@@ -462,7 +462,12 @@ export default function App() {
   // address opens the tables themselves (see routes.ts).
   if (route.name === 'category') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell
+        bar={bar}
+        onNavigate={goTo}
+        onModule={goModule}
+        grond={route.category.modules[0]}
+      >
         <CategoryScreen
           category={route.category}
           onOpen={(module) => go({ name: 'module', module, setId: null })}
@@ -477,7 +482,13 @@ export default function App() {
   // not the home screen — the front door is every module, this is one of them.
   if (route.name === 'module') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule} currentModule={route.module.id}>
+      <Shell
+        bar={bar}
+        onNavigate={goTo}
+        onModule={goModule}
+        currentModule={route.module.id}
+        grond={route.module.id}
+      >
         {/* Keyed on the module, so a way or a map chosen on one module's page
             is not still chosen on the next one's. */}
         <ModuleScreen
@@ -499,7 +510,13 @@ export default function App() {
   // and this is an answer to a question the child asked.
   if (route.name === 'soon') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule} currentModule={route.module.id}>
+      <Shell
+        bar={bar}
+        onNavigate={goTo}
+        onModule={goModule}
+        currentModule={route.module.id}
+        grond={route.module.id}
+      >
         <ModuleSoon module={route.module} onOpen={goModule} aside={eigenKolom} />
       </Shell>
     );
@@ -522,7 +539,7 @@ export default function App() {
   }
 
   return (
-    <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule}>
+    <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule} grond="vandaag">
       <HomeScreen
         naam={boot.profile.naam}
         onReeks={goReeks}

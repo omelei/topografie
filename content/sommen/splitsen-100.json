@@ -1,0 +1,325 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "splitsen-100",
+  "op": "splitsen",
+  "tafel": null,
+  "niveau": 2,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "splits-20-3",
+      "op": "splitsen",
+      "links": 20,
+      "rechts": 3,
+      "antwoord": 17
+    },
+    {
+      "id": "splits-20-8",
+      "op": "splitsen",
+      "links": 20,
+      "rechts": 8,
+      "antwoord": 12
+    },
+    {
+      "id": "splits-20-11",
+      "op": "splitsen",
+      "links": 20,
+      "rechts": 11,
+      "antwoord": 9
+    },
+    {
+      "id": "splits-20-14",
+      "op": "splitsen",
+      "links": 20,
+      "rechts": 14,
+      "antwoord": 6
+    },
+    {
+      "id": "splits-20-17",
+      "op": "splitsen",
+      "links": 20,
+      "rechts": 17,
+      "antwoord": 3
+    },
+    {
+      "id": "splits-30-4",
+      "op": "splitsen",
+      "links": 30,
+      "rechts": 4,
+      "antwoord": 26
+    },
+    {
+      "id": "splits-30-9",
+      "op": "splitsen",
+      "links": 30,
+      "rechts": 9,
+      "antwoord": 21
+    },
+    {
+      "id": "splits-30-13",
+      "op": "splitsen",
+      "links": 30,
+      "rechts": 13,
+      "antwoord": 17
+    },
+    {
+      "id": "splits-30-18",
+      "op": "splitsen",
+      "links": 30,
+      "rechts": 18,
+      "antwoord": 12
+    },
+    {
+      "id": "splits-30-26",
+      "op": "splitsen",
+      "links": 30,
+      "rechts": 26,
+      "antwoord": 4
+    },
+    {
+      "id": "splits-40-6",
+      "op": "splitsen",
+      "links": 40,
+      "rechts": 6,
+      "antwoord": 34
+    },
+    {
+      "id": "splits-40-12",
+      "op": "splitsen",
+      "links": 40,
+      "rechts": 12,
+      "antwoord": 28
+    },
+    {
+      "id": "splits-40-17",
+      "op": "splitsen",
+      "links": 40,
+      "rechts": 17,
+      "antwoord": 23
+    },
+    {
+      "id": "splits-40-23",
+      "op": "splitsen",
+      "links": 40,
+      "rechts": 23,
+      "antwoord": 17
+    },
+    {
+      "id": "splits-40-35",
+      "op": "splitsen",
+      "links": 40,
+      "rechts": 35,
+      "antwoord": 5
+    },
+    {
+      "id": "splits-50-7",
+      "op": "splitsen",
+      "links": 50,
+      "rechts": 7,
+      "antwoord": 43
+    },
+    {
+      "id": "splits-50-15",
+      "op": "splitsen",
+      "links": 50,
+      "rechts": 15,
+      "antwoord": 35
+    },
+    {
+      "id": "splits-50-22",
+      "op": "splitsen",
+      "links": 50,
+      "rechts": 22,
+      "antwoord": 28
+    },
+    {
+      "id": "splits-50-34",
+      "op": "splitsen",
+      "links": 50,
+      "rechts": 34,
+      "antwoord": 16
+    },
+    {
+      "id": "splits-50-46",
+      "op": "splitsen",
+      "links": 50,
+      "rechts": 46,
+      "antwoord": 4
+    },
+    {
+      "id": "splits-60-8",
+      "op": "splitsen",
+      "links": 60,
+      "rechts": 8,
+      "antwoord": 52
+    },
+    {
+      "id": "splits-60-19",
+      "op": "splitsen",
+      "links": 60,
+      "rechts": 19,
+      "antwoord": 41
+    },
+    {
+      "id": "splits-60-27",
+      "op": "splitsen",
+      "links": 60,
+      "rechts": 27,
+      "antwoord": 33
+    },
+    {
+      "id": "splits-60-41",
+      "op": "splitsen",
+      "links": 60,
+      "rechts": 41,
+      "antwoord": 19
+    },
+    {
+      "id": "splits-60-53",
+      "op": "splitsen",
+      "links": 60,
+      "rechts": 53,
+      "antwoord": 7
+    },
+    {
+      "id": "splits-70-5",
+      "op": "splitsen",
+      "links": 70,
+      "rechts": 5,
+      "antwoord": 65
+    },
+    {
+      "id": "splits-70-16",
+      "op": "splitsen",
+      "links": 70,
+      "rechts": 16,
+      "antwoord": 54
+    },
+    {
+      "id": "splits-70-28",
+      "op": "splitsen",
+      "links": 70,
+      "rechts": 28,
+      "antwoord": 42
+    },
+    {
+      "id": "splits-70-44",
+      "op": "splitsen",
+      "links": 70,
+      "rechts": 44,
+      "antwoord": 26
+    },
+    {
+      "id": "splits-70-62",
+      "op": "splitsen",
+      "links": 70,
+      "rechts": 62,
+      "antwoord": 8
+    },
+    {
+      "id": "splits-80-9",
+      "op": "splitsen",
+      "links": 80,
+      "rechts": 9,
+      "antwoord": 71
+    },
+    {
+      "id": "splits-80-23",
+      "op": "splitsen",
+      "links": 80,
+      "rechts": 23,
+      "antwoord": 57
+    },
+    {
+      "id": "splits-80-36",
+      "op": "splitsen",
+      "links": 80,
+      "rechts": 36,
+      "antwoord": 44
+    },
+    {
+      "id": "splits-80-47",
+      "op": "splitsen",
+      "links": 80,
+      "rechts": 47,
+      "antwoord": 33
+    },
+    {
+      "id": "splits-80-71",
+      "op": "splitsen",
+      "links": 80,
+      "rechts": 71,
+      "antwoord": 9
+    },
+    {
+      "id": "splits-90-12",
+      "op": "splitsen",
+      "links": 90,
+      "rechts": 12,
+      "antwoord": 78
+    },
+    {
+      "id": "splits-90-24",
+      "op": "splitsen",
+      "links": 90,
+      "rechts": 24,
+      "antwoord": 66
+    },
+    {
+      "id": "splits-90-38",
+      "op": "splitsen",
+      "links": 90,
+      "rechts": 38,
+      "antwoord": 52
+    },
+    {
+      "id": "splits-90-55",
+      "op": "splitsen",
+      "links": 90,
+      "rechts": 55,
+      "antwoord": 35
+    },
+    {
+      "id": "splits-90-83",
+      "op": "splitsen",
+      "links": 90,
+      "rechts": 83,
+      "antwoord": 7
+    },
+    {
+      "id": "splits-100-6",
+      "op": "splitsen",
+      "links": 100,
+      "rechts": 6,
+      "antwoord": 94
+    },
+    {
+      "id": "splits-100-25",
+      "op": "splitsen",
+      "links": 100,
+      "rechts": 25,
+      "antwoord": 75
+    },
+    {
+      "id": "splits-100-37",
+      "op": "splitsen",
+      "links": 100,
+      "rechts": 37,
+      "antwoord": 63
+    },
+    {
+      "id": "splits-100-64",
+      "op": "splitsen",
+      "links": 100,
+      "rechts": 64,
+      "antwoord": 36
+    },
+    {
+      "id": "splits-100-88",
+      "op": "splitsen",
+      "links": 100,
+      "rechts": 88,
+      "antwoord": 12
+    }
+  ]
+}

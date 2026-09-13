@@ -1,0 +1,990 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "delen-100",
+  "op": "delen",
+  "tafel": null,
+  "niveau": 2,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "deel-12-2",
+      "op": "delen",
+      "links": 12,
+      "rechts": 2,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-14-2",
+      "op": "delen",
+      "links": 14,
+      "rechts": 2,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-16-2",
+      "op": "delen",
+      "links": 16,
+      "rechts": 2,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-18-2",
+      "op": "delen",
+      "links": 18,
+      "rechts": 2,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-20-2",
+      "op": "delen",
+      "links": 20,
+      "rechts": 2,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-12-3",
+      "op": "delen",
+      "links": 12,
+      "rechts": 3,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-15-3",
+      "op": "delen",
+      "links": 15,
+      "rechts": 3,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-18-3",
+      "op": "delen",
+      "links": 18,
+      "rechts": 3,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-21-3",
+      "op": "delen",
+      "links": 21,
+      "rechts": 3,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-24-3",
+      "op": "delen",
+      "links": 24,
+      "rechts": 3,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-27-3",
+      "op": "delen",
+      "links": 27,
+      "rechts": 3,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-30-3",
+      "op": "delen",
+      "links": 30,
+      "rechts": 3,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-12-4",
+      "op": "delen",
+      "links": 12,
+      "rechts": 4,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-16-4",
+      "op": "delen",
+      "links": 16,
+      "rechts": 4,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-20-4",
+      "op": "delen",
+      "links": 20,
+      "rechts": 4,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-24-4",
+      "op": "delen",
+      "links": 24,
+      "rechts": 4,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-28-4",
+      "op": "delen",
+      "links": 28,
+      "rechts": 4,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-32-4",
+      "op": "delen",
+      "links": 32,
+      "rechts": 4,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-36-4",
+      "op": "delen",
+      "links": 36,
+      "rechts": 4,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-40-4",
+      "op": "delen",
+      "links": 40,
+      "rechts": 4,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-15-5",
+      "op": "delen",
+      "links": 15,
+      "rechts": 5,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-20-5",
+      "op": "delen",
+      "links": 20,
+      "rechts": 5,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-25-5",
+      "op": "delen",
+      "links": 25,
+      "rechts": 5,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-30-5",
+      "op": "delen",
+      "links": 30,
+      "rechts": 5,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-35-5",
+      "op": "delen",
+      "links": 35,
+      "rechts": 5,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-40-5",
+      "op": "delen",
+      "links": 40,
+      "rechts": 5,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-45-5",
+      "op": "delen",
+      "links": 45,
+      "rechts": 5,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-50-5",
+      "op": "delen",
+      "links": 50,
+      "rechts": 5,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-12-6",
+      "op": "delen",
+      "links": 12,
+      "rechts": 6,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-18-6",
+      "op": "delen",
+      "links": 18,
+      "rechts": 6,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-24-6",
+      "op": "delen",
+      "links": 24,
+      "rechts": 6,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-30-6",
+      "op": "delen",
+      "links": 30,
+      "rechts": 6,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-36-6",
+      "op": "delen",
+      "links": 36,
+      "rechts": 6,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-42-6",
+      "op": "delen",
+      "links": 42,
+      "rechts": 6,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-48-6",
+      "op": "delen",
+      "links": 48,
+      "rechts": 6,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-54-6",
+      "op": "delen",
+      "links": 54,
+      "rechts": 6,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-60-6",
+      "op": "delen",
+      "links": 60,
+      "rechts": 6,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-14-7",
+      "op": "delen",
+      "links": 14,
+      "rechts": 7,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-21-7",
+      "op": "delen",
+      "links": 21,
+      "rechts": 7,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-28-7",
+      "op": "delen",
+      "links": 28,
+      "rechts": 7,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-35-7",
+      "op": "delen",
+      "links": 35,
+      "rechts": 7,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-42-7",
+      "op": "delen",
+      "links": 42,
+      "rechts": 7,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-49-7",
+      "op": "delen",
+      "links": 49,
+      "rechts": 7,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-56-7",
+      "op": "delen",
+      "links": 56,
+      "rechts": 7,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-63-7",
+      "op": "delen",
+      "links": 63,
+      "rechts": 7,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-70-7",
+      "op": "delen",
+      "links": 70,
+      "rechts": 7,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-16-8",
+      "op": "delen",
+      "links": 16,
+      "rechts": 8,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-24-8",
+      "op": "delen",
+      "links": 24,
+      "rechts": 8,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-32-8",
+      "op": "delen",
+      "links": 32,
+      "rechts": 8,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-40-8",
+      "op": "delen",
+      "links": 40,
+      "rechts": 8,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-48-8",
+      "op": "delen",
+      "links": 48,
+      "rechts": 8,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-56-8",
+      "op": "delen",
+      "links": 56,
+      "rechts": 8,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-64-8",
+      "op": "delen",
+      "links": 64,
+      "rechts": 8,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-72-8",
+      "op": "delen",
+      "links": 72,
+      "rechts": 8,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-80-8",
+      "op": "delen",
+      "links": 80,
+      "rechts": 8,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-18-9",
+      "op": "delen",
+      "links": 18,
+      "rechts": 9,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-27-9",
+      "op": "delen",
+      "links": 27,
+      "rechts": 9,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-36-9",
+      "op": "delen",
+      "links": 36,
+      "rechts": 9,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-45-9",
+      "op": "delen",
+      "links": 45,
+      "rechts": 9,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-54-9",
+      "op": "delen",
+      "links": 54,
+      "rechts": 9,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-63-9",
+      "op": "delen",
+      "links": 63,
+      "rechts": 9,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-72-9",
+      "op": "delen",
+      "links": 72,
+      "rechts": 9,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-81-9",
+      "op": "delen",
+      "links": 81,
+      "rechts": 9,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-90-9",
+      "op": "delen",
+      "links": 90,
+      "rechts": 9,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-20-10",
+      "op": "delen",
+      "links": 20,
+      "rechts": 10,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-30-10",
+      "op": "delen",
+      "links": 30,
+      "rechts": 10,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-40-10",
+      "op": "delen",
+      "links": 40,
+      "rechts": 10,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-50-10",
+      "op": "delen",
+      "links": 50,
+      "rechts": 10,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-60-10",
+      "op": "delen",
+      "links": 60,
+      "rechts": 10,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-70-10",
+      "op": "delen",
+      "links": 70,
+      "rechts": 10,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-80-10",
+      "op": "delen",
+      "links": 80,
+      "rechts": 10,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-90-10",
+      "op": "delen",
+      "links": 90,
+      "rechts": 10,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-100-10",
+      "op": "delen",
+      "links": 100,
+      "rechts": 10,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-11-11",
+      "op": "delen",
+      "links": 11,
+      "rechts": 11,
+      "antwoord": 1
+    },
+    {
+      "id": "deel-22-11",
+      "op": "delen",
+      "links": 22,
+      "rechts": 11,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-33-11",
+      "op": "delen",
+      "links": 33,
+      "rechts": 11,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-44-11",
+      "op": "delen",
+      "links": 44,
+      "rechts": 11,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-55-11",
+      "op": "delen",
+      "links": 55,
+      "rechts": 11,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-66-11",
+      "op": "delen",
+      "links": 66,
+      "rechts": 11,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-77-11",
+      "op": "delen",
+      "links": 77,
+      "rechts": 11,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-88-11",
+      "op": "delen",
+      "links": 88,
+      "rechts": 11,
+      "antwoord": 8
+    },
+    {
+      "id": "deel-99-11",
+      "op": "delen",
+      "links": 99,
+      "rechts": 11,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-12-12",
+      "op": "delen",
+      "links": 12,
+      "rechts": 12,
+      "antwoord": 1
+    },
+    {
+      "id": "deel-24-12",
+      "op": "delen",
+      "links": 24,
+      "rechts": 12,
+      "antwoord": 2
+    },
+    {
+      "id": "deel-36-12",
+      "op": "delen",
+      "links": 36,
+      "rechts": 12,
+      "antwoord": 3
+    },
+    {
+      "id": "deel-48-12",
+      "op": "delen",
+      "links": 48,
+      "rechts": 12,
+      "antwoord": 4
+    },
+    {
+      "id": "deel-60-12",
+      "op": "delen",
+      "links": 60,
+      "rechts": 12,
+      "antwoord": 5
+    },
+    {
+      "id": "deel-72-12",
+      "op": "delen",
+      "links": 72,
+      "rechts": 12,
+      "antwoord": 6
+    },
+    {
+      "id": "deel-84-12",
+      "op": "delen",
+      "links": 84,
+      "rechts": 12,
+      "antwoord": 7
+    },
+    {
+      "id": "deel-96-12",
+      "op": "delen",
+      "links": 96,
+      "rechts": 12,
+      "antwoord": 8
+    },
+    {
+      "id": "deel100-33-3",
+      "op": "delen",
+      "links": 33,
+      "rechts": 3,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-36-3",
+      "op": "delen",
+      "links": 36,
+      "rechts": 3,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-39-3",
+      "op": "delen",
+      "links": 39,
+      "rechts": 3,
+      "antwoord": 13
+    },
+    {
+      "id": "deel100-42-3",
+      "op": "delen",
+      "links": 42,
+      "rechts": 3,
+      "antwoord": 14
+    },
+    {
+      "id": "deel100-45-3",
+      "op": "delen",
+      "links": 45,
+      "rechts": 3,
+      "antwoord": 15
+    },
+    {
+      "id": "deel100-48-3",
+      "op": "delen",
+      "links": 48,
+      "rechts": 3,
+      "antwoord": 16
+    },
+    {
+      "id": "deel100-51-3",
+      "op": "delen",
+      "links": 51,
+      "rechts": 3,
+      "antwoord": 17
+    },
+    {
+      "id": "deel100-54-3",
+      "op": "delen",
+      "links": 54,
+      "rechts": 3,
+      "antwoord": 18
+    },
+    {
+      "id": "deel100-57-3",
+      "op": "delen",
+      "links": 57,
+      "rechts": 3,
+      "antwoord": 19
+    },
+    {
+      "id": "deel100-63-3",
+      "op": "delen",
+      "links": 63,
+      "rechts": 3,
+      "antwoord": 21
+    },
+    {
+      "id": "deel100-66-3",
+      "op": "delen",
+      "links": 66,
+      "rechts": 3,
+      "antwoord": 22
+    },
+    {
+      "id": "deel100-69-3",
+      "op": "delen",
+      "links": 69,
+      "rechts": 3,
+      "antwoord": 23
+    },
+    {
+      "id": "deel100-72-3",
+      "op": "delen",
+      "links": 72,
+      "rechts": 3,
+      "antwoord": 24
+    },
+    {
+      "id": "deel100-75-3",
+      "op": "delen",
+      "links": 75,
+      "rechts": 3,
+      "antwoord": 25
+    },
+    {
+      "id": "deel100-44-4",
+      "op": "delen",
+      "links": 44,
+      "rechts": 4,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-48-4",
+      "op": "delen",
+      "links": 48,
+      "rechts": 4,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-52-4",
+      "op": "delen",
+      "links": 52,
+      "rechts": 4,
+      "antwoord": 13
+    },
+    {
+      "id": "deel100-56-4",
+      "op": "delen",
+      "links": 56,
+      "rechts": 4,
+      "antwoord": 14
+    },
+    {
+      "id": "deel100-60-4",
+      "op": "delen",
+      "links": 60,
+      "rechts": 4,
+      "antwoord": 15
+    },
+    {
+      "id": "deel100-64-4",
+      "op": "delen",
+      "links": 64,
+      "rechts": 4,
+      "antwoord": 16
+    },
+    {
+      "id": "deel100-68-4",
+      "op": "delen",
+      "links": 68,
+      "rechts": 4,
+      "antwoord": 17
+    },
+    {
+      "id": "deel100-72-4",
+      "op": "delen",
+      "links": 72,
+      "rechts": 4,
+      "antwoord": 18
+    },
+    {
+      "id": "deel100-76-4",
+      "op": "delen",
+      "links": 76,
+      "rechts": 4,
+      "antwoord": 19
+    },
+    {
+      "id": "deel100-84-4",
+      "op": "delen",
+      "links": 84,
+      "rechts": 4,
+      "antwoord": 21
+    },
+    {
+      "id": "deel100-88-4",
+      "op": "delen",
+      "links": 88,
+      "rechts": 4,
+      "antwoord": 22
+    },
+    {
+      "id": "deel100-92-4",
+      "op": "delen",
+      "links": 92,
+      "rechts": 4,
+      "antwoord": 23
+    },
+    {
+      "id": "deel100-96-4",
+      "op": "delen",
+      "links": 96,
+      "rechts": 4,
+      "antwoord": 24
+    },
+    {
+      "id": "deel100-100-4",
+      "op": "delen",
+      "links": 100,
+      "rechts": 4,
+      "antwoord": 25
+    },
+    {
+      "id": "deel100-55-5",
+      "op": "delen",
+      "links": 55,
+      "rechts": 5,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-60-5",
+      "op": "delen",
+      "links": 60,
+      "rechts": 5,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-65-5",
+      "op": "delen",
+      "links": 65,
+      "rechts": 5,
+      "antwoord": 13
+    },
+    {
+      "id": "deel100-70-5",
+      "op": "delen",
+      "links": 70,
+      "rechts": 5,
+      "antwoord": 14
+    },
+    {
+      "id": "deel100-75-5",
+      "op": "delen",
+      "links": 75,
+      "rechts": 5,
+      "antwoord": 15
+    },
+    {
+      "id": "deel100-80-5",
+      "op": "delen",
+      "links": 80,
+      "rechts": 5,
+      "antwoord": 16
+    },
+    {
+      "id": "deel100-85-5",
+      "op": "delen",
+      "links": 85,
+      "rechts": 5,
+      "antwoord": 17
+    },
+    {
+      "id": "deel100-90-5",
+      "op": "delen",
+      "links": 90,
+      "rechts": 5,
+      "antwoord": 18
+    },
+    {
+      "id": "deel100-95-5",
+      "op": "delen",
+      "links": 95,
+      "rechts": 5,
+      "antwoord": 19
+    },
+    {
+      "id": "deel100-66-6",
+      "op": "delen",
+      "links": 66,
+      "rechts": 6,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-72-6",
+      "op": "delen",
+      "links": 72,
+      "rechts": 6,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-78-6",
+      "op": "delen",
+      "links": 78,
+      "rechts": 6,
+      "antwoord": 13
+    },
+    {
+      "id": "deel100-84-6",
+      "op": "delen",
+      "links": 84,
+      "rechts": 6,
+      "antwoord": 14
+    },
+    {
+      "id": "deel100-90-6",
+      "op": "delen",
+      "links": 90,
+      "rechts": 6,
+      "antwoord": 15
+    },
+    {
+      "id": "deel100-96-6",
+      "op": "delen",
+      "links": 96,
+      "rechts": 6,
+      "antwoord": 16
+    },
+    {
+      "id": "deel100-77-7",
+      "op": "delen",
+      "links": 77,
+      "rechts": 7,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-84-7",
+      "op": "delen",
+      "links": 84,
+      "rechts": 7,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-91-7",
+      "op": "delen",
+      "links": 91,
+      "rechts": 7,
+      "antwoord": 13
+    },
+    {
+      "id": "deel100-98-7",
+      "op": "delen",
+      "links": 98,
+      "rechts": 7,
+      "antwoord": 14
+    },
+    {
+      "id": "deel100-88-8",
+      "op": "delen",
+      "links": 88,
+      "rechts": 8,
+      "antwoord": 11
+    },
+    {
+      "id": "deel100-96-8",
+      "op": "delen",
+      "links": 96,
+      "rechts": 8,
+      "antwoord": 12
+    },
+    {
+      "id": "deel100-99-9",
+      "op": "delen",
+      "links": 99,
+      "rechts": 9,
+      "antwoord": 11
+    }
+  ]
+}

@@ -261,7 +261,7 @@ describe('the tafeldiploma', () => {
   it('exists for a table and for nothing else', () => {
     // There is no diploma for "alle tafels door elkaar" and none for a mix:
     // that would be a certificate no school hands out.
-    for (const setId of ['tafels-alle', 'rekenmix', 'deel-7', 'plus-100', 'nl-provincies']) {
+    for (const setId of ['tafels-alle', 'rekenmix', 'delen-100', 'plus-100', 'nl-provincies']) {
       expect(diploma({ setId }), setId).toBeNull();
     }
   });

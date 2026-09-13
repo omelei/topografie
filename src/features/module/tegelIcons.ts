@@ -11,6 +11,7 @@ import {
   GlobeIcon,
   GridIcon,
   HalfUurIcon,
+  HalverenIcon,
   type IconProps,
   KeerIcon,
   KlaarIcon,
@@ -27,12 +28,14 @@ import {
   PinIcon,
   PlusIcon,
   ProvincieIcon,
+  SplitsIcon,
   StadIcon,
   StarIcon,
   TafelIcon,
   ToenIcon,
   UitgangIcon,
   UurIcon,
+  VerdubbelIcon,
   VormenIcon,
   WaterIcon,
   WrongIcon,
@@ -105,6 +108,11 @@ export const ONDERWERP_ICON: Record<string, TileIcon> = {
   delen: DeelIcon,
   plus: PlusIcon,
   min: MinIcon,
+  // What the sum does, drawn: the splitsbeen, a bar cut in two, a block twice
+  // (ADR-120).
+  splitsen: SplitsIcon,
+  halveren: HalverenIcon,
+  verdubbelen: VerdubbelIcon,
   rekenmix: MixIcon,
   // The child's own list of the sums they keep getting wrong (ADR-078). The
   // cross is not borrowed here, it is the subject: this tile is the mistakes.

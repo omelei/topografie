@@ -1,0 +1,325 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "halveren-1000",
+  "op": "halveren",
+  "tafel": null,
+  "niveau": 3,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "halveer-108",
+      "op": "halveren",
+      "links": 108,
+      "rechts": 2,
+      "antwoord": 54
+    },
+    {
+      "id": "halveer-124",
+      "op": "halveren",
+      "links": 124,
+      "rechts": 2,
+      "antwoord": 62
+    },
+    {
+      "id": "halveer-136",
+      "op": "halveren",
+      "links": 136,
+      "rechts": 2,
+      "antwoord": 68
+    },
+    {
+      "id": "halveer-150",
+      "op": "halveren",
+      "links": 150,
+      "rechts": 2,
+      "antwoord": 75
+    },
+    {
+      "id": "halveer-172",
+      "op": "halveren",
+      "links": 172,
+      "rechts": 2,
+      "antwoord": 86
+    },
+    {
+      "id": "halveer-190",
+      "op": "halveren",
+      "links": 190,
+      "rechts": 2,
+      "antwoord": 95
+    },
+    {
+      "id": "halveer-214",
+      "op": "halveren",
+      "links": 214,
+      "rechts": 2,
+      "antwoord": 107
+    },
+    {
+      "id": "halveer-236",
+      "op": "halveren",
+      "links": 236,
+      "rechts": 2,
+      "antwoord": 118
+    },
+    {
+      "id": "halveer-250",
+      "op": "halveren",
+      "links": 250,
+      "rechts": 2,
+      "antwoord": 125
+    },
+    {
+      "id": "halveer-268",
+      "op": "halveren",
+      "links": 268,
+      "rechts": 2,
+      "antwoord": 134
+    },
+    {
+      "id": "halveer-290",
+      "op": "halveren",
+      "links": 290,
+      "rechts": 2,
+      "antwoord": 145
+    },
+    {
+      "id": "halveer-312",
+      "op": "halveren",
+      "links": 312,
+      "rechts": 2,
+      "antwoord": 156
+    },
+    {
+      "id": "halveer-338",
+      "op": "halveren",
+      "links": 338,
+      "rechts": 2,
+      "antwoord": 169
+    },
+    {
+      "id": "halveer-350",
+      "op": "halveren",
+      "links": 350,
+      "rechts": 2,
+      "antwoord": 175
+    },
+    {
+      "id": "halveer-376",
+      "op": "halveren",
+      "links": 376,
+      "rechts": 2,
+      "antwoord": 188
+    },
+    {
+      "id": "halveer-394",
+      "op": "halveren",
+      "links": 394,
+      "rechts": 2,
+      "antwoord": 197
+    },
+    {
+      "id": "halveer-410",
+      "op": "halveren",
+      "links": 410,
+      "rechts": 2,
+      "antwoord": 205
+    },
+    {
+      "id": "halveer-432",
+      "op": "halveren",
+      "links": 432,
+      "rechts": 2,
+      "antwoord": 216
+    },
+    {
+      "id": "halveer-456",
+      "op": "halveren",
+      "links": 456,
+      "rechts": 2,
+      "antwoord": 228
+    },
+    {
+      "id": "halveer-470",
+      "op": "halveren",
+      "links": 470,
+      "rechts": 2,
+      "antwoord": 235
+    },
+    {
+      "id": "halveer-498",
+      "op": "halveren",
+      "links": 498,
+      "rechts": 2,
+      "antwoord": 249
+    },
+    {
+      "id": "halveer-516",
+      "op": "halveren",
+      "links": 516,
+      "rechts": 2,
+      "antwoord": 258
+    },
+    {
+      "id": "halveer-530",
+      "op": "halveren",
+      "links": 530,
+      "rechts": 2,
+      "antwoord": 265
+    },
+    {
+      "id": "halveer-554",
+      "op": "halveren",
+      "links": 554,
+      "rechts": 2,
+      "antwoord": 277
+    },
+    {
+      "id": "halveer-572",
+      "op": "halveren",
+      "links": 572,
+      "rechts": 2,
+      "antwoord": 286
+    },
+    {
+      "id": "halveer-590",
+      "op": "halveren",
+      "links": 590,
+      "rechts": 2,
+      "antwoord": 295
+    },
+    {
+      "id": "halveer-614",
+      "op": "halveren",
+      "links": 614,
+      "rechts": 2,
+      "antwoord": 307
+    },
+    {
+      "id": "halveer-638",
+      "op": "halveren",
+      "links": 638,
+      "rechts": 2,
+      "antwoord": 319
+    },
+    {
+      "id": "halveer-650",
+      "op": "halveren",
+      "links": 650,
+      "rechts": 2,
+      "antwoord": 325
+    },
+    {
+      "id": "halveer-676",
+      "op": "halveren",
+      "links": 676,
+      "rechts": 2,
+      "antwoord": 338
+    },
+    {
+      "id": "halveer-692",
+      "op": "halveren",
+      "links": 692,
+      "rechts": 2,
+      "antwoord": 346
+    },
+    {
+      "id": "halveer-710",
+      "op": "halveren",
+      "links": 710,
+      "rechts": 2,
+      "antwoord": 355
+    },
+    {
+      "id": "halveer-734",
+      "op": "halveren",
+      "links": 734,
+      "rechts": 2,
+      "antwoord": 367
+    },
+    {
+      "id": "halveer-756",
+      "op": "halveren",
+      "links": 756,
+      "rechts": 2,
+      "antwoord": 378
+    },
+    {
+      "id": "halveer-770",
+      "op": "halveren",
+      "links": 770,
+      "rechts": 2,
+      "antwoord": 385
+    },
+    {
+      "id": "halveer-798",
+      "op": "halveren",
+      "links": 798,
+      "rechts": 2,
+      "antwoord": 399
+    },
+    {
+      "id": "halveer-812",
+      "op": "halveren",
+      "links": 812,
+      "rechts": 2,
+      "antwoord": 406
+    },
+    {
+      "id": "halveer-836",
+      "op": "halveren",
+      "links": 836,
+      "rechts": 2,
+      "antwoord": 418
+    },
+    {
+      "id": "halveer-850",
+      "op": "halveren",
+      "links": 850,
+      "rechts": 2,
+      "antwoord": 425
+    },
+    {
+      "id": "halveer-874",
+      "op": "halveren",
+      "links": 874,
+      "rechts": 2,
+      "antwoord": 437
+    },
+    {
+      "id": "halveer-890",
+      "op": "halveren",
+      "links": 890,
+      "rechts": 2,
+      "antwoord": 445
+    },
+    {
+      "id": "halveer-916",
+      "op": "halveren",
+      "links": 916,
+      "rechts": 2,
+      "antwoord": 458
+    },
+    {
+      "id": "halveer-938",
+      "op": "halveren",
+      "links": 938,
+      "rechts": 2,
+      "antwoord": 469
+    },
+    {
+      "id": "halveer-956",
+      "op": "halveren",
+      "links": 956,
+      "rechts": 2,
+      "antwoord": 478
+    },
+    {
+      "id": "halveer-1000",
+      "op": "halveren",
+      "links": 1000,
+      "rechts": 2,
+      "antwoord": 500
+    }
+  ]
+}

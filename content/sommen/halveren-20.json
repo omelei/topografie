@@ -1,77 +1,77 @@
 {
   "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
-  "id": "deel-2",
-  "op": "delen",
-  "tafel": 2,
+  "id": "halveren-20",
+  "op": "halveren",
+  "tafel": null,
   "niveau": 1,
-  "contentVersie": "2026-09-08",
+  "contentVersie": "2026-09-13",
   "items": [
     {
-      "id": "deel-2-2",
-      "op": "delen",
+      "id": "halveer-2",
+      "op": "halveren",
       "links": 2,
       "rechts": 2,
       "antwoord": 1
     },
     {
-      "id": "deel-4-2",
-      "op": "delen",
+      "id": "halveer-4",
+      "op": "halveren",
       "links": 4,
       "rechts": 2,
       "antwoord": 2
     },
     {
-      "id": "deel-6-2",
-      "op": "delen",
+      "id": "halveer-6",
+      "op": "halveren",
       "links": 6,
       "rechts": 2,
       "antwoord": 3
     },
     {
-      "id": "deel-8-2",
-      "op": "delen",
+      "id": "halveer-8",
+      "op": "halveren",
       "links": 8,
       "rechts": 2,
       "antwoord": 4
     },
     {
-      "id": "deel-10-2",
-      "op": "delen",
+      "id": "halveer-10",
+      "op": "halveren",
       "links": 10,
       "rechts": 2,
       "antwoord": 5
     },
     {
-      "id": "deel-12-2",
-      "op": "delen",
+      "id": "halveer-12",
+      "op": "halveren",
       "links": 12,
       "rechts": 2,
       "antwoord": 6
     },
     {
-      "id": "deel-14-2",
-      "op": "delen",
+      "id": "halveer-14",
+      "op": "halveren",
       "links": 14,
       "rechts": 2,
       "antwoord": 7
     },
     {
-      "id": "deel-16-2",
-      "op": "delen",
+      "id": "halveer-16",
+      "op": "halveren",
       "links": 16,
       "rechts": 2,
       "antwoord": 8
     },
     {
-      "id": "deel-18-2",
-      "op": "delen",
+      "id": "halveer-18",
+      "op": "halveren",
       "links": 18,
       "rechts": 2,
       "antwoord": 9
     },
     {
-      "id": "deel-20-2",
-      "op": "delen",
+      "id": "halveer-20",
+      "op": "halveren",
       "links": 20,
       "rechts": 2,
       "antwoord": 10

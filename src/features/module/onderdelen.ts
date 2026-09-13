@@ -277,11 +277,19 @@ function topoFouten(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
 // ---------------------------------------------------------------------------
 // Rekenen
 
-/** What a range of sums is called, by the sign in front of its ceiling. */
+/**
+ * What a range of sums is called, by the kind in front of its ceiling. Every
+ * kind but the tables comes in ranges (ADR-120), and "tot 100" means the same
+ * on every one of them: no number in the sum is bigger.
+ */
 const BEREIK_NAAM: Record<string, TranslationKey> = {
   plus: 'sums.plusUpTo',
   min: 'sums.minusUpTo',
   keer: 'sums.timesUpTo',
+  delen: 'sums.divideUpTo',
+  splitsen: 'sums.splitUpTo',
+  halveren: 'sums.halveUpTo',
+  verdubbelen: 'sums.doubleUpTo',
 };
 
 /** The name of a set of sums, and the short label on its chip. */
@@ -289,10 +297,7 @@ function rekenNaam(setId: string): { naam: string; kort: string } {
   const tafel = /^tafel-(\d+)$/.exec(setId)?.[1];
   if (tafel) return { naam: t('sums.table', { tafel }), kort: tafel };
 
-  const deel = /^deel-(\d+)$/.exec(setId)?.[1];
-  if (deel) return { naam: t('sums.divideBy', { tafel: deel }), kort: deel };
-
-  const bereik = /^(plus|min|keer)-(\d+)$/.exec(setId);
+  const bereik = /^(plus|min|keer|delen|splitsen|halveren|verdubbelen)-(\d+)$/.exec(setId);
   const soort = bereik?.[1];
   const grens = bereik?.[2];
   if (soort && grens) {
@@ -825,10 +830,10 @@ export function startbareOnderdelen(): Onderdeel[] {
 /**
  * The subjects a module offers, in the order a child should meet them.
  *
- * Topography is five sets and a mix of them, one subject each. Rekenen is five
- * kinds of sum and a mix of them; the tables and the divisions hold twelve sets
- * apiece, and the mix of each is the Rekenmix rather than a thirteenth square
- * (ADR-100). Klokkijken is four steps and a mix, one subject each — the shape
+ * Topography is five sets and a mix of them, one subject each. Rekenen is eight
+ * kinds of sum and a mix of them; the tables hold twelve sets, every other kind
+ * three ranges, and the mix of the tables is the Rekenmix rather than a
+ * thirteenth square (ADR-100, ADR-120). Klokkijken is four steps and a mix, one subject each — the shape
  * topography has rather than the shape rekenen has. Taal is two parts of five
  * subjects and the mistakes, under the row topography asks where on (ADR-118).
  */
@@ -858,9 +863,10 @@ export function onderwerpenVan(
       regio: null,
       sets: van('tafel-'),
     },
-    // What comes after the tables: a number past ten times one under it, the
-    // sum a child splits (ADR-100). Beside the tables because it is the same
-    // sign.
+    // Keersommen in three ranges (ADR-100, ADR-120): to 10 is the table sums
+    // with an answer of ten at most, made of the tables' own items; to 100 and
+    // 1000 is a number past ten times one under it, the sum a child splits.
+    // Beside the tables because it is the same sign.
     {
       moduleId: 'tafels',
       id: 'keer',
@@ -868,16 +874,19 @@ export function onderwerpenVan(
       uitleg: 'onderwerp.keer.uitleg',
       keuze: 'onderwerp.bereik.keuze',
       regio: null,
-      sets: van('keer-'),
+      sets: [...mixMet('keer-10'), ...van('keer-')],
     },
+    // Deelsommen in the same three ranges, by the number that is divided: the
+    // tables the other way round, and the keersommen the other way round
+    // (ADR-120). They were twelve sets, "delen door 7", until then.
     {
       moduleId: 'tafels',
       id: 'delen',
       naam: 'onderwerp.delen',
       uitleg: 'onderwerp.delen.uitleg',
-      keuze: 'onderwerp.delen.keuze',
+      keuze: 'onderwerp.bereik.keuze',
       regio: null,
-      sets: van('deel-'),
+      sets: van('delen-'),
     },
     {
       moduleId: 'tafels',
@@ -896,6 +905,35 @@ export function onderwerpenVan(
       keuze: 'onderwerp.bereik.keuze',
       regio: null,
       sets: van('min-'),
+    },
+    // Splitsen, halveren and verdubbelen (ADR-120): three more kinds of sum,
+    // each in three ranges, after plus and minus because they lean on them.
+    {
+      moduleId: 'tafels',
+      id: 'splitsen',
+      naam: 'onderwerp.splitsen',
+      uitleg: 'onderwerp.splitsen.uitleg',
+      keuze: 'onderwerp.bereik.keuze',
+      regio: null,
+      sets: van('splitsen-'),
+    },
+    {
+      moduleId: 'tafels',
+      id: 'halveren',
+      naam: 'onderwerp.halveren',
+      uitleg: 'onderwerp.halveren.uitleg',
+      keuze: 'onderwerp.bereik.keuze',
+      regio: null,
+      sets: van('halveren-'),
+    },
+    {
+      moduleId: 'tafels',
+      id: 'verdubbelen',
+      naam: 'onderwerp.verdubbelen',
+      uitleg: 'onderwerp.verdubbelen.uitleg',
+      keuze: 'onderwerp.bereik.keuze',
+      regio: null,
+      sets: van('verdubbelen-'),
     },
     {
       moduleId: 'tafels',

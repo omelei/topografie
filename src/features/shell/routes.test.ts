@@ -183,10 +183,14 @@ describe('the addresses', () => {
     // "mix" in both modules rather than "rekenmix" and "nl-mix": those are ids,
     // and an id is not what a parent writes on a note.
     for (const [pad, setId] of [
-      ['/rekenen/deel-7', 'deel-7'],
+      ['/rekenen/delen-100', 'delen-100'],
       ['/rekenen/plus-20', 'plus-20'],
       ['/rekenen/min-1000', 'min-1000'],
+      ['/rekenen/keer-10', 'keer-10'],
       ['/rekenen/keer-100', 'keer-100'],
+      ['/rekenen/splitsen-20', 'splitsen-20'],
+      ['/rekenen/halveren-1000', 'halveren-1000'],
+      ['/rekenen/verdubbelen-20', 'verdubbelen-20'],
       ['/rekenen/alle-tafels', 'tafels-alle'],
       ['/rekenen/alle-deelsommen', 'deel-alle'],
       ['/rekenen/mix', 'rekenmix'],
@@ -211,6 +215,18 @@ describe('the addresses', () => {
     // And a range nobody offers. "Tot 50" is a plausible thing to type and
     // there is no such set, so it opens rekenen rather than an empty round.
     expect(routeFor('/rekenen/plus-50')).toMatchObject({ name: 'module', setId: null });
+    expect(routeFor('/rekenen/splitsen-1000')).toMatchObject({ name: 'module', setId: null });
+  });
+
+  it('opens the range that holds them where "delen door" used to be', () => {
+    // Twelve sets until ADR-120, at /rekenen/deel-7. Somebody may have written
+    // that down, and its sums are still there under the same ids.
+    expect(routeFor('/rekenen/deel-7')).toMatchObject({ name: 'module', setId: 'delen-100' });
+    expect(routeFor('/rekenen/deel-12')).toMatchObject({ name: 'module', setId: 'delen-100' });
+    expect(routeFor('/rekenen/deel-1')).toMatchObject({ name: 'module', setId: 'delen-10' });
+    expect(pathFor(routeFor('/rekenen/deel-7'))).toMatch(/\/rekenen\/delen-100$/);
+    // A table that never was is still a typo.
+    expect(routeFor('/rekenen/deel-13')).toMatchObject({ name: 'module', setId: null });
   });
 
   it('opens the front door where the collection used to be', () => {

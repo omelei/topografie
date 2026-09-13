@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { t } from '@/i18n';
-import { sumText } from '@/game-core';
+import { sumInWoorden, sumText, sumUitgewerkt } from '@/game-core';
 import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
@@ -99,6 +99,9 @@ export function SumScreen({
 
   const { sum } = state.question;
   const som = sumText(sum);
+  const uitgewerkt = sumUitgewerkt(sum);
+  // "helft van 1000" is three words at the size of a sum, so it steps down.
+  const somKlasse = sumInWoorden(sum) ? 'tk-sum tk-sum-woorden' : 'tk-sum';
   const revealed = state.phase === 'revealed';
   const typing = typesTheSum(mode);
 
@@ -154,7 +157,7 @@ export function SumScreen({
       {/* Announced separately from the heading, so a screen reader hears every
           new sum rather than only the first. */}
       <p className="tk-sr-only" role="status" aria-live="polite">
-        {revealed ? spokenFeedback(state.lastCorrect, som, sum.antwoord, state.given) : spoken}
+        {revealed ? spokenFeedback(state.lastCorrect, uitgewerkt, state.given) : spoken}
       </p>
 
       <div className="tk-round-body">
@@ -166,8 +169,8 @@ export function SumScreen({
                 <div className="min-w-0">
                   <p className="tk-display text-sectiekop">
                     {state.lastCorrect
-                      ? t('sums.correct', { som, antwoord: sum.antwoord })
-                      : t('sums.wrong', { som, antwoord: sum.antwoord })}
+                      ? t('sums.correct', { uitgewerkt })
+                      : t('sums.wrong', { uitgewerkt })}
                   </p>
                   <p className="text-lopend text-tekst-secundair">
                     {state.lastCorrect
@@ -225,7 +228,7 @@ export function SumScreen({
         {/* Where the map goes on the other screen. The sum gets the same stage,
             because it is the same thing: what the child is being asked about. */}
         <div className="tk-round-map flex items-center justify-center">
-          <p className="tk-sum tk-display tabular-nums">{som}</p>
+          <p className={`${somKlasse} tk-display tabular-nums`}>{som}</p>
         </div>
       </div>
     </div>
@@ -240,15 +243,10 @@ function klok(seconden: number): string {
 }
 
 /** What a screen reader hears once the answer is in. */
-function spokenFeedback(
-  correct: boolean,
-  som: string,
-  antwoord: number,
-  given: number | null,
-): string {
-  if (correct) return t('sums.correct', { som, antwoord });
+function spokenFeedback(correct: boolean, uitgewerkt: string, given: number | null): string {
+  if (correct) return t('sums.correct', { uitgewerkt });
   const detail = given === null ? t('sums.dontKnowSub') : t('sums.wrongSub', { gegeven: given });
-  return `${t('sums.wrong', { som, antwoord })} ${detail}`;
+  return `${t('sums.wrong', { uitgewerkt })} ${detail}`;
 }
 
 /**

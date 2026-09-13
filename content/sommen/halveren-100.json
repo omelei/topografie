@@ -1,0 +1,290 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "halveren-100",
+  "op": "halveren",
+  "tafel": null,
+  "niveau": 2,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "halveer-22",
+      "op": "halveren",
+      "links": 22,
+      "rechts": 2,
+      "antwoord": 11
+    },
+    {
+      "id": "halveer-24",
+      "op": "halveren",
+      "links": 24,
+      "rechts": 2,
+      "antwoord": 12
+    },
+    {
+      "id": "halveer-26",
+      "op": "halveren",
+      "links": 26,
+      "rechts": 2,
+      "antwoord": 13
+    },
+    {
+      "id": "halveer-28",
+      "op": "halveren",
+      "links": 28,
+      "rechts": 2,
+      "antwoord": 14
+    },
+    {
+      "id": "halveer-30",
+      "op": "halveren",
+      "links": 30,
+      "rechts": 2,
+      "antwoord": 15
+    },
+    {
+      "id": "halveer-32",
+      "op": "halveren",
+      "links": 32,
+      "rechts": 2,
+      "antwoord": 16
+    },
+    {
+      "id": "halveer-34",
+      "op": "halveren",
+      "links": 34,
+      "rechts": 2,
+      "antwoord": 17
+    },
+    {
+      "id": "halveer-36",
+      "op": "halveren",
+      "links": 36,
+      "rechts": 2,
+      "antwoord": 18
+    },
+    {
+      "id": "halveer-38",
+      "op": "halveren",
+      "links": 38,
+      "rechts": 2,
+      "antwoord": 19
+    },
+    {
+      "id": "halveer-40",
+      "op": "halveren",
+      "links": 40,
+      "rechts": 2,
+      "antwoord": 20
+    },
+    {
+      "id": "halveer-42",
+      "op": "halveren",
+      "links": 42,
+      "rechts": 2,
+      "antwoord": 21
+    },
+    {
+      "id": "halveer-44",
+      "op": "halveren",
+      "links": 44,
+      "rechts": 2,
+      "antwoord": 22
+    },
+    {
+      "id": "halveer-46",
+      "op": "halveren",
+      "links": 46,
+      "rechts": 2,
+      "antwoord": 23
+    },
+    {
+      "id": "halveer-48",
+      "op": "halveren",
+      "links": 48,
+      "rechts": 2,
+      "antwoord": 24
+    },
+    {
+      "id": "halveer-50",
+      "op": "halveren",
+      "links": 50,
+      "rechts": 2,
+      "antwoord": 25
+    },
+    {
+      "id": "halveer-52",
+      "op": "halveren",
+      "links": 52,
+      "rechts": 2,
+      "antwoord": 26
+    },
+    {
+      "id": "halveer-54",
+      "op": "halveren",
+      "links": 54,
+      "rechts": 2,
+      "antwoord": 27
+    },
+    {
+      "id": "halveer-56",
+      "op": "halveren",
+      "links": 56,
+      "rechts": 2,
+      "antwoord": 28
+    },
+    {
+      "id": "halveer-58",
+      "op": "halveren",
+      "links": 58,
+      "rechts": 2,
+      "antwoord": 29
+    },
+    {
+      "id": "halveer-60",
+      "op": "halveren",
+      "links": 60,
+      "rechts": 2,
+      "antwoord": 30
+    },
+    {
+      "id": "halveer-62",
+      "op": "halveren",
+      "links": 62,
+      "rechts": 2,
+      "antwoord": 31
+    },
+    {
+      "id": "halveer-64",
+      "op": "halveren",
+      "links": 64,
+      "rechts": 2,
+      "antwoord": 32
+    },
+    {
+      "id": "halveer-66",
+      "op": "halveren",
+      "links": 66,
+      "rechts": 2,
+      "antwoord": 33
+    },
+    {
+      "id": "halveer-68",
+      "op": "halveren",
+      "links": 68,
+      "rechts": 2,
+      "antwoord": 34
+    },
+    {
+      "id": "halveer-70",
+      "op": "halveren",
+      "links": 70,
+      "rechts": 2,
+      "antwoord": 35
+    },
+    {
+      "id": "halveer-72",
+      "op": "halveren",
+      "links": 72,
+      "rechts": 2,
+      "antwoord": 36
+    },
+    {
+      "id": "halveer-74",
+      "op": "halveren",
+      "links": 74,
+      "rechts": 2,
+      "antwoord": 37
+    },
+    {
+      "id": "halveer-76",
+      "op": "halveren",
+      "links": 76,
+      "rechts": 2,
+      "antwoord": 38
+    },
+    {
+      "id": "halveer-78",
+      "op": "halveren",
+      "links": 78,
+      "rechts": 2,
+      "antwoord": 39
+    },
+    {
+      "id": "halveer-80",
+      "op": "halveren",
+      "links": 80,
+      "rechts": 2,
+      "antwoord": 40
+    },
+    {
+      "id": "halveer-82",
+      "op": "halveren",
+      "links": 82,
+      "rechts": 2,
+      "antwoord": 41
+    },
+    {
+      "id": "halveer-84",
+      "op": "halveren",
+      "links": 84,
+      "rechts": 2,
+      "antwoord": 42
+    },
+    {
+      "id": "halveer-86",
+      "op": "halveren",
+      "links": 86,
+      "rechts": 2,
+      "antwoord": 43
+    },
+    {
+      "id": "halveer-88",
+      "op": "halveren",
+      "links": 88,
+      "rechts": 2,
+      "antwoord": 44
+    },
+    {
+      "id": "halveer-90",
+      "op": "halveren",
+      "links": 90,
+      "rechts": 2,
+      "antwoord": 45
+    },
+    {
+      "id": "halveer-92",
+      "op": "halveren",
+      "links": 92,
+      "rechts": 2,
+      "antwoord": 46
+    },
+    {
+      "id": "halveer-94",
+      "op": "halveren",
+      "links": 94,
+      "rechts": 2,
+      "antwoord": 47
+    },
+    {
+      "id": "halveer-96",
+      "op": "halveren",
+      "links": 96,
+      "rechts": 2,
+      "antwoord": 48
+    },
+    {
+      "id": "halveer-98",
+      "op": "halveren",
+      "links": 98,
+      "rechts": 2,
+      "antwoord": 49
+    },
+    {
+      "id": "halveer-100",
+      "op": "halveren",
+      "links": 100,
+      "rechts": 2,
+      "antwoord": 50
+    }
+  ]
+}

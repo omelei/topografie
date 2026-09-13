@@ -21,11 +21,17 @@
 import type { Niveau } from './types';
 
 /**
- * The four operations, in Dutch because they are content rather than code: the
+ * The operations, in Dutch because they are content rather than code: the
  * generator writes these words into the JSON and a person reading the content
  * should not have to translate them back.
+ *
+ * The first four are a sign between two numbers. The last three (ADR-120) are
+ * shaped differently and are written out by `sumText`: splitsen is "10 = 7 + ?",
+ * with the whole on the left and the part that is there on the right; halveren
+ * and verdubbelen carry a 2 on the right, which is what they multiply or divide
+ * by, and are read as "helft van 14" and "dubbel van 7".
  */
-export type SumOp = 'keer' | 'delen' | 'plus' | 'min';
+export type SumOp = 'keer' | 'delen' | 'plus' | 'min' | 'splitsen' | 'halveren' | 'verdubbelen';
 
 /**
  * What a child sees between the two numbers.
@@ -34,12 +40,28 @@ export type SumOp = 'keer' | 'delen' | 'plus' | 'min';
  * prints, and the lookalikes are the kind of detail that makes a product feel
  * like it was made by someone who was not paying attention. The division sign
  * is the colon Dutch primary school uses, never the obelus.
+ *
+ * Splitsen's sign is the plus of the splitsbeen written as a sum. Halveren and
+ * verdubbelen have none of their own: they are the colon and the times sign by
+ * two, and are written in words so that they do not read as a table.
  */
 export const SUM_SIGN: Record<SumOp, string> = {
   keer: '×',
   delen: ':',
   plus: '+',
   min: '−',
+  splitsen: '+',
+  halveren: ':',
+  verdubbelen: '×',
+};
+
+/**
+ * The words in front of a number that is halved or doubled. Dutch because the
+ * content is: these are what a Dutch schoolbook writes above the exercise.
+ */
+const SUM_WOORD: Partial<Record<SumOp, string>> = {
+  halveren: 'helft van',
+  verdubbelen: 'dubbel van',
 };
 
 export interface SumItem {
@@ -52,7 +74,7 @@ export interface SumItem {
 }
 
 export interface SumSet {
-  /** `tafel-7`, `deel-7`, `plus-100`. */
+  /** `tafel-7`, `delen-100`, `plus-100`. */
   readonly id: string;
   /** Null for a mix, whose items each carry their own sign. */
   readonly op: SumOp | null;
@@ -67,9 +89,27 @@ export interface SumSet {
   readonly items: readonly SumItem[];
 }
 
-/** The sum as it is read aloud and shown. */
+/** The sum as it is read aloud and shown: the question, without its answer. */
 export function sumText(sum: SumItem): string {
+  if (sum.op === 'splitsen') return `${sum.links} = ${sum.rechts} + ?`;
+  const woord = SUM_WOORD[sum.op];
+  if (woord) return `${woord} ${sum.links}`;
   return `${sum.links} ${SUM_SIGN[sum.op]} ${sum.rechts}`;
+}
+
+/**
+ * The sum with its answer in it, as the result screen and the feedback say it:
+ * "7 × 8 = 56", "10 = 7 + 3", "helft van 14 = 7". Splitsen puts the answer
+ * where the question mark was rather than after an equals sign it already has.
+ */
+export function sumUitgewerkt(sum: SumItem): string {
+  if (sum.op === 'splitsen') return `${sum.links} = ${sum.rechts} + ${sum.antwoord}`;
+  return `${sumText(sum)} = ${sum.antwoord}`;
+}
+
+/** Whether the sum is written with words, which the stage sets smaller. */
+export function sumInWoorden(sum: SumItem): boolean {
+  return SUM_WOORD[sum.op] !== undefined;
 }
 
 /**
@@ -145,6 +185,26 @@ function candidatesFor(sum: SumItem): number[] {
 
   if (sum.op === 'delen') {
     return [antwoord + 1, antwoord - 1, antwoord + 2, antwoord - 2, antwoord + 3, antwoord * 2];
+  }
+
+  // Ten out only where there are tens to lose: "10 = 7 + ?" has no room for 13.
+  const tien = links > 20 ? [antwoord + 10, antwoord - 10] : [];
+
+  // Splitsen: a miscount either way, then the part that was already there,
+  // which is the answer a child gives when they read the sum back.
+  if (sum.op === 'splitsen') {
+    return [antwoord + 1, antwoord - 1, ...tien, antwoord + 2, antwoord - 2, rechts];
+  }
+
+  // Halveren: one either way, and the number itself — not halved at all.
+  if (sum.op === 'halveren') {
+    return [antwoord + 1, antwoord - 1, ...tien, antwoord + 2, antwoord - 2, links];
+  }
+
+  // Verdubbelen: a double is even, so the near misses are two either way; an
+  // odd number beside it would give the answer away. Then the number itself.
+  if (sum.op === 'verdubbelen') {
+    return [antwoord + 2, antwoord - 2, ...tien, antwoord + 4, antwoord - 4, links];
   }
 
   return [

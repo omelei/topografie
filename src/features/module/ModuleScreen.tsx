@@ -724,9 +724,13 @@ function rondeVan(
     : t('start.vragenTijd', { aantal: vragen, minuten });
 }
 
-/** The subjects whose sets are numbers: a keypad, not a row of words. */
+/**
+ * The subject whose sets are twelve numbers: a keypad, not a row of words. The
+ * deelsommen were one too until they came in ranges, like the keersommen
+ * (ADR-120).
+ */
 function isKeypad(onderwerp: Onderwerp): boolean {
-  return onderwerp.id === 'tafels' || onderwerp.id === 'delen';
+  return onderwerp.id === 'tafels';
 }
 
 /**

@@ -1,9 +1,10 @@
 import type { SumItem, SumSet } from '@/game-core';
 
 /**
- * Rekenen's content, at build time: twelve tables, keersommen past them in two
- * ranges, twelve sets of division facts, and plus and minus in three ranges
- * each.
+ * Rekenen's content, at build time: twelve tables, and every other kind of sum
+ * in ranges — keersommen and deelsommen to 10, 100 and 1000, plus and minus to
+ * 20, 100 and 1000, splitsen to 10, 20 and 100, and halveren and verdubbelen to
+ * 20, 100 and 1000 (ADR-120).
  *
  * Bundled like the geography sets and unlike the geometry: five hundred sums is
  * a few kilobytes, and a round has to be able to start without waiting for
@@ -52,6 +53,11 @@ export const MIX_IDS = [
   // `useSumRound` reads the boxes and filters, which is also the only way the
   // list can be right rather than as right as it was when the page loaded.
   'fouten',
+  // "Keersommen tot 10" (ADR-120): the table sums whose answer is ten at most.
+  // Those are 2 × 3 and 5 × 2, which already have a Leitner box under their
+  // table's id — so this is a union of the same items, like every mix, and
+  // never a file that would give 2 × 3 a second box to fill.
+  'keer-10',
 ] as const;
 export type MixId = (typeof MIX_IDS)[number];
 
@@ -62,19 +68,34 @@ function bestanden(): SumSet[] {
 }
 
 /**
+ * The ceiling of a range — the number at the end of its id, "100" of
+ * `delen-100`. Read as a number rather than as text, because "plus-1000" sorts
+ * between "plus-100" and "plus-20" in every alphabet there is, and a child
+ * offered 100, 1000, 20 in that order is looking at a bug.
+ */
+function grensVan(set: SumSet): number {
+  return Number(/-(\d+)$/.exec(set.id)?.[1] ?? 0);
+}
+
+/**
  * Every set that is a file, in the order a child meets them: tables first by
- * table, then the division facts by table, then plus and minus by range.
+ * table, then every other kind by range, in the order the subjects stand.
  *
  * Ordered here rather than left to the filenames, which sort `tafel-10` before
  * `tafel-2` and would offer a child the tables in an order nobody teaches.
  */
 export function loadSumSets(): SumSet[] {
-  const rang: Record<string, number> = { keer: 0, delen: 1, plus: 2, min: 3 };
-  // Which table, or which ceiling — the number at the end of the id either
-  // way. Sorted as a number rather than as text, because "plus-1000" sorts
-  // between "plus-100" and "plus-20" in every alphabet there is, and a child
-  // offered 100, 1000, 20 in that order is looking at a bug.
-  const orde = (set: SumSet) => set.tafel ?? Number(/-(\d+)$/.exec(set.id)?.[1] ?? 0);
+  const rang: Record<string, number> = {
+    keer: 0,
+    delen: 1,
+    plus: 2,
+    min: 3,
+    splitsen: 4,
+    halveren: 5,
+    verdubbelen: 6,
+  };
+  // Which table, or which ceiling.
+  const orde = (set: SumSet) => set.tafel ?? grensVan(set);
 
   return bestanden().sort(
     (a, b) => (rang[a.op ?? ''] ?? 9) - (rang[b.op ?? ''] ?? 9) || orde(a) - orde(b),
@@ -113,8 +134,22 @@ export function isMix(id: string): id is MixId {
   return (MIX_IDS as readonly string[]).includes(id);
 }
 
+/** "Keersommen tot 10": every table sum whose answer is ten at most. */
+function keerTotTien(alles: readonly SumSet[]): SumSet {
+  const tafels = alles.filter((set) => set.op === 'keer' && set.tafel !== null);
+  return {
+    id: 'keer-10',
+    op: 'keer',
+    tafel: null,
+    niveau: 1,
+    contentVersie: tafels[0]?.contentVersie ?? '',
+    items: tafels.flatMap((set) => set.items).filter((sum) => sum.antwoord <= 10),
+  };
+}
+
 export function loadSumSet(id: string): SumSet | undefined {
   const alles = loadSumSets();
+  if (id === 'keer-10') return keerTotTien(alles);
   if (isMix(id)) {
     return unie(id, mixLeden(id, alles));
   }
@@ -123,13 +158,18 @@ export function loadSumSet(id: string): SumSet | undefined {
 
 /**
  * The pool a round without a fixed length draws from: everything of the same
- * kind as the set that was chosen.
+ * kind as the set that was chosen, and never past what its name promises.
  *
  * Ten sums is over long before a minute is, so a lightning round of the table
  * of seven has to reach past those ten. It reaches to the other tables and no
  * further — a child who asks for a minute of tables should not be handed
- * "845 − 140" halfway through. A mix already spans everything it means to, so
- * it draws from itself.
+ * "845 − 140" halfway through, nor "9 × 96", which is `keer` too (ADR-100).
+ *
+ * A range reaches the ranges of its own kind below it and stops at its own
+ * ceiling (ADR-120). "Tot 100" is a promise about every sum on the card, and a
+ * minute of it that handed a child "864 : 9" would break it on the one screen
+ * where nobody is checking. A mix already spans everything it means to, so it
+ * draws from itself — and so does "keersommen tot 10", which is one.
  */
 export function sumPool(id: string): readonly SumItem[] {
   const alles = loadSumSets();
@@ -137,11 +177,11 @@ export function sumPool(id: string): readonly SumItem[] {
 
   const set = alles.find((candidate) => candidate.id === id);
   if (!set) return [];
-  // Of the same kind means the same sign and the same shape: the tables and the
-  // keersommen past them are both `keer`, and a minute of the table of seven
-  // should not hand a child "9 × 96" any more than "845 − 140" (ADR-100).
-  const soort = (candidate: SumSet) => `${candidate.op}|${candidate.tafel === null}`;
+
+  const tafel = set.tafel !== null;
+  const grens = grensVan(set);
   return alles
-    .filter((candidate) => soort(candidate) === soort(set))
+    .filter((candidate) => candidate.op === set.op && (candidate.tafel !== null) === tafel)
+    .filter((candidate) => tafel || grensVan(candidate) <= grens)
     .flatMap((candidate) => candidate.items);
 }
