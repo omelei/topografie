@@ -1,45 +1,50 @@
 # leer.nu — logo
 
-Herziene versie. Het woordbeeld is uitgesneden naar vectorpaden: het logo heeft
-geen Archivo-installatie meer nodig en is overal identiek. Het merkteken is een
-vat met een dunne wand, verzachte punten en een peil op de helft — de punt in
-*leer.nu* heeft hetzelfde silhouet.
+Uitwerking 3a: Hanken Grotesk met een rondje (ADR-113). Het woordbeeld is
+_leer_, het beeldmerk, _nu_. Het beeldmerk is een ring met een naaldje dat naar
+beneden in de ring wijst.
 
 ## Kleuren
-| naam | waarde | gebruik |
-| --- | --- | --- |
-| inkt | `#1A201B` | op papier en grond (licht thema) |
-| papier | `#FBFAF6` | op inkt (ronde/donker thema) |
-| accent | `#327F48` | alleen merkteken, spaarzaam |
+
+| naam   | waarde    | gebruik                                 |
+| ------ | --------- | --------------------------------------- |
+| inkt   | `#1A201B` | op papier; de grond van het app-icoon   |
+| papier | `#FBFAF6` | op inkt                                 |
+| mos    | `#5B6A5E` | alleen in de uitwerking, niet in de app |
+
+Inkt en papier zijn precies `--inkt` en `--kaart` uit `src/index.css`.
 
 ## Welk bestand wanneer
-| bestand | gebruik |
-| --- | --- |
-| `svg/lockup-inkt.svg` · `-papier` | standaard logo: het vat staat tussen *leer* en *nu* (gelijk aan `woordbeeld-*`) |
-| `svg/lockup-gestapeld-*.svg` | smalle of vierkante vlakken; vat groot erboven, in de naam dan een massieve punt |
-| `svg/woordbeeld-*.svg` | idem horizontaal |
-| `svg/merkteken-*.svg` | vat vanaf 24 px |
-| `svg/merkteken-klein-*.svg` | massief, onder 24 px (wand valt anders dicht) |
-| `svg/favicon.svg` | favicon, wisselt mee met systeemthema |
-| `svg/app-icoon.svg` | squircle, voor app-stores en marketing |
-| `svg/app-icoon-vierkant.svg` | bron voor iOS/PWA-rasters |
-| `svg/app-icoon-maskable.svg` | Android maskable, motief op 42% |
-| `svg/social-kaart.svg` | og:image, 1200 × 630 |
-| `png/*` | waar SVG niet kan: favicons, app-iconen, social |
+
+| bestand                              | gebruik                                           |
+| ------------------------------------ | ------------------------------------------------- |
+| `svg/beeldmerk-inkt.svg` · `-papier` | het beeldmerk los, vanaf 20 px                    |
+| `svg/app-icoon.svg`                  | app-icoon: het merk in papier op een inktvlak     |
+| `svg/woordbeeld-inkt.svg` · `-papier` | het woordbeeld als paden (gegenereerd, zie onder) |
+| `svg/favicon.svg`                    | de favicon: de ring zonder naald (gegenereerd)    |
+| `png/*`                              | zoals geleverd: app-icoon, favicons, lockups, social |
+| `uitwerking/*.html`                  | de uitwerking van de ontwerper, met het lettertype erin |
 
 ## Regels
-- **Vrije ruimte**: minimaal een halve ruitbreedte rondom, aan alle zijden.
-- **Minimummaten**: lockup 26 px hoog (print 10 mm) — daaronder loopt het peil in
-  het vat tussen de woorden dicht; merkteken los 24 px, daaronder de massieve
-  variant.
-- **Verhoudingen niet aanpassen**: hoogte zetten, breedte volgt.
-- **Niet doen**: schaduw, gradiënt, omlijning, kantelen, het woordbeeld in
-  Archivo natypen, het vat vullen met een ander peil dan de helft
-  (voortgang toont de app met `Dot`, niet met het logo).
-- Op foto's of drukke vlakken: papier-variant op een inktvlak, nooit direct.
 
-## Verantwoording
-Woordbeeld: eigen tekening, x-hoogte 100, stam 23, superellips-rondingen
-(n = 2,7) met overshoot 2 op ronde vormen; open apertuur in de `e` met
-horizontaal afsnit. Merkteken: ruit van 96 met wand 6, punten verzacht met
-radius 8, peil op de helft met 3 marge binnen de wand.
+- **Vrije ruimte**: rondom de diameter van het rondje.
+- **Het rondje** staat op de x-hoogte, niet op de kaslijn, en net boven de
+  basislijn.
+- **Onder 20 px** verdwijnt het naaldje en blijft de ring over; dat houdt de
+  favicon leesbaar.
+- **Letterafstand** −0,02 em, gewicht 600; het rondje is 0,48 em.
+- Het woordbeeld wordt niet in een ander lettertype nagetypt.
+
+## Het woordbeeld als paden
+
+De ontwerper leverde het woordbeeld als afbeelding, gezet in Hanken Grotesk. De
+app laadt geen lettertype van een ander domein, dus snijdt
+`tools/logo/maak-logo.py` het woordbeeld uit tot paden, uit het lettertype dat
+in `uitwerking/leer-nu-logo-uitwerking.html` zit ingebed (SIL Open Font
+License). Het script schrijft ook `src/design/logo.ts`, de favicon en de
+iconen in `public/logo/`. Nooit met de hand aanpassen: het script opnieuw
+draaien.
+
+```
+python tools/logo/maak-logo.py
+```
