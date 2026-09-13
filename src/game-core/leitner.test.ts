@@ -4,9 +4,11 @@ import {
   composeRound,
   emptyState,
   isDue,
+  isOnthouden,
   isStale,
   masteryPercent,
   nextBox,
+  ONTHOUDEN_BOX,
   reinsertAfterMistake,
   review,
   scheduleFrom,
@@ -69,12 +71,64 @@ describe('nextBox', () => {
 });
 
 describe('scheduleFrom', () => {
-  it('uses the intervals from the spec', () => {
-    expect(INTERVAL_DAYS).toEqual({ 1: 1, 2: 2, 3: 4, 4: 8, 5: 21 });
+  it('uses the intervals from the spec, with box three at five days (ADR-114)', () => {
+    expect(INTERVAL_DAYS).toEqual({ 1: 1, 2: 2, 3: 5, 4: 8, 5: 21 });
   });
 
   it('schedules the interval for the box it is given', () => {
-    expect(scheduleFrom(3, NOW).getTime()).toBe(NOW.getTime() + 4 * DAY);
+    expect(scheduleFrom(3, NOW).getTime()).toBe(NOW.getTime() + 5 * DAY);
+  });
+});
+
+/**
+ * What "onthouden" means (ADR-114): right three times, each time when it was
+ * due, over at least a week. These are the three halves of that sentence.
+ */
+describe('remembering', () => {
+  it('does not move an item up for a correct answer given before it was due', () => {
+    const eerst = review(emptyState('nl-utrecht'), true, NOW);
+    const nogEens = review(eerst, true, new Date(NOW.getTime() + 60 * 60 * 1000));
+
+    expect(nogEens.box).toBe(eerst.box);
+    expect(nogEens.volgendeReview).toBe(eerst.volgendeReview);
+    // Still counted and still dated: the history and the forecast see it.
+    expect(nogEens.goedCount).toBe(2);
+    expect(nogEens.laatsteReview).not.toBe(eerst.laatsteReview);
+  });
+
+  it('still drops an item for a wrong answer given before it was due', () => {
+    const eerst = review({ ...emptyState('nl-utrecht'), box: 3 }, true, NOW);
+    const fout = review(eerst, false, new Date(NOW.getTime() + 60 * 60 * 1000));
+    expect(fout.box).toBe(1);
+  });
+
+  it('takes at least a week from first meeting to remembered', () => {
+    // An afternoon of rounds: however many, it is one answer's worth.
+    let state = emptyState('nl-zeeland');
+    for (let ronde = 0; ronde < 6; ronde++) {
+      state = review(state, true, new Date(NOW.getTime() + ronde * 20 * 60 * 1000));
+    }
+    expect(isOnthouden(state)).toBe(false);
+
+    // And the quickest way there, answering each time the moment it is due.
+    let snel = emptyState('nl-zeeland');
+    let dag = 0;
+    while (!isOnthouden(snel)) {
+      snel = review(snel, true, new Date(NOW.getTime() + dag * DAY));
+      dag = (new Date(snel.volgendeReview ?? NOW.toISOString()).getTime() - NOW.getTime()) / DAY;
+    }
+    const eerste = NOW.getTime();
+    const laatste = new Date(snel.laatsteReview ?? NOW.toISOString()).getTime();
+    expect((laatste - eerste) / DAY).toBeGreaterThanOrEqual(7);
+    expect(snel.box).toBe(ONTHOUDEN_BOX);
+  });
+
+  it('calls something remembered but long unseen not remembered today', () => {
+    const lang = dueState('x', 4, 20);
+    expect(isOnthouden(lang)).toBe(true);
+    expect(isOnthouden(lang, NOW)).toBe(false);
+    expect(isOnthouden(knownState('x'), NOW)).toBe(true);
+    expect(isOnthouden(undefined, NOW)).toBe(false);
   });
 });
 

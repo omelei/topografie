@@ -1,0 +1,35 @@
+# Keeps the premium database awake (ADR-116).
+#
+# A Supabase project on the free plan is paused after a week in which nobody
+# asked it anything, and a paused project answers a parent's code with nothing
+# at all. So twice a week this asks it one small question — "is there a code?"
+# — through the same public key the app uses, and fails loudly if it cannot.
+#
+# Skipped until the repository variables PREMIUM_URL and PREMIUM_KEY exist
+# (tools/premium/README.md), so it is green before premium is set up.
+name: Premium wakker
+
+on:
+  schedule:
+    - cron: '17 6 * * 1,4'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    if: ${{ vars.PREMIUM_URL != '' && vars.PREMIUM_KEY != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask the premium database one small question
+        env:
+          PREMIUM_URL: ${{ vars.PREMIUM_URL }}
+          PREMIUM_KEY: ${{ vars.PREMIUM_KEY }}
+        run: |
+          curl --fail --silent --show-error --max-time 30 \
+            -X POST "${PREMIUM_URL%/}/rest/v1/rpc/premium_ping" \
+            -H "apikey: ${PREMIUM_KEY}" \
+            -H "Authorization: Bearer ${PREMIUM_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{}'

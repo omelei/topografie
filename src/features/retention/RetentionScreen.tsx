@@ -2,7 +2,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Dot } from '@/components/Dot';
 import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
 import {
-  isDue,
   sumText,
   type Item,
   type ItemState,
@@ -13,33 +12,95 @@ import {
 } from '@/game-core';
 import { klokVoluit } from '@/features/klok/klokTaal';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
-import { dueLabel, retentionOf, statusOf } from './itemStatus';
+import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
 
 /**
  * K9, "Wat je onthoudt": the one screen that answers the question the product
- * is named after (ADR-112).
+ * is named after (ADR-112, ADR-114).
  *
- * It used to know only topography's five Dutch sets. Now it knows every module
- * a child can practise, in the shape of the rest of the app: which subject as
- * chips — the module first, then the set, the chosen one in the module's
- * colour — then **four tiles** that say where the whole set stands, then the
- * dots, then the table.
+ * It knows every module a child can practise, in the shape of the rest of the
+ * app: which subject as chips — the module first, then the set, the chosen one
+ * in the module's colour — then **four tiles** that say where the whole set
+ * stands, then the dots, then the table, and last the rules.
  *
- * Two views of the same facts, and both are needed. The dots are all of it at
- * once, and they are what tells you whether this week went well without
- * reading anything; the table is the detail — which one, how often, when it
- * comes back. The dots are the same `Dot` as everywhere else rather than a new
- * chart, and the legend under them is the same four labels the table uses.
+ * **The four tiles are the four statuses**, and they add up to the set:
+ * onthoud je, even opfrissen, nog aan het oefenen, nog niet geoefend. "Vandaag
+ * op de rol" was the fourth and is gone (ADR-114): it was the scheduler's word
+ * for what is due, which is a fact about the schedule and not about what a
+ * child remembers, and it is what the next round asks anyway.
+ *
+ * **The table is how the practising has gone**, not when it comes back: how
+ * many times each one was answered, the share of those that was right, and
+ * how many days ago it was last answered. "Weer op" — a date the scheduler
+ * chose — made a child plan around the algorithm.
+ *
+ * **The rules are written out**, as the streak's are (ADR-110). What counts as
+ * remembering changed in ADR-114, and a definition nobody can read is one
+ * nobody can trust.
+ *
+ * Premium since ADR-116. The rules are there without a code as well: what
+ * remembering means is not something to sell.
  */
 
 /** The four statuses, in the order a child moves through them. */
-const STATUSSEN: readonly ItemStatus[] = ['new', 'practising', 'remembered', 'frozen'];
+const STATUSSEN: readonly ItemStatus[] = ['new', 'practising', 'remembered', 'refresh'];
+
+/** What remembering means, in the order a child meets it. */
+const REGELS: readonly TranslationKey[] = [
+  'retention.regel1',
+  'retention.regel2',
+  'retention.regel3',
+  'retention.regel4',
+];
 
 export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
+  const { actief } = usePremium();
+
+  if (!actief) {
+    return (
+      <div className="tk-page">
+        <div className="tk-page-main">
+          <Kop />
+          <PremiumSlot />
+          <Regels />
+        </div>
+        {aside}
+      </div>
+    );
+  }
+
+  return <Onthouden aside={aside} />;
+}
+
+function Kop() {
+  return (
+    <div className="flex flex-col gap-2">
+      <h1 className="tk-titel">{t('retention.title')}</h1>
+      <p className="text-lopend text-tekst-secundair">{t('retention.intro')}</p>
+    </div>
+  );
+}
+
+function Regels() {
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('retention.regelsTitel')}>
+      <h2 className="tk-sectie">{t('retention.regelsTitel')}</h2>
+      <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
+        {REGELS.map((regel) => (
+          <li key={regel}>{t(regel)}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function Onthouden({ aside }: { readonly aside: ReactNode }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [moduleId, setModuleId] = useState<Module['id']>('topo');
   /** Which kind of sum, on rekenen only. Null for the first. */
@@ -71,31 +132,23 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
   const items = deel ? deel.items : [];
   const now = new Date();
 
-  const telling = { new: 0, practising: 0, remembered: 0, frozen: 0 } satisfies Record<
+  const telling = { new: 0, practising: 0, remembered: 0, refresh: 0 } satisfies Record<
     ItemStatus,
     number
   >;
-  let opDeRol = 0;
-  for (const item of items) {
-    const state = states.get(item.id);
-    telling[statusOf(state)] += 1;
-    if (state && state.laatsteReview !== null && isDue(state, now)) opDeRol += 1;
-  }
+  for (const item of items) telling[statusOf(states.get(item.id), now)] += 1;
 
   const tegels: readonly (readonly [TranslationKey, number])[] = [
-    ['retention.tegelOnthouden', telling.remembered + telling.frozen],
+    ['retention.tegelOnthouden', telling.remembered],
+    ['retention.tegelOpfrissen', telling.refresh],
     ['retention.tegelOefenen', telling.practising],
     ['retention.tegelNieuw', telling.new],
-    ['retention.tegelRol', opDeRol],
   ];
 
   return (
     <div className="tk-page">
       <div className="tk-page-main" data-module={moduleId} data-accent="module">
-        <div className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('retention.title')}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('retention.intro')}</p>
-        </div>
+        <Kop />
 
         {/* Which subject: the module, then the set. Chips rather than a
             select: every option is worth seeing, and a select on a touch
@@ -175,7 +228,7 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
         <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
           <h2 className="tk-sectie">{t('retention.glance')}</h2>
           <div className="tk-card flex flex-col gap-4">
-            <Heatmap moduleId={moduleId} items={items} states={states} />
+            <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
             {/* The legend is the table's own four labels: one language for
                 both views. */}
             <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-rand-licht pt-3">
@@ -204,6 +257,8 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
             <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
           </div>
         </section>
+
+        <Regels />
       </div>
 
       {aside}
@@ -275,16 +330,18 @@ function Heatmap({
   moduleId,
   items,
   states,
+  now,
 }: {
   readonly moduleId: Module['id'];
   readonly items: readonly Schedulable[];
   readonly states: ReadonlyMap<string, ItemState>;
+  readonly now: Date;
 }) {
   return (
     <div className="flex flex-wrap gap-2" role="list" aria-label={t('retention.glance')}>
       {items.map((item) => {
         const state = states.get(item.id);
-        const status = t(`status.${statusOf(state)}` as TranslationKey);
+        const status = t(`status.${statusOf(state, now)}` as TranslationKey);
 
         return (
           <span key={item.id} role="listitem">
@@ -300,6 +357,14 @@ function Heatmap({
   );
 }
 
+/** "vandaag", "1 dag geleden", "12 dagen geleden" — or a dash for never. */
+function laatstGeoefend(dagen: number | null): string {
+  if (dagen === null) return t('retention.nooit');
+  if (dagen === 0) return t('retention.vandaag');
+  if (dagen === 1) return t('retention.dagGeleden');
+  return t('retention.dagenGeleden', { aantal: dagen });
+}
+
 function RetentionTable({
   moduleId,
   items,
@@ -311,23 +376,21 @@ function RetentionTable({
   readonly states: ReadonlyMap<string, ItemState>;
   readonly now: Date;
 }) {
-  // Dutch, and short: a table column is not the place for "dinsdag 1 september".
-  const day = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'short' });
-
   return (
     <table className="tk-table">
       <thead>
         <tr>
           <th>{t('retention.item')}</th>
           <th>{t('retention.status')}</th>
-          <th className="tk-num">{t('retention.correct')}</th>
-          <th className="tk-num">{t('retention.due')}</th>
+          <th className="tk-num">{t('retention.aantal')}</th>
+          <th className="tk-num">{t('retention.procentGoed')}</th>
+          <th>{t('retention.laatst')}</th>
         </tr>
       </thead>
       <tbody>
         {items.map((item) => {
           const state = states.get(item.id);
-          const due = dueLabel(state, now);
+          const procent = procentGoed(state);
 
           return (
             <tr key={item.id}>
@@ -338,12 +401,15 @@ function RetentionTable({
                 </span>
               </td>
               <td>
-                <StatusLabel status={statusOf(state)} />
+                <StatusLabel status={statusOf(state, now)} />
               </td>
               {/* Right-aligned and tabular, so a column of them lines up on the
                   digit and the figure does not dance from row to row. */}
-              <td className="tk-num">{state?.goedCount ?? 0}</td>
-              <td className="tk-num">{due === 'due' ? t('retention.dueNow') : day.format(due)}</td>
+              <td className="tk-num">{aantalAntwoorden(state)}</td>
+              <td className="tk-num">
+                {procent === null ? t('retention.nooit') : t('retention.procent', { procent })}
+              </td>
+              <td>{laatstGeoefend(dagenGeleden(state, now))}</td>
             </tr>
           );
         })}

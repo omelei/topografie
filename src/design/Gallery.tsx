@@ -237,7 +237,7 @@ export function Gallery() {
 
       <h2 className={HEADING}>Itemstatus — label, geen chip</h2>
       <div className="flex flex-col gap-2">
-        <StatusLabel status="frozen" />
+        <StatusLabel status="refresh" />
         <StatusLabel status="remembered" />
         <StatusLabel status="practising" />
         <StatusLabel status="new" />

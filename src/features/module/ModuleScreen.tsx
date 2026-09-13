@@ -8,13 +8,15 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { useTestPlan } from '@/features/home/testPlan';
 import { Tafeldiplomas } from './Tafeldiplomas';
+import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
+import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
+import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import {
   itemsVan,
   naamVan,
   onderwerpenVan,
   onderwerpVan,
-  opDeRol,
   type Onderdeel,
   type Onderwerp,
 } from './onderdelen';
@@ -118,6 +120,10 @@ export function ModuleScreen({
   const plan = useTestPlan();
   const kleinScherm = useSmallScreen();
   const nogId = useId();
+  // What a premium tile does without a code: it goes to the page where one is
+  // entered, rather than being chosen and refused at the start (ADR-116).
+  const { actief } = usePremium();
+  const naarPremium = useNaarPremium();
 
   useEffect(() => {
     void loadItemStates().then(setStates);
@@ -308,6 +314,10 @@ export function ModuleScreen({
                 <Button
                   variant="tertiary"
                   onClick={() => {
+                    if (!actief) {
+                      naarPremium();
+                      return;
+                    }
                     kiesElders(mix);
                     setToetsstand(true);
                   }}
@@ -317,14 +327,6 @@ export function ModuleScreen({
               )}
             </p>
           ) : null}
-
-          <Rol
-            onderwerpen={onderwerpen}
-            chosen={chosen}
-            known={known}
-            now={now}
-            onSet={kiesElders}
-          />
         </div>
 
         {/* Where on the map, and only where there is more than one answer. */}
@@ -393,6 +395,10 @@ export function ModuleScreen({
                   // does nothing, so a chosen table of seven stays chosen.
                   onClick={() => {
                     if (open) return;
+                    if (premium && !actief) {
+                      naarPremium();
+                      return;
+                    }
                     setRegio(hier);
                     if (vraagtWelke(vak)) {
                       setVakId(vak.id);
@@ -484,6 +490,10 @@ export function ModuleScreen({
                   aria-label={metPremium(`${t(candidate.name)}. ${t(candidate.reason)}`, premium)}
                   aria-pressed={gekozenVorm}
                   onClick={() => {
+                    if (premium && !actief) {
+                      naarPremium();
+                      return;
+                    }
                     setFormId(candidate.id);
                     setToetsstand(false);
                   }}
@@ -514,7 +524,7 @@ export function ModuleScreen({
                   true,
                 )}
                 aria-pressed={alsToets}
-                onClick={() => setToetsstand(true)}
+                onClick={() => (actief ? setToetsstand(true) : naarPremium())}
               >
                 <span className="tk-plaat">
                   <PaperIcon size={24} />
@@ -608,6 +618,29 @@ export function ModuleScreen({
             }}
           />
         ) : null}
+
+        {/* Four klokdiploma's on the clock's page, and eleven topodiploma's on
+            topography's (ADR-117). Pressing one answers every step at once:
+            that step or that map, and the diploma. */}
+        {module.id === 'klok' ? (
+          <KlokDiplomas
+            onKies={(stap) => {
+              kiesElders(stap);
+              setFormId('klok-diploma');
+              setToetsstand(false);
+            }}
+          />
+        ) : null}
+
+        {module.id === 'topo' ? (
+          <TopoDiplomas
+            onKies={(kaart) => {
+              kiesElders(kaart);
+              setFormId('topo-diploma');
+              setToetsstand(false);
+            }}
+          />
+        ) : null}
       </div>
 
       {aside}
@@ -687,21 +720,19 @@ function isKeypad(onderwerp: Onderwerp): boolean {
  *
  * It is the tail of every subject's accessible name. The right-hand column is
  * where a child reads progress; the tiles are where they choose.
+ *
+ * What remembering is and nothing about the schedule: "3 vandaag op de rol"
+ * went with the Onthouden page's tile of that name (ADR-114). What is due is
+ * what the next round asks first, and a child does not need to be told so.
  */
 function vorderingVan(vak: Onderwerp, known: ReadonlyMap<string, ItemState>, now: Date): string {
   const ids = itemsVan(vak);
-  const mastered = countMastered(known, ids);
-  // Never over a mix on its own: a mix holds every item there is, so it is due
-  // more often than anything else by definition.
-  const due = vak.sets
-    .filter((deel) => !deel.mix || vak.sets.length === 1)
-    .reduce((most, deel) => Math.max(most, opDeRol(deel, known, now)), 0);
-  const stand =
-    mastered === 0 && due === 0
-      ? t('home.setNew')
-      : t('home.setMastered', { goed: mastered, totaal: ids.length });
+  const mastered = countMastered(known, ids, now);
+  const begonnen = ids.some((id) => known.get(id)?.laatsteReview != null);
 
-  return due > 0 ? `${stand} · ${t('choose.dueToday', { aantal: due })}` : stand;
+  return begonnen
+    ? t('home.setMastered', { goed: mastered, totaal: ids.length })
+    : t('home.setNew');
 }
 
 /**
@@ -724,49 +755,5 @@ function Stap({ nummer, label }: { readonly nummer: number; readonly label: stri
     <h2 className="tk-sectie">
       <span className="tk-stap-nummer">{nummer}</span> · {label}
     </h2>
-  );
-}
-
-/**
- * What the scheduler has put on today's list, when it is waiting somewhere
- * other than where the child is standing. It names the set and selects it, and
- * then gets out of the way — choosing how is still the child's to make.
- *
- * Absent when the busiest set is the one already open.
- */
-function Rol({
-  onderwerpen,
-  chosen,
-  known,
-  now,
-  onSet,
-}: {
-  readonly onderwerpen: readonly Onderwerp[];
-  readonly chosen: Onderdeel | null;
-  readonly known: ReadonlyMap<string, ItemState>;
-  readonly now: Date;
-  readonly onSet: (setId: string) => void;
-}) {
-  // Over the sets rather than the subjects, and never over a mix: a mix holds
-  // every item there is and would be the answer every time.
-  const sets = onderwerpen.flatMap((vak) => vak.sets).filter((deel) => !deel.mix);
-
-  const drukste = sets.reduce<{ deel: Onderdeel; due: number } | null>((best, deel) => {
-    const due = opDeRol(deel, known, now);
-    return best === null || due > best.due ? { deel, due } : best;
-  }, null);
-
-  if (drukste === null || drukste.due === 0) return null;
-  if (drukste.deel.setId === chosen?.setId) return null;
-
-  const naam = naamVan(drukste.deel);
-
-  return (
-    <p className="flex flex-wrap items-center gap-3 text-tekst-secundair">
-      {t('choose.dueBody', { aantal: drukste.due, set: naam })}
-      <Button variant="tertiary" onClick={() => onSet(drukste.deel.setId)}>
-        {t('choose.dueAction', { set: naam })}
-      </Button>
-    </p>
   );
 }

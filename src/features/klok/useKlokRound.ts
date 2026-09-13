@@ -3,6 +3,7 @@ import {
   alleenDeze,
   composeRound,
   judgeKlok,
+  KLOKDIPLOMA_VRAGEN,
   klokDigitaal,
   klokDistractors,
   metFouten,
@@ -29,7 +30,12 @@ import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/u
  */
 
 export type KlokMode =
-  'klok-meerkeuze' | 'klok-welke-klok' | 'klok-typen' | 'bliksemronde' | 'overleven';
+  | 'klok-meerkeuze'
+  | 'klok-welke-klok'
+  | 'klok-typen'
+  | 'bliksemronde'
+  | 'overleven'
+  | 'klok-diploma';
 
 /*
  * Which of these a child is offered, in which order and with what said about
@@ -46,7 +52,17 @@ export const KLOK_ROUND_RULE: Record<KlokMode, RoundRule> = {
   'klok-typen': { kind: 'fixed', aantal: 10 },
   bliksemronde: { kind: 'tijd', seconden: 60 },
   overleven: { kind: 'levens', levens: 3 },
+  'klok-diploma': { kind: 'fixed', aantal: KLOKDIPLOMA_VRAGEN },
 };
+
+/**
+ * A diploma is sat, not practised (ADR-117): ten faces of one step, the time
+ * typed, nothing said until the end — the way the oefentoets asks, whatever the
+ * page passed — and its own length.
+ */
+function isDiploma(mode: KlokMode): boolean {
+  return mode === 'klok-diploma';
+}
 
 /**
  * Which way a child answers. Typing everywhere except the two modes that are
@@ -139,8 +155,8 @@ export function useKlokRound(
     setId,
     mode,
     basisRegel: KLOK_ROUND_RULE[mode],
-    aantal,
-    toetsstand,
+    aantal: isDiploma(mode) ? null : aantal,
+    toetsstand: toetsstand || isDiploma(mode),
     itemVan: tijdVan,
     stel: (states, rule) => {
       const loaded = loadKlokSet(setId);

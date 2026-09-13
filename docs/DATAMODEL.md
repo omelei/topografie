@@ -306,7 +306,9 @@ create table item_states (
 create index on item_states (student_id, volgende_review);
 ```
 
-Intervals per box: 1, 2, 4, 8, 21 days (spec §4.2). The index is the query that
+Intervals per box: 1, 2, 5, 8, 21 days (spec §4.2, box three moved from four to
+five days by ADR-114, so that remembered — box four — takes at least a week).
+A correct answer moves an item up only when it was due. The index is the query that
 runs at the start of every single round; it is the one performance decision that
 is cheaper to make now than to discover later.
 

@@ -1,18 +1,16 @@
 import { useEffect, useState } from 'react';
-import { countMastered, formatGrade, grade, type ItemState, type ModeId } from '@/game-core';
+import { formatGrade, grade, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
-import { RAIL_MODULES, type Module } from '@/features/shell/modules';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { t, type TranslationKey } from '@/i18n';
-import { loadItemStates, loadPlayedRounds } from '@/store/progress';
-import type { PlayedRound } from '@/store/progress';
+import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
+import type { OpenRound, PlayedRound } from '@/store/progress';
 import {
   geplaatst,
   meestGeoefend,
   naamVan,
-  onderdelen,
   starters,
   startbareOnderdelen,
   POPULAR_SHOWN,
@@ -31,15 +29,21 @@ import { ToetsenBlok } from './ToetsenBlok';
  * Redrawn in 2026-09 (ADR-094) and still the same argument, in the same order.
  * First the child's own name, and under it what doing this is. Then the ways
  * in — what this child goes back to most, what they did last and how it went,
- * and everything else there is, furthest along first. Then the child's own
- * column: the tests, the streak, how the whole of it is going, and their
- * favourites.
+ * and what they started and did not finish. Then the child's own column: the
+ * tests, the streak, how the whole of it is going, and their favourites.
  *
- * **Two rows that scroll sideways, and one list.** "Meest geoefend" and
- * "Verder oefenen" are rows of cards at every size, one swipe, press or arrow
- * key from what is past the edge (`ScrollRij`). "Recent geoefend" is a list
- * (ADR-112): it is a log, read top to bottom, newest first, and a log laid on
- * its side made a child scroll to find out what they did yesterday.
+ * **Two rows that scroll sideways, and one list.** "Meest geoefend" and "Maak
+ * af" are rows of cards at every size, one swipe, press or arrow key from what
+ * is past the edge (`ScrollRij`). "Recent geoefend" is a list (ADR-112): it is
+ * a log, read top to bottom, newest first.
+ *
+ * **"Maak af" took the place of "Verder oefenen"** (ADR-115). That row was one
+ * tile per module with a bar of how much was remembered — a second way to the
+ * rail's five doors, and a forecast in a place ADR-094 said should not have
+ * one. What a child actually wants from the front door is the round they left
+ * halfway: the provinces they stopped at seven, the clock they closed when
+ * dinner was ready. Each card is one of those, and pressing it asks the
+ * questions that round had not asked yet.
  *
  * **The column moves, the page does not.** From 1200 it stands beside the rows.
  * Below that its blocks go into the flow of this page: the tests and the streak
@@ -55,6 +59,9 @@ import { ToetsenBlok } from './ToetsenBlok';
 /** How many rounds the history shows: as many as "meest geoefend" holds. */
 const RECENT_SHOWN = POPULAR_SHOWN;
 
+/** How many unfinished rounds the row holds. It scrolls; ten is a week of stopping. */
+const OPEN_SHOWN = 10;
+
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
   readonly naam: string;
@@ -65,24 +72,24 @@ export interface HomeScreenProps {
    * own column and the module pages use.
    */
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
-  readonly onModule?: ((id: Module['id']) => void) | undefined;
+  /** An unfinished round, picked up: the same set and way, asking only the rest. */
+  readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
 }
 
-export function HomeScreen({ naam, onReeks, onBegin, onModule }: HomeScreenProps) {
-  const [states, setStates] = useState<Map<string, ItemState> | null>(null);
+export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
+  const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const desk = useDesk();
 
   useEffect(() => {
-    void loadItemStates().then(setStates);
     void loadPlayedRounds().then(setPlayed);
+    void loadOpenRounds().then(setOpen);
   }, []);
-
-  const known = states ?? new Map<string, ItemState>();
 
   // Over every set a round can be started on, mixes included: a round of the
   // Rekenmix that could not be placed would drop out of the history entirely.
-  const gespeeld = geplaatst(played, startbareOnderdelen());
+  const alles = startbareOnderdelen();
+  const gespeeld = geplaatst(played, alles);
   const populair = meestGeoefend(gespeeld);
 
   const kop = (
@@ -96,7 +103,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onModule }: HomeScreenProps
     <>
       <Populairst populair={populair} onBegin={onBegin} />
       <Recent gespeeld={gespeeld} onBegin={onBegin} />
-      <VerderOefenen known={known} onOpen={onModule} />
+      <MaakAf open={open} alles={alles} onVerder={onVerder} />
     </>
   );
 
@@ -171,10 +178,10 @@ function GeoefendKaart({
 /**
  * Where this child keeps going, most played first, with the count on each.
  *
- * **The count is this device's own.** There is no backend and nothing leaves
- * the machine (ADR-015), so there is no "most popular with everyone" and no
- * honest way to invent one. A profile with no rounds behind it is offered the
- * ones to start with, at nought rather than at a number that would be a guess.
+ * **The count is this device's own.** Progress never leaves the machine
+ * (ADR-015), so there is no "most popular with everyone" and no honest way to
+ * invent one. A profile with no rounds behind it is offered the ones to start
+ * with, at nought rather than at a number that would be a guess.
  */
 function Populairst({
   populair,
@@ -278,75 +285,65 @@ function Recent({
 }
 
 /**
- * Everything else there is, furthest along first.
+ * The rounds this child started and did not finish, newest first (ADR-115).
  *
- * All of them, not only the ones that are built (ADR-051): a child who can see
- * that flags are coming is reading a plan. The ones that exist are sorted by how
- * much of them is remembered, and the ones that do not come after all of them,
- * in the rail's order — a stable sort keeps it.
+ * Each card is the set, the way it was being answered, and how far it got —
+ * as a bar and in words, because "nog 8 van de 15" is what decides whether it
+ * is worth doing before dinner. Pressing it asks exactly the questions that
+ * round had not asked yet, in the same way, and nothing else.
+ *
+ * Empty is a sentence rather than an absent row: the row is where a stopped
+ * round will be, and a child who has never stopped one should still learn
+ * that it is there.
  */
-function VerderOefenen({
-  known,
-  onOpen,
+function MaakAf({
+  open,
+  alles,
+  onVerder,
 }: {
-  readonly known: ReadonlyMap<string, ItemState>;
-  readonly onOpen?: ((id: Module['id']) => void) | undefined;
+  readonly open: readonly OpenRound[] | null;
+  readonly alles: readonly Onderdeel[];
+  readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
 }) {
-  const alles = onderdelen();
-
-  const kaarten = RAIL_MODULES.map((module) => {
-    const ids = alles
-      .filter((deel) => deel.moduleId === module.id)
-      .flatMap((deel) => deel.items.map((item) => item.id));
-    const mastered = countMastered(known, ids);
-
-    return {
-      module,
-      totaal: ids.length,
-      mastered,
-      stand: ids.length === 0 ? 0 : mastered / ids.length,
-      started: ids.some((id) => known.get(id)?.laatsteReview != null),
-    };
-  }).sort((a, b) => Number(b.module.built) - Number(a.module.built) || b.stand - a.stand);
+  const kaarten = (open ?? []).flatMap((ronde) => {
+    const deel = alles.find((kandidaat) => kandidaat.setId === ronde.setId);
+    return deel ? [{ deel, ronde }] : [];
+  });
+  const getoond = kaarten.slice(0, OPEN_SHOWN);
 
   return (
-    <ScrollRij titel={t('home.practiceMore')}>
-      {kaarten.map(({ module, totaal, mastered, stand, started }) => {
-        const ModuleIcon = MODULE_ICON[module.id];
-        const onthoud = t('home.setMastered', { goed: mastered, totaal });
+    <ScrollRij
+      titel={t('home.openTitle')}
+      // Nothing until the rounds are read, so the sentence for "nothing to
+      // finish" never flashes past a child who has three.
+      leeg={open !== null && getoond.length === 0 ? t('home.openNone') : undefined}
+    >
+      {getoond.map(({ deel, ronde }) => {
+        const ModuleIcon = MODULE_ICON[deel.moduleId];
+        const rest =
+          ronde.rest.length === 1
+            ? t('home.openRestOne', { totaal: ronde.totaal })
+            : t('home.openRest', { aantal: ronde.rest.length, totaal: ronde.totaal });
 
         return (
           <button
-            key={module.id}
+            key={`${deel.setId}-${ronde.mode}`}
             type="button"
-            data-module={module.id}
-            data-accent="module"
-            data-soon={module.built ? undefined : 'ja'}
-            className="tk-kaart tk-verder"
-            onClick={() => onOpen?.(module.id)}
+            data-module={deel.moduleId}
+            className="tk-kaart"
+            onClick={() => onVerder(deel, ronde.mode, ronde.rest)}
           >
-            <span className="tk-verder-kop">
-              <span className="tk-plaat tk-plaat-groot">
-                <ModuleIcon size={24} />
-              </span>
-              <span className="tk-kaart-titel">{t(module.name)}</span>
+            <span className="tk-plaat tk-plaat-groot">
+              <ModuleIcon size={24} />
             </span>
-
-            {/* The bar is the handoff's, and it is hidden from the
-                accessibility tree: the whole card is one button, and a bar's
-                own name folded into the button's is read out twice. What it
-                shows is said in words instead, for the reader who cannot see
-                it. */}
-            {module.built ? (
-              <>
-                <span aria-hidden="true">
-                  <ProgressBar value={stand} showDot={false} label={onthoud} />
-                </span>
-                <span className="tk-sr-only">{started ? onthoud : t('home.setNew')}</span>
-              </>
-            ) : (
-              <span className="tk-kaart-regel">{t('soon.subtitle')}</span>
-            )}
+            <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
+            <span className="tk-kaart-regel">{t(`mode.${ronde.mode}` as TranslationKey)}</span>
+            {/* The bar is decorative: the words under it say the same, and the
+                whole card is one button whose name is read once. */}
+            <span aria-hidden="true">
+              <ProgressBar value={ronde.beantwoord / ronde.totaal} showDot={false} label={rest} />
+            </span>
+            <span className="tk-kaart-voet">{rest}</span>
           </button>
         );
       })}

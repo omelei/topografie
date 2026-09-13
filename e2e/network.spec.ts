@@ -12,6 +12,13 @@ import { expect, test, type Request } from '@playwright/test';
  *
  * So the test is not "we did not add tracking". It is: over a real run of the
  * app, every single request went to our own origin. That is the claim, whole.
+ *
+ * With one exception since ADR-116, and it is narrow enough to say in a
+ * sentence: when a parent types a premium code, and once a week after that,
+ * the code and a random device number go to the premium server — nothing
+ * about the child. Every run here has a code that was checked in 2099, so the
+ * app has no reason to ask, and this test still sees nothing leave. The ask
+ * itself is tested in `premium.spec.ts`, against a server that is not there.
  */
 
 const ALLOWED_SCHEMES = ['data:', 'blob:', 'about:'];

@@ -8,7 +8,11 @@ import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { Tafeldiplomas } from '@/features/module/Tafeldiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
+import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
+import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { BadgeSectie } from '@/features/badges/Badges';
+import { PremiumSectie } from '@/features/premium/PremiumSlot';
+import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
 
@@ -71,8 +75,12 @@ export function ProfileScreen({
         <BadgeSectie />
         <Tafeldiplomas />
         <VlagDiplomas />
+        <KlokDiplomas />
+        <TopoDiplomas />
 
         <Week />
+
+        <PremiumBlok />
 
         <Children active={profile} />
 
@@ -112,6 +120,7 @@ export function ProfileScreen({
  * is show one child a number that belongs to another.
  */
 function Children({ active }: { readonly active: ProfileRecord }) {
+  const { actief } = usePremium();
   const [children, setChildren] = useState<ProfileRecord[]>([]);
   const [adding, setAdding] = useState(false);
   const [naam, setNaam] = useState('');
@@ -119,6 +128,11 @@ function Children({ active }: { readonly active: ProfileRecord }) {
   useEffect(() => {
     void listChildren().then(setChildren);
   }, []);
+
+  // More than one child is premium (ADR-116). Without a code the one who is
+  // practising is the one named at the top of this page, and this section
+  // says what a code adds.
+  if (!actief) return <PremiumSectie titel={t('you.children')} />;
 
   async function add(event: FormEvent) {
     event.preventDefault();
@@ -202,6 +216,33 @@ function Children({ active }: { readonly active: ProfileRecord }) {
 
       {/* Said once, where a parent adding the second child will read it. */}
       <p className="tk-hulp">{t('you.childExplain')}</p>
+    </section>
+  );
+}
+
+/**
+ * Premium, for the adult in the room (ADR-116): on or off on this device, until
+ * when, and the way to the page where a code is entered or taken off again.
+ */
+function PremiumBlok() {
+  const { actief, stand } = usePremium();
+  const naarPremium = useNaarPremium();
+
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('you.premium')}>
+      <h2 className="tk-sectie">{t('you.premium')}</h2>
+      <p className="text-tekst-secundair">
+        {actief && stand
+          ? t('you.premiumAan', { datum: leesbareDatum(stand.geldigTot) })
+          : t('you.premiumUit')}
+      </p>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={naarPremium}
+      >
+        {t('you.premiumBekijk')}
+      </button>
     </section>
   );
 }

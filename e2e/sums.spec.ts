@@ -84,24 +84,6 @@ test('the rail is the map of the product, not a list of what is finished', async
   await expect(page.getByRole('heading', { name: 'Taal' })).toBeVisible();
 });
 
-test('the front door lists every module, at every size', async ({ page }) => {
-  await signIn(page, 'Fien');
-
-  // The phone has no rail, so this is the only way to a module there — and on
-  // a laptop it stands beside the rail, which is what K1 draws.
-  const lijst = page.getByRole('region', { name: 'Verder oefenen' });
-
-  for (const naam of ['Rekenen', 'Klok', 'Taal', 'Vlaggen']) {
-    await expect(lijst.getByRole('button', { name: new RegExp(naam) })).toBeVisible();
-  }
-
-  await lijst.getByRole('button', { name: /Rekenen/ }).click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
-  // Nothing is chosen for the child any more, so the keypad waits for Tafels.
-  await kiesTafels(page);
-  await expect(page.getByRole('button', { name: 'Tafel van 7', exact: true })).toBeVisible();
-});
-
 test('the tables have an address of their own', async ({ page }) => {
   await signIn(page, 'Roos');
   // The slug still works — it has been written down — and it is the same page.

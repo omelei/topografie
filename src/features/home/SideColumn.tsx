@@ -13,6 +13,8 @@ import {
   type Gespeeld,
   type Onderdeel,
 } from '@/features/module/onderdelen';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { Blok } from './Blok';
 import { ReeksBlok } from './ReeksBlok';
 import { ToetsenBlok } from './ToetsenBlok';
@@ -61,6 +63,7 @@ export function SideColumn({
  * how the work is going, and a material is a reward (ADR-071).
  */
 export function GoedBlok() {
+  const { actief } = usePremium();
   const [accuracy, setAccuracy] = useState<Accuracy | null>(null);
   const [run, setRun] = useState<FlawlessRun | null>(null);
 
@@ -68,6 +71,16 @@ export function GoedBlok() {
     void loadAccuracy().then(setAccuracy);
     void loadRun().then(setRun);
   }, []);
+
+  // Premium since ADR-116. The block keeps its place and its name, so the
+  // column does not change shape when a code is entered.
+  if (!actief) {
+    return (
+      <Blok titel={t('home.accuracyTitle')}>
+        <PremiumSlot kaal />
+      </Blok>
+    );
+  }
 
   // Empty until it is known: a block that says nought and then changes its
   // mind has told a child something that was not true.

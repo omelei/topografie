@@ -14,7 +14,7 @@ import { VLAG_ROUND_RULE, type VlagMode } from '@/features/vlaggen/useVlagRound'
  * typing, which is where a table is practised.
  */
 export function herhaalKaartVorm(mode: PracticeMode): PracticeMode {
-  return ROUND_RULE[mode].kind === 'fixed' ? mode : 'meerkeuze';
+  return ROUND_RULE[mode].kind === 'fixed' && mode !== 'topo-diploma' ? mode : 'meerkeuze';
 }
 
 export function herhaalSomVorm(mode: SumMode): SumMode {
@@ -22,7 +22,9 @@ export function herhaalSomVorm(mode: SumMode): SumMode {
 }
 
 export function herhaalKlokVorm(mode: KlokMode): KlokMode {
-  return KLOK_ROUND_RULE[mode].kind === 'fixed' ? mode : 'klok-meerkeuze';
+  return KLOK_ROUND_RULE[mode].kind === 'fixed' && mode !== 'klok-diploma'
+    ? mode
+    : 'klok-meerkeuze';
 }
 
 export function herhaalVlagVorm(mode: VlagMode): VlagMode {

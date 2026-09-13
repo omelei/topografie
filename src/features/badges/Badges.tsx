@@ -17,6 +17,8 @@ import { STAMP_NAME } from '@/features/reis/stampNames';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadStamps } from '@/store/rewardStore';
+import { PremiumSectie } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { Embleem } from './Embleem';
 
 /**
@@ -66,11 +68,15 @@ function uitleg(id: StampId): string {
 
 /** All ten, the ones not earned yet as well, on the child's own page. */
 export function BadgeSectie() {
+  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
 
   useEffect(() => {
     void loadStamps().then(setBehaald);
   }, []);
+
+  // Premium since ADR-116. Still earned underneath, so none is lost.
+  if (!actief) return <PremiumSectie titel={t('badges.titel')} />;
 
   // Nothing until it is known: a wall of ten gaps that then fills three has
   // told a child they had none.

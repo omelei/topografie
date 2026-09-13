@@ -1,5 +1,7 @@
+import { diplomaDrempel } from '@/game-core';
 import { t } from '@/i18n';
 import type { GeoSet } from '@/content/loadGeo';
+import { KAART_NAAM } from '@/features/module/topoDiplomaNamen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import type { AnswerLayer } from './MapCanvas';
@@ -38,8 +40,26 @@ export function ResultScreen({
   // same five layers (ADR-103).
   const kaart = state.geo !== null && setsInRound(state.setId).length === 1 ? state.geo : null;
 
+  // After a topodiploma: what it earned, or how far off it was, in right
+  // answers — the vlaggendiploma's way of saying it (ADR-117).
+  const gehaald = state.reward?.topoDiploma ?? null;
+  const diploma =
+    state.practiceMode === 'topo-diploma' && gehaald
+      ? t('topo.diplomaEarned', { kaart: t(KAART_NAAM[gehaald]) })
+      : null;
+  const melding =
+    state.practiceMode === 'topo-diploma' && state.reward && !gehaald
+      ? t('topo.diplomaMissed', {
+          goed: state.correctCount,
+          totaal: state.total,
+          nodig: diplomaDrempel(state.total),
+        })
+      : null;
+
   return (
     <RondeKlaar
+      diploma={diploma}
+      melding={melding}
       moduleId="topo"
       setId={state.setId}
       mode={state.practiceMode}
