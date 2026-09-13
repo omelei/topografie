@@ -462,12 +462,7 @@ export default function App() {
   // address opens the tables themselves (see routes.ts).
   if (route.name === 'category') {
     return (
-      <Shell
-        bar={bar}
-        onNavigate={goTo}
-        onModule={goModule}
-        grond={route.category.modules[0]}
-      >
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule} grond={route.category.modules[0]}>
         <CategoryScreen
           category={route.category}
           onOpen={(module) => go({ name: 'module', module, setId: null })}

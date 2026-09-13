@@ -354,7 +354,13 @@ function splitsTotTien() {
   const items = [];
   for (let heel = 2; heel <= 10; heel++) {
     for (let deel = 1; deel < heel; deel++) {
-      items.push({ id: `splits-${heel}-${deel}`, op: 'splitsen', links: heel, rechts: deel, antwoord: heel - deel });
+      items.push({
+        id: `splits-${heel}-${deel}`,
+        op: 'splitsen',
+        links: heel,
+        rechts: deel,
+        antwoord: heel - deel,
+      });
     }
   }
   return items;
@@ -367,7 +373,13 @@ function splitsTotTwintig() {
   const items = [];
   for (let heel = 11; heel <= 19; heel++) {
     for (let deel = 4; deel <= 8; deel++) {
-      items.push({ id: `splits-${heel}-${deel}`, op: 'splitsen', links: heel, rechts: deel, antwoord: heel - deel });
+      items.push({
+        id: `splits-${heel}-${deel}`,
+        op: 'splitsen',
+        links: heel,
+        rechts: deel,
+        antwoord: heel - deel,
+      });
     }
   }
   return items;
