@@ -38,6 +38,10 @@ code, dus een code die je kwijt bent is echt weg: maak dan een nieuwe.
 
 Een code geldt standaard een jaar en voor drie apparaten.
 
+Er is nog geen verkoop: codes worden voorlopig met de hand uitgedeeld, aan
+testgezinnen, tot de prijs vastligt. Zet in de notitie voor wie een code is,
+zodat je hem later kunt verlengen of intrekken.
+
 ## Beheren
 
 In de SQL Editor:

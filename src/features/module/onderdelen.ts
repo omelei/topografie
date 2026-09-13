@@ -1,4 +1,4 @@
-import { isDue, type ItemState, type ModeId, type Schedulable } from '@/game-core';
+import type { ItemState, ModeId, Schedulable } from '@/game-core';
 import { loadItemSets } from '@/content/loadSets';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
 import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
@@ -889,14 +889,6 @@ export function laatstGeoefend(
     if (at !== null && (laatste === null || at > laatste)) laatste = at;
   }
   return laatste;
-}
-
-/** How many of this set the scheduler has put on today's list. */
-export function opDeRol(deel: Onderdeel, known: ReadonlyMap<string, ItemState>, now: Date): number {
-  return deel.items.filter((item) => {
-    const state = known.get(item.id);
-    return state ? isDue(state, now) : false;
-  }).length;
 }
 
 /** The whole of a subject, counted over its sets and never over its mix. */

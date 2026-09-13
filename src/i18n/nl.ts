@@ -407,13 +407,7 @@ export const nl = {
   // van vier woorden een zin van acht — op een telefoon twee regels lang.
   // De volgorde blijft; wat weg is, is het bijschrift erop.
   'choose.stepHow': 'Hoe wil je oefenen?',
-  'choose.dueToday': '{aantal} vandaag op de rol',
   'choose.testSubject': 'Hier gaat je toets over.',
-
-  // Wat er nog niet zit, als dat ergens anders wacht dan waar het kind kijkt.
-  // Het kiest de set en start niets: hoe je oefent blijft aan het kind.
-  'choose.dueBody': 'Er staan {aantal} onderdelen van {set} vandaag op de rol.',
-  'choose.dueAction': 'Kies {set}',
 
   // De startknop draagt de gekozen combinatie in woorden, en zijn maat komt
   // uit de ronde zelf: vragen, seconden of levens. Daarnaast hoe lang het

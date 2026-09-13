@@ -5216,10 +5216,11 @@ geleden"). **The rules are written out** under it, as the streak's are.
 A child now sees "onthoud je" a week after first meeting something, not the
 same evening; the number is smaller and it is true. "Alles onthouden" is
 earned at box four for every item, which needs the week. Boxes already on a
-device are not migrated — the app is not in use yet. The module page still
-says how many items are due ("op de rol") in a tile's name and one line above
-the steps; the owner's request was about the Onthouden page, and that line is
-the scheduler talking about the next round.
+device are not migrated — the app is not in use yet. "Op de rol" is gone from
+the module page as well, on the owner's word: the line above the steps that
+named the busiest set and the "3 vandaag op de rol" in a subject's accessible
+name. What is due is what the next round asks first; the child does not need
+the scheduler's word for it.
 
 ---
 
