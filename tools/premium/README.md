@@ -24,6 +24,7 @@ nog niet beschikbaar" en blijft alles wat premium is op slot.
 
    Gebruik **nooit** de secret key of de service_role key: die geeft volledige
    toegang tot de database en hoort niet in een app.
+
 4. Zet ze in GitHub bij **Settings → Secrets and variables → Actions →
    Variables** (niet bij Secrets, want ze komen toch in de app terecht):
    - `PREMIUM_URL`: de Project URL;
