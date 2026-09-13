@@ -77,11 +77,12 @@ test('the rail is the map of the product, not a list of what is finished', async
     await expect(rail.getByRole('button', { name: naam, exact: true })).toBeVisible();
   }
 
-  // And a door that is not open says so rather than opening onto nothing,
-  // which is the half of ADR-037 that survives. Klokkijken used to be the
-  // example here and is open now, so this asks the next one along.
-  await rail.getByRole('button', { name: 'Taal', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Taal' })).toBeVisible();
+  // Every door on the rail is open now — Taal was the last (ADR-118) — so a
+  // door opens its module's page and the rail says which one is showing.
+  const taal = rail.getByRole('button', { name: 'Taal', exact: true });
+  await taal.click();
+  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(taal).toHaveAttribute('aria-current', 'page');
 });
 
 test('the tables have an address of their own', async ({ page }) => {
@@ -260,7 +261,7 @@ test('the lightning round is offered without a setting, and marked premium', asy
  * kind, that the page keeps its shape while they do, and that no section ever
  * grows past six cards.
  */
-test('rekenen offers six subjects, and never more than six', async ({ page }) => {
+test('rekenen offers nine subjects, as chips that wrap', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/rekenen');
 
@@ -272,15 +273,19 @@ test('rekenen offers six subjects, and never more than six', async ({ page }) =>
     'Deelsommen',
     'Plussommen',
     'Minsommen',
+    'Splitsen',
+    'Halveren',
+    'Verdubbelen',
     'Rekenmix',
   ]) {
     await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
 
-  // Six is the ceiling a section may hold (ADR-061, ADR-062). Rekenen's subjects
-  // are chips now (ADR-095) and the step holds nothing else, so the region's
+  // Six was the ceiling a section of tiles may hold (ADR-061, ADR-062).
+  // Rekenen's subjects are chips (ADR-095), which wrap, and ADR-120 gave them
+  // three more kinds of sum. The step holds nothing else, so the region's
   // buttons are the subjects.
-  await expect(wat.getByRole('button')).toHaveCount(6);
+  await expect(wat.getByRole('button')).toHaveCount(9);
 });
 
 test('a subject with many sets asks which, instead of showing all of them', async ({ page }) => {
@@ -299,9 +304,17 @@ test('a subject with many sets asks which, instead of showing all of them', asyn
   await wat.getByRole('button', { name: /^Tafels/ }).click();
   await expect(welke(/^Welke tafel/)).toHaveCount(12);
 
-  // The keersommen past the tables, in two ranges.
+  // The keersommen in three ranges, and the deelsommen in the same three
+  // (ADR-120): no keypad of twelve divisors any more.
   await wat.getByRole('button', { name: /^Keersommen/ }).click();
-  await expect(welke(/^Tot welk getal/)).toHaveText(['tot 100', 'tot 1000']);
+  await expect(welke(/^Tot welk getal/)).toHaveText(['tot 10', 'tot 100', 'tot 1000']);
+
+  await wat.getByRole('button', { name: /^Deelsommen/ }).click();
+  await expect(welke(/^Tot welk getal/)).toHaveText(['tot 10', 'tot 100', 'tot 1000']);
+
+  // Splitsen stops at a hundred: past that it is plus and minus.
+  await wat.getByRole('button', { name: /^Splitsen/ }).click();
+  await expect(welke(/^Tot welk getal/)).toHaveText(['tot 10', 'tot 20', 'tot 100']);
 
   // Plus has three ranges, and they are offered smallest first. Sorted as
   // numbers: "1000" falls between "100" and "20" in every alphabet there is.
@@ -333,7 +346,7 @@ test('a plus sum is a plus sum, and a division is a division', async ({ page }) 
 
   await expect(page.locator('.tk-sum')).toContainText('+');
 
-  await page.goto('/rekenen/deel-7');
+  await page.goto('/rekenen/delen-100');
   await page
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Zelf typen/ })

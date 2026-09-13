@@ -504,26 +504,31 @@ export const nl = {
   'premium.slot': 'Dit hoort bij premium.',
   'premium.slotKnop': 'Code invullen',
 
-  // De onderwerpen van rekenen. Vijf soorten sommen en een mix ervan; de tafels
-  // en het delen hebben er twaalf elk, en die staan als knopjes onder de kaart
-  // in plaats van als twaalf kaarten ernaast.
+  // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
+  // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
+  // twaalf kaarten ernaast, en elke andere soort drie bereiken (ADR-120).
   'onderwerp.tafels': 'Tafels',
   'onderwerp.tafels.uitleg': 'De tafel van 1 tot en met 12',
   'onderwerp.tafels.keuze': 'Welke tafel?',
   'onderwerp.keer': 'Keersommen',
-  'onderwerp.keer.uitleg': 'Voorbij de tafels: 6 × 14, tot 100 of 1000',
+  'onderwerp.keer.uitleg': 'Keer tot 10, 100 of 1000: 6 × 14',
   'onderwerp.delen': 'Deelsommen',
-  'onderwerp.delen.uitleg': 'De tafels andersom: 56 : 7',
-  'onderwerp.delen.keuze': 'Delen door welk getal?',
+  'onderwerp.delen.uitleg': 'Delen tot 10, 100 of 1000: 56 : 7',
   'onderwerp.plus': 'Plussommen',
   'onderwerp.plus.uitleg': 'Optellen tot 20, 100 of 1000',
   'onderwerp.min': 'Minsommen',
   'onderwerp.min.uitleg': 'Aftrekken tot 20, 100 of 1000',
+  'onderwerp.splitsen': 'Splitsen',
+  'onderwerp.splitsen.uitleg': 'Wat hoort erbij? 10 = 7 + ?',
+  'onderwerp.halveren': 'Halveren',
+  'onderwerp.halveren.uitleg': 'De helft, tot 20, 100 of 1000',
+  'onderwerp.verdubbelen': 'Verdubbelen',
+  'onderwerp.verdubbelen.uitleg': 'Het dubbele, tot 20, 100 of 1000',
   'onderwerp.bereik.keuze': 'Tot welk getal?',
   // De mix heet naar wat erin zit en niet naar hoe spannend hij is: een kind
   // dat op deze kaart drukt hoort te weten wat het krijgt.
   'onderwerp.rekenmix': 'Rekenmix',
-  'onderwerp.rekenmix.uitleg': 'Keer, delen, plus en min door elkaar',
+  'onderwerp.rekenmix.uitleg': 'Alle soorten sommen door elkaar',
   'onderwerp.rekenmix.keuze': 'Hoe moeilijk?',
   // Het enige onderwerp dat voor elk kind anders is. Hij staat er alleen als er
   // iets in zit: een kaart met nul sommen is een kaart over niets.
@@ -583,10 +588,13 @@ export const nl = {
   // Rekenen. De tafels van 1 tot 12 en tien sommen per tafel, allebei uit het
   // app-ontwerp v2. Het oefenscherm zelf is daar niet getekend (ADR-049).
   'sums.table': 'Tafel van {tafel}',
-  'sums.divideBy': 'Delen door {tafel}',
   'sums.plusUpTo': 'Plussommen tot {grens}',
   'sums.minusUpTo': 'Minsommen tot {grens}',
   'sums.timesUpTo': 'Keersommen tot {grens}',
+  'sums.divideUpTo': 'Deelsommen tot {grens}',
+  'sums.splitUpTo': 'Splitsen tot {grens}',
+  'sums.halveUpTo': 'Halveren tot {grens}',
+  'sums.doubleUpTo': 'Verdubbelen tot {grens}',
   'sums.upTo': 'tot {grens}',
   'sums.allTables': 'Alle tafels door elkaar',
   'sums.allDivides': 'Alle deelsommen door elkaar',
@@ -608,8 +616,9 @@ export const nl = {
   'sums.typeQuestion': 'Typ het antwoord',
   'sums.chooseQuestion': 'Kies het antwoord',
   'sums.typePlaceholder': 'Antwoord',
-  'sums.correct': '{som} = {antwoord} — goed.',
-  'sums.wrong': '{som} = {antwoord}.',
+  // De som met het antwoord erin: "7 × 8 = 56", "10 = 7 + 3" (ADR-120).
+  'sums.correct': '{uitgewerkt} — goed.',
+  'sums.wrong': '{uitgewerkt}.',
   'sums.wrongSub': 'Jij zei {gegeven}.',
   'sums.dontKnowSub': 'Deze komt zo weer langs.',
   'sums.practiceMore': 'Deze sommen moet je nog oefenen',

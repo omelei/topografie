@@ -49,7 +49,26 @@ function token(name: string, seen: string[] = []): string {
   const reference = /^var\(\s*--([a-z0-9-]+)\s*\)$/.exec(value);
   if (reference?.[1]) return token(reference[1], [...seen, name]);
 
+  // A ground is two tokens mixed (ADR-120), and is measured as the browser
+  // mixes it rather than trusted from the comment beside it.
+  const mengsel =
+    /^color-mix\(in srgb,\s*var\(--([a-z0-9-]+)\)\s+(\d+)%,\s*var\(--([a-z0-9-]+)\)\s*\)$/.exec(
+      value,
+    );
+  if (mengsel?.[1] && mengsel[2] && mengsel[3]) {
+    const eerste = token(mengsel[1], [...seen, name]);
+    const tweede = token(mengsel[3], [...seen, name]);
+    return mix(eerste, Number(mengsel[2]) / 100, tweede);
+  }
+
   throw new Error(`Token --${name} is not a colour: ${value}`);
+}
+
+/** `color-mix(in srgb, a p%, b)`: channel by channel, in sRGB, as a browser mixes it. */
+function mix(a: string, p: number, b: string): string {
+  const onder = channels(b);
+  const kanalen = channels(a).map((value, i) => Math.round(value * p + (onder[i] ?? 0) * (1 - p)));
+  return `#${kanalen.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
 }
 
 function channels(hex: string): [number, number, number] {
@@ -177,5 +196,34 @@ describe('the colours outside the handoff table', () => {
   it('gives every rung of the ladder a colour of its own', () => {
     const waarden = REEKSEN.map((reeks) => token(`reeks-${reeks}`));
     expect(new Set(waarden).size).toBe(waarden.length);
+  });
+});
+
+/**
+ * The ground a page stands on (ADR-120): a module's page on a soft version of
+ * its tint, the front door on a soft version of the green. Every ink that
+ * stands on papier has to stand on each of them too, and a card has to stay a
+ * card on it.
+ */
+describe('the ground under a page', () => {
+  const GRONDEN = [...MODULES.map((name) => `${name}-grond`), 'vandaag-grond'];
+
+  it.each(GRONDEN.map((grond) => [grond] as const))('carries every ink on %s', (grond) => {
+    for (const inkt of ['inkt', 'tekst-secundair', 'tekst-tertiair', 'nadruk-tekst']) {
+      expect(ratio(inkt, grond), inkt).toBeGreaterThanOrEqual(4.5);
+    }
+    for (const rand of ['rand-bediening', 'nadruk', 'fout']) {
+      expect(ratio(rand, grond), rand).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it.each(MODULES.map((name) => [name] as const))('lets %s speak on its own ground', (name) => {
+    expect(ratio(`${name}-text`, `${name}-grond`)).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(name, `${name}-grond`)).toBeGreaterThanOrEqual(3);
+  });
+
+  it.each(GRONDEN.map((grond) => [grond] as const))('is neither a card nor paper: %s', (grond) => {
+    expect(token(grond)).not.toBe(token('kaart'));
+    expect(token(grond)).not.toBe(token('papier'));
   });
 });

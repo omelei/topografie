@@ -139,13 +139,25 @@ const SLUG_SET = new Map(
 /**
  * The sets of rekenen that answer to their own name.
  *
- * One to twelve, times and divide, three ranges each for plus and minus, and two
- * for the keersommen past the tables. A thirteenth table is a typo, not a set,
- * and so is "plus-50": a slug that does not name something opens the module
- * rather than an error page.
+ * The tables one to twelve, and every other kind in its three ranges
+ * (ADR-120). A thirteenth table is a typo, not a set, and so is "plus-50": a
+ * slug that does not name something opens the module rather than an error page.
  */
 const REKENEN_SLUG =
-  /^(?:tafel|deel)-(?:[1-9]|1[0-2])$|^(?:plus|min)-(?:20|100|1000)$|^keer-(?:100|1000)$/;
+  /^tafel-(?:[1-9]|1[0-2])$|^(?:plus|min|halveren|verdubbelen)-(?:20|100|1000)$|^(?:keer|delen)-(?:10|100|1000)$|^splitsen-(?:10|20|100)$/;
+
+/**
+ * "Delen door 7" was a set of its own until ADR-120, at /rekenen/deel-7, and
+ * somebody may have written that down. Its sums are in "tot 10" and "tot 100"
+ * now, with the same ids, so the address opens the range that holds them: all
+ * of delen door 1 is in "tot 10", and nearly all of every other table is in
+ * "tot 100".
+ */
+function vervallenDeelsom(slug: string): string | null {
+  const tafel = /^deel-(\d+)$/.exec(slug)?.[1];
+  if (tafel === undefined || Number(tafel) < 1 || Number(tafel) > 12) return null;
+  return tafel === '1' ? 'delen-10' : 'delen-100';
+}
 
 /**
  * Flags answer to where and what, in the order the page asks them —
@@ -217,7 +229,7 @@ const KLOK_SLUG: Record<string, string> = {
 function setIdFor(module: Module, slug: string): string | null {
   if (module.id === 'tafels') {
     if (REKENEN_SLUG.test(slug)) return slug;
-    return REKENEN_MIX[slug] ?? null;
+    return REKENEN_MIX[slug] ?? vervallenDeelsom(slug);
   }
   if (module.id === 'klok') return KLOK_SLUG[slug] ?? null;
   if (module.id === 'woorden') return TAAL_SET.get(slug) ?? null;

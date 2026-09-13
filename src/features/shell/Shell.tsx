@@ -63,11 +63,22 @@ export interface ShellProps {
   /** The streak, the profile switch — whatever the app bar is carrying today. */
   readonly bar?: ReactNode;
   /**
+   * What the page stands on (ADR-120): the front door's ground, a module's —
+   * on its page and on a category of it — or, left out, the plain paper.
+   */
+  readonly grond?: 'vandaag' | Module['id'] | undefined;
+  /**
    * The two lists, injectable so the frame can be tested with more than the
    * entries that exist today. Nothing in the app passes them.
    */
   readonly modules?: readonly Module[];
   readonly destinations?: readonly Destination[];
+}
+
+/** Which ground `main` stands on: the front door's, a module's, or none of its own. */
+function grondSoort(grond: ShellProps['grond']): 'vandaag' | 'vak' | undefined {
+  if (grond === undefined) return undefined;
+  return grond === 'vandaag' ? 'vandaag' : 'vak';
 }
 
 export function Shell({
@@ -77,6 +88,7 @@ export function Shell({
   currentModule,
   onModule,
   bar,
+  grond,
   modules = RAIL_MODULES,
   destinations = BUILT_DESTINATIONS,
 }: ShellProps) {
@@ -162,7 +174,13 @@ export function Shell({
           </nav>
         ) : null}
 
-        <main className="tk-grond min-h-0 min-w-0 flex-1">{children}</main>
+        <main
+          className="tk-grond min-h-0 min-w-0 flex-1"
+          data-grond={grondSoort(grond)}
+          data-module={grond === 'vandaag' ? undefined : grond}
+        >
+          {children}
+        </main>
       </div>
 
       {showDestinations ? (

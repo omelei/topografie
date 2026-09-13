@@ -226,7 +226,7 @@ describe('the ways of practising', () => {
     const opTafel = offeredForms(SUM_FORMS, 'tafel-7').map((form) => form.id);
     expect(opTafel).toContain('tafeldiploma');
 
-    for (const setId of ['tafels-alle', 'rekenmix', 'plus-100', 'deel-7']) {
+    for (const setId of ['tafels-alle', 'rekenmix', 'plus-100', 'delen-100', 'keer-10']) {
       expect(
         offeredForms(SUM_FORMS, setId).map((form) => form.id),
         setId,

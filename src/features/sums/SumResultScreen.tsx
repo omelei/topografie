@@ -1,5 +1,5 @@
 import { t } from '@/i18n';
-import { sumText } from '@/game-core';
+import { sumUitgewerkt } from '@/game-core';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import type { SumRoundState } from './useSumRound';
@@ -65,9 +65,7 @@ export function SumResultScreen({
                 <ModuleIcon size={24} />
               </span>
               <span className="tk-lijstrij-tekst">
-                <span className="tk-lijstrij-titel tabular-nums">
-                  {`${sumText(sum)} = ${sum.antwoord}`}
-                </span>
+                <span className="tk-lijstrij-titel tabular-nums">{sumUitgewerkt(sum)}</span>
               </span>
             </div>
           </li>

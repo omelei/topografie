@@ -67,13 +67,20 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken.
    doen `.tk-shape-correct`, `.tk-shape-wrong` en `.tk-shape-missed-outer` het.
    Nooit kleur als enige drager.
 
+9. **De grond zegt waar je bent** (ADR-120). De pagina van een vak staat op de
+   grond van dat vak, Vandaag op de groene grond: geef `Shell` een `grond` mee
+   (`"vandaag"` of het vak) en het zet `data-grond` op `main`. Elke andere
+   pagina staat op `papier`. Een grond is gemengd uit tokens (`--topo-grond`,
+   `--vandaag-grond`); maak er geen nieuwe hex voor.
+
 ## Wat het bewaakt
 
 - `src/design/huisstijl.test.ts` houdt elke tokenwaarde aan de overdracht, en
   faalt op een losse hex in een regel, een schaduw, een derde lettertype, een
   oude tokennaam, een Tailwind-klasse buiten de tokens of een kleur in de
   ronde.
-- `src/design/contrast.test.ts` meet de kleurparen, ook die van elk vak.
+- `src/design/contrast.test.ts` meet de kleurparen, ook die van elk vak en
+  elke grond.
 - `src/design/accent.test.ts` houdt bij waar een accent mag.
 - `src/design/answerStates.test.ts` houdt de vormregels vast.
 - `src/design/logo.test.ts` houdt het logo aan de bestanden in `docs/logo`.

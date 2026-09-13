@@ -1,0 +1,346 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "delen-1000",
+  "op": "delen",
+  "tafel": null,
+  "niveau": 3,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "deel-110-11",
+      "op": "delen",
+      "links": 110,
+      "rechts": 11,
+      "antwoord": 10
+    },
+    {
+      "id": "deel-108-12",
+      "op": "delen",
+      "links": 108,
+      "rechts": 12,
+      "antwoord": 9
+    },
+    {
+      "id": "deel-120-12",
+      "op": "delen",
+      "links": 120,
+      "rechts": 12,
+      "antwoord": 10
+    },
+    {
+      "id": "deel1000-64-4",
+      "op": "delen",
+      "links": 64,
+      "rechts": 4,
+      "antwoord": 16
+    },
+    {
+      "id": "deel1000-92-4",
+      "op": "delen",
+      "links": 92,
+      "rechts": 4,
+      "antwoord": 23
+    },
+    {
+      "id": "deel1000-108-4",
+      "op": "delen",
+      "links": 108,
+      "rechts": 4,
+      "antwoord": 27
+    },
+    {
+      "id": "deel1000-136-4",
+      "op": "delen",
+      "links": 136,
+      "rechts": 4,
+      "antwoord": 34
+    },
+    {
+      "id": "deel1000-152-4",
+      "op": "delen",
+      "links": 152,
+      "rechts": 4,
+      "antwoord": 38
+    },
+    {
+      "id": "deel1000-168-4",
+      "op": "delen",
+      "links": 168,
+      "rechts": 4,
+      "antwoord": 42
+    },
+    {
+      "id": "deel1000-184-4",
+      "op": "delen",
+      "links": 184,
+      "rechts": 4,
+      "antwoord": 46
+    },
+    {
+      "id": "deel1000-212-4",
+      "op": "delen",
+      "links": 212,
+      "rechts": 4,
+      "antwoord": 53
+    },
+    {
+      "id": "deel1000-232-4",
+      "op": "delen",
+      "links": 232,
+      "rechts": 4,
+      "antwoord": 58
+    },
+    {
+      "id": "deel1000-256-4",
+      "op": "delen",
+      "links": 256,
+      "rechts": 4,
+      "antwoord": 64
+    },
+    {
+      "id": "deel1000-268-4",
+      "op": "delen",
+      "links": 268,
+      "rechts": 4,
+      "antwoord": 67
+    },
+    {
+      "id": "deel1000-300-4",
+      "op": "delen",
+      "links": 300,
+      "rechts": 4,
+      "antwoord": 75
+    },
+    {
+      "id": "deel1000-332-4",
+      "op": "delen",
+      "links": 332,
+      "rechts": 4,
+      "antwoord": 83
+    },
+    {
+      "id": "deel1000-352-4",
+      "op": "delen",
+      "links": 352,
+      "rechts": 4,
+      "antwoord": 88
+    },
+    {
+      "id": "deel1000-384-4",
+      "op": "delen",
+      "links": 384,
+      "rechts": 4,
+      "antwoord": 96
+    },
+    {
+      "id": "deel1000-112-7",
+      "op": "delen",
+      "links": 112,
+      "rechts": 7,
+      "antwoord": 16
+    },
+    {
+      "id": "deel1000-161-7",
+      "op": "delen",
+      "links": 161,
+      "rechts": 7,
+      "antwoord": 23
+    },
+    {
+      "id": "deel1000-189-7",
+      "op": "delen",
+      "links": 189,
+      "rechts": 7,
+      "antwoord": 27
+    },
+    {
+      "id": "deel1000-238-7",
+      "op": "delen",
+      "links": 238,
+      "rechts": 7,
+      "antwoord": 34
+    },
+    {
+      "id": "deel1000-266-7",
+      "op": "delen",
+      "links": 266,
+      "rechts": 7,
+      "antwoord": 38
+    },
+    {
+      "id": "deel1000-294-7",
+      "op": "delen",
+      "links": 294,
+      "rechts": 7,
+      "antwoord": 42
+    },
+    {
+      "id": "deel1000-322-7",
+      "op": "delen",
+      "links": 322,
+      "rechts": 7,
+      "antwoord": 46
+    },
+    {
+      "id": "deel1000-371-7",
+      "op": "delen",
+      "links": 371,
+      "rechts": 7,
+      "antwoord": 53
+    },
+    {
+      "id": "deel1000-406-7",
+      "op": "delen",
+      "links": 406,
+      "rechts": 7,
+      "antwoord": 58
+    },
+    {
+      "id": "deel1000-448-7",
+      "op": "delen",
+      "links": 448,
+      "rechts": 7,
+      "antwoord": 64
+    },
+    {
+      "id": "deel1000-469-7",
+      "op": "delen",
+      "links": 469,
+      "rechts": 7,
+      "antwoord": 67
+    },
+    {
+      "id": "deel1000-525-7",
+      "op": "delen",
+      "links": 525,
+      "rechts": 7,
+      "antwoord": 75
+    },
+    {
+      "id": "deel1000-581-7",
+      "op": "delen",
+      "links": 581,
+      "rechts": 7,
+      "antwoord": 83
+    },
+    {
+      "id": "deel1000-616-7",
+      "op": "delen",
+      "links": 616,
+      "rechts": 7,
+      "antwoord": 88
+    },
+    {
+      "id": "deel1000-672-7",
+      "op": "delen",
+      "links": 672,
+      "rechts": 7,
+      "antwoord": 96
+    },
+    {
+      "id": "deel1000-144-9",
+      "op": "delen",
+      "links": 144,
+      "rechts": 9,
+      "antwoord": 16
+    },
+    {
+      "id": "deel1000-207-9",
+      "op": "delen",
+      "links": 207,
+      "rechts": 9,
+      "antwoord": 23
+    },
+    {
+      "id": "deel1000-243-9",
+      "op": "delen",
+      "links": 243,
+      "rechts": 9,
+      "antwoord": 27
+    },
+    {
+      "id": "deel1000-306-9",
+      "op": "delen",
+      "links": 306,
+      "rechts": 9,
+      "antwoord": 34
+    },
+    {
+      "id": "deel1000-342-9",
+      "op": "delen",
+      "links": 342,
+      "rechts": 9,
+      "antwoord": 38
+    },
+    {
+      "id": "deel1000-378-9",
+      "op": "delen",
+      "links": 378,
+      "rechts": 9,
+      "antwoord": 42
+    },
+    {
+      "id": "deel1000-414-9",
+      "op": "delen",
+      "links": 414,
+      "rechts": 9,
+      "antwoord": 46
+    },
+    {
+      "id": "deel1000-477-9",
+      "op": "delen",
+      "links": 477,
+      "rechts": 9,
+      "antwoord": 53
+    },
+    {
+      "id": "deel1000-522-9",
+      "op": "delen",
+      "links": 522,
+      "rechts": 9,
+      "antwoord": 58
+    },
+    {
+      "id": "deel1000-576-9",
+      "op": "delen",
+      "links": 576,
+      "rechts": 9,
+      "antwoord": 64
+    },
+    {
+      "id": "deel1000-603-9",
+      "op": "delen",
+      "links": 603,
+      "rechts": 9,
+      "antwoord": 67
+    },
+    {
+      "id": "deel1000-675-9",
+      "op": "delen",
+      "links": 675,
+      "rechts": 9,
+      "antwoord": 75
+    },
+    {
+      "id": "deel1000-747-9",
+      "op": "delen",
+      "links": 747,
+      "rechts": 9,
+      "antwoord": 83
+    },
+    {
+      "id": "deel1000-792-9",
+      "op": "delen",
+      "links": 792,
+      "rechts": 9,
+      "antwoord": 88
+    },
+    {
+      "id": "deel1000-864-9",
+      "op": "delen",
+      "links": 864,
+      "rechts": 9,
+      "antwoord": 96
+    }
+  ]
+}

@@ -160,6 +160,25 @@
     --module: var(--topo);
     --module-tekst: var(--topo-text);
     --module-tint: var(--topo-tint);
+    --module-grond: var(--topo-grond);
+
+    /* ---- The ground a page stands on, by where it is (ADR-120) ----------
+     * A module's page stands on a soft version of its plate's tint and the
+     * front door on a soft version of the handoff's green, so a child sees
+     * where they are before reading a word. Mixed from the tokens above
+     * rather than written as a hex: a change to the tint reaches its ground by
+     * itself. A module's tint is mixed with the card's light and not the
+     * paper's, so every ground is lighter than papier and every ink measured
+     * there still clears; contrast.test.ts measures each one as mixed.
+     * Tertiary ink and the module's text colour, on each: */
+    --topo-grond: color-mix(in srgb, var(--topo-tint) 60%, var(--kaart)); /* 4.66 / 6.17 */
+    --tafels-grond: color-mix(in srgb, var(--tafels-tint) 60%, var(--kaart)); /* 4.71 / 5.53 */
+    --klok-grond: color-mix(in srgb, var(--klok-tint) 60%, var(--kaart)); /* 4.61 / 6.93 */
+    --woorden-grond: color-mix(in srgb, var(--woorden-tint) 60%, var(--kaart)); /* 4.64 / 6.49 */
+    --tijdvakken-grond: color-mix(in srgb, var(--tijdvakken-tint) 60%, var(--kaart)); /* 4.68 */
+    --vlaggen-grond: color-mix(in srgb, var(--vlaggen-tint) 60%, var(--kaart)); /* 4.68 / 5.45 */
+    /* Vandaag: the green's light half and half with the paper.  4.79 */
+    --vandaag-grond: color-mix(in srgb, var(--nadruk-vlak) 50%, var(--papier));
 
     /* ---- Typefaces (see @font-face) --------------------------------------- */
     --font-kop: 'Archivo', system-ui, sans-serif; /* 600 and 700 */
@@ -318,31 +337,37 @@
     --module: var(--topo);
     --module-tekst: var(--topo-text);
     --module-tint: var(--topo-tint);
+    --module-grond: var(--topo-grond);
   }
   [data-module='tafels'] {
     --module: var(--tafels);
     --module-tekst: var(--tafels-text);
     --module-tint: var(--tafels-tint);
+    --module-grond: var(--tafels-grond);
   }
   [data-module='klok'] {
     --module: var(--klok);
     --module-tekst: var(--klok-text);
     --module-tint: var(--klok-tint);
+    --module-grond: var(--klok-grond);
   }
   [data-module='woorden'] {
     --module: var(--woorden);
     --module-tekst: var(--woorden-text);
     --module-tint: var(--woorden-tint);
+    --module-grond: var(--woorden-grond);
   }
   [data-module='tijdvakken'] {
     --module: var(--tijdvakken);
     --module-tekst: var(--tijdvakken-text);
     --module-tint: var(--tijdvakken-tint);
+    --module-grond: var(--tijdvakken-grond);
   }
   [data-module='vlaggen'] {
     --module: var(--vlaggen);
     --module-tekst: var(--vlaggen-text);
     --module-tint: var(--vlaggen-tint);
+    --module-grond: var(--vlaggen-grond);
   }
 
   /* ---- Inside a module, what is chosen wears the module (ADR-112) ---------
@@ -961,6 +986,13 @@
     font-variant-numeric: tabular-nums;
     color: var(--inkt);
   }
+  /* "helft van 1000" and "dubbel van 500" are words as well as a number
+   * (ADR-120). At a sum's size they are wider than the stage, so they step
+   * down, and a line that still breaks breaks evenly. */
+  .tk-sum-woorden {
+    font-size: clamp(2.25rem, 9vw, 4.5rem);
+    text-wrap: balance;
+  }
 
   /* ---- Taal: the sentence is the stage (ADR-118) ---------------------------
    * The sentence a word or a verb is asked in, at the question's size, with a
@@ -1427,6 +1459,16 @@
    * frame, and the frame is not part of the page. */
   .tk-grond {
     background: var(--papier);
+  }
+  /* Where the ground says where you are (ADR-120): a module's page, and a
+   * category's, on the module's own ground; the front door on the green's.
+   * Everywhere else it stays papier. Set by the shell on `main`, with
+   * data-module beside it to say which module. */
+  .tk-grond[data-grond='vak'] {
+    background: var(--module-grond);
+  }
+  .tk-grond[data-grond='vandaag'] {
+    background: var(--vandaag-grond);
   }
   .tk-home-aside {
     display: flex;

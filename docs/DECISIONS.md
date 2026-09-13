@@ -5521,6 +5521,89 @@ of ADR-110.
 
 ---
 
+## ADR-120 — Every kind of sum comes in ranges, three new kinds, and the ground says where you are
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner.
+Amends ADR-062, ADR-100 and ADR-112.
+
+### Context
+
+The owner asked for four things: keersommen "tot 10" beside "tot 100" and
+"tot 1000"; deelsommen offered the same way instead of "delen door 1 … 12";
+splitsen, halveren and verdubbelen as new kinds of sum under rekenen; and a
+fitting background on Vandaag and on the module pages.
+
+### Decision
+
+**"Tot N" means one thing on every kind of sum: no number in the sum is
+bigger than N**, answers are whole and at least one. For plus and keer that is
+the answer; for min, delen, splitsen and halveren it is the number on the left.
+The generator refuses to write a sum that breaks it and
+`sums.content.test.ts` checks every range again.
+
+**Keersommen tot 10 is made of the tables' own sums.** Mirroring "tot 100"
+literally — a number past ten times one under it — gives nothing at or under
+ten, so "tot 10" is every table sum with an answer of ten at most: 27 sums,
+from 1 × 1 to 10 × 1. They already have Leitner boxes under `tafel-2x3`, so
+`keer-10` is a union like the mixes (`MIX_IDS`), never a file that would give
+2 × 3 a second box. Tot 100 and tot 1000 are unchanged.
+
+**Deelsommen come in the same three ranges**, by the number that is divided:
+
+- `delen-10`: the tables the other way round with a dividend to ten (27).
+- `delen-100`: the rest of the tables the other way round to a hundred, and
+  the keersommen tot 100 the other way round, 84 : 6 = 14 (140).
+- `delen-1000`: the keersommen tot 1000 the other way round, 864 : 9 = 96, and
+  the three table divisions over a hundred (48).
+
+The twelve files `deel-1` … `deel-12` are gone, but every division they held
+kept its id (`deel-56-7`), so no child loses a box. A round played on
+`deel-7` is placed by its questions, which ADR-063's fallback already does; an
+address `/rekenen/deel-7` opens `delen-100`, and `deel-1` opens `delen-10`.
+Deelsommen are chips now, like every range; only the tables are a keypad.
+
+**Splitsen, halveren and verdubbelen are kinds of sum**, with their own sign
+(`SumOp`), mark and subject, after plus and min:
+
+- Splitsen is the splitsbeen written as a sum, "10 = 7 + ?": every split of
+  two to ten (45), eleven to nineteen with a part of four to eight (45), and
+  the round tens to a hundred with five parts each (45).
+- Halveren halves even numbers only — to 20 (10), 22–100 (40) and forty-five
+  to a thousand — and verdubbelen is the same numbers the other way round.
+  They are written "helft van 14" and "dubbel van 7", so they do not read as a
+  table, and set smaller on the stage (`.tk-sum-woorden`). A double's near
+  misses are even, so an odd option does not give the answer away.
+
+All of it goes into the Rekenmix by level (267, 445 and 313 sums). Rekenen now
+has nine subjects, ten with "Oefen je fouten". That is further past ADR-061's
+six than ADR-100 went; it holds because the subjects are chips, which wrap.
+
+**A timed round on a range stays under its ceiling.** `sumPool` used to reach
+every set of the same sign, so a minute of "plus tot 20" could ask 845 + 140.
+A range now reaches the ranges of its kind at or below it; a table still
+reaches the other tables.
+
+**The ground says where you are.** A module's page — and a category's, and the
+"binnenkort" page of one — stands on `--{module}-grond`, its plate's tint mixed
+60 % with the card's light; Vandaag stands on `--vandaag-grond`, the green's
+light half and half with the paper. Both are `color-mix` of existing tokens,
+so there is no new hex and a changed tint reaches its ground by itself. The
+shell sets `data-grond` (and `data-module`) on `main`; every other page stays
+on papier. Mixing with the card's light keeps every ground lighter than
+papier, so tertiary ink still clears 4.5:1 (4.61 at the lowest, klok);
+`contrast.test.ts` resolves the mix and measures every ink, rule and module
+colour on every ground. There is no dark theme since ADR-109, so there is none
+to adapt; a browser without `color-mix` falls back to the shell's card light.
+
+### Consequences
+
+Content grows from 605 sums to 1025. The e2e specs expect nine subjects and
+the new ranges; `/rekenen/deel-7` is only a way in now. The chosen tile's
+accent is unchanged: the ground is a ground, and ADR-112's rule about what
+wears the module's colour still holds.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

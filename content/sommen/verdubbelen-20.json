@@ -1,0 +1,80 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "verdubbelen-20",
+  "op": "verdubbelen",
+  "tafel": null,
+  "niveau": 1,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "verdubbel-1",
+      "op": "verdubbelen",
+      "links": 1,
+      "rechts": 2,
+      "antwoord": 2
+    },
+    {
+      "id": "verdubbel-2",
+      "op": "verdubbelen",
+      "links": 2,
+      "rechts": 2,
+      "antwoord": 4
+    },
+    {
+      "id": "verdubbel-3",
+      "op": "verdubbelen",
+      "links": 3,
+      "rechts": 2,
+      "antwoord": 6
+    },
+    {
+      "id": "verdubbel-4",
+      "op": "verdubbelen",
+      "links": 4,
+      "rechts": 2,
+      "antwoord": 8
+    },
+    {
+      "id": "verdubbel-5",
+      "op": "verdubbelen",
+      "links": 5,
+      "rechts": 2,
+      "antwoord": 10
+    },
+    {
+      "id": "verdubbel-6",
+      "op": "verdubbelen",
+      "links": 6,
+      "rechts": 2,
+      "antwoord": 12
+    },
+    {
+      "id": "verdubbel-7",
+      "op": "verdubbelen",
+      "links": 7,
+      "rechts": 2,
+      "antwoord": 14
+    },
+    {
+      "id": "verdubbel-8",
+      "op": "verdubbelen",
+      "links": 8,
+      "rechts": 2,
+      "antwoord": 16
+    },
+    {
+      "id": "verdubbel-9",
+      "op": "verdubbelen",
+      "links": 9,
+      "rechts": 2,
+      "antwoord": 18
+    },
+    {
+      "id": "verdubbel-10",
+      "op": "verdubbelen",
+      "links": 10,
+      "rechts": 2,
+      "antwoord": 20
+    }
+  ]
+}

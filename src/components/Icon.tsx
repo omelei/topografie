@@ -855,6 +855,47 @@ export function PlusIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
+ * Splitsen: the splitsbeen a child draws in groep 3 — the whole at the top and
+ * its two parts below, each on a leg (ADR-120).
+ */
+export function SplitsIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="18" cy="18" r="3" />
+      <path d="M10.5 8.6l-3 6.8M13.5 8.6l3 6.8" />
+    </Icon>
+  );
+}
+
+/**
+ * Halveren: one bar cut through the middle, into two halves the same size
+ * (ADR-120).
+ */
+export function HalverenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 8h16v8H4z" strokeLinejoin="round" />
+      <path d="M12 4v16" />
+    </Icon>
+  );
+}
+
+/**
+ * Verdubbelen: the same block twice, side by side — halveren the other way
+ * round, which is what verdubbelen is (ADR-120).
+ */
+export function VerdubbelIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 8h8v8H3z" strokeLinejoin="round" />
+      <path d="M13 8h8v8h-8z" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/**
  * Minsommen: the sign.
  *
  * One line, and the only icon in this set that is one line — `FreezerIcon` is

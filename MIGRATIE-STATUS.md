@@ -48,6 +48,11 @@ rest is gelijkgetrokken:
   zijn badges op de pagina Jij.
 - Het logo is uitwerking 3a: Hanken Grotesk met de ring en het naaldje
   (`docs/logo`).
+- **De grond zegt waar je bent (ADR-120).** Op de pagina van een vak staat
+  `main` op een zachte versie van de tint van dat vak (`--topo-grond` enz.), op
+  Vandaag op een zachte versie van het groen (`--vandaag-grond`). Beide zijn
+  gemengd uit bestaande tokens met `color-mix`, zonder nieuwe hex, en
+  `contrast.test.ts` meet elke inkt er opnieuw op.
 
 ## 2a. Stap 1: de tokens stonden ernaast
 

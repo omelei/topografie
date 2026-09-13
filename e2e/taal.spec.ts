@@ -325,7 +325,8 @@ test('Typ de vorm: after a wrong answer, the rule applied to this verb', async (
   await expect(veld).toHaveAttribute('autocorrect', 'off');
   await veld.fill('x');
   await veld.press('Enter');
-  await expect(page.locator('.tk-round-question')).toContainText(/kofschip|sterk werkwoord/);
+  // "’t Kofschip" opens its sentence, so it is written with a capital there.
+  await expect(page.locator('.tk-round-question')).toContainText(/kofschip|sterk werkwoord/i);
   expect((await scan(page)).violations).toEqual([]);
 
   await speel(page);

@@ -1,0 +1,325 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "verdubbelen-1000",
+  "op": "verdubbelen",
+  "tafel": null,
+  "niveau": 3,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "verdubbel-54",
+      "op": "verdubbelen",
+      "links": 54,
+      "rechts": 2,
+      "antwoord": 108
+    },
+    {
+      "id": "verdubbel-62",
+      "op": "verdubbelen",
+      "links": 62,
+      "rechts": 2,
+      "antwoord": 124
+    },
+    {
+      "id": "verdubbel-68",
+      "op": "verdubbelen",
+      "links": 68,
+      "rechts": 2,
+      "antwoord": 136
+    },
+    {
+      "id": "verdubbel-75",
+      "op": "verdubbelen",
+      "links": 75,
+      "rechts": 2,
+      "antwoord": 150
+    },
+    {
+      "id": "verdubbel-86",
+      "op": "verdubbelen",
+      "links": 86,
+      "rechts": 2,
+      "antwoord": 172
+    },
+    {
+      "id": "verdubbel-95",
+      "op": "verdubbelen",
+      "links": 95,
+      "rechts": 2,
+      "antwoord": 190
+    },
+    {
+      "id": "verdubbel-107",
+      "op": "verdubbelen",
+      "links": 107,
+      "rechts": 2,
+      "antwoord": 214
+    },
+    {
+      "id": "verdubbel-118",
+      "op": "verdubbelen",
+      "links": 118,
+      "rechts": 2,
+      "antwoord": 236
+    },
+    {
+      "id": "verdubbel-125",
+      "op": "verdubbelen",
+      "links": 125,
+      "rechts": 2,
+      "antwoord": 250
+    },
+    {
+      "id": "verdubbel-134",
+      "op": "verdubbelen",
+      "links": 134,
+      "rechts": 2,
+      "antwoord": 268
+    },
+    {
+      "id": "verdubbel-145",
+      "op": "verdubbelen",
+      "links": 145,
+      "rechts": 2,
+      "antwoord": 290
+    },
+    {
+      "id": "verdubbel-156",
+      "op": "verdubbelen",
+      "links": 156,
+      "rechts": 2,
+      "antwoord": 312
+    },
+    {
+      "id": "verdubbel-169",
+      "op": "verdubbelen",
+      "links": 169,
+      "rechts": 2,
+      "antwoord": 338
+    },
+    {
+      "id": "verdubbel-175",
+      "op": "verdubbelen",
+      "links": 175,
+      "rechts": 2,
+      "antwoord": 350
+    },
+    {
+      "id": "verdubbel-188",
+      "op": "verdubbelen",
+      "links": 188,
+      "rechts": 2,
+      "antwoord": 376
+    },
+    {
+      "id": "verdubbel-197",
+      "op": "verdubbelen",
+      "links": 197,
+      "rechts": 2,
+      "antwoord": 394
+    },
+    {
+      "id": "verdubbel-205",
+      "op": "verdubbelen",
+      "links": 205,
+      "rechts": 2,
+      "antwoord": 410
+    },
+    {
+      "id": "verdubbel-216",
+      "op": "verdubbelen",
+      "links": 216,
+      "rechts": 2,
+      "antwoord": 432
+    },
+    {
+      "id": "verdubbel-228",
+      "op": "verdubbelen",
+      "links": 228,
+      "rechts": 2,
+      "antwoord": 456
+    },
+    {
+      "id": "verdubbel-235",
+      "op": "verdubbelen",
+      "links": 235,
+      "rechts": 2,
+      "antwoord": 470
+    },
+    {
+      "id": "verdubbel-249",
+      "op": "verdubbelen",
+      "links": 249,
+      "rechts": 2,
+      "antwoord": 498
+    },
+    {
+      "id": "verdubbel-258",
+      "op": "verdubbelen",
+      "links": 258,
+      "rechts": 2,
+      "antwoord": 516
+    },
+    {
+      "id": "verdubbel-265",
+      "op": "verdubbelen",
+      "links": 265,
+      "rechts": 2,
+      "antwoord": 530
+    },
+    {
+      "id": "verdubbel-277",
+      "op": "verdubbelen",
+      "links": 277,
+      "rechts": 2,
+      "antwoord": 554
+    },
+    {
+      "id": "verdubbel-286",
+      "op": "verdubbelen",
+      "links": 286,
+      "rechts": 2,
+      "antwoord": 572
+    },
+    {
+      "id": "verdubbel-295",
+      "op": "verdubbelen",
+      "links": 295,
+      "rechts": 2,
+      "antwoord": 590
+    },
+    {
+      "id": "verdubbel-307",
+      "op": "verdubbelen",
+      "links": 307,
+      "rechts": 2,
+      "antwoord": 614
+    },
+    {
+      "id": "verdubbel-319",
+      "op": "verdubbelen",
+      "links": 319,
+      "rechts": 2,
+      "antwoord": 638
+    },
+    {
+      "id": "verdubbel-325",
+      "op": "verdubbelen",
+      "links": 325,
+      "rechts": 2,
+      "antwoord": 650
+    },
+    {
+      "id": "verdubbel-338",
+      "op": "verdubbelen",
+      "links": 338,
+      "rechts": 2,
+      "antwoord": 676
+    },
+    {
+      "id": "verdubbel-346",
+      "op": "verdubbelen",
+      "links": 346,
+      "rechts": 2,
+      "antwoord": 692
+    },
+    {
+      "id": "verdubbel-355",
+      "op": "verdubbelen",
+      "links": 355,
+      "rechts": 2,
+      "antwoord": 710
+    },
+    {
+      "id": "verdubbel-367",
+      "op": "verdubbelen",
+      "links": 367,
+      "rechts": 2,
+      "antwoord": 734
+    },
+    {
+      "id": "verdubbel-378",
+      "op": "verdubbelen",
+      "links": 378,
+      "rechts": 2,
+      "antwoord": 756
+    },
+    {
+      "id": "verdubbel-385",
+      "op": "verdubbelen",
+      "links": 385,
+      "rechts": 2,
+      "antwoord": 770
+    },
+    {
+      "id": "verdubbel-399",
+      "op": "verdubbelen",
+      "links": 399,
+      "rechts": 2,
+      "antwoord": 798
+    },
+    {
+      "id": "verdubbel-406",
+      "op": "verdubbelen",
+      "links": 406,
+      "rechts": 2,
+      "antwoord": 812
+    },
+    {
+      "id": "verdubbel-418",
+      "op": "verdubbelen",
+      "links": 418,
+      "rechts": 2,
+      "antwoord": 836
+    },
+    {
+      "id": "verdubbel-425",
+      "op": "verdubbelen",
+      "links": 425,
+      "rechts": 2,
+      "antwoord": 850
+    },
+    {
+      "id": "verdubbel-437",
+      "op": "verdubbelen",
+      "links": 437,
+      "rechts": 2,
+      "antwoord": 874
+    },
+    {
+      "id": "verdubbel-445",
+      "op": "verdubbelen",
+      "links": 445,
+      "rechts": 2,
+      "antwoord": 890
+    },
+    {
+      "id": "verdubbel-458",
+      "op": "verdubbelen",
+      "links": 458,
+      "rechts": 2,
+      "antwoord": 916
+    },
+    {
+      "id": "verdubbel-469",
+      "op": "verdubbelen",
+      "links": 469,
+      "rechts": 2,
+      "antwoord": 938
+    },
+    {
+      "id": "verdubbel-478",
+      "op": "verdubbelen",
+      "links": 478,
+      "rechts": 2,
+      "antwoord": 956
+    },
+    {
+      "id": "verdubbel-500",
+      "op": "verdubbelen",
+      "links": 500,
+      "rechts": 2,
+      "antwoord": 1000
+    }
+  ]
+}

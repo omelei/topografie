@@ -1,0 +1,290 @@
+{
+  "_gegenereerd": "tools/content/build-rekenen.mjs — gegenereerd, niet met de hand bewerken.",
+  "id": "verdubbelen-100",
+  "op": "verdubbelen",
+  "tafel": null,
+  "niveau": 2,
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "verdubbel-11",
+      "op": "verdubbelen",
+      "links": 11,
+      "rechts": 2,
+      "antwoord": 22
+    },
+    {
+      "id": "verdubbel-12",
+      "op": "verdubbelen",
+      "links": 12,
+      "rechts": 2,
+      "antwoord": 24
+    },
+    {
+      "id": "verdubbel-13",
+      "op": "verdubbelen",
+      "links": 13,
+      "rechts": 2,
+      "antwoord": 26
+    },
+    {
+      "id": "verdubbel-14",
+      "op": "verdubbelen",
+      "links": 14,
+      "rechts": 2,
+      "antwoord": 28
+    },
+    {
+      "id": "verdubbel-15",
+      "op": "verdubbelen",
+      "links": 15,
+      "rechts": 2,
+      "antwoord": 30
+    },
+    {
+      "id": "verdubbel-16",
+      "op": "verdubbelen",
+      "links": 16,
+      "rechts": 2,
+      "antwoord": 32
+    },
+    {
+      "id": "verdubbel-17",
+      "op": "verdubbelen",
+      "links": 17,
+      "rechts": 2,
+      "antwoord": 34
+    },
+    {
+      "id": "verdubbel-18",
+      "op": "verdubbelen",
+      "links": 18,
+      "rechts": 2,
+      "antwoord": 36
+    },
+    {
+      "id": "verdubbel-19",
+      "op": "verdubbelen",
+      "links": 19,
+      "rechts": 2,
+      "antwoord": 38
+    },
+    {
+      "id": "verdubbel-20",
+      "op": "verdubbelen",
+      "links": 20,
+      "rechts": 2,
+      "antwoord": 40
+    },
+    {
+      "id": "verdubbel-21",
+      "op": "verdubbelen",
+      "links": 21,
+      "rechts": 2,
+      "antwoord": 42
+    },
+    {
+      "id": "verdubbel-22",
+      "op": "verdubbelen",
+      "links": 22,
+      "rechts": 2,
+      "antwoord": 44
+    },
+    {
+      "id": "verdubbel-23",
+      "op": "verdubbelen",
+      "links": 23,
+      "rechts": 2,
+      "antwoord": 46
+    },
+    {
+      "id": "verdubbel-24",
+      "op": "verdubbelen",
+      "links": 24,
+      "rechts": 2,
+      "antwoord": 48
+    },
+    {
+      "id": "verdubbel-25",
+      "op": "verdubbelen",
+      "links": 25,
+      "rechts": 2,
+      "antwoord": 50
+    },
+    {
+      "id": "verdubbel-26",
+      "op": "verdubbelen",
+      "links": 26,
+      "rechts": 2,
+      "antwoord": 52
+    },
+    {
+      "id": "verdubbel-27",
+      "op": "verdubbelen",
+      "links": 27,
+      "rechts": 2,
+      "antwoord": 54
+    },
+    {
+      "id": "verdubbel-28",
+      "op": "verdubbelen",
+      "links": 28,
+      "rechts": 2,
+      "antwoord": 56
+    },
+    {
+      "id": "verdubbel-29",
+      "op": "verdubbelen",
+      "links": 29,
+      "rechts": 2,
+      "antwoord": 58
+    },
+    {
+      "id": "verdubbel-30",
+      "op": "verdubbelen",
+      "links": 30,
+      "rechts": 2,
+      "antwoord": 60
+    },
+    {
+      "id": "verdubbel-31",
+      "op": "verdubbelen",
+      "links": 31,
+      "rechts": 2,
+      "antwoord": 62
+    },
+    {
+      "id": "verdubbel-32",
+      "op": "verdubbelen",
+      "links": 32,
+      "rechts": 2,
+      "antwoord": 64
+    },
+    {
+      "id": "verdubbel-33",
+      "op": "verdubbelen",
+      "links": 33,
+      "rechts": 2,
+      "antwoord": 66
+    },
+    {
+      "id": "verdubbel-34",
+      "op": "verdubbelen",
+      "links": 34,
+      "rechts": 2,
+      "antwoord": 68
+    },
+    {
+      "id": "verdubbel-35",
+      "op": "verdubbelen",
+      "links": 35,
+      "rechts": 2,
+      "antwoord": 70
+    },
+    {
+      "id": "verdubbel-36",
+      "op": "verdubbelen",
+      "links": 36,
+      "rechts": 2,
+      "antwoord": 72
+    },
+    {
+      "id": "verdubbel-37",
+      "op": "verdubbelen",
+      "links": 37,
+      "rechts": 2,
+      "antwoord": 74
+    },
+    {
+      "id": "verdubbel-38",
+      "op": "verdubbelen",
+      "links": 38,
+      "rechts": 2,
+      "antwoord": 76
+    },
+    {
+      "id": "verdubbel-39",
+      "op": "verdubbelen",
+      "links": 39,
+      "rechts": 2,
+      "antwoord": 78
+    },
+    {
+      "id": "verdubbel-40",
+      "op": "verdubbelen",
+      "links": 40,
+      "rechts": 2,
+      "antwoord": 80
+    },
+    {
+      "id": "verdubbel-41",
+      "op": "verdubbelen",
+      "links": 41,
+      "rechts": 2,
+      "antwoord": 82
+    },
+    {
+      "id": "verdubbel-42",
+      "op": "verdubbelen",
+      "links": 42,
+      "rechts": 2,
+      "antwoord": 84
+    },
+    {
+      "id": "verdubbel-43",
+      "op": "verdubbelen",
+      "links": 43,
+      "rechts": 2,
+      "antwoord": 86
+    },
+    {
+      "id": "verdubbel-44",
+      "op": "verdubbelen",
+      "links": 44,
+      "rechts": 2,
+      "antwoord": 88
+    },
+    {
+      "id": "verdubbel-45",
+      "op": "verdubbelen",
+      "links": 45,
+      "rechts": 2,
+      "antwoord": 90
+    },
+    {
+      "id": "verdubbel-46",
+      "op": "verdubbelen",
+      "links": 46,
+      "rechts": 2,
+      "antwoord": 92
+    },
+    {
+      "id": "verdubbel-47",
+      "op": "verdubbelen",
+      "links": 47,
+      "rechts": 2,
+      "antwoord": 94
+    },
+    {
+      "id": "verdubbel-48",
+      "op": "verdubbelen",
+      "links": 48,
+      "rechts": 2,
+      "antwoord": 96
+    },
+    {
+      "id": "verdubbel-49",
+      "op": "verdubbelen",
+      "links": 49,
+      "rechts": 2,
+      "antwoord": 98
+    },
+    {
+      "id": "verdubbel-50",
+      "op": "verdubbelen",
+      "links": 50,
+      "rechts": 2,
+      "antwoord": 100
+    }
+  ]
+}
