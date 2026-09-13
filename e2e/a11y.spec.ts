@@ -125,7 +125,9 @@ test('the module pages have no violations, in each of their four shapes', async 
   await page.goto('/klokkijken');
   // The clock's step 1: four subjects and a mix, one set each — the shape
   // topografie's Nederland row has, with no chips underneath.
-  await expect(page.getByRole('button', { name: /^Halve uren/ })).toBeVisible();
+  // The tile, whose name is "Halve uren. …" — not the klokdiploma under it,
+  // whose name starts "Halve uren: …" (ADR-117).
+  await expect(page.getByRole('button', { name: /^Halve uren\./ })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   await page.goto('/woordjes');

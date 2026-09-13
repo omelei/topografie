@@ -57,7 +57,8 @@ test('the clock answers to the short word as well as its own', async ({ page }) 
   // "Klok" is what the rail says and what a child would type. Both land here.
   await page.goto('/klok');
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Kwartieren/ })).toBeVisible();
+  // The tile, "Kwartieren. …", and not the klokdiploma "Kwartieren: …" (ADR-117).
+  await expect(page.getByRole('button', { name: /^Kwartieren\./ })).toBeVisible();
 });
 
 test('a step of the clock has an address, and the page opens on it', async ({ page }) => {

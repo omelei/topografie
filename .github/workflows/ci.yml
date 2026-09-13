@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
+  # By hand, on main, for a deploy with nothing new in the code: after the
+  # premium variables are set or changed (ADR-116), which the build bakes in.
+  # A re-run of an old run does not do it — its Pages artifact is still there.
+  workflow_dispatch:
 
 jobs:
   check:
