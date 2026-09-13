@@ -1,4 +1,10 @@
-import { gatLetters, type SpellingItem } from '@/game-core';
+import {
+  gatLetters,
+  werkwoordRegel,
+  type SpellingItem,
+  type WerkwoordItem,
+  type WerkwoordRegel,
+} from '@/game-core';
 import { taalSetVanItem } from '@/content/loadTaal';
 import { t, type TranslationKey } from '@/i18n';
 import type { TaalVraag } from './useTaalRound';
@@ -67,9 +73,126 @@ export function spellingRegel(item: SpellingItem): string | null {
   return null;
 }
 
+/**
+ * The rule that makes a verb form, applied to this verb: "Hij, zij of het, dus
+ * stam + t: word + t = wordt." What this module is for, the way "half acht" is
+ * what the clock is for — worked out from the item's own fields, never stored.
+ */
+export function werkwoordRegelZin(item: WerkwoordItem): string {
+  return regelZin(werkwoordRegel(item));
+}
+
+function regelZin(regel: WerkwoordRegel): string {
+  switch (regel.soort) {
+    case 'sterk':
+      return t('taal.regel.sterk', { infinitief: regel.infinitief, vorm: regel.vorm });
+    case 'tt-stam':
+      return t(regel.achter ? 'taal.regel.ttAchter' : 'taal.regel.ttIk', { stam: regel.stam });
+    case 'tt-t': {
+      const jij = regel.persoon === 'jij';
+      const key = regel.alT
+        ? jij
+          ? 'taal.regel.ttAlTJij'
+          : 'taal.regel.ttAlTHij'
+        : jij
+          ? 'taal.regel.ttTJij'
+          : 'taal.regel.ttTHij';
+      return t(key, { stam: regel.stam, vorm: regel.vorm });
+    }
+    case 'tt-meervoud':
+      return t('taal.regel.ttMeervoud', { vorm: regel.vorm });
+    case 'vt': {
+      const uitgang = `${regel.kofschip ? 't' : 'd'}e${regel.meervoud ? 'n' : ''}`;
+      return t(regel.kofschip ? 'taal.regel.vtTe' : 'taal.regel.vtDe', {
+        infinitief: regel.infinitief,
+        letter: regel.letter,
+        stam: regel.stam,
+        uitgang,
+        vorm: regel.vorm,
+      });
+    }
+    case 'vd': {
+      const eind = regel.kofschip ? 't' : 'd';
+      const al = regel.stam.endsWith(eind);
+      if (regel.voorvoegsel !== null) {
+        return t(al ? 'taal.regel.vdZonderGeAl' : 'taal.regel.vdZonderGe', {
+          voorvoegsel: regel.voorvoegsel,
+          eind,
+          vorm: regel.vorm,
+        });
+      }
+      if (al) return t('taal.regel.vdAl', { eind, stam: regel.stam, vorm: regel.vorm });
+      return t(regel.kofschip ? 'taal.regel.vdT' : 'taal.regel.vdD', {
+        letter: regel.letter,
+        infinitief: regel.infinitief,
+        vorm: regel.vorm,
+      });
+    }
+  }
+}
+
 /** The rule applied to the item a question is about, or null. */
 export function regelVoor(vraag: TaalVraag): string | null {
-  return vraag.soort === 'spelling' ? spellingRegel(vraag.item) : null;
+  return vraag.soort === 'spelling' ? spellingRegel(vraag.item) : werkwoordRegelZin(vraag.item);
+}
+
+/**
+ * The rule cards of Ontdekken for verbs, in the order they are taught: the
+ * three ways of the tegenwoordige tijd, 't kofschip in the verleden tijd, the
+ * voltooid deelwoord with and without ge-, and the strong verbs last.
+ */
+export type RegelKaart =
+  | 'ik'
+  | 'jijhij'
+  | 'alT'
+  | 'achter'
+  | 'meervoud'
+  | 'te'
+  | 'de'
+  | 'vdT'
+  | 'vdD'
+  | 'zonderGe'
+  | 'sterk';
+
+export const KAART_VOLGORDE: readonly RegelKaart[] = [
+  'ik',
+  'jijhij',
+  'alT',
+  'achter',
+  'meervoud',
+  'te',
+  'de',
+  'vdT',
+  'vdD',
+  'zonderGe',
+  'sterk',
+];
+
+/** Which card a verb item is an example on. */
+export function kaartVan(item: WerkwoordItem): RegelKaart {
+  const regel = werkwoordRegel(item);
+  switch (regel.soort) {
+    case 'sterk':
+      return 'sterk';
+    case 'tt-stam':
+      return regel.achter ? 'achter' : 'ik';
+    case 'tt-t':
+      return regel.alT ? 'alT' : 'jijhij';
+    case 'tt-meervoud':
+      return 'meervoud';
+    case 'vt':
+      return regel.kofschip ? 'te' : 'de';
+    case 'vd':
+      return regel.voorvoegsel !== null ? 'zonderGe' : regel.kofschip ? 'vdT' : 'vdD';
+  }
+}
+
+export function kaartTitel(kaart: RegelKaart): string {
+  return t(`taal.kaart.${kaart}` as TranslationKey);
+}
+
+export function kaartUitleg(kaart: RegelKaart): string {
+  return t(`taal.kaart.${kaart}.uitleg` as TranslationKey);
 }
 
 /** What a spelling set's Ontdekken says above its words: the rule, in general. */

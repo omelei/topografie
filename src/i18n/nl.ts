@@ -901,6 +901,59 @@ export const nl = {
   'taal.regel.vk.etje': 'Na een korte klank met een l, m, n, r of ng komt -etje: {woord}.',
   'taal.regel.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig: {woord}.',
   'taal.regel.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk: {woord}.',
+  // De regel van een werkwoord, toegepast op dit werkwoord (ADR-118). Wat de
+  // regel is, rekent game-core uit; hier staan alleen de woorden.
+  'taal.regel.ttIk': 'Ik, dus alleen de stam: {stam}.',
+  'taal.regel.ttAchter': 'Jij staat achter het werkwoord, dus alleen de stam: {stam}.',
+  'taal.regel.ttTJij': 'Jij, dus stam + t: {stam} + t = {vorm}.',
+  'taal.regel.ttTHij': 'Hij, zij of het, dus stam + t: {stam} + t = {vorm}.',
+  'taal.regel.ttAlTJij': 'Jij, dus stam + t. Maar de stam {stam} eindigt al op een t: {vorm}.',
+  'taal.regel.ttAlTHij':
+    'Hij, zij of het, dus stam + t. Maar de stam {stam} eindigt al op een t: {vorm}.',
+  'taal.regel.ttMeervoud': 'Meer dan één persoon, dus het hele werkwoord: {vorm}.',
+  'taal.regel.vtTe':
+    '’t Kofschip: in {infinitief} staat een {letter} vóór -en, dus {stam} + {uitgang} = {vorm}.',
+  'taal.regel.vtDe':
+    'In {infinitief} staat een {letter} vóór -en. Die zit niet in ’t kofschip, dus {stam} + {uitgang} = {vorm}.',
+  'taal.regel.vdT': 'Ge- + stam + t, want de {letter} van {infinitief} zit in ’t kofschip: {vorm}.',
+  'taal.regel.vdD':
+    'Ge- + stam + d, want de {letter} van {infinitief} zit niet in ’t kofschip: {vorm}.',
+  'taal.regel.vdAl':
+    'Ge- + stam + {eind}. De stam {stam} eindigt al op een {eind}, dus er komt niets bij: {vorm}.',
+  'taal.regel.vdZonderGe': 'Met {voorvoegsel}- ervoor komt er geen ge- bij. Wel een {eind}: {vorm}.',
+  'taal.regel.vdZonderGeAl':
+    'Met {voorvoegsel}- ervoor komt er geen ge- bij, en de stam eindigt al op een {eind}: {vorm}.',
+  'taal.regel.sterk':
+    'Dit is een sterk werkwoord: {infinitief}, {vorm}. Die vorm maak je niet met een regel, die onthoud je.',
+  // Ontdekken voor werkwoorden: een kaart per regel, met voorbeelden uit de set.
+  'taal.explore.kindVormen': 'Ontdek de regels',
+  'taal.kaart.ik': 'Ik: alleen de stam',
+  'taal.kaart.ik.uitleg': 'De stam is het werkwoord zonder -en, zoals je hem hoort: worden, ik word.',
+  'taal.kaart.jijhij': 'Jij en hij: stam + t',
+  'taal.kaart.jijhij.uitleg':
+    'Bij jij, hij, zij en het komt er een t achter de stam, ook als je die niet hoort: hij wordt.',
+  'taal.kaart.alT': 'Stam op een t: geen t erbij',
+  'taal.kaart.alT.uitleg': 'Eindigt de stam al op een t, dan komt er geen tweede t bij: hij zet.',
+  'taal.kaart.achter': 'Jij achter het werkwoord: alleen de stam',
+  'taal.kaart.achter.uitleg': 'Staat jij achter het werkwoord, dan valt de t weg: word jij?',
+  'taal.kaart.meervoud': 'Meer personen: het hele werkwoord',
+  'taal.kaart.meervoud.uitleg': 'Bij wij, jullie en zij is het het hele werkwoord: wij worden.',
+  'taal.kaart.te': '’t Kofschip: -te en -ten',
+  'taal.kaart.te.uitleg':
+    'Kijk naar de letter vóór -en. Is dat een t, k, f, s, ch of p? Dan schrijf je -te, en -ten bij meer personen.',
+  'taal.kaart.de': 'Niet in ’t kofschip: -de en -den',
+  'taal.kaart.de.uitleg':
+    'Zit de letter vóór -en niet in ’t kofschip, dan schrijf je -de, en -den bij meer personen. Leven heeft een v, dus leefde.',
+  'taal.kaart.vdT': 'Ge- + stam + t',
+  'taal.kaart.vdT.uitleg':
+    'Zit de letter vóór -en in ’t kofschip, dan komt er een t achter: gefietst.',
+  'taal.kaart.vdD': 'Ge- + stam + d',
+  'taal.kaart.vdD.uitleg': 'Zit die letter niet in ’t kofschip, dan komt er een d achter: geleefd.',
+  'taal.kaart.zonderGe': 'Be-, ver-, ont-, her-, ge- en er-: geen ge-',
+  'taal.kaart.zonderGe.uitleg':
+    'Begint het werkwoord met be-, ver-, ont-, her-, ge- of er-, dan komt er geen ge- voor: verhuisd.',
+  'taal.kaart.sterk': 'Sterke werkwoorden',
+  'taal.kaart.sterk.uitleg': 'Deze vormen maak je niet met een regel. Die moet je onthouden.',
   // Ontdekken: de regel in het algemeen, en dan de woorden.
   'taal.explore.kind': 'Ontdek de woorden',
   'taal.explore.regel': 'De regel',

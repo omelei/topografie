@@ -12,7 +12,7 @@ import { MODULES, type Module } from '@/features/shell/modules';
 import { pathFor, routeFor } from '@/features/shell/routes';
 import { herhaalTaalVorm } from '@/features/round/herhaal';
 import { loadTaalSet } from '@/content/loadTaal';
-import { gespeld, spellingRegel } from './taalTaal';
+import { gespeld, KAART_VOLGORDE, kaartVan, spellingRegel, werkwoordRegelZin } from './taalTaal';
 
 /**
  * Taal as the fifth module of the family (ADR-118): the same page, its parts in
@@ -40,6 +40,15 @@ describe('the page', () => {
       'een-of-twee',
       'achter-aan',
       'spellingmix',
+    ]);
+  });
+
+  it('offers the verbs as three tenses and their mix', () => {
+    expect(per('werkwoorden')).toEqual([
+      'tegenwoordige-tijd',
+      'verleden-tijd',
+      'voltooid-deelwoord',
+      'werkwoordmix',
     ]);
   });
 
@@ -78,6 +87,7 @@ describe('the page', () => {
       .filter((deel) => deel.moduleId === 'woorden')
       .flatMap((deel) => deel.items.map((item) => item.id));
     expect(ids.filter((id) => id.startsWith('taal-sp-'))).toHaveLength(330);
+    expect(ids.filter((id) => id.startsWith('taal-ww-'))).toHaveLength(100);
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
@@ -104,9 +114,17 @@ describe('the ways of practising', () => {
     ]);
   });
 
-  it('has an oefentoets that is the flitsdictee on spelling', () => {
+  it('has an oefentoets that is the flitsdictee on spelling and the typed form on verbs', () => {
     const forms = offeredForms(formsFor('woorden', 'spelling'), 'taal-sp-dt');
     expect(toetsVormVan('woorden', forms, 'spelling')?.id).toBe('taal-flitsdictee');
+    const vormen = offeredForms(formsFor('woorden', 'werkwoorden'), 'taal-ww-vt');
+    expect(toetsVormVan('woorden', vormen, 'werkwoorden')?.id).toBe('taal-vorm-typen');
+    expect(tegels('werkwoorden', 'taal-ww-vt')).toEqual([
+      'taal-vorm-kiezen',
+      'taal-vorm-typen',
+      'ontdekken',
+      'overleven',
+    ]);
   });
 
   it('starts a stored way the set cannot use in the way its part chooses', () => {
@@ -147,5 +165,29 @@ describe('what a child hears and reads about a word', () => {
       (item) => item.id === 'taal-sp-klinkers-bomen',
     );
     expect(bomen && 'woord' in bomen ? spellingRegel(bomen) : null).toContain('bo-men');
+  });
+
+  it('applies the rule of a verb to this verb, from its own fields', () => {
+    const vorm = (setId: string, id: string) => {
+      const item = loadTaalSet(setId)?.items.find((kandidaat) => kandidaat.id === id);
+      return item && 'infinitief' in item ? werkwoordRegelZin(item) : null;
+    };
+    expect(vorm('taal-ww-tt', 'taal-ww-tt-worden-hij')).toBe(
+      'Hij, zij of het, dus stam + t: word + t = wordt.',
+    );
+    expect(vorm('taal-ww-tt', 'taal-ww-tt-worden-jij-achter')).toBe(
+      'Jij staat achter het werkwoord, dus alleen de stam: word.',
+    );
+    expect(vorm('taal-ww-vt', 'taal-ww-vt-leven-hij')).toContain('leef + de = leefde');
+    expect(vorm('taal-ww-vd', 'taal-ww-vd-verhuizen-hij')).toContain('geen ge-');
+    expect(vorm('taal-ww-vt', 'taal-ww-vt-rijden-hij')).toContain('sterk werkwoord');
+  });
+
+  it('puts every verb item on one of the rule cards of Ontdekken', () => {
+    for (const setId of ['taal-ww-tt', 'taal-ww-vt', 'taal-ww-vd']) {
+      for (const item of loadTaalSet(setId)?.items ?? []) {
+        if ('infinitief' in item) expect(KAART_VOLGORDE, item.id).toContain(kaartVan(item));
+      }
+    }
   });
 });

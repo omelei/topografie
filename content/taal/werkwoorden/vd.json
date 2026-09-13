@@ -1,0 +1,281 @@
+{
+  "id": "taal-ww-vd",
+  "deel": "werkwoorden",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-ww-vd-fietsen-ik",
+      "zin": "Ik heb de hele dag gefietst.",
+      "infinitief": "fietsen",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "gefietst",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-leven-wij",
+      "zin": "De dinosaurussen hebben lang geleefd.",
+      "infinitief": "leven",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "geleefd",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-werken-hij",
+      "zin": "Mijn opa heeft vroeger hard gewerkt.",
+      "infinitief": "werken",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gewerkt",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-bellen-jij",
+      "zin": "Heb jij al gebeld?",
+      "infinitief": "bellen",
+      "persoon": "jij",
+      "tijd": "vd",
+      "antwoord": "gebeld",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-spelen-wij",
+      "zin": "De kinderen hebben buiten gespeeld.",
+      "infinitief": "spelen",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "gespeeld",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-maken-ik",
+      "zin": "Ik heb een taart gemaakt.",
+      "infinitief": "maken",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "gemaakt",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-wachten-wij",
+      "zin": "Wij hebben een uur gewacht.",
+      "infinitief": "wachten",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "gewacht",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-zetten-hij",
+      "zin": "Hij heeft de beker op tafel gezet.",
+      "infinitief": "zetten",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gezet",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-praten-hij",
+      "zin": "De juf heeft met papa gepraat.",
+      "infinitief": "praten",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gepraat",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-antwoorden-hij",
+      "zin": "De juf heeft nog niet geantwoord.",
+      "infinitief": "antwoorden",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "geantwoord",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-landen-hij",
+      "zin": "Het vliegtuig is net geland.",
+      "infinitief": "landen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "geland",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-tekenen-ik",
+      "zin": "Ik heb een draak getekend.",
+      "infinitief": "tekenen",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "getekend",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-regenen-hij",
+      "zin": "Het heeft de hele nacht geregend.",
+      "infinitief": "regenen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "geregend",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-blaffen-hij",
+      "zin": "De hond heeft naar de kat geblaft.",
+      "infinitief": "blaffen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "geblaft",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-reizen-wij",
+      "zin": "Wij zijn naar zee gereisd.",
+      "infinitief": "reizen",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "gereisd",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-hopen-ik",
+      "zin": "Ik heb op sneeuw gehoopt.",
+      "infinitief": "hopen",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "gehoopt",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-huilen-hij",
+      "zin": "De baby heeft lang gehuild.",
+      "infinitief": "huilen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gehuild",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-dansen-wij",
+      "zin": "Wij hebben de hele avond gedanst.",
+      "infinitief": "dansen",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "gedanst",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-verhuizen-hij",
+      "zin": "Mijn vriendin is vorige week verhuisd.",
+      "infinitief": "verhuizen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "verhuisd",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-betalen-hij",
+      "zin": "Papa heeft de rekening betaald.",
+      "infinitief": "betalen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "betaald",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-herhalen-hij",
+      "zin": "De juf heeft het nog een keer herhaald.",
+      "infinitief": "herhalen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "herhaald",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-ontdekken-wij",
+      "zin": "Wij hebben een geheime gang ontdekt.",
+      "infinitief": "ontdekken",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "ontdekt",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-gebeuren-hij",
+      "zin": "Wat is er gebeurd?",
+      "infinitief": "gebeuren",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gebeurd",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-vertellen-hij",
+      "zin": "Opa heeft een mooi verhaal verteld.",
+      "infinitief": "vertellen",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "verteld",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-bedanken-ik",
+      "zin": "Ik heb mijn tante bedankt voor het cadeau.",
+      "infinitief": "bedanken",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "bedankt",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-beantwoorden-hij",
+      "zin": "Hij heeft de vraag goed beantwoord.",
+      "infinitief": "beantwoorden",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "beantwoord",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-worden-ik",
+      "zin": "Ik ben tien jaar geworden.",
+      "infinitief": "worden",
+      "persoon": "ik",
+      "tijd": "vd",
+      "antwoord": "geworden",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-vinden-wij",
+      "zin": "Wij hebben een schat gevonden.",
+      "infinitief": "vinden",
+      "persoon": "wij",
+      "tijd": "vd",
+      "antwoord": "gevonden",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-eten-jij",
+      "zin": "Heb jij al gegeten?",
+      "infinitief": "eten",
+      "persoon": "jij",
+      "tijd": "vd",
+      "antwoord": "gegeten",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vd-zitten-hij",
+      "zin": "Hij heeft een uur op de bank gezeten.",
+      "infinitief": "zitten",
+      "persoon": "hij",
+      "tijd": "vd",
+      "antwoord": "gezeten",
+      "sterk": true,
+      "groep": 7
+    }
+  ]
+}

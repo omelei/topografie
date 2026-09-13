@@ -63,6 +63,42 @@ letter hoort (hond, **honden**). Bij één of twee staat het woord in stukjes
 (**bo-men**, **kat-ten**). Dat is wat na een fout antwoord en bij Ontdekken
 staat.
 
+## Werkwoorden: drie sets
+
+| Set                | Items | Groep | Wat het kind beslist                                    |
+| ------------------ | ----- | ----- | ------------------------------------------------------- |
+| Tegenwoordige tijd | 40    | 6     | d, t of dt bij ik, jij en hij, ook met jij áchter het werkwoord |
+| Verleden tijd      | 30    | 7     | -te of -de, -ten of -den (’t kofschip)                  |
+| Voltooid deelwoord | 30    | 7     | ge- + stam + t of d; geen ge- na be-, ver-, ont-, her-, ge- en er- |
+
+Samen **100 zinnen**. De Werkwoordmix is deze 100 onder één naam.
+
+**Uitgerekend, niet overgeschreven.** Elk zwak werkwoord in de content wordt in
+de contenttest opnieuw uitgerekend door `werkwoordsvorm()` in game-core. Staat
+er in een bestand een vorm die de regels niet maken, dan faalt de build.
+
+**Sterke werkwoorden** staan in `sterke-werkwoorden.json`, met hun verleden
+tijd en voltooid deelwoord: eten, houden, lachen (lachte, maar gelachen),
+lopen, rijden, vinden, weten, worden en zitten. Alleen een item waarvan het
+antwoord uit die lijst komt, heet `sterk`. De tegenwoordige tijd van al deze
+werkwoorden is gewoon: hij wordt, hij vindt, hij rijdt.
+
+**Wat een kind te zien krijgt.** Bij _Kies de vorm_ staan drie vormen, en alle
+drie bestaan: bij "Hij ▢ morgen tien" zijn dat word, wordt en werd. Nooit een
+fout gespelde vorm als wort of fietsde. Vallen twee vormen samen (ik zet, hij
+zet), dan komt er een andere echte vorm bij.
+
+**Wat er in werkwoorden bewust niet in staat:**
+
+- **Scheidbare werkwoorden** (opbellen, opgebeld): die komen later.
+- **Leenwoorden met de klemtoon op -eren** (proberen, studeren): een regel
+  hoort de klemtoon niet, en de stam is dan anders dan bij luisteren.
+- **Werkwoorden die met er-, be- of ver- beginnen zonder dat het een
+  voorvoegsel is** (ergeren, geërgerd): de regel voor ge- zou daar een fout
+  maken.
+- **De tegenwoordige tijd van onregelmatige werkwoorden** (zijn, hebben,
+  kunnen, gaan): die volgen geen regel voor d, t of dt.
+
 ## Wat er bewust niet in staat
 
 - **Woorden met een apostrof of een trema** in de spellingsets (opa’s, zeeën):
@@ -76,8 +112,13 @@ staat.
 
 ## Waar het in de code staat
 
-- De sets: `content/taal/spelling/*.json`, geladen door `src/content/loadTaal.ts`.
+- De sets: `content/taal/spelling/*.json` en `content/taal/werkwoorden/*.json`,
+  geladen door `src/content/loadTaal.ts`; de sterke werkwoorden in
+  `content/taal/sterke-werkwoorden.json`.
 - De controle: `src/content/taal.content.test.ts` eist dat de letters in het
   gat bij de keuzes staan, dat elk woord één keer in zijn zin staat en nooit
-  vooraan, dat geen id of woord dubbel voorkomt, en dat een paar dat
-  hetzelfde klinkt niet dezelfde zin heeft.
+  vooraan, dat geen id of woord dubbel voorkomt, dat een paar dat hetzelfde
+  klinkt niet dezelfde zin heeft, en dat elke zwakke werkwoordsvorm is wat
+  `werkwoordsvorm()` ervan maakt.
+- Engels komt in een eigen stap, in `content/taal/engels/`, met een eigen
+  afbakening in dit bestand.

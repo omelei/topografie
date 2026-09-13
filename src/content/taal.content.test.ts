@@ -1,6 +1,21 @@
 import { describe, expect, it } from 'vitest';
-import { gatLetters, keerInZin, zinDelen } from '@/game-core';
-import { loadTaalSet, loadTaalSets, TAAL_MIX, type SpellingSet } from './loadTaal';
+import {
+  berekendAntwoord,
+  gatLetters,
+  keerInZin,
+  werkwoordOpties,
+  werkwoordVormen,
+  zinDelen,
+  type WerkwoordItem,
+} from '@/game-core';
+import {
+  loadTaalSet,
+  loadTaalSets,
+  sterkeWerkwoorden,
+  TAAL_MIX,
+  type SpellingSet,
+  type WerkwoordSet,
+} from './loadTaal';
 
 /**
  * Taal is written by hand, and this is what stands between the files and a
@@ -117,5 +132,91 @@ describe('the Spellingmix', () => {
     const mix = loadTaalSet(TAAL_MIX.spelling)?.items ?? [];
     expect(mix).toHaveLength(woorden.length);
     expect(new Set(mix.map((item) => item.id)).size).toBe(woorden.length);
+  });
+});
+
+const werkwoorden = sets.filter((set): set is WerkwoordSet => set.deel === 'werkwoorden');
+const vormen = werkwoorden.flatMap((set) => set.items);
+const sterk = sterkeWerkwoorden();
+
+/** The form the list of strong verbs gives for this item's tense and person. */
+function sterkeVorm(item: WerkwoordItem): string | undefined {
+  const lijst = sterk[item.infinitief];
+  if (!lijst || item.tijd === 'tt') return undefined;
+  if (item.tijd === 'vd') return lijst.vd;
+  return item.persoon === 'wij' ? lijst.vtMv : lijst.vt;
+}
+
+describe('the verb sets', () => {
+  it('are the three tenses, at the sizes AFBAKENING.md gives', () => {
+    const omvang = Object.fromEntries(werkwoorden.map((set) => [set.id, set.items.length]));
+    expect(omvang).toEqual({ 'taal-ww-tt': 40, 'taal-ww-vt': 30, 'taal-ww-vd': 30 });
+  });
+
+  it('asks each set in its own tense, in the school year it belongs to', () => {
+    // The tegenwoordige tijd is groep 6; the verleden tijd and the voltooid
+    // deelwoord are groep 7.
+    for (const set of werkwoorden) {
+      for (const item of set.items) {
+        expect(set.id, item.id).toBe(`taal-ww-${item.tijd}`);
+        expect(item.groep, item.id).toBe(item.tijd === 'tt' ? 6 : 7);
+        expect(item.id.startsWith(`${set.id}-${item.infinitief}-${item.persoon}`), item.id).toBe(
+          true,
+        );
+      }
+    }
+    expect(new Set(vormen.map((item) => item.id)).size).toBe(vormen.length);
+  });
+
+  it('works every weak form out again: a mistake in the content fails the build', () => {
+    for (const item of vormen) {
+      if (item.sterk) continue;
+      expect(berekendAntwoord(item), item.id).toBe(item.antwoord);
+      // A verb on the strong list is only weak here where the list agrees.
+      const lijst = sterkeVorm(item);
+      if (lijst !== undefined) expect(lijst, item.id).toBe(item.antwoord);
+    }
+  });
+
+  it('marks as strong only the forms no rule makes, and knows every one of them', () => {
+    for (const item of vormen) {
+      if (!item.sterk) continue;
+      expect(item.tijd, item.id).not.toBe('tt');
+      expect(sterkeVorm(item), item.id).toBe(item.antwoord);
+      expect(berekendAntwoord(item), item.id).not.toBe(item.antwoord);
+    }
+    for (const [infinitief, lijst] of Object.entries(sterk)) {
+      expect(
+        vormen.some((item) => item.infinitief === infinitief),
+        infinitief,
+      ).toBe(true);
+      for (const vorm of [lijst.vt, lijst.vtMv, lijst.vd]) expect(vorm.trim(), infinitief).not.toBe('');
+    }
+  });
+
+  it('puts the form in its sentence once, and writes it in small letters', () => {
+    for (const item of vormen) {
+      expect(keerInZin(item.zin, item.antwoord), item.id).toBe(1);
+      expect(item.antwoord, item.id).toBe(item.antwoord.toLocaleLowerCase('nl-NL'));
+    }
+  });
+
+  it('puts jij after the verb only where the sentence starts with the verb', () => {
+    for (const item of vormen) {
+      if (!item.achter) continue;
+      expect(item.persoon, item.id).toBe('jij');
+      expect(zinDelen(item.zin, item.antwoord)?.voor, item.id).toBe('');
+    }
+  });
+
+  it('offers three different real forms of the verb, the right one among them', () => {
+    for (const item of vormen) {
+      const echt = Object.values(werkwoordVormen(item.infinitief, sterk));
+      const opties = werkwoordOpties(item, sterk, () => 0);
+      expect(opties, item.id).toHaveLength(3);
+      expect(new Set(opties).size, item.id).toBe(3);
+      expect(opties, item.id).toContain(item.antwoord);
+      for (const optie of opties) expect(echt, `${item.id}: ${optie}`).toContain(optie);
+    }
   });
 });
