@@ -8,6 +8,7 @@ export * from './grade';
 export * from './sums';
 export * from './klok';
 export * from './vlaggen';
+export * from './taal';
 export * from './streak';
 export * from './oefendagen';
 export * from './rewards';
