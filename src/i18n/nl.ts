@@ -162,10 +162,12 @@ export const nl = {
   'nav.home': '{merk}, naar Vandaag',
   'nav.destinations': 'Waar je heen kunt',
   // Het vakmenu onder de balk op een tablet en een telefoon, waar de rail niet
-  // staat. Het woord ervoor zegt wat je kiest; de knop zegt welk vak het is,
-  // of vraagt erom waar je nog in geen vak bent.
-  'nav.vak': 'vak',
-  'nav.vakKies': 'Kies een vak',
+  // staat. De knop zegt welk vak je open hebt; waar je in geen vak bent noemt
+  // hij wat hij doet, want daar is hij de weg naar een ronde (ADR-121). De naam
+  // voor een schermlezer zet het woord "vak" voor het vak, omdat "Topo" alleen
+  // niet zegt waarvan het er een is.
+  'nav.vakKies': 'Oefenen',
+  'nav.vakHuidig': 'vak {vak}',
   'nav.vandaag': 'Vandaag',
   'nav.onthouden': 'Onthouden',
   'nav.vrienden': 'Vrienden',
