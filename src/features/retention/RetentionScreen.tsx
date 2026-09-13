@@ -190,7 +190,17 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
 
         <section className="flex flex-col gap-3" aria-label={t('retention.detail')}>
           <h2 className="tk-sectie">{t('retention.detail')}</h2>
-          <div className="tk-tabelkaart">
+          {/* A stop in the tab order with a name of its own: on a phone the
+              table is wider than the screen and scrolls sideways inside its
+              card, and a region that scrolls has to be reachable from the
+              keyboard too (axe, scrollable-region-focusable) — as the rows on
+              the front door are (ScrollRij). */}
+          <div
+            className="tk-tabelkaart"
+            role="group"
+            aria-label={t('retention.detail')}
+            tabIndex={0}
+          >
             <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
           </div>
         </section>

@@ -13,6 +13,37 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
+/**
+ * How the browser drew the flags to choose from, from the group up to the page:
+ * the size of each box and anything that takes it out of the accessibility
+ * tree. Runs in the page. A group that is in the page but not found by its role
+ * says nothing about why in the error alone, and a phone in WebKit is where it
+ * happened (the deploy of #40).
+ */
+function beschrijfGroep(): string {
+  const groep = document.querySelector('.tk-vlag-keuze');
+  if (!groep) return 'Geen .tk-vlag-keuze in de pagina.';
+
+  const regels: string[] = [];
+  for (let el: Element | null = groep; el; el = el.parentElement) {
+    const stijl = getComputedStyle(el);
+    const doos = el.getBoundingClientRect();
+    const zichtbaar = (el as Element & { checkVisibility?: () => boolean }).checkVisibility?.();
+    regels.push(
+      `${el.tagName.toLowerCase()} "${String(el.className)}" ` +
+        `${Math.round(doos.width)}x${Math.round(doos.height)} op y=${Math.round(doos.y)}, ` +
+        `display ${stijl.display}, visibility ${stijl.visibility}, ` +
+        `checkVisibility ${String(zichtbaar)}` +
+        (el.hasAttribute('aria-hidden')
+          ? `, aria-hidden ${String(el.getAttribute('aria-hidden'))}`
+          : '') +
+        (el.hasAttribute('inert') ? ', inert' : ''),
+    );
+  }
+  const knoppen = groep.querySelectorAll('button').length;
+  return `De vlaggen, ${knoppen} knoppen, van de groep omhoog:\n${regels.join('\n')}`;
+}
+
 /** Takes the first option every time until the round is over. */
 async function speel(page: Page) {
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
@@ -25,10 +56,12 @@ async function speel(page: Page) {
       await expect(klaar.or(volgende).or(vlaggen).or(namen).first()).toBeVisible();
     } catch (error) {
       // Say where the round stood, which the locator alone cannot: which
-      // question, and what the screen said instead of asking it.
+      // question, what the screen said instead of asking it, and how the
+      // flags to choose from were drawn.
       const scherm = (await page.locator('body').innerText()).slice(0, 1500);
+      const groep = await page.evaluate(beschrijfGroep);
       throw new Error(
-        `Vraag ${vraag + 1}: niets om te beantwoorden. Op het scherm:\n${scherm}\n\n${String(error)}`,
+        `Vraag ${vraag + 1}: niets om te beantwoorden. Op het scherm:\n${scherm}\n\n${groep}\n\n${String(error)}`,
       );
     }
     if (await klaar.isVisible()) return;
