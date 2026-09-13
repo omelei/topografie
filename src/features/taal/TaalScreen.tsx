@@ -294,9 +294,7 @@ function Vraag({
                 <UitkomstTeken uitkomst={correct ? 'goed' : 'fout'} />
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="tk-display text-sectiekop">{kop}</p>
-                  {sub === null ? null : (
-                    <p className="text-lopend text-tekst-secundair">{sub}</p>
-                  )}
+                  {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
                 </div>
               </div>
@@ -345,7 +343,13 @@ function Vraag({
             {revealed ? (
               <p className="tk-zin">
                 {delen.voor}
-                <Antwoord vraag={vraag} delen={delen} given={given} typen={typen} correct={correct} />
+                <Antwoord
+                  vraag={vraag}
+                  delen={delen}
+                  given={given}
+                  typen={typen}
+                  correct={correct}
+                />
                 {delen.na}
               </p>
             ) : kijken ? (
@@ -386,7 +390,6 @@ function Vraag({
     </>
   );
 }
-
 
 /**
  * A sentence from the copy with a marked word where its placeholder is: t() leaves
@@ -430,7 +433,13 @@ function Gat({ breed = false }: { readonly breed?: boolean }) {
 }
 
 /** "tr▢n": the word with the letters that decide taken out. */
-function WoordMetGat({ woord, gat }: { readonly woord: string; readonly gat: readonly [number, number] }) {
+function WoordMetGat({
+  woord,
+  gat,
+}: {
+  readonly woord: string;
+  readonly gat: readonly [number, number];
+}) {
   return (
     <span className="whitespace-nowrap">
       {woord.slice(0, gat[0])}

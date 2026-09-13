@@ -886,7 +886,8 @@ export const nl = {
   'taal.practiceMoreVormen': 'Deze werkwoorden moet je nog oefenen',
   // De regel van een spellingset, toegepast op één woord.
   'taal.regel.onthoud': 'Hier helpt geen regel: je hoort het niet. Onthoud {woord}, met {letters}.',
-  'taal.regel.dt': 'Maak het woord langer: {hulp}. Je hoort een {letter}, dus je schrijft een {letter}.',
+  'taal.regel.dt':
+    'Maak het woord langer: {hulp}. Je hoort een {letter}, dus je schrijft een {letter}.',
   'taal.regel.klinkerEen':
     'Hak het woord in stukjes: {hulp}. De lange klank staat aan het eind van een stukje, dus één letter: {letters}.',
   'taal.regel.klinkerTwee':
@@ -920,7 +921,8 @@ export const nl = {
     'Ge- + stam + d, want de {letter} van {infinitief} zit niet in ’t kofschip: {vorm}.',
   'taal.regel.vdAl':
     'Ge- + stam + {eind}. De stam {stam} eindigt al op een {eind}, dus er komt niets bij: {vorm}.',
-  'taal.regel.vdZonderGe': 'Met {voorvoegsel}- ervoor komt er geen ge- bij. Wel een {eind}: {vorm}.',
+  'taal.regel.vdZonderGe':
+    'Met {voorvoegsel}- ervoor komt er geen ge- bij. Wel een {eind}: {vorm}.',
   'taal.regel.vdZonderGeAl':
     'Met {voorvoegsel}- ervoor komt er geen ge- bij, en de stam eindigt al op een {eind}: {vorm}.',
   'taal.regel.sterk':
@@ -928,7 +930,8 @@ export const nl = {
   // Ontdekken voor werkwoorden: een kaart per regel, met voorbeelden uit de set.
   'taal.explore.kindVormen': 'Ontdek de regels',
   'taal.kaart.ik': 'Ik: alleen de stam',
-  'taal.kaart.ik.uitleg': 'De stam is het werkwoord zonder -en, zoals je hem hoort: worden, ik word.',
+  'taal.kaart.ik.uitleg':
+    'De stam is het werkwoord zonder -en, zoals je hem hoort: worden, ik word.',
   'taal.kaart.jijhij': 'Jij en hij: stam + t',
   'taal.kaart.jijhij.uitleg':
     'Bij jij, hij, zij en het komt er een t achter de stam, ook als je die niet hoort: hij wordt.',

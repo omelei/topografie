@@ -50,7 +50,14 @@ describe('the oefentoets', () => {
 describe('the ways of practising', () => {
   const ORDE = [
     ['wijs-aan', 'klok-welke-klok', 'vlag-zoeken'],
-    ['meerkeuze', 'som-meerkeuze', 'klok-meerkeuze', 'vlag-meerkeuze', 'taal-letters', 'taal-vorm-kiezen'],
+    [
+      'meerkeuze',
+      'som-meerkeuze',
+      'klok-meerkeuze',
+      'vlag-meerkeuze',
+      'taal-letters',
+      'taal-vorm-kiezen',
+    ],
     ['hoe-heet-dit', 'som-typen', 'klok-typen', 'taal-flitsdictee', 'taal-vorm-typen'],
     ['ontdekken'],
     ['bliksemronde'],

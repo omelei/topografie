@@ -106,7 +106,13 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
   await expect(page.getByRole('region', { name: 'Waar op de kaart?' })).toHaveCount(0);
 
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  for (const naam of ['Onthoudwoorden', 'D of t', 'Eén of twee', 'Achter aan het woord', 'Spellingmix']) {
+  for (const naam of [
+    'Onthoudwoorden',
+    'D of t',
+    'Eén of twee',
+    'Achter aan het woord',
+    'Spellingmix',
+  ]) {
     await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
 
@@ -120,7 +126,12 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
   expect((await scan(page)).violations).toEqual([]);
 
   await welk.getByRole('button', { name: 'Werkwoorden', exact: true }).click();
-  for (const naam of ['Tegenwoordige tijd', 'Verleden tijd', 'Voltooid deelwoord', 'Werkwoordmix']) {
+  for (const naam of [
+    'Tegenwoordige tijd',
+    'Verleden tijd',
+    'Voltooid deelwoord',
+    'Werkwoordmix',
+  ]) {
     await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
   for (const naam of ['Kies de vorm', 'Typ de vorm', 'Overleven', 'Oefentoets']) {
@@ -278,7 +289,9 @@ test('Ontdekken: the rule, and the words with their letters marked', async ({ pa
   await start(page);
 
   await expect(page.getByRole('region', { name: 'De regel' })).toContainText('honden');
-  await expect(page.getByRole('region', { name: 'De woorden' }).locator('mark').first()).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'De woorden' }).locator('mark').first(),
+  ).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   // Nothing was asked, so the way out is home.
@@ -291,7 +304,9 @@ test('Kies de vorm: three real forms, and the round in the history', async ({ pa
   await kies(page, 'Werkwoorden', /^Tegenwoordige tijd/, null, /^Kies de vorm/);
   await start(page);
 
-  await expect(page.getByRole('group', { name: 'Kies de vorm' }).getByRole('button')).toHaveCount(3);
+  await expect(page.getByRole('group', { name: 'Kies de vorm' }).getByRole('button')).toHaveCount(
+    3,
+  );
   expect((await scan(page)).violations).toEqual([]);
   await speel(page);
 

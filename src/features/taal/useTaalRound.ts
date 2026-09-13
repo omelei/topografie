@@ -99,20 +99,16 @@ export function useTaalRound(
 
       const questions: TaalVraag[] =
         set.deel === 'spelling'
-          ? kies(set.items).map(
-              (item): TaalVraag => ({
-                soort: 'spelling',
-                item,
-                opties: typen ? null : letterOpties(item),
-              }),
-            )
-          : kies(set.items).map(
-              (item): TaalVraag => ({
-                soort: 'werkwoord',
-                item,
-                opties: typen ? null : werkwoordOpties(item, sterkeWerkwoorden()),
-              }),
-            );
+          ? kies(set.items).map((item): TaalVraag => ({
+              soort: 'spelling',
+              item,
+              opties: typen ? null : letterOpties(item),
+            }))
+          : kies(set.items).map((item): TaalVraag => ({
+              soort: 'werkwoord',
+              item,
+              opties: typen ? null : werkwoordOpties(item, sterkeWerkwoorden()),
+            }));
 
       const items: readonly TaalItem[] = set.items;
       return { set, itemIds: items.map((item) => item.id), questions };

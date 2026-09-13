@@ -586,31 +586,32 @@ function vlagOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
  * one choice among several: "ei / ij" under Onthoudwoorden. The full name is
  * the chip's accessible name, as it is for the tables.
  */
-const TAAL_NAAM: Record<string, { readonly naam: TranslationKey; readonly kort?: TranslationKey }> = {
-  'taal-sp-eiij': { naam: 'set.taal-sp-eiij', kort: 'set.taal-sp-eiij.kort' },
-  'taal-sp-auou': { naam: 'set.taal-sp-auou', kort: 'set.taal-sp-auou.kort' },
-  'taal-sp-gch': { naam: 'set.taal-sp-gch', kort: 'set.taal-sp-gch.kort' },
-  'taal-sp-ck': { naam: 'set.taal-sp-ck', kort: 'set.taal-sp-ck.kort' },
-  'taal-sp-dt': { naam: 'set.taal-sp-dt' },
-  'taal-sp-klinkers': { naam: 'set.taal-sp-klinkers', kort: 'set.taal-sp-klinkers.kort' },
-  'taal-sp-medeklinkers': {
-    naam: 'set.taal-sp-medeklinkers',
-    kort: 'set.taal-sp-medeklinkers.kort',
-  },
-  'taal-sp-verkleinwoorden': {
-    naam: 'set.taal-sp-verkleinwoorden',
-    kort: 'set.taal-sp-verkleinwoorden.kort',
-  },
-  'taal-sp-ig': { naam: 'set.taal-sp-ig', kort: 'set.taal-sp-ig.kort' },
-  'taal-sp-lijk': { naam: 'set.taal-sp-lijk', kort: 'set.taal-sp-lijk.kort' },
-  'taal-sp-mix': { naam: 'set.taal-sp-mix' },
-  'taal-sp-fouten': { naam: 'set.taal-sp-fouten' },
-  'taal-ww-tt': { naam: 'set.taal-ww-tt' },
-  'taal-ww-vt': { naam: 'set.taal-ww-vt' },
-  'taal-ww-vd': { naam: 'set.taal-ww-vd' },
-  'taal-ww-mix': { naam: 'set.taal-ww-mix' },
-  'taal-ww-fouten': { naam: 'set.taal-ww-fouten' },
-};
+const TAAL_NAAM: Record<string, { readonly naam: TranslationKey; readonly kort?: TranslationKey }> =
+  {
+    'taal-sp-eiij': { naam: 'set.taal-sp-eiij', kort: 'set.taal-sp-eiij.kort' },
+    'taal-sp-auou': { naam: 'set.taal-sp-auou', kort: 'set.taal-sp-auou.kort' },
+    'taal-sp-gch': { naam: 'set.taal-sp-gch', kort: 'set.taal-sp-gch.kort' },
+    'taal-sp-ck': { naam: 'set.taal-sp-ck', kort: 'set.taal-sp-ck.kort' },
+    'taal-sp-dt': { naam: 'set.taal-sp-dt' },
+    'taal-sp-klinkers': { naam: 'set.taal-sp-klinkers', kort: 'set.taal-sp-klinkers.kort' },
+    'taal-sp-medeklinkers': {
+      naam: 'set.taal-sp-medeklinkers',
+      kort: 'set.taal-sp-medeklinkers.kort',
+    },
+    'taal-sp-verkleinwoorden': {
+      naam: 'set.taal-sp-verkleinwoorden',
+      kort: 'set.taal-sp-verkleinwoorden.kort',
+    },
+    'taal-sp-ig': { naam: 'set.taal-sp-ig', kort: 'set.taal-sp-ig.kort' },
+    'taal-sp-lijk': { naam: 'set.taal-sp-lijk', kort: 'set.taal-sp-lijk.kort' },
+    'taal-sp-mix': { naam: 'set.taal-sp-mix' },
+    'taal-sp-fouten': { naam: 'set.taal-sp-fouten' },
+    'taal-ww-tt': { naam: 'set.taal-ww-tt' },
+    'taal-ww-vt': { naam: 'set.taal-ww-vt' },
+    'taal-ww-vd': { naam: 'set.taal-ww-vd' },
+    'taal-ww-mix': { naam: 'set.taal-ww-mix' },
+    'taal-ww-fouten': { naam: 'set.taal-ww-fouten' },
+  };
 
 function taalOnderdeel(set: TaalSet): Onderdeel {
   const naam = TAAL_NAAM[set.id];
@@ -741,17 +742,15 @@ const TAAL_FOUTEN_UITLEG: Record<TaalDeel, TranslationKey> = {
 
 function taalOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
   const sets = [...taalOnderdelen(), ...taalSamengesteld(TAAL_MIX)];
-  const vakken = TAAL_VAKKEN.map(
-    (vak): Onderwerp => ({
-      moduleId: 'woorden',
-      id: vak.id,
-      naam: vak.naam,
-      uitleg: vak.uitleg,
-      keuze: vak.keuze,
-      regio: vak.deel,
-      sets: vak.sets.flatMap((id) => sets.filter((deel) => deel.setId === id)),
-    }),
-  );
+  const vakken = TAAL_VAKKEN.map((vak): Onderwerp => ({
+    moduleId: 'woorden',
+    id: vak.id,
+    naam: vak.naam,
+    uitleg: vak.uitleg,
+    keuze: vak.keuze,
+    regio: vak.deel,
+    sets: vak.sets.flatMap((id) => sets.filter((deel) => deel.setId === id)),
+  }));
 
   // A subject with nothing in it is a card that opens onto nothing: a set not
   // written yet takes its subject with it.

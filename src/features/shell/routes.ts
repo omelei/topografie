@@ -108,13 +108,15 @@ const SET_SLUG: Record<string, string> = {
  * and /woordjes, the word the rail's door answered to before Taal was built,
  * opens /taal. When Engels is there, /woordjes goes to Engels.
  */
-const MODULE_ALIAS: Record<string, { readonly module: Module['id']; readonly regio: string | null }> =
-  {
-    klok: { module: 'klok', regio: null },
-    woordjes: { module: 'woorden', regio: null },
-    spelling: { module: 'woorden', regio: 'spelling' },
-    werkwoorden: { module: 'woorden', regio: 'werkwoorden' },
-  };
+const MODULE_ALIAS: Record<
+  string,
+  { readonly module: Module['id']; readonly regio: string | null }
+> = {
+  klok: { module: 'klok', regio: null },
+  woordjes: { module: 'woorden', regio: null },
+  spelling: { module: 'woorden', regio: 'spelling' },
+  werkwoorden: { module: 'woorden', regio: 'werkwoorden' },
+};
 
 /** The map's own lists of mistakes, further out than Nederland ("nl-" covers home). */
 const TOPO_FOUTEN = /^(?:europa|afrika|azie|noord-amerika|zuid-amerika|oceanie|wereld)-fouten$/;
@@ -290,11 +292,14 @@ function moduleRoute(module: Module, tail: string | undefined, regio: string | n
   if (!module.built) return { name: 'soon', module };
   // Taal's part by name after the module — /taal/werkwoorden — or by the alias
   // it was reached at — /werkwoorden.
-  const deel = module.id === 'woorden' && tail !== undefined && TAAL_DELEN.includes(tail) ? tail : regio;
+  const deel =
+    module.id === 'woorden' && tail !== undefined && TAAL_DELEN.includes(tail) ? tail : regio;
   // A set nobody has heard of opens the module rather than an error page: the
   // child asked for topography and topography is what they get.
   const setId = tail === undefined || tail === '' || tail === deel ? null : setIdFor(module, tail);
-  return deel === null ? { name: 'module', module, setId } : { name: 'module', module, setId, regio: deel };
+  return deel === null
+    ? { name: 'module', module, setId }
+    : { name: 'module', module, setId, regio: deel };
 }
 
 export function routeFor(pathname: string): Route {

@@ -150,7 +150,9 @@ describe('the ways of practising', () => {
 
 describe('the addresses', () => {
   it('gives every set of Taal an address that opens on it', () => {
-    for (const deel of startbareOnderdelen().filter((kandidaat) => kandidaat.moduleId === 'woorden')) {
+    for (const deel of startbareOnderdelen().filter(
+      (kandidaat) => kandidaat.moduleId === 'woorden',
+    )) {
       const route = { name: 'module', module: taal, setId: deel.setId } as const;
       expect(routeFor(pathFor(route)), deel.setId).toEqual(route);
     }

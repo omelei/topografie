@@ -12,11 +12,7 @@ import type { RoundRule, TaalDeel } from '@/game-core';
  * teaches guessing (businessplan v6 §5.8), so there is no bliksemronde here.
  */
 export type TaalMode =
-  | 'taal-letters'
-  | 'taal-flitsdictee'
-  | 'taal-vorm-kiezen'
-  | 'taal-vorm-typen'
-  | 'overleven';
+  'taal-letters' | 'taal-flitsdictee' | 'taal-vorm-kiezen' | 'taal-vorm-typen' | 'overleven';
 
 export const TAAL_ROUND_RULE: Record<TaalMode, RoundRule> = {
   'taal-letters': { kind: 'fixed', aantal: 10 },

@@ -281,8 +281,14 @@ const STERK: SterkeWerkwoorden = {
 
 describe('the wrong answers beside a verb', () => {
   it('are word, wordt and werd for "Hij ▢ morgen tien"', () => {
-    expect(werkwoordAfleiders(item('worden', 'hij', 'tt', 'wordt'), STERK)).toEqual(['word', 'werd']);
-    expect(werkwoordAfleiders(item('worden', 'ik', 'tt', 'word'), STERK)).toEqual(['wordt', 'werd']);
+    expect(werkwoordAfleiders(item('worden', 'hij', 'tt', 'wordt'), STERK)).toEqual([
+      'word',
+      'werd',
+    ]);
+    expect(werkwoordAfleiders(item('worden', 'ik', 'tt', 'word'), STERK)).toEqual([
+      'wordt',
+      'werd',
+    ]);
   });
 
   it('are the other number and the tegenwoordige tijd in the verleden tijd', () => {
@@ -294,10 +300,9 @@ describe('the wrong answers beside a verb', () => {
       'fietste',
       'fietsen',
     ]);
-    expect(werkwoordAfleiders(item('rijden', 'hij', 'vt', 'reed', { sterk: true }), STERK)).toEqual([
-      'reden',
-      'rijdt',
-    ]);
+    expect(werkwoordAfleiders(item('rijden', 'hij', 'vt', 'reed', { sterk: true }), STERK)).toEqual(
+      ['reden', 'rijdt'],
+    );
   });
 
   it('are the hij-form and the verleden tijd beside a voltooid deelwoord', () => {

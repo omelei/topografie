@@ -216,7 +216,8 @@ function stukken(letters: readonly string[], anders: readonly boolean[]): Stuk[]
   letters.forEach((letter, index) => {
     const vlag = anders[index] ?? false;
     const vorige = uit.at(-1);
-    if (vorige && vorige.anders === vlag) uit[uit.length - 1] = { tekst: vorige.tekst + letter, anders: vlag };
+    if (vorige && vorige.anders === vlag)
+      uit[uit.length - 1] = { tekst: vorige.tekst + letter, anders: vlag };
     else uit.push({ tekst: letter, anders: vlag });
   });
   return uit;
@@ -438,7 +439,10 @@ export interface WerkwoordVormen {
  * rules. The tegenwoordige tijd is made by the rules for every verb in the
  * content, strong or not: "wordt" is as regular as "fietst".
  */
-export function werkwoordVormen(infinitief: string, sterk: SterkeWerkwoorden = {}): WerkwoordVormen {
+export function werkwoordVormen(
+  infinitief: string,
+  sterk: SterkeWerkwoorden = {},
+): WerkwoordVormen {
   const lijst = sterk[infinitief];
   return {
     ik: werkwoordsvorm(infinitief, 'ik', 'tt'),
@@ -452,7 +456,12 @@ export function werkwoordVormen(infinitief: string, sterk: SterkeWerkwoorden = {
 
 /** What the rules make for this item, strong verbs aside. */
 export function berekendAntwoord(item: WerkwoordItem): string {
-  return werkwoordsvorm(item.infinitief, item.persoon, item.tijd, item.achter ? { achter: true } : {});
+  return werkwoordsvorm(
+    item.infinitief,
+    item.persoon,
+    item.tijd,
+    item.achter ? { achter: true } : {},
+  );
 }
 
 const zelfde = (a: string, b: string) => klein(a) === klein(b);
@@ -572,7 +581,23 @@ export function werkwoordRegel(item: WerkwoordItem): WerkwoordRegel {
   const letter = kofschipLetter(infinitief);
   const kofschip = inKofschip(infinitief);
   if (item.tijd === 'vt') {
-    return { soort: 'vt', letter, kofschip, stam, vorm: antwoord, meervoud: item.persoon === 'wij', infinitief };
+    return {
+      soort: 'vt',
+      letter,
+      kofschip,
+      stam,
+      vorm: antwoord,
+      meervoud: item.persoon === 'wij',
+      infinitief,
+    };
   }
-  return { soort: 'vd', letter, kofschip, stam, vorm: antwoord, voorvoegsel: voorvoegselVan(infinitief), infinitief };
+  return {
+    soort: 'vd',
+    letter,
+    kofschip,
+    stam,
+    vorm: antwoord,
+    voorvoegsel: voorvoegselVan(infinitief),
+    infinitief,
+  };
 }

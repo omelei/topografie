@@ -190,7 +190,8 @@ describe('the verb sets', () => {
         vormen.some((item) => item.infinitief === infinitief),
         infinitief,
       ).toBe(true);
-      for (const vorm of [lijst.vt, lijst.vtMv, lijst.vd]) expect(vorm.trim(), infinitief).not.toBe('');
+      for (const vorm of [lijst.vt, lijst.vtMv, lijst.vd])
+        expect(vorm.trim(), infinitief).not.toBe('');
     }
   });
 

@@ -36,18 +36,18 @@ welk van de twee bedoeld is, en het item noemt het andere woord in
 
 ## Spelling: tien sets
 
-| Set                          | Items | Groep | Wat het kind beslist                           |
-| ---------------------------- | ----- | ----- | ---------------------------------------------- |
-| Onthoudwoorden: ei of ij     | 40    | 5–6   | ei of ij; je hoort het verschil niet           |
-| Onthoudwoorden: au of ou     | 30    | 5–7   | au of ou; je hoort het verschil niet           |
-| Onthoudwoorden: g of ch      | 30    | 7     | g of ch                                        |
-| Onthoudwoorden: c of k       | 30    | 7     | c of k, vooral in woorden uit een andere taal  |
-| D of t                       | 40    | 5–6   | de laatste letter; maak het woord langer       |
-| Eén of twee klinkers         | 30    | 5–6   | a of aa, e of ee, o of oo, u of uu             |
-| Eén of twee medeklinkers     | 30    | 5–6   | t of tt, k of kk en zo verder                  |
-| Verkleinwoorden              | 40    | 5–6   | -je, -tje, -pje of -etje                       |
-| Woorden op -ig               | 30    | 6–7   | -ig, niet „-ug” of „-ich”                      |
-| Woorden op -lijk             | 30    | 6–7   | -lijk, niet „-luk” of „-lik”                   |
+| Set                      | Items | Groep | Wat het kind beslist                          |
+| ------------------------ | ----- | ----- | --------------------------------------------- |
+| Onthoudwoorden: ei of ij | 40    | 5–6   | ei of ij; je hoort het verschil niet          |
+| Onthoudwoorden: au of ou | 30    | 5–7   | au of ou; je hoort het verschil niet          |
+| Onthoudwoorden: g of ch  | 30    | 7     | g of ch                                       |
+| Onthoudwoorden: c of k   | 30    | 7     | c of k, vooral in woorden uit een andere taal |
+| D of t                   | 40    | 5–6   | de laatste letter; maak het woord langer      |
+| Eén of twee klinkers     | 30    | 5–6   | a of aa, e of ee, o of oo, u of uu            |
+| Eén of twee medeklinkers | 30    | 5–6   | t of tt, k of kk en zo verder                 |
+| Verkleinwoorden          | 40    | 5–6   | -je, -tje, -pje of -etje                      |
+| Woorden op -ig           | 30    | 6–7   | -ig, niet „-ug” of „-ich”                     |
+| Woorden op -lijk         | 30    | 6–7   | -lijk, niet „-luk” of „-lik”                  |
 
 Samen **330 woorden**. De Spellingmix is geen eigen bestand: het zijn deze
 330 onder één naam (ADR-062).
@@ -65,10 +65,10 @@ staat.
 
 ## Werkwoorden: drie sets
 
-| Set                | Items | Groep | Wat het kind beslist                                    |
-| ------------------ | ----- | ----- | ------------------------------------------------------- |
-| Tegenwoordige tijd | 40    | 6     | d, t of dt bij ik, jij en hij, ook met jij áchter het werkwoord |
-| Verleden tijd      | 30    | 7     | -te of -de, -ten of -den (’t kofschip)                  |
+| Set                | Items | Groep | Wat het kind beslist                                               |
+| ------------------ | ----- | ----- | ------------------------------------------------------------------ |
+| Tegenwoordige tijd | 40    | 6     | d, t of dt bij ik, jij en hij, ook met jij áchter het werkwoord    |
+| Verleden tijd      | 30    | 7     | -te of -de, -ten of -den (’t kofschip)                             |
 | Voltooid deelwoord | 30    | 7     | ge- + stam + t of d; geen ge- na be-, ver-, ont-, her-, ge- en er- |
 
 Samen **100 zinnen**. De Werkwoordmix is deze 100 onder één naam.

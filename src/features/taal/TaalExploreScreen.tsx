@@ -92,9 +92,7 @@ export function TaalExploreScreen({
                           </span>
                           <span className="tk-lijstrij-regel">{item.zin}</span>
                         </span>
-                        {item.hulp ? (
-                          <span className="tk-lijstrij-stand">{item.hulp}</span>
-                        ) : null}
+                        {item.hulp ? <span className="tk-lijstrij-stand">{item.hulp}</span> : null}
                       </div>
                     </li>
                   ))}
