@@ -35,7 +35,9 @@ export function useNaarPremium(): () => void {
 
 /** "13 september 2027": the last day of a code, as a parent reads a date. */
 export function leesbareDatum(dag: string): string {
-  return new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }).format(
-    new Date(`${dag}T12:00:00`),
-  );
+  return new Intl.DateTimeFormat('nl-NL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(`${dag}T12:00:00`));
 }

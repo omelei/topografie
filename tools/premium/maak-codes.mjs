@@ -62,5 +62,7 @@ for (const code of codes) {
 }
 
 console.log('\n-- Plak dit in de SQL-editor van Supabase:');
-console.log('insert into public.premium_codes (code_hash, geldig_tot, max_apparaten, notitie) values');
+console.log(
+  'insert into public.premium_codes (code_hash, geldig_tot, max_apparaten, notitie) values',
+);
 console.log(`${rijen.join(',\n')};`);

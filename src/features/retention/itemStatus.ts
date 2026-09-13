@@ -43,8 +43,7 @@ const DAY_MS = 86_400_000;
 export function dagenGeleden(state: ItemState | undefined, now: Date): number | null {
   if (!state || state.laatsteReview === null) return null;
   const toen = new Date(state.laatsteReview);
-  const dag = (moment: Date) =>
-    Date.UTC(moment.getFullYear(), moment.getMonth(), moment.getDate());
+  const dag = (moment: Date) => Date.UTC(moment.getFullYear(), moment.getMonth(), moment.getDate());
   return Math.max(0, Math.round((dag(now) - dag(toen)) / DAY_MS));
 }
 

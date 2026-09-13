@@ -702,7 +702,8 @@ export const nl = {
   // Het klokdiploma (ADR-117): tien klokken van één stap, zelf opschrijven,
   // negen goed, en pas aan het eind hoor je hoe het ging.
   'mode.klok-diploma': 'Klokdiploma',
-  'way.klok-diploma': 'Tien klokken zelf opschrijven, negen goed — pas aan het eind zie je hoe het ging',
+  'way.klok-diploma':
+    'Tien klokken zelf opschrijven, negen goed — pas aan het eind zie je hoe het ging',
   'klok.diplomasTitle': 'Jouw klokdiploma’s',
   'klok.diplomasCount': '{aantal} van de {totaal} gehaald',
   'klok.diplomaHave': '{stap}: klokdiploma gehaald',

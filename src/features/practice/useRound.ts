@@ -71,12 +71,7 @@ export type SetId =
  * know which of the four it is.
  */
 export type PracticeMode =
-  | 'wijs-aan'
-  | 'meerkeuze'
-  | 'hoe-heet-dit'
-  | 'bliksemronde'
-  | 'overleven'
-  | 'topo-diploma';
+  'wijs-aan' | 'meerkeuze' | 'hoe-heet-dit' | 'bliksemronde' | 'overleven' | 'topo-diploma';
 
 /*
  * The split between practising and practising under pressure used to be two

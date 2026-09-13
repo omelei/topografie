@@ -31,13 +31,7 @@ export interface PremiumStand {
 }
 
 export type PremiumReden =
-  | 'leeg'
-  | 'onbekend'
-  | 'verlopen'
-  | 'vol'
-  | 'te-vaak'
-  | 'geen-verbinding'
-  | 'niet-ingesteld';
+  'leeg' | 'onbekend' | 'verlopen' | 'vol' | 'te-vaak' | 'geen-verbinding' | 'niet-ingesteld';
 
 export type PremiumUitkomst =
   | { readonly ok: true; readonly geldigTot: string }

@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { emptyState, review, type ItemState } from '@/game-core';
-import {
-  aantalAntwoorden,
-  dagenGeleden,
-  procentGoed,
-  retentionOf,
-  statusOf,
-} from './itemStatus';
+import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
 
 /**
  * The mapping ADR-042 settled and ADR-114 redefined, checked against the

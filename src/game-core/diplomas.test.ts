@@ -75,9 +75,7 @@ describe('the topodiploma', () => {
       'diploma-topo-nl-steden',
     );
     expect(diplomaDrempel(5)).toBe(5);
-    expect(
-      topoDiplomaFor(topo({ setId: 'nl-waddeneilanden', setSize: 5, correct: 4 })),
-    ).toBeNull();
+    expect(topoDiplomaFor(topo({ setId: 'nl-waddeneilanden', setSize: 5, correct: 4 }))).toBeNull();
   });
 
   it('is sat on one map and not on the world, the Topomix or a list of mistakes', () => {
