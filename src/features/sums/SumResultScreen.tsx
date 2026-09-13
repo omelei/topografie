@@ -1,111 +1,78 @@
 import { t } from '@/i18n';
 import { sumText } from '@/game-core';
+import { MODULE_ICON } from '@/features/shell/moduleIcons';
+import { RondeKlaar } from '@/features/round/RondeKlaar';
 import type { SumRoundState } from './useSumRound';
-import { Beloning } from '@/features/reis/Beloning';
-import { RoundMark } from '@/components/RoundMark';
-import { HerhaalFouten } from '@/features/round/HerhaalFouten';
 
 /**
- * K8 for the tables.
- *
- * The same argument as the map's result screen: the score is there, and what
- * changed is the product. "Twee sommen meer die je nu onthoudt" is the one line
- * on this screen a child could not have counted themselves, so it is the one
- * that gets the heading.
+ * "Ronde klaar" for the tables (`RondeKlaar`, ADR-112).
  *
  * The sums still to practise are listed with their answers. On the map they are
  * shown as places rather than told, because a map can show; a sum cannot be
  * pointed at, and reading "7 × 8 = 56" is what looking at it does.
+ *
+ * A diploma is the one thing on this page that is not about today: a table you
+ * have a diploma for is a table you have finished, so it is what the round
+ * earned. One not earned is said as what it takes.
  */
 export function SumResultScreen({
   state,
+  setId,
   onHome,
   onAgain,
   onHerhaal,
 }: {
   readonly state: SumRoundState;
+  readonly setId: string;
   readonly onHome: () => void;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
-  // Only a fixed round has a total to fall short of. "Je stopte na 3 van de
-  // 120" would be a lie about a round that was never going to ask 120.
-  const stoppedEarly = state.rule.kind === 'fixed' && state.answeredCount < state.total;
+  const ModuleIcon = MODULE_ICON.tafels;
+  const diploma = state.reward?.diploma ?? null;
 
   return (
-    <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 p-6" data-module="tafels">
-      <div>
-        <p className="tk-label">{t('result.title')}</p>
-        <h1 className="tk-display text-paginakop">{t('result.changed')}</h1>
-        <p className="mt-2 text-lopend">
-          {state.gained === 0
-            ? t('result.gainedNone')
-            : state.gained === 1
-              ? t('result.gainedOne')
-              : t('result.gainedMany', { aantal: state.gained })}
-        </p>
-        <p className="mt-4 text-tekst-secundair">
-          {t('result.score', { goed: state.correctCount, totaal: state.answeredCount })}
-        </p>
-        {stoppedEarly ? (
-          <p className="text-tekst-secundair">
-            {t('result.stoppedEarly', { gedaan: state.answeredCount, totaal: state.total })}
-          </p>
-        ) : null}
-      </div>
-
-      {/* The mark, on the one round that has earned one. See the map's result
-          screen: same block, same place, same argument. */}
-      {state.toetsstand ? (
-        <RoundMark goed={state.correctCount} totaal={state.answeredCount} />
-      ) : null}
-
-      {/* What the round handed over, if it handed anything over. */}
-      <Beloning reward={state.reward} />
-
-      {state.missed.length > 0 ? (
-        <section className="flex flex-col gap-3" aria-label={t('sums.practiceMore')}>
-          <h2 className="tk-label">{t('sums.practiceMore')}</h2>
-          <ul className="tk-options list-none p-0">
-            {state.missed.map((sum) => (
-              <li key={sum.id} className="tk-option tabular-nums">
-                {`${sumText(sum)} = ${sum.antwoord}`}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : (
-        <p className="text-lopend">{t('result.allCorrect')}</p>
-      )}
-
-      {/* The diploma, above the streak and below what changed. It is the one
-          thing on this screen that is not about today: a table you have a
-          diploma for is a table you have finished. */}
-      {state.reward?.diploma ? (
-        <p className="tk-badge-outline w-fit">
-          {t('sums.diplomaEarned', { tafel: state.reward.diploma })}
-        </p>
-      ) : state.mode === 'tafeldiploma' ? (
-        <p className="text-tekst-secundair">{t('sums.diplomaMissed')}</p>
-      ) : null}
-
-      {state.streak ? (
-        <p className="text-tekst-secundair">
-          {state.streak.state.huidigeStreak <= 1
-            ? t('result.streakGrewOne')
-            : t('result.streakGrew', { aantal: state.streak.state.huidigeStreak })}
-        </p>
-      ) : null}
-
-      <div className="flex flex-wrap gap-3">
-        <button type="button" className="tk-button" onClick={onAgain}>
-          {t('result.again')}
-        </button>
-        <HerhaalFouten missed={state.missed} onHerhaal={onHerhaal} />
-        <button type="button" className="tk-button tk-button-secondary" onClick={onHome}>
-          {t('result.home')}
-        </button>
-      </div>
-    </main>
+    <RondeKlaar
+      moduleId="tafels"
+      setId={setId}
+      mode={state.mode}
+      toetsstand={state.toetsstand}
+      goed={state.correctCount}
+      beantwoord={state.answeredCount}
+      // Only a fixed round has a total to fall short of. "Je stopte na 3 van de
+      // 120" would be a lie about a round that was never going to ask 120.
+      gestopt={
+        state.rule.kind === 'fixed' && state.answeredCount < state.total
+          ? { gedaan: state.answeredCount, totaal: state.total }
+          : null
+      }
+      gained={state.gained}
+      streak={state.streak}
+      reward={state.reward}
+      diploma={diploma ? t('sums.diplomaEarned', { tafel: diploma }) : null}
+      melding={state.mode === 'tafeldiploma' && !diploma ? t('sums.diplomaMissed') : null}
+      oefenTitel={t('sums.practiceMore')}
+      missed={state.missed}
+      onAgain={onAgain}
+      onHerhaal={onHerhaal}
+      onHome={onHome}
+    >
+      <ul className="tk-lijst">
+        {state.missed.map((sum) => (
+          <li key={sum.id}>
+            <div className="tk-lijstrij">
+              <span className="tk-plaat">
+                <ModuleIcon size={24} />
+              </span>
+              <span className="tk-lijstrij-tekst">
+                <span className="tk-lijstrij-titel tabular-nums">
+                  {`${sumText(sum)} = ${sum.antwoord}`}
+                </span>
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </RondeKlaar>
   );
 }

@@ -109,8 +109,8 @@ export function ScrollRij({
 
   return (
     <section className="tk-rij" aria-label={titel}>
-      <div className="tk-rij-kop">
-        <h2 className="tk-label">{titel}</h2>
+      <div className="tk-sectie tk-rij-kop">
+        <h2>{titel}</h2>
 
         {leeg === undefined ? (
           <div className="tk-rij-knoppen">

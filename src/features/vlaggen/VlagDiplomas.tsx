@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { DiplomaIcon } from '@/components/Icon';
 import { DIPLOMA_WERELDDELEN, type DiplomaWerelddeel } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { loadVlagDiplomas } from '@/store/rewardStore';
+import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
 
 /**
@@ -11,13 +11,13 @@ import { PremiumLabel } from '@/features/module/PremiumLabel';
  * The tafeldiploma wall's shape and its argument: every gap is one werelddeel a
  * child can decide to go and sit this afternoon, so on the flags page pressing
  * one chooses it — the werelddeel, all its flags, and the diploma — and on the
- * collection page the same six are there to be looked at.
+ * child's own page the same six are there to be looked at (ADR-112).
  */
 export function VlagDiplomas({
   onKies,
 }: {
   /** Where pressing a diploma chooses it. Absent where the wall is only shown. */
-  readonly onKies?: (deel: DiplomaWerelddeel) => void;
+  readonly onKies?: ((deel: DiplomaWerelddeel) => void) | undefined;
 }) {
   const [behaald, setBehaald] = useState<ReadonlySet<DiplomaWerelddeel> | null>(null);
 
@@ -31,54 +31,31 @@ export function VlagDiplomas({
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('vlag.diplomasTitle')}>
-      <div>
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="tk-label">{t('vlag.diplomasTitle')}</h2>
-          <PremiumLabel hoorbaar />
-        </div>
-        <p className="text-tekst-secundair">
+      <div className="tk-sectie">
+        <h2>{t('vlag.diplomasTitle')}</h2>
+        <PremiumLabel hoorbaar />
+        <span className="tk-sectie-meta">
           {t('vlag.diplomasCount', { aantal: behaald.size, totaal: DIPLOMA_WERELDDELEN.length })}
-        </p>
+        </span>
       </div>
 
-      <div className="tk-diplomas">
-        {DIPLOMA_WERELDDELEN.map((deel) => {
-          const gehaald = behaald.has(deel);
+      <DiplomaRaster
+        module="vlaggen"
+        vakken={DIPLOMA_WERELDDELEN.map((deel) => {
           const naam = t(`regio.${deel}` as TranslationKey);
-          const label = gehaald
-            ? t('vlag.diplomaHave', { deel: naam })
-            : t('vlag.diplomaWant', { deel: naam });
-          const inhoud = (
-            <>
-              <DiplomaIcon size={24} />
-              <span aria-hidden="true">{naam}</span>
-            </>
-          );
+          const gehaald = behaald.has(deel);
 
-          return onKies ? (
-            <button
-              key={deel}
-              type="button"
-              className="tk-diploma"
-              data-gehaald={gehaald ? 'ja' : undefined}
-              aria-label={label}
-              onClick={() => onKies(deel)}
-            >
-              {inhoud}
-            </button>
-          ) : (
-            <span
-              key={deel}
-              className="tk-diploma"
-              data-gehaald={gehaald ? 'ja' : undefined}
-              role="img"
-              aria-label={label}
-            >
-              {inhoud}
-            </span>
-          );
+          return {
+            key: deel,
+            titel: naam,
+            label: gehaald
+              ? t('vlag.diplomaHave', { deel: naam })
+              : t('vlag.diplomaWant', { deel: naam }),
+            gehaald,
+            onKies: onKies ? () => onKies(deel) : undefined,
+          };
         })}
-      </div>
+      />
     </section>
   );
 }

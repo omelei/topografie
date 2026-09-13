@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { t } from '@/i18n';
+import { CorrectIcon } from '@/components/Icon';
 import { SpeakButton } from '@/components/SpeakButton';
 import { MapCanvas, type AnswerLayer } from '@/features/practice/MapCanvas';
 import { loadAnswerLayer, SETS, type SetId } from '@/features/practice/useRound';
@@ -90,11 +91,18 @@ export function ExploreScreen({
   const spoken = chosen === null ? '' : `${chosen.naam}. ${chosen.weetje ?? ''}`.trim();
 
   return (
-    <div className="flex h-screen flex-col bg-papier" data-thema="ronde">
-      <header className="flex flex-none items-center gap-6 border-b border-rand-licht px-6 py-4">
+    <div
+      className="flex h-screen flex-col bg-papier"
+      data-module="topo"
+      data-accent="module"
+      data-thema="ronde"
+    >
+      {/* The round's bar, with the set's name at the size a round asks its
+          question in (ADR-112). */}
+      <header className="tk-verken-kop">
         <div className="min-w-0">
           <p className="tk-label">{t('explore.kind')}</p>
-          <h1 className="tk-display truncate text-paginakop">{set?.naam ?? ''}</h1>
+          <h1 className="tk-display truncate text-vraag">{set?.naam ?? ''}</h1>
         </div>
 
         {chosen !== null && <SpeakButton text={spoken} />}
@@ -121,7 +129,7 @@ export function ExploreScreen({
             names none for this column. Spelled out so it stays a decision. */}
         <nav
           aria-label={t('explore.listLabel')}
-          className="flex min-h-0 flex-1 flex-col border-t border-rand-licht md:w-[320px] md:flex-none md:border-r md:border-t-0"
+          className="flex min-h-0 flex-1 flex-col border-t border-rand-licht bg-kaart md:w-[320px] md:flex-none md:border-r md:border-t-0"
         >
           <p className="flex-none px-6 py-3 text-tekst-secundair">{t('explore.hint')}</p>
 
@@ -133,14 +141,11 @@ export function ExploreScreen({
                   <button
                     type="button"
                     aria-current={picked ? 'true' : undefined}
-                    className={
-                      picked
-                        ? 'w-full rounded-chip border-2 border-inkt px-4 py-3 text-left font-semibold'
-                        : 'w-full rounded-chip border-2 border-transparent px-4 py-3 text-left'
-                    }
+                    className="tk-verken-item"
                     onClick={() => setChosenId(picked ? null : item.id)}
                   >
                     {item.naam}
+                    {picked ? <CorrectIcon size={20} /> : null}
                   </button>
                 </li>
               );
@@ -150,8 +155,9 @@ export function ExploreScreen({
 
         {/* Half the screen on a phone, all of what is left beside the list on
             anything wider. Bounded rather than greedy: a map that takes the
-            whole height leaves the list with none. */}
-        <main className="flex min-h-0 flex-none basis-1/2 flex-col md:flex-1 md:basis-auto">
+            whole height leaves the list with none. On the card's tone, so the
+            land stands a step down from it as it does in a round. */}
+        <main className="flex min-h-0 flex-none basis-1/2 flex-col bg-kaart md:flex-1 md:basis-auto">
           <div className="flex min-h-0 flex-1 items-center justify-center p-3">
             <MapCanvas
               background={geo}

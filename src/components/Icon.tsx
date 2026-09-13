@@ -954,11 +954,11 @@ export function ChevronRightIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
- * A star: ten correct answers (ADR-096).
+ * A star: the mark of the well-known flags on the flags page.
  *
  * Five points and straight edges, which is what §E's primitives allow and what
- * a star is anyway. One drawing for an empty star and a full one: the filling
- * is the stylesheet's (`.tk-ster-vol`), so the pair can never drift apart.
+ * a star is anyway. It was also the reward for ten correct answers (ADR-096),
+ * which is hidden with the rest of the journey since ADR-112.
  */
 export function StarIcon(props: Omit<IconProps, 'children'>) {
   return (

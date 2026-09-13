@@ -1,4 +1,3 @@
-import { StreakIcon } from '@/components/Icon';
 import type { Oefendag } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 
@@ -17,11 +16,13 @@ export function dagLang(weekdag: number): string {
  *
  * Nought is a sentence rather than a nought, as on the front door's cards: "0
  * dagen op rij" reads as a score on a child who has done nothing wrong.
+ *
+ * No mark in front of it (ADR-112): the number is the first thing in the block,
+ * and the block's own heading already says what it counts.
  */
 export function ReeksGetal({ dagen }: { readonly dagen: number }) {
   return (
     <p className="tk-reeks-getal">
-      <StreakIcon size={24} />
       {dagen === 0 ? (
         <span className="tk-reeks-zin">{t('reeks.nul')}</span>
       ) : (

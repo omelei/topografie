@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { countMastered, formatGrade, grade, type ItemState, type ModeId } from '@/game-core';
+import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { RAIL_MODULES, type Module } from '@/features/shell/modules';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -21,27 +22,27 @@ import {
 } from '@/features/module/onderdelen';
 import { ReeksBlok } from './ReeksBlok';
 import { ScrollRij } from './ScrollRij';
-import { FavorietenBlok, GoedBlok, VoortgangBlok } from './SideColumn';
+import { FavorietenBlok, GoedBlok } from './SideColumn';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
  * K1, the front door — which is also leer.nu itself.
  *
  * Redrawn in 2026-09 (ADR-094) and still the same argument, in the same order.
- * First the child's own name, and under it what doing this is: choose a
- * subject, do a round, earn the next one. Then three rows of ways in — what this
- * child goes back to most, what they did last and how it went, and everything
- * else there is, furthest along first. Then the child's own column: the tests,
- * the level, how the whole of it is going, and their favourites.
+ * First the child's own name, and under it what doing this is. Then the ways
+ * in — what this child goes back to most, what they did last and how it went,
+ * and everything else there is, furthest along first. Then the child's own
+ * column: the tests, the streak, how the whole of it is going, and their
+ * favourites.
  *
- * **Three rows that scroll sideways.** Each one used to be a grid that wrapped
- * onto as many lines as it needed, which made the page as long as the child's
- * history. As rows they are one line each at every size, with five cards in the
- * first two and every module in the third, and what is past the edge is one
- * swipe, one press or one arrow key away (`ScrollRij`).
+ * **Two rows that scroll sideways, and one list.** "Meest geoefend" and
+ * "Verder oefenen" are rows of cards at every size, one swipe, press or arrow
+ * key from what is past the edge (`ScrollRij`). "Recent geoefend" is a list
+ * (ADR-112): it is a log, read top to bottom, newest first, and a log laid on
+ * its side made a child scroll to find out what they did yesterday.
  *
  * **The column moves, the page does not.** From 1200 it stands beside the rows.
- * Below that its four blocks go into the flow of this page: progress and tests
+ * Below that its blocks go into the flow of this page: the tests and the streak
  * side by side on a tablet above the rows, and the other two after them. Which
  * block goes where is decided here, in React, because it is the reading order
  * as well as the drawing (see `useDesk`).
@@ -51,31 +52,23 @@ import { ToetsenBlok } from './ToetsenBlok';
  * and what they are about, with no mark, no bar and no projection.
  */
 
-/**
- * How many rounds the history shows: as many cards as "meest geoefend" holds,
- * so the two rows the handoff draws as one shape are also one length.
- */
+/** How many rounds the history shows: as many as "meest geoefend" holds. */
 const RECENT_SHOWN = POPULAR_SHOWN;
 
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
   readonly naam: string;
-  /** Which animal they chose. This screen only passes it on to their column. */
-  readonly sticker: string | undefined;
-  /** The way to the collection, which their column links to. */
-  readonly onReis: () => void;
-  /** The way to the streak's own page, which their column links to as well. */
+  /** The way to the streak's own page, which their column links to. */
   readonly onReeks: () => void;
   /**
    * One way into a round, whichever module it is in: the same one the child's
-   * own column and the module pages use. There were three callbacks here, one
-   * per module, and a fourth module would have made it four.
+   * own column and the module pages use.
    */
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
   readonly onModule?: ((id: Module['id']) => void) | undefined;
 }
 
-export function HomeScreen({ naam, sticker, onReis, onReeks, onBegin, onModule }: HomeScreenProps) {
+export function HomeScreen({ naam, onReeks, onBegin, onModule }: HomeScreenProps) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const desk = useDesk();
@@ -92,29 +85,25 @@ export function HomeScreen({ naam, sticker, onReis, onReeks, onBegin, onModule }
   const gespeeld = geplaatst(played, startbareOnderdelen());
   const populair = meestGeoefend(gespeeld);
 
-  /** One way into a round, wherever on this screen it is pressed. */
-  const begin = onBegin;
-
   const kop = (
     <div className="tk-home-kop">
-      <h1 className="tk-display tk-titel">{t('home.welcome', { naam })}</h1>
+      <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
       <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
     </div>
   );
 
   const rijen = (
     <>
-      <Populairst populair={populair} onBegin={begin} />
-      <Recent gespeeld={gespeeld} onBegin={begin} />
+      <Populairst populair={populair} onBegin={onBegin} />
+      <Recent gespeeld={gespeeld} onBegin={onBegin} />
       <VerderOefenen known={known} onOpen={onModule} />
     </>
   );
 
   const toetsen = <ToetsenBlok />;
   const reeks = <ReeksBlok onReeks={onReeks} />;
-  const voortgang = <VoortgangBlok sticker={sticker} onReis={onReis} />;
   const goed = <GoedBlok />;
-  const favorieten = <FavorietenBlok onBegin={begin} />;
+  const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   if (desk) {
     return (
@@ -127,7 +116,6 @@ export function HomeScreen({ naam, sticker, onReis, onReeks, onBegin, onModule }
         <aside className="tk-home-aside">
           {toetsen}
           {reeks}
-          {voortgang}
           {goed}
           {favorieten}
         </aside>
@@ -135,16 +123,15 @@ export function HomeScreen({ naam, sticker, onReis, onReeks, onBegin, onModule }
     );
   }
 
-  // Below 1200 the streak goes under the pair rather than between it: three
-  // blocks in two columns left the tests alone on half a row (ADR-110).
+  // Below 1200 the tests and the streak are a pair above the rows: the two
+  // blocks about this week, side by side on a tablet (ADR-110, ADR-112).
   return (
     <div className="tk-home">
       {kop}
       <div className="tk-home-paar">
-        {voortgang}
         {toetsen}
+        {reeks}
       </div>
-      {reeks}
       {rijen}
       {goed}
       {favorieten}
@@ -153,9 +140,8 @@ export function HomeScreen({ naam, sticker, onReis, onReeks, onBegin, onModule }
 }
 
 /**
- * One card in the first two rows. They are the same card in both, on purpose:
- * a mark, the exercise, the way it was done, and under a rule the one line the
- * row is about — how often, or how it went.
+ * One card in "meest geoefend": a mark, the exercise, the way it was done, and
+ * under a rule how often.
  */
 function GeoefendKaart({
   deel,
@@ -228,11 +214,11 @@ function Populairst({
 }
 
 /**
- * What was just practised, and what it came to — newest first.
+ * What was just practised, and what it came to — newest first, as a list.
  *
  * A log and not a league table. The mark is over what was answered rather than
  * what was asked, because a round can be stopped early and the questions nobody
- * saw were not got wrong. Every card starts that same set the same way again.
+ * saw were not got wrong. Every row starts that same set the same way again.
  */
 function Recent({
   gespeeld,
@@ -244,36 +230,57 @@ function Recent({
   const recent = gespeeld.slice(0, RECENT_SHOWN);
 
   return (
-    <ScrollRij
-      titel={t('home.recentTitle')}
-      leeg={recent.length === 0 ? t('home.recentNone') : undefined}
-    >
-      {recent.map(({ deel, ronde }) => {
-        const cijfer = grade(ronde.correct, ronde.answered);
-        const uit = { goed: ronde.correct, totaal: ronde.answered };
+    <section className="flex flex-col gap-3" aria-label={t('home.recentTitle')}>
+      <h2 className="tk-sectie">{t('home.recentTitle')}</h2>
 
-        return (
-          <GeoefendKaart
-            key={ronde.at}
-            deel={deel}
-            vorm={t(`mode.${ronde.mode}` as TranslationKey)}
-            status={
-              cijfer === null
-                ? t('home.recentOutOf', uit)
-                : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })
-            }
-            onClick={() => onBegin(deel, ronde.mode)}
-          />
-        );
-      })}
-    </ScrollRij>
+      {recent.length === 0 ? (
+        <p className="text-tekst-secundair">{t('home.recentNone')}</p>
+      ) : (
+        <ul className="tk-lijst">
+          {recent.map(({ deel, ronde }) => {
+            const ModuleIcon = MODULE_ICON[deel.moduleId];
+            const cijfer = grade(ronde.correct, ronde.answered);
+            const uit = { goed: ronde.correct, totaal: ronde.answered };
+
+            return (
+              <li key={ronde.at}>
+                <button
+                  type="button"
+                  data-module={deel.moduleId}
+                  className="tk-lijstrij"
+                  onClick={() => onBegin(deel, ronde.mode)}
+                >
+                  <span className="tk-plaat">
+                    <ModuleIcon size={24} />
+                  </span>
+                  <span className="tk-lijstrij-tekst">
+                    <span className="tk-lijstrij-titel">{naamVan(deel)}</span>
+                    <span className="tk-lijstrij-regel">
+                      {t(`mode.${ronde.mode}` as TranslationKey)}
+                    </span>
+                  </span>
+                  <span className="tk-lijstrij-stand">
+                    {cijfer === null
+                      ? t('home.recentOutOf', uit)
+                      : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
+                  </span>
+                  <span className="tk-lijstrij-pijl">
+                    <NextIcon size={20} />
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }
 
 /**
  * Everything else there is, furthest along first.
  *
- * All five, not only the ones that are built (ADR-051): a child who can see
+ * All of them, not only the ones that are built (ADR-051): a child who can see
  * that flags are coming is reading a plan. The ones that exist are sorted by how
  * much of them is remembered, and the ones that do not come after all of them,
  * in the rail's order — a stable sort keeps it.
@@ -313,6 +320,7 @@ function VerderOefenen({
             key={module.id}
             type="button"
             data-module={module.id}
+            data-accent="module"
             data-soon={module.built ? undefined : 'ja'}
             className="tk-kaart tk-verder"
             onClick={() => onOpen?.(module.id)}

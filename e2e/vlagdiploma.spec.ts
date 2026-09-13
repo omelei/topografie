@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 /**
  * The vlaggendiploma (ADR-104): six on the flags page with the gaps showing,
  * one press to sit one, nothing said until the end, and the six again on the
- * collection page.
+ * child's own page.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -15,7 +15,7 @@ async function signIn(page: Page, naam: string) {
 
 /** Takes the first option every time until the round is over. */
 async function speel(page: Page) {
-  const klaar = page.getByRole('heading', { name: 'Wat er is veranderd' });
+  const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
   const vlaggen = page.getByRole('group', { name: 'Kies een vlag' });
   const namen = page.getByRole('group', { name: 'Kies een naam' });
@@ -70,10 +70,10 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await speel(page);
 
   await expect(page.getByText(/^Vlaggendiploma gehaald|^Nog geen diploma/)).toBeVisible();
-  await expect(page.getByText('cijfer', { exact: true })).toBeVisible();
+  await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
-  // And on the collection page, as pictures rather than buttons.
-  await page.goto('/voortgang');
+  // And on the child's own page, as pictures rather than buttons (ADR-112).
+  await page.goto('/jij');
   const verzameling = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
   await expect(verzameling.getByRole('img')).toHaveCount(6);
 });

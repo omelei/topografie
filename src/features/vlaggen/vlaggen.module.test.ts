@@ -114,28 +114,29 @@ describe('the page', () => {
 });
 
 describe('the ways of practising', () => {
-  const tegels = (setId: string, klok = false) =>
-    offeredForms(formsFor('vlaggen'), klok, setId)
+  const tegels = (setId: string) =>
+    offeredForms(formsFor('vlaggen'), setId)
       .filter((form) => !form.alleenToets)
       .map((form) => form.id);
 
-  it('offers four ways as tiles and the oefentoets, and no typing, even with the clock on', () => {
-    expect(tegels('vlag-europa-bekend', true)).toEqual([
+  it('offers five ways as tiles and the oefentoets, in the order every page has, and no typing', () => {
+    // Zoeken, meerkeuze, then the premium ways (ADR-112). The bliksemronde is
+    // here too now: it was missing on flags, and it asks both ways round.
+    expect(tegels('vlag-europa-bekend')).toEqual([
       'vlag-zoeken',
       'vlag-meerkeuze',
       'ontdekken',
+      'bliksemronde',
       'overleven',
     ]);
     const ids = formsFor('vlaggen').map((form) => form.id);
     expect(ids).not.toContain('hoe-heet-dit');
-    expect(ids).not.toContain('bliksemronde');
+    expect(VLAG_ROUND_RULE.bliksemronde).toEqual({ kind: 'tijd', seconden: 60 });
+    expect(richtingVan('bliksemronde', 1)).toBe('meerkeuze');
   });
 
   it('has an oefentoets that asks both ways round', () => {
-    const toets = toetsVormVan(
-      'vlaggen',
-      offeredForms(formsFor('vlaggen'), false, 'vlag-europa-bekend'),
-    );
+    const toets = toetsVormVan('vlaggen', offeredForms(formsFor('vlaggen'), 'vlag-europa-bekend'));
     expect(toets?.id).toBe('vlag-gemengd');
     expect(toets?.alleenToets).toBe(true);
 

@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '@/store/profile';
 
 /**
- * The two switches on K10, and both of them do something.
+ * The switch on K10, and it does something.
  *
  * A switch that changes nothing is a promise the screen does not keep, and on a
- * settings page that is the whole content — so these are wired to the two
- * places they claim to affect rather than stored and admired.
+ * settings page that is the whole content — so this one is wired to the place
+ * it claims to affect rather than stored and admired.
  *
- * K10 had a third, for the reading mode. ADR-025 dropped it and it is not here
- * behind a flag either: a switched-off flag is code nobody runs.
+ * K10 had a third, for the reading mode; ADR-025 dropped it. And there was a
+ * second, "Klok bij het oefenen", whose only job was to hide the bliksemronde.
+ * ADR-112 offers the bliksemronde on every page, so the switch had nothing left
+ * to switch and went. A value a child stored for it is simply no longer read.
  */
 
 export interface Preferences {
@@ -19,18 +21,11 @@ export interface Preferences {
    * child turns it off rather than having to find it.
    */
   readonly readAloud: boolean;
-  /**
-   * Off by default, and the reason is on the screen beside it: haste does not
-   * help you remember. Off, the timed round is not offered at all — a switch
-   * that only hid the clock while still counting would be a worse lie than no
-   * switch.
-   */
-  readonly timer: boolean;
 }
 
-export const DEFAULT_PREFERENCES: Preferences = { readAloud: true, timer: false };
+export const DEFAULT_PREFERENCES: Preferences = { readAloud: true };
 
-const KEY = { readAloud: 'voorlezen', timer: 'timer' } as const;
+const KEY = { readAloud: 'voorlezen' } as const;
 
 /** Stored as strings because that is what the settings store holds. */
 function read(value: string | undefined, fallback: boolean): boolean {
@@ -39,12 +34,8 @@ function read(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function loadPreferences(): Promise<Preferences> {
-  const [readAloud, timer] = await Promise.all([getSetting(KEY.readAloud), getSetting(KEY.timer)]);
-
-  return {
-    readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud),
-    timer: read(timer, DEFAULT_PREFERENCES.timer),
-  };
+  const readAloud = await getSetting(KEY.readAloud);
+  return { readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud) };
 }
 
 export async function savePreference(name: keyof Preferences, on: boolean): Promise<void> {
@@ -52,10 +43,11 @@ export async function savePreference(name: keyof Preferences, on: boolean): Prom
 }
 
 /**
- * The preferences as React state, for the two screens that obey them.
+ * The preferences as React state, for the screens that obey them.
  *
- * Deliberately not a context: two consumers, one read each, and a provider
- * around the whole app would be more machinery than the thing it carries.
+ * Deliberately not a context: a handful of consumers, one read each, and a
+ * provider around the whole app would be more machinery than the thing it
+ * carries.
  */
 export function usePreferences(): Preferences {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);

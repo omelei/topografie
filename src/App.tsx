@@ -27,10 +27,9 @@ import {
   type Onderdeel,
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
-import { ReisScreen } from '@/features/reis/ReisScreen';
 import { ReeksScreen } from '@/features/reeks/ReeksScreen';
 import type { Route } from '@/features/shell/routes';
-import { getProfile, setSticker } from '@/store/profile';
+import { getProfile } from '@/store/profile';
 import type { ModeId } from '@/game-core';
 import {
   isFoutenSet,
@@ -230,17 +229,6 @@ export default function App() {
   };
 
   /**
-   * The hero a child chose, written through and held here, because the app
-   * bar shows it too: a choice that only redrew the card it was made on would
-   * look like it had not been saved.
-   */
-  const chooseSticker = (id: string) => {
-    void setSticker(id).then((updated) => {
-      if (updated) setBoot({ status: 'ready', profile: updated });
-    });
-  };
-
-  /**
    * A new screen starts at the top.
    *
    * There is no page load between screens — the router swaps a component — so
@@ -351,20 +339,11 @@ export default function App() {
     );
   }
 
-  /** The way to the collection, from the card that says where the journey is. */
-  const goReis = () => go({ name: 'reis' });
   /** The way to the streak's page, from the block that shows the streak. */
   const goReeks = () => go({ name: 'reeks' });
 
   /** The child's own column, which every screen inside the shell carries. */
-  const eigenKolom = (
-    <SideColumn
-      sticker={boot.profile.avatarConfig.sticker}
-      onReis={goReis}
-      onReeks={goReeks}
-      onBegin={beginRonde}
-    />
-  );
+  const eigenKolom = <SideColumn onReeks={goReeks} onBegin={beginRonde} />;
 
   // The streak's own page: the number, the days behind it and how it works
   // (ADR-110). Reached from the streak block and by its address, like the
@@ -373,23 +352,6 @@ export default function App() {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
         <ReeksScreen aside={eigenKolom} />
-      </Shell>
-    );
-  }
-
-  // Everything there is to collect: twelve heroes in five reeksen, twelve
-  // diplomas, ten stamps, and what each of them costs. Reached from the journey card and by its own
-  // address, never from the tab bar — it is the long view of one card rather
-  // than a fifth section of the product (ADR-076).
-  if (route.name === 'reis') {
-    return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        <ReisScreen
-          sticker={boot.profile.avatarConfig.sticker}
-          onSticker={chooseSticker}
-          onVerder={(vak) => (vak === null ? goHome() : goModule(vak))}
-          aside={eigenKolom}
-        />
       </Shell>
     );
   }
@@ -461,8 +423,6 @@ export default function App() {
     <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule}>
       <HomeScreen
         naam={boot.profile.naam}
-        sticker={boot.profile.avatarConfig.sticker}
-        onReis={goReis}
         onReeks={goReeks}
         onBegin={beginRonde}
         onModule={goModule}

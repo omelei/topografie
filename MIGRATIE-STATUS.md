@@ -32,6 +32,23 @@ het terugkomt. Hoe je een nieuw scherm bouwt staat in `docs/HUISSTIJL.md`.
 De tabel hieronder is nu geschiedenis: hij zegt waar elk oud token heen ging.
 Waar hij "vervalt" zegt, is de keuze in stap 2 gemaakt zoals in sectie 5.
 
+## 2b. Na stap 2: de app gelijkgetrokken (ADR-112, ADR-113)
+
+Twee dingen uit stap 2 zijn teruggedraaid op verzoek van de eigenaar, en de
+rest is gelijkgetrokken:
+
+- **Een ronde is licht.** De donkere set (`--donker-*`) is weg;
+  `data-thema="ronde"` zet alleen nog de trefmaten op 56.
+- **Het accent volgt het vak.** Binnen een vak draagt wat gekozen is de kleur
+  van dat vak (`data-accent="module"`); daarbuiten blijft het groen.
+- Eén sectiekop (`tk-sectie`), één lijst (`tk-lijst`), één tegel voor getallen
+  (`tk-cijfer`) en één typografische rol per soort tekst — zie
+  `docs/HUISSTIJL.md`.
+- "Jouw voortgang" (helden, kist, sterren, niveau) is verborgen; de stempels
+  zijn badges op de pagina Jij.
+- Het logo is uitwerking 3a: Hanken Grotesk met de ring en het naaldje
+  (`docs/logo`).
+
 ## 2a. Stap 1: de tokens stonden ernaast
 
 Klaar in `71dddef`. Toen nog niets ingeschakeld.

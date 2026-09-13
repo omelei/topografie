@@ -16,16 +16,19 @@ import { t } from '@/i18n';
  *
  * Over what was answered rather than what was asked, the same as everywhere
  * else: a round stopped early asked questions nobody got wrong.
+ *
+ * A tile beside the round's other two numbers (ADR-112), so it stands inside
+ * the result screen's `<dl>`; the sentence saying why it means something is
+ * under the tiles, where the result screen puts its sentences.
  */
 export function RoundMark({ goed, totaal }: { readonly goed: number; readonly totaal: number }) {
   const cijfer = grade(goed, totaal);
   if (cijfer === null) return null;
 
   return (
-    <p className="tk-cijfer">
-      <span className="tk-label">{t('result.markLabel')}</span>
-      <span className="tk-display text-getal-groot tabular-nums">{formatGrade(cijfer)}</span>
-      <span className="tk-cijfer-why">{t('result.markWhy')}</span>
-    </p>
+    <div className="tk-cijfer tk-toetscijfer">
+      <dt className="tk-cijfer-label">{t('result.markLabel')}</dt>
+      <dd className="tk-cijfer-getal">{formatGrade(cijfer)}</dd>
+    </div>
   );
 }

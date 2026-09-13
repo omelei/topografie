@@ -36,11 +36,12 @@ export function CategoryScreen({
     <div className="tk-page">
       <div className="tk-page-main">
         <div className="flex flex-col gap-2">
-          <h1 className="tk-display text-paginakop">{t(category.name)}</h1>
-          <p className="text-tekst-secundair">{t('category.holds')}</p>
+          <h1 className="tk-titel">{t(category.name)}</h1>
+          <p className="text-lopend text-tekst-secundair">{t('category.holds')}</p>
         </div>
 
-        <ul className="flex flex-col gap-3 p-0">
+        {/* The list every page uses (ADR-112). */}
+        <ul className="tk-lijst">
           {modules.map((module) => {
             const ModuleIcon = MODULE_ICON[module.id];
 
@@ -51,15 +52,17 @@ export function CategoryScreen({
                 <button
                   type="button"
                   data-module={module.id}
-                  className="tk-module-card w-full"
+                  className="tk-lijstrij"
                   disabled={!module.built}
                   onClick={() => onOpen(module)}
                 >
-                  <ModuleIcon size={24} />
-                  <span className="min-w-0">
-                    <span className="block font-semibold">{t(module.name)}</span>
+                  <span className="tk-plaat">
+                    <ModuleIcon size={24} />
+                  </span>
+                  <span className="tk-lijstrij-tekst">
+                    <span className="tk-lijstrij-titel">{t(module.name)}</span>
                     {module.built ? null : (
-                      <span className="block text-tekst-secundair">{t('soon.subtitle')}</span>
+                      <span className="tk-lijstrij-regel">{t('soon.subtitle')}</span>
                     )}
                   </span>
                 </button>

@@ -58,7 +58,7 @@ export function ReeksScreen({ aside }: { readonly aside: ReactNode }) {
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <h1 className="tk-display tk-titel">{t('reeks.titel')}</h1>
+        <h1 className="tk-titel">{t('reeks.titel')}</h1>
 
         {/* Its own name rather than the block's: two landmarks with one label
             are two places called the same thing. */}
@@ -69,11 +69,11 @@ export function ReeksScreen({ aside }: { readonly aside: ReactNode }) {
         </section>
 
         <section className="flex flex-col gap-3" aria-label={t('reeks.cijfersTitel')}>
-          <h2 className="tk-label">{t('reeks.cijfersTitel')}</h2>
+          <h2 className="tk-sectie">{t('reeks.cijfersTitel')}</h2>
           <dl className="tk-cijfers">
             {cijfers.map(([label, waarde]) => (
               <div key={label} className="tk-cijfer">
-                <dt className="text-bijschrift text-tekst-secundair">{t(label)}</dt>
+                <dt className="tk-cijfer-label">{t(label)}</dt>
                 <dd className="tk-cijfer-getal">{waarde}</dd>
               </div>
             ))}
@@ -82,8 +82,8 @@ export function ReeksScreen({ aside }: { readonly aside: ReactNode }) {
 
         <Kalender weken={kalenderWeken(reeks.geoefend, reeks.vandaag, WEKEN)} />
 
-        <section className="flex flex-col gap-2" aria-label={t('reeks.regelsTitel')}>
-          <h2 className="tk-label">{t('reeks.regelsTitel')}</h2>
+        <section className="flex flex-col gap-3" aria-label={t('reeks.regelsTitel')}>
+          <h2 className="tk-sectie">{t('reeks.regelsTitel')}</h2>
           <ul className="tk-regels">
             {REGELS.map((regel) => (
               <li key={regel}>{t(regel)}</li>
@@ -116,7 +116,7 @@ function vandaagZin(dagen: number, geoefend: boolean): string {
 function Kalender({ weken }: { readonly weken: readonly (readonly Oefendag[])[] }) {
   return (
     <section className="flex flex-col gap-3" aria-label={t('reeks.kalenderTitel')}>
-      <h2 className="tk-label">{t('reeks.kalenderTitel')}</h2>
+      <h2 className="tk-sectie">{t('reeks.kalenderTitel')}</h2>
       <table className="tk-kalender">
         <thead>
           <tr>

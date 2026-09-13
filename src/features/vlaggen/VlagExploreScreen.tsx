@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { t } from '@/i18n';
+import { CorrectIcon } from '@/components/Icon';
 import { SpeakButton } from '@/components/SpeakButton';
 import { loadVlagSet } from '@/content/loadVlaggen';
 import { Vlag } from './Vlag';
@@ -42,11 +43,16 @@ export function VlagExploreScreen({
       : `${chosen.naam}. ${t('vlag.explore.hoofdstad')}: ${chosen.hoofdstad}. ${chosen.weetje}`;
 
   return (
-    <div className="flex h-screen flex-col bg-papier" data-module="vlaggen" data-thema="ronde">
-      <header className="flex flex-none items-center gap-6 border-b border-rand-licht px-6 py-4">
+    <div
+      className="flex h-screen flex-col bg-papier"
+      data-module="vlaggen"
+      data-accent="module"
+      data-thema="ronde"
+    >
+      <header className="tk-verken-kop">
         <div className="min-w-0">
           <p className="tk-label">{t('vlag.explore.kind')}</p>
-          <h1 className="tk-display truncate text-paginakop">{set ? vlagSetNaam(set) : ''}</h1>
+          <h1 className="tk-display truncate text-vraag">{set ? vlagSetNaam(set) : ''}</h1>
         </div>
 
         {chosen !== null && <SpeakButton text={spoken} />}
@@ -63,7 +69,7 @@ export function VlagExploreScreen({
       <div className="flex min-h-0 flex-1 flex-col-reverse md:flex-row">
         <nav
           aria-label={t('explore.listLabel')}
-          className="flex min-h-0 flex-1 flex-col border-t border-rand-licht md:w-[320px] md:flex-none md:border-r md:border-t-0"
+          className="flex min-h-0 flex-1 flex-col border-t border-rand-licht bg-kaart md:w-[320px] md:flex-none md:border-r md:border-t-0"
         >
           <p className="flex-none px-6 py-3 text-tekst-secundair">{t('vlag.explore.hint')}</p>
 
@@ -75,14 +81,11 @@ export function VlagExploreScreen({
                   <button
                     type="button"
                     aria-current={picked ? 'true' : undefined}
-                    className={
-                      picked
-                        ? 'w-full rounded-chip border-2 border-inkt px-4 py-3 text-left font-semibold'
-                        : 'w-full rounded-chip border-2 border-transparent px-4 py-3 text-left'
-                    }
+                    className="tk-verken-item"
                     onClick={() => setChosenId(picked ? null : vlag.id)}
                   >
                     {vlag.naam}
+                    {picked ? <CorrectIcon size={20} /> : null}
                   </button>
                 </li>
               );
@@ -90,7 +93,7 @@ export function VlagExploreScreen({
           </ul>
         </nav>
 
-        <main className="flex min-h-0 flex-none basis-1/2 flex-col md:flex-1 md:basis-auto">
+        <main className="flex min-h-0 flex-none basis-1/2 flex-col bg-kaart md:flex-1 md:basis-auto">
           {/* Clipped, and the flag bound by the height it is given: on a phone
               this is half a screen shared with the facts, and a flag sized to
               the width alone overflowed onto the header and took the tap meant

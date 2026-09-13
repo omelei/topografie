@@ -6,7 +6,6 @@ import { t } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { usePreferences } from '@/features/player/settings';
 import { useTestPlan } from '@/features/home/testPlan';
 import { Tafeldiplomas } from './Tafeldiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
@@ -116,7 +115,6 @@ export function ModuleScreen({
   const [aantal, setAantal] = useState<number | null>(null);
   /** Whether the round should keep its answers until the end (ADR-085). */
   const [toetsstand, setToetsstand] = useState(false);
-  const prefs = usePreferences();
   const plan = useTestPlan();
   const kleinScherm = useSmallScreen();
   const nogId = useId();
@@ -178,7 +176,7 @@ export function ModuleScreen({
   // the way in becomes multiple choice (ADR-087). Pointing is still on the
   // page, at the end of the row.
   const krap = teDrukOmAanTeWijzen(chosen?.setId ?? null, chosen?.items.length ?? 0, kleinScherm);
-  const aangeboden = offeredForms(formsFor(module.id), prefs.timer, chosen?.setId ?? null, krap);
+  const aangeboden = offeredForms(formsFor(module.id), chosen?.setId ?? null, krap);
   // Before there is a set, a way that is only offered for some sets is not
   // offered yet: a tafeldiploma drawn before the table is a tile that can
   // vanish from under a finger the moment the child picks the Keersommen.
@@ -279,7 +277,9 @@ export function ModuleScreen({
 
   return (
     <div className="tk-page" data-module={module.id}>
-      <div className="tk-page-main">
+      {/* What is chosen here wears the module's colour (ADR-112). The child's
+          own column beside it does not: it is about the child, not the module. */}
+      <div className="tk-page-main" data-accent="module">
         <div className="flex flex-col gap-3">
           {/* Which module this is, as a badge in its own tint. On a phone and
               a tablet the rail is not drawn, and the menu above says it too;
@@ -617,7 +617,7 @@ export function ModuleScreen({
           it is in reach the whole way down and never lies over its own button.
           See .tk-startbalk-mobiel for what ADR-052 taught about building it. */}
       {kleinScherm ? (
-        <div className="tk-startbalk-mobiel tk-choose-start">
+        <div className="tk-startbalk-mobiel tk-choose-start" data-accent="module">
           <p className="tk-startbalk-zin">
             {klaar ? (
               <>
@@ -715,13 +715,13 @@ function mixVan(onderwerpen: readonly Onderwerp[]): string | null {
 
 /**
  * One of the page's numbered questions: the number in the module's text colour
- * and the question in ink, on a hairline. The number is drawn here rather than
- * written into the copy, because the modules do not have the same number of
- * questions.
+ * and the question in ink, on the hairline every section heading has. The
+ * number is drawn here rather than written into the copy, because the modules
+ * do not have the same number of questions.
  */
 function Stap({ nummer, label }: { readonly nummer: number; readonly label: string }) {
   return (
-    <h2 className="tk-stap">
+    <h2 className="tk-sectie">
       <span className="tk-stap-nummer">{nummer}</span> · {label}
     </h2>
   );

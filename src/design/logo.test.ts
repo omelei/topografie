@@ -1,58 +1,63 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { LOCKUP, LOCKUP_GLYPHS, LOCKUP_VAT, MERKTEKEN } from './logo';
+import { LOCKUP, LOCKUP_GLYPHS, LOCKUP_MERK, MERK, MERK_KLEIN, MERK_NAALD_VANAF_PX } from './logo';
 
 const svg = (name: string) =>
   readFileSync(join(process.cwd(), 'docs', 'logo', 'svg', name), 'utf8');
 
 /**
- * The part of a half level that is the delivered level's own lower edges: from
- * the end of the first curve to the start of the last one.
- */
-function lowerEdges(peil: string): string {
-  return peil.slice(peil.indexOf(' ', peil.indexOf('Q')) + 1, peil.lastIndexOf(' Q'));
-}
-
-/**
- * The logo, checked against the designer's files rather than against itself.
+ * The logo, checked against the files in docs/logo rather than against itself
+ * (ADR-113).
  *
- * If one of these fails, either the drawing in docs/logo changed and logo.ts has
- * to be copied again, or logo.ts was edited by hand — and the logo is the one
- * thing nobody should be retouching in a code review.
+ * The beeldmerk and the app icon are the designer's own SVGs. The wordmark was
+ * delivered as a picture only, so tools/logo/maak-logo.py cuts it to outlines
+ * from the font in the designer's uitwerking and writes both
+ * woordbeeld-inkt.svg and logo.ts. If one of these fails, either a file in
+ * docs/logo changed and the script has to run again, or logo.ts was edited by
+ * hand — and the logo is the one thing nobody should be retouching in a code
+ * review.
  */
 describe('the logo is the one in docs/logo', () => {
-  it('draws the wordmark on the same box', () => {
-    expect(svg('woordbeeld-inkt.svg')).toContain(`viewBox="0 0 ${LOCKUP.width} ${LOCKUP.height}"`);
-  });
-
-  it('copies every letter path for path', () => {
-    const file = svg('woordbeeld-inkt.svg');
-    expect(LOCKUP_GLYPHS).toHaveLength(6);
-    for (const glyph of LOCKUP_GLYPHS) {
-      expect(file).toContain(`<path transform="translate(${glyph.x},0)" d="${glyph.d}">`);
+  it('draws the beeldmerk as the designer did: a ring and a needle', () => {
+    for (const name of ['beeldmerk-inkt.svg', 'beeldmerk-papier.svg']) {
+      const file = svg(name);
+      expect(file, name).toContain(`<circle cx="${MERK.cx}" cy="${MERK.cy}" r="${MERK.r}"`);
+      expect(file, name).toContain(`stroke-width="${MERK.stroke}"`);
+      expect(file, name).toContain(`d="${MERK.naald}"`);
     }
   });
 
-  it('copies the wall of the vat, between the words and on its own', () => {
-    expect(svg('woordbeeld-inkt.svg')).toContain(`d="${LOCKUP_VAT.wall}"`);
-    expect(svg('merkteken-inkt.svg')).toContain(`d="${MERKTEKEN.wall}"`);
-    expect(svg('merkteken-papier.svg')).toContain(`d="${MERKTEKEN.wall}"`);
-    expect(svg('merkteken-klein-inkt.svg')).toContain(`d="${MERKTEKEN.solid}"`);
+  it('puts the same mark on the app icon', () => {
+    const file = svg('app-icoon.svg');
+    expect(file).toContain(`r="${MERK.r}"`);
+    expect(file).toContain(`d="${MERK.naald}"`);
   });
 
-  it('fills the vat to the half, where the designer clips it', () => {
-    // The files clip a whole inner diamond at the middle line; logo.ts carries
-    // the half that is left. Its bottom is the delivered edges, and it starts
-    // and ends on the line the clip is drawn at.
-    const woord = svg('woordbeeld-inkt.svg');
-    expect(woord).toContain('<rect x="339" y="100"');
-    expect(woord).toContain(lowerEdges(LOCKUP_VAT.peil));
-    expect(LOCKUP_VAT.peil).toMatch(/^M[\d.]+,100 .* [\d.]+,100 Z$/);
+  it('copies the wordmark path for path from its outlined file', () => {
+    const file = svg('woordbeeld-inkt.svg');
+    expect(file).toContain(`viewBox="0 0 ${LOCKUP.width} `);
+    // l, e, e, r, n, u.
+    expect(LOCKUP_GLYPHS).toHaveLength(6);
+    for (const d of LOCKUP_GLYPHS) expect(file).toContain(`<path d="${d}"/>`);
+    expect(file).toContain(
+      `<circle cx="${LOCKUP_MERK.cx}" cy="${LOCKUP_MERK.cy}" r="${LOCKUP_MERK.r}"`,
+    );
+    expect(file).toContain(`stroke-width="${LOCKUP_MERK.stroke}"`);
+    expect(file).toContain(`<path d="${LOCKUP_MERK.naald}"/>`);
+  });
 
-    const merk = svg('merkteken-inkt.svg');
-    expect(merk).toContain('<rect x="0" y="48"');
-    expect(merk).toContain(lowerEdges(MERKTEKEN.peil));
-    expect(MERKTEKEN.peil).toMatch(/^M[\d.]+,48 .* [\d.]+,48 Z$/);
+  it('keeps the ring between the words in the proportions of the mark on its own', () => {
+    // The same drawing at another size: ring to stroke as 38 to 13.
+    expect(LOCKUP_MERK.r / LOCKUP_MERK.stroke).toBeCloseTo(MERK.r / MERK.stroke, 1);
+    // And it stands inside the box, off the baseline, as the uitwerking lifts it.
+    expect(LOCKUP_MERK.cy + LOCKUP_MERK.r + LOCKUP_MERK.stroke / 2).toBeLessThan(LOCKUP.height);
+  });
+
+  it('drops the needle below 20px, as the favicon of 16 does', () => {
+    expect(MERK_NAALD_VANAF_PX).toBe(20);
+    const favicon = svg('favicon.svg');
+    expect(favicon).not.toContain('<path');
+    expect(MERK_KLEIN.stroke).toBeGreaterThan(MERK.stroke);
   });
 });

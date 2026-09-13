@@ -9,8 +9,9 @@
  *
  * The name is always lower case, including at the start of a sentence, and the
  * dot in the middle is the mark rather than punctuation — see Wordmark.tsx,
- * which draws it as the vat. This string is the name as *text*, for a document
- * title, a screen reader and anywhere the mark itself would be wrong.
+ * which draws it as the ring with its needle (ADR-113). This string is the name
+ * as *text*, for a document title, a screen reader and anywhere the mark itself
+ * would be wrong.
  */
 export const brand = {
   name: 'leer.nu',

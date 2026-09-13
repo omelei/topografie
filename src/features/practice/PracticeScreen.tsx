@@ -5,7 +5,6 @@ import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { MapCanvas } from './MapCanvas';
 import { RoundProgress } from './RoundProgress';
-import { SterTeller } from '@/features/reis/SterTeller';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
@@ -168,7 +167,12 @@ export function PracticeScreen({
         : 'wrong';
 
   return (
-    <div className="flex h-screen flex-col bg-papier" data-thema="ronde">
+    <div
+      className="flex h-screen flex-col bg-papier"
+      data-module="topo"
+      data-accent="module"
+      data-thema="ronde"
+    >
       {/* Everything that is not the question or the map, on one line at the top.
           No navigation at any size — this screen is not wrapped in the Shell at
           all (ADR-041), so there is nothing to hide. */}
@@ -188,10 +192,6 @@ export function PracticeScreen({
         {prefs.readAloud ? <SpeakButton text={vraag} /> : null}
 
         <div className="ml-auto flex items-center gap-4 md:gap-6">
-          {/* The star being filled, on every round screen and in every mode:
-              ten correct answers are one, and between two chests it is the only
-              thing that moves (ADR-099). */}
-          <SterTeller correct={state.correctCount} />
           {/* What is running out, or how far along you are — never both, because
               in a timed round the question number counts towards nothing. */}
           {state.secondsLeft !== null ? (

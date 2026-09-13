@@ -147,6 +147,7 @@ export function Shell({
                   key={module.id}
                   type="button"
                   data-module={module.id}
+                  data-accent="module"
                   aria-current={module.id === currentModule ? 'page' : undefined}
                   className="tk-rail-item"
                   onClick={() => onModule?.(module.id)}

@@ -67,23 +67,7 @@ describe('the tokens are the handoff’s', () => {
     ['nadruk', '#327f48'],
     ['nadruk-vlak', '#eafbec'],
     ['nadruk-tekst', '#2c5c3a'],
-    ['donker-grond', '#1a201b'],
-    ['donker-vlak', '#252c26'],
-    ['donker-land', '#2f3831'],
-    ['donker-rail', '#3a413b'],
-    ['donker-rand', '#566056'],
-    ['donker-land-hover', '#3e4a40'],
-    ['donker-grenslijn', '#7c867d'],
-    ['donker-nadruk', '#7fd494'],
-    ['donker-tekst', '#fbfaf6'],
-    ['donker-tekst-secundair', '#b9beb9'],
-    ['donker-tekst-tertiair', '#8c948c'],
-    ['donker-fout-rand', '#c98a8a'],
-    ['donker-fout-rand-kaart', '#e8b3b3'],
-    ['donker-fout-tekst', '#f2b8b8'],
-    ['donker-fout-tekst-kaart', '#f6d9d9'],
-    ['donker-fout-arcering', '#4a3030'],
-    ['donker-fout-arcering-kaart', '#5a3636'],
+    // The handoff's dark half is not carried since ADR-112: a round is light.
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
@@ -190,13 +174,15 @@ describe('the stylesheet uses them and nothing else', () => {
     expect(/(^|\n)\s*p\s*\{[^}]*text-wrap:\s*pretty/.test(cssCode)).toBe(true);
   });
 
-  it('takes a round dark and the hit targets up to 56', () => {
+  it('keeps a round on the app’s own colours and takes the hit targets up to 56', () => {
+    // ADR-112: a round is light like every other screen. It redefines no
+    // colour — only how big a control is.
     const start = css.indexOf("[data-thema='ronde'] {");
     const ronde = css.slice(start, css.indexOf('}', start));
-    expect(ronde).toContain('--papier: var(--donker-grond)');
-    expect(ronde).toContain('--kaart: var(--donker-vlak)');
     expect(ronde).toContain('--raak: var(--touch-ronde)');
     expect(ronde).toContain('--knop-hoogte: var(--touch-ronde)');
+    expect(ronde).not.toMatch(/--(papier|kaart|inkt|nadruk|accent)[\w-]*:/);
+    expect(cssCode).not.toMatch(/--donker-/);
   });
 });
 
@@ -238,7 +224,7 @@ describe('the old vocabulary is gone', () => {
   });
 });
 
-describe('a round is dark on every module', () => {
+describe('a round switches its hit targets on in every module', () => {
   it.each([
     ['src/features/practice/PracticeScreen.tsx'],
     ['src/features/sums/SumScreen.tsx'],

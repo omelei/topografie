@@ -1090,6 +1090,7 @@ const VLAG_MODES: readonly ModeId[] = [
   'vlag-zoeken',
   'vlag-meerkeuze',
   'vlag-gemengd',
+  'bliksemronde',
   'overleven',
   'vlag-diploma',
 ];

@@ -186,8 +186,6 @@ export type Route =
   | { readonly name: 'home' }
   | { readonly name: 'retention' }
   | { readonly name: 'you' }
-  /** The collection: every animal, diploma and stamp there is to get. */
-  | { readonly name: 'reis' }
   /** The streak: the days in a row, the days behind them, and how it works. */
   | { readonly name: 'reeks' }
   /** A module that exists, opened on one of its sets or on its own first. */
@@ -199,24 +197,13 @@ export type Route =
 
 export const RETENTION_SLUG = 'onthouden';
 export const YOU_SLUG = 'jij';
-/**
- * The collection has an address of its own rather than a tab in the bar.
- *
- * It is a place a child goes on purpose, from the card in their own column
- * that says where the journey is — not one of the four places the product is
- * organised around. A fifth tab would have made it look like a section of the
- * app rather than what it is: the long view of one card.
+/*
+ * /voortgang (and the older /ontdekkingsreis) was the collection: the heroes,
+ * the chest and the level. It is hidden while it is thought through again
+ * (ADR-112), so neither word is an address any more and both fall through to
+ * the front door, like any other word the router does not know.
  */
-export const REIS_SLUG = 'voortgang';
-/**
- * What the collection used to be called, and still answers to.
- *
- * "Jouw ontdekkingsreis" became "Jouw voortgang", and a rename that breaks the
- * address a parent wrote on the fridge is a rename that costs somebody a page
- * that will not open. The old word still resolves; nothing links to it.
- */
-export const REIS_SLUG_OUD = 'ontdekkingsreis';
-/** The streak's page, reached from the streak block the way the collection is (ADR-110). */
+/** The streak's page, reached from the streak block in the child's own column (ADR-110). */
 export const REEKS_SLUG = 'reeks';
 
 /**
@@ -257,7 +244,6 @@ export function routeFor(pathname: string): Route {
   if (slug === '') return { name: 'home' };
   if (slug === RETENTION_SLUG) return { name: 'retention' };
   if (slug === YOU_SLUG) return { name: 'you' };
-  if (slug === REIS_SLUG || slug === REIS_SLUG_OUD) return { name: 'reis' };
   if (slug === REEKS_SLUG) return { name: 'reeks' };
 
   const [head = '', tail] = slug.split('/');
@@ -285,7 +271,6 @@ function slugFor(route: Route): string {
   if (route.name === 'home') return '';
   if (route.name === 'retention') return RETENTION_SLUG;
   if (route.name === 'you') return YOU_SLUG;
-  if (route.name === 'reis') return REIS_SLUG;
   if (route.name === 'reeks') return REEKS_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];

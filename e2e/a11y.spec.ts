@@ -134,18 +134,20 @@ test('the module pages have no violations, in each of their four shapes', async 
 });
 
 /**
- * The collection: twelve heroes, twelve diplomas and ten stamps, most of them
- * not earned yet. It is the densest page in the product and the one where the
- * temptation to say "not yet" with a colour alone is strongest, so it is worth
- * a scan of its own (ADR-076).
+ * Jij: ten badges and eighteen diplomas, most of them not earned yet (ADR-112).
+ * It is where the temptation to say "not yet" with a colour alone is
+ * strongest, so it is worth a scan of its own — and so is Onthouden, which is
+ * a table and a wall of dots.
  */
-test('the collection page has no violations', async ({ page }) => {
+test('the Jij page and the Onthouden page have no violations', async ({ page }) => {
   await signIn(page, 'Lieve');
 
-  await page.goto('/voortgang');
-  // Level one: the card in the column beside it carries the same name, which
-  // is right — it is the short view of this page and links to it.
-  await expect(page.getByRole('heading', { name: 'Jouw voortgang', level: 1 })).toBeVisible();
+  await page.goto('/jij');
+  await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  await page.goto('/onthouden');
+  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
 

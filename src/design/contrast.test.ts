@@ -21,60 +21,35 @@ import { describe, expect, it } from 'vitest';
 const CSS_PATH = join(process.cwd(), 'src', 'index.css');
 const css = readFileSync(CSS_PATH, 'utf8');
 
-type Theme = 'licht' | 'ronde';
-
 /**
- * The two themes, read apart (ADR-109).
- *
- * Light is `:root`. The round's is the block `data-thema="ronde"` switches on,
- * which redefines the same role names — `--kaart`, `--inkt`, `--nadruk` — with
- * the handoff's dark values. A lookup that is not scoped to a theme would find
- * the light declaration first and report every dark token at its light value,
- * measuring the wrong colours while claiming the round was checked.
- *
- * The round block has no nested braces, so it ends at the first `}`.
+ * The one theme there is: `:root`. A round used to redefine the roles with the
+ * handoff's dark values (ADR-109); since ADR-112 it is light like the rest of
+ * the app, so every colour is measured once, where it is declared. The root
+ * block has no nested braces, so it ends at the first `}`.
  */
-const RONDE_OPEN = "[data-thema='ronde'] {";
-const rondeStart = css.indexOf(RONDE_OPEN);
-if (rondeStart < 0) throw new Error(`No round theme block in ${CSS_PATH}`);
+const rootStart = css.indexOf(':root {');
+if (rootStart < 0) throw new Error(`No :root block in ${CSS_PATH}`);
+const root = css.slice(rootStart, css.indexOf('}', rootStart));
 
-const blocks: Record<Theme, string> = {
-  licht: css.slice(0, rondeStart),
-  ronde: css.slice(rondeStart, css.indexOf('}', rondeStart)),
-};
-
-/**
- * One token's declaration in a theme. A token the round does not redefine
- * falls back to the light block, which is what the cascade does too.
- *
- * The lookbehind keeps `--kaart` from matching `--padding-kaart`.
- */
-function declarationOf(name: string, theme: Theme): string {
-  const here = new RegExp(`(?<![\\w-])--${name}:\\s*([^;]+);`).exec(blocks[theme]);
+/** One token's declaration. The lookbehind keeps `--kaart` from matching `--padding-kaart`. */
+function declarationOf(name: string): string {
+  const here = new RegExp(`(?<![\\w-])--${name}:\\s*([^;]+);`).exec(root);
   if (here?.[1]) return here[1].trim();
-  if (theme === 'ronde') return declarationOf(name, 'licht');
   throw new Error(`Token --${name} not found in ${CSS_PATH}`);
 }
 
-/**
- * A token's value, resolved.
- *
- * A reference resolves in the theme being asked about, not in the theme its
- * declaration was written in: `--map-land` is declared once, as
- * `var(--papier)`, and is a different colour in a round because var() is
- * resolved where it is used.
- */
-function token(name: string, theme: Theme = 'licht', seen: string[] = []): string {
+/** A token's value, resolved through var() references to a hex. */
+function token(name: string, seen: string[] = []): string {
   if (seen.includes(name))
     throw new Error(`Token --${name} refers to itself: ${seen.join(' -> ')}`);
 
-  const value = declarationOf(name, theme);
+  const value = declarationOf(name);
   if (/^#[0-9a-fA-F]{6}$/.test(value)) return value;
 
   const reference = /^var\(\s*--([a-z0-9-]+)\s*\)$/.exec(value);
-  if (reference?.[1]) return token(reference[1], theme, [...seen, name]);
+  if (reference?.[1]) return token(reference[1], [...seen, name]);
 
-  throw new Error(`Token --${name} in the ${theme} theme is not a colour: ${value}`);
+  throw new Error(`Token --${name} is not a colour: ${value}`);
 }
 
 function channels(hex: string): [number, number, number] {
@@ -97,15 +72,15 @@ export function contrastRatio(a: string, b: string): number {
   return (hi + 0.05) / (lo + 0.05);
 }
 
-function ratio(foreground: string, background: string, theme: Theme): number {
-  return contrastRatio(token(foreground, theme), token(background, theme));
+function ratio(foreground: string, background: string): number {
+  return contrastRatio(token(foreground), token(background));
 }
 
 /** The seven modules, in the rail order of ADR-029. */
 const MODULES = ['topo', 'tafels', 'klok', 'woorden', 'spelling', 'tijdvakken', 'vlaggen'] as const;
 const REEKSEN = ['brons', 'zilver', 'goud', 'platina', 'ultra'] as const;
 
-describe('contrast, light', () => {
+describe('contrast', () => {
   it.each([
     ['inkt', 'kaart'],
     ['inkt', 'papier'],
@@ -130,8 +105,10 @@ describe('contrast, light', () => {
     ['fout-tekst', 'fout-arcering-grond'],
     ['inkt', 'vlak-hover'],
     ['inkt', 'map-land'],
+    // A map shape under the pointer, with its name drawn on it.
+    ['inkt', 'map-land-hover'],
   ])('%s on %s clears 4.5:1', (foreground, background) => {
-    expect(ratio(foreground, background, 'licht')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(foreground, background)).toBeGreaterThanOrEqual(4.5);
   });
 
   /**
@@ -147,46 +124,17 @@ describe('contrast, light', () => {
     ['fout', 'papier'],
     ['accent', 'kaart'],
     ['map-grens', 'map-land'],
+    ['map-grens', 'map-land-hover'],
     ['fout-kaart-rand', 'map-land'],
     ['tekst-tertiair', 'kaart'],
   ])('%s on %s clears 3:1 as a non-text indicator', (foreground, background) => {
-    expect(ratio(foreground, background, 'licht')).toBeGreaterThanOrEqual(3);
-  });
-});
-
-describe('contrast, in a round', () => {
-  it.each([
-    ['inkt', 'papier'],
-    ['inkt', 'kaart'],
-    ['tekst-secundair', 'kaart'],
-    ['tekst-tertiair', 'kaart'],
-    ['nadruk', 'kaart'],
-    ['nadruk', 'papier'],
-    ['kaart', 'inkt'],
-    ['kaart', 'nadruk'],
-    ['accent-text', 'accent-tint'],
-    ['fout', 'kaart'],
-    ['fout', 'papier'],
-    ['fout-tekst', 'fout-arcering-grond'],
-    ['inkt', 'vlak-hover'],
-    ['inkt', 'map-land'],
-  ])('%s on %s clears 4.5:1', (foreground, background) => {
-    expect(ratio(foreground, background, 'ronde')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(foreground, background)).toBeGreaterThanOrEqual(3);
   });
 
-  it.each([
-    ['rand-bediening', 'kaart'],
-    ['rand-bediening', 'papier'],
-    ['map-grens', 'map-land'],
-    ['fout-kaart-rand', 'map-land'],
-    ['accent', 'kaart'],
-  ])('%s on %s clears 3:1 as a non-text indicator', (foreground, background) => {
-    expect(ratio(foreground, background, 'ronde')).toBeGreaterThanOrEqual(3);
-  });
-
-  it('really is dark: the ground is the handoff ink', () => {
-    expect(token('papier', 'ronde')).toBe(token('inkt', 'licht'));
-    expect(token('inkt', 'ronde')).toBe(token('kaart', 'licht'));
+  it('is light in a round too: a round redefines no colour', () => {
+    const start = css.indexOf("[data-thema='ronde'] {");
+    const ronde = css.slice(start, css.indexOf('}', start));
+    expect(ronde).not.toMatch(/--(papier|kaart|inkt|tekst|rand|nadruk|fout|accent|map)[\w-]*:/);
   });
 });
 
@@ -196,29 +144,33 @@ describe('the colours outside the handoff table', () => {
    * still has a colour of its own. Text on it is the module's text colour.
    */
   it.each(MODULES.map((name) => [name] as const))('%s-text clears 4.5:1 on its tint', (name) => {
-    expect(ratio(`${name}-text`, `${name}-tint`, 'licht')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(`${name}-text`, `${name}-tint`)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  /**
+   * Inside a module the accent is the module's colour (ADR-112), so its colour
+   * is the double rule round a chosen tile and the fill of a round's dots: a
+   * non-text indicator, on a card and on the ground.
+   */
+  it.each(MODULES.map((name) => [name] as const))('%s clears 3:1 as a chosen rule', (name) => {
+    expect(ratio(name, 'kaart')).toBeGreaterThanOrEqual(3);
+    expect(ratio(name, 'papier')).toBeGreaterThanOrEqual(3);
+    expect(ratio(`${name}-text`, 'papier')).toBeGreaterThanOrEqual(4.5);
   });
 
   /**
    * The collection's five materials (ADR-071). They carry a drawing rather
-   * than text, so the floor is three; gold is also the stars in a round's bar,
-   * so it is measured on the round's ground as well.
+   * than text, so the floor is three.
    */
   it.each(REEKSEN.map((reeks) => [reeks] as const))('draws %s legibly on a card', (reeks) => {
-    expect(ratio(`reeks-${reeks}`, 'kaart', 'licht')).toBeGreaterThanOrEqual(3);
-  });
-
-  it('draws the stars legibly on the ground of a round', () => {
-    expect(ratio('reeks-goud', 'papier', 'ronde')).toBeGreaterThanOrEqual(3);
+    expect(ratio(`reeks-${reeks}`, 'kaart')).toBeGreaterThanOrEqual(3);
   });
 
   it.each(REEKSEN.map((reeks) => [reeks] as const))(
     'names %s legibly in its deep tone, and draws on it in the light',
     (reeks) => {
-      expect(ratio(`reeks-${reeks}-diep`, 'kaart', 'licht'), 'deep tone').toBeGreaterThanOrEqual(
-        4.5,
-      );
-      expect(ratio('reeks-licht', `reeks-${reeks}`, 'licht'), 'drawing').toBeGreaterThanOrEqual(3);
+      expect(ratio(`reeks-${reeks}-diep`, 'kaart'), 'deep tone').toBeGreaterThanOrEqual(4.5);
+      expect(ratio('reeks-licht', `reeks-${reeks}`), 'drawing').toBeGreaterThanOrEqual(3);
     },
   );
 
