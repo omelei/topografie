@@ -77,11 +77,12 @@ test('the rail is the map of the product, not a list of what is finished', async
     await expect(rail.getByRole('button', { name: naam, exact: true })).toBeVisible();
   }
 
-  // And a door that is not open says so rather than opening onto nothing,
-  // which is the half of ADR-037 that survives. Klokkijken used to be the
-  // example here and is open now, so this asks the next one along.
-  await rail.getByRole('button', { name: 'Taal', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Taal' })).toBeVisible();
+  // Every door on the rail is open now — Taal was the last (ADR-118) — so a
+  // door opens its module's page and the rail says which one is showing.
+  const taal = rail.getByRole('button', { name: 'Taal', exact: true });
+  await taal.click();
+  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(taal).toHaveAttribute('aria-current', 'page');
 });
 
 test('the tables have an address of their own', async ({ page }) => {

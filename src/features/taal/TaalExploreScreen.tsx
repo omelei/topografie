@@ -64,7 +64,14 @@ export function TaalExploreScreen({
         </button>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      {/* The one part of the screen that scrolls, and it holds nothing that
+          takes focus, so without a tab stop of its own a keyboard could not
+          scroll it (axe: scrollable-region-focusable). */}
+      <main
+        className="min-h-0 flex-1 overflow-y-auto"
+        tabIndex={0}
+        aria-label={deel ? naamVan(deel) : undefined}
+      >
         <div className="tk-uitslag-kolom p-6">
           {uitleg === null ? null : (
             <section className="tk-card flex flex-col gap-3" aria-label={t('taal.explore.regel')}>
