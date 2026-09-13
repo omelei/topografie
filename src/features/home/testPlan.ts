@@ -16,10 +16,11 @@ import { getSetting, setSetting } from '@/store/profile';
  * decides what the front door offers to carry on with, and it is the one thing
  * on that screen which acts on what the child typed.
  *
- * Only subjects that exist may be chosen. Offering a test for woordjes would
+ * Only subjects that exist may be chosen. Offering a test for tijdvakken would
  * be promising practice material for it, and ADR-037's rule is that this
- * product does not make a child a promise it has not kept yet. Klokkijken was
- * the example here until it was built, which is the list doing its job.
+ * product does not make a child a promise it has not kept yet. Klokkijken and
+ * then woordjes were the example here until they were built; Taal is a subject
+ * a test can be set for since ADR-118, which is the list doing its job.
  *
  * They live in `settings`, which is a key and a value: a fact about the device
  * the family shares, needing no schema change. The list is JSON in one row

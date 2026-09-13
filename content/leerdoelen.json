@@ -85,6 +85,55 @@
       "omschrijving": "De leerling noemt de landen van een werelddeel bij naam.",
       "leerjaar": ["groep7", "groep8"],
       "kerndoelRefs": []
+    },
+    {
+      "id": "nl-sp-onthoudwoorden",
+      "code": "NL.SP.O1",
+      "omschrijving": "De leerling schrijft woorden met ei of ij, au of ou, g of ch en c of k zoals ze in de Woordenlijst staan.",
+      "leerjaar": ["groep5", "groep6", "groep7"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-sp-d-of-t",
+      "code": "NL.SP.D1",
+      "omschrijving": "De leerling kiest aan het eind van een woord tussen d en t door het woord langer te maken.",
+      "leerjaar": ["groep5", "groep6"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-sp-een-of-twee",
+      "code": "NL.SP.K1",
+      "omschrijving": "De leerling schrijft een klinker of een medeklinker één of twee keer, door het woord in stukjes te hakken.",
+      "leerjaar": ["groep5", "groep6"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-sp-woordeinden",
+      "code": "NL.SP.E1",
+      "omschrijving": "De leerling schrijft verkleinwoorden en woorden op -ig en -lijk goed.",
+      "leerjaar": ["groep5", "groep6", "groep7"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-ww-tegenwoordige-tijd",
+      "code": "NL.WW.T1",
+      "omschrijving": "De leerling schrijft de tegenwoordige tijd bij ik, jij en hij goed, ook als het werkwoord op d eindigt.",
+      "leerjaar": ["groep6"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-ww-verleden-tijd",
+      "code": "NL.WW.V1",
+      "omschrijving": "De leerling kiest in de verleden tijd tussen -te en -de met ’t kofschip.",
+      "leerjaar": ["groep7"],
+      "kerndoelRefs": []
+    },
+    {
+      "id": "nl-ww-voltooid-deelwoord",
+      "code": "NL.WW.D1",
+      "omschrijving": "De leerling schrijft het voltooid deelwoord met een t of een d, en zonder ge- na be-, ver-, ont-, her-, ge- en er-.",
+      "leerjaar": ["groep7"],
+      "kerndoelRefs": []
     }
   ]
 }

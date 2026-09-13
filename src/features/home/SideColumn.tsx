@@ -15,6 +15,7 @@ import {
 } from '@/features/module/onderdelen';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
+import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
 import { ReeksBlok } from './ReeksBlok';
 import { ToetsenBlok } from './ToetsenBlok';
@@ -26,9 +27,14 @@ import { ToetsenBlok } from './ToetsenBlok';
  *
  * It is the same column on every page inside the shell, because it is what the
  * app knows about the child, and that does not change when they walk into
- * topography. The front door lays the same blocks out itself — it puts them in
- * the flow of its own page below 1200 — so each block is exported on its own as
- * well as in this column (ADR-094).
+ * topography. The front door lays the same blocks out itself, so each block is
+ * exported on its own as well as in this column (ADR-094).
+ *
+ * **Only beside the page, from 1200** (ADR-119). Below that the column used to
+ * go into the flow of every page, under the work, and on a phone or a tablet it
+ * was four blocks to scroll past on the way to nothing. The owner asked for it
+ * to go there. The front door keeps the tests below 1200, because they are the
+ * one block that is also where a test is planned.
  *
  * "Jouw voortgang" — the hero, the chest and the level — is not here any more
  * (ADR-112). It is hidden while it is thought through again; what a child earns
@@ -45,6 +51,9 @@ export function SideColumn({
   readonly onReeks: () => void;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
+  const desk = useDesk();
+  if (!desk) return null;
+
   return (
     <aside className="tk-home-aside">
       <ToetsenBlok />

@@ -93,17 +93,18 @@ export const POPULAR_SHOWN = 5;
  * numbers in front of children.
  *
  * So they are named as what they are: the ones to start with. The first a
- * Dutch child meets in topography, in rekenen and on the clock, and two ways
- * into flags. Five, because that is what the row holds (ADR-094): the flags
- * took the places of the capitals and the sums to twenty, which were each a
- * second card for a module that already had one (ADR-102).
+ * Dutch child meets in topography, in rekenen, on the clock, in flags and in
+ * Taal. Five, because that is what the row holds (ADR-094): the flags took the
+ * places of the capitals and the sums to twenty (ADR-102), and Taal's ei or ij
+ * took the second flags card, the world's well-known flags, so that every
+ * module has one card and none has two (ADR-118).
  */
 const STARTERS: readonly { readonly setId: string; readonly mode: ModeId }[] = [
   { setId: 'nl-provincies', mode: 'wijs-aan' },
   { setId: 'tafel-2', mode: 'som-typen' },
   { setId: 'klok-heel', mode: 'klok-meerkeuze' },
   { setId: 'vlag-europa-bekend', mode: 'vlag-meerkeuze' },
-  { setId: 'vlag-wereld-bekend', mode: 'vlag-zoeken' },
+  { setId: 'taal-sp-eiij', mode: 'taal-letters' },
 ];
 
 /**

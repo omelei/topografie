@@ -24,7 +24,7 @@ import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
 import { TaalResultScreen } from './TaalResultScreen';
-import { goedAntwoord, useTaalRound, type TaalRoundState, type TaalVraag } from './useTaalRound';
+import { useTaalRound, type TaalRoundState, type TaalVraag } from './useTaalRound';
 
 /**
  * One round of Taal (ADR-118).

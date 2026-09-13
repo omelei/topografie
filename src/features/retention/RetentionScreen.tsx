@@ -7,11 +7,14 @@ import {
   type ItemState,
   type KlokItem,
   type Schedulable,
+  type SpellingItem,
   type SumItem,
   type VlagItem,
+  type WerkwoordItem,
 } from '@/game-core';
 import { klokVoluit } from '@/features/klok/klokTaal';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
+import { regiosVan } from '@/features/module/regios';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -125,7 +128,10 @@ function Onthouden({ aside }: { readonly aside: ReactNode }) {
   const modules = BUILT_MODULES;
   const soorten = moduleId === 'tafels' ? somSoorten(states) : [];
   const soort = soorten.find((vak) => vak.id === soortId) ?? soorten[0] ?? null;
-  const sets = setsVan(moduleId, states, soort?.id ?? null);
+  // Taal asks which part first, as its own page does (ADR-118).
+  const delen = moduleId === 'woorden' ? regiosVan('woorden') : [];
+  const deelKeuze = delen.find((kandidaat) => kandidaat.id === soortId) ?? delen[0] ?? null;
+  const sets = setsVan(moduleId, states, deelKeuze?.id ?? soort?.id ?? null);
   // The set the child chose, or the module's first: topography opens on the
   // provinces, as it always has.
   const deel = sets.find((kandidaat) => kandidaat.setId === setId) ?? sets[0] ?? null;
@@ -191,6 +197,25 @@ function Onthouden({ aside }: { readonly aside: ReactNode }) {
                   }}
                 >
                   {t(vak.naam)}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {delen.length > 0 ? (
+            <div className="tk-keuzes" role="group" aria-label={t('deel.title')}>
+              {delen.map((kandidaat) => (
+                <button
+                  key={kandidaat.id}
+                  type="button"
+                  className="tk-keuze"
+                  aria-pressed={kandidaat.id === deelKeuze?.id}
+                  onClick={() => {
+                    setSoortId(kandidaat.id);
+                    setSetId(null);
+                  }}
+                >
+                  {t(kandidaat.naam)}
                 </button>
               ))}
             </div>
@@ -275,6 +300,7 @@ function Onthouden({ aside }: { readonly aside: ReactNode }) {
  * well-known and the look-alikes are the same flags again, and twenty chips
  * are not a choice. Rekenen asks which kind of sum first (`onderwerpenVan`),
  * as its own page does, because thirty-odd sets in one row are not one either.
+ * Taal asks which part first, Spelling or Werkwoorden, for the same reason.
  */
 function setsVan(
   moduleId: Module['id'],
@@ -285,6 +311,7 @@ function setsVan(
   const sets: Onderdeel[] = [];
   for (const vak of onderwerpenVan(moduleId, states)) {
     if (moduleId === 'tafels' && vak.id !== onderwerpId) continue;
+    if (moduleId === 'woorden' && vak.regio !== onderwerpId) continue;
     for (const deel of vak.sets) {
       if (deel.mix || deel.setId.endsWith('fouten') || gezien.has(deel.setId)) continue;
       if (
@@ -310,12 +337,17 @@ function somSoorten(states: ReadonlyMap<string, ItemState>) {
 
 /**
  * What an item is called, in the words its own round uses: the name of a
- * place or a flag, the sum as it is written, the time in full.
+ * place or a flag, the sum as it is written, the time in full — and in Taal the
+ * word, or for a verb the sentence, because "wordt" is three items apart.
  */
 function itemNaam(moduleId: Module['id'], item: Schedulable): string {
   if (moduleId === 'tafels') return sumText(item as SumItem);
   if (moduleId === 'klok') return klokVoluit(item as KlokItem);
   if (moduleId === 'vlaggen') return (item as VlagItem).naam;
+  if (moduleId === 'woorden') {
+    const taalItem = item as SpellingItem | WerkwoordItem;
+    return 'woord' in taalItem ? taalItem.woord : taalItem.zin;
+  }
   return (item as Item).naam;
 }
 

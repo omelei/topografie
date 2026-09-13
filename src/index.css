@@ -1394,10 +1394,10 @@
 
   /* ---- The page inside the shell ----------------------------------------
    * One column of work, and from 1200 the child's own column of 320 beside it
-   * with 48 between (ADR-094). Below 1200 nothing stands beside anything: the
-   * child's blocks go into the flow of the page, and which of them goes where
-   * is the page's decision — `HomeScreen` and `SideColumn` make it in React,
-   * because it changes the reading order and not only the drawing.
+   * with 48 between (ADR-094). Below 1200 nothing stands beside anything, and
+   * the child's column is not drawn at all — the front door keeps its tests
+   * above the rows (ADR-119). `HomeScreen` and `SideColumn` decide that in
+   * React, so what is not drawn is not read out either.
    *
    * The front door and a module page are one shape and share every number
    * here. They keep two names because the front door's middle holds rows and a
@@ -1473,20 +1473,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-  /* Progress and tests side by side on a tablet, and exactly as tall as each
-   * other. A grid row does that without either block knowing about the other.
-   * One under the other on a phone. */
-  .tk-home-paar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-  @media (min-width: 768px) {
-    .tk-home-paar {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
   }
 
   /* ---- A block in the child's own column --------------------------------

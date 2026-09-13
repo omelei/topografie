@@ -6,6 +6,7 @@ import {
   onderdelen,
   onderwerpenVan,
   startbareOnderdelen,
+  starters,
 } from '@/features/module/onderdelen';
 import { regiosVan, TAAL_DELEN } from '@/features/module/regios';
 import { MODULES, type Module } from '@/features/shell/modules';
@@ -80,6 +81,13 @@ describe('the page', () => {
     expect(per('spelling', new Map(ids.map(fout)))).toContain('taal-sp-fouten');
     expect(per('spelling', new Map(ids.slice(0, 4).map(fout)))).not.toContain('taal-sp-fouten');
     expect(per('werkwoorden', new Map(ids.map(fout)))).not.toContain('taal-ww-fouten');
+  });
+
+  it('has one card among the five a new child starts with: ei or ij, by choosing', () => {
+    const taalKaarten = starters().filter((entry) => entry.deel.moduleId === 'woorden');
+    expect(taalKaarten.map((entry) => [entry.deel.setId, entry.mode])).toEqual([
+      ['taal-sp-eiij', 'taal-letters'],
+    ]);
   });
 
   it('counts every spelling word once toward progress, and not the mix', () => {
