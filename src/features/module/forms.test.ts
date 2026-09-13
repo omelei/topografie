@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
   KLOK_FORMS,
   MAX_FORMS,
+  SPELLING_FORMS,
   SUM_FORMS,
   TOPO_FORMS,
   VLAG_FORMS,
+  WERKWOORD_FORMS,
   formsFor,
   minutesFor,
   offeredForms,
@@ -26,6 +28,14 @@ describe('the oefentoets', () => {
     expect(vorm('tafels', SUM_FORMS, 'tafel-7')).toBe('som-typen');
     expect(vorm('klok', KLOK_FORMS, 'klok-heel')).toBe('klok-typen');
   });
+
+  it('types in the way of the part on Taal: the flitsdictee, or the verb form', () => {
+    // Per part rather than per module (ADR-118): Engels will type in a third.
+    const spelling = offeredForms(formsFor('woorden', 'spelling'), 'taal-sp-eiij');
+    const werkwoorden = offeredForms(formsFor('woorden', 'werkwoorden'), 'taal-ww-tt');
+    expect(toetsVormVan('woorden', spelling, 'spelling')?.id).toBe('taal-flitsdictee');
+    expect(toetsVormVan('woorden', werkwoorden, 'werkwoorden')?.id).toBe('taal-vorm-typen');
+  });
 });
 
 /**
@@ -40,8 +50,8 @@ describe('the oefentoets', () => {
 describe('the ways of practising', () => {
   const ORDE = [
     ['wijs-aan', 'klok-welke-klok', 'vlag-zoeken'],
-    ['meerkeuze', 'som-meerkeuze', 'klok-meerkeuze', 'vlag-meerkeuze'],
-    ['hoe-heet-dit', 'som-typen', 'klok-typen'],
+    ['meerkeuze', 'som-meerkeuze', 'klok-meerkeuze', 'vlag-meerkeuze', 'taal-letters', 'taal-vorm-kiezen'],
+    ['hoe-heet-dit', 'som-typen', 'klok-typen', 'taal-flitsdictee', 'taal-vorm-typen'],
     ['ontdekken'],
     ['bliksemronde'],
     ['overleven'],
@@ -49,6 +59,7 @@ describe('the ways of practising', () => {
     ['vlag-gemengd'],
   ];
   const plek = (id: string) => ORDE.findIndex((groep) => groep.includes(id));
+  const ALLE = [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS, SPELLING_FORMS, WERKWOORD_FORMS];
 
   it('runs in the same order on every page', () => {
     expect(TOPO_FORMS.map((form) => form.id)).toEqual([
@@ -75,8 +86,20 @@ describe('the ways of practising', () => {
       'overleven',
       'klok-diploma',
     ]);
+    expect(SPELLING_FORMS.map((form) => form.id)).toEqual([
+      'taal-letters',
+      'taal-flitsdictee',
+      'ontdekken',
+      'overleven',
+    ]);
+    expect(WERKWOORD_FORMS.map((form) => form.id)).toEqual([
+      'taal-vorm-kiezen',
+      'taal-vorm-typen',
+      'ontdekken',
+      'overleven',
+    ]);
 
-    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
+    for (const forms of ALLE) {
       const plekken = forms.map((form) => plek(form.id));
       expect(plekken, forms.map((form) => form.id).join(', ')).not.toContain(-1);
       expect(plekken).toEqual([...plekken].sort((a, b) => a - b));
@@ -84,7 +107,7 @@ describe('the ways of practising', () => {
   });
 
   it('puts the free ways before the premium ones', () => {
-    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
+    for (const forms of ALLE) {
       const premium = forms.map((form) => isPremiumVorm(form.id));
       expect(premium).toEqual([...premium].sort((a, b) => Number(a) - Number(b)));
     }
@@ -106,8 +129,28 @@ describe('the ways of practising', () => {
     }
   });
 
+  it('offers no bliksemronde and no diploma on Taal, whatever the part', () => {
+    // ADR-118, departing from ADR-112's "a bliksemronde on every page": a clock
+    // on spelling teaches guessing, and no school hands out a spelling diploma.
+    for (const forms of [SPELLING_FORMS, WERKWOORD_FORMS]) {
+      const ids = forms.map((form) => form.id);
+      expect(ids).not.toContain('bliksemronde');
+      expect(ids.some((id) => id.endsWith('diploma'))).toBe(false);
+    }
+    expect(formsFor('woorden', 'spelling')).toBe(SPELLING_FORMS);
+    expect(formsFor('woorden', 'werkwoorden')).toBe(WERKWOORD_FORMS);
+    // With Spelling chosen and no subject yet, the page shows spelling's ways.
+    expect(formsFor('woorden', null)).toBe(SPELLING_FORMS);
+    // No exploring a mix or a list of mistakes, as everywhere.
+    const opMix = offeredForms(SPELLING_FORMS, 'taal-sp-mix').map((form) => form.id);
+    expect(opMix).not.toContain('ontdekken');
+    expect(offeredForms(WERKWOORD_FORMS, 'taal-ww-tt').map((form) => form.id)).toContain(
+      'ontdekken',
+    );
+  });
+
   it('gives every way a reason and a face', () => {
-    for (const form of [...TOPO_FORMS, ...SUM_FORMS, ...KLOK_FORMS, ...VLAG_FORMS]) {
+    for (const form of ALLE.flat()) {
       expect(form.reason, form.id).toMatch(/^way\./);
       expect(typeof form.icon, form.id).toBe('function');
     }
@@ -117,7 +160,7 @@ describe('the ways of practising', () => {
     // Six cards a child recognises rather than six cards a child reads is the
     // whole argument for an icon here, and it collapses the moment two of them
     // are the same drawing.
-    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
+    for (const forms of ALLE) {
       const icons = forms.map((form) => form.icon);
       expect(new Set(icons).size).toBe(icons.length);
     }

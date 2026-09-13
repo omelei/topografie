@@ -19,6 +19,8 @@ import {
 } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { isVlagFouten, isVlagMix } from '@/content/loadVlaggen';
+import { isTaalFouten, isTaalMix } from '@/content/loadTaal';
+import { TAAL_ROUND_RULE } from '@/features/taal/taalRegels';
 import { loadItemSets } from '@/content/loadSets';
 import {
   isFoutenSet,
@@ -422,10 +424,130 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
 ];
 
 /**
- * The way the oefentoets answers in, per module: typing, because that is what a
- * test asks — the name unaided, the sum unaided, the time written out. The
- * oefentoets is a tile of its own and pressing it chooses this way too, so a
- * child is never asked to pick a way a test does not have (ADR-100).
+ * Spelling, in the order every page has (ADR-112) — and with three of its ways
+ * missing on purpose (ADR-118).
+ *
+ * **No zoeken.** On the map the name is given and the place is found; the
+ * spelling version would be a word given by ear and the right spelling found
+ * among four. Three of those four would be the word spelled wrong, and a child
+ * who looks at a wrong picture of a word keeps it. So the options here are
+ * never words, only the letters that decide.
+ *
+ * **Kies de letters** is the meerkeuze: the sentence with the word in it and
+ * the deciding letters open, and two to four letter pieces to put there. The
+ * step up to writing, not a way round it.
+ *
+ * **Flitsdictee** is zelf typen: the word stands in its sentence for three
+ * seconds, goes, and the child writes all of it — kijken, afdekken, schrijven,
+ * controleren. The three seconds are for looking; the typing has no clock.
+ *
+ * **Ontdekken**: the set as a list, the deciding letters marked and the rule
+ * in a sentence. Not on a mix or a list of mistakes, where nobody meets a set.
+ *
+ * **No bliksemronde.** Spelling is thinking, not recognising, and a clock on
+ * it teaches guessing (businessplan v6 §5.8). This departs from ADR-112's
+ * "a bliksemronde on every page", and ADR-118 says so.
+ *
+ * **Overleven**, over three lives, asks the letters. **No diploma**: no school
+ * hands one out for spelling, and inventing one would be inventing a
+ * certificate. The oefentoets is the flitsdictee, with nothing said until the
+ * end (`TOETS_VORM`).
+ */
+export const SPELLING_FORMS: readonly PracticeForm[] = [
+  {
+    id: 'taal-letters',
+    name: 'mode.taal-letters',
+    reason: 'way.taal-letters',
+    icon: ChoiceIcon,
+    rule: TAAL_ROUND_RULE['taal-letters'],
+    seconds: 8,
+  },
+  {
+    id: 'taal-flitsdictee',
+    name: 'mode.taal-flitsdictee',
+    reason: 'way.taal-flitsdictee',
+    icon: KeyboardIcon,
+    rule: TAAL_ROUND_RULE['taal-flitsdictee'],
+    seconds: 12,
+  },
+  {
+    id: 'ontdekken',
+    name: 'mode.ontdekken',
+    reason: 'way.ontdekken',
+    icon: ExploreIcon,
+    rule: null,
+    seconds: null,
+    geldtVoor: (setId) => !isTaalMix(setId) && !isTaalFouten(setId),
+  },
+  {
+    id: 'overleven',
+    name: 'mode.overleven',
+    reason: 'way.overleven',
+    icon: ShieldIcon,
+    rule: TAAL_ROUND_RULE.overleven,
+    seconds: null,
+  },
+];
+
+/**
+ * Werkwoorden, in the same order and missing the same three, for the same
+ * reasons (ADR-118).
+ *
+ * **Kies de vorm** offers three forms, and all three exist: "word", "wordt"
+ * and "werd", never "wort". What a child chooses between is d, t or dt among
+ * real words (`werkwoordAfleiders`). **Typ de vorm** is the same sentence with
+ * the form typed, which is what a test asks. **Ontdekken** is the rule cards —
+ * ik is the stem, hij is the stem and a t, 't kofschip, ge- and a t or a d —
+ * each with examples from the set. **Overleven** chooses, over three lives.
+ *
+ * No zoeken, because there is nothing to find; no bliksemronde, because d, t
+ * or dt against a clock is guessing; no diploma. The oefentoets types.
+ */
+export const WERKWOORD_FORMS: readonly PracticeForm[] = [
+  {
+    id: 'taal-vorm-kiezen',
+    name: 'mode.taal-vorm-kiezen',
+    reason: 'way.taal-vorm-kiezen',
+    icon: ChoiceIcon,
+    rule: TAAL_ROUND_RULE['taal-vorm-kiezen'],
+    seconds: 8,
+  },
+  {
+    id: 'taal-vorm-typen',
+    name: 'mode.taal-vorm-typen',
+    reason: 'way.taal-vorm-typen',
+    icon: KeyboardIcon,
+    rule: TAAL_ROUND_RULE['taal-vorm-typen'],
+    seconds: 12,
+  },
+  {
+    id: 'ontdekken',
+    name: 'mode.ontdekken',
+    reason: 'way.ontdekken',
+    icon: ExploreIcon,
+    rule: null,
+    seconds: null,
+    geldtVoor: (setId) => !isTaalMix(setId) && !isTaalFouten(setId),
+  },
+  {
+    id: 'overleven',
+    name: 'mode.overleven',
+    reason: 'way.overleven',
+    icon: ShieldIcon,
+    rule: TAAL_ROUND_RULE.overleven,
+    seconds: null,
+  },
+];
+
+/**
+ * The way the oefentoets answers in: typing, because that is what a test asks
+ * — the name unaided, the sum unaided, the time written out, the word after
+ * the flitsdictee's three seconds, the verb form. The oefentoets is a tile of
+ * its own and pressing it chooses this way too, so a child is never asked to
+ * pick a way a test does not have (ADR-100).
+ *
+ * Per module, and per part where a module has parts: Taal's two parts type in
+ * two different ways (ADR-118), and Engels will type in a third.
  *
  * Flags cannot type, so their toets asks both ways round instead (ADR-102).
  */
@@ -434,20 +556,32 @@ const TOETS_VORM: Record<string, ModeId> = {
   tafels: 'som-typen',
   klok: 'klok-typen',
   vlaggen: 'vlag-gemengd',
+  spelling: 'taal-flitsdictee',
+  werkwoorden: 'taal-vorm-typen',
 };
 
-/** The way the oefentoets uses, if this page offers it; null otherwise. */
+/**
+ * The way the oefentoets uses, if this page offers it; null otherwise. `deel`
+ * is the part a page with parts is on, which decides before the module does.
+ */
 export function toetsVormVan(
   moduleId: string,
   forms: readonly PracticeForm[],
+  deel: string | null = null,
 ): PracticeForm | null {
-  return forms.find((form) => form.id === TOETS_VORM[moduleId]) ?? null;
+  const vorm = (deel === null ? undefined : TOETS_VORM[deel]) ?? TOETS_VORM[moduleId];
+  return forms.find((form) => form.id === vorm) ?? null;
 }
 
-export function formsFor(moduleId: string): readonly PracticeForm[] {
+/**
+ * The ways a page offers. On Taal they follow the part rather than the set:
+ * with Spelling chosen the page shows spelling's ways before a subject is.
+ */
+export function formsFor(moduleId: string, deel: string | null = null): readonly PracticeForm[] {
   if (moduleId === 'tafels') return SUM_FORMS;
   if (moduleId === 'klok') return KLOK_FORMS;
   if (moduleId === 'vlaggen') return VLAG_FORMS;
+  if (moduleId === 'woorden') return deel === 'werkwoorden' ? WERKWOORD_FORMS : SPELLING_FORMS;
   return TOPO_FORMS;
 }
 

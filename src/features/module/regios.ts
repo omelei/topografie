@@ -1,3 +1,4 @@
+import type { TaalDeel } from '@/game-core';
 import type { TranslationKey } from '@/i18n';
 import type { Module } from '@/features/shell/modules';
 
@@ -25,6 +26,13 @@ import type { Module } from '@/features/shell/modules';
  * doing its job: the shape of the product was drawn before the content was
  * there, a child could see what was coming, and nothing had to move when it
  * came (ADR-086). The `built` flag stays, because the next region will need it.
+ *
+ * **Taal uses the same row for its parts** (ADR-118): Spelling and
+ * Werkwoorden, and Engels when it comes. "Welk deel?" is the same question as
+ * "Waar op de kaart?" — the coarsest choice, one of a few, answered first, the
+ * first one already chosen — and a second mechanism that did the same thing
+ * under another name would be two places to keep in step. So for Taal a
+ * region is a part; the row asks its own question (`regioVraag`).
  */
 export interface Regio {
   readonly id:
@@ -35,7 +43,8 @@ export interface Regio {
     | 'noord-amerika'
     | 'zuid-amerika'
     | 'oceanie'
-    | 'nederland';
+    | 'nederland'
+    | TaalDeel;
   readonly naam: TranslationKey;
   /** Whether there are sets behind it today. */
   readonly built: boolean;
@@ -68,7 +77,28 @@ export const TOPO_REGIOS: readonly Regio[] = [
  * a row of one, which is a label you cannot press, so the row waits for two.
  */
 export function regiosVan(moduleId: Module['id']): readonly Regio[] {
+  if (moduleId === 'woorden') return TAAL_DELEN;
   return moduleId === 'topo' || moduleId === 'vlaggen' ? TOPO_REGIOS : [];
+}
+
+/**
+ * Taal's parts. Spelling first, because it is where groep 5 starts and what a
+ * child brings home from school most weeks. Engels is the third, in a step of
+ * its own; until then it is not a chip, not even one that says "binnenkort".
+ */
+export const TAAL_DELEN: readonly Regio[] = [
+  { id: 'spelling', naam: 'regio.spelling', built: true },
+  { id: 'werkwoorden', naam: 'regio.werkwoorden', built: true },
+];
+
+/** What the row asks: where on the map, or which part of Taal. */
+export function regioVraag(moduleId: Module['id']): TranslationKey {
+  return moduleId === 'woorden' ? 'deel.title' : 'regio.title';
+}
+
+/** The word before the row's answer in the start bar: "kaart", or "deel". */
+export function regioLabel(moduleId: Module['id']): TranslationKey {
+  return moduleId === 'woorden' ? 'start.deel' : 'start.kaart';
 }
 
 /**
@@ -80,9 +110,13 @@ export function regiosVan(moduleId: Module['id']): readonly Regio[] {
  *
  * Flags open on the world (ADR-111). Nederland on the flags page is the twelve
  * provincievlaggen, and a child who comes for flags comes for the countries'.
+ *
+ * Taal opens on Spelling, which is this row's default in the same sense: the
+ * only thing on the page chosen before the child chooses (ADR-118).
  */
 export function eersteRegio(moduleId: Module['id'], regios: readonly Regio[]): Regio['id'] | null {
-  const standaard: Regio['id'] = moduleId === 'vlaggen' ? 'wereld' : 'nederland';
+  const standaard: Regio['id'] =
+    moduleId === 'vlaggen' ? 'wereld' : moduleId === 'woorden' ? 'spelling' : 'nederland';
   const eerst = regios.find((regio) => regio.id === standaard && regio.built);
   return (eerst ?? regios.find((regio) => regio.built))?.id ?? null;
 }

@@ -25,15 +25,19 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'wijs-aan',
   'klok-welke-klok',
   'vlag-zoeken',
-  // Meerkeuze.
+  // Meerkeuze. On Taal: the letters of the gap, or one of three forms.
   'meerkeuze',
   'som-meerkeuze',
   'klok-meerkeuze',
   'vlag-meerkeuze',
-  // Zelf typen.
+  'taal-letters',
+  'taal-vorm-kiezen',
+  // Zelf typen. On Taal: the flitsdictee, and the verb form typed (ADR-118).
   'hoe-heet-dit',
   'som-typen',
   'klok-typen',
+  'taal-flitsdictee',
+  'taal-vorm-typen',
 ]);
 
 /** A way of practising that will need an account. The oefentoets is its own tile. */

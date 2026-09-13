@@ -1,5 +1,13 @@
-import type { ItemState, ModeId, Schedulable } from '@/game-core';
+import type { ItemState, ModeId, Schedulable, TaalDeel } from '@/game-core';
 import { loadItemSets } from '@/content/loadSets';
+import {
+  isTaalMix,
+  loadTaalSet,
+  loadTaalSets,
+  TAAL_FOUTEN,
+  TAAL_MIX,
+  type TaalSet,
+} from '@/content/loadTaal';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
 import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
 import { loadVlagSet, loadVlagSets, type VlagOnderwerp, type VlagSet } from '@/content/loadVlaggen';
@@ -59,9 +67,10 @@ export const SET_NAME_KEY: Record<SetId, TranslationKey> = {
 /**
  * What one round of this set asks. Topography samples large sets; a table is
  * whole; the clock is ten, because ten faces is a round and a hundred and
- * forty-four of them is an afternoon.
+ * forty-four of them is an afternoon. Taal is ten for the same reason: forty
+ * words of ei and ij is a week's list, not a round (ADR-118).
  */
-export const ROUND_SIZE = { topo: 15, tafels: 10, klok: 10, vlaggen: 10 } as const;
+export const ROUND_SIZE = { topo: 15, tafels: 10, klok: 10, vlaggen: 10, taal: 10 } as const;
 
 /** How many favourites the column on the right holds. */
 export const FAVOURITES_SHOWN = 4;
@@ -144,9 +153,10 @@ export interface Onderwerp {
   /** The question above the chips. Null for a subject that is one set. */
   readonly keuze: TranslationKey | null;
   /**
-   * Where on the map this subject is, for the modules that have a where.
+   * Where on the map this subject is, for the modules that have a where — and
+   * for Taal, which part it is in: Spelling or Werkwoorden (ADR-118).
    *
-   * Null everywhere except topography, and it is a plain string rather than
+   * Null on rekenen and the clock, and it is a plain string rather than
    * `Regio['id']` so that `regios.ts` can import from here without this file
    * importing back (ADR-083).
    */
@@ -566,6 +576,212 @@ function vlagOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
 }
 
 // ---------------------------------------------------------------------------
+// Taal
+
+/**
+ * What each set of Taal is called, and the short word on its chip where it is
+ * one choice among several: "ei / ij" under Onthoudwoorden. The full name is
+ * the chip's accessible name, as it is for the tables.
+ */
+const TAAL_NAAM: Record<string, { readonly naam: TranslationKey; readonly kort?: TranslationKey }> = {
+  'taal-sp-eiij': { naam: 'set.taal-sp-eiij', kort: 'set.taal-sp-eiij.kort' },
+  'taal-sp-auou': { naam: 'set.taal-sp-auou', kort: 'set.taal-sp-auou.kort' },
+  'taal-sp-gch': { naam: 'set.taal-sp-gch', kort: 'set.taal-sp-gch.kort' },
+  'taal-sp-ck': { naam: 'set.taal-sp-ck', kort: 'set.taal-sp-ck.kort' },
+  'taal-sp-dt': { naam: 'set.taal-sp-dt' },
+  'taal-sp-klinkers': { naam: 'set.taal-sp-klinkers', kort: 'set.taal-sp-klinkers.kort' },
+  'taal-sp-medeklinkers': {
+    naam: 'set.taal-sp-medeklinkers',
+    kort: 'set.taal-sp-medeklinkers.kort',
+  },
+  'taal-sp-verkleinwoorden': {
+    naam: 'set.taal-sp-verkleinwoorden',
+    kort: 'set.taal-sp-verkleinwoorden.kort',
+  },
+  'taal-sp-ig': { naam: 'set.taal-sp-ig', kort: 'set.taal-sp-ig.kort' },
+  'taal-sp-lijk': { naam: 'set.taal-sp-lijk', kort: 'set.taal-sp-lijk.kort' },
+  'taal-sp-mix': { naam: 'set.taal-sp-mix' },
+  'taal-sp-fouten': { naam: 'set.taal-sp-fouten' },
+  'taal-ww-tt': { naam: 'set.taal-ww-tt' },
+  'taal-ww-vt': { naam: 'set.taal-ww-vt' },
+  'taal-ww-vd': { naam: 'set.taal-ww-vd' },
+  'taal-ww-mix': { naam: 'set.taal-ww-mix' },
+  'taal-ww-fouten': { naam: 'set.taal-ww-fouten' },
+};
+
+function taalOnderdeel(set: TaalSet): Onderdeel {
+  const naam = TAAL_NAAM[set.id];
+  return {
+    moduleId: 'woorden',
+    setId: set.id,
+    naam: naam?.naam ?? null,
+    literalNaam: naam ? null : set.id,
+    kortNaam: naam?.kort ? t(naam.kort) : null,
+    mix: isTaalMix(set.id),
+    items: set.items,
+    roundSize: ROUND_SIZE.taal,
+  };
+}
+
+function taalOnderdelen(): Onderdeel[] {
+  return loadTaalSets().map(taalOnderdeel);
+}
+
+/** The mix, or the list of mistakes, of each part that has sets. */
+function taalSamengesteld(ids: Readonly<Record<TaalDeel, string>>): Onderdeel[] {
+  return Object.values(ids)
+    .map((id) => loadTaalSet(id))
+    .filter((set): set is TaalSet => set !== undefined)
+    .map(taalOnderdeel);
+}
+
+interface TaalVak {
+  readonly id: string;
+  readonly deel: TaalDeel;
+  readonly naam: TranslationKey;
+  readonly uitleg: TranslationKey;
+  readonly keuze: TranslationKey | null;
+  readonly sets: readonly string[];
+}
+
+/**
+ * Taal's subjects, six at most per part (ADR-061, ADR-118).
+ *
+ * Spelling has ten sets and room for six tiles, with the mix and the child's
+ * own mistakes among them. So the four kinds of onthoudwoord are one tile with
+ * a chip each, as the tables are one tile with twelve, and so are the three
+ * endings: what a child decides is the same kind of thing within each, and a
+ * tile per set would have been ten tiles of equal weight.
+ *
+ * Werkwoorden are the three tenses, a mix and the mistakes: one set each.
+ */
+const TAAL_VAKKEN: readonly TaalVak[] = [
+  {
+    id: 'onthoudwoorden',
+    deel: 'spelling',
+    naam: 'onderwerp.taal.onthoud',
+    uitleg: 'onderwerp.taal.onthoud.uitleg',
+    keuze: 'onderwerp.taal.onthoud.keuze',
+    sets: ['taal-sp-eiij', 'taal-sp-auou', 'taal-sp-gch', 'taal-sp-ck'],
+  },
+  {
+    id: 'd-of-t',
+    deel: 'spelling',
+    naam: 'onderwerp.taal.dt',
+    uitleg: 'onderwerp.taal.dt.uitleg',
+    keuze: null,
+    sets: ['taal-sp-dt'],
+  },
+  {
+    id: 'een-of-twee',
+    deel: 'spelling',
+    naam: 'onderwerp.taal.eenTwee',
+    uitleg: 'onderwerp.taal.eenTwee.uitleg',
+    keuze: 'onderwerp.taal.eenTwee.keuze',
+    sets: ['taal-sp-klinkers', 'taal-sp-medeklinkers'],
+  },
+  {
+    id: 'achter-aan',
+    deel: 'spelling',
+    naam: 'onderwerp.taal.achter',
+    uitleg: 'onderwerp.taal.achter.uitleg',
+    keuze: 'onderwerp.taal.achter.keuze',
+    sets: ['taal-sp-verkleinwoorden', 'taal-sp-ig', 'taal-sp-lijk'],
+  },
+  {
+    id: 'spellingmix',
+    deel: 'spelling',
+    naam: 'onderwerp.taal.spellingmix',
+    uitleg: 'onderwerp.taal.spellingmix.uitleg',
+    keuze: null,
+    sets: [TAAL_MIX.spelling],
+  },
+  {
+    id: 'tegenwoordige-tijd',
+    deel: 'werkwoorden',
+    naam: 'onderwerp.taal.tt',
+    uitleg: 'onderwerp.taal.tt.uitleg',
+    keuze: null,
+    sets: ['taal-ww-tt'],
+  },
+  {
+    id: 'verleden-tijd',
+    deel: 'werkwoorden',
+    naam: 'onderwerp.taal.vt',
+    uitleg: 'onderwerp.taal.vt.uitleg',
+    keuze: null,
+    sets: ['taal-ww-vt'],
+  },
+  {
+    id: 'voltooid-deelwoord',
+    deel: 'werkwoorden',
+    naam: 'onderwerp.taal.vd',
+    uitleg: 'onderwerp.taal.vd.uitleg',
+    keuze: null,
+    sets: ['taal-ww-vd'],
+  },
+  {
+    id: 'werkwoordmix',
+    deel: 'werkwoorden',
+    naam: 'onderwerp.taal.werkwoordmix',
+    uitleg: 'onderwerp.taal.werkwoordmix.uitleg',
+    keuze: null,
+    sets: [TAAL_MIX.werkwoorden],
+  },
+];
+
+/** What "Oefen je fouten" says under its name, per part. */
+const TAAL_FOUTEN_UITLEG: Record<TaalDeel, TranslationKey> = {
+  spelling: 'onderwerp.taal.fouten.uitleg',
+  werkwoorden: 'onderwerp.taal.werkwoorden.fouten.uitleg',
+};
+
+function taalOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+  const sets = [...taalOnderdelen(), ...taalSamengesteld(TAAL_MIX)];
+  const vakken = TAAL_VAKKEN.map(
+    (vak): Onderwerp => ({
+      moduleId: 'woorden',
+      id: vak.id,
+      naam: vak.naam,
+      uitleg: vak.uitleg,
+      keuze: vak.keuze,
+      regio: vak.deel,
+      sets: vak.sets.flatMap((id) => sets.filter((deel) => deel.setId === id)),
+    }),
+  );
+
+  // A subject with nothing in it is a card that opens onto nothing: a set not
+  // written yet takes its subject with it.
+  return [...vakken.filter((vak) => vak.sets.length > 0), ...taalFouten(known)];
+}
+
+/**
+ * "Oefen je fouten" in each part of Taal, once five of its words or verbs were
+ * wrong — the subject every module has had since ADR-103. Last in its row.
+ */
+function taalFouten(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+  return (Object.keys(TAAL_FOUTEN) as TaalDeel[]).flatMap((deel): Onderwerp[] => {
+    const alles = loadTaalSet(TAAL_FOUTEN[deel]);
+    if (!alles) return [];
+    const items: readonly Schedulable[] = alles.items;
+    const fout = items.filter((item) => (known.get(item.id)?.foutCount ?? 0) > 0);
+    if (fout.length < MIN_FOUTEN) return [];
+
+    return [
+      {
+        moduleId: 'woorden',
+        id: alles.id,
+        naam: 'onderwerp.fouten',
+        uitleg: TAAL_FOUTEN_UITLEG[deel],
+        keuze: null,
+        regio: deel,
+        sets: [{ ...taalOnderdeel(alles), items: fout }],
+      },
+    ];
+  });
+}
+
+// ---------------------------------------------------------------------------
 
 /**
  * Every set that is a set of its own: the unit progress is counted over.
@@ -575,7 +791,13 @@ function vlagOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
  * sums in rekenen and that they remember four hundred of a set of ten.
  */
 export function onderdelen(): Onderdeel[] {
-  return [...topoOnderdelen(), ...rekenOnderdelen(), ...klokOnderdelen(), ...vlagOnderdelen()];
+  return [
+    ...topoOnderdelen(),
+    ...rekenOnderdelen(),
+    ...klokOnderdelen(),
+    ...vlagOnderdelen(),
+    ...taalOnderdelen(),
+  ];
 }
 
 /** Every set a round can be started on, mixes included. Used to name a round. */
@@ -592,6 +814,9 @@ export function startbareOnderdelen(): Onderdeel[] {
     ...klokOnderdelen(),
     ...(klok === null ? [] : [klok]),
     ...loadVlagSets().map(vlagOnderdeel),
+    ...taalOnderdelen(),
+    ...taalSamengesteld(TAAL_MIX),
+    ...taalSamengesteld(TAAL_FOUTEN),
   ];
 }
 
@@ -602,7 +827,8 @@ export function startbareOnderdelen(): Onderdeel[] {
  * kinds of sum and a mix of them; the tables and the divisions hold twelve sets
  * apiece, and the mix of each is the Rekenmix rather than a thirteenth square
  * (ADR-100). Klokkijken is four steps and a mix, one subject each — the shape
- * topography has rather than the shape rekenen has.
+ * topography has rather than the shape rekenen has. Taal is two parts of five
+ * subjects and the mistakes, under the row topography asks where on (ADR-118).
  */
 export function onderwerpenVan(
   moduleId: Module['id'],
@@ -611,6 +837,7 @@ export function onderwerpenVan(
   if (moduleId === 'topo') return topoOnderwerpen(known);
   if (moduleId === 'klok') return klokOnderwerpen(known);
   if (moduleId === 'vlaggen') return vlagOnderwerpen(known);
+  if (moduleId === 'woorden') return taalOnderwerpen(known);
 
   if (moduleId !== 'tafels') return [];
 

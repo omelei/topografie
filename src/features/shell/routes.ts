@@ -29,8 +29,9 @@ export const MODULE_SLUG: Record<Module['id'], string> = {
   topo: 'topografie',
   tafels: 'tafels',
   klok: 'klokkijken',
-  woorden: 'woordjes',
-  spelling: 'spelling',
+  // "Taal" is what the rail says, so it is the address (ADR-118). "Woordjes"
+  // held the place while the module did not exist; it is an alias below.
+  woorden: 'taal',
   tijdvakken: 'tijdvakken',
   vlaggen: 'vlaggen',
 };
@@ -101,10 +102,19 @@ const SET_SLUG: Record<string, string> = {
  *
  * Aliases go one way. `pathFor` still writes the module's own slug, so nothing
  * in the app links here; it is for an address somebody typed or wrote down.
+ *
+ * Taal has three (ADR-118). /spelling and /werkwoorden open Taal on that part
+ * — spelling was a module of its own in the plan and is a part of Taal now —
+ * and /woordjes, the word the rail's door answered to before Taal was built,
+ * opens /taal. When Engels is there, /woordjes goes to Engels.
  */
-const MODULE_ALIAS: Record<string, Module['id']> = {
-  klok: 'klok',
-};
+const MODULE_ALIAS: Record<string, { readonly module: Module['id']; readonly regio: string | null }> =
+  {
+    klok: { module: 'klok', regio: null },
+    woordjes: { module: 'woorden', regio: null },
+    spelling: { module: 'woorden', regio: 'spelling' },
+    werkwoorden: { module: 'woorden', regio: 'werkwoorden' },
+  };
 
 /** The map's own lists of mistakes, further out than Nederland ("nl-" covers home). */
 const TOPO_FOUTEN = /^(?:europa|afrika|azie|noord-amerika|zuid-amerika|oceanie|wereld)-fouten$/;
@@ -142,9 +152,42 @@ const REKENEN_SLUG =
  */
 const VLAG_PROVINCIES = 'vlag-nederland-provincies';
 
+/**
+ * Taal's sets, at the words a parent writes on a note (ADR-118): /taal/ei-ij,
+ * /taal/d-of-t, /taal/tegenwoordige-tijd. A table of its own and a way back of
+ * its own, for the reason `SLUG_SET` has one: both parts have a mix, and "mix"
+ * could only have meant one of them — so they are the Spellingmix and the
+ * Werkwoordmix, by name.
+ */
+const TAAL_SLUG: Record<string, string> = {
+  'taal-sp-eiij': 'ei-ij',
+  'taal-sp-auou': 'au-ou',
+  'taal-sp-gch': 'g-ch',
+  'taal-sp-ck': 'c-k',
+  'taal-sp-dt': 'd-of-t',
+  'taal-sp-klinkers': 'klinkers',
+  'taal-sp-medeklinkers': 'medeklinkers',
+  'taal-sp-verkleinwoorden': 'verkleinwoorden',
+  'taal-sp-ig': 'ig',
+  'taal-sp-lijk': 'lijk',
+  'taal-sp-mix': 'spellingmix',
+  'taal-sp-fouten': 'spelling-fouten',
+  'taal-ww-tt': 'tegenwoordige-tijd',
+  'taal-ww-vt': 'verleden-tijd',
+  'taal-ww-vd': 'voltooid-deelwoord',
+  'taal-ww-mix': 'werkwoordmix',
+  'taal-ww-fouten': 'werkwoorden-fouten',
+};
+
+const TAAL_SET = new Map(Object.entries(TAAL_SLUG).map(([id, slug]) => [slug, id]));
+
+/** Taal's two parts, which answer to their own name after /taal. */
+const TAAL_DELEN: readonly string[] = ['spelling', 'werkwoorden'];
+
 export function setSlug(setId: string): string {
   if (setId === VLAG_PROVINCIES) return 'provincies';
   if (setId.startsWith('vlag-')) return setId.slice('vlag-'.length);
+  if (setId.startsWith('taal-')) return TAAL_SLUG[setId] ?? setId;
   return SET_SLUG[setId] ?? setId;
 }
 
@@ -175,6 +218,7 @@ function setIdFor(module: Module, slug: string): string | null {
     return REKENEN_MIX[slug] ?? null;
   }
   if (module.id === 'klok') return KLOK_SLUG[slug] ?? null;
+  if (module.id === 'woorden') return TAAL_SET.get(slug) ?? null;
   if (module.id === 'vlaggen') {
     const id = slug === 'provincies' ? VLAG_PROVINCIES : `vlag-${slug}`;
     return loadVlagSet(id) ? id : null;
@@ -189,7 +233,13 @@ export type Route =
   /** The streak: the days in a row, the days behind them, and how it works. */
   | { readonly name: 'reeks' }
   /** A module that exists, opened on one of its sets or on its own first. */
-  | { readonly name: 'module'; readonly module: Module; readonly setId: string | null }
+  | {
+      readonly name: 'module';
+      readonly module: Module;
+      readonly setId: string | null;
+      /** Taal's part, where the address names one and no set: /werkwoorden (ADR-118). */
+      readonly regio?: string;
+    }
   /** A module the plan has but the product does not yet. */
   | { readonly name: 'soon'; readonly module: Module }
   /** A word a parent looks for, holding more than one module. */
@@ -236,12 +286,15 @@ function soleCategoryOf(module: Module): Category | null {
   );
 }
 
-function moduleRoute(module: Module, tail: string | undefined): Route {
+function moduleRoute(module: Module, tail: string | undefined, regio: string | null = null): Route {
   if (!module.built) return { name: 'soon', module };
+  // Taal's part by name after the module — /taal/werkwoorden — or by the alias
+  // it was reached at — /werkwoorden.
+  const deel = module.id === 'woorden' && tail !== undefined && TAAL_DELEN.includes(tail) ? tail : regio;
   // A set nobody has heard of opens the module rather than an error page: the
   // child asked for topography and topography is what they get.
-  const setId = tail === undefined || tail === '' ? null : setIdFor(module, tail);
-  return { name: 'module', module, setId };
+  const setId = tail === undefined || tail === '' || tail === deel ? null : setIdFor(module, tail);
+  return deel === null ? { name: 'module', module, setId } : { name: 'module', module, setId, regio: deel };
 }
 
 export function routeFor(pathname: string): Route {
@@ -256,9 +309,9 @@ export function routeFor(pathname: string): Route {
 
   const alias = MODULE_ALIAS[head];
   const module = MODULES.find(
-    (candidate) => MODULE_SLUG[candidate.id] === head || candidate.id === alias,
+    (candidate) => MODULE_SLUG[candidate.id] === head || candidate.id === alias?.module,
   );
-  if (module) return moduleRoute(module, tail);
+  if (module) return moduleRoute(module, tail, alias?.regio ?? null);
 
   const category = CATEGORIES.find((candidate) => candidate.id === head);
   if (category) {
@@ -286,7 +339,8 @@ function slugFor(route: Route): string {
   // of rekenen today, so /rekenen is their address and /tafels is a synonym
   // that keeps working for anyone who wrote it down.
   const head = soleCategoryOf(route.module)?.id ?? MODULE_SLUG[route.module.id];
-  return route.setId === null ? head : `${head}/${setSlug(route.setId)}`;
+  if (route.setId !== null) return `${head}/${setSlug(route.setId)}`;
+  return route.regio === undefined ? head : `${head}/${route.regio}`;
 }
 
 export function pathFor(route: Route): string {

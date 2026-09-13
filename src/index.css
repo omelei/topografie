@@ -151,9 +151,6 @@
     --woorden: #6f64b6;
     --woorden-text: #56489b; /* on tint 6.09:1 */
     --woorden-tint: #e6e5ff;
-    --spelling: #965598;
-    --spelling-text: #7c397e; /* on tint 6.15:1 */
-    --spelling-tint: #f5e0f5;
     --tijdvakken: #797600;
     --tijdvakken-text: #605c00; /* on tint 5.67:1 */
     --tijdvakken-tint: #eaead0;
@@ -336,11 +333,6 @@
     --module: var(--woorden);
     --module-tekst: var(--woorden-text);
     --module-tint: var(--woorden-tint);
-  }
-  [data-module='spelling'] {
-    --module: var(--spelling);
-    --module-tekst: var(--spelling-text);
-    --module-tint: var(--spelling-tint);
   }
   [data-module='tijdvakken'] {
     --module: var(--tijdvakken);

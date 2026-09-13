@@ -130,8 +130,10 @@ test('the module pages have no violations, in each of their four shapes', async 
   await expect(page.getByRole('button', { name: /^Halve uren\./ })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  await page.goto('/woordjes');
-  await expect(page.getByRole('heading', { name: 'Taal' })).toBeVisible();
+  // The page of a module not built yet. Taal was this example until it was
+  // built (ADR-118).
+  await page.goto('/tijdvakken');
+  await expect(page.getByRole('heading', { name: 'Tijdvakken' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
 

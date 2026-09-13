@@ -435,6 +435,7 @@ export default function App() {
           module={route.module}
           naam={boot.profile.naam}
           setId={route.setId}
+          regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
           onStart={beginRonde}
           aside={eigenKolom}

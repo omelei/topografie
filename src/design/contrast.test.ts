@@ -76,8 +76,8 @@ function ratio(foreground: string, background: string): number {
   return contrastRatio(token(foreground), token(background));
 }
 
-/** The seven modules, in the rail order of ADR-029. */
-const MODULES = ['topo', 'tafels', 'klok', 'woorden', 'spelling', 'tijdvakken', 'vlaggen'] as const;
+/** The six modules, in the rail order of ADR-029. Spelling is a part of Taal (ADR-118). */
+const MODULES = ['topo', 'tafels', 'klok', 'woorden', 'tijdvakken', 'vlaggen'] as const;
 const REEKSEN = ['brons', 'zilver', 'goud', 'platina', 'ultra'] as const;
 
 describe('contrast', () => {

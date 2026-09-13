@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
-import { eersteRegio, TOPO_REGIOS } from './regios';
+import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './regios';
 
 /**
  * What will need an account, marked before there is one (ADR-111), and the
@@ -21,6 +21,11 @@ describe('premium', () => {
       'hoe-heet-dit',
       'som-typen',
       'klok-typen',
+      // Taal's choosing and typing (ADR-118).
+      'taal-letters',
+      'taal-vorm-kiezen',
+      'taal-flitsdictee',
+      'taal-vorm-typen',
     ];
     for (const vorm of gratis) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
@@ -40,7 +45,7 @@ describe('premium', () => {
   });
 
   it("marks every module's list of mistakes and nothing else", () => {
-    for (const id of ['fouten', 'nl-fouten', 'wereld-fouten', 'klok-fouten']) {
+    for (const id of ['fouten', 'nl-fouten', 'wereld-fouten', 'klok-fouten', 'taal-sp-fouten']) {
       expect(isPremiumOnderwerp(id), id).toBe(true);
     }
     for (const id of ['tafels', 'nl-mix', 'provincies']) {
@@ -59,5 +64,13 @@ describe('the map a page opens on', () => {
     expect(eersteRegio('topo', TOPO_REGIOS)).toBe('nederland');
     expect(eersteRegio('vlaggen', TOPO_REGIOS)).toBe('wereld');
     expect(eersteRegio('tafels', [])).toBeNull();
+  });
+
+  it('is Spelling on Taal, whose row asks which part (ADR-118)', () => {
+    expect(regiosVan('woorden')).toBe(TAAL_DELEN);
+    expect(TAAL_DELEN.map((deel) => deel.id)).toEqual(['spelling', 'werkwoorden']);
+    expect(eersteRegio('woorden', TAAL_DELEN)).toBe('spelling');
+    expect(regioVraag('woorden')).toBe('deel.title');
+    expect(regioVraag('topo')).toBe('regio.title');
   });
 });
