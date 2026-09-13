@@ -34,7 +34,9 @@ function beschrijfGroep(): string {
         `${Math.round(doos.width)}x${Math.round(doos.height)} op y=${Math.round(doos.y)}, ` +
         `display ${stijl.display}, visibility ${stijl.visibility}, ` +
         `checkVisibility ${String(zichtbaar)}` +
-        (el.hasAttribute('aria-hidden') ? `, aria-hidden ${String(el.getAttribute('aria-hidden'))}` : '') +
+        (el.hasAttribute('aria-hidden')
+          ? `, aria-hidden ${String(el.getAttribute('aria-hidden'))}`
+          : '') +
         (el.hasAttribute('inert') ? ', inert' : ''),
     );
   }
