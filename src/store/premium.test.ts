@@ -5,10 +5,24 @@ import {
   leesStand,
   normaliseerCode,
   PREMIUM_SLEUTEL,
+  sleutelKoppen,
   type PremiumStand,
 } from './premium';
 
 /** Premium on this device (ADR-116): what a code is, and how long it counts. */
+
+describe('the key the app sends', () => {
+  it('sends a publishable key on apikey only, since it is not a JWT', () => {
+    expect(sleutelKoppen('sb_publishable_abc')).toEqual({
+      'Content-Type': 'application/json',
+      apikey: 'sb_publishable_abc',
+    });
+  });
+
+  it('sends an older anon key, a JWT, on both headers', () => {
+    expect(sleutelKoppen('eyJhbGciOi.x.y').Authorization).toBe('Bearer eyJhbGciOi.x.y');
+  });
+});
 
 const NU = new Date('2026-09-13T12:00:00');
 

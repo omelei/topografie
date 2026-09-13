@@ -14,17 +14,25 @@ nog niet beschikbaar" en blijft alles wat premium is op slot.
    **Central EU (Frankfurt)**. Het gratis plan is genoeg.
 2. Open **SQL Editor**, plak de inhoud van [`schema.sql`](schema.sql) en klik
    op **Run**. Het script kan veilig opnieuw worden gedraaid.
-3. Open **Project Settings → API** en kopieer:
-   - de **Project URL** (`https://….supabase.co`);
-   - de **anon / publishable key**. Die sleutel is openbaar bedoeld: hij kan
-     alleen de drie functies uit het schema aanroepen, niet de tabellen lezen.
+3. Kopieer uit het dashboard:
+   - de **Project URL** (`https://….supabase.co`), onder **Project Settings →
+     Data API** of via de knop **Connect**;
+   - de **publishable key** (`sb_publishable_…`), onder **Project Settings →
+     API Keys**. Die sleutel is openbaar bedoeld: hij kan alleen de drie
+     functies uit het schema aanroepen, niet de tabellen lezen. Een oudere
+     **anon key** (begint met `eyJ`) werkt ook.
+
+   Gebruik **nooit** de secret key of de service_role key: die geeft volledige
+   toegang tot de database en hoort niet in een app.
+
 4. Zet ze in GitHub bij **Settings → Secrets and variables → Actions →
    Variables** (niet bij Secrets, want ze komen toch in de app terecht):
    - `PREMIUM_URL`: de Project URL;
-   - `PREMIUM_KEY`: de anon key.
-5. De volgende deploy van `main` neemt ze mee. De workflow `premium-wakker`
-   vraagt de database twee keer per week één klein ding, zodat een gratis
-   project niet in slaap valt.
+   - `PREMIUM_KEY`: de publishable key.
+5. Deploy opnieuw: **Actions → CI → Run workflow** op `main`. De build neemt
+   de variabelen mee. De workflow `premium-wakker` vraagt de database twee
+   keer per week één klein ding, zodat een gratis project niet in slaap valt;
+   draai hem één keer met de hand om te zien dat de verbinding werkt.
 
 ## Codes maken
 

@@ -26,10 +26,15 @@ jobs:
         env:
           PREMIUM_URL: ${{ vars.PREMIUM_URL }}
           PREMIUM_KEY: ${{ vars.PREMIUM_KEY }}
+        # A publishable key (sb_publishable_…) goes on `apikey` only; it is not
+        # a JWT and is refused as a Bearer token. An older anon key is a JWT
+        # and goes on both, as src/store/premium.ts does.
         run: |
+          bearer=()
+          case "$PREMIUM_KEY" in eyJ*) bearer=(-H "Authorization: Bearer ${PREMIUM_KEY}") ;; esac
           curl --fail --silent --show-error --max-time 30 \
             -X POST "${PREMIUM_URL%/}/rest/v1/rpc/premium_ping" \
             -H "apikey: ${PREMIUM_KEY}" \
-            -H "Authorization: Bearer ${PREMIUM_KEY}" \
+            "${bearer[@]}" \
             -H "Content-Type: application/json" \
             -d '{}'

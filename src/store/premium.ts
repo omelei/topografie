@@ -164,6 +164,19 @@ interface ServerAntwoord {
 
 const REDENEN: readonly PremiumReden[] = ['onbekend', 'verlopen', 'vol', 'te-vaak'];
 
+/**
+ * How the public key goes along. A new Supabase project hands out a
+ * publishable key (`sb_publishable_…`), which belongs on the `apikey` header
+ * only: it is not a JWT, and sent as `Authorization: Bearer` it is refused.
+ * The older anon key is a JWT and was sent on both, which is what a project
+ * made before the switch still expects.
+ */
+export function sleutelKoppen(sleutel: string): Record<string, string> {
+  const koppen: Record<string, string> = { 'Content-Type': 'application/json', apikey: sleutel };
+  if (sleutel.startsWith('eyJ')) koppen.Authorization = `Bearer ${sleutel}`;
+  return koppen;
+}
+
 async function vraag(functie: string, code: string): Promise<PremiumUitkomst> {
   const doel = server();
   if (doel === null) return { ok: false, reden: 'niet-ingesteld' };
@@ -172,11 +185,7 @@ async function vraag(functie: string, code: string): Promise<PremiumUitkomst> {
   try {
     const reactie = await fetch(`${doel.url}/rest/v1/rpc/${functie}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: doel.sleutel,
-        Authorization: `Bearer ${doel.sleutel}`,
-      },
+      headers: sleutelKoppen(doel.sleutel),
       body: JSON.stringify({ p_code: code, p_apparaat: apparaatId() }),
     });
     if (!reactie.ok) return { ok: false, reden: 'geen-verbinding' };
