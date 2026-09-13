@@ -1,15 +1,21 @@
 import {
   diplomaFor,
+  kaartVanDiploma,
+  klokDiplomaFor,
+  klokVanDiploma,
   newStamps,
   rewardForRound,
   sterrenInKist,
   sterrenVoor,
   tableOfDiploma,
+  topoDiplomaFor,
   vlagDiplomaFor,
   werelddeelVanDiploma,
   type DiplomaWerelddeel,
+  type KlokDiplomaSet,
   type RewardSnapshot,
   type StampId,
+  type TopoDiplomaSet,
 } from '@/game-core';
 import { getDb } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
@@ -39,6 +45,10 @@ export interface RoundOutcome {
   readonly diploma: number | null;
   /** The werelddeel this round earned a vlaggendiploma for, or null (ADR-104). */
   readonly vlagDiploma: DiplomaWerelddeel | null;
+  /** The step of the clock this round earned a klokdiploma for, or null (ADR-117). */
+  readonly klokDiploma: KlokDiplomaSet | null;
+  /** The map this round earned a topodiploma for, or null (ADR-117). */
+  readonly topoDiploma: TopoDiplomaSet | null;
   /**
    * The stars this round added, and how many of the next chest's five are there
    * now. Worked out from the count of correct answers either side of the round,
@@ -92,6 +102,28 @@ export async function loadVlagDiplomas(): Promise<Set<DiplomaWerelddeel>> {
   return delen;
 }
 
+/** The steps of the clock this child has a klokdiploma for, from the same store. */
+export async function loadKlokDiplomas(): Promise<Set<KlokDiplomaSet>> {
+  const held = await loadStamps();
+  const stappen = new Set<KlokDiplomaSet>();
+  for (const id of held) {
+    const stap = klokVanDiploma(id);
+    if (stap !== null) stappen.add(stap);
+  }
+  return stappen;
+}
+
+/** The maps this child has a topodiploma for, from the same store. */
+export async function loadTopoDiplomas(): Promise<Set<TopoDiplomaSet>> {
+  const held = await loadStamps();
+  const kaarten = new Set<TopoDiplomaSet>();
+  for (const id of held) {
+    const kaart = kaartVanDiploma(id);
+    if (kaart !== null) kaarten.add(kaart);
+  }
+  return kaarten;
+}
+
 /**
  * Applies a finished round: adds what was earned, awards any stamp the round
  * newly satisfies, and reports all of it — including any chest the round paid
@@ -137,6 +169,15 @@ export async function applyRoundRewards(params: {
   if (vlagDiplomaId !== null) {
     await db.put('kindBadges', { kindId, badgeId: vlagDiplomaId, behaaldOp });
   }
+  // The klokdiploma and the topodiploma, the same way (ADR-117).
+  const klokDiplomaId = klokDiplomaFor(params.snapshot);
+  if (klokDiplomaId !== null) {
+    await db.put('kindBadges', { kindId, badgeId: klokDiplomaId, behaaldOp });
+  }
+  const topoDiplomaId = topoDiplomaFor(params.snapshot);
+  if (topoDiplomaId !== null) {
+    await db.put('kindBadges', { kindId, badgeId: topoDiplomaId, behaaldOp });
+  }
 
   // Every one of this round's answers is already written by now, so the total
   // afterwards is read from the store and the round's own count subtracted
@@ -151,6 +192,8 @@ export async function applyRoundRewards(params: {
     stamps: earned,
     diploma: diplomaId === null ? null : tableOfDiploma(diplomaId),
     vlagDiploma: vlagDiplomaId === null ? null : werelddeelVanDiploma(vlagDiplomaId),
+    klokDiploma: klokDiplomaId === null ? null : klokVanDiploma(klokDiplomaId),
+    topoDiploma: topoDiplomaId === null ? null : kaartVanDiploma(topoDiplomaId),
     sterren: { erbij: sterrenVoor(na) - sterrenVoor(voor), inKist: sterrenInKist(na) },
     kistenTeGoed: await kistenOpenstaand(),
   };

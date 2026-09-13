@@ -9,6 +9,7 @@ import {
   judgeAnswer,
   metFouten,
   review,
+  TOPODIPLOMA_VRAGEN,
   type AnswerVerdict,
   type Item,
   type RoundRule,
@@ -69,7 +70,13 @@ export type SetId =
  * the step in between, where the answer is on the screen and the child has to
  * know which of the four it is.
  */
-export type PracticeMode = 'wijs-aan' | 'meerkeuze' | 'hoe-heet-dit' | 'bliksemronde' | 'overleven';
+export type PracticeMode =
+  | 'wijs-aan'
+  | 'meerkeuze'
+  | 'hoe-heet-dit'
+  | 'bliksemronde'
+  | 'overleven'
+  | 'topo-diploma';
 
 /*
  * The split between practising and practising under pressure used to be two
@@ -101,15 +108,27 @@ export const ROUND_RULE: Record<PracticeMode, RoundRule> = {
   'hoe-heet-dit': { kind: 'fixed', aantal: MAX_ROUND },
   bliksemronde: { kind: 'tijd', seconden: 60 },
   overleven: { kind: 'levens', levens: 3 },
+  // Twenty places, or the whole map where it has fewer (ADR-117).
+  'topo-diploma': { kind: 'fixed', aantal: TOPODIPLOMA_VRAGEN },
 };
 
 /**
- * Which way a child answers. One mode types, one chooses, the rest point. Kept
- * separate from the mode so a future timed typing round is a table change, not
- * a rewrite.
+ * A topodiploma is sat, not practised (ADR-117): the name typed, nothing said
+ * until the end — the way the oefentoets asks, whatever the page passed — and
+ * its own length.
+ */
+export function isTopoDiploma(mode: PracticeMode): boolean {
+  return mode === 'topo-diploma';
+}
+
+/**
+ * Which way a child answers. Typing, and the diploma, which types because a
+ * test asks for the name unaided; one chooses; the rest point. Kept separate
+ * from the mode so a future timed typing round is a table change, not a
+ * rewrite.
  */
 export function typesTheAnswer(mode: PracticeMode): boolean {
-  return mode === 'hoe-heet-dit';
+  return mode === 'hoe-heet-dit' || isTopoDiploma(mode);
 }
 
 export function choosesTheAnswer(mode: PracticeMode): boolean {
@@ -458,10 +477,14 @@ export interface RoundState {
 export function useRound(
   setId: RoundSetId,
   practiceMode: PracticeMode,
-  aantal: number | null = null,
-  toetsstand = false,
+  gevraagd: number | null = null,
+  gevraagdeToets = false,
   alleen: readonly string[] | null = null,
 ) {
+  // A diploma is its own length and always keeps its answers until the end,
+  // whatever the page passed (ADR-117, as ADR-104 did for flags).
+  const aantal = isTopoDiploma(practiceMode) ? null : gevraagd;
+  const toetsstand = gevraagdeToets || isTopoDiploma(practiceMode);
   const [geo, setGeo] = useState<GeoSet | null>(null);
   /** One layer per set the round can reach. A single set leaves one entry. */
   const [layers, setLayers] = useState<ReadonlyMap<SetId, AnswerLayer>>(new Map());

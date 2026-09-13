@@ -2,17 +2,23 @@ import type { ModeId } from '@/game-core';
 import { t } from '@/i18n';
 
 /**
- * What will need an account, marked before there is one (ADR-111, ADR-112).
+ * What premium opens (ADR-111, ADR-112, ADR-116).
  *
  * The rule is said the other way round since ADR-112: three kinds of way stay
  * free on every page — **zoeken** (finding the place, the clock or the flag
  * that goes with a name), **meerkeuze** and **zelf typen** — and every other
- * way of practising is premium: ontdekken, the bliksemronde, overleven, the
- * diplomas and the oefentoets. So is every way of going back over your own
+ * way of practising is premium: ontdekken, the bliksemronde, overleven, every
+ * diploma and the oefentoets. So is every way of going back over your own
  * mistakes — the "Oefen je fouten" subject and "Herhaal je fouten" after a
- * round. There is no sign-in yet, so nothing here is locked: the label says
- * what is coming, and the day accounts arrive this file is the one list of
- * what they gate.
+ * round.
+ *
+ * Since ADR-116 it is locked, behind a code (`store/premium.ts`), and the owner
+ * added what is not a way of practising: the badges, the diplomas on the
+ * child's own page, more than one child, the streak, "Goed beantwoord" and the
+ * Onthouden page. Those are gated where they are drawn, each with the same
+ * slot (`PremiumSlot`); the ways are gated here and in `App`, where a round
+ * starts, so a way into a round from anywhere — a favourite, the history, an
+ * unfinished round — meets the same rule.
  */
 const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Zoeken: on the map the name is given and the child finds the place.

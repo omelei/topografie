@@ -18,5 +18,9 @@ describe('the way a repeat of the mistakes is asked', () => {
     expect(herhaalKlokVorm('overleven')).toBe('klok-meerkeuze');
     expect(herhaalVlagVorm('vlag-diploma')).toBe('vlag-meerkeuze');
     expect(herhaalVlagVorm('overleven')).toBe('vlag-meerkeuze');
+    // The klokdiploma and the topodiploma have a length, and are still not
+    // practice: they come back the way the others do (ADR-117).
+    expect(herhaalKlokVorm('klok-diploma')).toBe('klok-meerkeuze');
+    expect(herhaalKaartVorm('topo-diploma')).toBe('meerkeuze');
   });
 });

@@ -1,4 +1,4 @@
-import { INTERVAL_DAYS } from './leitner';
+import { INTERVAL_DAYS, isOnthouden } from './leitner';
 import type { ItemState } from './types';
 
 /**
@@ -108,14 +108,22 @@ export function retentionAfterRound(
   return Math.round((total / itemIds.length) * 100);
 }
 
-/** How many items in a set are at box 5 — the "8 van de 12 onthoud je" on home. */
+/**
+ * How many items in a set are remembered — "8 van de 12 onthoud je" — by the
+ * one definition the product has (ADR-114, `isOnthouden`): box four or five.
+ *
+ * With `now`, an item that has gone so long unseen that it needs a refresher is
+ * left out, which is what the Onthouden page and the module page show. Without
+ * it, what was proven, which is what a round's rewards count.
+ */
 export function countMastered(
   states: ReadonlyMap<string, ItemState>,
   itemIds: readonly string[],
+  now?: Date,
 ): number {
   let count = 0;
   for (const id of itemIds) {
-    if (states.get(id)?.box === 5) count++;
+    if (isOnthouden(states.get(id), now)) count++;
   }
   return count;
 }

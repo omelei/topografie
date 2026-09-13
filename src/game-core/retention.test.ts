@@ -41,12 +41,12 @@ describe('itemRetention', () => {
   // The sentence the whole model has to survive being explained by: after one
   // box interval you still know about nine tenths of it.
   it('is nine tenths after exactly one interval', () => {
-    // Box 3 has a four-day interval.
-    expect(itemRetention(state('x', 3, 0), days(4))).toBeCloseTo(0.9, 6);
+    // Box 3 has a five-day interval since ADR-114.
+    expect(itemRetention(state('x', 3, 0), days(5))).toBeCloseTo(0.9, 6);
   });
 
   it('keeps falling at the same rate after that', () => {
-    expect(itemRetention(state('x', 3, 0), days(8))).toBeCloseTo(0.81, 6);
+    expect(itemRetention(state('x', 3, 0), days(10))).toBeCloseTo(0.81, 6);
   });
 
   it('holds up better from a higher box', () => {
@@ -56,8 +56,8 @@ describe('itemRetention', () => {
   });
 
   it('counts the time already elapsed since the last review', () => {
-    // Reviewed four days ago, asked about four days ahead: eight days of decay.
-    expect(itemRetention(state('x', 3, 4), days(4))).toBeCloseTo(0.81, 6);
+    // Reviewed five days ago, asked about five days ahead: two intervals of decay.
+    expect(itemRetention(state('x', 3, 5), days(5))).toBeCloseTo(0.81, 6);
   });
 });
 
@@ -126,12 +126,23 @@ describe('retentionAfterRound', () => {
 });
 
 describe('countMastered', () => {
-  it('counts only box five', () => {
+  it('counts box four and five, which is what remembered means (ADR-114)', () => {
     const states = new Map([
       ['a', state('a', 5, 0)],
       ['b', state('b', 4, 0)],
       ['c', state('c', 5, 0)],
+      ['e', state('e', 3, 0)],
     ]);
-    expect(countMastered(states, ['a', 'b', 'c', 'd'])).toBe(2);
+    expect(countMastered(states, ['a', 'b', 'c', 'd', 'e'])).toBe(3);
+  });
+
+  it('leaves out what needs a refresher, when asked about a day', () => {
+    // Box four, due twenty days ago: overdue by more than its eight days again.
+    const states = new Map([
+      ['a', state('a', 4, 0)],
+      ['b', { ...dueState('b', 4, 28), volgendeReview: days(-20).toISOString() }],
+    ]);
+    expect(countMastered(states, ['a', 'b'])).toBe(2);
+    expect(countMastered(states, ['a', 'b'], NOW)).toBe(1);
   });
 });

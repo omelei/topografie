@@ -5,6 +5,7 @@ import type { ModeId, StreakChange } from '@/game-core';
 import { BadgeRijen, isBadge } from '@/features/badges/Badges';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
+import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -84,8 +85,11 @@ export function RondeKlaar({
   const ModuleIcon = MODULE_ICON[moduleId];
   const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
   const vorm = toetsstand ? t('choose.testMode') : t(`mode.${mode}` as TranslationKey);
-  const badges = (reward?.stamps ?? []).filter(isBadge);
-  const reeks = reeksZin(streak);
+  // The badges and the streak are premium (ADR-116). They are still earned
+  // and counted underneath; without a code this page just does not say so.
+  const { actief } = usePremium();
+  const badges = actief ? (reward?.stamps ?? []).filter(isBadge) : [];
+  const reeks = actief ? reeksZin(streak) : null;
 
   return (
     <main className="tk-uitslag" data-module={moduleId} data-accent="module">

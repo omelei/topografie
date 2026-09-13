@@ -8,16 +8,45 @@ import type { Item, ItemState, LeitnerBox } from './types';
  * is only as trustworthy as the algorithm behind it is explainable.
  */
 
-/** Days until an item in each box comes back. Spec section 4.2. */
+/**
+ * Days until an item in each box comes back. Spec section 4.2, with box three
+ * at five days rather than four since ADR-114.
+ *
+ * The one day is what makes "onthouden" mean a week: an item reaches box four
+ * on its third correct answer at a moment it was due, and with these intervals
+ * the earliest that can be is day 0, day 2 and day 7 — a week after it was
+ * first met. At four days it was day 6, and "na een week nog goed" would have
+ * been a day short of true.
+ */
 export const INTERVAL_DAYS: Readonly<Record<LeitnerBox, number>> = {
   1: 1,
   2: 2,
-  3: 4,
+  3: 5,
   4: 8,
   5: 21,
 };
 
 export const MAX_BOX: LeitnerBox = 5;
+
+/**
+ * The box from which an item counts as remembered (ADR-114): three correct
+ * answers, each given when the item was due, over at least a week.
+ *
+ * One line for the whole product. The front door used to count box five and
+ * the Onthouden page box four and five, so "8 van de 12 onthoud je" and the
+ * tile under it could disagree about the same twelve provinces.
+ */
+export const ONTHOUDEN_BOX: LeitnerBox = 4;
+
+/**
+ * Remembered: in box four or five, and not so long unseen that it needs a
+ * refresher. Without `now` the second half is not asked, which is what the
+ * rewards want — they count what was proven, not what is fresh.
+ */
+export function isOnthouden(state: ItemState | undefined, now?: Date): boolean {
+  if (!state || state.laatsteReview === null || state.box < ONTHOUDEN_BOX) return false;
+  return now === undefined || !isStale(state, now);
+}
 
 /** How a round is filled: due work first, some new material, a little revision. */
 export const ROUND_MIX = { due: 0.7, nieuw: 0.2, opfris: 0.1 } as const;
@@ -47,8 +76,29 @@ export function emptyState(itemId: string): ItemState {
   };
 }
 
-/** Applies one answer. Pure: returns the next state, mutates nothing. */
+/**
+ * Applies one answer. Pure: returns the next state, mutates nothing.
+ *
+ * **A correct answer only moves an item up when it was due** (ADR-114). Before
+ * that, four rounds of the provinces in one afternoon took every province to
+ * the last box, and the Onthouden page called them remembered by teatime —
+ * which is the one thing spaced repetition exists to say is not true. An early
+ * correct answer is still counted and still dated, so the history and the
+ * forecast see it; it just does not prove anything the schedule has not asked
+ * for yet, so the box and the day it comes back stay where they were.
+ *
+ * A wrong answer counts whenever it comes. Not knowing it an hour after the
+ * last round is exactly as much news as not knowing it a week later.
+ */
 export function review(state: ItemState, correct: boolean, now: Date): ItemState {
+  if (correct && !isDue(state, now)) {
+    return {
+      ...state,
+      laatsteReview: now.toISOString(),
+      goedCount: state.goedCount + 1,
+    };
+  }
+
   const box = nextBox(state.box, correct);
   return {
     itemId: state.itemId,

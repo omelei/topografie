@@ -5161,6 +5161,211 @@ delivery in `docs/logo` and one run of the script, never an edit to
 
 ---
 
+## ADR-114 — "Onthouden" means right after a week, and the Onthouden page says so
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner,
+who asked for the definition to be challenged; the definition below was put to
+them and chosen.
+
+### Context
+
+The product had two definitions of remembering. The front door, the module
+page and the "Alles onthouden" badge counted box five; the Onthouden page
+counted box four and five as "Onthoud je" and called box five "in de
+vriezer". And neither meant much, because `review` moved an item up a box on
+every correct answer, due or not: four rounds of the provinces in one
+afternoon took every province to box five, and the page called them
+remembered by teatime. Spaced repetition exists to say exactly that this is
+not remembering.
+
+In the same feedback the owner asked for the table on the page to change —
+an "Aantal" column with every answer given, "% goed" instead of "Goed",
+"Laatst geoefend" in days ago (today is "vandaag") instead of "Weer op" — and
+for the "Vandaag op de rol" tile to go.
+
+### Decision
+
+**Onthouden is: right three times, each time when it was due, over at least a
+week.** In the code that is box four and up (`ONTHOUDEN_BOX`, `isOnthouden`),
+one definition everywhere, and `countMastered` counts it.
+
+**A correct answer only moves an item up when it was due.** An early one is
+counted and dated — the history and the forecast see it — but the box and the
+day it comes back stay. A wrong answer counts whenever it comes, and still
+returns the item to box one.
+
+**Box three comes back after five days rather than four**, so the quickest
+way to box four is day 0, day 2 and day 7: a week, as the definition says, not
+six days.
+
+**Even opfrissen.** An item that was remembered and has gone unseen for its
+own interval twice over is not called remembered today; it is "even
+opfrissen", and one correct answer puts it back. The freezer label is gone:
+with remembering starting at box four, box five was a second word for the same
+fact. The four statuses are new, nog niet onthouden, onthouden and even
+opfrissen, as the dots, the legend, the table and **four tiles** that add up to
+the set. "Vandaag op de rol" was a fact about the schedule, not about memory.
+
+**The table is how the practising went:** Onderdeel, Hoe het gaat, Aantal
+(right and wrong together), % goed (a dash where there are no answers) and
+Laatst geoefend in calendar days ("vandaag", "1 dag geleden", "12 dagen
+geleden"). **The rules are written out** under it, as the streak's are.
+
+### Consequences
+
+A child now sees "onthoud je" a week after first meeting something, not the
+same evening; the number is smaller and it is true. "Alles onthouden" is
+earned at box four for every item, which needs the week. Boxes already on a
+device are not migrated — the app is not in use yet. The module page still
+says how many items are due ("op de rol") in a tile's name and one line above
+the steps; the owner's request was about the Onthouden page, and that line is
+the scheduler talking about the next round.
+
+---
+
+## ADR-115 — "Maak af" on the front door, in place of "Verder oefenen"
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner;
+which row it replaces was put to them and chosen.
+
+### Context
+
+"Verder oefenen" was a row of one tile per module with a bar of how much was
+remembered: a second way to the rail's doors, and a forecast on a page ADR-094
+says should not carry one. The owner asked for the exercises a child started
+and did not finish instead.
+
+### Decision
+
+**A round is unfinished when fewer of its questions were answered than it set
+out to ask** — stopped halfway, or left when the tab closed. What was answered
+is read from the attempts, which every answer writes at once, not from the
+session, which a closed tab never finishes (`loadOpenRounds`).
+
+**Only the latest round of each set and way counts**: a child who stopped the
+provinces on Monday and did all twelve on Tuesday has nothing to finish. A
+round nobody answered anything in was opened, not started. Rounds that cannot
+be finished later are left out: the bliksemronde and overleven have no end to
+reach, exploring asks nothing, and a diploma sat in two halves is not the test
+it certifies. After thirty days an unfinished round is over.
+
+**Pressing a card asks exactly what that round had not asked yet**, in the
+same way, through the "herhaal" path (`alleen`). The card says how far it got,
+as a bar and as "Nog 8 van de 15 vragen". With nothing to finish the row is a
+sentence saying what it is for.
+
+### Consequences
+
+The front door no longer lists the modules; the rail on a laptop and the menu
+under the app bar below 1200 do. The e2e test that walked that list is gone,
+and `e2e/vandaag.spec.ts` stops a round and finishes it.
+
+---
+
+## ADR-116 — Premium behind a code, checked in a small database
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner:
+"De premium functionaliteit moet achter een inlog. Dit is een code." Where the
+database lives was left to the implementer; the code model and what a locked
+feature looks like were put to the owner and chosen.
+
+### Context
+
+ADR-111 labelled premium before it was locked. The owner now asks for the
+lock, as a code, with a database behind it, and names what is premium: the
+badges, the diplomas, more than one child, the streak, "Goed beantwoord", the
+Onthouden page, overleven, the bliksemronde and the oefentoets — "onder andere",
+so ontdekken and both ways of going back over mistakes stay premium as ADR-112
+had them.
+
+The owner has a VPS at TransIP and asked whether to use it or a service such as
+Supabase. ADR-015 has no backend at all, and names Supabase as the one it did
+not build yet.
+
+### Decision
+
+**Supabase, in Frankfurt, for this.** What is needed now is one table and one
+check, with nothing about a child in it; a managed Postgres with row level
+security, backups and TLS costs nothing to run and nothing to patch, and it is
+where the accounts of ADR-050 would go. The VPS would have to carry a server,
+a database, certificates and updates by hand. The app talks to the check
+through one file (`store/premium.ts`), so moving it to a server of our own —
+if schools ever ask for Dutch hosting — is a change to that file.
+
+**A code per family, for a year, on up to three devices.** `LEER-XXXX-XXXX`,
+eight characters from an alphabet without 0, O, 1, I and L. The database holds
+only its SHA-256 (`tools/premium/schema.sql`), made by `maak-codes.mjs`. The
+public key can call three functions — check, take off a device, ping — and read
+no table. Ten wrong codes from one device in an hour are refused.
+
+**What leaves the device is the code and a random device number.** Nothing
+else: no name, no child, no progress. The answer is kept in localStorage — the
+device's, not a child's, and read on the first frame so no page shows a lock
+and then takes it away. The app asks again once a week when it can; a no takes
+premium off, and no answer leaves it on for two weeks from the last yes.
+
+**Locked, not hidden.** A premium block keeps its title and says "Dit hoort bij
+premium" with one button to the premium page (`PremiumSlot`); a premium tile on
+a module page goes there when pressed; every round starts in `App`, which
+refuses a premium way from anywhere — a favourite, the history, an unfinished
+round — the same way. What is earned while locked (days, badges, answers) is
+still counted, so a code opens a history rather than an empty page. The
+premium page says what premium is, takes the code, and shows until when it is
+on, with the way to take it off this device again. Jij says the same in one
+block.
+
+**The build carries the address and the public key** as repository variables
+`PREMIUM_URL` and `PREMIUM_KEY`; a build without them says "Premium is nog
+niet beschikbaar". A workflow pings the database twice a week so a free project
+is never paused.
+
+### Consequences
+
+This is the first request the app makes to anyone, and `network.spec.ts` now
+says so: only when a code is entered, and weekly after. The home screen's
+claim — what a child practises stays on the device — still holds.
+
+The lock is a gate, not a safe: everything the app does is in the bundle, and
+someone with the developer tools can set the stored value by hand. That is the
+price of ADR-015's promise, and the right one; there is nothing on a server to
+withhold. Every e2e test runs with premium on (`playwright.config.ts`), and
+`premium.spec.ts` tests the locks and the code against a server that is not
+there. Setting it up is in `tools/premium/README.md`: a Supabase project, the
+schema, two variables.
+
+---
+
+## ADR-117 — The klokdiploma and the topodiploma
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner;
+the shape of both was put to them and chosen.
+
+### Decision
+
+**The klokdiploma**: one per step of the clock — hele uren, halve uren,
+kwartieren, vijf minuten — ten faces, the time typed, nothing said until the
+end, and nine of the ten right. **The topodiploma**: one per map — the five
+Dutch maps and the six werelddelen, not the world, the Topomix or a list of
+mistakes — twenty places or the whole map where it has fewer, the name typed,
+nothing said until the end, nine in ten right rounded up. Both are the
+vlaggendiploma's rule (ADR-104), with the bar shared as `diplomaDrempel`; the
+tafeldiploma remains the one passed without a mistake.
+
+Each is the last way on its page and a wall with the gaps showing: four on the
+clock's page, eleven on topography's, and all of them on Jij. Pressing a gap
+chooses the step or the map and the diploma. "Hoeveel vragen?" is not asked;
+"Herhaal je fouten" after one asks as practice. `forms.ts` used to say there is
+no klokdiploma because no school hands one out; the owner asked for one.
+
+### Consequences
+
+Topography's page has seven ways on a map with a diploma, one over the six
+`MAX_FORMS` held; it holds seven now, and with the oefentoets the grid is four
+rows of two. The diplomas are stored beside the others, under `diploma-klok-…`
+and `diploma-topo-…`, and are premium like every diploma.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

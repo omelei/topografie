@@ -58,6 +58,29 @@ export default defineConfig({
     baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
     locale: 'nl-NL',
+    // Every test runs with premium on (ADR-116), because nearly every flow
+    // here — the Onthouden page, the diplomas, the bliksemronde, a second
+    // child — is premium now. The code was "checked" in 2099, so the app never
+    // asks the server again during a run. `e2e/premium.spec.ts` clears this to
+    // test the locks and the code itself.
+    storageState: {
+      cookies: [],
+      origins: [
+        {
+          origin: 'http://localhost:4173',
+          localStorage: [
+            {
+              name: 'leernu.premium',
+              value: JSON.stringify({
+                code: 'E2ETESTS',
+                geldigTot: '2099-12-31',
+                gecontroleerd: '2099-01-01T00:00:00.000Z',
+              }),
+            },
+          ],
+        },
+      ],
+    },
   },
   projects: [
     {
@@ -90,5 +113,12 @@ export default defineConfig({
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // A premium server that does not exist, so the build has one to ask and
+    // `e2e/premium.spec.ts` can answer for it with `page.route`. Nothing ever
+    // reaches it: a request that is not intercepted fails on the name.
+    env: {
+      VITE_PREMIUM_URL: 'https://premium.leer.test',
+      VITE_PREMIUM_KEY: 'e2e-sleutel',
+    },
   },
 });

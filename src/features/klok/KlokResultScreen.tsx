@@ -1,4 +1,5 @@
-import { t } from '@/i18n';
+import { diplomaDrempel } from '@/game-core';
+import { t, type TranslationKey } from '@/i18n';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import { KlokFace } from './KlokFace';
 import { klokVoluit } from './klokTaal';
@@ -28,8 +29,26 @@ export function KlokResultScreen({
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
+  // After a klokdiploma: what it earned, or how far off it was, in right
+  // answers — the vlaggendiploma's way of saying it (ADR-117).
+  const gehaald = state.reward?.klokDiploma ?? null;
+  const diploma =
+    mode === 'klok-diploma' && gehaald
+      ? t('klok.diplomaEarned', { stap: t(`set.${gehaald}` as TranslationKey) })
+      : null;
+  const melding =
+    mode === 'klok-diploma' && state.reward && !gehaald
+      ? t('klok.diplomaMissed', {
+          goed: state.correctCount,
+          totaal: state.total,
+          nodig: diplomaDrempel(state.total),
+        })
+      : null;
+
   return (
     <RondeKlaar
+      diploma={diploma}
+      melding={melding}
       moduleId="klok"
       setId={setId}
       mode={mode}

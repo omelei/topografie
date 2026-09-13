@@ -210,9 +210,10 @@ export const STAMPS: readonly StampDefinition[] = [
     criterion: (s) => s.streakDays >= 7,
   },
   {
-    // Every item in the set at box five — which is four correct answers in a
-    // row each, and so takes weeks of coming back rather than one lucky round.
-    // This is the stamp the others are shaped after.
+    // Every item in the set remembered, by the product's one definition
+    // (ADR-114): each of them right three times, each time when it was due,
+    // over at least a week. So it takes coming back rather than one lucky
+    // afternoon. This is the stamp the others are shaped after.
     id: 'set-onthouden',
     criterion: (s) => s.setSize > 0 && s.mastered === s.setSize,
   },
@@ -309,9 +310,17 @@ export function vlagdiplomaVragen(vlaggen: number): number {
  * which is what was asked for, and the same bar where there are fewer: eleven
  * of Zuid-Amerika's twelve, thirteen of Oceanië's fourteen. Whole numbers, so
  * the arithmetic has no floating point in it to argue with.
+ *
+ * The bar of every diploma that is passed with a mark — flags, the clock and
+ * the map (ADR-117). The tafeldiploma is the one passed without a mistake.
  */
-export function vlagdiplomaDrempel(vragen: number): number {
+export function diplomaDrempel(vragen: number): number {
   return Math.ceil((vragen * 9) / 10);
+}
+
+/** The vlaggendiploma's name for the same bar, which is where it started. */
+export function vlagdiplomaDrempel(vragen: number): number {
+  return diplomaDrempel(vragen);
 }
 
 /**
@@ -332,4 +341,97 @@ export function vlagDiplomaFor(snapshot: RewardSnapshot): string | null {
 /** Which werelddeel a stored vlaggendiploma is for, or null if the row is not one. */
 export function werelddeelVanDiploma(id: string): DiplomaWerelddeel | null {
   return alsDiplomaWerelddeel(/^diploma-vlag-(.+)$/.exec(id)?.[1]);
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * The klokdiploma (ADR-117): one per step of the clock, in the order a
+ * classroom teaches them. Not the mix, which is every step at once, and not a
+ * child's own mistakes.
+ */
+export const KLOK_DIPLOMA_SETS = ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf'] as const;
+
+export type KlokDiplomaSet = (typeof KLOK_DIPLOMA_SETS)[number];
+
+function alsKlokDiplomaSet(setId: string | undefined): KlokDiplomaSet | null {
+  return (KLOK_DIPLOMA_SETS as readonly string[]).includes(setId ?? '')
+    ? (setId as KlokDiplomaSet)
+    : null;
+}
+
+/** Ten faces, which is a round of the clock and so its diploma. */
+export const KLOKDIPLOMA_VRAGEN = 10;
+
+/**
+ * The klokdiploma: ten faces of one step, the time typed without help, nothing
+ * said until the end, and nine of the ten right — the vlaggendiploma's bar,
+ * because reading a face is a test passed with a mark, not a table recited.
+ */
+export function klokDiplomaFor(snapshot: RewardSnapshot): string | null {
+  if (snapshot.mode !== 'klok-diploma') return null;
+  const set = alsKlokDiplomaSet(snapshot.setId);
+  if (set === null || !snapshot.completeRound) return null;
+  const vragen = Math.min(KLOKDIPLOMA_VRAGEN, snapshot.setSize);
+  if (snapshot.correct < diplomaDrempel(vragen)) return null;
+  return `diploma-${set}`;
+}
+
+/** Which step a stored klokdiploma is for, or null if the row is not one. */
+export function klokVanDiploma(id: string): KlokDiplomaSet | null {
+  return alsKlokDiplomaSet(/^diploma-(klok-.+)$/.exec(id)?.[1]);
+}
+
+/**
+ * The topodiploma (ADR-117): one per map a child is asked to know. The five
+ * Dutch maps and the six werelddelen — not the world, where twenty countries
+ * of a hundred and sixty-seven is a lottery rather than a test, not the
+ * Topomix, and not a list of mistakes.
+ */
+export const TOPO_DIPLOMA_SETS = [
+  'nl-provincies',
+  'nl-hoofdsteden',
+  'nl-steden',
+  'nl-wateren',
+  'nl-waddeneilanden',
+  'europa-landen',
+  'afrika-landen',
+  'azie-landen',
+  'noord-amerika-landen',
+  'zuid-amerika-landen',
+  'oceanie-landen',
+] as const;
+
+export type TopoDiplomaSet = (typeof TOPO_DIPLOMA_SETS)[number];
+
+export function alsTopoDiplomaSet(setId: string | undefined): TopoDiplomaSet | null {
+  return (TOPO_DIPLOMA_SETS as readonly string[]).includes(setId ?? '')
+    ? (setId as TopoDiplomaSet)
+    : null;
+}
+
+/** Twenty places, or the whole map where it has fewer: the vlaggendiploma's rule. */
+export const TOPODIPLOMA_VRAGEN = 20;
+
+export function topodiplomaVragen(plekken: number): number {
+  return Math.min(TOPODIPLOMA_VRAGEN, plekken);
+}
+
+/**
+ * The topodiploma: the whole round answered by typing the name, nothing said
+ * until the end, and nine in ten right. Oceanië's nine countries need all nine
+ * and the five islands all five, because nine in ten of a small number rounds
+ * up to all of it — the same arithmetic the flags use.
+ */
+export function topoDiplomaFor(snapshot: RewardSnapshot): string | null {
+  if (snapshot.mode !== 'topo-diploma') return null;
+  const set = alsTopoDiplomaSet(snapshot.setId);
+  if (set === null || !snapshot.completeRound) return null;
+  if (snapshot.correct < diplomaDrempel(topodiplomaVragen(snapshot.setSize))) return null;
+  return `diploma-topo-${set}`;
+}
+
+/** Which map a stored topodiploma is for, or null if the row is not one. */
+export function kaartVanDiploma(id: string): TopoDiplomaSet | null {
+  return alsTopoDiplomaSet(/^diploma-topo-(.+)$/.exec(id)?.[1]);
 }

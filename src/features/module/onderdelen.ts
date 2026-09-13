@@ -1058,6 +1058,7 @@ const PRACTICE_MODES: readonly ModeId[] = [
   'hoe-heet-dit',
   'bliksemronde',
   'overleven',
+  'topo-diploma',
 ];
 const SUM_MODES: readonly ModeId[] = [
   'som-typen',
@@ -1072,6 +1073,7 @@ const KLOK_MODES: readonly ModeId[] = [
   'klok-typen',
   'bliksemronde',
   'overleven',
+  'klok-diploma',
 ];
 
 export function asPracticeMode(mode: ModeId): PracticeMode {

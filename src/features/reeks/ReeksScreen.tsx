@@ -3,6 +3,8 @@ import { dagenInMaand, dayKey, kalenderWeken, laatsteZevenDagen, type Oefendag }
 import { t, type TranslationKey } from '@/i18n';
 import { dagKort, dagLang, ReeksGetal, WeekRij } from './WeekRij';
 import { useReeks } from './useReeks';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 
 /** How many weeks the calendar holds: a month, and the week it began in. */
 const WEKEN = 5;
@@ -39,6 +41,25 @@ const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3', 'reeks.regel4'] 
  * no "beter dan vorige week" — the only streak on the page is this one.
  */
 export function ReeksScreen({ aside }: { readonly aside: ReactNode }) {
+  const { actief } = usePremium();
+
+  // Premium since ADR-116: the page says whose it is and how to open it.
+  if (!actief) {
+    return (
+      <div className="tk-page">
+        <div className="tk-page-main">
+          <h1 className="tk-titel">{t('reeks.titel')}</h1>
+          <PremiumSlot />
+        </div>
+        {aside}
+      </div>
+    );
+  }
+
+  return <ReeksPagina aside={aside} />;
+}
+
+function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
   const reeks = useReeks();
 
   // Nothing until it is known. A page that says nought and then twelve has

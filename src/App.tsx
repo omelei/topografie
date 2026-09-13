@@ -28,6 +28,10 @@ import {
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
 import { ReeksScreen } from '@/features/reeks/ReeksScreen';
+import { PremiumScreen } from '@/features/premium/PremiumScreen';
+import { usePremium } from '@/features/premium/usePremium';
+import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
+import { controleerOpnieuw } from '@/store/premium';
 import type { Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
 import type { ModeId } from '@/game-core';
@@ -110,6 +114,13 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   const [visit, setVisit] = useState(0);
   const [route, go] = useRoute();
+  const { actief: premium } = usePremium();
+
+  /** The premium page, from a lock (ADR-116). Whatever screen was up is left. */
+  const naarPremium = () => {
+    setScreen({ name: 'home' });
+    go({ name: 'premium' });
+  };
 
   // The tab bar's four destinations, two of which exist. Mapping them here
   // rather than inside the Shell keeps the frame ignorant of what a screen is.
@@ -155,7 +166,16 @@ export default function App() {
     mode: ModeId,
     aantal: number | null = null,
     toetsstand = false,
+    alleen: readonly string[] | null = null,
   ) => {
+    // The one place every round starts, so the one place premium is asked
+    // (ADR-116): a favourite, a line in the history or an unfinished round in
+    // a premium way goes to the code page rather than into the round.
+    if (!premium && (toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId))) {
+      naarPremium();
+      return;
+    }
+
     setVisit(visit + 1);
 
     // Flags explore on a screen of their own, like the map, and the mix and
@@ -166,12 +186,12 @@ export default function App() {
         return;
       }
       const vlagMode = asVlagMode(mode);
-      setScreen({ name: 'vlag', setId: deel.setId, vlagMode, aantal, toetsstand, alleen: null });
+      setScreen({ name: 'vlag', setId: deel.setId, vlagMode, aantal, toetsstand, alleen });
       return;
     }
     if (deel.moduleId === 'klok') {
       const klokMode = asKlokMode(mode);
-      setScreen({ name: 'klok', setId: deel.setId, klokMode, aantal, toetsstand, alleen: null });
+      setScreen({ name: 'klok', setId: deel.setId, klokMode, aantal, toetsstand, alleen });
       return;
     }
     if (deel.moduleId !== 'topo') {
@@ -181,7 +201,7 @@ export default function App() {
         sumMode: asSumMode(mode),
         aantal,
         toetsstand,
-        alleen: null,
+        alleen,
       });
       return;
     }
@@ -198,8 +218,17 @@ export default function App() {
       practiceMode: asPracticeMode(mode),
       aantal,
       toetsstand,
-      alleen: null,
+      alleen,
     });
+  };
+
+  /**
+   * "Maak af" (ADR-115): the round a child left, picked up where it stopped —
+   * the same set, the same way, and only the questions it had not asked yet.
+   */
+  const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => {
+    if (rest.length === 0) return;
+    beginRonde(deel, mode, rest.length, false, [...rest]);
   };
 
   /**
@@ -209,6 +238,11 @@ export default function App() {
    */
   const herhaal = (ids: readonly string[]) => {
     if (ids.length === 0) return;
+    // Premium, like every way of going back over your own mistakes (ADR-116).
+    if (!premium) {
+      naarPremium();
+      return;
+    }
     const alleen = [...ids];
     const aantal = alleen.length;
     setVisit(visit + 1);
@@ -243,6 +277,13 @@ export default function App() {
 
   useEffect(() => {
     void getProfile().then((profile) => setBoot({ status: 'ready', profile: profile ?? null }));
+  }, []);
+
+  // Once a week, if there is a code on this device: is it still good? Nothing
+  // is asked when there is no code, so a device without premium still asks
+  // nobody anything (ADR-116).
+  useEffect(() => {
+    void controleerOpnieuw();
   }, []);
 
   // The component gallery, in development only. import.meta.env.DEV is
@@ -345,6 +386,16 @@ export default function App() {
   /** The child's own column, which every screen inside the shell carries. */
   const eigenKolom = <SideColumn onReeks={goReeks} onBegin={beginRonde} />;
 
+  // What premium is and where the code goes (ADR-116). Reached from every
+  // lock and from Jij, by its address, and never from the tab bar.
+  if (route.name === 'premium') {
+    return (
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+        <PremiumScreen aside={eigenKolom} />
+      </Shell>
+    );
+  }
+
   // The streak's own page: the number, the days behind it and how it works
   // (ADR-110). Reached from the streak block and by its address, like the
   // collection below, and never from the tab bar.
@@ -425,7 +476,7 @@ export default function App() {
         naam={boot.profile.naam}
         onReeks={goReeks}
         onBegin={beginRonde}
-        onModule={goModule}
+        onVerder={maakAf}
       />
     </Shell>
   );

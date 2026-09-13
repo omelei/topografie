@@ -104,4 +104,7 @@ export type ModeId =
   | 'vlag-gemengd'
   // The test at the end of a werelddeel: twenty flags, nine in ten right, and
   // nothing said until the end (ADR-104).
-  | 'vlag-diploma';
+  | 'vlag-diploma'
+  // The same test for one step of the clock, and for one map (ADR-117).
+  | 'klok-diploma'
+  | 'topo-diploma';

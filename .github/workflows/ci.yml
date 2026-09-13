@@ -268,6 +268,12 @@ jobs:
           # say so, and the step below refuses to publish a build whose page and
           # base disagree.
           BASE_PATH: ${{ vars.BASE_PATH || '/' }}
+          # Premium (ADR-116): where a code is checked, and the key that may
+          # ask. Both are public by design — the key opens three functions and
+          # no table. Empty until premium is set up (tools/premium/README.md),
+          # and a build without them says "nog niet beschikbaar".
+          VITE_PREMIUM_URL: ${{ vars.PREMIUM_URL }}
+          VITE_PREMIUM_KEY: ${{ vars.PREMIUM_KEY }}
       # Cheap, and it closes the only way this build can be wrong while every
       # test passes: the tests run against a dev server that does not have a
       # base at all, so nothing else in this file ever looks at the paths that

@@ -45,7 +45,7 @@ describe('the ways of practising', () => {
     ['ontdekken'],
     ['bliksemronde'],
     ['overleven'],
-    ['tafeldiploma', 'vlag-diploma'],
+    ['tafeldiploma', 'vlag-diploma', 'klok-diploma', 'topo-diploma'],
     ['vlag-gemengd'],
   ];
   const plek = (id: string) => ORDE.findIndex((groep) => groep.includes(id));
@@ -58,6 +58,7 @@ describe('the ways of practising', () => {
       'ontdekken',
       'bliksemronde',
       'overleven',
+      'topo-diploma',
     ]);
     expect(SUM_FORMS.map((form) => form.id)).toEqual([
       'som-meerkeuze',
@@ -72,6 +73,7 @@ describe('the ways of practising', () => {
       'klok-typen',
       'bliksemronde',
       'overleven',
+      'klok-diploma',
     ]);
 
     for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
@@ -121,11 +123,13 @@ describe('the ways of practising', () => {
     }
   });
 
-  it('never draws more than six tiles, whatever a module holds', () => {
-    // A drawing rule, not a limit on the product: past six the grid stops being
-    // one glance. A module with a seventh way has a question to answer here.
+  it('never draws more than seven tiles, whatever a module holds', () => {
+    // A drawing rule, not a limit on the product. Seven since ADR-117, and
+    // only on a map with a topodiploma: six ways and the test at the end.
     const tegels = (forms: typeof TOPO_FORMS, setId: string) =>
       offeredForms(forms, setId).filter((form) => !form.alleenToets).length;
+    expect(MAX_FORMS).toBe(7);
+    expect(tegels(TOPO_FORMS, 'nl-provincies')).toBe(7);
     expect(tegels(TOPO_FORMS, 'nl-provincies')).toBeLessThanOrEqual(MAX_FORMS);
     expect(tegels(KLOK_FORMS, 'klok-half')).toBeLessThanOrEqual(MAX_FORMS);
     expect(tegels(VLAG_FORMS, 'vlag-europa-alle')).toBeLessThanOrEqual(MAX_FORMS);
@@ -135,12 +139,35 @@ describe('the ways of practising', () => {
     expect(formsFor('vlaggen')).toBe(VLAG_FORMS);
   });
 
-  it('offers the clock module every one of its ways, on every step', () => {
-    // Nothing here is set-dependent: there is no mix a way stops making sense
-    // on, the way exploring does on the map, and no set a diploma belongs to.
-    for (const setId of ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf', 'klok-mix']) {
+  it('offers the clock module every one of its ways on every step, and the diploma on the steps', () => {
+    // A klokdiploma is sat on one step of the clock (ADR-117); the mix is
+    // every step at once, and there is no certificate for that.
+    for (const setId of ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf']) {
       expect(offeredForms(KLOK_FORMS, setId).length, setId).toBe(KLOK_FORMS.length);
     }
+    const opMix = offeredForms(KLOK_FORMS, 'klok-mix').map((form) => form.id);
+    expect(opMix).not.toContain('klok-diploma');
+    expect(opMix).toHaveLength(KLOK_FORMS.length - 1);
+  });
+
+  it('offers a topodiploma on one map, and not on the world, the mix or a list of mistakes', () => {
+    for (const setId of ['nl-provincies', 'nl-steden', 'europa-landen', 'oceanie-landen']) {
+      expect(
+        offeredForms(TOPO_FORMS, setId).map((form) => form.id),
+        setId,
+      ).toContain('topo-diploma');
+    }
+    for (const setId of ['wereld-landen', 'nl-mix', 'nl-fouten']) {
+      expect(
+        offeredForms(TOPO_FORMS, setId).map((form) => form.id),
+        setId,
+      ).not.toContain('topo-diploma');
+    }
+    // A diploma is its own length, so "Hoeveel vragen?" is not asked under it.
+    const diploma = TOPO_FORMS.find((form) => form.id === 'topo-diploma');
+    expect(diploma && questionChoices(diploma, 80)).toEqual([]);
+    expect(diploma && questionCount(diploma, 80)).toBe(20);
+    expect(diploma && questionCount(diploma, 12)).toBe(12);
   });
 
   it('offers a diploma on a table and on nothing else', () => {

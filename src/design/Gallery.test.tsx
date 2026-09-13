@@ -62,7 +62,7 @@ describe('every component renders every state it claims to have', () => {
   it('gives every item status a word, not only a shape', () => {
     render(<Gallery />);
     for (const word of [
-      'in de vriezer',
+      'even opfrissen',
       'dit onthoud je nu',
       'nog niet onthouden',
       'nog niet geoefend',

@@ -4,6 +4,8 @@ import { t, type TranslationKey } from '@/i18n';
 import { loadVlagDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
+import { PremiumSectie } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 
 /**
  * Six vlaggendiploma's, one per werelddeel, with the gaps showing (ADR-104).
@@ -19,11 +21,14 @@ export function VlagDiplomas({
   /** Where pressing a diploma chooses it. Absent where the wall is only shown. */
   readonly onKies?: ((deel: DiplomaWerelddeel) => void) | undefined;
 }) {
+  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<DiplomaWerelddeel> | null>(null);
 
   useEffect(() => {
     void loadVlagDiplomas().then(setBehaald);
   }, []);
+
+  if (!actief) return <PremiumSectie titel={t('vlag.diplomasTitle')} />;
 
   // Nothing until it is known: a wall that shows six gaps and then fills two of
   // them has told a child they had none.

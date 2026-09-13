@@ -2,6 +2,8 @@ import { NextIcon } from '@/components/Icon';
 import { laatsteZevenDagen } from '@/game-core';
 import { ReeksGetal, WeekRij } from '@/features/reeks/WeekRij';
 import { useReeks } from '@/features/reeks/useReeks';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { t } from '@/i18n';
 import { Blok } from './Blok';
 
@@ -18,7 +20,18 @@ import { Blok } from './Blok';
  * numbers behind them are written out.
  */
 export function ReeksBlok({ onReeks }: { readonly onReeks: () => void }) {
+  const { actief } = usePremium();
   const reeks = useReeks();
+
+  // Premium since ADR-116. The block keeps its place and its name; the days
+  // are still counted underneath, so the streak is all there once a code is.
+  if (!actief) {
+    return (
+      <Blok titel={t('reeks.titel')}>
+        <PremiumSlot kaal />
+      </Blok>
+    );
+  }
 
   // Empty until it is known, for the reason the progress card gives.
   if (reeks === null) return <Blok titel={t('reeks.titel')} bezig />;

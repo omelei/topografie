@@ -8,7 +8,10 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { useTestPlan } from '@/features/home/testPlan';
 import { Tafeldiplomas } from './Tafeldiplomas';
+import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
+import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
+import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import {
   itemsVan,
   naamVan,
@@ -118,6 +121,10 @@ export function ModuleScreen({
   const plan = useTestPlan();
   const kleinScherm = useSmallScreen();
   const nogId = useId();
+  // What a premium tile does without a code: it goes to the page where one is
+  // entered, rather than being chosen and refused at the start (ADR-116).
+  const { actief } = usePremium();
+  const naarPremium = useNaarPremium();
 
   useEffect(() => {
     void loadItemStates().then(setStates);
@@ -308,6 +315,10 @@ export function ModuleScreen({
                 <Button
                   variant="tertiary"
                   onClick={() => {
+                    if (!actief) {
+                      naarPremium();
+                      return;
+                    }
                     kiesElders(mix);
                     setToetsstand(true);
                   }}
@@ -393,6 +404,10 @@ export function ModuleScreen({
                   // does nothing, so a chosen table of seven stays chosen.
                   onClick={() => {
                     if (open) return;
+                    if (premium && !actief) {
+                      naarPremium();
+                      return;
+                    }
                     setRegio(hier);
                     if (vraagtWelke(vak)) {
                       setVakId(vak.id);
@@ -484,6 +499,10 @@ export function ModuleScreen({
                   aria-label={metPremium(`${t(candidate.name)}. ${t(candidate.reason)}`, premium)}
                   aria-pressed={gekozenVorm}
                   onClick={() => {
+                    if (premium && !actief) {
+                      naarPremium();
+                      return;
+                    }
                     setFormId(candidate.id);
                     setToetsstand(false);
                   }}
@@ -514,7 +533,7 @@ export function ModuleScreen({
                   true,
                 )}
                 aria-pressed={alsToets}
-                onClick={() => setToetsstand(true)}
+                onClick={() => (actief ? setToetsstand(true) : naarPremium())}
               >
                 <span className="tk-plaat">
                   <PaperIcon size={24} />
@@ -608,6 +627,29 @@ export function ModuleScreen({
             }}
           />
         ) : null}
+
+        {/* Four klokdiploma's on the clock's page, and eleven topodiploma's on
+            topography's (ADR-117). Pressing one answers every step at once:
+            that step or that map, and the diploma. */}
+        {module.id === 'klok' ? (
+          <KlokDiplomas
+            onKies={(stap) => {
+              kiesElders(stap);
+              setFormId('klok-diploma');
+              setToetsstand(false);
+            }}
+          />
+        ) : null}
+
+        {module.id === 'topo' ? (
+          <TopoDiplomas
+            onKies={(kaart) => {
+              kiesElders(kaart);
+              setFormId('topo-diploma');
+              setToetsstand(false);
+            }}
+          />
+        ) : null}
       </div>
 
       {aside}
@@ -690,7 +732,7 @@ function isKeypad(onderwerp: Onderwerp): boolean {
  */
 function vorderingVan(vak: Onderwerp, known: ReadonlyMap<string, ItemState>, now: Date): string {
   const ids = itemsVan(vak);
-  const mastered = countMastered(known, ids);
+  const mastered = countMastered(known, ids, now);
   // Never over a mix on its own: a mix holds every item there is, so it is due
   // more often than anything else by definition.
   const due = vak.sets

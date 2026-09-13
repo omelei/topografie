@@ -25,7 +25,16 @@ describe('premium', () => {
     for (const vorm of gratis) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
     }
-    for (const vorm of ['ontdekken', 'bliksemronde', 'overleven', 'tafeldiploma', 'vlag-diploma']) {
+    for (const vorm of [
+      'ontdekken',
+      'bliksemronde',
+      'overleven',
+      'tafeldiploma',
+      'vlag-diploma',
+      'klok-diploma',
+      'topo-diploma',
+      'vlag-gemengd',
+    ]) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(true);
     }
   });

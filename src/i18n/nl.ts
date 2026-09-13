@@ -23,7 +23,13 @@ export const nl = {
   // stopt na tien.
   'home.welcome': 'Welkom {naam}!',
   'home.todayOpen': 'Kies een vak, doe een ronde en kijk wat je al onthoudt.',
-  'home.practiceMore': 'Verder oefenen',
+  // De rondes die je begon en niet afmaakte (ADR-115), in de plaats van de
+  // moduletegels van "Verder oefenen". Tikken vraagt wat die ronde nog niet
+  // had gevraagd, op dezelfde manier.
+  'home.openTitle': 'Maak af',
+  'home.openNone': 'Stop je halverwege een ronde? Dan kun je hem hier afmaken.',
+  'home.openRest': 'Nog {aantal} van de {totaal} vragen',
+  'home.openRestOne': 'Nog 1 van de {totaal} vragen',
   // De tegels tussen het toetsblok en het logboek: waar je zelf het vaakst
   // naar teruggaat, met het aantal keer erbij. Dat getal komt van dit apparaat
   // en van niets anders - er is geen server die meekijkt, dus er is ook geen
@@ -177,24 +183,42 @@ export const nl = {
   // K9, wat je onthoudt. De tabel is het detail, de punten erboven zijn alles
   // in één blik — dezelfde vorm, kleiner, geen tweede diagram om te leren.
   'retention.title': 'Wat je onthoudt',
-  // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat de
-  // pagina laat zien, en belooft niets over hoe lang iets blijft hangen.
+  // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat
+  // onthouden hier betekent (ADR-114): na een week nog goed.
   'retention.intro':
-    'Hoe goed je alles onthoudt, per onderwerp. Wat op de rol staat, komt terug in je volgende ronde.',
+    'Iets onthoud je als je het nog weet nadat er een week tussen zat. Hier zie je per onderwerp hoe ver je bent.',
   'retention.welkVak': 'Welk vak?',
   'retention.welkOnderwerp': 'Welk onderwerp?',
   'retention.welkeSom': 'Welke sommen?',
+  // De vier statussen als tegels; samen zijn ze het hele onderwerp. "Vandaag op
+  // de rol" is weg: dat ging over het schema, niet over wat je onthoudt.
   'retention.tegelOnthouden': 'Onthoud je',
+  'retention.tegelOpfrissen': 'Even opfrissen',
   'retention.tegelOefenen': 'Nog aan het oefenen',
   'retention.tegelNieuw': 'Nog niet geoefend',
-  'retention.tegelRol': 'Vandaag op de rol',
   'retention.detail': 'Per onderdeel',
   'retention.glance': 'Alles in één blik',
+  // De tabel: hoe vaak, hoeveel procent goed, en wanneer het laatst. "Weer op"
+  // is weg; wanneer iets terugkomt is de zaak van de volgende ronde.
   'retention.item': 'Onderdeel',
   'retention.status': 'Hoe het gaat',
-  'retention.correct': 'Goed',
-  'retention.due': 'Weer op',
-  'retention.dueNow': 'vandaag',
+  'retention.aantal': 'Aantal',
+  'retention.procentGoed': '% goed',
+  'retention.procent': '{procent}%',
+  'retention.laatst': 'Laatst geoefend',
+  'retention.vandaag': 'vandaag',
+  'retention.dagGeleden': '1 dag geleden',
+  'retention.dagenGeleden': '{aantal} dagen geleden',
+  'retention.nooit': '–',
+  // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114).
+  'retention.regelsTitel': 'Wanneer onthoud je iets?',
+  'retention.regel1':
+    'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
+  'retention.regel2':
+    'Onthouden is drie keer goed op verschillende dagen, met minstens een week tussen de eerste en de laatste keer.',
+  'retention.regel3':
+    'Heb je iets heel lang niet gezien, dan staat er even opfrissen. Eén goed antwoord en je onthoudt het weer.',
+  'retention.regel4': 'Eén fout antwoord en je begint bij dat onderdeel weer bij het begin.',
 
   // Het toetsenblok, bovenaan de eigen kolom van het kind. Het is de reden dat
   // het kind deze week oefent, en het zegt alleen dat: wanneer, en waarover.
@@ -243,8 +267,9 @@ export const nl = {
 
   // Item status, K9. Four states, each with a shape as well as a word — and
   // none of them green, because green is an answer state and would tell a
-  // child they had just got something right.
-  'status.frozen': 'in de vriezer',
+  // child they had just got something right. "In de vriezer" is gone
+  // (ADR-114): onthouden begins at box four now, and box five is the same fact.
+  'status.refresh': 'even opfrissen',
   'status.remembered': 'dit onthoud je nu',
   'status.practising': 'nog niet onthouden',
   'status.new': 'nog niet geoefend',
@@ -355,6 +380,18 @@ export const nl = {
   'way.ontdekken': 'Rondkijken, geen vragen',
   'way.bliksemronde': 'Zo veel mogelijk in een minuut — voor als het al zit',
   'way.overleven': 'Doorgaan tot je levens op zijn — voor als het al zit',
+  // Het topodiploma (ADR-117): twintig plekken van één kaart, of de hele kaart
+  // als die kleiner is, de naam zelf typen, negen van de tien goed.
+  'mode.topo-diploma': 'Topodiploma',
+  'way.topo-diploma':
+    'Twintig namen zelf typen, negen van de tien goed — pas aan het eind zie je hoe het ging',
+  'topo.diplomasTitle': 'Jouw topodiploma’s',
+  'topo.diplomasCount': '{aantal} van de {totaal} gehaald',
+  'topo.diplomaHave': '{kaart}: topodiploma gehaald',
+  'topo.diplomaWant': '{kaart}: nog geen topodiploma',
+  'topo.diplomaEarned': 'Topodiploma gehaald: {kaart}',
+  'topo.diplomaMissed':
+    'Nog geen diploma: {goed} van de {totaal} goed. Met {nodig} goed is hij van jou.',
   // Bij naam, net als de begroeting op de voordeur. "Wat wil je oefenen?" aan
   // niemand in het bijzonder is een formulier; aan Fem gevraagd is het een
   // vraag, en zij is degene die hem beantwoordt.
@@ -434,9 +471,45 @@ export const nl = {
   'start.nogKiezen': 'Nog even kiezen',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
-  // Wat straks alleen met een account kan (ADR-111). Het label staat er al; de
-  // functie werkt nog voor iedereen, want inloggen bestaat nog niet.
+  // Premium (ADR-111, ADR-116): een code die een ouder één keer invult. Geen
+  // e-mail en geen wachtwoord; er is geen account om in te loggen.
   'premium.label': 'Premium',
+  'premium.titel': 'Premium',
+  'premium.intro':
+    'Met premium kun je alles van leer.nu gebruiken. Eén code geldt een jaar, voor alle kinderen op dit apparaat, en je kunt hem op drie apparaten gebruiken.',
+  'premium.codeTitel': 'Je code',
+  'premium.codeLabel': 'Typ de code',
+  'premium.codePlaceholder': 'LEER-XXXX-XXXX',
+  'premium.codeGebruiken': 'Code gebruiken',
+  'premium.bezig': 'Even kijken…',
+  'premium.aan': 'Premium staat aan op dit apparaat, tot en met {datum}.',
+  'premium.afmelden': 'Code van dit apparaat halen',
+  'premium.afmeldenUitleg':
+    'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
+  'premium.watTitel': 'Wat er bij premium hoort',
+  'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp',
+  'premium.functie.manieren': 'Ontdekken, de bliksemronde en overleven',
+  'premium.functie.toets': 'De oefentoets',
+  'premium.functie.diplomas': 'De diploma’s: tafels, vlaggen, klok en topo',
+  'premium.functie.fouten': 'Oefen je fouten en herhaal je fouten',
+  'premium.functie.badges': 'Jouw badges',
+  'premium.functie.reeks': 'Jouw reeks',
+  'premium.functie.goed': 'Goed beantwoord',
+  'premium.functie.kinderen': 'Meer dan één kind op dit apparaat',
+  'premium.gratis': 'Zonder code kun je in elk vak zoeken, meerkeuze doen en zelf typen.',
+  'premium.voorOuders':
+    'Voor ouders: alleen de code gaat naar onze server, om te kijken of hij klopt. Wat je kind oefent, blijft op dit apparaat.',
+  'premium.fout.leeg': 'Typ eerst de code.',
+  'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',
+  'premium.fout.verlopen': 'Deze code is verlopen.',
+  'premium.fout.vol':
+    'Deze code staat al op drie apparaten. Haal hem eerst van een ander apparaat af.',
+  'premium.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
+  'premium.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
+  'premium.fout.niet-ingesteld': 'Premium is nog niet beschikbaar.',
+  // Wat er staat waar een premiumblok zou staan, zonder code.
+  'premium.slot': 'Dit hoort bij premium.',
+  'premium.slotKnop': 'Code invullen',
 
   // De onderwerpen van rekenen. Vijf soorten sommen en een mix ervan; de tafels
   // en het delen hebben er twaalf elk, en die staan als knopjes onder de kaart
@@ -626,6 +699,17 @@ export const nl = {
   'way.klok-meerkeuze': 'Kies uit vier tijden — de instap naar typen',
   'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort — voor de eerste keer',
   'way.klok-typen': 'Schrijf de tijd zelf op — voor de toets',
+  // Het klokdiploma (ADR-117): tien klokken van één stap, zelf opschrijven,
+  // negen goed, en pas aan het eind hoor je hoe het ging.
+  'mode.klok-diploma': 'Klokdiploma',
+  'way.klok-diploma': 'Tien klokken zelf opschrijven, negen goed — pas aan het eind zie je hoe het ging',
+  'klok.diplomasTitle': 'Jouw klokdiploma’s',
+  'klok.diplomasCount': '{aantal} van de {totaal} gehaald',
+  'klok.diplomaHave': '{stap}: klokdiploma gehaald',
+  'klok.diplomaWant': '{stap}: nog geen klokdiploma',
+  'klok.diplomaEarned': 'Klokdiploma gehaald: {stap}',
+  'klok.diplomaMissed':
+    'Nog geen diploma: {goed} van de {totaal} goed. Met {nodig} goed is hij van jou.',
 
   // Vlaggen (ADR-102). Een onderwerp is één of twee woorden, zoals bij
   // topografie; de rij erboven zegt al waar.
@@ -778,6 +862,11 @@ export const nl = {
   'you.on': 'aan',
   'you.off': 'uit',
   'you.stays': 'Wat je oefent blijft op dit apparaat.',
+  // Premium op dit apparaat, voor de volwassene die de code heeft (ADR-116).
+  'you.premium': 'Premium',
+  'you.premiumAan': 'Premium staat aan tot en met {datum}.',
+  'you.premiumUit': 'Premium staat nog niet aan op dit apparaat.',
+  'you.premiumBekijk': 'Naar premium',
 
   // Badges: de tien reisstempels, anders getekend en op de pagina Jij (ADR-112).
   'badges.titel': 'Jouw badges',
@@ -809,7 +898,7 @@ export const nl = {
   'stamp.week-op-rij': 'Zeven dagen op rij',
   'stamp.week-op-rij.criterion': 'Zeven dagen achter elkaar geoefend.',
   'stamp.set-onthouden': 'Alles onthouden',
-  'stamp.set-onthouden.criterion': 'Elk onderdeel vier keer op rij goed.',
+  'stamp.set-onthouden.criterion': 'Alles van één onderwerp onthouden: na een week nog goed.',
   'stamp.bliksem-tien': 'Tien in een minuut',
   'stamp.bliksem-tien.criterion': 'Tien goed binnen één minuut.',
   'stamp.overleven-vijftien': 'Vijftien levens lang',

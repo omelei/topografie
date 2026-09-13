@@ -193,7 +193,12 @@ export type Route =
   /** A module the plan has but the product does not yet. */
   | { readonly name: 'soon'; readonly module: Module }
   /** A word a parent looks for, holding more than one module. */
-  | { readonly name: 'category'; readonly category: Category };
+  | { readonly name: 'category'; readonly category: Category }
+  /** What premium is, and the one field that turns it on (ADR-116). */
+  | { readonly name: 'premium' };
+
+/** The premium page. Reached from every lock and from Jij, never from the tab bar. */
+export const PREMIUM_SLUG = 'premium';
 
 export const RETENTION_SLUG = 'onthouden';
 export const YOU_SLUG = 'jij';
@@ -245,6 +250,7 @@ export function routeFor(pathname: string): Route {
   if (slug === RETENTION_SLUG) return { name: 'retention' };
   if (slug === YOU_SLUG) return { name: 'you' };
   if (slug === REEKS_SLUG) return { name: 'reeks' };
+  if (slug === PREMIUM_SLUG) return { name: 'premium' };
 
   const [head = '', tail] = slug.split('/');
 
@@ -272,6 +278,7 @@ function slugFor(route: Route): string {
   if (route.name === 'retention') return RETENTION_SLUG;
   if (route.name === 'you') return YOU_SLUG;
   if (route.name === 'reeks') return REEKS_SLUG;
+  if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];
 

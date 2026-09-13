@@ -10,7 +10,13 @@ import {
   ShieldIcon,
   type IconProps,
 } from '@/components/Icon';
-import { diplomaWerelddeelVanSet, type ModeId, type RoundRule } from '@/game-core';
+import {
+  alsTopoDiplomaSet,
+  diplomaWerelddeelVanSet,
+  KLOK_DIPLOMA_SETS,
+  type ModeId,
+  type RoundRule,
+} from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { isVlagFouten, isVlagMix } from '@/content/loadVlaggen';
 import { loadItemSets } from '@/content/loadSets';
@@ -94,8 +100,16 @@ export interface PracticeForm {
   readonly vasteLengte?: boolean;
 }
 
-/** One glance, not a scroll. See the note above. */
-export const MAX_FORMS = 6;
+/**
+ * One glance, not a scroll. See the note above.
+ *
+ * Seven since ADR-117, and only on topography's maps: its six ways and the
+ * topodiploma. That is one question answered here, as the note asks — the
+ * diploma is not a way of practising but the test at the end of them, it is
+ * offered only once a map is chosen, and with the oefentoets beside it the
+ * grid is four rows of two rather than three and a half.
+ */
+export const MAX_FORMS = 7;
 
 /**
  * Topography: the four that teach, then the two that put pressure on what is
@@ -156,6 +170,19 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: ROUND_RULE.overleven,
     seconds: null,
+  },
+  {
+    // Last, for the tafeldiploma's reason: it is the test at the end of the
+    // practice rather than a way in. On one map at a time, and not on the
+    // world, the Topomix or a list of mistakes (ADR-117).
+    id: 'topo-diploma',
+    name: 'mode.topo-diploma',
+    reason: 'way.topo-diploma',
+    icon: DiplomaIcon,
+    rule: ROUND_RULE['topo-diploma'],
+    seconds: 14,
+    vasteLengte: true,
+    geldtVoor: (setId) => alsTopoDiplomaSet(setId) !== null,
   },
 ];
 
@@ -243,10 +270,14 @@ export const SUM_FORMS: readonly PracticeForm[] = [
  * **Typing is third and last of the three that teach**, for the reason the map
  * gives: writing "7:35" unaided is what a test asks.
  *
- * Five rather than six, and nothing is padded to make up the number. There is
- * no exploring on a clock — twelve faces is not somewhere a child can wander —
- * and there is no diploma, because no Dutch school hands one out for the clock
- * the way it does for a table.
+ * No exploring on a clock — twelve faces is not somewhere a child can wander.
+ *
+ * **And a klokdiploma last** (ADR-117). This comment used to say there was
+ * none, because no Dutch school hands one out the way it does for a table. The
+ * owner asked for one, and the argument that settles it is the product's own:
+ * a diploma here is the test at the end of the practice, sat on one step of
+ * the clock at a time, and a child who has read ten faces of kwartieren
+ * without help has something worth having a name for.
  */
 export const KLOK_FORMS: readonly PracticeForm[] = [
   {
@@ -290,6 +321,16 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: KLOK_ROUND_RULE.overleven,
     seconds: null,
+  },
+  {
+    id: 'klok-diploma',
+    name: 'mode.klok-diploma',
+    reason: 'way.klok-diploma',
+    icon: DiplomaIcon,
+    rule: KLOK_ROUND_RULE['klok-diploma'],
+    seconds: 14,
+    vasteLengte: true,
+    geldtVoor: (setId) => (KLOK_DIPLOMA_SETS as readonly string[]).includes(setId),
   },
 ];
 
