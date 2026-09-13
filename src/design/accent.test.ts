@@ -45,6 +45,9 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   [".tk-tegel[aria-pressed='true']", 'the answer already given, as a tile'],
   [".tk-tegel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a tile'],
   ['.tk-tegel-vink', 'the answer already given: its tick'],
+  // Ontdekken: the name being looked at, in a list of eighty (ADR-112). It
+  // carries a tick as well, so the tint is not the only thing that says so.
+  [".tk-verken-item[aria-current='true']", 'the answer already given, in a list'],
   [".tk-tafel[aria-pressed='true']", 'the answer already given, as a square'],
   [".tk-tafel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a square'],
   // The start bar is all of those answers at once, on the module's soft ground
@@ -83,11 +86,11 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
 ]);
 
 /**
- * Where an accent may be *defined* rather than used: the light theme and the
- * round's (ADR-109). The accent is the handoff's green in both; a module no
- * longer resolves one of its own, and keeps its colour for its plate only.
+ * Where an accent may be *defined* rather than used: the root, where it is the
+ * handoff's green, and `data-accent="module"`, which points it at the module's
+ * own colour inside a module — its page, its rounds, its rail entry (ADR-112).
  */
-const DEFINITION_SELECTORS = /^(:root|\[data-thema='ronde'\])$/;
+const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
 
 /** Lines in components that may name an accent, and why. */
 const ALLOWED_LINES: readonly { file: string; snippet: string; why: string }[] = [

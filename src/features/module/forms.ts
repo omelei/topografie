@@ -64,8 +64,6 @@ export interface PracticeForm {
    * on three lives is exactly as long as the child is good.
    */
   readonly seconds: number | null;
-  /** Only offered once the clock is switched on, which it is not by default (K10). */
-  readonly needsClock: boolean;
   /**
    * Which sets this way of practising is offered for. Absent means all of them.
    *
@@ -116,7 +114,6 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: PointIcon,
     rule: ROUND_RULE['wijs-aan'],
     seconds: 10,
-    needsClock: false,
   },
   {
     id: 'meerkeuze',
@@ -125,7 +122,6 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: ChoiceIcon,
     rule: ROUND_RULE.meerkeuze,
     seconds: 8,
-    needsClock: false,
   },
   {
     id: 'hoe-heet-dit',
@@ -134,7 +130,6 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: KeyboardIcon,
     rule: ROUND_RULE['hoe-heet-dit'],
     seconds: 14,
-    needsClock: false,
   },
   {
     id: 'ontdekken',
@@ -143,7 +138,6 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: ExploreIcon,
     rule: null,
     seconds: null,
-    needsClock: false,
     // Nor a child's own list of mistakes: exploring is where a set is met.
     geldtVoor: (setId) => !isMixSet(setId) && !isFoutenSet(setId),
   },
@@ -154,7 +148,6 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: BoltIcon,
     rule: ROUND_RULE.bliksemronde,
     seconds: null,
-    needsClock: true,
   },
   {
     id: 'overleven',
@@ -163,30 +156,22 @@ export const TOPO_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: ROUND_RULE.overleven,
     seconds: null,
-    needsClock: false,
   },
 ];
 
 /**
- * The tables. Typing first and choosing second, which is the opposite of the
- * map and deliberate: four plausible products can be narrowed by a child who
- * cannot do the sum, so multiple choice measures less here. It is the way back
- * in when typing is going badly, not the way in (ADR-049).
+ * The tables, in the order every page has (ADR-112): choosing, then typing,
+ * then the two with pressure, then the diploma. A sum has nothing to find, so
+ * there is no "zoeken" here, and no exploring either — the seventh sum of the
+ * table of seven is not somewhere a child can wander.
  *
- * Four rather than six, and nothing is padded to make up the number. There is
- * no exploring for a table because there is nothing to look at — the seventh
- * sum of the table of seven is not somewhere a child can wander.
+ * ADR-049 had typing first on this page, on the argument that four plausible
+ * products can be narrowed by a child who cannot do the sum. The argument is
+ * still true, and it is now made by the line under each tile rather than by an
+ * order no other page has: a child who learned on topography that the second
+ * tile is the step up finds the same thing here.
  */
 export const SUM_FORMS: readonly PracticeForm[] = [
-  {
-    id: 'som-typen',
-    name: 'mode.som-typen',
-    reason: 'way.som-typen',
-    icon: KeyboardIcon,
-    rule: SUM_ROUND_RULE['som-typen'],
-    seconds: 8,
-    needsClock: false,
-  },
   {
     id: 'som-meerkeuze',
     name: 'mode.som-meerkeuze',
@@ -194,7 +179,14 @@ export const SUM_FORMS: readonly PracticeForm[] = [
     icon: ChoiceIcon,
     rule: SUM_ROUND_RULE['som-meerkeuze'],
     seconds: 6,
-    needsClock: false,
+  },
+  {
+    id: 'som-typen',
+    name: 'mode.som-typen',
+    reason: 'way.som-typen',
+    icon: KeyboardIcon,
+    rule: SUM_ROUND_RULE['som-typen'],
+    seconds: 8,
   },
   {
     id: 'bliksemronde',
@@ -203,7 +195,6 @@ export const SUM_FORMS: readonly PracticeForm[] = [
     icon: BoltIcon,
     rule: SUM_ROUND_RULE.bliksemronde,
     seconds: null,
-    needsClock: true,
   },
   {
     id: 'overleven',
@@ -212,7 +203,6 @@ export const SUM_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: SUM_ROUND_RULE.overleven,
     seconds: null,
-    needsClock: false,
   },
   {
     // Last, because it is the heaviest thing rekenen asks and because it is not
@@ -231,29 +221,24 @@ export const SUM_FORMS: readonly PracticeForm[] = [
     icon: DiplomaIcon,
     rule: SUM_ROUND_RULE.tafeldiploma,
     seconds: 8,
-    needsClock: false,
     geldtVoor: (setId) => /^tafel-\d+$/.test(setId),
   },
 ];
 
 /**
- * Klokkijken: the two that read a face, the one that reads it backwards, then
- * the two that put pressure on what is already read.
+ * Klokkijken, in the order every page has (ADR-112): finding, choosing,
+ * typing, then the two that put pressure on what is already read.
  *
- * **Choosing comes first here**, which is the map's order rather than the
- * tables'. ADR-049 put typing first on rekenen because four plausible products
- * can be narrowed by a child who cannot do the sum, so multiple choice measures
- * less there. A clock is the opposite: the four times offered are the four
- * mistakes children actually make reading one — an hour out, over for voor, the
- * hands swapped — so choosing between them is the exercise rather than a way
- * round it (`klokDistractors`).
+ * **"Klok zoeken" is first, and it is the clock's zoeken.** The other ways all
+ * show a face and ask what it says. This one shows a time and asks which of
+ * four faces says it — the name given and the picture found, which is what
+ * zoeken is on the map and on the flags. It is also the half a schoolbook
+ * drills hardest, because it catches a child who has learned to recognise
+ * twelve pictures.
  *
- * **"Welke klok" is the second, and it is not multiple choice turned round.**
- * The other four ways all show a face and ask what it says. This one shows a
- * time and asks which of four faces says it, which is the half of clock reading
- * that a child who has only ever been shown clocks has never been asked. It is
- * also the half a schoolbook drills hardest, because it is the one that catches
- * a child who has learned to recognise twelve pictures.
+ * **Choosing is second.** The four times offered are the four mistakes children
+ * actually make reading a face — an hour out, over for voor, the hands swapped
+ * — so choosing between them is an exercise of its own (`klokDistractors`).
  *
  * **Typing is third and last of the three that teach**, for the reason the map
  * gives: writing "7:35" unaided is what a test asks.
@@ -265,15 +250,6 @@ export const SUM_FORMS: readonly PracticeForm[] = [
  */
 export const KLOK_FORMS: readonly PracticeForm[] = [
   {
-    id: 'klok-meerkeuze',
-    name: 'mode.klok-meerkeuze',
-    reason: 'way.klok-meerkeuze',
-    icon: ChoiceIcon,
-    rule: KLOK_ROUND_RULE['klok-meerkeuze'],
-    seconds: 10,
-    needsClock: false,
-  },
-  {
     id: 'klok-welke-klok',
     name: 'mode.klok-welke-klok',
     reason: 'way.klok-welke-klok',
@@ -282,7 +258,14 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     icon: PointIcon,
     rule: KLOK_ROUND_RULE['klok-welke-klok'],
     seconds: 12,
-    needsClock: false,
+  },
+  {
+    id: 'klok-meerkeuze',
+    name: 'mode.klok-meerkeuze',
+    reason: 'way.klok-meerkeuze',
+    icon: ChoiceIcon,
+    rule: KLOK_ROUND_RULE['klok-meerkeuze'],
+    seconds: 10,
   },
   {
     id: 'klok-typen',
@@ -291,7 +274,6 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     icon: KeyboardIcon,
     rule: KLOK_ROUND_RULE['klok-typen'],
     seconds: 14,
-    needsClock: false,
   },
   {
     id: 'bliksemronde',
@@ -300,7 +282,6 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     icon: BoltIcon,
     rule: KLOK_ROUND_RULE.bliksemronde,
     seconds: null,
-    needsClock: true,
   },
   {
     id: 'overleven',
@@ -309,7 +290,6 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: KLOK_ROUND_RULE.overleven,
     seconds: null,
-    needsClock: false,
   },
 ];
 
@@ -328,7 +308,8 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
  * rule the other modules follow: when the options are pictures the way is
  * "{thing} zoeken", when they are words it is Meerkeuze.
  *
- * No bliksemronde. The plan for this module lists five ways and not six.
+ * **A bliksemronde as well** (ADR-112). It was missing here, and every other
+ * page has one: a minute of flags, both ways round, like the oefentoets.
  */
 export const VLAG_FORMS: readonly PracticeForm[] = [
   {
@@ -338,7 +319,6 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: PointIcon,
     rule: VLAG_ROUND_RULE['vlag-zoeken'],
     seconds: 12,
-    needsClock: false,
   },
   {
     id: 'vlag-meerkeuze',
@@ -347,7 +327,6 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: ChoiceIcon,
     rule: VLAG_ROUND_RULE['vlag-meerkeuze'],
     seconds: 10,
-    needsClock: false,
   },
   {
     id: 'ontdekken',
@@ -356,10 +335,17 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: ExploreIcon,
     rule: null,
     seconds: null,
-    needsClock: false,
     // Where a child meets a set, and a mix of everything or a list of their
     // own mistakes is not where anyone meets anything.
     geldtVoor: (setId) => !isVlagMix(setId) && !isVlagFouten(setId),
+  },
+  {
+    id: 'bliksemronde',
+    name: 'mode.bliksemronde',
+    reason: 'way.bliksemronde',
+    icon: BoltIcon,
+    rule: VLAG_ROUND_RULE.bliksemronde,
+    seconds: null,
   },
   {
     id: 'overleven',
@@ -368,7 +354,6 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: VLAG_ROUND_RULE.overleven,
     seconds: null,
-    needsClock: false,
   },
   {
     // Last of the tiles, for the tafeldiploma's reason: it is not practice but
@@ -381,7 +366,6 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: DiplomaIcon,
     rule: VLAG_ROUND_RULE['vlag-diploma'],
     seconds: 12,
-    needsClock: false,
     vasteLengte: true,
     geldtVoor: (setId) => diplomaWerelddeelVanSet(setId) !== null,
   },
@@ -392,7 +376,6 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
     icon: PaperIcon,
     rule: VLAG_ROUND_RULE['vlag-gemengd'],
     seconds: 12,
-    needsClock: false,
     alleenToets: true,
   },
 ];
@@ -428,24 +411,32 @@ export function formsFor(moduleId: string): readonly PracticeForm[] {
 }
 
 /**
- * What is actually drawn: what the clock setting allows and what the chosen set
- * can be practised in, capped at six.
+ * What is actually drawn: what the chosen set can be practised in, with at
+ * most six tiles.
  *
  * The set is part of it because step 2 is about a set that step 1 has already
  * named. A way of practising that does not apply to it is not greyed out — it
  * is absent, the same way an unbuilt module is absent from the rail: a disabled
  * control on a chooser is a question a child has to ask someone about.
+ *
+ * The cap counts tiles. A way only the oefentoets asks in is not a tile, so it
+ * neither counts towards the six nor is ever the one the cap drops — on the
+ * flags page it is the seventh entry, and dropping it took the oefentoets with
+ * it.
+ *
+ * There used to be a second argument, the clock setting, which kept the
+ * bliksemronde off every page until "Klok bij het oefenen" was switched on.
+ * ADR-112 offers it everywhere and the setting is gone.
  */
 export function offeredForms(
   forms: readonly PracticeForm[],
-  clock: boolean,
   setId: string | null,
   krap = false,
 ): readonly PracticeForm[] {
+  let tegels = 0;
   const offered = forms
-    .filter((form) => clock || !form.needsClock)
     .filter((form) => setId === null || !form.geldtVoor || form.geldtVoor(setId))
-    .slice(0, MAX_FORMS);
+    .filter((form) => form.alleenToets === true || ++tegels <= MAX_FORMS);
 
   // On a map too crowded to point at, pointing goes last rather than first. It
   // is still offered — see `teDrukOmAanTeWijzen` for why it is moved and not

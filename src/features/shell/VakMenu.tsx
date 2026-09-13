@@ -144,6 +144,7 @@ export function VakMenu({
                   <button
                     type="button"
                     data-module={module.id}
+                    data-accent="module"
                     className="tk-vakmenu-optie"
                     aria-current={hier ? 'page' : undefined}
                     onClick={() => {

@@ -172,17 +172,11 @@ describe('the addresses', () => {
     expect(routeFor('/rekenen/plus-50')).toMatchObject({ name: 'module', setId: null });
   });
 
-  it('gives the collection an address, and keeps it out of the tab bar', () => {
-    // A place a child goes on purpose, from the card that says where their
-    // journey is — not a fifth section of the product (ADR-076).
-    expect(routeFor('/voortgang')).toEqual({ name: 'reis' });
-    expect(pathFor({ name: 'reis' })).toMatch(/\/voortgang$/);
-  });
-
-  it('still answers to the word the collection used to be called', () => {
-    // "Jouw ontdekkingsreis" became "Jouw voortgang". An address somebody
-    // wrote down keeps working; nothing links to it any more.
-    expect(routeFor('/ontdekkingsreis')).toEqual({ name: 'reis' });
+  it('opens the front door where the collection used to be', () => {
+    // "Jouw voortgang" is hidden while it is thought through again (ADR-112).
+    // An address somebody wrote down lands on the front door, not on nothing.
+    expect(routeFor('/voortgang')).toEqual({ name: 'home' });
+    expect(routeFor('/ontdekkingsreis')).toEqual({ name: 'home' });
   });
 
   it('gives the streak an address, reached from the block that shows it', () => {

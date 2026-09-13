@@ -221,8 +221,9 @@ test('a finished table says what changed, not only what was scored', async ({ pa
     await page.getByRole('button', { name: 'Volgende vraag' }).click();
   }
 
-  await expect(page.getByRole('heading', { name: 'Wat er is veranderd' })).toBeVisible();
-  await expect(page.getByText('10 van de 10 goed')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+  // The round in numbers, as a tile (ADR-112).
+  await expect(page.getByText('10 van 10', { exact: true })).toBeVisible();
   await expect(page.getByText('Alles goed. Morgen komen er nieuwe bij.')).toBeVisible();
 });
 
@@ -256,23 +257,17 @@ test('a survival round of tables runs on lives, not on ten questions', async ({ 
   await expect(levens).toContainText('2');
 });
 
-test('the lightning round is offered only once the clock is on', async ({ page }) => {
+test('the lightning round is offered without a setting, and marked premium', async ({ page }) => {
+  // It used to wait for "Klok bij het oefenen", which was off by default, so
+  // most children never saw it. ADR-112 offers it on every page.
   await signIn(page, 'Timo');
+  await page.goto('/rekenen');
 
   const bliksem = page
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Bliksemronde\b/ });
-
-  await page.goto('/rekenen');
-  await expect(bliksem).toHaveCount(0);
-
-  const clock = page.getByRole('button', { name: /Klok bij het oefenen/ });
-  await page.goto('/jij');
-  await clock.click();
-  await expect(clock).toHaveAttribute('aria-pressed', 'true');
-
-  await page.goto('/rekenen');
   await expect(bliksem).toBeVisible();
+  await expect(bliksem).toHaveAccessibleName(/Premium$/);
 });
 
 /**

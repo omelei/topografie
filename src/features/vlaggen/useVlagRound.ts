@@ -44,17 +44,24 @@ import { voorlaad } from './vlagSrc';
  */
 
 export type VlagMode =
-  'vlag-zoeken' | 'vlag-meerkeuze' | 'vlag-gemengd' | 'overleven' | 'vlag-diploma';
+  | 'vlag-zoeken'
+  | 'vlag-meerkeuze'
+  | 'vlag-gemengd'
+  | 'bliksemronde'
+  | 'overleven'
+  | 'vlag-diploma';
 
 /**
- * Ten questions, about two minutes, and three lives for overleven. The diploma
- * asks twenty — fewer on a werelddeel that has fewer flags, which the round
- * gets for free by being composed from the set (ADR-104).
+ * Ten questions, about two minutes; a minute for the bliksemronde and three
+ * lives for overleven, both ways round like the oefentoets. The diploma asks
+ * twenty — fewer on a werelddeel that has fewer flags, which the round gets for
+ * free by being composed from the set (ADR-104).
  */
 export const VLAG_ROUND_RULE: Record<VlagMode, RoundRule> = {
   'vlag-zoeken': { kind: 'fixed', aantal: 10 },
   'vlag-meerkeuze': { kind: 'fixed', aantal: 10 },
   'vlag-gemengd': { kind: 'fixed', aantal: 10 },
+  bliksemronde: { kind: 'tijd', seconden: 60 },
   overleven: { kind: 'levens', levens: 3 },
   'vlag-diploma': { kind: 'fixed', aantal: VLAGDIPLOMA_VRAGEN },
 };

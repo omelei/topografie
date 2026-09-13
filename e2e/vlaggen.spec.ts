@@ -42,7 +42,7 @@ async function start(page: Page) {
  * its third life, and both are what is being tested.
  */
 async function speel(page: Page) {
-  const klaar = page.getByRole('heading', { name: 'Wat er is veranderd' });
+  const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
   const vlaggen = page.getByRole('group', { name: 'Kies een vlag' });
   const namen = page.getByRole('group', { name: 'Kies een naam' });
@@ -93,11 +93,12 @@ test('flags have a module page in the shape topography has', async ({ page }) =>
   }
   await expect(wat.getByRole('button', { name: /^Vlaggenmix/ })).toHaveCount(0);
 
-  // Four ways and the oefentoets, and no typing: spelling is not the point.
+  // Five ways and the oefentoets, and no typing: spelling is not the point.
   // A set first, because the ways are the ways of a chosen set.
   await wat.getByRole('button', { name: /^Bekende vlaggen/ }).click();
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  for (const naam of ['Vlag zoeken', 'Meerkeuze', 'Ontdekken', 'Overleven', 'Oefentoets']) {
+  const manieren = ['Vlag zoeken', 'Meerkeuze', 'Ontdekken', 'Bliksemronde', 'Overleven'];
+  for (const naam of [...manieren, 'Oefentoets']) {
     await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
   await expect(hoe.getByRole('button', { name: /^Zelf typen/ })).toHaveCount(0);
@@ -164,7 +165,7 @@ test('Oefentoets: no answers until the end, and then a mark', async ({ page }) =
   await start(page);
 
   await speel(page);
-  await expect(page.getByText('cijfer', { exact: true })).toBeVisible();
+  await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
   await inGeschiedenis(page, 'Bekende vlaggen van Afrika');
 });
 

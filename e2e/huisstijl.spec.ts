@@ -5,7 +5,8 @@ import { expect, test, type Page } from '@playwright/test';
  *
  * The unit tests hold the tokens to the handoff's values; this holds that the
  * page actually uses them: the ground is the handoff's papier, headings are
- * Archivo, and a round turns dark with its controls at 56 on every size.
+ * Archivo, and a round stays on that paper with its controls at 56 on every
+ * size (ADR-112).
  */
 
 async function signIn(page: Page, naam: string) {
@@ -46,14 +47,17 @@ test('stands on the handoff’s paper and sets its headings in Archivo', async (
   );
 });
 
-test('turns a round dark, with its controls at 56 whatever the size', async ({ page }) => {
+test('keeps a round on the app’s paper, with its controls at 56 whatever the size', async ({
+  page,
+}) => {
   await signIn(page, 'Daan');
   await startRound(page);
 
+  // Light like every other screen since ADR-112: the handoff's papier.
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(26, 32, 27)',
+    'rgb(239, 237, 228)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();

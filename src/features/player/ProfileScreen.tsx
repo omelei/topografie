@@ -1,25 +1,31 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { t } from '@/i18n';
-import { FamilyIcon, PupilIcon } from '@/components/Icon';
+import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { dayKey, grade, formatGrade } from '@/game-core';
 import { createChild, listChildren, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
+import { Tafeldiplomas } from '@/features/module/Tafeldiplomas';
+import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
+import { BadgeSectie } from '@/features/badges/Badges';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
 
 /**
- * K10, "Jij".
+ * K10, "Jij": the child's own page (ADR-112).
  *
- * Two switches, not three: ADR-025 dropped the reading mode, so the screen has
- * read-aloud and the timer and nothing pretending to be a setting.
+ * In the order a child reads it. **What they have earned** first — the badges
+ * and the two walls of diplomas, which used to be on the collection page and
+ * are the part of it that stays while the rest is thought through again. Then
+ * **this week**, for the adult in the room, as the same tiles the streak page
+ * uses. Then **who is practising**, and the one switch.
  *
  * Most of what the design draws here needs something that does not exist yet.
- * The avatar set, the group, switching to a sibling's profile and the friend
- * code all belong to the parent account of ADR-046 or to the friend layer, and
- * none of it is built — so none of it is drawn. A settings screen full of
- * controls that do nothing is worse than a short one that works.
+ * The avatar set, the group, the friend code all belong to the parent account
+ * of ADR-046 or to the friend layer, and none of it is built — so none of it is
+ * drawn. A settings screen full of controls that do nothing is worse than a
+ * short one that works.
  *
  * School and place of residence are not here and never will be. They are the
  * two fields that would turn a name on a device into a child somebody could
@@ -45,8 +51,7 @@ export function ProfileScreen({
   /**
    * The switch moves after the write, not before it. Flipping it first and
    * writing afterwards reads a few milliseconds sooner and is a lie the moment
-   * the write does not land: a child who turns the clock on and closes the tab
-   * would find it off again. What the switch shows is what is stored.
+   * the write does not land. What the switch shows is what is stored.
    */
   const toggle = (name: keyof Preferences) => {
     const next = { ...prefs, [name]: !prefs[name] };
@@ -56,36 +61,36 @@ export function ProfileScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <div>
-          <h1 className="tk-display text-paginakop">{t('you.title')}</h1>
-          <p className="mt-1 text-tekst-secundair">{t('you.nameIs', { naam: profile.naam })}</p>
+        <div className="flex flex-col gap-2">
+          <h1 className="tk-titel">{t('you.title')}</h1>
+          <p className="text-lopend text-tekst-secundair">
+            {t('you.nameIs', { naam: profile.naam })}
+          </p>
         </div>
+
+        <BadgeSectie />
+        <Tafeldiplomas />
+        <VlagDiplomas />
 
         <Week />
 
         <Children active={profile} />
 
-        <section className="flex flex-col gap-3" aria-busy={!loaded}>
-          <h2 className="tk-label">{t('you.settings')}</h2>
-
-          <Switch
-            on={prefs.readAloud}
-            label={t('you.readAloud')}
-            why={t('you.readAloudWhy')}
-            onToggle={() => toggle('readAloud')}
-          />
-          {/* The reason sits beside the switch rather than in a help page. A
-            child who wants the clock should read why it is off before they
-            turn it on, and an adult should be able to see we meant it. */}
-          <Switch
-            on={prefs.timer}
-            label={t('you.timer')}
-            why={t('you.timerWhy')}
-            onToggle={() => toggle('timer')}
-          />
+        <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
+          <h2 className="tk-sectie">{t('you.settings')}</h2>
+          <ul className="tk-lijst">
+            <li>
+              <Switch
+                on={prefs.readAloud}
+                label={t('you.readAloud')}
+                why={t('you.readAloudWhy')}
+                onToggle={() => toggle('readAloud')}
+              />
+            </li>
+          </ul>
         </section>
 
-        <p className="text-tekst-secundair">{t('you.stays')}</p>
+        <p className="tk-hulp">{t('you.stays')}</p>
       </div>
 
       {aside}
@@ -104,8 +109,7 @@ export function ProfileScreen({
  *
  * Switching reloads the page. That is blunt and it is right: every screen holds
  * some of a child's work in React state, and the one thing this must never do
- * is show one child a number that belongs to another. A reload is a few hundred
- * milliseconds on a local app and it cannot be got subtly wrong.
+ * is show one child a number that belongs to another.
  */
 function Children({ active }: { readonly active: ProfileRecord }) {
   const [children, setChildren] = useState<ProfileRecord[]>([]);
@@ -130,28 +134,42 @@ function Children({ active }: { readonly active: ProfileRecord }) {
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.children')}>
-      <h2 className="tk-label">{t('you.children')}</h2>
+      <h2 className="tk-sectie">{t('you.children')}</h2>
 
-      {children.map((child) => (
-        <button
-          key={child.id}
-          type="button"
-          className="tk-module-card w-full"
-          aria-pressed={child.id === active.id}
-          disabled={child.id === active.id}
-          onClick={() => void give(child.id)}
-        >
-          <PupilIcon size={24} />
-          <span className="min-w-0">
-            <span className="block font-semibold">{child.naam}</span>
-            <span className="block text-tekst-secundair">
-              {child.id === active.id
-                ? t('you.practisingNow')
-                : t('you.switchTo', { naam: child.naam })}
-            </span>
-          </span>
-        </button>
-      ))}
+      {children.length > 0 ? (
+        <ul className="tk-lijst">
+          {children.map((child) => {
+            const actief = child.id === active.id;
+
+            return (
+              <li key={child.id}>
+                {/* The one practising cannot be handed the turn again: there is
+                    nothing to do, and a control that does nothing lies. */}
+                <button
+                  type="button"
+                  className="tk-lijstrij"
+                  aria-pressed={actief}
+                  disabled={actief}
+                  onClick={() => void give(child.id)}
+                >
+                  <span className="tk-plaat tk-plaat-neutraal">
+                    <PupilIcon size={24} />
+                  </span>
+                  <span className="tk-lijstrij-tekst">
+                    <span className="tk-lijstrij-titel">{child.naam}</span>
+                    <span className="tk-lijstrij-regel">
+                      {actief ? t('you.practisingNow') : t('you.switchTo', { naam: child.naam })}
+                    </span>
+                  </span>
+                  <span className="tk-lijstrij-pijl">
+                    {actief ? <CorrectIcon size={20} /> : <NextIcon size={20} />}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
 
       {adding ? (
         <form onSubmit={add} className="flex flex-wrap items-center gap-3">
@@ -183,11 +201,16 @@ function Children({ active }: { readonly active: ProfileRecord }) {
       )}
 
       {/* Said once, where a parent adding the second child will read it. */}
-      <p className="text-tekst-secundair">{t('you.childExplain')}</p>
+      <p className="tk-hulp">{t('you.childExplain')}</p>
     </section>
   );
 }
 
+/**
+ * A setting as a row of the list: what it does, why, and a switch that shows
+ * its state as a shape and in a word — "aan" and "uit" survive being colour
+ * blind, and aria-pressed carries it to a screen reader without either.
+ */
 function Switch({
   on,
   label,
@@ -200,16 +223,17 @@ function Switch({
   readonly onToggle: () => void;
 }) {
   return (
-    <button type="button" className="tk-card text-left" aria-pressed={on} onClick={onToggle}>
-      <span className="flex items-center gap-4">
-        <span className="min-w-0 flex-1">
-          <span className="block font-semibold">{label}</span>
-          <span className="block text-tekst-secundair">{why}</span>
-        </span>
-        {/* The state in a word as well as a shape: "aan" and "uit" survive
-            being colour blind, and aria-pressed carries it to a screen reader
-            without either. */}
-        <span className="tk-label flex-none">{on ? t('you.on') : t('you.off')}</span>
+    <button type="button" className="tk-lijstrij" aria-pressed={on} onClick={onToggle}>
+      <span className="tk-plaat tk-plaat-neutraal">
+        <SpeakIcon size={24} />
+      </span>
+      <span className="tk-lijstrij-tekst">
+        <span className="tk-lijstrij-titel">{label}</span>
+        <span className="tk-lijstrij-regel">{why}</span>
+      </span>
+      <span className="tk-lijstrij-pijl">
+        <span className="tk-schakelaar" aria-hidden="true" />
+        <span className="tk-label">{on ? t('you.on') : t('you.off')}</span>
       </span>
     </button>
   );
@@ -218,19 +242,14 @@ function Switch({
 /**
  * The week, for the adult in the room.
  *
- * "Jij" is the one screen in this product a parent opens, and until now it told
- * them their child's name and two switches. What a parent actually wants is
- * three sentences: has there been any practice this week, how did it go, and is
- * there a test coming (ADR-079).
+ * "Jij" is the one screen in this product a parent opens, and what a parent
+ * wants is three things: has there been any practice this week, how did it go,
+ * and is there a test coming (ADR-079). Four tiles and two sentences.
  *
  * It is deliberately not a report on the child. No forecast, no percentage of
- * anything, no comparison — those live on Onthouden where they belong to the
- * child, and a parent reading a grade about their ten-year-old on a settings
- * page is the beginning of a conversation nobody wanted. What it says is what
- * happened: rounds, and what each came to.
- *
- * Seven days rather than "recently", because a week is the unit a parent thinks
- * in and it is the unit a school test is set in.
+ * anything, no comparison. What it says is what happened: rounds, days,
+ * questions, and the mark they came to. Seven days rather than "recently",
+ * because a week is the unit a parent thinks in and a school test is set in.
  */
 function Week({ now = new Date() }: { readonly now?: Date }) {
   const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
@@ -262,22 +281,29 @@ function Week({ now = new Date() }: { readonly now?: Date }) {
   const toets = plan.toetsen[0] ?? null;
   const dagenTot = toets === null ? null : daysUntil(toets.date, now);
 
+  const tegels = [
+    [t('you.tegelRondes'), String(deze.length)],
+    [t('you.tegelDagen'), String(dagen)],
+    [t('you.tegelVragen'), String(beantwoord)],
+    [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer)],
+  ] as const;
+
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.week')}>
-      <h2 className="tk-label">{t('you.week')}</h2>
+      <h2 className="tk-sectie">{t('you.week')}</h2>
 
       {deze.length === 0 ? (
         <p className="text-tekst-secundair">{t('you.weekNone')}</p>
       ) : (
         <>
-          <p className="text-lopend">
-            {t('you.weekRounds', { rondes: deze.length, dagen, vragen: beantwoord })}
-          </p>
-          <p className="text-tekst-secundair">
-            {cijfer === null
-              ? t('you.weekNoGrade')
-              : t('you.weekGrade', { cijfer: formatGrade(cijfer) })}
-          </p>
+          <dl className="tk-cijfers">
+            {tegels.map(([label, waarde]) => (
+              <div key={label} className="tk-cijfer">
+                <dt className="tk-cijfer-label">{label}</dt>
+                <dd className="tk-cijfer-getal">{waarde}</dd>
+              </div>
+            ))}
+          </dl>
           {meest ? (
             <p className="text-tekst-secundair">{t('you.weekMost', { set: meest[0] })}</p>
           ) : null}

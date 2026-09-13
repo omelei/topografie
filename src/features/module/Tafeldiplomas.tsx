@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { DiplomaIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { loadDiplomas } from '@/store/rewardStore';
+import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
 import { PremiumLabel } from './PremiumLabel';
 
 /** One to twelve, which is every table the product has. */
 const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 /**
- * Twelve diplomas, on the page the tables live on.
+ * Twelve diplomas, on the page the tables live on and on the child's own page.
  *
  * The tafeltoets is the one thing about the tables a Dutch child already has an
  * opinion about before they meet this app: it is what the teacher hands out,
@@ -17,18 +17,18 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * table, all ten right, one mistake and you sit it again — and shows the twelve
  * as a wall with the gaps visible (ADR-064).
  *
- * The gaps are the point, and it is the one place in this product where an
- * empty slot is shown on purpose. Everywhere else a shelf of things not yet
- * earned was ruled out (ADR-059), because those were rewards a child could not
- * aim at. This is twelve named tables, in the order they are taught, and every
- * gap is a thing a child can decide to go and do this afternoon: pressing one
- * chooses that table, and step 2 is directly above it.
- *
- * Not in the child's own column, and not on the front door. It belongs to
- * rekenen and to nothing else — a diploma wall on every screen would be a
- * scoreboard, which is what the column on the right is careful not to be.
+ * The gaps are the point. This is twelve named tables, in the order they are
+ * taught, and every gap is a thing a child can decide to go and do this
+ * afternoon: on the rekenen page pressing one chooses that table and the
+ * diploma. On the child's own page the same wall is shown, not pressed — it is
+ * where the badges are (ADR-112).
  */
-export function Tafeldiplomas({ onKies }: { readonly onKies: (setId: string) => void }) {
+export function Tafeldiplomas({
+  onKies,
+}: {
+  /** Where pressing a diploma chooses its table. Absent where the wall is only shown. */
+  readonly onKies?: ((setId: string) => void) | undefined;
+}) {
   const [behaald, setBehaald] = useState<ReadonlySet<number> | null>(null);
 
   useEffect(() => {
@@ -41,37 +41,26 @@ export function Tafeldiplomas({ onKies }: { readonly onKies: (setId: string) => 
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('rekenen.diplomasTitle')}>
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="tk-label">{t('rekenen.diplomasTitle')}</h2>
+      <div className="tk-sectie">
+        <h2>{t('rekenen.diplomasTitle')}</h2>
         <PremiumLabel hoorbaar />
+        <span className="tk-sectie-meta">
+          {t('rekenen.diplomasCount', { aantal: behaald.size, totaal: TAFELS.length })}
+        </span>
       </div>
-      <p className="text-tekst-secundair">
-        {t('rekenen.diplomasCount', { aantal: behaald.size, totaal: TAFELS.length })}
-      </p>
 
-      <div className="tk-diplomas">
-        {TAFELS.map((tafel) => {
-          const gehaald = behaald.has(tafel);
-
-          return (
-            <button
-              key={tafel}
-              type="button"
-              className="tk-diploma"
-              data-gehaald={gehaald ? 'ja' : undefined}
-              aria-label={
-                gehaald ? t('rekenen.diplomaHave', { tafel }) : t('rekenen.diplomaWant', { tafel })
-              }
-              onClick={() => onKies(`tafel-${tafel}`)}
-            >
-              <DiplomaIcon size={24} />
-              <span aria-hidden="true" className="tabular-nums">
-                {tafel}
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      <DiplomaRaster
+        module="tafels"
+        vakken={TAFELS.map((tafel) => ({
+          key: String(tafel),
+          titel: t('sums.table', { tafel }),
+          label: behaald.has(tafel)
+            ? t('rekenen.diplomaHave', { tafel })
+            : t('rekenen.diplomaWant', { tafel }),
+          gehaald: behaald.has(tafel),
+          onKies: onKies ? () => onKies(`tafel-${tafel}`) : undefined,
+        }))}
+      />
     </section>
   );
 }

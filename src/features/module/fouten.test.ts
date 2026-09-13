@@ -60,7 +60,7 @@ describe('topography', () => {
   });
 
   it('does not explore a list of mistakes, and leads with choosing where the map is crowded', () => {
-    const vormen = offeredForms(formsFor('topo'), false, 'nl-fouten').map((form) => form.id);
+    const vormen = offeredForms(formsFor('topo'), 'nl-fouten').map((form) => form.id);
     expect(vormen).not.toContain('ontdekken');
 
     expect(teDrukOmAanTeWijzen('wereld-fouten', 5, false)).toBe(true);

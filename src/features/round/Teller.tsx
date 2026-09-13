@@ -28,10 +28,12 @@ export function Counter({
     <div className={onlyWide ? 'hidden flex-col items-end md:flex' : 'flex flex-col items-end'}>
       <span className="tk-label">{label}</span>
       <b
+        // The card title's size, as the numbers in the app's own bars are:
+        // the bar is the frame of the round, and the question is its headline.
         className={
           urgent
-            ? 'tk-display text-sectiekop tabular-nums text-fout'
-            : 'tk-display text-sectiekop tabular-nums'
+            ? 'tk-display text-kaartkop tabular-nums text-fout'
+            : 'tk-display text-kaartkop tabular-nums'
         }
       >
         {value}

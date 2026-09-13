@@ -4,6 +4,7 @@ import {
   MAX_FORMS,
   SUM_FORMS,
   TOPO_FORMS,
+  VLAG_FORMS,
   formsFor,
   minutesFor,
   offeredForms,
@@ -13,12 +14,13 @@ import {
   teDrukOmAanTeWijzen,
   toetsVormVan,
 } from './forms';
+import { isPremiumVorm } from './premium';
 
 describe('the oefentoets', () => {
   it('answers by typing, whatever the module', () => {
     // A test asks for the name, the sum or the time unaided (ADR-100).
     const vorm = (moduleId: string, forms: typeof TOPO_FORMS, setId: string) =>
-      toetsVormVan(moduleId, offeredForms(forms, false, setId))?.id;
+      toetsVormVan(moduleId, offeredForms(forms, setId))?.id;
 
     expect(vorm('topo', TOPO_FORMS, 'nl-provincies')).toBe('hoe-heet-dit');
     expect(vorm('tafels', SUM_FORMS, 'tafel-7')).toBe('som-typen');
@@ -31,14 +33,24 @@ describe('the oefentoets', () => {
  * worth a test rather than a comment. Somebody rearranging this list is
  * changing what the screen says about how to learn, and should have to mean it.
  *
- * This replaces `round/modes.test.ts`, which asserted the opposite of the last
- * case below: that the clock and the lives were kept out of the list entirely.
- * They are in it now, at the end, and the reason is in `forms.ts` — a chip
- * started a round on the spot, so the two heaviest rounds in the product were
- * the only two a child never read a description of first.
+ * Since ADR-112 it is one order on every page: zoeken, meerkeuze, zelf typen —
+ * the three that are free — and then ontdekken, the bliksemronde, overleven and
+ * the diploma. A way a module does not have is simply not in its list.
  */
 describe('the ways of practising', () => {
-  it('runs from lightest to heaviest, with the pressure at the end', () => {
+  const ORDE = [
+    ['wijs-aan', 'klok-welke-klok', 'vlag-zoeken'],
+    ['meerkeuze', 'som-meerkeuze', 'klok-meerkeuze', 'vlag-meerkeuze'],
+    ['hoe-heet-dit', 'som-typen', 'klok-typen'],
+    ['ontdekken'],
+    ['bliksemronde'],
+    ['overleven'],
+    ['tafeldiploma', 'vlag-diploma'],
+    ['vlag-gemengd'],
+  ];
+  const plek = (id: string) => ORDE.findIndex((groep) => groep.includes(id));
+
+  it('runs in the same order on every page', () => {
     expect(TOPO_FORMS.map((form) => form.id)).toEqual([
       'wijs-aan',
       'meerkeuze',
@@ -47,37 +59,53 @@ describe('the ways of practising', () => {
       'bliksemronde',
       'overleven',
     ]);
-
-    // The tables are the other way round at the top — typing before choosing,
-    // ADR-049 — and have no exploring, because a sum is not somewhere to walk.
-    // The diploma is last: it is not a way of practising but the test at the
-    // end of it, and it is the only thing in this product that can be failed.
     expect(SUM_FORMS.map((form) => form.id)).toEqual([
-      'som-typen',
       'som-meerkeuze',
+      'som-typen',
       'bliksemronde',
       'overleven',
       'tafeldiploma',
     ]);
-
-    // And the clock is the map's order at the top rather than the tables':
-    // the four times offered are the four mistakes children actually make
-    // reading a face, so choosing between them is the exercise rather than a
-    // way round it. "Welke klok" is second because it is the direction a child
-    // who has learned to recognise twelve pictures has never been asked in.
-    // No exploring — twelve faces is not somewhere to wander — and no diploma,
-    // because no school hands one out for the clock.
     expect(KLOK_FORMS.map((form) => form.id)).toEqual([
-      'klok-meerkeuze',
       'klok-welke-klok',
+      'klok-meerkeuze',
       'klok-typen',
       'bliksemronde',
       'overleven',
     ]);
+
+    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
+      const plekken = forms.map((form) => plek(form.id));
+      expect(plekken, forms.map((form) => form.id).join(', ')).not.toContain(-1);
+      expect(plekken).toEqual([...plekken].sort((a, b) => a - b));
+    }
+  });
+
+  it('puts the free ways before the premium ones', () => {
+    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
+      const premium = forms.map((form) => isPremiumVorm(form.id));
+      expect(premium).toEqual([...premium].sort((a, b) => Number(a) - Number(b)));
+    }
+  });
+
+  it('offers the bliksemronde on every page, with no setting in the way', () => {
+    // It used to wait for "Klok bij het oefenen", which was off by default,
+    // and flags had none at all (ADR-112).
+    for (const [moduleId, setId] of [
+      ['topo', 'nl-provincies'],
+      ['tafels', 'tafel-7'],
+      ['klok', 'klok-half'],
+      ['vlaggen', 'vlag-europa-bekend'],
+    ] as const) {
+      expect(
+        offeredForms(formsFor(moduleId), setId).map((form) => form.id),
+        moduleId,
+      ).toContain('bliksemronde');
+    }
   });
 
   it('gives every way a reason and a face', () => {
-    for (const form of [...TOPO_FORMS, ...SUM_FORMS, ...KLOK_FORMS]) {
+    for (const form of [...TOPO_FORMS, ...SUM_FORMS, ...KLOK_FORMS, ...VLAG_FORMS]) {
       expect(form.reason, form.id).toMatch(/^way\./);
       expect(typeof form.icon, form.id).toBe('function');
     }
@@ -87,51 +115,43 @@ describe('the ways of practising', () => {
     // Six cards a child recognises rather than six cards a child reads is the
     // whole argument for an icon here, and it collapses the moment two of them
     // are the same drawing.
-    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS]) {
+    for (const forms of [TOPO_FORMS, SUM_FORMS, KLOK_FORMS, VLAG_FORMS]) {
       const icons = forms.map((form) => form.icon);
       expect(new Set(icons).size).toBe(icons.length);
     }
   });
 
-  it('never offers more than six, whatever a module holds', () => {
+  it('never draws more than six tiles, whatever a module holds', () => {
     // A drawing rule, not a limit on the product: past six the grid stops being
     // one glance. A module with a seventh way has a question to answer here.
-    expect(offeredForms(TOPO_FORMS, true, 'nl-provincies').length).toBeLessThanOrEqual(MAX_FORMS);
-    expect(offeredForms(KLOK_FORMS, true, 'klok-half').length).toBeLessThanOrEqual(MAX_FORMS);
+    const tegels = (forms: typeof TOPO_FORMS, setId: string) =>
+      offeredForms(forms, setId).filter((form) => !form.alleenToets).length;
+    expect(tegels(TOPO_FORMS, 'nl-provincies')).toBeLessThanOrEqual(MAX_FORMS);
+    expect(tegels(KLOK_FORMS, 'klok-half')).toBeLessThanOrEqual(MAX_FORMS);
+    expect(tegels(VLAG_FORMS, 'vlag-europa-alle')).toBeLessThanOrEqual(MAX_FORMS);
     expect(formsFor('topo')).toBe(TOPO_FORMS);
     expect(formsFor('tafels')).toBe(SUM_FORMS);
     expect(formsFor('klok')).toBe(KLOK_FORMS);
+    expect(formsFor('vlaggen')).toBe(VLAG_FORMS);
   });
 
   it('offers the clock module every one of its ways, on every step', () => {
     // Nothing here is set-dependent: there is no mix a way stops making sense
     // on, the way exploring does on the map, and no set a diploma belongs to.
     for (const setId of ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf', 'klok-mix']) {
-      expect(offeredForms(KLOK_FORMS, true, setId).length, setId).toBe(KLOK_FORMS.length);
+      expect(offeredForms(KLOK_FORMS, setId).length, setId).toBe(KLOK_FORMS.length);
     }
-  });
-
-  it('does not offer the clock while the clock is switched off', () => {
-    // K10's switch is off by default, and a switch that only hid the clock
-    // while still counting would be a worse lie than no switch.
-    const off = offeredForms(TOPO_FORMS, false, 'nl-provincies').map((form) => form.id);
-    expect(off).not.toContain('bliksemronde');
-    expect(off).toContain('overleven');
-
-    expect(offeredForms(TOPO_FORMS, true, 'nl-provincies').map((form) => form.id)).toContain(
-      'bliksemronde',
-    );
   });
 
   it('offers a diploma on a table and on nothing else', () => {
     // There is no such thing as a diploma for "alle tafels door elkaar", and
     // offering one would mean inventing a certificate no school hands out.
-    const opTafel = offeredForms(SUM_FORMS, false, 'tafel-7').map((form) => form.id);
+    const opTafel = offeredForms(SUM_FORMS, 'tafel-7').map((form) => form.id);
     expect(opTafel).toContain('tafeldiploma');
 
     for (const setId of ['tafels-alle', 'rekenmix', 'plus-100', 'deel-7']) {
       expect(
-        offeredForms(SUM_FORMS, false, setId).map((form) => form.id),
+        offeredForms(SUM_FORMS, setId).map((form) => form.id),
         setId,
       ).not.toContain('tafeldiploma');
     }
@@ -141,12 +161,10 @@ describe('the ways of practising', () => {
     // Exploring is one set's own map layer, and it is where a child meets a
     // set for the first time. A mix of everything is not where anyone meets
     // anything for the first time.
-    expect(offeredForms(TOPO_FORMS, false, 'nl-provincies').map((form) => form.id)).toContain(
+    expect(offeredForms(TOPO_FORMS, 'nl-provincies').map((form) => form.id)).toContain(
       'ontdekken',
     );
-    expect(offeredForms(TOPO_FORMS, false, 'nl-mix').map((form) => form.id)).not.toContain(
-      'ontdekken',
-    );
+    expect(offeredForms(TOPO_FORMS, 'nl-mix').map((form) => form.id)).not.toContain('ontdekken');
   });
 });
 
@@ -284,7 +302,7 @@ describe('a map too crowded to point at', () => {
   });
 
   it('moves pointing to the end of the row rather than off it', () => {
-    const krap = offeredForms(TOPO_FORMS, false, 'wereld-landen', true);
+    const krap = offeredForms(TOPO_FORMS, 'wereld-landen', true);
     const ids = krap.map((form) => form.id);
 
     expect(ids).toContain('wijs-aan');
@@ -294,7 +312,7 @@ describe('a map too crowded to point at', () => {
     expect(ids[0]).toBe('meerkeuze');
     // Same forms, same number of them.
     expect([...ids].sort()).toEqual(
-      offeredForms(TOPO_FORMS, false, 'wereld-landen', false)
+      offeredForms(TOPO_FORMS, 'wereld-landen', false)
         .map((form) => form.id)
         .sort(),
     );

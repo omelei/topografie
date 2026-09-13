@@ -7,12 +7,26 @@ import { eersteRegio, TOPO_REGIOS } from './regios';
  * map each page opens on.
  */
 describe('premium', () => {
-  it('marks the bliksemronde and the two diplomas, and no way that teaches', () => {
-    expect(isPremiumVorm('bliksemronde')).toBe(true);
-    expect(isPremiumVorm('tafeldiploma')).toBe(true);
-    expect(isPremiumVorm('vlag-diploma')).toBe(true);
-    for (const vorm of ['wijs-aan', 'meerkeuze', 'hoe-heet-dit', 'som-typen', 'overleven']) {
+  it('leaves zoeken, meerkeuze and zelf typen free, and marks every other way', () => {
+    // ADR-112: the three ways that ask about one thing at a time are free on
+    // every page; the rest is premium.
+    const gratis = [
+      'wijs-aan',
+      'klok-welke-klok',
+      'vlag-zoeken',
+      'meerkeuze',
+      'som-meerkeuze',
+      'klok-meerkeuze',
+      'vlag-meerkeuze',
+      'hoe-heet-dit',
+      'som-typen',
+      'klok-typen',
+    ];
+    for (const vorm of gratis) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
+    }
+    for (const vorm of ['ontdekken', 'bliksemronde', 'overleven', 'tafeldiploma', 'vlag-diploma']) {
+      expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(true);
     }
   });
 

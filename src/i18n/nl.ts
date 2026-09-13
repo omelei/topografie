@@ -10,11 +10,6 @@
  */
 export const nl = {
   // Home
-  'home.streakNone': 'Je begint vandaag',
-  // Dutch needs both forms; "1 dagen op rij" is the kind of small wrongness a
-  // ten-year-old notices immediately.
-  'home.streakOne': '1 dag op rij',
-  'home.streakMany': '{aantal} dagen op rij',
   // "Rustdag", not "vriezer": ADR-031 gives that word back to the item status,
   // where it means something a child is done with rather than a day off.
   'home.restDay': '{aantal} rustdag bewaard',
@@ -27,7 +22,7 @@ export const nl = {
   // opdracht met een plafond: tien, en dan ben je klaar. Niets in het product
   // stopt na tien.
   'home.welcome': 'Welkom {naam}!',
-  'home.todayOpen': 'Kies een vak, doe een ronde en verdien je volgende held.',
+  'home.todayOpen': 'Kies een vak, doe een ronde en kijk wat je al onthoudt.',
   'home.practiceMore': 'Verder oefenen',
   // De tegels tussen het toetsblok en het logboek: waar je zelf het vaakst
   // naar teruggaat, met het aantal keer erbij. Dat getal komt van dit apparaat
@@ -63,20 +58,6 @@ export const nl = {
   // algoritme: het is wat je het vaakst gekozen hebt.
   'home.favouritesTitle': 'Jouw favorieten',
   'home.favouritesNone': 'Nog geen favorieten. Wat je vaak oefent, komt hier te staan.',
-
-  // De reis. Alles hier komt uit één getal dat het product al sinds de eerste
-  // versie bijhoudt en nooit liet zien: tien punten voor elk goed antwoord.
-  // De middelste regel is de regel die telt — "nog 340 punten" is een munt
-  // waarin niemand rekent, "nog 6 goede antwoorden" is iets wat je vanmiddag
-  // kunt gaan doen. Nergens staat hoe lang of hoe vaak: door wachten gebeurt
-  // hier niets.
-  'home.journeyTitle': 'Jouw voortgang',
-  'home.journeyLevel': 'Niveau {niveau}',
-  'home.journeyHave': '{aantal} van de {totaal} helden',
-  'home.journeyBar': 'Op weg naar niveau {niveau}',
-  'home.journeyToGo': 'Nog {aantal} goede antwoorden tot niveau {niveau}.',
-  'home.journeyOneToGo': 'Nog één goed antwoord tot niveau {niveau}.',
-  'home.journeyAll': 'Bekijk alles wat je kunt verdienen',
 
   // De andere streak: goede antwoorden op rij, zonder dag ertussen. Hij staat
   // onder het percentage en niet erboven, want het is het enige getal in het
@@ -196,6 +177,17 @@ export const nl = {
   // K9, wat je onthoudt. De tabel is het detail, de punten erboven zijn alles
   // in één blik — dezelfde vorm, kleiner, geen tweede diagram om te leren.
   'retention.title': 'Wat je onthoudt',
+  // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat de
+  // pagina laat zien, en belooft niets over hoe lang iets blijft hangen.
+  'retention.intro': 'Hoe goed je alles onthoudt, per onderwerp. Wat op de rol staat, komt terug in je volgende ronde.',
+  'retention.welkVak': 'Welk vak?',
+  'retention.welkOnderwerp': 'Welk onderwerp?',
+  'retention.welkeSom': 'Welke sommen?',
+  'retention.tegelOnthouden': 'Onthoud je',
+  'retention.tegelOefenen': 'Nog aan het oefenen',
+  'retention.tegelNieuw': 'Nog niet geoefend',
+  'retention.tegelRol': 'Vandaag op de rol',
+  'retention.detail': 'Per onderdeel',
   'retention.glance': 'Alles in één blik',
   'retention.item': 'Onderdeel',
   'retention.status': 'Hoe het gaat',
@@ -486,10 +478,6 @@ export const nl = {
   'practice.counterLives': 'levens',
   'practice.counterCorrect': 'goed',
   'practice.counterCombo': 'goed op rij',
-  // Tien goede antwoorden zijn een ster. Tussen twee kisten is dit het enige
-  // dat beweegt, en daarom staat het in elke ronde (ADR-099).
-  'practice.counterStar': 'ster',
-  'practice.counterStarValue': '{aantal}/{totaal}',
   'practice.speak': 'Lees de vraag voor',
   'practice.correct': '{naam} — goed.',
   'practice.wrong': '{naam} ligt hier.',
@@ -572,7 +560,7 @@ export const nl = {
   'rekenen.diplomaHave': 'Tafel van {tafel}: diploma gehaald',
   'rekenen.diplomaWant': 'Tafel van {tafel}: nog geen diploma',
   'way.som-typen': 'Zeg het antwoord zelf — zo weet je of je de tafel kent',
-  'way.som-meerkeuze': 'Kies uit vier getallen — de weg terug als typen niet lukt',
+  'way.som-meerkeuze': 'Kies uit vier getallen — de instap naar typen',
   'way.tafeldiploma': 'De hele tafel foutloos — één fout en je begint opnieuw',
 
   // Klokkijken. De klok zelf staat op het toneel waar bij topografie de kaart
@@ -632,11 +620,10 @@ export const nl = {
   // klokken, waar hij hoort.
   'mode.klok-welke-klok': 'Klok zoeken',
   'mode.klok-typen': 'Zelf typen',
-  // De volgorde is het argument. Meerkeuze staat vooraan en niet achteraan
-  // zoals bij rekenen: de vier tijden die je krijgt zijn precies de vier
-  // fouten die kinderen maken, dus kiezen ís de oefening.
-  'way.klok-meerkeuze': 'Kies uit vier tijden — voor de eerste keer',
-  'way.klok-welke-klok': 'Van de tijd naar de wijzers — andersom dus',
+  // De volgorde is op elke pagina dezelfde (ADR-112): zoeken, meerkeuze, zelf
+  // typen. Bij de klok is zoeken de klok die bij een tijd hoort.
+  'way.klok-meerkeuze': 'Kies uit vier tijden — de instap naar typen',
+  'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort — voor de eerste keer',
   'way.klok-typen': 'Schrijf de tijd zelf op — voor de toets',
 
   // Vlaggen (ADR-102). Een onderwerp is één of twee woorden, zoals bij
@@ -683,7 +670,7 @@ export const nl = {
   // Alleen de oefentoets vraagt zo, en zo heet hij dan ook in de lijst van
   // wat je laatst hebt geoefend.
   'mode.vlag-gemengd': 'Oefentoets',
-  'way.vlag-zoeken': 'Kies de vlag die bij de naam hoort',
+  'way.vlag-zoeken': 'Kies de vlag die bij de naam hoort — voor de eerste keer',
   'way.vlag-meerkeuze': 'Kies de naam die bij de vlag hoort',
   'way.vlag-gemengd':
     'Je kiest zonder hulp, vlaggen en namen door elkaar. Aan het eind zie je wat goed was en krijg je een cijfer.',
@@ -721,9 +708,6 @@ export const nl = {
     'Nog geen diploma: {goed} van de {totaal} goed. Met {nodig} goed is hij van jou.',
 
   'result.title': 'Ronde klaar',
-  // The one place the word "score" is allowed: the result of one round. It is
-  // never a word for how much a child knows (ADR-030).
-  'result.score': '{goed} van de {totaal} goed',
   'result.practiceMore': 'Deze moet je nog oefenen',
   'result.allCorrect': 'Alles goed. Morgen komen er nieuwe bij.',
   'result.home': 'Terug naar start',
@@ -735,52 +719,25 @@ export const nl = {
   'result.streakGrewOne': 'Dat is je eerste dag.',
   'result.streakSaved': 'Je rustdag heeft je streak gered.',
   'result.restDayEarned': 'Je hebt er een rustdag bij verdiend.',
-  'result.newStamp': 'Nieuwe reisstempel: {naam}',
+  'result.newStamp': 'Nieuwe badge: {naam}',
+  // De ronde in getallen, als tegels bovenaan "Ronde klaar" (ADR-112).
+  'result.samenvatting': 'Hoe de ronde ging',
+  'result.tegelGoed': 'Goed',
+  'result.tegelGoedWaarde': '{goed} van {totaal}',
+  'result.tegelErbij': 'Erbij onthouden',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde
   // waarin de app je na elke vraag het antwoord gaf zegt niets over jou.
-  'result.markLabel': 'cijfer',
+  'result.markLabel': 'Cijfer',
   'result.markWhy': 'Zonder hulp onderweg, net als op school.',
 
-  // Wat een ronde opleverde (ADR-096): de sterren die erbij kwamen, en als er
-  // een kist openging, welke held eruit kwam. Alleen te zien als er echt iets
-  // bij kwam. Geen "goed gedaan": het product zegt wat er gebeurd is, niet wat
-  // je ervan moet vinden. En nooit wat er in de volgende kist zit.
+  // Wat een ronde opleverde: een diploma of een badge (ADR-112). Alleen te zien
+  // als er echt iets bij kwam. Geen "goed gedaan": het product zegt wat er
+  // gebeurd is, niet wat je ervan moet vinden.
   'result.beloningTitle': 'Wat je verdiende',
-  'result.sterEen': 'Je verdiende een ster.',
-  'result.sterVeel': 'Je verdiende {aantal} sterren.',
-  'result.sterStand': '{aantal} van de {totaal} sterren voor je volgende kist.',
-  'result.kistEen': 'Je kist gaat open.',
-  'result.kistVeel': 'Je {aantal} kisten gaan open.',
-  // Wat er uit een kist kwam. ADR-084 vraagt drie dingen: wat het is, uit welke
-  // reeks, en welk moment het overhandigde — dat laatste stond er niet in en
-  // staat er nu wel: uit welke kist. Nooit "goed gedaan": het product zegt wat
-  // er gebeurde, wat je ervan vindt is aan het kind.
-  'result.heldNieuw': '{held} komt erbij, in {reeks}. Uit kist {kist}.',
-  // De zwakste uitkomst, dus het aantal staat vooraan: dat is het enige dat
-  // beweegt, en de zin moet naar het bewegende deel wijzen.
-  'result.heldDubbel': '{held}: {aantal} van de {totaal} naar {reeks}. Uit kist {kist}.',
-  // Noem waar hij vandaan komt, anders is "naar goud" een mededeling zonder
-  // afstand.
-  'result.heldHoger': '{held} gaat van {vorige} naar {reeks}. Uit kist {kist}.',
-  // Onbereikbaar sinds ADR-097: een held op ultra wordt niet meer aangeboden.
-  // Blijft staan als vangnet voor een rij uit een oudere versie.
-  'result.heldVol': '{held} staat al op ultra.',
-
-  // De drie kaarten die een kist openlegt. Elke kaart zegt wat hij doet vóór
-  // je hem indrukt: drie kaarten die niet zeggen wat ze zijn, zijn geen keuze
-  // maar drie knoppen (ADR-097).
-  'kist.titel': 'Je kist',
-  'kist.kiesTitel': 'Kies wie eruit komt.',
-  'kist.kiesTitelVeel': 'Kies wie eruit komt. Je hebt {aantal} kisten.',
-  'kist.kaartNieuw': '{held} erbij, in {reeks}',
-  'kist.kaartHoger': '{held} naar {reeks}',
-  'kist.kaartDubbel': '{held}, {aantal} van de {totaal} naar {reeks}',
-  'kist.kaartKort': 'naar {reeks}',
-  // K8. De score staat er, maar wat er veranderd is, is het product: het enige
-  // op dit scherm dat een kind niet zelf had kunnen uitrekenen.
-  'result.changed': 'Wat er is veranderd',
+  // Wat er veranderd is, is het product: het enige op "Ronde klaar" dat een
+  // kind niet zelf had kunnen uitrekenen.
   'result.gainedOne': 'Eén vraag meer die je nu onthoudt.',
   'result.gainedMany': '{aantal} vragen meer die je nu onthoudt.',
   'result.gainedNone': 'Nog niets erbij. Deze komen morgen terug.',
@@ -806,77 +763,29 @@ export const nl = {
   // gebeurd is — rondes, en waar ze op uitkwamen.
   'you.week': 'Deze week',
   'you.weekNone': 'Deze week nog niet geoefend.',
-  'you.weekRounds': '{rondes} rondes op {dagen} dagen, samen {vragen} vragen.',
-  'you.weekGrade': 'Gemiddeld cijfer {cijfer}.',
-  'you.weekNoGrade': 'Nog geen cijfer deze week.',
+  // Vier tegels, zoals de reekspagina ze heeft (ADR-112). Een streepje waar
+  // nog geen cijfer is: nul zou een cijfer zijn.
+  'you.tegelRondes': 'Rondes',
+  'you.tegelDagen': 'Dagen geoefend',
+  'you.tegelVragen': 'Vragen beantwoord',
+  'you.tegelCijfer': 'Gemiddeld cijfer',
+  'you.geenCijfer': '–',
   'you.weekMost': 'Het meest geoefend: {set}.',
   'you.settings': 'Instellingen',
   'you.readAloud': 'Vragen voorlezen',
   'you.readAloudWhy': 'Je kunt elke vraag laten voorlezen.',
-  'you.timer': 'Klok bij het oefenen',
-  'you.timerWhy': 'Haast helpt het onthouden niet.',
   'you.on': 'aan',
   'you.off': 'uit',
   'you.stays': 'Wat je oefent blijft op dit apparaat.',
 
-  // De verzamelpagina: alles wat je hebt, en hoe de rest komt. De kaart in de
-  // rechterkolom kan er maar één tegelijk laten zien; dit is het geheel.
-  // Nergens staat wanneer — alles hier koop je met goede antwoorden.
-  'reis.title': 'Jouw voortgang',
-  'reis.answered': '{aantal} goede antwoorden',
-  // Bovenaan staat de beloning die het dichtst bij is: de sterren naar de
-  // volgende kist, in één grote zin. Bij nul is de eerste ster het doel, want
-  // tien is vanmiddag te halen en vijftig niet.
-  'reis.kistTitel': 'Je volgende kist',
-  'reis.sterrenStand': '{aantal} van de {totaal} sterren',
-  'reis.totKist': 'Nog {aantal} goede antwoorden tot je volgende kist.',
-  'reis.totKistEen': 'Nog één goed antwoord tot je volgende kist.',
-  'reis.totEersteSter': 'Nog {aantal} goede antwoorden tot je eerste ster.',
-  'reis.totEersteSterEen': 'Nog één goed antwoord tot je eerste ster.',
-  // De weg terug naar oefenen, naar het vak waar je het laatst was. Zonder die
-  // weg is de pagina een eindpunt in plaats van een aanleiding.
-  'reis.verderMet': 'Verder oefenen met {vak}',
-  'reis.doeEenRonde': 'Doe één ronde',
-  'reis.vak.topo': 'topografie',
-  'reis.vak.tafels': 'tafels',
-  'reis.vak.klok': 'klokkijken',
-  'reis.animals': 'Helden',
-  'reis.heldHave': '{dier}, {reeks}',
-  'reis.heldDubbel': '{reeks} · {aantal} van de {totaal}',
-  'reis.heldUltra': '{reeks} · hoogste reeks',
-  'reis.heldDraagt': 'je draagt deze',
-  'reis.heldDragen': 'dragen',
-  // Een held die je nog niet hebt houdt zijn naam voor zich: welke het wordt,
-  // is waar een kist voor is. Wat hij kost staat er wel.
-  'reis.heldWant': 'Nog niet gevonden',
-  'reis.heldPrijs': 'Kist: vijf sterren',
-  'reis.heldWantLabel': 'Nog niet gevonden. Kist: vijf sterren.',
-  // De spelregels, voluit. Er zit geen geluk meer in: elke kist geeft een held
-  // die je nog niet hebt en je kiest er één van drie (ADR-097). Een kind mag
-  // precies weten hoe het werkt, en nu is dat een kortere zin dan eerst.
-  'reis.regelsTitel': 'Zo werkt het',
-  'reis.regel1': 'Tien goede antwoorden zijn één ster.',
-  'reis.regel2':
-    'Vijf sterren zijn een kist. Een kist legt drie helden neer die je nog niet hebt, en jij kiest er één.',
-  'reis.regel3':
-    'Heb je alle twaalf? Dan kies je wie er omhoog gaat. Na drie keer gaat een held een reeks omhoog: brons, zilver, goud, platina, ultra.',
-  'reis.regel4':
-    'Je kunt niets kopen, door te wachten krijg je niets, en er komt geen geluk aan te pas. Alleen goede antwoorden tellen.',
-  'reis.stamps': 'Reisstempels',
-  'reis.stampsHave': '{aantal} van de {totaal}',
-
-  // De vijf reeksen. Kleine letter, want ze staan midden in een zin — en in een
-  // kop zet de opmaak ze zelf al in kapitalen.
-  //
-  // Brons, zilver, goud, platina, ultra: de ladder die elk kind al kent uit de
-  // spellen die ze buiten dit product spelen. "Zwart" en "diamant" zeiden
-  // niets over hoe ver je was; deze vijf wel, en "ultra" is een woord dat een
-  // kind meteen als het einde van de ladder leest.
-  'reeks.brons': 'brons',
-  'reeks.zilver': 'zilver',
-  'reeks.goud': 'goud',
-  'reeks.platina': 'platina',
-  'reeks.ultra': 'ultra',
+  // Badges: de tien reisstempels, anders getekend en op de pagina Jij (ADR-112).
+  'badges.titel': 'Jouw badges',
+  'badges.stand': '{aantal} van de {totaal} verdiend',
+  'badges.verdiend': 'verdiend',
+  'badges.nogNiet': 'nog niet',
+  // Onder een diploma, in woorden: "nog niet" is nooit alleen een tint.
+  'diploma.gehaald': 'Gehaald',
+  'diploma.nogNiet': 'Nog niet',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet

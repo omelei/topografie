@@ -72,28 +72,6 @@ async function start(page: Page) {
 }
 
 /**
- * The lightning round is only offered when the clock is switched on, and it is
- * off by default (K10). Turning it on is part of getting there, so this tests
- * the setting as well as the round.
- *
- * The switch moves only once the write has landed, so waiting for it to read as
- * on is waiting for IndexedDB. The reload then proves the value survives the
- * page rather than the render.
- */
-async function turnTheClockOn(page: Page) {
-  const clock = page.getByRole('button', { name: /Klok bij het oefenen/ });
-
-  await page.goto('/jij');
-  await expect(clock).toHaveAttribute('aria-pressed', 'false');
-
-  await clock.click();
-  await expect(clock).toHaveAttribute('aria-pressed', 'true');
-
-  await page.reload();
-  await expect(clock).toHaveAttribute('aria-pressed', 'true');
-}
-
-/**
  * A round with a clock or with lives on it.
  *
  * These were chips that started a round the moment they were pressed. They are
@@ -365,40 +343,19 @@ test('the oefentoets asks without answering, and marks at the end', async ({ pag
   // One answer, and it was wrong on purpose, so the mark is the lowest there
   // is. What is being checked is that there is one at all.
   await expect(page.getByText('Zonder hulp onderweg, net als op school.')).toBeVisible();
-  await expect(page.locator('.tk-cijfer')).toContainText(/1,0|10,0/);
+  await expect(page.locator('.tk-toetscijfer')).toContainText(/1,0|10,0/);
 });
 
 /**
- * The hero a child wears is theirs, so it has to stick — and it has to show
- * somewhere other than the card it was chosen on, or it does not look saved.
- *
- * Heroes since ADR-096: a new child has the first three, in bronze — Valerie
- * Vos, Daan Das and Olaf Otter (ADR-098) — and the other nine arrive in
- * chests. This checks both halves: that a hero a child has can be worn, and
- * that one they have not found cannot.
+ * "Jouw voortgang" is hidden while it is thought through again (ADR-112): its
+ * address opens the front door, and nothing on the front door leads to it.
  */
-test('the hero a child picks is theirs, and follows them', async ({ page }) => {
+test('the collection is hidden, and its address opens the front door', async ({ page }) => {
   await signIn(page, 'Puk');
   await page.goto('/voortgang');
 
-  const helden = page.getByRole('region', { name: 'Helden' });
-  await helden.getByRole('button', { name: /^Olaf Otter,/ }).click();
-  await expect(helden.getByRole('button', { name: /^Olaf Otter,/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-
-  // Not found yet: a chest in its place, which says so and what it costs, and
-  // does not say what is in it (ADR-081). It is not a button either — a control
-  // a child cannot use is a question they have to ask somebody about.
-  await expect(helden.getByRole('button', { name: /^Ben Buizerd/ })).toHaveCount(0);
-  await expect(helden.getByLabel('Nog niet gevonden').first()).toBeVisible();
-
-  // It belongs to the child, not to the page: it survives a reload.
-  await page.reload();
-  await expect(
-    page.getByRole('region', { name: 'Helden' }).getByRole('button', { name: /^Olaf Otter,/ }),
-  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('heading', { name: 'Welkom Puk!' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw voortgang' })).toHaveCount(0);
 });
 
 test('plays a round: question, map, answer, feedback', async ({ page }) => {
@@ -453,7 +410,7 @@ test('asks about every province, and lets a child stop early', async ({ page }) 
 
   await page.getByRole('button', { name: 'Stoppen' }).click();
   // K8: the heading is what changed, and the score is a line underneath it.
-  await expect(page.getByRole('heading', { name: 'Wat er is veranderd' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Terug naar start' })).toBeVisible();
 });
 
@@ -605,7 +562,7 @@ async function answerWrongly(page: Page) {
  */
 test('bliksemronde runs a clock and moves on by itself', async ({ page }) => {
   await signIn(page, 'Sem');
-  await turnTheClockOn(page);
+  // No setting to switch on first: the bliksemronde is on every page (ADR-112).
   await startChallenge(page, 'Bliksemronde');
 
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();

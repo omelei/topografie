@@ -4,7 +4,6 @@ import { sumText } from '@/game-core';
 import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
-import { SterTeller } from '@/features/reis/SterTeller';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
@@ -81,7 +80,13 @@ export function SumScreen({
 
   if (state.phase === 'finished')
     return (
-      <SumResultScreen state={state} onHome={onHome} onAgain={onAgain} onHerhaal={onHerhaal} />
+      <SumResultScreen
+        state={state}
+        setId={setId}
+        onHome={onHome}
+        onAgain={onAgain}
+        onHerhaal={onHerhaal}
+      />
     );
 
   if (state.phase === 'loading' || !state.question) {
@@ -101,7 +106,12 @@ export function SumScreen({
   const spoken = `${som}. ${t('sums.prompt')}`;
 
   return (
-    <div className="flex h-screen flex-col bg-papier" data-module="tafels" data-thema="ronde">
+    <div
+      className="flex h-screen flex-col bg-papier"
+      data-module="tafels"
+      data-accent="module"
+      data-thema="ronde"
+    >
       <header className="tk-round-bar">
         <StopButton onStop={stop} />
         {/* The dots, except in the endless rounds, which have no ten to count
@@ -115,10 +125,6 @@ export function SumScreen({
         ) : null}
         {prefs.readAloud ? <SpeakButton text={spoken} /> : null}
         <div className="ml-auto flex items-center gap-4 md:gap-6">
-          {/* The star being filled, on every round screen and in every mode:
-              ten correct answers are one, and between two chests it is the only
-              thing that moves (ADR-099). */}
-          <SterTeller correct={state.correctCount} />
           {/* What is running out, or nothing. Never both a clock and lives:
               only one round has each. */}
           {state.secondsLeft !== null ? (

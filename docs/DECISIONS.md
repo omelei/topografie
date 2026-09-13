@@ -5045,6 +5045,122 @@ when pressed, not a search through the screens.
 
 ---
 
+## ADR-112 — One app: the module's colour inside a module, light rounds, one type scale, and the journey hidden
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner.
+
+### Context
+
+After ADR-109 the owner walked the whole app and sent twelve points: every
+choice on a module page was green whatever the module; the app bar repeated
+the streak; font sizes differed from screen to screen; "Recent geoefend" was a
+row of tiles; the diplomas and the travel stamps did not look like the rest of
+the app; "Jouw voortgang" was to be hidden until it is thought through again;
+the rounds were dark and looked like another product; the result screen was
+four screens that each did it differently; the ways of practising were in a
+different order on every page, the bliksemronde was missing from most of them
+and premium was on the wrong tiles; and Onthouden and Jij had fallen behind.
+
+### Decision
+
+**Inside a module, what is chosen wears the module's colour.**
+`data-accent="module"` beside `data-module` points `--accent` at the module's
+colour: on the module page, its rail and menu entry, its card on the front
+door, its rounds, its result page and on Onthouden. Everywhere else the accent
+is the handoff's green. Right and wrong keep their own green and red in every
+module. This supersedes ADR-109's "the accent is green everywhere".
+
+**A round is light.** The dark set (`--donker-*`) is gone. `data-thema="ronde"`
+only takes the hit targets to 56. The question and the stage are cards on the
+ground, like everything else; the map's land is the ground's tone on its card,
+and a shape under the pointer goes to `--map-land-hover`. This supersedes
+ADR-109's "a round is dark".
+
+**One size per role** (`docs/HUISSTIJL.md`): a page title, a section heading
+(`.tk-sectie`, the card title's 20 on a hairline, replacing the 13 of the
+label, the step heading and the 28 of a section title), a card title, a row
+title at a button's 17 with a caption of 14 under it, and a number in a tile.
+Lists are `.tk-lijst`, numbers are `.tk-cijfers`. "Recent geoefend" is a list.
+
+**The streak leaves the app bar**; its block keeps the number, without the
+mark in front of it.
+
+**"Jouw voortgang" is hidden, not deleted from the data.** The block, the page
+(/voortgang now opens the front door), the star in the round bar and the stars
+and chest on the result screen are gone from the screen. What a round earns
+still accrues in `rewardStore`, so nothing is lost the day it returns; the
+screens are in the history before this ADR.
+
+**The travel stamps are badges**, and the diplomas are cards, both wearing one
+round emblem (`Embleem`): closed in the module's colour when earned, a dashed
+ring when not. Both live on Jij, and the diploma walls stay on their module
+pages as ways in.
+
+**"Ronde klaar" is one page** (`RondeKlaar`) for every module: the module's
+badge and the title, the round as tiles (right, newly remembered, and the mark
+after an oefentoets), one sentence about what changed, the way on, what was
+earned, and what is still to practise — with the map, the face or the flag
+beside it.
+
+**One order of ways on every page**: zoeken, meerkeuze, zelf typen, ontdekken,
+bliksemronde, overleven, diploma, oefentoets. Zoeken is "Aanwijzen" on the map,
+"Klok zoeken" and "Vlag zoeken". Only the first three are free; everything else
+carries the premium label. The bliksemronde is on every page, flags included,
+and the "Klok bij het oefenen" switch that hid it is gone. This reverses
+ADR-049's typing-first order on rekenen: the argument stays in the line under
+each tile. The six-tile cap counts tiles, so the oefentoets's own way on the
+flags page is never the one dropped.
+
+**Onthouden covers every module**, with four tiles, a legend and the table on
+a card. **Jij** carries the badges, the diplomas, the week as tiles, the
+children as a list and one switch.
+
+### Consequences
+
+The e2e specs find the result page by "Ronde klaar" and the mark by
+`.tk-toetscijfer`. The hero a child wears stays in the app bar, but there is no
+way to choose another until the journey returns. The design tests hold the new
+rules: no colour inside the round block, and every module's colour measured as
+a chosen rule.
+
+---
+
+## ADR-113 — The logo is the ring with a needle, set in Hanken Grotesk and cut to outlines
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner;
+supersedes ADR-108.
+
+### Context
+
+The designer delivered uitwerking 3a: the name in Hanken Grotesk 600 with a
+round mark between _leer_ and _nu_ — a ring with a needle pointing down into
+it. The mark and the app icon came as SVG; the wordmark only as PNG, and the
+uitwerking sets it in Hanken Grotesk from Google Fonts. The app ships Archivo
+and Public Sans from its own domain and nothing else (ADR-109).
+
+### Decision
+
+**The wordmark is outlines.** `tools/logo/maak-logo.py` reads the font the
+uitwerking embeds (SIL Open Font License), instances it at 600, and sets
+_leer_, the mark and _nu_ as the uitwerking does: −0.02 em letter spacing, the
+font's kerning, the mark 0.48 em wide and lifted just off the baseline. It
+writes `docs/logo/svg/woordbeeld-*.svg`, `src/design/logo.ts`, the favicon
+and the icons in `public/logo`. `logo.test.ts` holds `logo.ts` to those files
+and to the designer's own mark.
+
+**Below 20 px the needle goes** and the ring is drawn heavier, as the
+uitwerking's favicon of 16 does — in `Brandmark` and in the favicon. The
+apple-touch icon and the maskable icon are full bleed, the others the
+delivered rounded square. Clear space is the ring's diameter.
+
+### Consequences
+
+No third typeface reaches a child's browser. A change to the logo is a new
+delivery in `docs/logo` and one run of the script, never an edit to
+`logo.ts`.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

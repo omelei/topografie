@@ -62,30 +62,33 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await shoot(page, size, '01-naam');
 
   await signIn(page, 'Fenna');
-  // The child's column and the streak are read from IndexedDB, and on WebKit —
-  // both iPads and the iPhone — the read is slower than a screenshot taken the
-  // moment the name appears. The page draws the cards at once and fills them
-  // when it knows (ADR-094); a picture of the empty cards is not the page a
-  // child looks at, so this waits for the filled one.
-  const voortgang = page.getByRole('region', { name: 'Jouw voortgang' });
-  await expect(voortgang).not.toHaveAttribute('aria-busy', 'true');
-  await expect(page.locator('.tk-streak')).toBeVisible();
+  // The child's column is read from IndexedDB, and on WebKit — both iPads and
+  // the iPhone — the read is slower than a screenshot taken the moment the name
+  // appears. The page draws the cards at once and fills them when it knows
+  // (ADR-094); a picture of the empty cards is not the page a child looks at,
+  // so this waits for the filled one.
+  const reeks = page.getByRole('region', { name: 'Jouw reeks' });
+  await expect(reeks).not.toHaveAttribute('aria-busy', 'true');
+  await expect(page.getByRole('region', { name: 'Goed beantwoord' })).not.toHaveAttribute(
+    'aria-busy',
+    'true',
+  );
   await shoot(page, size, '02-thuis');
 
   await page.goto('/topografie');
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
   await shoot(page, size, '03-kiezen');
 
+  // Jij carries the badges and the diplomas now (ADR-112), which makes it the
+  // page that has to survive being mostly empty: a new child has none of them.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { name: 'Jij', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
   await shoot(page, size, '04-jij');
 
-  // The collection, which is the longest page in the product and the one that
-  // has to survive being mostly empty: a new child has three of twelve heroes,
-  // no stars, no diplomas and no stamps (ADR-076, ADR-098).
-  await page.goto('/voortgang');
-  await expect(page.getByRole('heading', { name: 'Jouw voortgang', level: 1 })).toBeVisible();
-  await shoot(page, size, '12-voortgang');
+  await page.goto('/onthouden');
+  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
+  await shoot(page, size, '12-onthouden');
 });
 
 /**
@@ -115,7 +118,7 @@ test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   await shoot(page, size, '06-antwoord');
 
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  await expect(page.getByRole('heading', { name: 'Wat er is veranderd' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   await shoot(page, size, '07-resultaat');
 });
 
@@ -159,7 +162,7 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
     await shoot(page, size, naam);
 
     await page.getByRole('button', { name: 'Stoppen' }).click();
-    await expect(page.getByRole('heading', { name: 'Wat er is veranderd' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   }
 });
 

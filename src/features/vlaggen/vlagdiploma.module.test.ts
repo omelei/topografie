@@ -16,7 +16,7 @@ import { VLAG_ROUND_RULE } from './useVlagRound';
  */
 
 const tegels = (setId: string) =>
-  offeredForms(formsFor('vlaggen'), false, setId)
+  offeredForms(formsFor('vlaggen'), setId)
     .filter((form) => !form.alleenToets)
     .map((form) => form.id);
 
@@ -39,17 +39,21 @@ describe('the vlaggendiploma', () => {
     }
   });
 
-  it('is the last of the tiles, and the page still holds six ways at most', () => {
+  it('is the last of the tiles, and the page still holds six tiles at most', () => {
     expect(tegels('vlag-europa-alle')).toEqual([
       'vlag-zoeken',
       'vlag-meerkeuze',
       'ontdekken',
+      'bliksemronde',
       'overleven',
       'vlag-diploma',
     ]);
-    expect(offeredForms(formsFor('vlaggen'), true, 'vlag-europa-alle').length).toBeLessThanOrEqual(
-      MAX_FORMS,
-    );
+    expect(tegels('vlag-europa-alle').length).toBeLessThanOrEqual(MAX_FORMS);
+    // The oefentoets's own way is not a tile, so it does not count towards the
+    // six and is never the one the cap drops.
+    expect(
+      offeredForms(formsFor('vlaggen'), 'vlag-europa-alle').map((form) => form.id),
+    ).toContain('vlag-gemengd');
   });
 
   it('asks twenty, or every flag of a smaller werelddeel, and offers no other length', () => {

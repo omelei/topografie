@@ -5,7 +5,6 @@ import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
-import { SterTeller } from '@/features/reis/SterTeller';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { Vlag } from './Vlag';
@@ -82,7 +81,13 @@ export function VlagScreen({
 
   if (state.phase === 'finished') {
     return (
-      <VlagResultScreen state={state} onHome={onHome} onAgain={onAgain} onHerhaal={onHerhaal} />
+      <VlagResultScreen
+        state={state}
+        setId={setId}
+        onHome={onHome}
+        onAgain={onAgain}
+        onHerhaal={onHerhaal}
+      />
     );
   }
 
@@ -109,7 +114,12 @@ export function VlagScreen({
   const spoken = zoeken ? `${vlag.naam}. ${instruction}` : instruction;
 
   return (
-    <div className="flex h-screen flex-col bg-papier" data-module="vlaggen" data-thema="ronde">
+    <div
+      className="flex h-screen flex-col bg-papier"
+      data-module="vlaggen"
+      data-accent="module"
+      data-thema="ronde"
+    >
       <header className="tk-round-bar">
         <StopButton onStop={stop} />
         {state.rule.kind === 'fixed' ? (
@@ -121,16 +131,23 @@ export function VlagScreen({
         ) : null}
         {prefs.readAloud ? <SpeakButton text={spoken} /> : null}
         <div className="ml-auto flex items-center gap-4 md:gap-6">
-          <SterTeller correct={state.correctCount} />
-          {state.livesLeft !== null ? (
-            <>
-              <Counter
-                label={t('practice.counterLives')}
-                value={String(state.livesLeft)}
-                urgent={state.livesLeft <= 1}
-              />
-              <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
-            </>
+          {/* What is running out — the minute of the bliksemronde (ADR-112) or
+              the lives — and how many are right. Never both a clock and lives. */}
+          {state.secondsLeft !== null ? (
+            <Counter
+              label={t('practice.counterTime')}
+              value={aftellen(state.secondsLeft)}
+              urgent={state.secondsLeft <= 10}
+            />
+          ) : state.livesLeft !== null ? (
+            <Counter
+              label={t('practice.counterLives')}
+              value={String(state.livesLeft)}
+              urgent={state.livesLeft <= 1}
+            />
+          ) : null}
+          {state.secondsLeft !== null || state.livesLeft !== null ? (
+            <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
           ) : null}
           <Counter
             label={t('practice.counterCombo')}
@@ -163,9 +180,13 @@ export function VlagScreen({
                   </p>
                 </div>
               </div>
-              <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
-                {t('practice.next')}
-              </button>
+              {/* A bliksemronde moves on by itself, so there is nothing to
+                  press and nothing to charge a child for pressing. */}
+              {state.rule.kind !== 'tijd' && (
+                <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
+                  {t('practice.next')}
+                </button>
+              )}
             </>
           ) : (
             <>
@@ -231,6 +252,13 @@ export function VlagScreen({
       </div>
     </div>
   );
+}
+
+/** Seconds as a clock, because 0:07 reads as "nearly out" and 7 does not. */
+function aftellen(seconden: number): string {
+  const m = Math.floor(seconden / 60);
+  const sec = seconden % 60;
+  return `${m}:${String(sec).padStart(2, '0')}`;
 }
 
 /** The line under the feedback: what the child chose, or nothing. */
