@@ -22,20 +22,21 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken.
    `border-rand-bediening` voor de rand van iets dat je kunt indrukken.
 2. **Typografie op rol.** Eén maat per rol, op elk scherm:
 
-   | rol                                      | klasse                          | maat (PO)  |
-   | ---------------------------------------- | ------------------------------- | ---------- |
-   | paginatitel (`h1`)                       | `tk-titel`                      | 40 (tel 24) |
-   | zin onder de titel                       | `text-lopend text-tekst-secundair` | 16      |
-   | sectiekop (`h2`)                         | `tk-sectie`                     | 20         |
-   | titel van een kaart                      | `tk-kaart-titel`                | 20         |
-   | titel van een rij, tegel, chip of knop   | `tk-lijstrij-titel`, `text-knop` | 17        |
-   | regel onder een rij of tegel             | `tk-lijstrij-regel`, `tk-hulp`  | 14         |
-   | getal in een tegel                       | `tk-cijfer-getal`               | 28         |
-   | label boven een waarde of een kaart      | `tk-label`                      | 13, kapitaal |
-   | de vraag in een ronde                    | `text-vraag`                    | 32 (tel 24) |
+   | rol                                    | klasse                             | maat (PO)    |
+   | -------------------------------------- | ---------------------------------- | ------------ |
+   | paginatitel (`h1`)                     | `tk-titel`                         | 40 (tel 24)  |
+   | zin onder de titel                     | `text-lopend text-tekst-secundair` | 16           |
+   | sectiekop (`h2`)                       | `tk-sectie`                        | 20           |
+   | titel van een kaart                    | `tk-kaart-titel`                   | 20           |
+   | titel van een rij, tegel, chip of knop | `tk-lijstrij-titel`, `text-knop`   | 17           |
+   | regel onder een rij of tegel           | `tk-lijstrij-regel`, `tk-hulp`     | 14           |
+   | getal in een tegel                     | `tk-cijfer-getal`                  | 28           |
+   | label boven een waarde of een kaart    | `tk-label`                         | 13, kapitaal |
+   | de vraag in een ronde                  | `text-vraag`                       | 32 (tel 24)  |
 
    Archivo voor koppen en getallen, Public Sans voor al het andere. Het gewicht
    hoort bij de rol: zet er geen `font-semibold` of `font-bold` naast.
+
 3. **Vorm.** `rounded-kaart` (12) voor kaarten, knoppen en velden,
    `rounded-chip` (6) voor een chip, optie of plaat, `rounded-pil` voor een pil.
    Randen zijn 1 px (`border-hair`), 2 px (`border-active`) alleen bij nadruk of

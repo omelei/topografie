@@ -44,12 +44,7 @@ import { voorlaad } from './vlagSrc';
  */
 
 export type VlagMode =
-  | 'vlag-zoeken'
-  | 'vlag-meerkeuze'
-  | 'vlag-gemengd'
-  | 'bliksemronde'
-  | 'overleven'
-  | 'vlag-diploma';
+  'vlag-zoeken' | 'vlag-meerkeuze' | 'vlag-gemengd' | 'bliksemronde' | 'overleven' | 'vlag-diploma';
 
 /**
  * Ten questions, about two minutes; a minute for the bliksemronde and three

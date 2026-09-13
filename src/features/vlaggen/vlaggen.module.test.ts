@@ -136,10 +136,7 @@ describe('the ways of practising', () => {
   });
 
   it('has an oefentoets that asks both ways round', () => {
-    const toets = toetsVormVan(
-      'vlaggen',
-      offeredForms(formsFor('vlaggen'), 'vlag-europa-bekend'),
-    );
+    const toets = toetsVormVan('vlaggen', offeredForms(formsFor('vlaggen'), 'vlag-europa-bekend'));
     expect(toets?.id).toBe('vlag-gemengd');
     expect(toets?.alleenToets).toBe(true);
 

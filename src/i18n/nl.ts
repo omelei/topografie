@@ -179,7 +179,8 @@ export const nl = {
   'retention.title': 'Wat je onthoudt',
   // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat de
   // pagina laat zien, en belooft niets over hoe lang iets blijft hangen.
-  'retention.intro': 'Hoe goed je alles onthoudt, per onderwerp. Wat op de rol staat, komt terug in je volgende ronde.',
+  'retention.intro':
+    'Hoe goed je alles onthoudt, per onderwerp. Wat op de rol staat, komt terug in je volgende ronde.',
   'retention.welkVak': 'Welk vak?',
   'retention.welkOnderwerp': 'Welk onderwerp?',
   'retention.welkeSom': 'Welke sommen?',

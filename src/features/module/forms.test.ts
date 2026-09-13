@@ -161,9 +161,7 @@ describe('the ways of practising', () => {
     // Exploring is one set's own map layer, and it is where a child meets a
     // set for the first time. A mix of everything is not where anyone meets
     // anything for the first time.
-    expect(offeredForms(TOPO_FORMS, 'nl-provincies').map((form) => form.id)).toContain(
-      'ontdekken',
-    );
+    expect(offeredForms(TOPO_FORMS, 'nl-provincies').map((form) => form.id)).toContain('ontdekken');
     expect(offeredForms(TOPO_FORMS, 'nl-mix').map((form) => form.id)).not.toContain('ontdekken');
   });
 });

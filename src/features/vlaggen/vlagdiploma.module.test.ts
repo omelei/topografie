@@ -51,9 +51,9 @@ describe('the vlaggendiploma', () => {
     expect(tegels('vlag-europa-alle').length).toBeLessThanOrEqual(MAX_FORMS);
     // The oefentoets's own way is not a tile, so it does not count towards the
     // six and is never the one the cap drops.
-    expect(
-      offeredForms(formsFor('vlaggen'), 'vlag-europa-alle').map((form) => form.id),
-    ).toContain('vlag-gemengd');
+    expect(offeredForms(formsFor('vlaggen'), 'vlag-europa-alle').map((form) => form.id)).toContain(
+      'vlag-gemengd',
+    );
   });
 
   it('asks twenty, or every flag of a smaller werelddeel, and offers no other length', () => {

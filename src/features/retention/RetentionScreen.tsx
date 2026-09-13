@@ -154,7 +154,9 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
                 onClick={() => setSetId(kandidaat.setId)}
               >
                 <span aria-hidden="true">
-                  {moduleId === 'tafels' ? (kandidaat.kortNaam ?? naamVan(kandidaat)) : naamVan(kandidaat)}
+                  {moduleId === 'tafels'
+                    ? (kandidaat.kortNaam ?? naamVan(kandidaat))
+                    : naamVan(kandidaat)}
                 </span>
               </button>
             ))}
