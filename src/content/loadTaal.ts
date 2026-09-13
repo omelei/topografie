@@ -95,6 +95,11 @@ export function taalDeelVan(setId: string): TaalDeel | null {
   return null;
 }
 
+/** The set an item was written in, from its id: `taal-sp-eiij-trein` → `taal-sp-eiij`. */
+export function taalSetVanItem(itemId: string): string | null {
+  return TAAL_VOLGORDE.find((id) => itemId.startsWith(`${id}-`)) ?? null;
+}
+
 export function isTaalMix(setId: string): boolean {
   return Object.values(TAAL_MIX).includes(setId);
 }

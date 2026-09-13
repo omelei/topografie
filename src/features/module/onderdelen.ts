@@ -6,8 +6,10 @@ import {
   loadTaalSets,
   TAAL_FOUTEN,
   TAAL_MIX,
+  taalDeelVan,
   type TaalSet,
 } from '@/content/loadTaal';
+import { KIES_VORM, type TaalMode } from '@/features/taal/taalRegels';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
 import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
 import { loadVlagSet, loadVlagSets, type VlagOnderwerp, type VlagSet } from '@/content/loadVlaggen';
@@ -1318,4 +1320,18 @@ const VLAG_MODES: readonly ModeId[] = [
 
 export function asVlagMode(mode: ModeId): VlagMode {
   return VLAG_MODES.includes(mode) ? (mode as VlagMode) : 'vlag-zoeken';
+}
+
+const TAAL_MODES: readonly ModeId[] = [
+  'taal-letters',
+  'taal-flitsdictee',
+  'taal-vorm-kiezen',
+  'taal-vorm-typen',
+  'overleven',
+];
+
+/** Taal's ways, falling back to the way the set's part chooses in (ADR-118). */
+export function asTaalMode(mode: ModeId, setId: string): TaalMode {
+  if (TAAL_MODES.includes(mode)) return mode as TaalMode;
+  return KIES_VORM[taalDeelVan(setId) ?? 'spelling'];
 }

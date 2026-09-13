@@ -1,0 +1,327 @@
+{
+  "id": "taal-sp-verkleinwoorden",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-verkleinwoorden-boekje",
+      "woord": "boekje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Ik lees een boekje over dieren.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-hondje",
+      "woord": "hondje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het hondje kwispelt met zijn staart.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-huisje",
+      "woord": "huisje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "In het bos staat een huisje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-bordje",
+      "woord": "bordje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Op de deur hangt een bordje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-kopje",
+      "woord": "kopje",
+      "gat": [3, 5],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Wil je een kopje thee?",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-zakje",
+      "woord": "zakje",
+      "gat": [3, 5],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Ik krijg een zakje snoep.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-tasje",
+      "woord": "tasje",
+      "gat": [3, 5],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Mijn zus heeft een roze tasje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-bedje",
+      "woord": "bedje",
+      "gat": [3, 5],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "De pop slaapt in een bedje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-wolkje",
+      "woord": "wolkje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Er is geen wolkje aan de lucht.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-stukje",
+      "woord": "stukje",
+      "gat": [4, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Mag ik een stukje taart?",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-briefje",
+      "woord": "briefje",
+      "gat": [5, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Ik schrijf een briefje aan oma.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-snoepje",
+      "woord": "snoepje",
+      "gat": [5, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Na het eten krijg ik een snoepje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-treintje",
+      "woord": "treintje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Op de vloer rijdt een treintje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-stoeltje",
+      "woord": "stoeltje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het kind zit op een stoeltje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-tafeltje",
+      "woord": "tafeltje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Naast mijn bed staat een tafeltje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-vogeltje",
+      "woord": "vogeltje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Een vogeltje zingt in de boom.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-kamertje",
+      "woord": "kamertje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Boven is een klein kamertje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-tuintje",
+      "woord": "tuintje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Achter het huis ligt een tuintje.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-cadeautje",
+      "woord": "cadeautje",
+      "gat": [6, 9],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Voor jou heb ik een cadeautje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-sleuteltje",
+      "woord": "sleuteltje",
+      "gat": [7, 10],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het slot gaat open met een sleuteltje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-lepeltje",
+      "woord": "lepeltje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Roer met een lepeltje in je thee.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-touwtje",
+      "woord": "touwtje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Aan de vlieger zit een touwtje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-bijtje",
+      "woord": "bijtje",
+      "gat": [3, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Een bijtje zoemt bij de bloem.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-deurtje",
+      "woord": "deurtje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "De poppenkast heeft een deurtje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-boompje",
+      "woord": "boompje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "We planten een boompje in de tuin.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-raampje",
+      "woord": "raampje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Door het raampje kijk ik naar buiten.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-armpje",
+      "woord": "armpje",
+      "gat": [3, 6],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "De baby zwaait met haar armpje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-filmpje",
+      "woord": "filmpje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Mijn broer maakt een filmpje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-duimpje",
+      "woord": "duimpje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "De baby zuigt op haar duimpje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-riempje",
+      "woord": "riempje",
+      "gat": [4, 7],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het horloge heeft een leren riempje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-bezempje",
+      "woord": "bezempje",
+      "gat": [5, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Met een bezempje veeg ik de kruimels op.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-balletje",
+      "woord": "balletje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Ik speel met een balletje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-ringetje",
+      "woord": "ringetje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Oma draagt een gouden ringetje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-zonnetje",
+      "woord": "zonnetje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het zonnetje schijnt.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-sterretje",
+      "woord": "sterretje",
+      "gat": [5, 9],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Aan de hemel zie ik een sterretje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-pennetje",
+      "woord": "pennetje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Schrijf het op met een pennetje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-karretje",
+      "woord": "karretje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Het paard trekt een karretje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-kammetje",
+      "woord": "kammetje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Mijn pop heeft een kammetje.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-dingetje",
+      "woord": "dingetje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Er zit een raar dingetje in mijn schoen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-verkleinwoorden-belletje",
+      "woord": "belletje",
+      "gat": [4, 8],
+      "keuzes": ["je", "tje", "pje", "etje"],
+      "zin": "Aan de deur hangt een belletje.",
+      "groep": 6
+    }
+  ]
+}

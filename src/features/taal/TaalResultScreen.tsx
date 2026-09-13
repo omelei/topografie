@@ -1,0 +1,65 @@
+import { t } from '@/i18n';
+import { RondeKlaar } from '@/features/round/RondeKlaar';
+import type { TaalRoundState } from './useTaalRound';
+
+/**
+ * "Ronde klaar" for Taal (`RondeKlaar`, ADR-112).
+ *
+ * What is still to practise is the word as it is written, with the sentence
+ * it was asked in beside it — the sentence is what makes "wij" and "wei" two
+ * different words, so it comes along to the list (ADR-118).
+ */
+export function TaalResultScreen({
+  state,
+  setId,
+  onHome,
+  onAgain,
+  onHerhaal,
+}: {
+  readonly state: TaalRoundState;
+  readonly setId: string;
+  readonly onHome: () => void;
+  readonly onAgain: () => void;
+  readonly onHerhaal: (ids: readonly string[]) => void;
+}) {
+  const werkwoorden = state.set?.deel === 'werkwoorden';
+
+  return (
+    <RondeKlaar
+      moduleId="woorden"
+      setId={setId}
+      mode={state.mode}
+      toetsstand={state.toetsstand}
+      goed={state.correctCount}
+      beantwoord={state.answeredCount}
+      gestopt={
+        state.rule.kind === 'fixed' && state.answeredCount < state.total
+          ? { gedaan: state.answeredCount, totaal: state.total }
+          : null
+      }
+      gained={state.gained}
+      streak={state.streak}
+      reward={state.reward}
+      oefenTitel={t(werkwoorden ? 'taal.practiceMoreVormen' : 'taal.practiceMore')}
+      missed={state.missed}
+      onAgain={onAgain}
+      onHerhaal={onHerhaal}
+      onHome={onHome}
+    >
+      <ul className="tk-lijst">
+        {state.missed.map((item) => (
+          <li key={item.id}>
+            <div className="tk-lijstrij">
+              <span className="tk-lijstrij-tekst">
+                <span className="tk-lijstrij-titel">
+                  {'woord' in item ? item.woord : item.antwoord}
+                </span>
+                <span className="tk-lijstrij-regel">{item.zin}</span>
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </RondeKlaar>
+  );
+}

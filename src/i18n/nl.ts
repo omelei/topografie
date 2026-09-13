@@ -856,6 +856,73 @@ export const nl = {
   'way.taal-flitsdictee': 'Kijk drie tellen, en schrijf het woord dan zelf — zoals een dictee',
   'way.taal-vorm-kiezen': 'Kies uit drie vormen — de instap naar typen',
   'way.taal-vorm-typen': 'Schrijf de vorm zelf op — voor de toets',
+  // De ronde. Geen voorleesknop: die zou het woord zeggen dat je moet spellen.
+  'taal.loading': 'Woorden worden geladen…',
+  'taal.failed': 'De woorden konden niet geladen worden.',
+  'taal.gat': 'open plek',
+  'taal.lettersVraag': 'Welke letters horen erin?',
+  'taal.lettersLabel': 'Kies de letters',
+  'taal.lettersPrompt': 'Maak het woord af.',
+  'taal.flitsKijk': 'Kijk goed',
+  'taal.flitsKijkPrompt': 'Onthoud hoe het woord eruitziet.',
+  'taal.flitsTyp': 'Typ het woord',
+  'taal.flitsTypPrompt': 'Schrijf het woord in de zin.',
+  'taal.flitsVeld': 'Het woord dat er stond',
+  'taal.vormVraag': 'Welke vorm hoort erin?',
+  'taal.vormLabel': 'Kies de vorm',
+  'taal.vormPrompt': 'Zet het werkwoord in de zin.',
+  'taal.vormTyp': 'Typ de vorm',
+  'taal.vormVeld': 'De vorm van {infinitief}',
+  'taal.infinitief': 'Het werkwoord is {infinitief}.',
+  // Na een antwoord. Het goede woord staat erbij, en na een fout de regel,
+  // toegepast op dit woord.
+  'taal.goed': 'Goed! {woord}.',
+  'taal.fout': 'Het is {woord}, met {letters}.',
+  'taal.foutVorm': 'Het is {woord}.',
+  'taal.jijKoos': 'Jij koos {gegeven}.',
+  'taal.jeSchreef': 'Je schreef {getypt}.',
+  'taal.weetNiet': 'Nu weet je hem.',
+  'taal.practiceMore': 'Deze woorden moet je nog oefenen',
+  'taal.practiceMoreVormen': 'Deze werkwoorden moet je nog oefenen',
+  // De regel van een spellingset, toegepast op één woord.
+  'taal.regel.onthoud': 'Hier helpt geen regel: je hoort het niet. Onthoud {woord}, met {letters}.',
+  'taal.regel.dt': 'Maak het woord langer: {hulp}. Je hoort een {letter}, dus je schrijft een {letter}.',
+  'taal.regel.klinkerEen':
+    'Hak het woord in stukjes: {hulp}. De lange klank staat aan het eind van een stukje, dus één letter: {letters}.',
+  'taal.regel.klinkerTwee':
+    'Na de lange klank komt nog een medeklinker: {hulp}. Dan schrijf je twee letters: {letters}.',
+  'taal.regel.medeEen':
+    'Hak het woord in stukjes: {hulp}. Na een lange klank schrijf je de medeklinker één keer: {letters}.',
+  'taal.regel.medeTwee':
+    'Hak het woord in stukjes: {hulp}. Na een korte klank schrijf je de medeklinker twee keer: {letters}.',
+  'taal.regel.vk.je': 'Na de meeste medeklinkers komt -je: {woord}.',
+  'taal.regel.vk.tje': 'Na een klinker, of na een l, n, r of w, komt -tje: {woord}.',
+  'taal.regel.vk.pje': 'Na een m komt -pje: {woord}.',
+  'taal.regel.vk.etje': 'Na een korte klank met een l, m, n, r of ng komt -etje: {woord}.',
+  'taal.regel.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig: {woord}.',
+  'taal.regel.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk: {woord}.',
+  // Ontdekken: de regel in het algemeen, en dan de woorden.
+  'taal.explore.kind': 'Ontdek de woorden',
+  'taal.explore.regel': 'De regel',
+  'taal.explore.woorden': 'De woorden',
+  'taal.uitleg.eiij':
+    'Ei en ij klinken hetzelfde. Hier helpt geen regel: kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.auou':
+    'Au en ou klinken hetzelfde. Hier helpt geen regel: kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.gch':
+    'Een g en een ch klinken bijna hetzelfde. Kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.ck':
+    'Een c klinkt hier als een k. Veel van deze woorden komen uit een andere taal. Kijk goed, en onthoud het.',
+  'taal.uitleg.dt':
+    'Maak het woord langer: honden. Hoor je een d? Dan schrijf je een d. Hoor je een t? Dan schrijf je een t.',
+  'taal.uitleg.klinkers':
+    'Hak het woord in stukjes: bo-men. Staat de lange klank aan het eind van een stukje? Dan schrijf je één letter. Komt er nog een medeklinker achter, zoals in boom? Dan twee.',
+  'taal.uitleg.medeklinkers':
+    'Hak het woord in stukjes: kat-ten. Na een korte klank schrijf je de medeklinker twee keer. Na een lange klank, zoals in ma-ken, één keer.',
+  'taal.uitleg.verkleinwoorden':
+    'Meestal komt er -je achter: boekje. Na een klinker of na l, n, r of w: -tje. Na een m: -pje. Na een korte klank met l, m, n, r of ng: -etje.',
+  'taal.uitleg.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig, zoals in gelukkig.',
+  'taal.uitleg.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk, zoals in vrolijk.',
 
   'result.title': 'Ronde klaar',
   'result.practiceMore': 'Deze moet je nog oefenen',

@@ -1,0 +1,247 @@
+{
+  "id": "taal-sp-auou",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-auou-koud",
+      "woord": "koud",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "In de winter is het buiten koud.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-oud",
+      "woord": "oud",
+      "gat": [0, 2],
+      "keuzes": ["au", "ou"],
+      "zin": "Mijn opa is al heel oud.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-hout",
+      "woord": "hout",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "De tafel is gemaakt van hout.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-goud",
+      "woord": "goud",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "De ring is van echt goud.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-zout",
+      "woord": "zout",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Doe een beetje zout in de soep.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-vrouw",
+      "woord": "vrouw",
+      "gat": [2, 4],
+      "keuzes": ["au", "ou"],
+      "zin": "De vrouw van de bakker is heel aardig.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-fout",
+      "woord": "fout",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Ik maak een fout in mijn som.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-touw",
+      "woord": "touw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Aan het touw hangt een schommel.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-schouder",
+      "woord": "schouder",
+      "gat": [3, 5],
+      "keuzes": ["au", "ou"],
+      "zin": "De papegaai zit op zijn schouder.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-kabouter",
+      "woord": "kabouter",
+      "gat": [3, 5],
+      "keuzes": ["au", "ou"],
+      "zin": "In het bos woont een kleine kabouter.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-mouw",
+      "woord": "mouw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Mijn trui heeft een lange mouw.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-bouwen",
+      "woord": "bouwen",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "We gaan een hut bouwen.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-vouwen",
+      "woord": "vouwen",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Kun jij een vliegtuig vouwen van papier?",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-kous",
+      "woord": "kous",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Er zit een gat in mijn kous.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-houden",
+      "woord": "houden",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Ik kan mijn adem lang houden.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-blauw",
+      "woord": "blauw",
+      "gat": [2, 4],
+      "keuzes": ["au", "ou"],
+      "zin": "De lucht is blauw vandaag.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-gauw",
+      "woord": "gauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Kom maar gauw binnen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-pauw",
+      "woord": "pauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "De pauw heeft mooie veren.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-saus",
+      "woord": "saus",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Wil je saus bij je patat?",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-pauze",
+      "woord": "pauze",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "In de pauze spelen we buiten.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-auto",
+      "woord": "auto",
+      "gat": [0, 2],
+      "keuzes": ["au", "ou"],
+      "zin": "Papa zet de auto in de garage.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-auou-klauw",
+      "woord": "klauw",
+      "gat": [2, 4],
+      "keuzes": ["au", "ou"],
+      "zin": "De beer heeft een grote klauw.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-rauw",
+      "woord": "rauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Een wortel kun je ook rauw eten.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-lauw",
+      "woord": "lauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "De thee is nog lauw.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-applaus",
+      "woord": "applaus",
+      "gat": [4, 6],
+      "keuzes": ["au", "ou"],
+      "zin": "Na het liedje krijgt de klas een groot applaus.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-kauwgom",
+      "woord": "kauwgom",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "In de klas mag je geen kauwgom.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-dauw",
+      "woord": "dauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Vroeg in de ochtend ligt er dauw op het gras.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-auou-nauw",
+      "woord": "nauw",
+      "gat": [1, 3],
+      "keuzes": ["au", "ou"],
+      "zin": "Het pad tussen de huizen is heel nauw.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-auou-flauw",
+      "woord": "flauw",
+      "gat": [2, 4],
+      "keuzes": ["au", "ou"],
+      "zin": "Die grap vind ik een beetje flauw.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-auou-dinosaurus",
+      "woord": "dinosaurus",
+      "gat": [5, 7],
+      "keuzes": ["au", "ou"],
+      "zin": "De dinosaurus leefde heel lang geleden.",
+      "groep": 6
+    }
+  ]
+}
