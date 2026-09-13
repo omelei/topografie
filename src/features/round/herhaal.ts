@@ -2,6 +2,8 @@ import { ROUND_RULE, type PracticeMode } from '@/features/practice/useRound';
 import { SUM_ROUND_RULE, type SumMode } from '@/features/sums/useSumRound';
 import { KLOK_ROUND_RULE, type KlokMode } from '@/features/klok/useKlokRound';
 import { VLAG_ROUND_RULE, type VlagMode } from '@/features/vlaggen/useVlagRound';
+import { KIES_VORM, TAAL_ROUND_RULE, type TaalMode } from '@/features/taal/taalRegels';
+import type { TaalDeel } from '@/game-core';
 
 /**
  * Which way "Herhaal je fouten" asks in (ADR-111).
@@ -31,4 +33,9 @@ export function herhaalVlagVorm(mode: VlagMode): VlagMode {
   return VLAG_ROUND_RULE[mode].kind === 'fixed' && mode !== 'vlag-diploma'
     ? mode
     : 'vlag-meerkeuze';
+}
+
+/** Taal has no diploma; overleven comes back as the part's way of choosing. */
+export function herhaalTaalVorm(mode: TaalMode, deel: TaalDeel): TaalMode {
+  return TAAL_ROUND_RULE[mode].kind === 'fixed' ? mode : KIES_VORM[deel];
 }

@@ -21,7 +21,7 @@ import type { TranslationKey } from '@/i18n';
 
 export interface Module {
   /** Matches a [data-module] block in index.css, which resolves its accent. */
-  readonly id: 'topo' | 'tafels' | 'klok' | 'woorden' | 'spelling' | 'tijdvakken' | 'vlaggen';
+  readonly id: 'topo' | 'tafels' | 'klok' | 'woorden' | 'tijdvakken' | 'vlaggen';
   readonly name: TranslationKey;
   readonly built: boolean;
 }
@@ -36,8 +36,9 @@ export const MODULES: readonly Module[] = [
   { id: 'topo', name: 'module.topo', built: true },
   { id: 'tafels', name: 'module.tafels', built: true },
   { id: 'klok', name: 'module.klok', built: true },
-  { id: 'woorden', name: 'module.woorden', built: false },
-  { id: 'spelling', name: 'module.spelling', built: false },
+  // Taal, at /taal (ADR-118). Spelling was a row of its own here and is now
+  // one of Taal's parts, so it is an address (/spelling) and not a module.
+  { id: 'woorden', name: 'module.woorden', built: true },
   { id: 'tijdvakken', name: 'module.tijdvakken', built: false },
   { id: 'vlaggen', name: 'module.vlaggen', built: true },
 ];
@@ -47,8 +48,9 @@ export const BUILT_MODULES = MODULES.filter((module) => module.built);
 /**
  * What the rail offers: the five entrances the product is planned around.
  *
- * Not every module in `MODULES` — spelling and tijdvakken sit under taal and
- * are not their own doors — and not only the built ones, per ADR-051. Order is
+ * Not every module in `MODULES`, and not only the built ones, per ADR-051.
+ * Tijdvakken is not a door: ADR-051 put it under taal, and it is history, not
+ * language (ADR-118) — it waits, unbuilt, for a door of its own. Order is
  * business plan v6 §5.5.
  */
 export const RAIL_MODULES = MODULES.filter((module) =>

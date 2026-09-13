@@ -151,9 +151,6 @@
     --woorden: #6f64b6;
     --woorden-text: #56489b; /* on tint 6.09:1 */
     --woorden-tint: #e6e5ff;
-    --spelling: #965598;
-    --spelling-text: #7c397e; /* on tint 6.15:1 */
-    --spelling-tint: #f5e0f5;
     --tijdvakken: #797600;
     --tijdvakken-text: #605c00; /* on tint 5.67:1 */
     --tijdvakken-tint: #eaead0;
@@ -336,11 +333,6 @@
     --module: var(--woorden);
     --module-tekst: var(--woorden-text);
     --module-tint: var(--woorden-tint);
-  }
-  [data-module='spelling'] {
-    --module: var(--spelling);
-    --module-tekst: var(--spelling-text);
-    --module-tint: var(--spelling-tint);
   }
   [data-module='tijdvakken'] {
     --module: var(--tijdvakken);
@@ -970,6 +962,69 @@
     color: var(--inkt);
   }
 
+  /* ---- Taal: the sentence is the stage (ADR-118) ---------------------------
+   * The sentence a word or a verb is asked in, at the question's size, with a
+   * gap where the letters go. Everything in it is ink. What is marked is marked
+   * by a shape — a thick rule under the letters that decide, a wavy rule under
+   * the letters that differ — and the tint under a difference only adds. */
+  .tk-zin-podium {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    height: 100%;
+  }
+  .tk-zin {
+    font-family: var(--font-kop);
+    font-size: var(--type-vraag);
+    line-height: 1.7;
+    font-weight: var(--type-vraag-weight);
+    letter-spacing: var(--type-vraag-ls);
+    color: var(--inkt);
+  }
+  .tk-gat {
+    display: inline-block;
+    min-width: 1.5em;
+    height: 1em;
+    margin: 0 2px;
+    border: var(--stroke-active) solid var(--inkt);
+    border-radius: var(--radius-chip);
+    vertical-align: -0.1em;
+  }
+  .tk-gat-woord {
+    min-width: 4em;
+  }
+  .tk-letters {
+    background: transparent;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 6px;
+  }
+  .tk-verschil {
+    background: var(--fout-vlak);
+    color: inherit;
+    text-decoration: underline wavy var(--fout);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+  /* The field in the gap takes the sentence's own letters, so what is typed
+   * is the size of the words around it. */
+  .tk-input.tk-zin-veld {
+    display: inline-block;
+    width: 9em;
+    max-width: 100%;
+    margin: 0 4px;
+    padding: 0 12px;
+    font: inherit;
+    vertical-align: baseline;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-zin-veld {
+      animation: tk-verschijn 200ms ease-out;
+    }
+  }
+
   /* ---- The clock, and the stage it stands on ----------------------------
    * What `.tk-sum` is to rekenen and the canvas is to topografie: the thing
    * being asked about, given the whole of the space under the question card.
@@ -1339,10 +1394,10 @@
 
   /* ---- The page inside the shell ----------------------------------------
    * One column of work, and from 1200 the child's own column of 320 beside it
-   * with 48 between (ADR-094). Below 1200 nothing stands beside anything: the
-   * child's blocks go into the flow of the page, and which of them goes where
-   * is the page's decision — `HomeScreen` and `SideColumn` make it in React,
-   * because it changes the reading order and not only the drawing.
+   * with 48 between (ADR-094). Below 1200 nothing stands beside anything, and
+   * the child's column is not drawn at all — the front door keeps its tests
+   * above the rows (ADR-119). `HomeScreen` and `SideColumn` decide that in
+   * React, so what is not drawn is not read out either.
    *
    * The front door and a module page are one shape and share every number
    * here. They keep two names because the front door's middle holds rows and a
@@ -1418,20 +1473,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-  /* Progress and tests side by side on a tablet, and exactly as tall as each
-   * other. A grid row does that without either block knowing about the other.
-   * One under the other on a phone. */
-  .tk-home-paar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
-  }
-  @media (min-width: 768px) {
-    .tk-home-paar {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-    }
   }
 
   /* ---- A block in the child's own column --------------------------------
@@ -3272,5 +3313,16 @@
   }
   to {
     transform: translate(0, 0);
+  }
+}
+
+/* The flitsdictee's field arriving where the word was: a fade and no more, and
+ * none at all with reduced motion (ADR-118). */
+@keyframes tk-verschijn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

@@ -1,0 +1,247 @@
+{
+  "id": "taal-sp-lijk",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-lijk-vrolijk",
+      "woord": "vrolijk",
+      "gat": [3, 7],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Mijn zusje is altijd vrolijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-gevaarlijk",
+      "woord": "gevaarlijk",
+      "gat": [6, 10],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Spelen op de weg is gevaarlijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-eerlijk",
+      "woord": "eerlijk",
+      "gat": [3, 7],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Je moet altijd eerlijk zijn.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-moeilijk",
+      "woord": "moeilijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Deze puzzel is moeilijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-heerlijk",
+      "woord": "heerlijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De taart smaakt heerlijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-duidelijk",
+      "woord": "duidelijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De juf praat heel duidelijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-vriendelijk",
+      "woord": "vriendelijk",
+      "gat": [7, 11],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De bakker is altijd vriendelijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-gemakkelijk",
+      "woord": "gemakkelijk",
+      "gat": [7, 11],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Deze som is gemakkelijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-lelijk",
+      "woord": "lelijk",
+      "gat": [2, 6],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Ik vind die kleur lelijk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-natuurlijk",
+      "woord": "natuurlijk",
+      "gat": [6, 10],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Je mag natuurlijk meedoen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-lijk-mogelijk",
+      "woord": "mogelijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Kom zo snel mogelijk naar huis.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-eigenlijk",
+      "woord": "eigenlijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Ik wil eigenlijk liever buiten spelen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-werkelijk",
+      "woord": "werkelijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het is werkelijk waar gebeurd.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-verschrikkelijk",
+      "woord": "verschrikkelijk",
+      "gat": [11, 15],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het was verschrikkelijk koud.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-hopelijk",
+      "woord": "hopelijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het is morgen hopelijk mooi weer.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-persoonlijk",
+      "woord": "persoonlijk",
+      "gat": [7, 11],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Ik geef het cadeau persoonlijk aan opa.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-vreselijk",
+      "woord": "vreselijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het regent vreselijk hard.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-dagelijks",
+      "woord": "dagelijks",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Ik poets mijn tanden dagelijks.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-jaarlijks",
+      "woord": "jaarlijks",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De markt komt jaarlijks naar ons dorp.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-wekelijks",
+      "woord": "wekelijks",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Ik zwem wekelijks in het zwembad.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-belachelijk",
+      "woord": "belachelijk",
+      "gat": [7, 11],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Die hoed ziet er belachelijk uit.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-redelijk",
+      "woord": "redelijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het weer is redelijk goed.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-hartelijk",
+      "woord": "hartelijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Oma zegt ons hartelijk gedag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-tijdelijk",
+      "woord": "tijdelijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De winkel is tijdelijk dicht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-schadelijk",
+      "woord": "schadelijk",
+      "gat": [6, 10],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Te veel snoep is schadelijk voor je tanden.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-pijnlijk",
+      "woord": "pijnlijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Een steek van een wesp is pijnlijk.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-onmogelijk",
+      "woord": "onmogelijk",
+      "gat": [6, 10],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Het is onmogelijk om zelf te vliegen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-oneerlijk",
+      "woord": "oneerlijk",
+      "gat": [5, 9],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "Dat vind ik oneerlijk!",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-gezamenlijk",
+      "woord": "gezamenlijk",
+      "gat": [7, 11],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "We eten gezamenlijk in de kantine.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-lijk-sierlijk",
+      "woord": "sierlijk",
+      "gat": [4, 8],
+      "keuzes": ["lijk", "luk", "lik"],
+      "zin": "De zwaan zwemt sierlijk over het water.",
+      "groep": 7
+    }
+  ]
+}

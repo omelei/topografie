@@ -1,0 +1,247 @@
+{
+  "id": "taal-sp-ig",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-ig-gelukkig",
+      "woord": "gelukkig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Ik ben heel gelukkig met mijn hond.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-lastig",
+      "woord": "lastig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Deze som is lastig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-prachtig",
+      "woord": "prachtig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Wat een prachtig schilderij!",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-zonnig",
+      "woord": "zonnig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Het wordt morgen zonnig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-gezellig",
+      "woord": "gezellig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Het is gezellig bij oma.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-handig",
+      "woord": "handig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Een rugzak is handig op kamp.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-nodig",
+      "woord": "nodig",
+      "gat": [3, 5],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Ik heb een potlood nodig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-aardig",
+      "woord": "aardig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "De nieuwe juf is heel aardig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-rustig",
+      "woord": "rustig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "In de bibliotheek is het rustig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-bezig",
+      "woord": "bezig",
+      "gat": [3, 5],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Ik ben bezig met mijn huiswerk.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-geduldig",
+      "woord": "geduldig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Wacht maar geduldig op je beurt.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-grappig",
+      "woord": "grappig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Die clown is heel grappig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-nieuwsgierig",
+      "woord": "nieuwsgierig",
+      "gat": [10, 12],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Een kat is heel nieuwsgierig.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-verdrietig",
+      "woord": "verdrietig",
+      "gat": [8, 10],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Mijn zusje is verdrietig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-moedig",
+      "woord": "moedig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "De brandweerman is heel moedig.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-voorzichtig",
+      "woord": "voorzichtig",
+      "gat": [9, 11],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Doe voorzichtig met het glas.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-twintig",
+      "woord": "twintig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "In onze klas zitten twintig kinderen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-dertig",
+      "woord": "dertig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Een maand heeft dertig of eenendertig dagen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-veertig",
+      "woord": "veertig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Mijn moeder is veertig jaar.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-zestig",
+      "woord": "zestig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Een uur heeft zestig minuten.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-zuinig",
+      "woord": "zuinig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Wees zuinig op je spullen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-jarig",
+      "woord": "jarig",
+      "gat": [3, 5],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Morgen ben ik jarig!",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-hongerig",
+      "woord": "hongerig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Na het zwemmen ben ik hongerig.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-slordig",
+      "woord": "slordig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Mijn kamer is slordig.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-ig-modderig",
+      "woord": "modderig",
+      "gat": [6, 8],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Na de regen is het pad modderig.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-koppig",
+      "woord": "koppig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Mijn broertje is soms koppig.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-haastig",
+      "woord": "haastig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "De man loopt haastig naar de bus.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-prettig",
+      "woord": "prettig",
+      "gat": [5, 7],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Het is prettig om buiten te zitten.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-stevig",
+      "woord": "stevig",
+      "gat": [4, 6],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Houd het touw stevig vast.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ig-wazig",
+      "woord": "wazig",
+      "gat": [3, 5],
+      "keuzes": ["ig", "ug", "ich"],
+      "zin": "Zonder bril zie ik alles wazig.",
+      "groep": 7
+    }
+  ]
+}

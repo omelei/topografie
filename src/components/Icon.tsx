@@ -970,3 +970,99 @@ export function StarIcon(props: Omit<IconProps, 'children'>) {
     </Icon>
   );
 }
+
+/*
+ * Taal's marks (ADR-118): two for its parts and seven for its subjects, from
+ * the same four primitives. A letter would have been the obvious drawing and
+ * is the one §E rules out: a glyph at 24px is a font, not an icon.
+ */
+
+/** Spelling: a line of writing with a gap in it — the gap is the exercise. */
+export function GatIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 16h5M16 16h5" />
+      <rect x="10" y="8" width="4" height="9" rx="1" />
+    </Icon>
+  );
+}
+
+/** Werkwoorden: one word in three lengths — word, wordt, worden. */
+export function VormenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 7h9M4 12h12M4 17h16" />
+    </Icon>
+  );
+}
+
+/** Onthoudwoorden: an eye, because no rule helps and the picture of the word does. */
+export function OogIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M2.5 12L12 6l9.5 6-9.5 6z" strokeLinejoin="round" />
+      <circle cx="12" cy="12" r="2.5" />
+    </Icon>
+  );
+}
+
+/** D of t: a short word and a longer one — make it longer and listen. */
+export function LangerIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 8h8" />
+      <path d="M4 16h13M14 13l3 3-3 3" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/** Eén of twee: one stroke, and a pair. */
+export function EenTweeIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M6 5v14M14 5v14M18 5v14" />
+    </Icon>
+  );
+}
+
+/** Achter aan het woord: a word, and the dot is its end. */
+export function UitgangIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 12h11" />
+      <circle cx="18" cy="12" r="3" fill="currentColor" />
+    </Icon>
+  );
+}
+
+/*
+ * The three tenses on one line of time, read left to right. The dot is what
+ * happens; the upright is now. Now, before now, and done by now.
+ */
+
+export function NuIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M3 12h6M15 12h6" />
+      <circle cx="12" cy="12" r="3" fill="currentColor" />
+    </Icon>
+  );
+}
+
+export function ToenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M11 12h10M16 8v8" />
+      <circle cx="5" cy="12" r="3" fill="currentColor" />
+    </Icon>
+  );
+}
+
+export function KlaarIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M8 12h13M16 8v8" />
+      <circle cx="5" cy="12" r="3" fill="currentColor" />
+    </Icon>
+  );
+}

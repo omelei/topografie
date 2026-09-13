@@ -45,11 +45,12 @@ import { ToetsenBlok } from './ToetsenBlok';
  * dinner was ready. Each card is one of those, and pressing it asks the
  * questions that round had not asked yet.
  *
- * **The column moves, the page does not.** From 1200 it stands beside the rows.
- * Below that its blocks go into the flow of this page: the tests and the streak
- * side by side on a tablet above the rows, and the other two after them. Which
- * block goes where is decided here, in React, because it is the reading order
- * as well as the drawing (see `useDesk`).
+ * **The column is beside the rows, or it is the tests alone.** From 1200 it
+ * stands beside the rows. Below that only the tests stay, above the rows: they
+ * are where a test is planned, and a phone is where a parent often does it. The
+ * streak, "Goed beantwoord" and the favourites are not drawn below 1200
+ * (ADR-119), which is decided here, in React, rather than hidden in CSS, so a
+ * screen reader does not meet them either (see `useDesk`).
  *
  * Two things it deliberately does not do. **It does not forecast** — "wat
  * onthoud je" is K9's. And **the test block is about the tests**: when they are
@@ -130,18 +131,12 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
     );
   }
 
-  // Below 1200 the tests and the streak are a pair above the rows: the two
-  // blocks about this week, side by side on a tablet (ADR-110, ADR-112).
+  // Below 1200 the tests alone, above the rows (ADR-119).
   return (
     <div className="tk-home">
       {kop}
-      <div className="tk-home-paar">
-        {toetsen}
-        {reeks}
-      </div>
+      {toetsen}
       {rijen}
-      {goed}
-      {favorieten}
     </div>
   );
 }

@@ -107,4 +107,11 @@ export type ModeId =
   | 'vlag-diploma'
   // The same test for one step of the clock, and for one map (ADR-117).
   | 'klok-diploma'
-  | 'topo-diploma';
+  | 'topo-diploma'
+  // Taal (ADR-118). Spelling chooses the letters of a gap or types the whole
+  // word after seeing it for three seconds; werkwoorden choose or type the
+  // form a sentence asks for. No bliksemronde and no diploma for either.
+  | 'taal-letters'
+  | 'taal-flitsdictee'
+  | 'taal-vorm-kiezen'
+  | 'taal-vorm-typen';

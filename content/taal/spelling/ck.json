@@ -1,0 +1,247 @@
+{
+  "id": "taal-sp-ck",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-ck-cadeau",
+      "woord": "cadeau",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Voor mijn verjaardag krijg ik een cadeau.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-camping",
+      "woord": "camping",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "In de zomer gaan we naar een camping.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-computer",
+      "woord": "computer",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Mijn broer speelt een spel op de computer.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-cactus",
+      "woord": "cactus",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Een cactus heeft veel stekels.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-clown",
+      "woord": "clown",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "De clown heeft een rode neus.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-club",
+      "woord": "club",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Mijn zus zit op een club voor turnen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-concert",
+      "woord": "concert",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "We gaan naar een concert in het park.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-cursus",
+      "woord": "cursus",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Mama doet een cursus koken.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-actie",
+      "woord": "actie",
+      "gat": [1, 2],
+      "keuzes": ["c", "k"],
+      "zin": "De school houdt een actie voor het goede doel.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-acteur",
+      "woord": "acteur",
+      "gat": [1, 2],
+      "keuzes": ["c", "k"],
+      "zin": "De acteur speelt een piraat.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-product",
+      "woord": "product",
+      "gat": [5, 6],
+      "keuzes": ["c", "k"],
+      "zin": "Dit product is gemaakt van hout.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-insect",
+      "woord": "insect",
+      "gat": [4, 5],
+      "keuzes": ["c", "k"],
+      "zin": "Een mier is een klein insect.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-code",
+      "woord": "code",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Wat is de code van het slot?",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-carnaval",
+      "woord": "carnaval",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Met carnaval verkleed ik me als ridder.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-caravan",
+      "woord": "caravan",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Opa slaapt in een caravan.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kampioen",
+      "woord": "kampioen",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Onze club is kampioen geworden.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kantine",
+      "woord": "kantine",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "In de kantine drinken we limonade.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kapitein",
+      "woord": "kapitein",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "De kapitein staat op het schip.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kopie",
+      "woord": "kopie",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Maak een kopie van de tekening.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-karton",
+      "woord": "karton",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "De doos is van karton.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kassa",
+      "woord": "kassa",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Betaal maar bij de kassa.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kalender",
+      "woord": "kalender",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Op de kalender staat mijn verjaardag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-krokodil",
+      "woord": "krokodil",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "De krokodil zwemt in de rivier.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kano",
+      "woord": "kano",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "We varen met een kano over het meer.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kameel",
+      "woord": "kameel",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Een kameel kan lang zonder water.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kanaal",
+      "woord": "kanaal",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Het schip vaart door het kanaal.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-koffer",
+      "woord": "koffer",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Mijn kleren zitten in de koffer.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kermis",
+      "woord": "kermis",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Op de kermis gaan we in de draaimolen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-karakter",
+      "woord": "karakter",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "Mijn hond heeft een lief karakter.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-ck-kajak",
+      "woord": "kajak",
+      "gat": [0, 1],
+      "keuzes": ["c", "k"],
+      "zin": "In de kajak zit maar één persoon.",
+      "groep": 7
+    }
+  ]
+}

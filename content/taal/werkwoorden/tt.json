@@ -1,0 +1,375 @@
+{
+  "id": "taal-ww-tt",
+  "deel": "werkwoorden",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-ww-tt-worden-hij",
+      "zin": "Hij wordt morgen tien.",
+      "infinitief": "worden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "wordt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-worden-ik",
+      "zin": "Ik word later dierenarts.",
+      "infinitief": "worden",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "word",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-worden-jij-achter",
+      "zin": "Word jij ook zo moe van zwemmen?",
+      "infinitief": "worden",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "word",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-worden-jij",
+      "zin": "Jij wordt vast een goede kok.",
+      "infinitief": "worden",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "wordt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-worden-hij-vraag",
+      "zin": "Wordt het morgen mooi weer?",
+      "infinitief": "worden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "wordt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-vinden-hij",
+      "zin": "Mijn zus vindt kaas lekker.",
+      "infinitief": "vinden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "vindt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-vinden-ik",
+      "zin": "Ik vind mijn sleutel niet.",
+      "infinitief": "vinden",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "vind",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-vinden-jij-achter",
+      "zin": "Vind jij deze puzzel moeilijk?",
+      "infinitief": "vinden",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "vind",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-vinden-jij",
+      "zin": "Jij vindt dat vast een goed plan.",
+      "infinitief": "vinden",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "vindt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-rijden-hij",
+      "zin": "De bus rijdt elke dag langs ons huis.",
+      "infinitief": "rijden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "rijdt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-rijden-ik",
+      "zin": "Ik rijd op mijn fiets naar school.",
+      "infinitief": "rijden",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "rijd",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-rijden-jij-achter",
+      "zin": "Rijd jij morgen mee naar oma?",
+      "infinitief": "rijden",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "rijd",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-rijden-jij",
+      "zin": "Jij rijdt heel hard op je step.",
+      "infinitief": "rijden",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "rijdt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-houden-hij",
+      "zin": "Opa houdt van lange wandelingen.",
+      "infinitief": "houden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "houdt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-houden-ik",
+      "zin": "Ik houd de deur voor je open.",
+      "infinitief": "houden",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "houd",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-houden-jij-achter",
+      "zin": "Houd jij mijn tas even vast?",
+      "infinitief": "houden",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "houd",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-antwoorden-hij",
+      "zin": "De juf antwoordt op mijn vraag.",
+      "infinitief": "antwoorden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "antwoordt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-antwoorden-ik",
+      "zin": "Ik antwoord altijd meteen.",
+      "infinitief": "antwoorden",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "antwoord",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-beantwoorden-jij",
+      "zin": "Jij beantwoordt de vraag goed.",
+      "infinitief": "beantwoorden",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "beantwoordt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-landen-hij",
+      "zin": "Het vliegtuig landt op het vliegveld.",
+      "infinitief": "landen",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "landt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-branden-hij",
+      "zin": "De kaars brandt op tafel.",
+      "infinitief": "branden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "brandt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-leiden-hij",
+      "zin": "Mijn vader leidt het spel.",
+      "infinitief": "leiden",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "leidt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-zetten-hij",
+      "zin": "Hij zet de beker op tafel.",
+      "infinitief": "zetten",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "zet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-zetten-ik",
+      "zin": "Ik zet de wekker op zeven uur.",
+      "infinitief": "zetten",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "zet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-zetten-jij-achter",
+      "zin": "Zet jij de fietsen in de schuur?",
+      "infinitief": "zetten",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "zet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-praten-hij",
+      "zin": "De juf praat met mijn moeder.",
+      "infinitief": "praten",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "praat",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-praten-jij",
+      "zin": "Jij praat heel zacht.",
+      "infinitief": "praten",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "praat",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-wachten-hij",
+      "zin": "Mijn hond wacht bij de deur.",
+      "infinitief": "wachten",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "wacht",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-wachten-ik",
+      "zin": "Ik wacht op de bus.",
+      "infinitief": "wachten",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "wacht",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-zitten-jij",
+      "zin": "Jij zit naast mij in de klas.",
+      "infinitief": "zitten",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "zit",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-weten-jij-achter",
+      "zin": "Weet jij waar mijn jas is?",
+      "infinitief": "weten",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "weet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-weten-hij",
+      "zin": "Mijn zus weet het antwoord.",
+      "infinitief": "weten",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "weet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-eten-hij",
+      "zin": "Hij eet een appel.",
+      "infinitief": "eten",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "eet",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-fietsen-hij",
+      "zin": "Mijn broer fietst naar zijn werk.",
+      "infinitief": "fietsen",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "fietst",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-fietsen-jij-achter",
+      "zin": "Fiets jij morgen met ons mee?",
+      "infinitief": "fietsen",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "fiets",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-werken-jij",
+      "zin": "Jij werkt hard aan je tekening.",
+      "infinitief": "werken",
+      "persoon": "jij",
+      "tijd": "tt",
+      "antwoord": "werkt",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-maken-ik",
+      "zin": "Ik maak een tekening voor oma.",
+      "infinitief": "maken",
+      "persoon": "ik",
+      "tijd": "tt",
+      "antwoord": "maak",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-leven-hij",
+      "zin": "De vis leeft in het water.",
+      "infinitief": "leven",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "leeft",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-verhuizen-hij",
+      "zin": "Hij verhuist naar een ander dorp.",
+      "infinitief": "verhuizen",
+      "persoon": "hij",
+      "tijd": "tt",
+      "antwoord": "verhuist",
+      "groep": 6
+    },
+    {
+      "id": "taal-ww-tt-bellen-jij-achter",
+      "zin": "Bel jij de dokter?",
+      "infinitief": "bellen",
+      "persoon": "jij",
+      "achter": true,
+      "tijd": "tt",
+      "antwoord": "bel",
+      "groep": 6
+    }
+  ]
+}

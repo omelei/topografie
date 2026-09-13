@@ -1,0 +1,369 @@
+{
+  "id": "taal-sp-dt",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-dt-hond",
+      "woord": "hond",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De hond blaft naar de postbode.",
+      "groep": 5,
+      "hulp": "honden"
+    },
+    {
+      "id": "taal-sp-dt-paard",
+      "woord": "paard",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Het paard eet een wortel.",
+      "groep": 5,
+      "hulp": "paarden"
+    },
+    {
+      "id": "taal-sp-dt-hand",
+      "woord": "hand",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Geef me je hand.",
+      "groep": 5,
+      "hulp": "handen"
+    },
+    {
+      "id": "taal-sp-dt-goed",
+      "woord": "goed",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Ik voel me goed vandaag.",
+      "groep": 5,
+      "hulp": "goede"
+    },
+    {
+      "id": "taal-sp-dt-rood",
+      "woord": "rood",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Mijn jas is rood.",
+      "groep": 5,
+      "hulp": "rode"
+    },
+    {
+      "id": "taal-sp-dt-bord",
+      "woord": "bord",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Leg de appel op je bord.",
+      "groep": 5,
+      "hulp": "borden"
+    },
+    {
+      "id": "taal-sp-dt-woord",
+      "woord": "woord",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Schrijf elk woord netjes op.",
+      "groep": 5,
+      "hulp": "woorden"
+    },
+    {
+      "id": "taal-sp-dt-tand",
+      "woord": "tand",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Ik heb een losse tand.",
+      "groep": 5,
+      "hulp": "tanden"
+    },
+    {
+      "id": "taal-sp-dt-kind",
+      "woord": "kind",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Elk kind krijgt een appel.",
+      "groep": 5,
+      "hulp": "kinderen"
+    },
+    {
+      "id": "taal-sp-dt-bed",
+      "woord": "bed",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "Ik lees een boek in bed.",
+      "groep": 5,
+      "hulp": "bedden"
+    },
+    {
+      "id": "taal-sp-dt-vriend",
+      "woord": "vriend",
+      "gat": [5, 6],
+      "keuzes": ["d", "t"],
+      "zin": "Mijn beste vriend woont naast ons.",
+      "groep": 5,
+      "hulp": "vrienden"
+    },
+    {
+      "id": "taal-sp-dt-land",
+      "woord": "land",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Nederland is een klein land.",
+      "groep": 6,
+      "hulp": "landen"
+    },
+    {
+      "id": "taal-sp-dt-wild",
+      "woord": "wild",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Het paard is nog een beetje wild.",
+      "groep": 6,
+      "hulp": "wilde"
+    },
+    {
+      "id": "taal-sp-dt-strand",
+      "woord": "strand",
+      "gat": [5, 6],
+      "keuzes": ["d", "t"],
+      "zin": "We spelen op het strand.",
+      "groep": 6,
+      "hulp": "stranden"
+    },
+    {
+      "id": "taal-sp-dt-mond",
+      "woord": "mond",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Doe je mond open bij de tandarts.",
+      "groep": 6,
+      "hulp": "monden"
+    },
+    {
+      "id": "taal-sp-dt-hoed",
+      "woord": "hoed",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De tovenaar draagt een hoed.",
+      "groep": 6,
+      "hulp": "hoeden"
+    },
+    {
+      "id": "taal-sp-dt-avond",
+      "woord": "avond",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Op een warme avond zitten we buiten.",
+      "groep": 6,
+      "hulp": "avonden"
+    },
+    {
+      "id": "taal-sp-dt-baard",
+      "woord": "baard",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Opa heeft een witte baard.",
+      "groep": 6,
+      "hulp": "baarden"
+    },
+    {
+      "id": "taal-sp-dt-veld",
+      "woord": "veld",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De koeien lopen in het veld.",
+      "groep": 6,
+      "hulp": "velden"
+    },
+    {
+      "id": "taal-sp-dt-hard",
+      "woord": "hard",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De wind waait hard.",
+      "groep": 6,
+      "hulp": "harde",
+      "klinktAls": "hart"
+    },
+    {
+      "id": "taal-sp-dt-kat",
+      "woord": "kat",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "De kat ligt op de bank.",
+      "groep": 5,
+      "hulp": "katten"
+    },
+    {
+      "id": "taal-sp-dt-voet",
+      "woord": "voet",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Ik heb een blaar op mijn voet.",
+      "groep": 5,
+      "hulp": "voeten"
+    },
+    {
+      "id": "taal-sp-dt-boot",
+      "woord": "boot",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "We varen met de boot.",
+      "groep": 5,
+      "hulp": "boten"
+    },
+    {
+      "id": "taal-sp-dt-poot",
+      "woord": "poot",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De hond geeft een poot.",
+      "groep": 5,
+      "hulp": "poten"
+    },
+    {
+      "id": "taal-sp-dt-wit",
+      "woord": "wit",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "De sneeuw is wit.",
+      "groep": 5,
+      "hulp": "witte"
+    },
+    {
+      "id": "taal-sp-dt-groot",
+      "woord": "groot",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Een olifant is heel groot.",
+      "groep": 5,
+      "hulp": "grote"
+    },
+    {
+      "id": "taal-sp-dt-laat",
+      "woord": "laat",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Het is al laat.",
+      "groep": 5,
+      "hulp": "late"
+    },
+    {
+      "id": "taal-sp-dt-kaart",
+      "woord": "kaart",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Ik stuur opa een kaart.",
+      "groep": 5,
+      "hulp": "kaarten"
+    },
+    {
+      "id": "taal-sp-dt-nest",
+      "woord": "nest",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "In de boom zit een nest.",
+      "groep": 6,
+      "hulp": "nesten"
+    },
+    {
+      "id": "taal-sp-dt-feest",
+      "woord": "feest",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Op mijn feest komen tien kinderen.",
+      "groep": 5,
+      "hulp": "feesten"
+    },
+    {
+      "id": "taal-sp-dt-kant",
+      "woord": "kant",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Aan de kant van de weg staat een bank.",
+      "groep": 6,
+      "hulp": "kanten"
+    },
+    {
+      "id": "taal-sp-dt-hart",
+      "woord": "hart",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Mijn hart klopt snel na het rennen.",
+      "groep": 6,
+      "hulp": "harten",
+      "klinktAls": "hard"
+    },
+    {
+      "id": "taal-sp-dt-plant",
+      "woord": "plant",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "De plant staat bij het raam.",
+      "groep": 6,
+      "hulp": "planten"
+    },
+    {
+      "id": "taal-sp-dt-pet",
+      "woord": "pet",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "Ik draag een pet tegen de zon.",
+      "groep": 6,
+      "hulp": "petten"
+    },
+    {
+      "id": "taal-sp-dt-vlot",
+      "woord": "vlot",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Op het meer drijft een vlot.",
+      "groep": 6,
+      "hulp": "vlotten"
+    },
+    {
+      "id": "taal-sp-dt-net",
+      "woord": "net",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "De visser gooit een net in het water.",
+      "groep": 6,
+      "hulp": "netten"
+    },
+    {
+      "id": "taal-sp-dt-sport",
+      "woord": "sport",
+      "gat": [4, 5],
+      "keuzes": ["d", "t"],
+      "zin": "Voetbal is mijn favoriete sport.",
+      "groep": 6,
+      "hulp": "sporten"
+    },
+    {
+      "id": "taal-sp-dt-punt",
+      "woord": "punt",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "Achter de zin zet je een punt.",
+      "groep": 6,
+      "hulp": "punten"
+    },
+    {
+      "id": "taal-sp-dt-zoet",
+      "woord": "zoet",
+      "gat": [3, 4],
+      "keuzes": ["d", "t"],
+      "zin": "De appel is lekker zoet.",
+      "groep": 6,
+      "hulp": "zoete"
+    },
+    {
+      "id": "taal-sp-dt-bot",
+      "woord": "bot",
+      "gat": [2, 3],
+      "keuzes": ["d", "t"],
+      "zin": "De hond knaagt op een bot.",
+      "groep": 6,
+      "hulp": "botten"
+    }
+  ]
+}

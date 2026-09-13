@@ -16,10 +16,8 @@ import type { Module } from './modules';
  * aanduidt".
  *
  * §E names six of them — gebied, vlag, klok, tafels, woord, tijdvak — and the
- * plan has seven modules. Spelling has no icon of its own and shares the word,
- * which is a collision nobody sees yet because neither module is built; it is
- * a question for the styleguide rather than something to invent a seventh
- * shape for here.
+ * plan has six modules. Spelling used to be a seventh that shared the word; it
+ * is one of Taal's parts now (ADR-118), so the word is Taal's alone.
  *
  * Its own file rather than a constant inside the Shell, because the rail is no
  * longer the only place a module wears its own mark: K1's tiles carry it too,
@@ -32,7 +30,6 @@ export const MODULE_ICON: Record<Module['id'], ComponentType<Omit<IconProps, 'ch
   tafels: TablesIcon,
   klok: ClockIcon,
   woorden: WordIcon,
-  spelling: WordIcon,
   tijdvakken: EraIcon,
   vlaggen: FlagIcon,
 };

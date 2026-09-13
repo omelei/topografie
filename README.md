@@ -4,11 +4,13 @@ Practice for Dutch primary and lower-secondary education. Short rounds, a map
 that fills the screen, and progress a child can feel. No advertising, no
 tracking, no account required.
 
-Four modules today: **topografie**, **rekenen**, **klokkijken** and **vlaggen**.
-Three more are planned and they stand in the rail beside the four that exist
-([ADR-051](docs/DECISIONS.md)), because a rail that showed only what was
-finished made the product look like it stopped there. What none of them does is pretend: a module that is not built
-says so on its own page and points at the ones that are.
+Five modules today: **topografie**, **rekenen**, **klokkijken**, **vlaggen** and
+**taal**. They are the five doors of the rail ([ADR-051](docs/DECISIONS.md)),
+which stood there before most of them were built, because a rail that showed
+only what was finished made the product look like it stopped there. What none
+of them did is pretend, and what is still planned does not either: a module
+that is not built — tijdvakken — says so on its own page and points at the ones
+that are.
 
 That last sentence is why this repository is public. The best-known free
 alternative is paid for by advertising from over a hundred vendors, on a page
@@ -86,10 +88,23 @@ Taiwan is in and Palestina is not, is written down in
 werelddelen has a **vlaggendiploma**: twenty of its flags, nine in ten right,
 and nothing said until the end ([ADR-104](docs/DECISIONS.md)).
 
+Taal, at /taal, is spelling and werkwoorden for groep 5 to 7, the words and
+verb forms a child brings home from school ([ADR-118](docs/DECISIONS.md)). Every
+word is asked in a sentence. **Kies de letters** opens the letters that decide
+— tr▢n — and offers only those letters, never a word spelled wrong, because a
+wrong picture of a word is one a child keeps. **Flitsdictee** shows the word
+in its sentence for three seconds and then asks for all of it. The verbs are
+worked out rather than copied: `werkwoordsvorm()` makes every weak form again
+in a content test, and the three forms offered beside a verb question all
+exist. A typed answer is judged strictly — the letter is the answer here —
+and the letters that differ are shown. No clock on any of it, and no voice.
+Which words, and why, is in
+[content/taal/AFBAKENING.md](content/taal/AFBAKENING.md).
+
 Every module offers a **mix**: the Rekenmix shuffles all four operations — in
 three difficulties, from the level every set has always carried
-([ADR-073](docs/DECISIONS.md)) — the Topomix shuffles all five map sets, and the
-Klokmix every face there is. None of them is a set of its own — they hold the
+([ADR-073](docs/DECISIONS.md)) — the Topomix shuffles all five map sets, the
+Klokmix every face there is, and Taal has a Spellingmix and a Werkwoordmix. None of them is a set of its own — they hold the
 same items under one name, so a sum answered in a mix moves the box it moves
 anywhere else ([ADR-062](docs/DECISIONS.md), [ADR-063](docs/DECISIONS.md)).
 
@@ -102,7 +117,7 @@ gaps showing. And a child who knows which sums they keep getting wrong can ask
 for exactly those ([ADR-078](docs/DECISIONS.md)).
 
 Every module has a page of its own at the word a parent would type — leer.nu
-/topografie, /rekenen, /klokkijken — and one flow on it: what you want to
+/topografie, /rekenen, /klokkijken, /taal — and one flow on it: what you want to
 practise, then how, then a button. Step 1 offers **subjects**, six at most, and
 a subject that holds many sets asks which as a row of chips underneath: one
 decision, then a smaller one, instead of thirty-six of equal weight
@@ -134,8 +149,9 @@ what is popular, and a figure we invented would be a fabrication on a page whose
 whole claim is that it does not track anybody ([ADR-082](docs/DECISIONS.md)).
 It logs the rounds just played with the mark each came to — "cijfer 8,4", over
 what was answered and not over what was asked ([ADR-053](docs/DECISIONS.md)).
-And down the right it keeps what is the child's own — on every screen inside
-the frame, not only here: their progress first, then everything answered
+And down the right it keeps what is the child's own — beside every screen
+inside the frame from 1200 wide; below that only the tests stay, on the front
+door ([ADR-119](docs/DECISIONS.md)): their progress first, then everything answered
 correctly so far with the run of correct answers under it, then the exercises
 they keep going back to. "Jouw voortgang" is the hero a child wears, the reeks
 it stands in, five stars with as many filled as the next chest has, and one line

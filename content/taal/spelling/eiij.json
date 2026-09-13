@@ -1,0 +1,329 @@
+{
+  "id": "taal-sp-eiij",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-eiij-trein",
+      "woord": "trein",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ik ga met de trein naar opa.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-klein",
+      "woord": "klein",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het konijn is nog heel klein.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-plein",
+      "woord": "plein",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Op het plein staat een grote boom.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-geit",
+      "woord": "geit",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "De geit eet gras bij het hek.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-eiland",
+      "woord": "eiland",
+      "gat": [0, 2],
+      "keuzes": ["ei", "ij"],
+      "zin": "Op het eiland wonen niet veel mensen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-wei",
+      "woord": "wei",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "De koeien staan in de wei.",
+      "groep": 5,
+      "klinktAls": "wij"
+    },
+    {
+      "id": "taal-sp-eiij-reis",
+      "woord": "reis",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Na de zomer maken we een lange reis.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-meisje",
+      "woord": "meisje",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het meisje speelt met haar hond.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-zeil",
+      "woord": "zeil",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het zeil van de boot is wit.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-prei",
+      "woord": "prei",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Mama koopt een prei op de markt.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-kei",
+      "woord": "kei",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Er ligt een grote kei in de tuin.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-klei",
+      "woord": "klei",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "We maken een pot van klei.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-reiger",
+      "woord": "reiger",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Een reiger staat stil in het water.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-keizer",
+      "woord": "keizer",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "De keizer woonde in een groot paleis.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-pleister",
+      "woord": "pleister",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Op mijn knie zit een pleister.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-breien",
+      "woord": "breien",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Oma kan heel mooi breien.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-eind",
+      "woord": "eind",
+      "gat": [0, 2],
+      "keuzes": ["ei", "ij"],
+      "zin": "Aan het eind van de straat woont mijn vriend.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-weiland",
+      "woord": "weiland",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het paard loopt in het weiland.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-leider",
+      "woord": "leider",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "De leider van de groep loopt voorop.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-tijd",
+      "woord": "tijd",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het is tijd om naar bed te gaan.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-blij",
+      "woord": "blij",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ik ben blij met mijn cadeau.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-vrij",
+      "woord": "vrij",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Op zaterdag ben ik vrij van school.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-lijn",
+      "woord": "lijn",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Teken een rechte lijn onder je naam.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-fijn",
+      "woord": "fijn",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Wat een fijn boek is dit!",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-konijn",
+      "woord": "konijn",
+      "gat": [3, 5],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ons konijn eet een wortel.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-gordijn",
+      "woord": "gordijn",
+      "gat": [4, 6],
+      "keuzes": ["ei", "ij"],
+      "zin": "Doe het gordijn maar dicht.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-ijs",
+      "woord": "ijs",
+      "gat": [0, 2],
+      "keuzes": ["ei", "ij"],
+      "zin": "In de zomer eet ik graag een ijs.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-kijken",
+      "woord": "kijken",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "We gaan naar de vogels kijken.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-schrijven",
+      "woord": "schrijven",
+      "gat": [4, 6],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ik kan al mijn naam schrijven.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-prijs",
+      "woord": "prijs",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Onze klas wint de eerste prijs.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-spijker",
+      "woord": "spijker",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Papa slaat een spijker in de muur.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-dijk",
+      "woord": "dijk",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "We fietsen over de dijk langs het water.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-rij",
+      "woord": "rij",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ga maar achter in de rij staan.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-wij",
+      "woord": "wij",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Morgen gaan wij naar het strand.",
+      "groep": 5,
+      "klinktAls": "wei"
+    },
+    {
+      "id": "taal-sp-eiij-tijger",
+      "woord": "tijger",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Een tijger heeft zwarte strepen.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-ijzer",
+      "woord": "ijzer",
+      "gat": [0, 2],
+      "keuzes": ["ei", "ij"],
+      "zin": "Het hek is gemaakt van ijzer.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-vijf",
+      "woord": "vijf",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "Mijn broertje is vijf jaar.",
+      "groep": 5
+    },
+    {
+      "id": "taal-sp-eiij-rijst",
+      "woord": "rijst",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "We eten rijst met groente.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-wijzer",
+      "woord": "wijzer",
+      "gat": [1, 3],
+      "keuzes": ["ei", "ij"],
+      "zin": "De grote wijzer staat op de twaalf.",
+      "groep": 6
+    },
+    {
+      "id": "taal-sp-eiij-kwijt",
+      "woord": "kwijt",
+      "gat": [2, 4],
+      "keuzes": ["ei", "ij"],
+      "zin": "Ik ben mijn sleutel kwijt.",
+      "groep": 6
+    }
+  ]
+}

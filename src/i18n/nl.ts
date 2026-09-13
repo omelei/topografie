@@ -176,7 +176,6 @@ export const nl = {
   'module.tafels': 'Rekenen',
   'module.klok': 'Klok',
   'module.woorden': 'Taal',
-  'module.spelling': 'Spelling',
   'module.tijdvakken': 'Tijdvakken',
   'module.vlaggen': 'Vlaggen',
 
@@ -786,6 +785,200 @@ export const nl = {
   'vlag.diplomaEarned': 'Vlaggendiploma gehaald: {deel}',
   'vlag.diplomaMissed':
     'Nog geen diploma: {goed} van de {totaal} goed. Met {nodig} goed is hij van jou.',
+
+  // Taal (ADR-118). Eén pagina met twee delen. De rij die bij topografie
+  // vraagt waar op de kaart, vraagt hier welk deel.
+  'deel.title': 'Welk deel?',
+  'regio.spelling': 'Spelling',
+  'regio.werkwoorden': 'Werkwoorden',
+  'start.deel': 'deel',
+  // Spelling: zes tegels. De vier soorten onthoudwoorden en de drie
+  // woordeinden zijn elk één tegel, met knopjes eronder.
+  'onderwerp.taal.onthoud': 'Onthoudwoorden',
+  'onderwerp.taal.onthoud.uitleg': 'Ei of ij, au of ou, g of ch, c of k',
+  'onderwerp.taal.onthoud.keuze': 'Welke letters?',
+  'onderwerp.taal.dt': 'D of t',
+  'onderwerp.taal.dt.uitleg': 'Maak het woord langer: hond, honden',
+  'onderwerp.taal.eenTwee': 'Eén of twee',
+  'onderwerp.taal.eenTwee.uitleg': 'Eén letter of twee: manen, katten',
+  'onderwerp.taal.eenTwee.keuze': 'Klinkers of medeklinkers?',
+  'onderwerp.taal.achter': 'Achter aan het woord',
+  'onderwerp.taal.achter.uitleg': 'Verkleinwoorden, -ig en -lijk',
+  'onderwerp.taal.achter.keuze': 'Welk woordeinde?',
+  'onderwerp.taal.spellingmix': 'Spellingmix',
+  'onderwerp.taal.spellingmix.uitleg': 'Alle spelling door elkaar',
+  'onderwerp.taal.fouten.uitleg': 'De woorden die je eerder fout had',
+  // Werkwoorden: drie tijden, een mix en je fouten.
+  'onderwerp.taal.tt': 'Tegenwoordige tijd',
+  'onderwerp.taal.tt.uitleg': 'Ik word, hij wordt, word jij?',
+  'onderwerp.taal.vt': 'Verleden tijd',
+  'onderwerp.taal.vt.uitleg': '-te of -de, met ’t kofschip',
+  'onderwerp.taal.vd': 'Voltooid deelwoord',
+  'onderwerp.taal.vd.uitleg': 'Ge- en een t of een d: gefietst, geleefd',
+  'onderwerp.taal.werkwoordmix': 'Werkwoordmix',
+  'onderwerp.taal.werkwoordmix.uitleg': 'Alle werkwoorden door elkaar',
+  'onderwerp.taal.werkwoorden.fouten.uitleg': 'De werkwoorden die je eerder fout had',
+  // De naam van een set: wat de startbalk, de kaarten en de favorieten tonen.
+  // Het korte woord staat op het knopje als de set een van meer is.
+  'set.taal-sp-eiij': 'Ei of ij',
+  'set.taal-sp-eiij.kort': 'ei / ij',
+  'set.taal-sp-auou': 'Au of ou',
+  'set.taal-sp-auou.kort': 'au / ou',
+  'set.taal-sp-gch': 'G of ch',
+  'set.taal-sp-gch.kort': 'g / ch',
+  'set.taal-sp-ck': 'C of k',
+  'set.taal-sp-ck.kort': 'c / k',
+  'set.taal-sp-dt': 'D of t',
+  'set.taal-sp-klinkers': 'Eén of twee klinkers',
+  'set.taal-sp-klinkers.kort': 'klinkers',
+  'set.taal-sp-medeklinkers': 'Eén of twee medeklinkers',
+  'set.taal-sp-medeklinkers.kort': 'medeklinkers',
+  'set.taal-sp-verkleinwoorden': 'Verkleinwoorden',
+  'set.taal-sp-verkleinwoorden.kort': 'verkleinwoorden',
+  'set.taal-sp-ig': 'Woorden op -ig',
+  'set.taal-sp-ig.kort': '-ig',
+  'set.taal-sp-lijk': 'Woorden op -lijk',
+  'set.taal-sp-lijk.kort': '-lijk',
+  'set.taal-sp-mix': 'Spellingmix',
+  'set.taal-sp-fouten': 'Jouw fouten met spelling',
+  'set.taal-ww-tt': 'Tegenwoordige tijd',
+  'set.taal-ww-vt': 'Verleden tijd',
+  'set.taal-ww-vd': 'Voltooid deelwoord',
+  'set.taal-ww-mix': 'Werkwoordmix',
+  'set.taal-ww-fouten': 'Jouw fouten met werkwoorden',
+  // De manieren. Geen bliksemronde: spelling is nadenken, en een klok leert
+  // gokken. Het flitsdictee heeft kijktijd, geen antwoordtijd.
+  'mode.taal-letters': 'Kies de letters',
+  'mode.taal-flitsdictee': 'Flitsdictee',
+  'mode.taal-vorm-kiezen': 'Kies de vorm',
+  'mode.taal-vorm-typen': 'Typ de vorm',
+  'way.taal-letters': 'Kies de letters die in het woord horen — de instap naar schrijven',
+  'way.taal-flitsdictee': 'Kijk drie tellen, en schrijf het woord dan zelf — zoals een dictee',
+  'way.taal-vorm-kiezen': 'Kies uit drie vormen — de instap naar typen',
+  'way.taal-vorm-typen': 'Schrijf de vorm zelf op — voor de toets',
+  // De ronde. Geen voorleesknop: die zou het woord zeggen dat je moet spellen.
+  'taal.loading': 'Woorden worden geladen…',
+  'taal.failed': 'De woorden konden niet geladen worden.',
+  'taal.gat': 'open plek',
+  'taal.lettersVraag': 'Welke letters horen erin?',
+  'taal.lettersLabel': 'Kies de letters',
+  'taal.lettersPrompt': 'Maak het woord af.',
+  'taal.flitsKijk': 'Kijk goed',
+  'taal.flitsKijkPrompt': 'Onthoud hoe het woord eruitziet.',
+  'taal.flitsTyp': 'Typ het woord',
+  'taal.flitsTypPrompt': 'Schrijf het woord in de zin.',
+  'taal.flitsVeld': 'Het woord dat er stond',
+  'taal.vormVraag': 'Welke vorm hoort erin?',
+  'taal.vormLabel': 'Kies de vorm',
+  'taal.vormPrompt': 'Zet het werkwoord in de zin.',
+  'taal.vormTyp': 'Typ de vorm',
+  'taal.vormVeld': 'De vorm van {infinitief}',
+  'taal.infinitief': 'Het werkwoord is {infinitief}.',
+  // Na een antwoord. Het goede woord staat erbij, en na een fout de regel,
+  // toegepast op dit woord.
+  'taal.goed': 'Goed! {woord}.',
+  'taal.fout': 'Het is {woord}, met {letters}.',
+  'taal.foutVorm': 'Het is {woord}.',
+  'taal.jijKoos': 'Jij koos {gegeven}.',
+  'taal.jeSchreef': 'Je schreef {getypt}.',
+  'taal.weetNiet': 'Nu weet je hem.',
+  'taal.practiceMore': 'Deze woorden moet je nog oefenen',
+  'taal.practiceMoreVormen': 'Deze werkwoorden moet je nog oefenen',
+  // De regel van een spellingset, toegepast op één woord.
+  'taal.regel.onthoud': 'Hier helpt geen regel: je hoort het niet. Onthoud {woord}, met {letters}.',
+  'taal.regel.dt':
+    'Maak het woord langer: {hulp}. Je hoort een {letter}, dus je schrijft een {letter}.',
+  'taal.regel.klinkerEen':
+    'Hak het woord in stukjes: {hulp}. De lange klank staat aan het eind van een stukje, dus één letter: {letters}.',
+  'taal.regel.klinkerTwee':
+    'Na de lange klank komt nog een medeklinker: {hulp}. Dan schrijf je twee letters: {letters}.',
+  'taal.regel.medeEen':
+    'Hak het woord in stukjes: {hulp}. Na een lange klank schrijf je de medeklinker één keer: {letters}.',
+  'taal.regel.medeTwee':
+    'Hak het woord in stukjes: {hulp}. Na een korte klank schrijf je de medeklinker twee keer: {letters}.',
+  'taal.regel.vk.je': 'Na de meeste medeklinkers komt -je: {woord}.',
+  'taal.regel.vk.tje': 'Na een klinker, of na een l, n, r of w, komt -tje: {woord}.',
+  'taal.regel.vk.pje': 'Na een m komt -pje: {woord}.',
+  'taal.regel.vk.etje': 'Na een korte klank met een l, m, n, r of ng komt -etje: {woord}.',
+  'taal.regel.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig: {woord}.',
+  'taal.regel.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk: {woord}.',
+  // De regel van een werkwoord, toegepast op dit werkwoord (ADR-118). Wat de
+  // regel is, rekent game-core uit; hier staan alleen de woorden.
+  'taal.regel.ttIk': 'Ik, dus alleen de stam: {stam}.',
+  'taal.regel.ttAchter': 'Jij staat achter het werkwoord, dus alleen de stam: {stam}.',
+  'taal.regel.ttTJij': 'Jij, dus stam + t: {stam} + t = {vorm}.',
+  'taal.regel.ttTHij': 'Hij, zij of het, dus stam + t: {stam} + t = {vorm}.',
+  'taal.regel.ttAlTJij': 'Jij, dus stam + t. Maar de stam {stam} eindigt al op een t: {vorm}.',
+  'taal.regel.ttAlTHij':
+    'Hij, zij of het, dus stam + t. Maar de stam {stam} eindigt al op een t: {vorm}.',
+  'taal.regel.ttMeervoud': 'Meer dan één persoon, dus het hele werkwoord: {vorm}.',
+  'taal.regel.vtTe':
+    '’t Kofschip: in {infinitief} staat een {letter} vóór -en, dus {stam} + {uitgang} = {vorm}.',
+  'taal.regel.vtDe':
+    'In {infinitief} staat een {letter} vóór -en. Die zit niet in ’t kofschip, dus {stam} + {uitgang} = {vorm}.',
+  'taal.regel.vdT': 'Ge- + stam + t, want de {letter} van {infinitief} zit in ’t kofschip: {vorm}.',
+  'taal.regel.vdD':
+    'Ge- + stam + d, want de {letter} van {infinitief} zit niet in ’t kofschip: {vorm}.',
+  'taal.regel.vdAl':
+    'Ge- + stam + {eind}. De stam {stam} eindigt al op een {eind}, dus er komt niets bij: {vorm}.',
+  'taal.regel.vdZonderGe':
+    'Met {voorvoegsel}- ervoor komt er geen ge- bij. Wel een {eind}: {vorm}.',
+  'taal.regel.vdZonderGeAl':
+    'Met {voorvoegsel}- ervoor komt er geen ge- bij, en de stam eindigt al op een {eind}: {vorm}.',
+  'taal.regel.sterk':
+    'Dit is een sterk werkwoord: {infinitief}, {vorm}. Die vorm maak je niet met een regel, die onthoud je.',
+  // Ontdekken voor werkwoorden: een kaart per regel, met voorbeelden uit de set.
+  'taal.explore.kindVormen': 'Ontdek de regels',
+  'taal.kaart.ik': 'Ik: alleen de stam',
+  'taal.kaart.ik.uitleg':
+    'De stam is het werkwoord zonder -en, zoals je hem hoort: worden, ik word.',
+  'taal.kaart.jijhij': 'Jij en hij: stam + t',
+  'taal.kaart.jijhij.uitleg':
+    'Bij jij, hij, zij en het komt er een t achter de stam, ook als je die niet hoort: hij wordt.',
+  'taal.kaart.alT': 'Stam op een t: geen t erbij',
+  'taal.kaart.alT.uitleg': 'Eindigt de stam al op een t, dan komt er geen tweede t bij: hij zet.',
+  'taal.kaart.achter': 'Jij achter het werkwoord: alleen de stam',
+  'taal.kaart.achter.uitleg': 'Staat jij achter het werkwoord, dan valt de t weg: word jij?',
+  'taal.kaart.meervoud': 'Meer personen: het hele werkwoord',
+  'taal.kaart.meervoud.uitleg': 'Bij wij, jullie en zij is het het hele werkwoord: wij worden.',
+  'taal.kaart.te': '’t Kofschip: -te en -ten',
+  'taal.kaart.te.uitleg':
+    'Kijk naar de letter vóór -en. Is dat een t, k, f, s, ch of p? Dan schrijf je -te, en -ten bij meer personen.',
+  'taal.kaart.de': 'Niet in ’t kofschip: -de en -den',
+  'taal.kaart.de.uitleg':
+    'Zit de letter vóór -en niet in ’t kofschip, dan schrijf je -de, en -den bij meer personen. Leven heeft een v, dus leefde.',
+  'taal.kaart.vdT': 'Ge- + stam + t',
+  'taal.kaart.vdT.uitleg':
+    'Zit de letter vóór -en in ’t kofschip, dan komt er een t achter: gefietst.',
+  'taal.kaart.vdD': 'Ge- + stam + d',
+  'taal.kaart.vdD.uitleg': 'Zit die letter niet in ’t kofschip, dan komt er een d achter: geleefd.',
+  'taal.kaart.zonderGe': 'Be-, ver-, ont-, her-, ge- en er-: geen ge-',
+  'taal.kaart.zonderGe.uitleg':
+    'Begint het werkwoord met be-, ver-, ont-, her-, ge- of er-, dan komt er geen ge- voor: verhuisd.',
+  'taal.kaart.sterk': 'Sterke werkwoorden',
+  'taal.kaart.sterk.uitleg': 'Deze vormen maak je niet met een regel. Die moet je onthouden.',
+  // Ontdekken: de regel in het algemeen, en dan de woorden.
+  'taal.explore.kind': 'Ontdek de woorden',
+  'taal.explore.regel': 'De regel',
+  'taal.explore.woorden': 'De woorden',
+  'taal.uitleg.eiij':
+    'Ei en ij klinken hetzelfde. Hier helpt geen regel: kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.auou':
+    'Au en ou klinken hetzelfde. Hier helpt geen regel: kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.gch':
+    'Een g en een ch klinken bijna hetzelfde. Kijk goed hoe het woord eruitziet, en onthoud het.',
+  'taal.uitleg.ck':
+    'Een c klinkt hier als een k. Veel van deze woorden komen uit een andere taal. Kijk goed, en onthoud het.',
+  'taal.uitleg.dt':
+    'Maak het woord langer: honden. Hoor je een d? Dan schrijf je een d. Hoor je een t? Dan schrijf je een t.',
+  'taal.uitleg.klinkers':
+    'Hak het woord in stukjes: bo-men. Staat de lange klank aan het eind van een stukje? Dan schrijf je één letter. Komt er nog een medeklinker achter, zoals in boom? Dan twee.',
+  'taal.uitleg.medeklinkers':
+    'Hak het woord in stukjes: kat-ten. Na een korte klank schrijf je de medeklinker twee keer. Na een lange klank, zoals in ma-ken, één keer.',
+  'taal.uitleg.verkleinwoorden':
+    'Meestal komt er -je achter: boekje. Na een klinker of na l, n, r of w: -tje. Na een m: -pje. Na een korte klank met l, m, n, r of ng: -etje.',
+  'taal.uitleg.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig, zoals in gelukkig.',
+  'taal.uitleg.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk, zoals in vrolijk.',
 
   'result.title': 'Ronde klaar',
   'result.practiceMore': 'Deze moet je nog oefenen',

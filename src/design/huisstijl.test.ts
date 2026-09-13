@@ -232,6 +232,8 @@ describe('a round switches its hit targets on in every module', () => {
     ['src/features/vlaggen/VlagScreen.tsx'],
     ['src/features/explore/ExploreScreen.tsx'],
     ['src/features/vlaggen/VlagExploreScreen.tsx'],
+    ['src/features/taal/TaalScreen.tsx'],
+    ['src/features/taal/TaalExploreScreen.tsx'],
   ])('%s switches the round theme on', (file) => {
     expect(readFileSync(join(ROOT, file), 'utf8')).toContain('data-thema="ronde"');
   });

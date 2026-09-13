@@ -62,7 +62,7 @@ describe('the shell', () => {
     //
     // Short words, because K1 draws the rail that way: 88 pixels wide reads as
     // a list, and "Topografie" in it reads as prose that did not fit.
-    expect(names).toEqual(['Topo', 'Rekenen', 'Klok', 'Taal', 'Spelling', 'Tijdvakken', 'Vlaggen']);
+    expect(names).toEqual(['Topo', 'Rekenen', 'Klok', 'Taal', 'Tijdvakken', 'Vlaggen']);
   });
 
   it('lets a module carry its own accent without naming it', () => {
@@ -83,7 +83,6 @@ describe('the shell', () => {
       'tafels',
       'klok',
       'woorden',
-      'spelling',
       'tijdvakken',
       'vlaggen',
     ]);
@@ -207,11 +206,13 @@ describe('the shell', () => {
     expect(knop).toHaveAttribute('aria-expanded', 'false');
     expect(knop).toHaveFocus();
 
-    // A choice closes it too, and goes where it was asked to.
+    // A choice closes it too, and goes where it was asked to — a module not
+    // built yet as well, which answers "binnenkort" (ADR-051). Taal was the
+    // example until it was built (ADR-118).
     fireEvent.click(knop);
     const opnieuw = document.getElementById(knop.getAttribute('aria-controls') ?? '');
-    fireEvent.click(within(opnieuw as HTMLElement).getByRole('button', { name: 'Taal' }));
-    expect(seen).toEqual(['woorden']);
+    fireEvent.click(within(opnieuw as HTMLElement).getByRole('button', { name: 'Tijdvakken' }));
+    expect(seen).toEqual(['tijdvakken']);
     expect(knop).toHaveAttribute('aria-expanded', 'false');
   });
 

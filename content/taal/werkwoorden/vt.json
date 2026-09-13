@@ -1,0 +1,283 @@
+{
+  "id": "taal-ww-vt",
+  "deel": "werkwoorden",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-ww-vt-fietsen-ik",
+      "zin": "Gisteren fietste ik naar het strand.",
+      "infinitief": "fietsen",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "fietste",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-fietsen-wij",
+      "zin": "Wij fietsten samen naar school.",
+      "infinitief": "fietsen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "fietsten",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-leven-hij",
+      "zin": "Opa leefde lang op een boerderij.",
+      "infinitief": "leven",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "leefde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-verhuizen-hij",
+      "zin": "Vorig jaar verhuisde mijn vriendin naar een andere stad.",
+      "infinitief": "verhuizen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "verhuisde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-verhuizen-wij",
+      "zin": "Wij verhuisden naar een groter huis.",
+      "infinitief": "verhuizen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "verhuisden",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-spelen-hij",
+      "zin": "De kat speelde met een bolletje wol.",
+      "infinitief": "spelen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "speelde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-spelen-wij",
+      "zin": "We speelden de hele middag buiten.",
+      "infinitief": "spelen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "speelden",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-maken-ik",
+      "zin": "Ik maakte een taart voor mama.",
+      "infinitief": "maken",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "maakte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-lachen-jij",
+      "zin": "Jij lachte om de grap.",
+      "infinitief": "lachen",
+      "persoon": "jij",
+      "tijd": "vt",
+      "antwoord": "lachte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-huilen-hij",
+      "zin": "De baby huilde de hele nacht.",
+      "infinitief": "huilen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "huilde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-wachten-wij",
+      "zin": "Wij wachtten lang op de trein.",
+      "infinitief": "wachten",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "wachtten",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-zetten-hij",
+      "zin": "Hij zette de fiets tegen de muur.",
+      "infinitief": "zetten",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "zette",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-antwoorden-hij",
+      "zin": "De juf antwoordde op elke vraag.",
+      "infinitief": "antwoorden",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "antwoordde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-landen-hij",
+      "zin": "Het vliegtuig landde op tijd.",
+      "infinitief": "landen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "landde",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-werken-ik",
+      "zin": "Ik werkte hard aan mijn werkstuk.",
+      "infinitief": "werken",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "werkte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-dansen-wij",
+      "zin": "De kinderen dansten in de gymzaal.",
+      "infinitief": "dansen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "dansten",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-stoppen-hij",
+      "zin": "Mijn broer stopte met zijn spel.",
+      "infinitief": "stoppen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "stopte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-bellen-wij",
+      "zin": "Wij belden oma voor haar verjaardag.",
+      "infinitief": "bellen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "belden",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-regenen-hij",
+      "zin": "Het regende de hele dag.",
+      "infinitief": "regenen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "regende",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-tekenen-ik",
+      "zin": "Ik tekende een draak.",
+      "infinitief": "tekenen",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "tekende",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-blaffen-hij",
+      "zin": "De hond blafte naar de postbode.",
+      "infinitief": "blaffen",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "blafte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-pakken-jij",
+      "zin": "Jij pakte je tas.",
+      "infinitief": "pakken",
+      "persoon": "jij",
+      "tijd": "vt",
+      "antwoord": "pakte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-reizen-wij",
+      "zin": "Wij reisden met de trein naar zee.",
+      "infinitief": "reizen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "reisden",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-hopen-ik",
+      "zin": "Ik hoopte op sneeuw.",
+      "infinitief": "hopen",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "hoopte",
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-rijden-hij",
+      "zin": "Hij reed op zijn fiets naar huis.",
+      "infinitief": "rijden",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "reed",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-vinden-wij",
+      "zin": "Wij vonden een schelp op het strand.",
+      "infinitief": "vinden",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "vonden",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-worden-ik",
+      "zin": "Ik werd wakker van de wekker.",
+      "infinitief": "worden",
+      "persoon": "ik",
+      "tijd": "vt",
+      "antwoord": "werd",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-eten-hij",
+      "zin": "Het meisje at een boterham.",
+      "infinitief": "eten",
+      "persoon": "hij",
+      "tijd": "vt",
+      "antwoord": "at",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-zitten-jij",
+      "zin": "Jij zat naast mij in de bus.",
+      "infinitief": "zitten",
+      "persoon": "jij",
+      "tijd": "vt",
+      "antwoord": "zat",
+      "sterk": true,
+      "groep": 7
+    },
+    {
+      "id": "taal-ww-vt-lopen-wij",
+      "zin": "Wij liepen door het bos.",
+      "infinitief": "lopen",
+      "persoon": "wij",
+      "tijd": "vt",
+      "antwoord": "liepen",
+      "sterk": true,
+      "groep": 7
+    }
+  ]
+}

@@ -66,13 +66,19 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // the iPhone — the read is slower than a screenshot taken the moment the name
   // appears. The page draws the cards at once and fills them when it knows
   // (ADR-094); a picture of the empty cards is not the page a child looks at,
-  // so this waits for the filled one.
-  const reeks = page.getByRole('region', { name: 'Jouw reeks' });
-  await expect(reeks).not.toHaveAttribute('aria-busy', 'true');
-  await expect(page.getByRole('region', { name: 'Goed beantwoord' })).not.toHaveAttribute(
-    'aria-busy',
-    'true',
-  );
+  // so this waits for the filled one. Below 1200 the column is not drawn and
+  // the tests are the one block left (ADR-119).
+  if ((page.viewportSize()?.width ?? 0) >= 1200) {
+    const reeks = page.getByRole('region', { name: 'Jouw reeks' });
+    await expect(reeks).not.toHaveAttribute('aria-busy', 'true');
+    await expect(page.getByRole('region', { name: 'Goed beantwoord' })).not.toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
+  } else {
+    await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Jouw reeks' })).toHaveCount(0);
+  }
   await shoot(page, size, '02-thuis');
 
   await page.goto('/topografie');

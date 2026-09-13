@@ -13,12 +13,11 @@ import { useEffect, useState } from 'react';
  * and a default is state (ADR-087). Below 768 a map gets about two hundred
  * pixels of height.
  *
- * **Whether there is a column beside the work** changes the *order* of the
- * child's own blocks, not only where they are drawn. From 1200 the tests come
- * first, in a column of their own; below it the same blocks go into the flow of
- * the page with the level first. A keyboard and a screen reader should meet them
- * in the order the eye does, and CSS `order` would move the drawing and leave
- * the tab order behind (ADR-094).
+ * **Whether there is a column beside the work** decides whether the child's own
+ * blocks are there at all. From 1200 they are a column of their own; below it
+ * they are not drawn, except the tests on the front door (ADR-119). That is a
+ * question for React and not for CSS: a block hidden by a stylesheet is still
+ * met by a keyboard and a screen reader.
  */
 const PHONE = '(max-width: 767px)';
 const DESK = '(min-width: 1200px)';

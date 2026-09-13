@@ -1,0 +1,277 @@
+{
+  "id": "taal-sp-medeklinkers",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-medeklinkers-katten",
+      "woord": "katten",
+      "gat": [2, 4],
+      "keuzes": ["t", "tt"],
+      "zin": "De katten spelen met een bal.",
+      "groep": 5,
+      "hulp": "kat-ten"
+    },
+    {
+      "id": "taal-sp-medeklinkers-kippen",
+      "woord": "kippen",
+      "gat": [2, 4],
+      "keuzes": ["p", "pp"],
+      "zin": "De kippen leggen eieren.",
+      "groep": 5,
+      "hulp": "kip-pen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-pannen",
+      "woord": "pannen",
+      "gat": [2, 4],
+      "keuzes": ["n", "nn"],
+      "zin": "Mama zet twee pannen op het fornuis.",
+      "groep": 5,
+      "hulp": "pan-nen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-mannen",
+      "woord": "mannen",
+      "gat": [2, 4],
+      "keuzes": ["n", "nn"],
+      "zin": "Drie mannen dragen de kast.",
+      "groep": 5,
+      "hulp": "man-nen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-poppen",
+      "woord": "poppen",
+      "gat": [2, 4],
+      "keuzes": ["p", "pp"],
+      "zin": "Mijn zus speelt met poppen.",
+      "groep": 5,
+      "hulp": "pop-pen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-zakken",
+      "woord": "zakken",
+      "gat": [2, 4],
+      "keuzes": ["k", "kk"],
+      "zin": "Het meel zit in zakken.",
+      "groep": 5,
+      "hulp": "zak-ken"
+    },
+    {
+      "id": "taal-sp-medeklinkers-ballen",
+      "woord": "ballen",
+      "gat": [2, 4],
+      "keuzes": ["l", "ll"],
+      "zin": "In de gymzaal liggen veel ballen.",
+      "groep": 5,
+      "hulp": "bal-len"
+    },
+    {
+      "id": "taal-sp-medeklinkers-vissen",
+      "woord": "vissen",
+      "gat": [2, 4],
+      "keuzes": ["s", "ss"],
+      "zin": "In de vijver zwemmen vissen.",
+      "groep": 5,
+      "hulp": "vis-sen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-tassen",
+      "woord": "tassen",
+      "gat": [2, 4],
+      "keuzes": ["s", "ss"],
+      "zin": "Zet de tassen maar in de gang.",
+      "groep": 5,
+      "hulp": "tas-sen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-pennen",
+      "woord": "pennen",
+      "gat": [2, 4],
+      "keuzes": ["n", "nn"],
+      "zin": "Mijn pennen zitten in mijn etui.",
+      "groep": 5,
+      "hulp": "pen-nen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-zussen",
+      "woord": "zussen",
+      "gat": [2, 4],
+      "keuzes": ["s", "ss"],
+      "zin": "Ik heb twee zussen.",
+      "groep": 5,
+      "hulp": "zus-sen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-lessen",
+      "woord": "lessen",
+      "gat": [2, 4],
+      "keuzes": ["s", "ss"],
+      "zin": "De lessen beginnen om half negen.",
+      "groep": 5,
+      "hulp": "les-sen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-bakker",
+      "woord": "bakker",
+      "gat": [2, 4],
+      "keuzes": ["k", "kk"],
+      "zin": "De bakker verkoopt taart.",
+      "groep": 5,
+      "hulp": "bak-ker"
+    },
+    {
+      "id": "taal-sp-medeklinkers-wekker",
+      "woord": "wekker",
+      "gat": [2, 4],
+      "keuzes": ["k", "kk"],
+      "zin": "Mijn wekker gaat heel vroeg.",
+      "groep": 5,
+      "hulp": "wek-ker"
+    },
+    {
+      "id": "taal-sp-medeklinkers-ladder",
+      "woord": "ladder",
+      "gat": [2, 4],
+      "keuzes": ["d", "dd"],
+      "zin": "Papa klimt op de ladder.",
+      "groep": 5,
+      "hulp": "lad-der"
+    },
+    {
+      "id": "taal-sp-medeklinkers-kikker",
+      "woord": "kikker",
+      "gat": [2, 4],
+      "keuzes": ["k", "kk"],
+      "zin": "De kikker springt in de sloot.",
+      "groep": 5,
+      "hulp": "kik-ker"
+    },
+    {
+      "id": "taal-sp-medeklinkers-emmer",
+      "woord": "emmer",
+      "gat": [1, 3],
+      "keuzes": ["m", "mm"],
+      "zin": "Vul de emmer met water.",
+      "groep": 5,
+      "hulp": "em-mer"
+    },
+    {
+      "id": "taal-sp-medeklinkers-zwemmen",
+      "woord": "zwemmen",
+      "gat": [3, 5],
+      "keuzes": ["m", "mm"],
+      "zin": "Op vrijdag gaan we zwemmen.",
+      "groep": 5,
+      "hulp": "zwem-men"
+    },
+    {
+      "id": "taal-sp-medeklinkers-rennen",
+      "woord": "rennen",
+      "gat": [2, 4],
+      "keuzes": ["n", "nn"],
+      "zin": "We rennen naar de bus.",
+      "groep": 5,
+      "hulp": "ren-nen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-sommen",
+      "woord": "sommen",
+      "gat": [2, 4],
+      "keuzes": ["m", "mm"],
+      "zin": "Voor rekenen maken we sommen.",
+      "groep": 5,
+      "hulp": "som-men"
+    },
+    {
+      "id": "taal-sp-medeklinkers-maken",
+      "woord": "maken",
+      "gat": [2, 3],
+      "keuzes": ["k", "kk"],
+      "zin": "We gaan een taart maken.",
+      "groep": 5,
+      "hulp": "ma-ken"
+    },
+    {
+      "id": "taal-sp-medeklinkers-koken",
+      "woord": "koken",
+      "gat": [2, 3],
+      "keuzes": ["k", "kk"],
+      "zin": "Papa gaat vanavond koken.",
+      "groep": 5,
+      "hulp": "ko-ken"
+    },
+    {
+      "id": "taal-sp-medeklinkers-lopen",
+      "woord": "lopen",
+      "gat": [2, 3],
+      "keuzes": ["p", "pp"],
+      "zin": "We lopen naar het park.",
+      "groep": 5,
+      "hulp": "lo-pen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-kopen",
+      "woord": "kopen",
+      "gat": [2, 3],
+      "keuzes": ["p", "pp"],
+      "zin": "Ik wil een nieuwe bal kopen.",
+      "groep": 5,
+      "hulp": "ko-pen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-wonen",
+      "woord": "wonen",
+      "gat": [2, 3],
+      "keuzes": ["n", "nn"],
+      "zin": "Wij wonen in een flat.",
+      "groep": 5,
+      "hulp": "wo-nen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-spelen",
+      "woord": "spelen",
+      "gat": [3, 4],
+      "keuzes": ["l", "ll"],
+      "zin": "Na school gaan we buiten spelen.",
+      "groep": 5,
+      "hulp": "spe-len"
+    },
+    {
+      "id": "taal-sp-medeklinkers-praten",
+      "woord": "praten",
+      "gat": [3, 4],
+      "keuzes": ["t", "tt"],
+      "zin": "De juf wil met je praten.",
+      "groep": 5,
+      "hulp": "pra-ten"
+    },
+    {
+      "id": "taal-sp-medeklinkers-hopen",
+      "woord": "hopen",
+      "gat": [2, 3],
+      "keuzes": ["p", "pp"],
+      "zin": "We hopen op mooi weer.",
+      "groep": 5,
+      "hulp": "ho-pen"
+    },
+    {
+      "id": "taal-sp-medeklinkers-dromen",
+      "woord": "dromen",
+      "gat": [3, 4],
+      "keuzes": ["m", "mm"],
+      "zin": "Ik kan heel gek dromen.",
+      "groep": 6,
+      "hulp": "dro-men"
+    },
+    {
+      "id": "taal-sp-medeklinkers-lezen",
+      "woord": "lezen",
+      "gat": [2, 3],
+      "keuzes": ["z", "zz"],
+      "zin": "Ik vind lezen fijn.",
+      "groep": 5,
+      "hulp": "le-zen"
+    }
+  ]
+}

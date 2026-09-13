@@ -20,7 +20,7 @@ import {
   type Onderdeel,
   type Onderwerp,
 } from './onderdelen';
-import { eersteRegio, regiosVan } from './regios';
+import { eersteRegio, regioLabel, regioVraag, regiosVan } from './regios';
 import { onderwerpIcon, regioIcon } from './tegelIcons';
 import {
   formsFor,
@@ -79,11 +79,16 @@ import { useSmallScreen } from '@/features/shell/useSmallScreen';
  *
  * **A set has an address.** leer.nu/topografie/provincies opens on it — on the
  * tile and on the region above it.
+ *
+ * **Taal asks which part first, in the same row** (ADR-118): "Welk deel?" is
+ * the region row with Spelling and Werkwoorden in it, and the ways follow the
+ * part rather than the set.
  */
 export function ModuleScreen({
   module,
   naam,
   setId,
+  regio: adresRegio = null,
   onSet,
   onStart,
   aside,
@@ -93,6 +98,8 @@ export function ModuleScreen({
   readonly naam: string;
   /** Which set the address names, or null for the module's own way in. */
   readonly setId: string | null;
+  /** Which region or part the address names without a set: /werkwoorden. */
+  readonly regio?: string | null;
   /** Puts a set in the address, or takes it out with null. */
   readonly onSet: (setId: string | null) => void;
   readonly onStart: (
@@ -145,7 +152,8 @@ export function ModuleScreen({
   // leer.nu/topografie/provincies opens on Nederland without the address
   // having to carry the word. With neither, the module's own (`eersteRegio`).
   const regios = regiosVan(module.id);
-  const hier = regio ?? adresVak?.regio ?? eersteRegio(module.id, regios);
+  const uitAdres = regios.find((kandidaat) => kandidaat.id === adresRegio)?.id ?? null;
+  const hier = regio ?? adresVak?.regio ?? uitAdres ?? eersteRegio(module.id, regios);
   const onderwerpen =
     regios.length === 0 ? alleOnderwerpen : alleOnderwerpen.filter((vak) => vak.regio === hier);
 
@@ -182,7 +190,8 @@ export function ModuleScreen({
   // the way in becomes multiple choice (ADR-087). Pointing is still on the
   // page, at the end of the row.
   const krap = teDrukOmAanTeWijzen(chosen?.setId ?? null, chosen?.items.length ?? 0, kleinScherm);
-  const aangeboden = offeredForms(formsFor(module.id), chosen?.setId ?? null, krap);
+  // On Taal the ways are the part's, before a subject is chosen (ADR-118).
+  const aangeboden = offeredForms(formsFor(module.id, hier), chosen?.setId ?? null, krap);
   // Before there is a set, a way that is only offered for some sets is not
   // offered yet: a tafeldiploma drawn before the table is a tile that can
   // vanish from under a finger the moment the child picks the Keersommen.
@@ -195,7 +204,7 @@ export function ModuleScreen({
   // The oefentoets is a way of its own (ADR-100). It answers the way a test
   // asks, by typing, and hears back only at the end — so pressing it chooses
   // the way as well, and pressing any other way leaves it.
-  const toetsVorm = toetsVormVan(module.id, forms);
+  const toetsVorm = toetsVormVan(module.id, forms, hier);
   const alsToets = toetsstand && toetsVorm !== null;
   const form = alsToets ? toetsVorm : gekozenManier;
 
@@ -209,8 +218,12 @@ export function ModuleScreen({
   const gekozen = aantal !== null && lengtes.includes(aantal) ? aantal : null;
   const vragen = form === null ? null : questionCount(form, setSize, gekozen);
   const minuten = form === null ? null : minutesFor(form, vragen);
-  /** Everything this module holds, under one name. What a test asks about. */
-  const mix = mixVan(alleOnderwerpen);
+  /**
+   * Everything this module holds, under one name. What a test asks about. The
+   * row's own where it has one — the Werkwoordmix on Werkwoorden — and the
+   * module's first otherwise.
+   */
+  const mix = mixVan(onderwerpen) ?? mixVan(alleOnderwerpen);
   const zin =
     chosen === null || form === null
       ? ''
@@ -233,7 +246,7 @@ export function ModuleScreen({
   const regioNaam = heeftRegio ? regios.find((kandidaat) => kandidaat.id === hier) : undefined;
   const ronde = rondeVan(form, vragen, minuten);
   const gekozenLijst: readonly { readonly label: string; readonly waarde: string }[] = [
-    ...(regioNaam ? [{ label: t('start.kaart'), waarde: t(regioNaam.naam) }] : []),
+    ...(regioNaam ? [{ label: t(regioLabel(module.id)), waarde: t(regioNaam.naam) }] : []),
     ...(onderwerp
       ? [
           {
@@ -329,10 +342,11 @@ export function ModuleScreen({
           ) : null}
         </div>
 
-        {/* Where on the map, and only where there is more than one answer. */}
+        {/* Where on the map, or which part of Taal, and only where there is
+            more than one answer. */}
         {heeftRegio ? (
-          <section className="tk-kies" aria-label={t('regio.title')}>
-            <Stap nummer={stap.regio} label={t('regio.title')} />
+          <section className="tk-kies" aria-label={t(regioVraag(module.id))}>
+            <Stap nummer={stap.regio} label={t(regioVraag(module.id))} />
 
             <div className="tk-keuzes">
               {regios.map((kandidaat) => {

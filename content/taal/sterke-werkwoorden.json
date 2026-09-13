@@ -1,0 +1,11 @@
+{
+  "eten": { "vt": "at", "vtMv": "aten", "vd": "gegeten" },
+  "houden": { "vt": "hield", "vtMv": "hielden", "vd": "gehouden" },
+  "lachen": { "vt": "lachte", "vtMv": "lachten", "vd": "gelachen" },
+  "lopen": { "vt": "liep", "vtMv": "liepen", "vd": "gelopen" },
+  "rijden": { "vt": "reed", "vtMv": "reden", "vd": "gereden" },
+  "vinden": { "vt": "vond", "vtMv": "vonden", "vd": "gevonden" },
+  "weten": { "vt": "wist", "vtMv": "wisten", "vd": "geweten" },
+  "worden": { "vt": "werd", "vtMv": "werden", "vd": "geworden" },
+  "zitten": { "vt": "zat", "vtMv": "zaten", "vd": "gezeten" }
+}

@@ -36,10 +36,51 @@ describe('the addresses', () => {
     // an address, and showing them something else instead of answering is how
     // an app teaches you not to trust its addresses.
     //
-    // This used to be klokkijken, which is now built — the assertion moving to
-    // the next unbuilt module is the plan doing what ADR-051 says it does.
-    const route = routeFor('/woordjes');
+    // This used to be klokkijken and then woordjes, which are now built — the
+    // assertion moving to the next unbuilt module is the plan doing what
+    // ADR-051 says it does.
+    const route = routeFor('/tijdvakken');
     expect(route).toMatchObject({ name: 'soon' });
+  });
+
+  it('opens Taal at the word the rail says, and each part at its own name', () => {
+    // ADR-118. /taal is the address; /spelling and /werkwoorden open Taal on
+    // that part, and /woordjes, the placeholder, opens /taal.
+    const taal = routeFor('/taal');
+    expect(taal).toMatchObject({ name: 'module', setId: null });
+    if (taal.name !== 'module') throw new Error('expected a module');
+    expect(taal.module.id).toBe('woorden');
+    expect(taal).not.toHaveProperty('regio');
+
+    expect(routeFor('/spelling')).toMatchObject({ name: 'module', setId: null, regio: 'spelling' });
+    expect(routeFor('/werkwoorden')).toMatchObject({ regio: 'werkwoorden', setId: null });
+    expect(routeFor('/taal/werkwoorden')).toMatchObject({ regio: 'werkwoorden', setId: null });
+    expect(pathFor(routeFor('/werkwoorden'))).toMatch(/\/taal\/werkwoorden$/);
+
+    const woordjes = routeFor('/woordjes');
+    expect(woordjes).toMatchObject({ name: 'module', setId: null });
+    expect(pathFor(woordjes)).toMatch(/\/taal$/);
+  });
+
+  it('gives every set of Taal an address, and the two mixes their own names', () => {
+    // A table of its own, because both parts have a mix and "mix" could only
+    // have meant one of them.
+    for (const [pad, setId] of [
+      ['/taal/ei-ij', 'taal-sp-eiij'],
+      ['/taal/d-of-t', 'taal-sp-dt'],
+      ['/taal/verkleinwoorden', 'taal-sp-verkleinwoorden'],
+      ['/taal/spellingmix', 'taal-sp-mix'],
+      ['/taal/tegenwoordige-tijd', 'taal-ww-tt'],
+      ['/taal/voltooid-deelwoord', 'taal-ww-vd'],
+      ['/taal/werkwoordmix', 'taal-ww-mix'],
+      ['/taal/werkwoorden-fouten', 'taal-ww-fouten'],
+    ] as const) {
+      expect(routeFor(pad), pad).toMatchObject({ name: 'module', setId });
+      expect(pathFor(routeFor(pad)), pad).toMatch(new RegExp(`${pad}$`));
+    }
+    // A set under an alias, and a set nobody offers.
+    expect(routeFor('/spelling/ei-ij')).toMatchObject({ setId: 'taal-sp-eiij' });
+    expect(routeFor('/taal/mix')).toMatchObject({ name: 'module', setId: null });
   });
 
   it('sends a mistyped path to the front door rather than an error', () => {

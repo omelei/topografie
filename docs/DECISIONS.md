@@ -5367,6 +5367,160 @@ and `diploma-topo-…`, and are premium like every diploma.
 
 ---
 
+## ADR-118 — Taal is the fifth module: spelling and werkwoorden, judged strictly, worked out rather than copied
+
+**Status:** accepted. **Date:** 2026-09-13. The design was decided with the
+product owner, and the items were put to them and approved before this was
+merged (REGISTER R-09).
+
+### Context
+
+The rail has shown Taal since ADR-051 — module id `woorden`, an address that
+answered "binnenkort". A child in groep 5 to 7 brings home words and verb
+forms to learn most weeks, and the owner's first testers are that age. Two
+things about language are true of no module already built. **The letter is
+the answer**: a place may be typed with one slip (ADR-017), because what is
+tested is where it lies, but in spelling the slip is the thing being asked.
+And **a verb form is made by rules**, so content that stores the forms could
+store a wrong one without anybody noticing — the clock's problem with "half
+acht" again (ADR-092).
+
+### Decision
+
+**One page with two parts, asked in the row topography asks where on.**
+/taal is data for the one `ModuleScreen` (ADR-061). "Welk deel?" is the region
+row under another question (`regiosVan`, `eersteRegio`, `regioVraag`):
+Spelling and Werkwoorden, Spelling chosen, which is the row's default in
+ADR-111's sense and the only answer on the page given before the child
+gives one. The ways follow the part rather than the set, so with Spelling
+chosen the page shows spelling's ways before a subject is. Engels will be the
+third part: a row in `TAAL_DELEN`, its ways, and its own way for the
+oefentoets, which is why `TOETS_VORM` is per part now and not per module. It
+is not shown as a chip until it exists, not even one that says "binnenkort".
+
+**Spelling is ten sets under six tiles**: the four kinds of onthoudwoord (ei/ij,
+au/ou, g/ch, c/k) as one tile with chips, d of t, one or two letters (vowels,
+consonants), the three word endings (diminutives, -ig, -lijk) as one tile with
+chips, the Spellingmix and "Oefen je fouten". **Werkwoorden are three tenses**,
+the Werkwoordmix and the mistakes. 330 words and 100 sentences, every one in a
+sentence, chosen and bounded in `content/taal/AFBAKENING.md`, with the
+Woordenlijst as the norm and no claim on a method or a kerndoel (ADR-011).
+
+**The ways, in ADR-112's order, with what is missing said in `forms.ts`.**
+_Kies de letters_ opens the letters that decide and offers only those letters
+as buttons — never a whole word spelled wrong, because a child who sees a wrong
+picture of a word keeps it. A screen reader hears the pieces spelled ("e, i"),
+because "ei" and "ij" are one sound out loud. _Flitsdictee_ shows the word in
+its sentence for three seconds (`FLITS_KIJKTIJD_MS`) and then asks for all of
+it in the gap: kijken, afdekken, schrijven, controleren, with no way back. The
+three seconds start when the sentence takes focus, which is when a screen
+reader reads it out, and the field arrives without a fade for reduced motion.
+_Kies de vorm_ offers three forms of the same verb, all real
+(`werkwoordAfleiders`): "word, wordt, werd", never "wort". _Typ de vorm_ types
+it. _Ontdekken_ is the set with its rule for spelling and the rule cards for
+verbs, each with examples from the set. _Overleven_ chooses, over three lives.
+The _oefentoets_ is the flitsdictee on spelling and the typed form on verbs.
+Kiezen and typen are free; the rest is premium, as everywhere (ADR-112).
+
+**No bliksemronde and no diploma.** This departs from ADR-112's "the
+bliksemronde is on every page". Spelling is thinking and not recognising, and
+a clock on it teaches guessing (business plan v6 §5.8, the second rule). The
+flitsdictee's three seconds are looking time, not answering time: the typing
+after them has no clock. No school hands out a spelling diploma.
+
+**Taal is judged strictly** (`beoordeelWoord`, beside and not inside
+`answer.ts`). Capitals and the spaces around the word do not count; nothing
+else is forgiven — an accent, a trema, an apostrophe or a hyphen is part of
+the word, and one letter out is wrong. The feedback shows what was typed next
+to the word, with the letters that differ marked on both sides
+(`letterVerschil`). The field has autocomplete, autocorrect, autocapitalise
+and the spelling check off, so the device does not spell for the child. For
+Engels the function already takes a word in front (a, an, the, to) and a
+second spelling.
+
+**Verbs are worked out, not copied** (`werkwoordsvorm`): the stem, a t after jij
+and hij unless the stem ends in one or jij stands after the verb, 't kofschip
+on the letter before -en in the infinitive, and ge- with a t or a d, none after
+be-, ver-, ont-, her-, ge- and er-. The content test works every weak form out
+again, so a mistake in a file fails the build. A form no rule makes comes from
+`sterke-werkwoorden.json`, and only those items are marked `sterk`. After a
+wrong answer, and on an explore card, the rule is applied to that item —
+"Hij, zij of het, dus stam + t: word + t = wordt." — worked out in game-core
+(`werkwoordRegel`) and put into words in `features/taal`, the split ADR-092
+made for the clock.
+
+**No sound and no voice.** The Taal rounds have no read-aloud button. It would
+say the word the child is asked to spell, and the browser's better voices send
+the text to a server, which the README promises nothing does. A dictee with a
+voice is a decision of its own.
+
+**Only the catalogue.** No lists of a child's or a parent's own in this step.
+
+**Addresses.** /taal is the word on the rail. /spelling and /werkwoorden open
+Taal on that part — the route carries the part (`regio`) — and /woordjes,
+the placeholder, opens /taal until Engels is there. Every set has an address,
+/taal/ei-ij, /taal/d-of-t, /taal/tegenwoordige-tijd, from a slug table of
+Taal's own: both parts have a mix, and "mix" could only have meant one.
+
+**The spelling row leaves the modules.** Spelling was a module of its own in
+the plan, beside Taal and not in the rail; it is one of Taal's parts now, so it
+is an address and not a row, and its colour tokens go with it. **Tijdvakken is
+history, not language**: it stays unbuilt and no longer sits "under taal",
+which amends ADR-051.
+
+**Around it.** The front door's five starters give Taal one card — ei of ij, by
+choosing — in the place of the second flags card, the world's well-known
+flags, so every module has one and none has two. A test can be set for Taal,
+Onthouden asks which part first, and "Oefen je fouten" appears per part.
+
+### Consequences
+
+A module that asks on a stage still writes a composer and a judge, not a round
+(ADR-101): `useTaalRound` is the fifth on `useRoundCore`. Nine tile marks were
+drawn from §E's primitives. The tests that used woordjes as the example of an
+unbuilt module use tijdvakken. `e2e/taal.spec.ts` plays every way of both
+parts to "Ronde klaar", the flitsdictee with a keyboard alone.
+
+Not built, and deliberately: Engels (a step of its own, which the page and
+`beoordeelWoord` are ready for), Frans and Duits, separable verbs, lists of
+one's own, a voice, duels, a mix across parts, and diplomas for Taal.
+
+---
+
+## ADR-119 — Below 1200 the child's own column is not drawn; the front door keeps the tests
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner;
+the width and what the front door keeps were put to them and chosen.
+
+### Context
+
+ADR-094 put the child's own column beside every page from 1200 and into the
+flow of the page below it. On a phone and a tablet that meant four blocks —
+Jouw toetsen, Jouw reeks, Goed beantwoord, Jouw favorieten — under every module
+page and around the rows of the front door: a long way to scroll to reach
+nothing the page was about.
+
+### Decision
+
+**From 1200 the column stands beside the page, as before. Below 1200 it is not
+drawn** — left out in React (`SideColumn`, `useDesk`) rather than hidden by a
+stylesheet, so a keyboard and a screen reader do not meet it either.
+
+**The front door keeps "Jouw toetsen"**, above its rows. It is the one block
+that is also where a test is planned, and a phone is where a parent often does
+that; the owner chose to keep it there over taking it away too.
+
+### Consequences
+
+Below 1200 the streak, "Goed beantwoord" and the favourites are not shown, and
+the streak's page is reached from a desk or by its address (/reeks). The e2e
+specs look for them at a desk only. `.tk-home-paar`, which put the tests and
+the streak side by side on a tablet, is gone. This supersedes ADR-094's "below
+1200 the blocks go into the flow of the page" and the streak block below 1200
+of ADR-110.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

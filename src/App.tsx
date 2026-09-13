@@ -19,10 +19,15 @@ import { VlagScreen } from '@/features/vlaggen/VlagScreen';
 import { VlagExploreScreen } from '@/features/vlaggen/VlagExploreScreen';
 import type { VlagMode } from '@/features/vlaggen/useVlagRound';
 import { isVlagFouten, isVlagMix } from '@/content/loadVlaggen';
+import { TaalScreen } from '@/features/taal/TaalScreen';
+import { TaalExploreScreen } from '@/features/taal/TaalExploreScreen';
+import type { TaalMode } from '@/features/taal/taalRegels';
+import { isTaalFouten, isTaalMix, taalDeelVan } from '@/content/loadTaal';
 import {
   asKlokMode,
   asPracticeMode,
   asSumMode,
+  asTaalMode,
   asVlagMode,
   type Onderdeel,
 } from '@/features/module/onderdelen';
@@ -48,6 +53,7 @@ import {
   herhaalKaartVorm,
   herhaalKlokVorm,
   herhaalSomVorm,
+  herhaalTaalVorm,
   herhaalVlagVorm,
 } from '@/features/round/herhaal';
 import type { ProfileRecord } from '@/store/db';
@@ -89,7 +95,16 @@ type Screen =
       toetsstand: boolean;
       alleen: readonly string[] | null;
     }
-  | { name: 'vlag-ontdek'; setId: string };
+  | { name: 'vlag-ontdek'; setId: string }
+  | {
+      name: 'taal';
+      setId: string;
+      taalMode: TaalMode;
+      aantal: number | null;
+      toetsstand: boolean;
+      alleen: readonly string[] | null;
+    }
+  | { name: 'taal-ontdek'; setId: string };
 type Boot = { status: 'loading' } | { status: 'ready'; profile: ProfileRecord | null };
 
 /**
@@ -189,6 +204,17 @@ export default function App() {
       setScreen({ name: 'vlag', setId: deel.setId, vlagMode, aantal, toetsstand, alleen });
       return;
     }
+    // Taal explores on a screen of its own too, and asks the way its part
+    // does: letters or words for spelling, forms for verbs (ADR-118).
+    if (deel.moduleId === 'woorden') {
+      if (mode === 'ontdekken' && !isTaalMix(deel.setId) && !isTaalFouten(deel.setId)) {
+        setScreen({ name: 'taal-ontdek', setId: deel.setId });
+        return;
+      }
+      const taalMode = asTaalMode(mode, deel.setId);
+      setScreen({ name: 'taal', setId: deel.setId, taalMode, aantal, toetsstand, alleen });
+      return;
+    }
     if (deel.moduleId === 'klok') {
       const klokMode = asKlokMode(mode);
       setScreen({ name: 'klok', setId: deel.setId, klokMode, aantal, toetsstand, alleen });
@@ -259,6 +285,10 @@ export default function App() {
     } else if (screen.name === 'vlag') {
       const vlagMode = herhaalVlagVorm(screen.vlagMode);
       setScreen({ ...screen, vlagMode, aantal, toetsstand: false, alleen });
+    } else if (screen.name === 'taal') {
+      const deel = taalDeelVan(screen.setId) ?? 'spelling';
+      const taalMode = herhaalTaalVorm(screen.taalMode, deel);
+      setScreen({ ...screen, taalMode, aantal, toetsstand: false, alleen });
     }
   };
 
@@ -364,6 +394,26 @@ export default function App() {
     );
   }
 
+  if (screen.name === 'taal-ontdek') {
+    return <TaalExploreScreen setId={screen.setId} onHome={goHome} />;
+  }
+
+  if (screen.name === 'taal') {
+    return (
+      <TaalScreen
+        key={`${screen.setId}-${screen.taalMode}-${screen.aantal ?? 0}-${visit}`}
+        setId={screen.setId}
+        mode={screen.taalMode}
+        aantal={screen.aantal}
+        toetsstand={screen.toetsstand}
+        onHome={goHome}
+        onAgain={() => setVisit(visit + 1)}
+        alleen={screen.alleen}
+        onHerhaal={herhaal}
+      />
+    );
+  }
+
   if (screen.name === 'practice') {
     return (
       <PracticeScreen
@@ -435,6 +485,7 @@ export default function App() {
           module={route.module}
           naam={boot.profile.naam}
           setId={route.setId}
+          regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
           onStart={beginRonde}
           aside={eigenKolom}

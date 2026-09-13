@@ -1,0 +1,277 @@
+{
+  "id": "taal-sp-klinkers",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-klinkers-bomen",
+      "woord": "bomen",
+      "gat": [1, 2],
+      "keuzes": ["o", "oo"],
+      "zin": "In het park staan hoge bomen.",
+      "groep": 5,
+      "hulp": "bo-men"
+    },
+    {
+      "id": "taal-sp-klinkers-straten",
+      "woord": "straten",
+      "gat": [3, 4],
+      "keuzes": ["a", "aa"],
+      "zin": "De straten zijn nat van de regen.",
+      "groep": 5,
+      "hulp": "stra-ten"
+    },
+    {
+      "id": "taal-sp-klinkers-benen",
+      "woord": "benen",
+      "gat": [1, 2],
+      "keuzes": ["e", "ee"],
+      "zin": "Een spin heeft acht benen.",
+      "groep": 5,
+      "hulp": "be-nen"
+    },
+    {
+      "id": "taal-sp-klinkers-ramen",
+      "woord": "ramen",
+      "gat": [1, 2],
+      "keuzes": ["a", "aa"],
+      "zin": "Mama lapt de ramen.",
+      "groep": 5,
+      "hulp": "ra-men"
+    },
+    {
+      "id": "taal-sp-klinkers-buren",
+      "woord": "buren",
+      "gat": [1, 2],
+      "keuzes": ["u", "uu"],
+      "zin": "Onze buren hebben een hond.",
+      "groep": 5,
+      "hulp": "bu-ren"
+    },
+    {
+      "id": "taal-sp-klinkers-zomer",
+      "woord": "zomer",
+      "gat": [1, 2],
+      "keuzes": ["o", "oo"],
+      "zin": "In de zomer is het warm.",
+      "groep": 5,
+      "hulp": "zo-mer"
+    },
+    {
+      "id": "taal-sp-klinkers-water",
+      "woord": "water",
+      "gat": [1, 2],
+      "keuzes": ["a", "aa"],
+      "zin": "De eend zwemt in het water.",
+      "groep": 5,
+      "hulp": "wa-ter"
+    },
+    {
+      "id": "taal-sp-klinkers-tafel",
+      "woord": "tafel",
+      "gat": [1, 2],
+      "keuzes": ["a", "aa"],
+      "zin": "Het boek ligt op de tafel.",
+      "groep": 5,
+      "hulp": "ta-fel"
+    },
+    {
+      "id": "taal-sp-klinkers-boter",
+      "woord": "boter",
+      "gat": [1, 2],
+      "keuzes": ["o", "oo"],
+      "zin": "Op mijn brood zit boter.",
+      "groep": 5,
+      "hulp": "bo-ter"
+    },
+    {
+      "id": "taal-sp-klinkers-jaren",
+      "woord": "jaren",
+      "gat": [1, 2],
+      "keuzes": ["a", "aa"],
+      "zin": "Dat was jaren geleden.",
+      "groep": 5,
+      "hulp": "ja-ren"
+    },
+    {
+      "id": "taal-sp-klinkers-rozen",
+      "woord": "rozen",
+      "gat": [1, 2],
+      "keuzes": ["o", "oo"],
+      "zin": "In de vaas staan rode rozen.",
+      "groep": 5,
+      "hulp": "ro-zen"
+    },
+    {
+      "id": "taal-sp-klinkers-vogel",
+      "woord": "vogel",
+      "gat": [1, 2],
+      "keuzes": ["o", "oo"],
+      "zin": "Op het dak zit een vogel.",
+      "groep": 5,
+      "hulp": "vo-gel"
+    },
+    {
+      "id": "taal-sp-klinkers-zeven",
+      "woord": "zeven",
+      "gat": [1, 2],
+      "keuzes": ["e", "ee"],
+      "zin": "Een week heeft zeven dagen.",
+      "groep": 5,
+      "hulp": "ze-ven"
+    },
+    {
+      "id": "taal-sp-klinkers-muren",
+      "woord": "muren",
+      "gat": [1, 2],
+      "keuzes": ["u", "uu"],
+      "zin": "De muren van mijn kamer zijn blauw.",
+      "groep": 5,
+      "hulp": "mu-ren"
+    },
+    {
+      "id": "taal-sp-klinkers-peren",
+      "woord": "peren",
+      "gat": [1, 2],
+      "keuzes": ["e", "ee"],
+      "zin": "Ik eet graag peren.",
+      "groep": 5,
+      "hulp": "pe-ren"
+    },
+    {
+      "id": "taal-sp-klinkers-boom",
+      "woord": "boom",
+      "gat": [1, 3],
+      "keuzes": ["o", "oo"],
+      "zin": "In de tuin staat een boom.",
+      "groep": 5,
+      "hulp": "boom"
+    },
+    {
+      "id": "taal-sp-klinkers-maan",
+      "woord": "maan",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Vannacht schijnt de maan.",
+      "groep": 5,
+      "hulp": "maan"
+    },
+    {
+      "id": "taal-sp-klinkers-straat",
+      "woord": "straat",
+      "gat": [3, 5],
+      "keuzes": ["a", "aa"],
+      "zin": "Ik woon in een drukke straat.",
+      "groep": 5,
+      "hulp": "straat"
+    },
+    {
+      "id": "taal-sp-klinkers-raam",
+      "woord": "raam",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Kijk eens uit het raam.",
+      "groep": 5,
+      "hulp": "raam"
+    },
+    {
+      "id": "taal-sp-klinkers-uur",
+      "woord": "uur",
+      "gat": [0, 2],
+      "keuzes": ["u", "uu"],
+      "zin": "Het duurt nog een uur.",
+      "groep": 5,
+      "hulp": "uur"
+    },
+    {
+      "id": "taal-sp-klinkers-muur",
+      "woord": "muur",
+      "gat": [1, 3],
+      "keuzes": ["u", "uu"],
+      "zin": "Op de muur hangt een klok.",
+      "groep": 5,
+      "hulp": "muur"
+    },
+    {
+      "id": "taal-sp-klinkers-jaar",
+      "woord": "jaar",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Ik ben negen jaar.",
+      "groep": 5,
+      "hulp": "jaar"
+    },
+    {
+      "id": "taal-sp-klinkers-zeep",
+      "woord": "zeep",
+      "gat": [1, 3],
+      "keuzes": ["e", "ee"],
+      "zin": "Was je handen met zeep.",
+      "groep": 5,
+      "hulp": "zeep"
+    },
+    {
+      "id": "taal-sp-klinkers-week",
+      "woord": "week",
+      "gat": [1, 3],
+      "keuzes": ["e", "ee"],
+      "zin": "Over een week is het vakantie.",
+      "groep": 5,
+      "hulp": "week"
+    },
+    {
+      "id": "taal-sp-klinkers-kaas",
+      "woord": "kaas",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Ik eet een broodje kaas.",
+      "groep": 5,
+      "hulp": "kaas"
+    },
+    {
+      "id": "taal-sp-klinkers-brood",
+      "woord": "brood",
+      "gat": [2, 4],
+      "keuzes": ["o", "oo"],
+      "zin": "De bakker bakt vers brood.",
+      "groep": 5,
+      "hulp": "brood"
+    },
+    {
+      "id": "taal-sp-klinkers-vuur",
+      "woord": "vuur",
+      "gat": [1, 3],
+      "keuzes": ["u", "uu"],
+      "zin": "Het vuur in de haard is warm.",
+      "groep": 6,
+      "hulp": "vuur"
+    },
+    {
+      "id": "taal-sp-klinkers-haar",
+      "woord": "haar",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Mijn zus heeft lang haar.",
+      "groep": 5,
+      "hulp": "haar"
+    },
+    {
+      "id": "taal-sp-klinkers-peer",
+      "woord": "peer",
+      "gat": [1, 3],
+      "keuzes": ["e", "ee"],
+      "zin": "Wil je een appel of een peer?",
+      "groep": 5,
+      "hulp": "peer"
+    },
+    {
+      "id": "taal-sp-klinkers-naam",
+      "woord": "naam",
+      "gat": [1, 3],
+      "keuzes": ["a", "aa"],
+      "zin": "Schrijf je naam op het blad.",
+      "groep": 5,
+      "hulp": "naam"
+    }
+  ]
+}

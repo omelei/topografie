@@ -106,10 +106,11 @@ describe('the page', () => {
     expect(vlagSetNaam({ regio: 'nederland', onderwerp: 'provincies' })).toBe('Provincievlaggen');
   });
 
-  it('offers two ways into flags among the five a new child starts with', () => {
+  it('offers one way into flags among the five a new child starts with', () => {
+    // Two until Taal took the second one, so every module has one (ADR-118).
     const lijst = starters();
     expect(lijst).toHaveLength(5);
-    expect(lijst.filter((entry) => entry.deel.moduleId === 'vlaggen')).toHaveLength(2);
+    expect(lijst.filter((entry) => entry.deel.moduleId === 'vlaggen')).toHaveLength(1);
   });
 });
 

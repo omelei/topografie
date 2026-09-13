@@ -1,0 +1,247 @@
+{
+  "id": "taal-sp-gch",
+  "deel": "spelling",
+  "contentVersie": "2026-09-13",
+  "items": [
+    {
+      "id": "taal-sp-gch-lachen",
+      "woord": "lachen",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "We moeten hard lachen om de clown.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-zacht",
+      "woord": "zacht",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Het kussen is heel zacht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-slecht",
+      "woord": "slecht",
+      "gat": [3, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "Het weer is slecht vandaag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-licht",
+      "woord": "licht",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Doe het licht maar uit.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-nacht",
+      "woord": "nacht",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Uilen jagen in de nacht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-echt",
+      "woord": "echt",
+      "gat": [1, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "Is die ring echt van goud?",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-kracht",
+      "woord": "kracht",
+      "gat": [3, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "Een olifant heeft veel kracht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-gracht",
+      "woord": "gracht",
+      "gat": [3, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "De boot vaart door de gracht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-toch",
+      "woord": "toch",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Je komt toch ook op mijn feest?",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-pech",
+      "woord": "pech",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "We hebben pech: de band is lek.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-vechten",
+      "woord": "vechten",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "De twee katten vechten om een vis.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-lucht",
+      "woord": "lucht",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Er vliegt een vogel door de lucht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-ochtend",
+      "woord": "ochtend",
+      "gat": [1, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "In de ochtend eet ik mijn ontbijt.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-dochter",
+      "woord": "dochter",
+      "gat": [2, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "De buurvrouw heeft een dochter van acht.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-juichen",
+      "woord": "juichen",
+      "gat": [3, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "Alle kinderen juichen als we winnen.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-vragen",
+      "woord": "vragen",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Mag ik je iets vragen?",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-berg",
+      "woord": "berg",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "We klimmen op een hoge berg.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-dag",
+      "woord": "dag",
+      "gat": [2, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "Het was een mooie dag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-weg",
+      "woord": "weg",
+      "gat": [2, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "De weg naar school is niet lang.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-vlag",
+      "woord": "vlag",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Op het dak wappert een vlag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-hoog",
+      "woord": "hoog",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "De toren is heel hoog.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-laag",
+      "woord": "laag",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "De zon staat al laag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-oog",
+      "woord": "oog",
+      "gat": [2, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "Er zit iets in mijn oog.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-mager",
+      "woord": "mager",
+      "gat": [2, 3],
+      "keuzes": ["g", "ch"],
+      "zin": "De kat is lang en mager.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-wieg",
+      "woord": "wieg",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "De baby slaapt in de wieg.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-deeg",
+      "woord": "deeg",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Van het deeg bakken we koekjes.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-leeg",
+      "woord": "leeg",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Mijn glas is al leeg.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-zorg",
+      "woord": "zorg",
+      "gat": [3, 4],
+      "keuzes": ["g", "ch"],
+      "zin": "Ik zorg goed voor mijn konijn.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-vroeg",
+      "woord": "vroeg",
+      "gat": [4, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "Ik sta elke dag vroeg op.",
+      "groep": 7
+    },
+    {
+      "id": "taal-sp-gch-ploeg",
+      "woord": "ploeg",
+      "gat": [4, 5],
+      "keuzes": ["g", "ch"],
+      "zin": "Ons voetbalteam is een sterke ploeg.",
+      "groep": 7
+    }
+  ]
+}

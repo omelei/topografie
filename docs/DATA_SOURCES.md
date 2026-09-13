@@ -269,3 +269,14 @@ hierboven, dus met de bron zelf als vindplaats en niet met een blogpost.
 **OpenStreetMap wordt niet gebruikt.** ODbL is besmettelijk voor afgeleide
 databases en dit is een commercieel product; spec §3.2 wijst dat om die reden
 al af.
+
+## Taal — woorden en zinnen
+
+- **Bron:** eigen werk van leer.nu. De 330 spellingwoorden, de 100 werkwoordzinnen
+  en de indeling in sets zijn door ons gekozen en geschreven, en op 13 september
+  2026 door de product owner goedgekeurd (ADR-118).
+- **Norm voor de spelling:** de Woordenlijst Nederlandse Taal (het Groene Boekje).
+  Een woord waarover we twijfelden, staat er niet in.
+- **Geen methode en geen kerndoel:** er is niets overgenomen uit een lesmethode, en
+  er wordt geen aansluiting op een kerndoel geclaimd (ADR-011).
+- **Wat erin staat en waarom:** `content/taal/AFBAKENING.md`.
