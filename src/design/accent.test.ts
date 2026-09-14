@@ -53,6 +53,10 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   // The start bar is all of those answers at once, on the module's soft ground
   // with its colour down the leading edge (ADR-095). Its label is in the
   // module's text colour; the chips on it are ink.
+  // Vandaag (ADR-126): de voordeur had geen primaire actie, en dit is hem. Het
+  // is dezelfde vorm als de startbalk om dezelfde reden — hier begint een ronde
+  // — en buiten een module is de accentkleur de groene nadruk.
+  ['.tk-vandaag', 'the one thing to do today'],
   ['.tk-startbalk', 'the answers already given, together'],
   ['.tk-startbalk-label', 'the answers already given, together'],
   // The rail is where the module entrance does most of its work: a column of

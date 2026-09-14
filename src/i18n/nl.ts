@@ -44,6 +44,15 @@ export const nl = {
   // niemand nog leest en die bij de volgende ronde toch wordt meegewogen.
   // Wat je net gedaan hebt, met het cijfer erbij. Een logboek, geen ranglijst:
   // het staat er in de volgorde waarin het gebeurde en telt niets bij elkaar op.
+  // "Vandaag": het dagplan (ADR-126). Het getal is van het kind zelf en staat
+  // er dus ook zonder code; het plan eronder is waar premium voor is.
+  'vandaag.titel': 'Vandaag herhalen',
+  'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeet.',
+  'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeet.',
+  'vandaag.eenVraag': 'Er is 1 vraag die je bijna vergeet.',
+  'vandaag.vragen': 'Er zijn {aantal} vragen die je bijna vergeet.',
+  'vandaag.ronde': '{aantal} vragen',
+
   'home.recentTitle': 'Recent geoefend',
   'home.recentNone': 'Nog niets geoefend. Na je eerste ronde staat het hier.',
   'home.recentOutOf': '{goed} van de {totaal} goed',
@@ -206,6 +215,7 @@ export const nl = {
   'retention.aantal': 'Aantal',
   'retention.procentGoed': '% goed',
   'retention.procent': '{procent}%',
+  'retention.overDrieWeken': 'Over 3 weken',
   'retention.laatst': 'Laatst geoefend',
   'retention.vandaag': 'vandaag',
   'retention.dagGeleden': '1 dag geleden',
@@ -562,6 +572,8 @@ export const nl = {
   'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
+  'premium.wat.vandaag':
+    'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
   'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
   'premium.wat.jij':
     'De diploma’s voor vlaggen, klok en topo, de badges, en meer dan één kind op dit apparaat.',
@@ -1099,6 +1111,13 @@ export const nl = {
   // velden die een naam op een apparaat veranderen in een vindbaar kind.
   'you.title': 'Jij',
   'you.nameIs': 'Je oefent als {naam}.',
+  // De persoon bovenaan Jij (ADR-126), met de naam die tot nu toe nergens te
+  // veranderen was.
+  'you.who': 'Wie oefent hier?',
+  'you.nameChange': 'Naam wijzigen',
+  'you.nameSave': 'Bewaren',
+  'you.nameCancel': 'Laat maar',
+
   'you.children': 'Wie oefent er?',
   'you.practisingNow': 'oefent nu',
   'you.switchTo': 'Geef {naam} de beurt',

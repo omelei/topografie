@@ -541,6 +541,7 @@ export default function App() {
         onReeks={goReeks}
         onBegin={beginRonde}
         onVerder={maakAf}
+        onPlan={maakAf}
       />
     </Shell>
   );

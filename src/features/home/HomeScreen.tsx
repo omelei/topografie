@@ -19,6 +19,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { ReeksBlok } from './ReeksBlok';
+import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { FavorietenBlok, GoedBlok } from './SideColumn';
 import { ToetsenBlok } from './ToetsenBlok';
@@ -75,9 +76,15 @@ export interface HomeScreenProps {
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
   /** An unfinished round, picked up: the same set and way, asking only the rest. */
   readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
+  /**
+   * Een geplande ronde: dezelfde set, dezelfde manier, en alleen de onderdelen
+   * die vandaag aan de beurt zijn (ADR-126). Dat is wat "Maak af" ook doet, met
+   * een andere reden — daar is de rest van een ronde, hier wat je bijna vergeet.
+   */
+  readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
 }
 
-export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps) {
+export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const desk = useDesk();
@@ -100,6 +107,10 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
     </div>
   );
 
+  // Bovenaan, boven alles: het is het enige blok dat zegt wat er nú te doen is
+  // (ADR-126). De rijen eronder zijn geschiedenis.
+  const vandaag = <VandaagBlok alles={alles} gespeeld={gespeeld} onPlan={onPlan} />;
+
   const rijen = (
     <>
       <Populairst populair={populair} onBegin={onBegin} />
@@ -118,6 +129,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
       <div className="tk-home">
         <div className="tk-home-main">
           {kop}
+          {vandaag}
           {rijen}
         </div>
 
@@ -135,6 +147,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
   return (
     <div className="tk-home">
       {kop}
+      {vandaag}
       {toetsen}
       {rijen}
     </div>
