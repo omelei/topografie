@@ -585,6 +585,7 @@ export const nl = {
   'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
+  'premium.wat.lijsten': 'De lijst van school zelf intypen, en je kind oefent hem als flitsdictee.',
   'premium.wat.bericht':
     'Hoe de week ging: of er geoefend is, wat er blijft hangen, en wat er wacht.',
   'premium.wat.vandaag':
@@ -1167,6 +1168,25 @@ export const nl = {
   'you.premiumAan': 'Premium staat aan tot en met {datum}.',
   'you.premiumVandaag': 'Vandaag is de laatste dag van premium.',
   // Het weekbericht: de week gelezen in plaats van geteld (ADR-133).
+  'onderwerp.taal.eigen': 'Eigen woorden',
+  'onderwerp.taal.eigen.uitleg': 'De lijst die je zelf hebt ingevoerd.',
+  'onderwerp.taal.eigen.keuze': 'Welke lijst?',
+  // Eigen woordenlijsten (ADR-135).
+  'you.lijstenTitel': 'Eigen woorden',
+  'you.lijstenUitleg': 'Typ de lijst van school over. Je kind oefent hem als flitsdictee.',
+  'you.lijstenGeen': 'Je hebt nog geen lijst.',
+  'you.lijstenNieuw': 'Nieuwe lijst',
+  'you.lijstenNaam': 'Naam van de lijst',
+  'you.lijstenNaamHint': 'Bijvoorbeeld: Week 12',
+  'you.lijstenMaak': 'Lijst maken',
+  'you.lijstenWoord': 'Woord',
+  'you.lijstenWoordToe': 'Woord toevoegen',
+  'you.lijstenWoordWeg': '{woord} weghalen',
+  'you.lijstenWeg': 'Lijst weghalen',
+  'you.lijstenAantal': '{aantal} woorden',
+  'you.lijstenAantalEen': '1 woord',
+  'you.lijstenVol': 'Deze lijst is vol.',
+  'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
   'you.berichtTitel': 'Hoe gaat het?',

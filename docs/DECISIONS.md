@@ -6438,8 +6438,8 @@ andere.
 
 ### Context
 
-Leitner beantwoordt één vraag — *wanneer moet dit terugkomen* — en die vraag is
-niet de enige die een ronde stelt. De tweede is *hoe moeilijk mag het nu zijn*,
+Leitner beantwoordt één vraag — _wanneer moet dit terugkomen_ — en die vraag is
+niet de enige die een ronde stelt. De tweede is _hoe moeilijk mag het nu zijn_,
 en daar had dit product geen antwoord op. `ROUND_MIX` was één vaste verhouding
 (70% aan de beurt, 20% nieuw, 10% opfrissen), voor elk kind, elke ronde, hoe het
 ook ging.
@@ -6487,7 +6487,7 @@ Veertien tests, waarvan twee over gedrag en niet over de tabel: een kind dat
 worstelt krijgt aantoonbaar minder nieuwe vragen dan een kind dat vlot gaat, en
 de voorspelling zegt hetzelfde als de ronde doet.
 
-**Niet hier besloten:** meebewegen *binnen* een ronde. Een ronde is een vaste
+**Niet hier besloten:** meebewegen _binnen_ een ronde. Een ronde is een vaste
 lijst — "maak af" hangt daaraan — en dat veranderen is een andere beslissing.
 
 ---
@@ -6578,6 +6578,66 @@ niet stuk zonder AudioContext en niet als het afspelen zelf mislukt.
 De rondehooks lezen nu een voorkeur en dus de store. `useRoundCore.test.tsx`
 vervangt die voorkeur zoals het `rewardStore` al verving — wat dat bestand test
 is wanneer de kern schrijft, niet of er een toon klinkt.
+
+---
+
+## ADR-135 — De lijst van school wordt een gewone set
+
+**Status:** accepted. **Date:** 2026-09-14. Punt 8 van de roadmap.
+
+### Context
+
+Elke basisschool geeft een eigen woordenlijst mee, elke week een andere, en geen
+enkel product kan die allemaal bevatten. Het is tegelijk het duidelijkste
+antwoord op "waarom zou ik hiervoor betalen": het huiswerk van déze week.
+
+### Decision
+
+**Een ingetypte lijst is een `Onderdeel`, net als elke andere set.** Dat is de
+hele beslissing. Daarmee krijgt hij de Leitner-dozen, de onthoudtabel, het
+dagplan en het toetsvooruitzicht zonder dat één van die vier hoeft te weten dat
+deze woorden niet uit een bestand komen.
+
+**In localStorage en niet in IndexedDB.** Niet uit gemak: `onderdelen()` is
+synchroon en wordt door het halve product aangeroepen, dus een lijst die
+asynchroon binnenkomt zou overal een laadmoment introduceren en op de eerste
+frame ontbreken. Premium staat er om dezelfde reden (ADR-116). Het hoort ook bij
+het apparaat en niet bij één kind: de lijst van school is voor iedereen in huis
+die hem moet leren.
+
+**Het id van een woord hangt aan het woord en niet aan zijn plek in de lijst.**
+`taal-eigen-<lijst>-<woord>`. Een ouder die er een woord tussenuit haalt,
+verschuift anders elke doos eronder en draagt "fiets" ineens de voortgang van
+"trein". Hetzelfde woord kan daarom ook maar één keer in een lijst: twee
+onderdelen met hetzelfde id zouden één doos delen.
+
+**De enige vorm is het flitsdictee.** Een woord van school heeft geen gat en geen
+keuzes — die kan een ouder niet schrijven en dat horen we ook niet te vragen. Het
+flitsdictee laat het woord even zien en laat het dan typen, en dat ís een dictee.
+"Kies de letters", "Ontdekken" en "Overleven" vragen alle drie naar de letters
+die beslissen en staan er dus niet, via `geldtVoor` — absent en niet uitgezet,
+zoals ADR-061 wil.
+
+**Eén tegel met een chip per lijst**, om dezelfde reden als de tafels er één zijn
+met twaalf: wat een kind hier kiest is telkens hetzelfde soort ding. De naam van
+een tegel is een vertaalsleutel en de naam van een lijst is wat een ouder typte,
+dus draagt de tegel de vaste naam en dragen de chips de getypte namen.
+
+**Premium**, en het invoerscherm staat op "Jij" naast het weekbericht en de
+instellingen: dit is invoerwerk voor een volwassene. De ingebouwde spellingsets
+blijven gratis, zoals alle inhoud gratis blijft (ADR-124).
+
+### Consequences
+
+Tien tests over de opslag, waarvan er twee over het id gaan — het enige stukje
+dat echt kapot kan. `woordlijsten.spec.ts` typt een lijst in, vindt hem terug op
+de taalpagina, controleert dat alleen het flitsdictee wordt aangeboden, en kijkt
+of het onderwerp weer verdwijnt als de lijst weg is: een deur naar een lege kamer
+is erger dan geen deur.
+
+**Niet hier besloten:** een lijst delen tussen apparaten of met een andere ouder.
+Dat vraagt een server en dus een plek waar het huiswerk van een kind terechtkomt,
+en die is er met opzet niet.
 
 ---
 

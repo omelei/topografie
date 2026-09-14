@@ -10,6 +10,7 @@ import {
   type TaalSet,
 } from '@/content/loadTaal';
 import { KIES_VORM, type TaalMode } from '@/features/taal/taalRegels';
+import { itemId, leesLijsten, setIdVan } from '@/store/woordlijsten';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
 import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
 import { loadVlagSet, loadVlagSets, type VlagOnderwerp, type VlagSet } from '@/content/loadVlaggen';
@@ -636,6 +637,44 @@ function taalOnderdelen(): Onderdeel[] {
   return loadTaalSets().map(taalOnderdeel);
 }
 
+/**
+ * De lijsten die een ouder zelf intypte, als gewone sets (ADR-135).
+ *
+ * Ze zien er hier precies zo uit als een ingebouwde set, en dat is het hele
+ * punt: daarmee krijgen ze de Leitner-dozen, de onthoudtabel, het dagplan en
+ * het toetsvooruitzicht zonder dat één van die vier hoeft te weten dat deze
+ * woorden niet uit een bestand komen.
+ *
+ * Een woord van school heeft geen gat en geen keuzes — die kan een ouder niet
+ * schrijven en horen ook niet gevraagd te worden. Daarom is de enige vorm het
+ * flitsdictee (`forms.ts`): het woord staat er even, en dan typ je het. Dat is
+ * ook precies wat een dictee op school is. `gat` en `keuzes` staan op het hele
+ * woord zodat het type klopt; niets leest ze voor deze sets.
+ *
+ * `zin` is het woord zelf. `zinDelen` vindt het woord daarin terug en zet er
+ * het veld neer, dus een kind ziet één woord in plaats van een zin met een gat.
+ */
+function eigenOnderdelen(): Onderdeel[] {
+  return leesLijsten()
+    .filter((lijst) => lijst.woorden.length > 0)
+    .map((lijst) => ({
+      moduleId: 'woorden' as const,
+      setId: setIdVan(lijst.id),
+      naam: null,
+      literalNaam: lijst.naam,
+      kortNaam: null,
+      mix: false,
+      items: lijst.woorden.map((woord) => ({
+        id: itemId(lijst.id, woord),
+        woord,
+        gat: [0, woord.length] as readonly [number, number],
+        keuzes: [woord],
+        zin: woord,
+      })),
+      roundSize: ROUND_SIZE.taal,
+    }));
+}
+
 /** The mix, or the list of mistakes, of each part that has sets. */
 function taalSamengesteld(ids: Readonly<Record<TaalDeel, string>>): Onderdeel[] {
   return Object.values(ids)
@@ -759,7 +798,40 @@ function taalOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
 
   // A subject with nothing in it is a card that opens onto nothing: a set not
   // written yet takes its subject with it.
-  return [...vakken.filter((vak) => vak.sets.length > 0), ...taalFouten(known)];
+  return [
+    ...vakken.filter((vak) => vak.sets.length > 0),
+    ...eigenOnderwerp(),
+    ...taalFouten(known),
+  ];
+}
+
+/**
+ * De eigen lijsten, als één onderwerp met een chip per lijst (ADR-135).
+ *
+ * Eén tegel en niet één per lijst, om dezelfde reden als de tafels er één zijn
+ * met twaalf chips: wat een kind hier kiest is telkens hetzelfde soort ding.
+ * De naam van een tegel is een vertaalsleutel en de naam van een lijst is wat
+ * een ouder typte — dus draagt de tegel de vaste naam en dragen de chips de
+ * getypte namen.
+ *
+ * Geen lijsten, geen tegel: een onderwerp dat op niets uitkomt is een deur naar
+ * een lege kamer.
+ */
+function eigenOnderwerp(): Onderwerp[] {
+  const sets = eigenOnderdelen();
+  if (sets.length === 0) return [];
+
+  return [
+    {
+      moduleId: 'woorden',
+      id: 'eigen-lijsten',
+      naam: 'onderwerp.taal.eigen',
+      uitleg: 'onderwerp.taal.eigen.uitleg',
+      keuze: sets.length > 1 ? 'onderwerp.taal.eigen.keuze' : null,
+      regio: 'spelling',
+      sets,
+    },
+  ];
 }
 
 /**
@@ -804,6 +876,7 @@ export function onderdelen(): Onderdeel[] {
     ...klokOnderdelen(),
     ...vlagOnderdelen(),
     ...taalOnderdelen(),
+    ...eigenOnderdelen(),
   ];
 }
 
@@ -822,6 +895,7 @@ export function startbareOnderdelen(): Onderdeel[] {
     ...(klok === null ? [] : [klok]),
     ...loadVlagSets().map(vlagOnderdeel),
     ...taalOnderdelen(),
+    ...eigenOnderdelen(),
     ...taalSamengesteld(TAAL_MIX),
     ...taalSamengesteld(TAAL_FOUTEN),
   ];

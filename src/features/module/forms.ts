@@ -20,6 +20,7 @@ import {
 import { t, type TranslationKey } from '@/i18n';
 import { isVlagFouten, isVlagMix } from '@/content/loadVlaggen';
 import { isTaalFouten, isTaalMix } from '@/content/loadTaal';
+import { isEigenSet } from '@/store/woordlijsten';
 import { TAAL_ROUND_RULE } from '@/features/taal/taalRegels';
 import { loadItemSets } from '@/content/loadSets';
 import {
@@ -461,6 +462,11 @@ export const SPELLING_FORMS: readonly PracticeForm[] = [
     icon: ChoiceIcon,
     rule: TAAL_ROUND_RULE['taal-letters'],
     seconds: 8,
+    // Niet op een eigen lijst (ADR-135). Deze vorm laat kiezen tussen de letters
+    // die beslissen, en die staan in het bestand naast het woord. Een ouder die
+    // de lijst van school intypt schrijft geen gaten, en dat horen we ook niet
+    // te vragen: het flitsdictee eronder is wat een dictee op school is.
+    geldtVoor: (setId) => !isEigenSet(setId),
   },
   {
     id: 'taal-flitsdictee',
@@ -477,7 +483,9 @@ export const SPELLING_FORMS: readonly PracticeForm[] = [
     icon: ExploreIcon,
     rule: null,
     seconds: null,
-    geldtVoor: (setId) => !isTaalMix(setId) && !isTaalFouten(setId),
+    // Ontdekken laat de regel achter een set zien. Achter de lijst van school
+    // zit geen regel: het zijn de woorden van deze week.
+    geldtVoor: (setId) => !isTaalMix(setId) && !isTaalFouten(setId) && !isEigenSet(setId),
   },
   {
     id: 'overleven',
@@ -486,6 +494,8 @@ export const SPELLING_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: TAAL_ROUND_RULE.overleven,
     seconds: null,
+    // Overleven vraagt de letters, net als "Kies de letters" hierboven.
+    geldtVoor: (setId) => !isEigenSet(setId),
   },
 ];
 

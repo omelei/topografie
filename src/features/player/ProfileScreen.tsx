@@ -16,6 +16,7 @@ import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
 import { Weekbericht } from './Weekbericht';
+import { EigenLijsten } from './EigenLijsten';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
@@ -94,6 +95,11 @@ export function ProfileScreen({
             achter een abonnement is niet "hoeveel rondes" maar "gaat het goed"
             (ADR-133). De rondes worden één keer gelezen en door beide gebruikt. */}
         <Weekbericht afgemaakt={afgemaakt} now={now} />
+
+        {/* De lijst van school, ingetypt door een ouder (ADR-135). Naast het
+            weekbericht en de instellingen, want dit is invoerwerk voor een
+            volwassene en geen scherm voor een kind. */}
+        <EigenLijsten />
 
         <Prijzenkast />
 
