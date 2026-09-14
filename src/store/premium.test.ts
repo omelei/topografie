@@ -1,11 +1,15 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   activeer,
+  dagenGeldig,
   isActief,
+  isVerlopen,
   leesStand,
   normaliseerCode,
   PREMIUM_SLEUTEL,
   sleutelKoppen,
+  verlooptBinnenkort,
+  WAARSCHUW_VANAF_DAGEN,
   type PremiumStand,
 } from './premium';
 
@@ -73,5 +77,56 @@ describe('a premium code', () => {
     expect(await activeer('LEER-7K3M-Q9TX')).toEqual({ ok: false, reden: 'niet-ingesteld' });
     expect(await activeer('   ')).toEqual({ ok: false, reden: 'leeg' });
     expect(leesStand()).toBeNull();
+  });
+});
+
+/** Het einde van een jaar zien aankomen (ADR-129). */
+describe('een code die afloopt', () => {
+  function stand(geldigTot: string, gecontroleerd: string): PremiumStand {
+    return { code: '7K3MQ9TX', geldigTot, gecontroleerd };
+  }
+
+  const nu = new Date('2027-09-14T10:00:00');
+
+  it('telt de laatste dag als nul en niet als verlopen', () => {
+    const vandaagLaatste = stand('2027-09-14', nu.toISOString());
+    expect(dagenGeldig(vandaagLaatste, nu)).toBe(0);
+    expect(isVerlopen(vandaagLaatste, nu)).toBe(false);
+    expect(verlooptBinnenkort(vandaagLaatste, nu)).toBe(true);
+  });
+
+  it('is verlopen vanaf de dag erna', () => {
+    const gisteren = stand('2027-09-13', nu.toISOString());
+    expect(dagenGeldig(gisteren, nu)).toBe(-1);
+    expect(isVerlopen(gisteren, nu)).toBe(true);
+    expect(verlooptBinnenkort(gisteren, nu)).toBe(false);
+  });
+
+  it('waarschuwt binnen een maand en daarvoor niet', () => {
+    const net = stand('2027-10-14', nu.toISOString());
+    expect(dagenGeldig(net, nu)).toBe(WAARSCHUW_VANAF_DAGEN);
+    expect(verlooptBinnenkort(net, nu)).toBe(true);
+
+    const nogNiet = stand('2027-10-15', nu.toISOString());
+    expect(verlooptBinnenkort(nogNiet, nu)).toBe(false);
+  });
+
+  /**
+   * De belangrijkste. `isActief` staat ook uit als de server twee weken niet
+   * bereikbaar was, en dat is geen verlopen abonnement. Tegen een ouder zeggen
+   * dat zijn code verlopen is terwijl hij nog een half jaar loopt, is erger dan
+   * niets zeggen.
+   */
+  it('verwart een onbereikbare server niet met een verlopen code', () => {
+    const langGeleden = stand('2028-09-14', '2027-08-01T10:00:00.000Z');
+    expect(isActief(langGeleden, nu)).toBe(false);
+    expect(isVerlopen(langGeleden, nu)).toBe(false);
+    expect(verlooptBinnenkort(langGeleden, nu)).toBe(false);
+  });
+
+  it('zegt niets zonder code, en niet over een onleesbare datum', () => {
+    expect(dagenGeldig(null, nu)).toBeNull();
+    expect(isVerlopen(null, nu)).toBe(false);
+    expect(dagenGeldig(stand('geen datum', nu.toISOString()), nu)).toBeNull();
   });
 });

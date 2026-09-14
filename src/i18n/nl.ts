@@ -502,6 +502,12 @@ export const nl = {
   'premium.codeGebruiken': 'Code gebruiken',
   'premium.bezig': 'Even kijken…',
   'premium.aan': 'Premium staat aan op dit apparaat, tot en met {datum}.',
+  // Het einde van een jaar, aangekondigd in plaats van afgewacht (ADR-129).
+  'premium.bijnaAf':
+    'Je code loopt af op {datum}. Verleng hem voor die dag, dan merkt er thuis niemand iets van.',
+  'premium.verlopen':
+    'Je code is afgelopen op {datum}. Alles wat je kinderen geoefend hebben staat gewoon op dit apparaat en komt terug zodra je verlengt.',
+  'premium.verlengen': 'Premium verlengen',
   'premium.afmelden': 'Code van dit apparaat halen',
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
@@ -1155,6 +1161,12 @@ export const nl = {
   // Premium op dit apparaat, voor de volwassene die de code heeft (ADR-116).
   'you.premium': 'Premium',
   'you.premiumAan': 'Premium staat aan tot en met {datum}.',
+  'you.premiumVandaag': 'Vandaag is de laatste dag van premium.',
+  'you.premiumMorgen': 'Premium loopt morgen af.',
+  'you.premiumBijna': 'Premium loopt af op {datum}, over {dagen} dagen.',
+  'you.premiumVerlopen':
+    'Premium is afgelopen op {datum}. De voortgang van je kinderen staat er nog.',
+  'you.premiumVerleng': 'Premium verlengen',
   'you.premiumUit': 'Premium staat nog niet aan op dit apparaat.',
   'you.premiumBekijk': 'Naar premium',
 

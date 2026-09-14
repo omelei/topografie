@@ -6297,6 +6297,70 @@ voor de ouder schuift op tot een kind terugkomt om over te berichten.
 
 ---
 
+## ADR-129 — Een jaar loopt af, en dat wordt aangekondigd in plaats van afgewacht
+
+**Status:** accepted. **Date:** 2026-09-14. Punt 8 van de roadmap bij ADR-126,
+naar voren gehaald omdat het de enige stap was die op niets wachtte.
+
+### Context
+
+Een code is een jaar geldig. `isActief` klapte om van waar naar onwaar op de dag
+ná `geldigTot`, en verder gebeurde er niets. Het gevolg voor een gezin dat
+betaald heeft: op een willekeurige dinsdag is het dagplan weg, valt de
+onthoudtabel terug naar zijn preview en verdwijnt het toetsvooruitzicht. Geen
+melding vooraf, geen melding achteraf.
+
+Erger nog is wat de premiumpagina dan laat zien. `actief && stand` was onwaar,
+dus kreeg de ouder `Aanbod` — **exact dezelfde koude verkooppagina als iemand
+die nog nooit van premium had gehoord**. Iemand die een jaar betaald heeft is
+geen vreemde, en het moment waarop hij het merkt is precies het moment waarop hij
+denkt dat de voortgang van zijn kinderen weg is.
+
+Dat is niet waar, en het is het sterkste argument om te verlengen: alles staat
+in IndexedDB op het apparaat en gaat nergens heen als een code afloopt (ADR-015).
+Het stond alleen nergens.
+
+### Decision
+
+**Binnen dertig dagen voor het einde staat er wat er gaat gebeuren**, op `/jij`
+en op de premiumpagina — de twee plekken waar een ouder komt. Niet op een scherm
+van een kind: dat is niet hun rekening.
+
+Dertig dagen, want dat is lang genoeg om er rustig over te doen en kort genoeg om
+over dít jaar te gaan. Eerder waarschuwen maakt er een reclameboodschap van die
+elf maanden lang in de weg staat.
+
+**Verlopen is een eigen toestand**, met een eigen zin en een eigen knop
+("Premium verlengen"), en met de mededeling dat de voortgang er nog staat. Het
+aanbod staat eronder, want verlengen ís kopen — maar het staat niet meer alléén.
+
+**`isVerlopen` is met opzet iets anders dan `!isActief`.** Die laatste staat ook
+uit als de server veertien dagen onbereikbaar was (`ZONDER_VERBINDING_DAGEN`), en
+dat is geen verlopen abonnement maar een vakantiehuis zonder wifi. Tegen een
+ouder zeggen dat zijn code verlopen is terwijl die nog een half jaar loopt, is
+het ergste wat dit scherm kan doen — en het is precies de fout die je maakt als
+je de bestaande functie hergebruikt omdat hij er toch al staat. Dat verschil is
+de vierde test.
+
+**Gerekend van middag tot middag.** `geldigTot` is een kalenderdag en geen
+moment; met middernacht als anker haalt de zomertijd er een dag bij of af. De
+laatste dag zelf telt als nul en niet als verlopen, met een eigen zin: "over 0
+dagen" is geen Nederlands en "over 1 dagen" is erger.
+
+### Consequences
+
+`dagenGeldig`, `isVerlopen` en `verlooptBinnenkort` zijn puur en staan naast
+`isActief` in `store/premium.ts`, met vijf tests. `verlopen.spec.ts` zet een
+code neer die bijna om is en een die om is, en kijkt wat er dan op beide
+pagina's staat.
+
+**Niet hier besloten:** een e-mail sturen als een code afloopt. Dat kan — de
+kassa heeft Resend al — maar het betekent het e-mailadres van een ouder bewaren
+naast de bestelling, en dat is een aparte afweging over bewaartermijnen die deze
+beslissing niet nodig heeft. Wat hier staat werkt zonder dat iemand iets bewaart.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
