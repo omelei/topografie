@@ -550,16 +550,16 @@ export const nl = {
   'premium.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
   'premium.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'premium.fout.niet-ingesteld': 'Premium is nog niet beschikbaar.',
-  // De kassa (ADR-123). Het bedrag staat hier niet: het staat op de kassapagina
-  // zelf, op één plek, zodat een prijs die verandert niet op twee plekken uit
-  // elkaar kan lopen.
-
   // Wat er staat waar een premiumblok zou staan, zonder code (ADR-124). Elk
   // slot zegt wat dát ding doet: "dit hoort bij premium" meldt een deur en niet
   // wat erachter zit, en daar koopt niemand iets van. De knop gaat naar de
   // uitleg, niet naar een codeveld — wie hier staat heeft meestal geen code.
-  'premium.slot': 'Dit hoort bij premium.',
   'premium.slotKnop': 'Bekijk premium',
+  // Wat er in de naam van een tegel staat die naar de premiumpagina gaat
+  // (ADR-125). Een tegel die de hele kiezer vervangt hoort dat te zeggen
+  // voordat hij wordt ingedrukt; op het scherm zie je de pagina veranderen,
+  // in een naam die eindigt op het kale woord "Premium" stond het nergens.
+  'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
   'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',

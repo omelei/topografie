@@ -17,31 +17,25 @@ import { useNaarPremium } from './usePremium';
  * één zin over wat dít ding voor je doet. Wie niets te zeggen heeft over wat er
  * achter de deur zit, hoort er ook geen deur te zetten.
  *
+ * Sinds ADR-125 is `wat` verplicht in plaats van een sleutel met een terugval
+ * op "Dit hoort bij premium". Een regel die met één weggelaten prop te omzeilen
+ * is, is over een halfjaar geen regel meer; het type is de goedkoopste plek om
+ * hem te bewaken, en de zin waarop teruggevallen werd bestaat niet meer.
+ * `PremiumSectie` stond hier ook nog — een kop met een slot eronder — en had
+ * sinds ADR-124 geen enkele gebruiker: elk blok dat premium is tekent zichzelf
+ * zonder code niet.
+ *
  * **De knop past bij wie ervoor staat.** "Code invullen" veronderstelt dat je al
  * gekocht hebt, en dat is bijna niemand die dit leest. De weg is naar de pagina
  * die uitlegt wat premium is; daar staat het codeveld voor wie er wel een heeft.
  */
-export function PremiumSectie({
-  titel,
-  wat,
-}: {
-  readonly titel: string;
-  readonly wat?: TranslationKey | undefined;
-}) {
-  return (
-    <section className="flex flex-col gap-3" aria-label={titel}>
-      <h2 className="tk-sectie">{titel}</h2>
-      <PremiumSlot wat={wat} />
-    </section>
-  );
-}
-
 export function PremiumSlot({
   kaal = false,
   wat,
 }: {
   readonly kaal?: boolean;
-  readonly wat?: TranslationKey | undefined;
+  /** Wat dít ding voor je doet, in één zin. Verplicht: zie hierboven. */
+  readonly wat: TranslationKey;
 }) {
   const naarPremium = useNaarPremium();
 
@@ -49,7 +43,7 @@ export function PremiumSlot({
     <div className={kaal ? 'flex flex-col gap-3' : 'tk-card flex flex-col gap-3'}>
       <p className="flex flex-wrap items-center gap-2 text-tekst-secundair">
         <PremiumLabel hoorbaar />
-        {t(wat ?? 'premium.slot')}
+        {t(wat)}
       </p>
       <button
         type="button"

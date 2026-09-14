@@ -57,6 +57,18 @@ describe('premium', () => {
     expect(metPremium('Oefentoets', true)).toBe('Oefentoets. Premium');
     expect(metPremium('Meerkeuze', false)).toBe('Meerkeuze');
   });
+
+  it('says where a locked tile goes, because pressing it leaves the page', () => {
+    // ADR-125. Een premiumtegel is niet uitgeschakeld: hij vervangt de hele
+    // kiezer door de premiumpagina, en een naam die eindigt op het kale woord
+    // "Premium" kondigde dat niet aan.
+    expect(metPremium('Oefentoets', true, false)).toBe(
+      'Oefentoets. Premium. Je gaat naar de premiumpagina.',
+    );
+    // Met code is er nergens heen te sturen, dus staat het woord er weer alleen.
+    expect(metPremium('Oefentoets', true, true)).toBe('Oefentoets. Premium');
+    expect(metPremium('Meerkeuze', false, false)).toBe('Meerkeuze');
+  });
 });
 
 describe('the map a page opens on', () => {

@@ -68,7 +68,15 @@ export function isPremiumOnderwerp(id: string): boolean {
  * An accessible name with the label on the end, so a screen reader hears it
  * after what the tile is — the name still leads, and a query anchored on it
  * still finds it.
+ *
+ * **Zonder code zegt hij wat indrukken doet** (ADR-125). Een premiumtegel is
+ * niet uitgeschakeld: hij vervangt de hele kiezer door de premiumpagina. Op het
+ * scherm is dat tenminste te zien — de pagina verandert onder je ogen — maar
+ * het woord "Premium" op zichzelf zei nergens dat een druk je ergens heen
+ * brengt, en wie met een schermlezer werkt stond op de nieuwe pagina zonder
+ * dat iets had aangekondigd dat hij de kiezer verliet.
  */
-export function metPremium(label: string, premium: boolean): string {
-  return premium ? `${label}. ${t('premium.label')}` : label;
+export function metPremium(label: string, premium: boolean, actief = true): string {
+  if (!premium) return label;
+  return actief ? `${label}. ${t('premium.label')}` : `${label}. ${t('premium.tegelSlot')}`;
 }
