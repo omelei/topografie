@@ -22,6 +22,7 @@ import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store
 import { recordRoundFinished } from '@/store/streakStore';
 import { usePreferences } from '@/features/player/settings';
 import { speelUitkomst } from '@/features/round/geluid';
+import { klimVan, type Klim } from '@/features/round/klim';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 import type { AnswerLayer } from './MapCanvas';
 
@@ -420,6 +421,8 @@ export interface RoundState {
   readonly combo: number;
   readonly chosenId: string | null;
   readonly lastCorrect: boolean;
+  /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
+  readonly klim: Klim | null;
   /** Present after a typed answer: how it was judged (ADR-017). */
   readonly verdict: AnswerVerdict | null;
   /** Items answered wrongly, for the result screen. */
@@ -508,6 +511,7 @@ export function useRound(
   const [phase, setPhase] = useState<RoundPhase>('loading');
   const [chosenId, setChosen] = useState<string | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
+  const [klim, setKlim] = useState<Klim | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -686,6 +690,8 @@ export function useRound(
       setChosen(params.chosenForMap);
       setVerdict(params.judged);
       setLastCorrect(correct);
+      // De motor, zichtbaar gemaakt (ADR-137). Alleen omhoog — zie `klim.ts`.
+      setKlim(klimVan(previous, nextState, correct));
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
       speelUitkomst(correct, geluidAan);
       setPhase('revealed');
@@ -948,6 +954,7 @@ export function useRound(
     combo,
     chosenId,
     lastCorrect,
+    klim,
     verdict,
     missed,
     gained: Math.max(

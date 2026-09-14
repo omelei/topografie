@@ -21,6 +21,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
+import { Klim } from '@/features/round/Klim';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
 import { TaalResultScreen } from './TaalResultScreen';
@@ -296,6 +297,8 @@ function Vraag({
                   <p className="tk-display text-sectiekop">{kop}</p>
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
+                  {/* Wat dit antwoord met dit woord deed (ADR-137). */}
+                  {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
               <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>

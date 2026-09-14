@@ -3439,6 +3439,53 @@
     background: var(--kaart);
     color: var(--inkt);
   }
+  /* De trap die een goed antwoord oplevert (ADR-137). Vijf treden naast een
+   * zin, klein en op één regel: het is terugkoppeling naast de uitkomst en
+   * niet een blok op zichzelf.
+   *
+   * **Inkt en geen accent**, hoewel dit een voortgangsbalk is en die volgens
+   * §B een accent mag dragen. Drie redenen: er staat een woord naast, dus de
+   * kleur hoeft niets te betekenen; het uitkomstteken ernaast is al groen of
+   * gearceerd, en een derde kleur in dezelfde regel is ruis; en `accent.test.ts`
+   * waarschuwt precies voor de redenering waarmee je hem hier wél zou zetten —
+   * elke stap ziet er op zichzelf uit als een verbetering. Vol tegen leeg is
+   * bovendien ook een vorm, niet alleen een kleur (§A). */
+  .tk-klim {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-klim-trap {
+    display: inline-flex;
+    gap: 3px;
+  }
+  .tk-klim-trede {
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--rand);
+    border-radius: 2px;
+    background: transparent;
+  }
+  .tk-klim-trede[data-vol='ja'] {
+    border-color: var(--inkt);
+    background: var(--inkt);
+  }
+  .tk-klim-woord {
+    color: var(--tekst-secundair);
+  }
+  .tk-klim[data-onthouden='ja'] .tk-klim-woord {
+    color: var(--tekst);
+    font-weight: 600;
+  }
+  /* Alleen de nieuwe trede beweegt, en alleen als beweging welkom is. Wie hem
+   * uitzet ziet dezelfde trap, even vol. */
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-klim-trede[data-nieuw='ja'] {
+      animation: tk-klim-trede 300ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+  }
+
   /* Het teken komt aan in plaats van te verschijnen (ADR-134). Een uitkomst die
    * er ineens staat, wordt gelezen; een die beweegt, wordt gezien — en dat
    * scheelt de halve seconde waarin een kind anders zelf moet uitzoeken of het
@@ -3499,6 +3546,17 @@
 /* Het uitkomstteken, dat aankomt (ADR-134). Iets voorbij honderd procent en dan
  * terug: dat leest als iets dat landt, waar een rechte schaal leest als iets
  * dat groeit. */
+@keyframes tk-klim-trede {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 @keyframes tk-teken-aan {
   from {
     transform: scale(0.6);

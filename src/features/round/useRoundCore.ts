@@ -11,6 +11,7 @@ import {
 } from '@/game-core';
 import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { recordRoundFinished } from '@/store/streakStore';
+import { klimVan, type Klim } from './klim';
 import { usePreferences } from '@/features/player/settings';
 import { speelUitkomst } from './geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
@@ -100,6 +101,8 @@ export interface RondeKern<S, Q, T, A> {
   readonly combo: number;
   readonly given: A | null;
   readonly lastCorrect: boolean;
+  /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
+  readonly klim: Klim | null;
   readonly missed: readonly T[];
   /** How many more of the set the child now remembers. Never negative. */
   readonly gained: number;
@@ -127,6 +130,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState<A | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
+  const [klim, setKlim] = useState<Klim | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [combo, setCombo] = useState(0);
@@ -215,6 +219,9 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
       setGiven(antwoord.given);
       setLastCorrect(correct);
+      // De motor, zichtbaar gemaakt (ADR-137): dit onderdeel schuift een trede
+      // op en komt daardoor later terug. Alleen omhoog — zie `klim.ts`.
+      setKlim(klimVan(previous, nextState, correct));
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
       speelUitkomst(correct, geluidAan);
       setPhase('revealed');
@@ -361,6 +368,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     combo,
     given,
     lastCorrect,
+    klim,
     missed,
     gained: Math.max(0, countMastered(states, itemIds) - masteredAtStart.current),
     rule,

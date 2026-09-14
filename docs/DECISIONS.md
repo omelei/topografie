@@ -6699,6 +6699,74 @@ doorheen.
 
 ---
 
+## ADR-137 — De motor wordt zichtbaar: elk goed antwoord klimt een trede
+
+**Status:** accepted. **Date:** 2026-09-14. Gevraagd door de product owner: "de
+app voelt te statisch".
+
+### Context
+
+Dat is een scherpere klacht dan "meer gamification", en hij klopt. Dit product
+toont overal een **stand** en nergens een **verandering**: hoeveel je onthoudt,
+wat er klaarstaat, hoe de week ging, welke diploma's je hebt. Allemaal
+momentopnamen.
+
+Ondertussen draait er wel degelijk iets. Elk goed antwoord schuift een onderdeel
+een Leitner-doos op, waardoor het later terugkomt en langer blijft hangen. Dat is
+de hele motor van leer.nu — en een kind heeft hem nog nooit gezien. De dozen
+komen in geen enkele zin naar het kind toe voor; het woord "doos" staat alleen in
+commentaar.
+
+Er is dus een beweging die er al is, die betekenis heeft, en die niemand ziet.
+Dat is een betere plek om te beginnen dan een dertiende beloningssysteem.
+
+### Decision
+
+**Na een goed antwoord klimt het onderdeel zichtbaar een trede**, op een trap van
+vijf, met één zin ernaast.
+
+**Alleen omhoog.** Een fout antwoord zet een onderdeel terug naar doos één, en
+dat te zien geven zou straffen. ADR-048 maakt het niet weten overal goedkoop —
+geen leven, geen doos, geen stempel — en een zichtbare val draait dat in één
+beeld terug. Bij een fout antwoord staat er niets; het uitkomstteken en het goede
+antwoord zijn de terugkoppeling die daar hoort.
+
+**Geen nummers en geen "doos".** Dat is het woord van het algoritme en niet van
+een kind. Wat een kind ziet is dat er iets vol loopt, en wat het leest is dat het
+dit steeds beter kent.
+
+**De vierde trede is een grens die al bestond.** `ONTHOUDEN_BOX` is waar dit
+product "dit onthoud je" zegt, op de onthoudpagina en op de modulepagina. Daar
+verandert de zin. Het is dus geen nieuw beloninkje maar het moment waarop iets
+dat al gold, waar wordt.
+
+**Een onderdeel dat nog nooit gezien is komt van de grond af**, niet uit doos
+één: `emptyState` zet de doos alvast op één, en dan zou de eerste goede beurt een
+stap van één naar twee lijken terwijl het er twee zijn.
+
+**Inkt en geen accent**, hoewel dit een voortgangsbalk is en die volgens §B een
+accent mag dragen. Er staat een woord naast, dus de kleur hoeft niets te
+betekenen; het uitkomstteken ernaast is al groen of gearceerd, en een derde kleur
+in dezelfde regel is ruis. En `accent.test.ts` waarschuwt precies voor de
+redenering waarmee je hem hier wél zou zetten — elke stap ziet er op zichzelf uit
+als een verbetering. De guard ving dit; de allow-list blijft zoals hij was.
+
+### Consequences
+
+`klim.ts` is puur en heeft vijf tests, waarvan de eerste de regel is die het
+meest kan afglijden: bij een fout antwoord komt er niets terug.
+
+De stap komt uit beide rondehooks, dus alle vijf de modules hebben hem in één
+keer. `klim.spec.ts` speelt een echte ronde en kijkt of er iets beweegt — en of
+er bij een fout antwoord niets staat.
+
+**Niet hier besloten:** de rest van het antwoord op "te statisch". Het dagplan dat
+slinkt terwijl je werkt, een ronde met een aangekondigd einde, de prijzenkast die
+zich vult op het moment zelf in plaats van achteraf, en een dagdoel dat een kind
+zelf zet. Dit is de eerste omdat het de enige is die de motor zelf laat zien.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -8,6 +8,7 @@ import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
+import { Klim } from '@/features/round/Klim';
 import { ResultScreen } from './ResultScreen';
 import {
   choosesTheAnswer,
@@ -254,6 +255,8 @@ export function PracticeScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
+                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
+                  {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
 

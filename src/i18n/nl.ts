@@ -1189,6 +1189,10 @@ export const nl = {
   'you.lijstenVol': 'Deze lijst is vol.',
   'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
   // De ouderpagina, losgetrokken van "Jij" (ADR-136).
+  // De trap na een goed antwoord (ADR-137). Geen "doos": dat is het woord van
+  // het algoritme en niet van een kind.
+  'klim.beter': 'Je kent dit steeds beter.',
+  'klim.onthouden': 'Dit onthoud je nu.',
   'ouder.title': 'Voor ouders',
   'ouder.uitleg': 'Hoe het gaat, de lijst van school, en wat je geregeld hebt.',
   'ouder.naar': 'Voor ouders',
