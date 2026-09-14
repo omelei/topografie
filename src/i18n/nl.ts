@@ -162,10 +162,12 @@ export const nl = {
   'nav.home': '{merk}, naar Vandaag',
   'nav.destinations': 'Waar je heen kunt',
   // Het vakmenu onder de balk op een tablet en een telefoon, waar de rail niet
-  // staat. Het woord ervoor zegt wat je kiest; de knop zegt welk vak het is,
-  // of vraagt erom waar je nog in geen vak bent.
-  'nav.vak': 'vak',
-  'nav.vakKies': 'Kies een vak',
+  // staat. De knop zegt welk vak je open hebt; waar je in geen vak bent noemt
+  // hij wat hij doet, want daar is hij de weg naar een ronde (ADR-121). De naam
+  // voor een schermlezer zet het woord "vak" voor het vak, omdat "Topo" alleen
+  // niet zegt waarvan het er een is.
+  'nav.vakKies': 'Oefenen',
+  'nav.vakHuidig': 'vak {vak}',
   'nav.vandaag': 'Vandaag',
   'nav.onthouden': 'Onthouden',
   'nav.vrienden': 'Vrienden',
@@ -464,10 +466,10 @@ export const nl = {
   'start.nogKiezen': 'Nog even kiezen',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
-  // Premium (ADR-111, ADR-116, ADR-121): een code die een ouder één keer
+  // Premium (ADR-111, ADR-116, ADR-122): een code die een ouder één keer
   // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
   //
-  // De knip staat sinds ADR-121 tussen oefenen en onthouden, en de intro zegt
+  // De knip staat sinds ADR-122 tussen oefenen en onthouden, en de intro zegt
   // hem in die volgorde: eerst wat gratis is en blijft, dan waar premium over
   // gaat. Andersom leest elke zin als een muur.
   'premium.label': 'Premium',
@@ -487,7 +489,7 @@ export const nl = {
   'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp en door de weken heen',
   'premium.functie.fouten': 'Oefen je fouten: alles wat ooit fout ging, bij elkaar',
   // De bliksemronde en overleven zijn geen extraatjes maar een controle: ze
-  // slaan pas ergens op als je het al kent (ADR-121).
+  // slaan pas ergens op als je het al kent (ADR-122).
   'premium.functie.manieren':
     'De bliksemronde en overleven: kun je het ook snel, en hou je het vol?',
   'premium.functie.toets':
@@ -1032,7 +1034,7 @@ export const nl = {
   'result.gainedOne': 'Eén vraag meer die je nu onthoudt.',
   'result.gainedMany': '{aantal} vragen meer die je nu onthoudt.',
   'result.gainedNone': 'Nog niets erbij. Deze komen morgen terug.',
-  // De voorspelling, gratis en zonder code (ADR-121). Dezelfde woorden als op
+  // De voorspelling, gratis en zonder code (ADR-122). Dezelfde woorden als op
   // de voordeur, want het is dezelfde som: wat er over is als je niets doet.
   // Geen knop ernaast naar premium — een kind een slot voorhouden op de pagina
   // waar het net iets goed deed, is precies wat PremiumSlot niet doet.

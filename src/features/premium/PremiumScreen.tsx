@@ -5,7 +5,7 @@ import { activeer, meldAf, type PremiumReden } from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
- * Everything premium opens, with what it is for at the top (ADR-121): the two
+ * Everything premium opens, with what it is for at the top (ADR-122): the two
  * that keep a record over weeks come first, then the two ways of checking
  * yourself, then what a family gets for the year.
  */

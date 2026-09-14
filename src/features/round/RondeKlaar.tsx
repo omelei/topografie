@@ -26,7 +26,7 @@ import { HerhaalFouten } from './HerhaalFouten';
  * - **the round in numbers**, as tiles: how many were right, how many more the
  *   child now remembers, and after an oefentoets the mark — with one sentence
  *   under them saying what changed, which is the one thing a child could not
- *   have counted themselves, and since ADR-121 one saying what is left of this
+ *   have counted themselves, and since ADR-122 one saying what is left of this
  *   subject in three weeks, which is the one thing nobody can count at all;
  * - **the way on**, straight after that and before anything that can be long:
  *   another round, "herhaal je fouten", or back to the front door;
@@ -220,7 +220,7 @@ const DRIE_WEKEN_MS = 21 * 86_400_000;
 
 /**
  * What is left of this subject in three weeks, under the round's own numbers
- * (ADR-121).
+ * (ADR-122).
  *
  * Free, and on purpose: it is the one sentence in this product that is about
  * what happens if you do nothing, and a forecast a family cannot see is a

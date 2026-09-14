@@ -8,7 +8,7 @@ import { t } from '@/i18n';
  * went wrong — exactly those, straight away, while the child still remembers
  * getting them wrong (ADR-111).
  *
- * Free since ADR-121. It was premium, with the collected list of mistakes on
+ * Free since ADR-122. It was premium, with the collected list of mistakes on
  * the module page; the two were separated because this one asks only about the
  * round that has just ended. Locking it put the paywall on the exact moment a
  * child is most able to learn something, which is the opposite of what the

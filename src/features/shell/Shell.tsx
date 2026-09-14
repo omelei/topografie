@@ -26,7 +26,10 @@ import { VakMenu } from './VakMenu';
  * opens into the same list, and the destinations lie along the bottom where a
  * thumb is. A tablet used to get the rail lying along the bottom and the
  * destinations in the app bar; the handoff swaps them, so both kinds of device
- * in a child's hand are held the same way.
+ * in a child's hand are held the same way. That one control is stuck to the top
+ * of the glass and the app bar above it is not (ADR-121): the way to a vak is
+ * the thing worth keeping within reach the whole way down a page, and the mark
+ * and the streak are the thing worth spending the height on.
  *
  * Exactly one of each pair is displayed at any width — rail or menu, app bar
  * row or tab bar — so nothing is offered twice. Which one is CSS: the menu's
@@ -142,8 +145,13 @@ export function Shell({
         {bar}
       </header>
 
+      {/* The vak menu, and the box that keeps it on the glass (ADR-121). The
+          sticky is here rather than inside VakMenu because a sticky box can
+          only travel inside its containing block: on the component's own root
+          that block is this wrapper, which is exactly as tall as the menu, and
+          it would not move at all. Here the block is the page's column. */}
       {showModules ? (
-        <div className="flex-none desk:hidden">
+        <div className="tk-vakmenu-houder flex-none desk:hidden">
           <VakMenu modules={modules} current={currentModule} onModule={onModule} />
         </div>
       ) : null}

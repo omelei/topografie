@@ -114,7 +114,7 @@ describe('the ways of practising', () => {
   });
 
   it('opens every page on a way that is free', () => {
-    // Until ADR-121 the free ways happened to come first and the premium ones
+    // Until ADR-122 the free ways happened to come first and the premium ones
     // last, and this test asserted that. It is no longer true and should not
     // be: the tafeldiploma is free and stands last, where the order of the ways
     // puts a diploma (ADR-112), and ontdekken is free and stands in the middle.
@@ -127,7 +127,7 @@ describe('the ways of practising', () => {
     }
   });
 
-  it('leaves ontdekken and the tafeldiploma free wherever they appear (ADR-121)', () => {
+  it('leaves ontdekken and the tafeldiploma free wherever they appear (ADR-122)', () => {
     for (const forms of ALLE) {
       for (const form of forms) {
         if (form.id === 'ontdekken' || form.id === 'tafeldiploma') {

@@ -1,11 +1,11 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 
 /**
- * Premium behind a code (ADR-116, ADR-121): without one the premium parts are
+ * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
  * locked and every lock leads to the code; with one they open, and what went to
  * the server was the code and a device number, nothing else.
  *
- * ADR-121 moved the line to between practising and remembering, so this spec
+ * ADR-122 moved the line to between practising and remembering, so this spec
  * also holds the other way round: ontdekken, "herhaal je fouten", the
  * tafeldiploma's and the forecast on "Ronde klaar" are there without a code.
  *
@@ -77,7 +77,7 @@ test('without a code the premium parts are locked, and every lock leads to the c
   );
 
   // On Jij: the badges and the second child are locked. The tafeldiploma's are
-  // not — they are the one wall a family gets without a code (ADR-121).
+  // not — they are the one wall a family gets without a code (ADR-122).
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toContainText(
     'Dit hoort bij premium.',
@@ -97,7 +97,7 @@ test('without a code a child can still discover, repeat their misses, and see th
   await signIn(page, 'Sam');
 
   // Ontdekken is a way now, not a lock: it asks nothing, so it can never be
-  // the thing a child is turned away from (ADR-121).
+  // the thing a child is turned away from (ADR-122).
   await page.goto('/topografie');
   await page
     .getByRole('region', { name: /Kies een onderwerp/ })

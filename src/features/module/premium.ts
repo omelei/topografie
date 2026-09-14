@@ -2,9 +2,9 @@ import type { ModeId } from '@/game-core';
 import { t } from '@/i18n';
 
 /**
- * What premium opens (ADR-111, ADR-112, ADR-116, ADR-121).
+ * What premium opens (ADR-111, ADR-112, ADR-116, ADR-122).
  *
- * Since ADR-121 the line is drawn between **oefenen** and **onthouden**.
+ * Since ADR-122 the line is drawn between **oefenen** and **onthouden**.
  * Practising is free, all of it: finding the place, the clock or the flag that
  * goes with a name, meerkeuze, typing the answer, and — new — **ontdekken**,
  * which is where a child meets an item before anybody asks them anything. So
@@ -26,7 +26,7 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'klok-welke-klok',
   'vlag-zoeken',
   // Ontdekken: the first meeting with an item, which asks nothing and so can
-  // never be the thing a child is turned away from (ADR-121).
+  // never be the thing a child is turned away from (ADR-122).
   'ontdekken',
   // Meerkeuze. On Taal: the letters of the gap, or one of three forms.
   'meerkeuze',
@@ -41,7 +41,7 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'klok-typen',
   'taal-flitsdictee',
   'taal-vorm-typen',
-  // The one diploma that is free (ADR-121): the tafeltoets is the thing a
+  // The one diploma that is free (ADR-122): the tafeltoets is the thing a
   // Dutch child already wants before they meet this app, and it is the moment
   // a parent photographs. The other three stay premium.
   'tafeldiploma',
@@ -57,7 +57,7 @@ export function isPremiumVorm(id: ModeId): boolean {
  * and `*-fouten`. Premium because it is a record kept across rounds.
  *
  * Not to be confused with "Herhaal je fouten" on the result page, which is free
- * since ADR-121: that one asks about the round that just ended and nothing
+ * since ADR-122: that one asks about the round that just ended and nothing
  * else, so it belongs to the round rather than to the record.
  */
 export function isPremiumOnderwerp(id: string): boolean {

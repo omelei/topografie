@@ -262,7 +262,7 @@ export default function App() {
    * round just finished got wrong and nothing else — as practice, with the
    * answers shown, in a way that has a length (`round/herhaal.ts`).
    *
-   * Free since ADR-121, unlike the collected list of mistakes on the module
+   * Free since ADR-122, unlike the collected list of mistakes on the module
    * page: this one reaches no further than the round a child has just played,
    * so it is part of that round rather than a record kept across weeks — and
    * going back over what you just got wrong is the mechanism the product is

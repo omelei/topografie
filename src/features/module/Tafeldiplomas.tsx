@@ -22,7 +22,7 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * diploma. On the child's own page the same wall is shown, not pressed — it is
  * where the badges are (ADR-112).
  *
- * Free since ADR-121, alone among the four diplomas. It is the one a Dutch
+ * Free since ADR-122, alone among the four diplomas. It is the one a Dutch
  * child already wants before they meet this app, and the moment a parent
  * photographs — which is the only way this product travels by word of mouth.
  * The vlaggen-, klok- and topodiploma stay premium (ADR-117).

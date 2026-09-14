@@ -240,13 +240,33 @@ describe('the shell', () => {
     expect(lijst.getByRole('button', { name: 'Topo' })).toHaveFocus();
   });
 
-  it('asks for a module where none is open', () => {
+  it('names its own job where no module is open', () => {
+    // ADR-121: where you are in no vak the control is not a read-out but the
+    // way to a round, and it says so — on its face and to a screen reader.
     render(
       <Shell modules={MODULES} destinations={DESTINATIONS}>
         <p>vandaag</p>
       </Shell>,
     );
 
-    expect(screen.getByRole('button', { name: 'vak Kies een vak' })).toBeInTheDocument();
+    const knop = screen.getByRole('button', { name: 'Oefenen' });
+    expect(knop).toHaveTextContent('Oefenen');
+    expect(knop).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('is stuck to the top of the glass below 1200', () => {
+    // The sticky lives on the wrapper in Shell, not on the menu's own root: a
+    // sticky box travels only inside its containing block, and on the root that
+    // block is the wrapper itself. jsdom applies no stylesheet, so what is
+    // checked is that the class the rule hangs on is where it has to be.
+    render(
+      <Shell modules={MODULES} destinations={DESTINATIONS}>
+        <p>vandaag</p>
+      </Shell>,
+    );
+
+    const houder = document.querySelector('.tk-vakmenu-houder');
+    expect(houder).not.toBeNull();
+    expect(houder?.querySelector('.tk-vakmenu')).not.toBeNull();
   });
 });

@@ -8,7 +8,7 @@ import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './r
  */
 describe('premium', () => {
   it('leaves practising free, and marks what works over weeks', () => {
-    // ADR-121: oefenen is free — the three ways that ask about one thing at a
+    // ADR-122: oefenen is free — the three ways that ask about one thing at a
     // time, ontdekken, and the tafeldiploma. The rest is premium.
     const gratis = [
       'wijs-aan',

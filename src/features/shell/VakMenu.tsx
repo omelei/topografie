@@ -14,7 +14,21 @@ import type { Module } from './modules';
  * front door. One control that says which module you are in, and opens into all
  * five, does both jobs in one row.
  *
- * Its behaviour, from the handoff and the disclosure pattern:
+ * ADR-121 made it the loudest thing under the app bar and stuck it there. Three
+ * changes, and each is a separate reason:
+ *
+ * - **It sticks.** `Shell` wraps it in `.tk-vakmenu-houder`, which is what
+ *   carries `position: sticky` — the row *and* its open panel in one box, so an
+ *   open menu is never anchored to a place the page has scrolled past.
+ * - **It says "Oefenen" where no module is open**, because in that state it is
+ *   not a read-out of where you are but the way to a round, and a control that
+ *   names its own job is pressed.
+ * - **The word "vak" left the row.** It was a grey label in front of the button
+ *   taking width off a 393 phone, and with "Oefenen" on the button it said the
+ *   same thing twice. It survives in the button's accessible name, where "Topo"
+ *   on its own does not say what kind of thing Topo is.
+ *
+ * The rest of its behaviour, from the handoff and the disclosure pattern:
  *
  * - a button that says which module you are in, with `aria-expanded`;
  * - the list opens under it, in the flow of the page rather than over it, and
@@ -110,10 +124,6 @@ export function VakMenu({
   return (
     <div ref={wrap} className="tk-vakmenu" onKeyDown={toets} onBlur={weg}>
       <div className="tk-vakmenu-rij">
-        <span id={`${id}-vak`} className="tk-label">
-          {t('nav.vak')}
-        </span>
-
         <button
           ref={knop}
           type="button"
@@ -121,14 +131,18 @@ export function VakMenu({
           data-module={actief?.id}
           aria-expanded={open}
           aria-controls={open ? `${id}-lijst` : undefined}
-          aria-labelledby={`${id}-vak ${id}-naam`}
+          aria-label={actief ? t('nav.vakHuidig', { vak: t(actief.name) }) : t('nav.vakKies')}
           onClick={() => setOpen(!open)}
         >
-          <span className={actief ? 'tk-plaat' : 'tk-plaat tk-plaat-neutraal'}>
-            <ActiefIcon size={20} />
+          <span
+            className={
+              actief ? 'tk-plaat tk-plaat-klein' : 'tk-plaat tk-plaat-klein tk-plaat-neutraal'
+            }
+          >
+            <ActiefIcon size={22} />
           </span>
-          <span id={`${id}-naam`}>{actief ? t(actief.name) : t('nav.vakKies')}</span>
-          {open ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+          <span className="tk-vakmenu-naam">{actief ? t(actief.name) : t('nav.vakKies')}</span>
+          {open ? <ChevronUpIcon size={22} /> : <ChevronDownIcon size={22} />}
         </button>
       </div>
 
