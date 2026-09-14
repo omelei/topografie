@@ -6361,6 +6361,226 @@ beslissing niet nodig heeft. Wat hier staat werkt zonder dat iemand iets bewaart
 
 ---
 
+## ADR-130 — Munten en XP gaan eruit, omdat niets ze ooit las
+
+**Status:** accepted. **Date:** 2026-09-14. Besloten door de product owner.
+
+### Context
+
+Dit product heeft twaalf beloningen: XP, munten, niveau, tien badges,
+drieëndertig diploma's, de dagreeks, de foutloze reeks, sterren, kisten, twaalf
+helden in vijf reeksen, een cijfer per ronde en "erbij geleerd".
+
+Twee daarvan bestonden alleen in de database. **Munten** werden elke ronde
+opgeteld in `rewardStore` en door geen enkele lezer opgehaald. **XP** kwam in
+geen enkel `.tsx`-bestand voor. Het commentaar in `rewards.ts` zei het zelf: ze
+waren voor een avatarwinkel die er nooit kwam.
+
+Een valuta die een kind niet kan zien, niet kan uitgeven en niet uitgelegd kan
+krijgen, is geen beloning. Het is een getal dat in een database omhoog gaat.
+
+### Decision
+
+**Weg**, in plaats van er een winkel bij te bouwen. Een winkel zou het dertiende
+beloningssysteem zijn naast elf die al om aandacht vechten, en de plek die hij
+zou innemen — iets verzamelen — is al bezet door helden en kisten, die een kind
+wél ziet.
+
+`comboAnswers` gaat mee: dat werd in beide rondehooks bijgehouden en bestond
+alleen om de XP-bonus te berekenen. **`combo` blijft**, want dat is de ×-teller
+die tijdens een ronde op het scherm staat; ze leken op elkaar en waren het niet.
+
+De velden `xp` en `munten` blijven op rijen staan die er al zijn. IndexedDB heeft
+geen migratie nodig voor een veld dat niemand meer leest, en een migratie die
+door de voortgang van elk kind heen loopt om twee getallen te wissen is meer
+risico dan hij wegneemt.
+
+### Consequences
+
+Vier tests over `rewardForRound` vervallen met de functie. Het niveau raakt dit
+niet: dat loopt sinds ADR-070 op goede antwoorden en niet op XP — wat achteraf
+de eerste helft van deze beslissing was.
+
+---
+
+## ADR-131 — De starterrij heet naar wie ernaar kijkt
+
+**Status:** accepted. **Date:** 2026-09-14.
+
+### Context
+
+De voordeur toont "Meest geoefend". Heeft een kind nog niets gedaan, dan vult
+`starters()` die rij met vijf kaarten om mee te beginnen — een goede afslag, die
+in één druk een ronde start.
+
+Alleen heet de rij dan nog steeds "Meest geoefend". Dat is een kop over een
+geschiedenis die niet bestaat, en het is letterlijk het eerste wat een nieuw kind
+op deze pagina leest. Eronder stond "Hier begin je mee", wat het goedmaakte door
+het tegen te spreken.
+
+### Decision
+
+**De kop hangt af van wie ernaar kijkt.** Zonder geschiedenis heet de rij "Hier
+begin je mee"; met geschiedenis "Meest geoefend". De regel eronder vervalt: die
+zei al wat de kop nu zegt, en twee keer hetzelfde is één keer te veel.
+
+### Consequences
+
+`app.spec.ts` zocht de rij op de oude naam en doet dat nu op de nieuwe, met een
+test erbij die beide kanten vastlegt: voor de eerste ronde de ene kop, erna de
+andere.
+
+---
+
+## ADR-132 — Een ronde beweegt mee met hoe het gaat: Leitner zegt wanneer, dit zegt hoe zwaar
+
+**Status:** accepted. **Date:** 2026-09-14.
+
+### Context
+
+Leitner beantwoordt één vraag — *wanneer moet dit terugkomen* — en die vraag is
+niet de enige die een ronde stelt. De tweede is *hoe moeilijk mag het nu zijn*,
+en daar had dit product geen antwoord op. `ROUND_MIX` was één vaste verhouding
+(70% aan de beurt, 20% nieuw, 10% opfrissen), voor elk kind, elke ronde, hoe het
+ook ging.
+
+Dat is precies het gat met de aanpassende producten waar leer.nu naast staat.
+Hun kracht is dat ze weten hoe moeilijk het mag zijn; de onze is dat we weten
+wanneer iets terug moet. Er is geen reden om er maar één van te hebben.
+
+### Decision
+
+**De verhouding beweegt mee met de gemiddelde Leitner-doos van de set.**
+
+Onder doos twee: minder nieuw (5%) en meer opfrissen (30%). Boven doos drieënhalf:
+meer nieuw (35%). Daartussen verandert er niets, dus wie in het midden zit merkt
+van deze beslissing niets.
+
+**Het signaal is de doos en niet het percentage goed.** Dat laatste is een
+levenslange teller: een kind dat een half jaar worstelde en nu vlot is, blijft er
+maanden laag in staan. Een doos beweegt bij élk antwoord.
+
+**Laag betekent minder nieuw, niet minder.** Een kind dat nog vecht met wat het
+heeft, is niet geholpen met meer onbekende vragen — het is geholpen met herhaling
+en met vragen die het al kent. Andersom is een kind met alles in doos vier niet
+geholpen met nog een rondje bekende stof: dat is de saaie kant van hetzelfde
+probleem.
+
+**Ongeziene onderdelen tellen niet mee in het gemiddelde.** Zouden ze als doos
+één meetellen, dan was elke grote set altijd "rustiger" en mat het gemiddelde
+vooral hoe vol de set is.
+
+**Onder vijf geziene onderdelen gebeurt er niets.** Eén slechte dag is dan het
+hele signaal, en een kind dat net begint heeft juist nieuwe stof nodig.
+
+**`roundPreview` gebruikt dezelfde functie.** Dat scherm zegt vooraf hoeveel
+vragen een kind eerder heeft gehad — de zin waarmee dit product zijn eigen
+methode uitlegt — en die zin moet waar blijven als de verhouding meebeweegt.
+
+### Consequences
+
+`tempo.ts` is puur en ligt onder `leitner.ts` in plaats van ernaast: andersom
+zouden ze elkaar importeren en zou `TEMPO_MIX` leeg kunnen zijn op het moment dat
+het gelezen wordt. `ROUND_MIX` is nu `TEMPO_MIX.gewoon`, zodat er één tabel is.
+
+Veertien tests, waarvan twee over gedrag en niet over de tabel: een kind dat
+worstelt krijgt aantoonbaar minder nieuwe vragen dan een kind dat vlot gaat, en
+de voorspelling zegt hetzelfde als de ronde doet.
+
+**Niet hier besloten:** meebewegen *binnen* een ronde. Een ronde is een vaste
+lijst — "maak af" hangt daaraan — en dat veranderen is een andere beslissing.
+
+---
+
+## ADR-133 — Het weekbericht: de week gelezen in plaats van geteld
+
+**Status:** accepted. **Date:** 2026-09-14. Punt 6 van de roadmap.
+
+### Context
+
+"Jij" had vier tegels over deze week: rondes, dagen, vragen, cijfer. Dat zijn
+feiten, en een ouder die ze leest moet ze zelf duiden — terwijl juist de duiding
+is wat hij koopt. De vraag achter een abonnement is niet "hoeveel rondes", het is
+**"gaat het goed, en moet ik iets doen?"**
+
+### Decision
+
+**Drie zinnen onder de tegels**, in de volgorde waarin een ouder het vraagt: is
+er geoefend, blijft het hangen, en wat wacht er.
+
+**Tegen schooldagen afgezet en niet tegen zeven dagen.** Een weekend is geen dag
+waarop een kind iets naliet — dezelfde regel waarmee de reeks niet straft
+(`streak.ts`). Werk doen telt wél altijd: op zaterdag geoefend is een dag
+geoefend.
+
+**Eén set die wankelt, met een naam.** Het langst over tijd wint, want dat is het
+dichtst bij vergeten. Een advies dat een ouder kan uitspreken tegen zijn kind —
+"doe de tafel van zeven even" — is meer waard dan een lijst.
+
+**Premium**, en zonder code staat er één slot in plaats van drie halve zinnen. De
+vier tegels erboven blijven gratis: dat zijn feiten over het eigen kind (ADR-124).
+
+De pagina leest de rondes nu één keer en geeft ze aan beide blokken, in plaats
+van dat elk blok dezelfde sessies opnieuw doorloopt.
+
+### Consequences
+
+`weekbericht.ts` is puur en generiek in de set, zoals `dagplan`. Acht tests,
+waarvan de twee die het meest tellen over de kalender gaan: vier rondes op
+dinsdag zijn één dinsdag, en een zaterdag telt mee als er geoefend is maar niet
+als schooldag.
+
+**Niet hier besloten:** dit per e-mail sturen. Dat vraagt het adres van een ouder
+naast de bestelling en een bewaartermijn, en dit werkt zonder dat iemand iets
+bewaart.
+
+---
+
+## ADR-134 — Een antwoord klinkt en het teken komt aan
+
+**Status:** accepted. **Date:** 2026-09-14. Punt 9 van de roadmap.
+
+### Context
+
+Een ronde gaf terugkoppeling door tekst te tonen. Correct, en traag: een kind
+moet lezen om te weten of het goed was, terwijl het al weet wat het antwoordde.
+
+### Decision
+
+**Twee tonen, door de browser zelf gemaakt.** Een oscillator en een
+volumeverloop, geen bestand. Een geluidsbestand is een asset die kan ontbreken,
+die de bundel groter maakt en die op een trage verbinding te laat komt om nog
+terugkoppeling te zijn. Deze kosten nul bytes.
+
+**Fout klinkt niet als fout.** Twee korte tonen omhoog voor goed, één zachte lage
+toon voor mis — geen zoemer. ADR-048 maakt het niet weten overal goedkoop, en een
+geluid dat een kind laat schrikken draait dat in één klap terug. De foute toon is
+ook zachter dan de goede.
+
+**Geluid is nooit de reden dat een ronde vastloopt.** Alles staat achter een
+`try`: geen AudioContext, een opgeschorte context, een browser die het niet kan —
+in alle gevallen gebeurt er niets en gaat de ronde door.
+
+**Aan bij het begin, met een schakelaar.** Twee tonen zijn de snelste
+terugkoppeling die er is; wie ze niet wil, in de klas of naast een slapende
+broer, zet ze uit op "Jij".
+
+**Het teken komt aan in plaats van te verschijnen**, in 260 ms, iets voorbij
+honderd procent en dan terug. Achter `prefers-reduced-motion: no-preference`, en
+niets dat de stand van het teken verandert: wie beweging heeft uitgezet ziet
+precies hetzelfde beeld.
+
+### Consequences
+
+Zes tests, waarvan de laatste twee de enige zijn die er echt toe doen: het gaat
+niet stuk zonder AudioContext en niet als het afspelen zelf mislukt.
+
+De rondehooks lezen nu een voorkeur en dus de store. `useRoundCore.test.tsx`
+vervangt die voorkeur zoals het `rewardStore` al verving — wat dat bestand test
+is wanneer de kern schrijft, niet of er een toon klinkt.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

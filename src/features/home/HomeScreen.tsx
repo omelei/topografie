@@ -203,10 +203,11 @@ function Populairst({
   if (lijst.length === 0) return null;
 
   return (
-    <ScrollRij
-      titel={t('home.popularTitle')}
-      onder={leeg ? <p className="text-tekst-secundair">{t('home.popularNew')}</p> : null}
-    >
+    // De kop hangt af van wie ernaar kijkt. Voor een kind dat nog niets deed is
+    // "Meest geoefend" een kop over een geschiedenis die niet bestaat, en het
+    // is meteen het eerste wat het leest (ADR-131). De regel eronder zei dat al
+    // en is nu de kop zelf, want twee keer hetzelfde is één keer te veel.
+    <ScrollRij titel={leeg ? t('home.popularStart') : t('home.popularTitle')}>
       {lijst.map(({ deel, mode, keer }) => (
         <GeoefendKaart
           key={`${deel.setId}-${mode}`}

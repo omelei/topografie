@@ -4,7 +4,6 @@ import {
   klokDiplomaFor,
   klokVanDiploma,
   newStamps,
-  rewardForRound,
   sterrenInKist,
   sterrenVoor,
   tableOfDiploma,
@@ -37,9 +36,6 @@ import { loadAccuracy } from './progress';
  */
 
 export interface RoundOutcome {
-  readonly xp: number;
-  readonly coins: number;
-  readonly totalXp: number;
   readonly stamps: readonly StampId[];
   /** The table this round earned a diploma for, or null. */
   readonly diploma: number | null;
@@ -131,24 +127,10 @@ export async function loadTopoDiplomas(): Promise<Set<TopoDiplomaSet>> {
  */
 export async function applyRoundRewards(params: {
   readonly correct: number;
-  readonly answered: number;
-  readonly comboAnswers: number;
   readonly snapshot: RewardSnapshot;
 }): Promise<RoundOutcome> {
-  const reward = rewardForRound(params);
   const db = await getDb();
-
   const kindId = await activeChildId();
-  const profile = await db.get('profile', kindId);
-  const totalXp = (profile?.xp ?? 0) + reward.xp;
-
-  if (profile) {
-    await db.put('profile', {
-      ...profile,
-      xp: totalXp,
-      munten: profile.munten + reward.coins,
-    });
-  }
 
   const held = await loadStamps();
   const earned = newStamps(params.snapshot, held);
@@ -186,9 +168,6 @@ export async function applyRoundRewards(params: {
   const voor = Math.max(0, na - params.correct);
 
   return {
-    xp: reward.xp,
-    coins: reward.coins,
-    totalXp,
     stamps: earned,
     diploma: diplomaId === null ? null : tableOfDiploma(diplomaId),
     vlagDiploma: vlagDiplomaId === null ? null : werelddeelVanDiploma(vlagDiplomaId),

@@ -35,7 +35,9 @@ export const nl = {
   // en van niets anders - er is geen server die meekijkt, dus er is ook geen
   // "3.412 keer gespeeld" te tonen dat waar zou zijn.
   'home.popularTitle': 'Meest geoefend',
-  'home.popularNew': 'Hier begin je mee.',
+  // Dezelfde rij, voor wie nog niets deed. "Meest geoefend" is dan een kop over
+  // een geschiedenis die niet bestaat (ADR-131).
+  'home.popularStart': 'Hier begin je mee',
   'home.popularTimes': '{aantal} keer gespeeld',
   'home.popularOnce': '1 keer gespeeld',
   'home.popularNone': 'nog niet geoefend',
@@ -583,6 +585,8 @@ export const nl = {
   'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
+  'premium.wat.bericht':
+    'Hoe de week ging: of er geoefend is, wat er blijft hangen, en wat er wacht.',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
   'premium.wat.toets':
@@ -1162,6 +1166,18 @@ export const nl = {
   'you.premium': 'Premium',
   'you.premiumAan': 'Premium staat aan tot en met {datum}.',
   'you.premiumVandaag': 'Vandaag is de laatste dag van premium.',
+  // Het weekbericht: de week gelezen in plaats van geteld (ADR-133).
+  'you.geluid': 'Geluid bij een antwoord',
+  'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
+  'you.berichtTitel': 'Hoe gaat het?',
+  'you.berichtNiets': 'Er is deze week niet geoefend.',
+  'you.berichtGeoefend': 'Er is geoefend op {dagen} van de {schooldagen} schooldagen.',
+  'you.berichtGeoefendEen': 'Er is geoefend op 1 van de {schooldagen} schooldagen.',
+  'you.berichtOnthouden': 'Van alles wat er geoefend is, blijft nu {procent}% hangen.',
+  'you.berichtWankelt': '{set} wacht het langst: {aantal} onderdelen, {dagen} dagen over tijd.',
+  'you.berichtWankeltEen': '{set} wacht het langst: 1 onderdeel, {dagen} dagen over tijd.',
+  'you.berichtWankeltVandaag': '{set} is vandaag aan de beurt: {aantal} onderdelen.',
+  'you.berichtNiksWacht': 'Er wacht niets. Alles is op tijd herhaald.',
   'you.premiumMorgen': 'Premium loopt morgen af.',
   'you.premiumBijna': 'Premium loopt af op {datum}, over {dagen} dagen.',
   'you.premiumVerlopen':

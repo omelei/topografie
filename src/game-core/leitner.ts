@@ -1,4 +1,5 @@
 import type { Item, ItemState, LeitnerBox } from './types';
+import { mixVoor, TEMPO_MIX, type RoundMix } from './tempo';
 
 /**
  * The five-box Leitner scheduler (ADR-005).
@@ -48,8 +49,15 @@ export function isOnthouden(state: ItemState | undefined, now?: Date): boolean {
   return now === undefined || !isStale(state, now);
 }
 
-/** How a round is filled: due work first, some new material, a little revision. */
-export const ROUND_MIX = { due: 0.7, nieuw: 0.2, opfris: 0.1 } as const;
+/**
+ * How a round is filled: due work first, some new material, a little revision.
+ *
+ * The middle of three since ADR-132: `tempo.ts` moves the share of new material
+ * up or down with the average box of the set, and this is what a child in the
+ * middle gets. It stays the baseline here because it is what a caller means
+ * when it expresses no preference.
+ */
+export const ROUND_MIX = TEMPO_MIX.gewoon;
 
 /** After a wrong answer the item returns this many questions later, same round. */
 export const RETRY_GAP = 3;
@@ -165,6 +173,8 @@ export interface ComposeRoundInput<T extends Schedulable = Item> {
   readonly size: number;
   readonly now: Date;
   readonly rng?: () => number;
+  /** De verhouding, als een beller er zelf een kiest. Anders `mixVoor` (ADR-132). */
+  readonly mix?: RoundMix;
 }
 
 /**
@@ -179,6 +189,9 @@ export function composeRound<T extends Schedulable = Item>(input: ComposeRoundIn
   const { items, states, size, now } = input;
   const rng = input.rng ?? Math.random;
   if (size <= 0 || items.length === 0) return [];
+
+  // Hoe zwaar deze ronde mag zijn, uit hoe het met deze set gaat (ADR-132).
+  const mix = input.mix ?? mixVoor(states, items);
 
   const due: T[] = [];
   const nieuw: T[] = [];
@@ -202,8 +215,8 @@ export function composeRound<T extends Schedulable = Item>(input: ComposeRoundIn
   const shuffledNieuw = shuffle(nieuw, rng);
   const shuffledBekend = shuffle(bekend, rng);
 
-  const dueTarget = Math.round(size * ROUND_MIX.due);
-  const nieuwTarget = Math.round(size * ROUND_MIX.nieuw);
+  const dueTarget = Math.round(size * mix.due);
+  const nieuwTarget = Math.round(size * mix.nieuw);
   const opfrisTarget = size - dueTarget - nieuwTarget;
 
   const picked: T[] = [
@@ -239,8 +252,12 @@ export function roundPreview(input: {
   readonly states: ReadonlyMap<string, ItemState>;
   readonly size: number;
   readonly now: Date;
+  readonly mix?: RoundMix;
 }): { readonly total: number; readonly seen: number } {
   const { items, states, size, now } = input;
+  // Dezelfde verhouding als `composeRound`, anders belooft dit scherm een ronde
+  // die het niet krijgt (ADR-132).
+  const mix = input.mix ?? mixVoor(states, items);
 
   let due = 0;
   let nieuw = 0;
@@ -254,8 +271,8 @@ export function roundPreview(input: {
   }
 
   const total = Math.min(size, items.length);
-  const dueTarget = Math.min(due, Math.round(total * ROUND_MIX.due));
-  const nieuwTarget = Math.min(nieuw, Math.round(total * ROUND_MIX.nieuw));
+  const dueTarget = Math.min(due, Math.round(total * mix.due));
+  const nieuwTarget = Math.min(nieuw, Math.round(total * mix.nieuw));
   const opfrisTarget = Math.min(bekend, total - dueTarget - nieuwTarget);
 
   // A shortfall in one pool is filled from the others, in the order

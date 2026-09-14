@@ -1,5 +1,5 @@
 /**
- * XP, levels, coins and badges.
+ * Levels and badges.
  *
  * Spec §4.5 is unusually specific about what this may not be: no lootboxes, no
  * chance mechanics, no real money, nothing that can be bought rather than
@@ -11,17 +11,13 @@
  * "waarom kreeg ik dat?" gets a sentence, not a shrug — which also happens to be
  * the only way a teacher can defend the numbers to a parent.
  *
- * Coins are a separate currency from XP on purpose. XP measures how much work
- * you have done and only ever rises; coins are spent on an avatar and go down
- * again. Merging them would mean a child who buys a hat loses their level.
+ * **There used to be XP and coins here too, and they are gone (ADR-130).** Both
+ * were written on every round and read by nothing: XP appeared in no component
+ * at all, and coins were saved for an avatar shop that was never built. A
+ * currency a child cannot see, spend or be told the point of is not a reward,
+ * it is a number going up in a database — and the product already has eleven
+ * things that do reward, of which the child can actually see every one.
  */
-
-export const XP_PER_CORRECT = 10;
-/** Extra per answer once five in a row are right. Spec §4.1 asks for the combo. */
-export const XP_COMBO_BONUS = 5;
-export const COMBO_THRESHOLD = 5;
-export const COINS_PER_CORRECT = 1;
-export const COINS_PERFECT_ROUND = 5;
 
 /**
  * The ladder runs on correct answers, not on XP (ADR-070).
@@ -83,31 +79,6 @@ export function levelProgress(correct: number): number {
  */
 export function correctToNextLevel(correct: number): number {
   return Math.max(1, correctForLevel(levelFor(correct) + 1) - correct);
-}
-
-export interface RoundReward {
-  readonly xp: number;
-  readonly coins: number;
-}
-
-/**
- * What one round is worth.
- *
- * `comboAnswers` is how many of the correct answers landed while five or more
- * were already right in a row. Counted rather than multiplied: a multiplier on
- * a whole round rewards a lucky start, while counting rewards the run itself.
- */
-export function rewardForRound(params: {
-  readonly correct: number;
-  readonly answered: number;
-  readonly comboAnswers: number;
-}): RoundReward {
-  const perfect = params.answered > 0 && params.correct === params.answered;
-
-  return {
-    xp: params.correct * XP_PER_CORRECT + params.comboAnswers * XP_COMBO_BONUS,
-    coins: params.correct * COINS_PER_CORRECT + (perfect ? COINS_PERFECT_ROUND : 0),
-  };
 }
 
 // ---------------------------------------------------------------------------
