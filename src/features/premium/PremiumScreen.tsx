@@ -1,7 +1,14 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { CorrectIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
-import { activeer, isTeKoop, meldAf, type PremiumReden } from '@/store/premium';
+import {
+  activeer,
+  isTeKoop,
+  isVerlopen,
+  meldAf,
+  verlooptBinnenkort,
+  type PremiumReden,
+} from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
@@ -73,8 +80,16 @@ const FOUT: Record<PremiumReden, TranslationKey> = {
  * apparaat haalt, en de rest is er niet. Doorverkopen aan wie al betaald heeft
  * is het duidelijkste teken dat een pagina niet naar zijn lezer kijkt.
  */
-export function PremiumScreen({ aside }: { readonly aside: ReactNode }) {
+export function PremiumScreen({
+  aside,
+  now = new Date(),
+}: {
+  readonly aside: ReactNode;
+  readonly now?: Date;
+}) {
   const { actief, stand } = usePremium();
+  const verlopen = isVerlopen(stand, now);
+  const bijnaAf = actief && verlooptBinnenkort(stand, now);
 
   return (
     <div className="tk-page">
@@ -85,6 +100,23 @@ export function PremiumScreen({ aside }: { readonly aside: ReactNode }) {
             {actief ? t('premium.introAan') : t('premium.intro')}
           </p>
         </div>
+
+        {/* Wie een jaar betaald heeft en over de datum is, kreeg tot ADR-129
+            precies dezelfde pagina als iemand die nog nooit van premium had
+            gehoord. Dat is niet alleen kil, het is ook het moment waarop een
+            ouder denkt dat de voortgang weg is — terwijl die gewoon op het
+            apparaat staat en dat de reden is om te verlengen. */}
+        {verlopen && stand ? (
+          <p className="tk-card text-lopend">
+            {t('premium.verlopen', { datum: leesbareDatum(stand.geldigTot) })}
+          </p>
+        ) : null}
+
+        {bijnaAf && stand ? (
+          <p className="tk-card text-lopend">
+            {t('premium.bijnaAf', { datum: leesbareDatum(stand.geldigTot) })}
+          </p>
+        ) : null}
 
         {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
       </div>

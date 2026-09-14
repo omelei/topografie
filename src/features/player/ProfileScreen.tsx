@@ -12,6 +12,7 @@ import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { BadgeSectie } from '@/features/badges/Badges';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
+import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
 
@@ -329,31 +330,59 @@ function Children({ active }: { readonly active: ProfileRecord }) {
  * Premium, for the adult in the room (ADR-116): on or off on this device, until
  * when, and the way to the page where a code is entered or taken off again.
  */
-function PremiumBlok() {
+function PremiumBlok({ now = new Date() }: { readonly now?: Date }) {
   const { actief, stand } = usePremium();
   const naarPremium = useNaarPremium();
+
+  const dagen = dagenGeldig(stand, now);
+  const verlopen = isVerlopen(stand, now);
+  const bijnaAf = actief && verlooptBinnenkort(stand, now);
 
   // Met code is dit een statusregel voor de volwassene: staat het aan, tot
   // wanneer, en waar je het afzet. Zonder code is het het enige premiumblok op
   // deze pagina, en dan zegt het wat er mist in plaats van dat er iets mist
   // (ADR-124). Vijf sloten werden er één.
+  //
+  // En sinds ADR-129 een derde geval, dat er het langst het meest toe doet:
+  // een jaar loopt af. Een ouder die niets hoort merkt het pas als het dagplan
+  // op een dinsdag weg is, en dat is geen opzegging maar een verrassing.
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.premium')}>
       <h2 className="tk-sectie">{t('you.premium')}</h2>
       <p className="text-tekst-secundair">
-        {actief && stand
-          ? t('you.premiumAan', { datum: leesbareDatum(stand.geldigTot) })
-          : t('premium.wat.jij')}
+        {verlopen && stand
+          ? t('you.premiumVerlopen', { datum: leesbareDatum(stand.geldigTot) })
+          : actief && stand
+            ? afloopZin(stand.geldigTot, bijnaAf, dagen)
+            : t('premium.wat.jij')}
       </p>
       <button
         type="button"
         className="tk-button tk-button-secondary self-start"
         onClick={naarPremium}
       >
-        {actief ? t('you.premiumBekijk') : t('premium.slotKnop')}
+        {verlopen
+          ? t('you.premiumVerleng')
+          : actief
+            ? t('you.premiumBekijk')
+            : t('premium.slotKnop')}
       </button>
     </section>
   );
+}
+
+/**
+ * Hoeveel er nog van het jaar over is, in de woorden die erbij horen.
+ *
+ * Losse zinnen voor vandaag en morgen, want "over 0 dagen" is geen Nederlands
+ * en "over 1 dagen" is erger. Dezelfde vorm als het toetsblok gebruikt.
+ */
+function afloopZin(geldigTot: string, bijnaAf: boolean, dagen: number | null): string {
+  const datum = leesbareDatum(geldigTot);
+  if (!bijnaAf || dagen === null) return t('you.premiumAan', { datum });
+  if (dagen === 0) return t('you.premiumVandaag');
+  if (dagen === 1) return t('you.premiumMorgen');
+  return t('you.premiumBijna', { datum, dagen });
 }
 
 /**

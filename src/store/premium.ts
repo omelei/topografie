@@ -84,6 +84,50 @@ export function normaliseerCode(invoer: string): string {
   return schoon.length === 12 && schoon.startsWith('LEER') ? schoon.slice(4) : schoon;
 }
 
+/**
+ * Hoeveel hele dagen een code nog geldig is. Nul op de laatste dag zelf,
+ * negatief zodra hij verlopen is, en null als er geen code is (ADR-129).
+ *
+ * Gerekend van middag tot middag, zodat de zomertijd er geen dag bij of af
+ * haalt: `geldigTot` is een kalenderdag en geen moment.
+ */
+export function dagenGeldig(stand: PremiumStand | null, now: Date): number | null {
+  if (stand === null) return null;
+  const laatste = new Date(`${stand.geldigTot}T12:00:00`);
+  if (Number.isNaN(laatste.getTime())) return null;
+  const vandaag = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12);
+  return Math.round((laatste.getTime() - vandaag.getTime()) / DAG_MS);
+}
+
+/**
+ * Of de code zelf over de datum is.
+ *
+ * Met opzet iets anders dan `!isActief`. Die staat ook uit als de server twee
+ * weken onbereikbaar was (`ZONDER_VERBINDING_DAGEN`), en dat is geen verlopen
+ * abonnement maar een vakantiehuis zonder wifi. Tegen een ouder zeggen dat zijn
+ * code verlopen is terwijl hij gewoon nog een half jaar loopt, is het ergste
+ * wat dit scherm kan doen.
+ */
+export function isVerlopen(stand: PremiumStand | null, now: Date): boolean {
+  const dagen = dagenGeldig(stand, now);
+  return dagen !== null && dagen < 0;
+}
+
+/**
+ * Vanaf hoeveel dagen voor het einde er iets gezegd wordt.
+ *
+ * Een maand: lang genoeg om er rustig over te doen, kort genoeg om over dít
+ * jaar te gaan. Eerder waarschuwen maakt er een reclameboodschap van die elf
+ * maanden lang in de weg staat.
+ */
+export const WAARSCHUW_VANAF_DAGEN = 30;
+
+/** Of het einde dichtbij genoeg is om het te melden, en nog niet gepasseerd. */
+export function verlooptBinnenkort(stand: PremiumStand | null, now: Date): boolean {
+  const dagen = dagenGeldig(stand, now);
+  return dagen !== null && dagen >= 0 && dagen <= WAARSCHUW_VANAF_DAGEN;
+}
+
 /** Whether a remembered code still counts on this day. */
 export function isActief(stand: PremiumStand | null, now: Date): boolean {
   if (stand === null) return false;
