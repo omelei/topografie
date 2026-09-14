@@ -212,12 +212,21 @@ export interface Diensten {
   readonly webhookUrl: string;
 }
 
+/**
+ * Wat er misging, in twee lagen.
+ *
+ * `reden` gaat terug naar de browser en is met opzet grof: "mollie", niet wat
+ * Mollie precies zei. Wat een dienst antwoordt kan de naam van een tabel of een
+ * kolom bevatten, en dat hoort niet in het scherm van iemand die toevallig een
+ * verzoek doet. `detail` gaat naar de log, waar het thuishoort.
+ */
 export class KassaFout extends Error {
   constructor(
     readonly code: number,
     readonly reden: string,
+    readonly detail: string | null = null,
   ) {
-    super(reden);
+    super(detail === null ? reden : `${reden}: ${detail}`);
     this.name = 'KassaFout';
   }
 }

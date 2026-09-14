@@ -52,22 +52,31 @@ function antwoord(inhoud: unknown, status = 200): Response {
   });
 }
 
+/** Eén veld uit een antwoord, als het er is en een string is. Anders niets. */
+function tekst(bron: unknown, veld: string): string | null {
+  if (bron === null || typeof bron !== 'object') return null;
+  const waarde = (bron as Record<string, unknown>)[veld];
+  return typeof waarde === 'string' ? waarde : null;
+}
+
 async function mollieVerzoek(
   pad: string,
-  opties: RequestInit = {},
-): Promise<Record<string, never>> {
+  opties: { readonly method?: string; readonly body?: string } = {},
+): Promise<unknown> {
   const antwoordVanMollie = await fetch(`${MOLLIE}${pad}`, {
     ...opties,
     headers: {
-      ...opties.headers,
       authorization: `Bearer ${nodig('MOLLIE_SLEUTEL')}`,
       'content-type': 'application/json',
     },
   });
-  const inhoud = (await antwoordVanMollie.json()) as Record<string, never>;
+  const inhoud: unknown = await antwoordVanMollie.json();
   if (!antwoordVanMollie.ok) {
-    const detail = String((inhoud as { detail?: string }).detail ?? antwoordVanMollie.status);
-    throw new KassaFout(502, `mollie: ${detail}`);
+    throw new KassaFout(
+      502,
+      'mollie',
+      `${antwoordVanMollie.status} ${tekst(inhoud, 'detail') ?? ''}`.trim(),
+    );
   }
   return inhoud;
 }
@@ -76,12 +85,13 @@ async function mollieVerzoek(
  * Het e-mailadres staat in de metadata van de betaling en niet in een tabel van
  * ons: Mollie moet het voor de transactie toch bewaren, en één plek is er één.
  */
-function alsBetaling(ruw: Record<string, never>): Betaling {
-  const metadata = (ruw as { metadata?: { email?: string } | null }).metadata ?? null;
+function alsBetaling(ruw: unknown): Betaling {
+  const metadata =
+    ruw !== null && typeof ruw === 'object' ? (ruw as { metadata?: unknown }).metadata : null;
   return {
-    id: String((ruw as { id?: string }).id ?? ''),
-    status: String((ruw as { status?: string }).status ?? ''),
-    email: metadata?.email ?? null,
+    id: tekst(ruw, 'id') ?? '',
+    status: tekst(ruw, 'status') ?? '',
+    email: tekst(metadata, 'email'),
   };
 }
 
@@ -103,24 +113,19 @@ async function rpc(naam: string, argumenten: Record<string, unknown>): Promise<u
     body: JSON.stringify(argumenten),
   });
   if (!antwoordVanDb.ok) {
-    throw new KassaFout(502, `database: ${antwoordVanDb.status} ${await antwoordVanDb.text()}`);
+    throw new KassaFout(502, 'database', `${antwoordVanDb.status} ${await antwoordVanDb.text()}`);
   }
   return antwoordVanDb.json();
 }
 
 function alsBestelling(ruw: unknown): Bestelling | null {
-  if (ruw === null || typeof ruw !== 'object') return null;
-  const rij = ruw as {
-    nieuw?: boolean;
-    code?: string | null;
-    geldig_tot?: string;
-    gemaild?: boolean;
-  };
-  if (typeof rij.geldig_tot !== 'string') return null;
+  const geldigTot = tekst(ruw, 'geldig_tot');
+  if (geldigTot === null) return null;
+  const rij = ruw as { nieuw?: unknown; gemaild?: unknown };
   return {
     nieuw: rij.nieuw === true,
-    code: typeof rij.code === 'string' ? rij.code : null,
-    geldigTot: rij.geldig_tot,
+    code: tekst(ruw, 'code'),
+    geldigTot,
     gemaild: rij.gemaild === true,
   };
 }
@@ -150,7 +155,11 @@ async function stuurMail(input: {
     }),
   });
   if (!antwoordVanMailer.ok) {
-    throw new KassaFout(502, `mail: ${antwoordVanMailer.status} ${await antwoordVanMailer.text()}`);
+    throw new KassaFout(
+      502,
+      'mail',
+      `${antwoordVanMailer.status} ${await antwoordVanMailer.text()}`,
+    );
   }
 }
 
@@ -169,10 +178,10 @@ function diensten(): Diensten {
             metadata: { email: input.email },
           }),
         });
-        const links = (ruw as { _links?: { checkout?: { href?: string } } })._links;
-        const checkoutUrl = links?.checkout?.href;
-        if (typeof checkoutUrl !== 'string') throw new KassaFout(502, 'mollie: geen checkout-url');
-        return { id: String((ruw as { id?: string }).id ?? ''), checkoutUrl };
+        const links = (ruw as { _links?: { checkout?: unknown } })._links;
+        const checkoutUrl = tekst(links?.checkout, 'href');
+        if (checkoutUrl === null) throw new KassaFout(502, 'mollie', 'geen checkout-url');
+        return { id: tekst(ruw, 'id') ?? '', checkoutUrl };
       },
       async leesBetaling(id) {
         return alsBetaling(await mollieVerzoek(`/payments/${encodeURIComponent(id)}`));
@@ -188,7 +197,7 @@ function diensten(): Diensten {
             p_geldig_tot: input.geldigTot,
           }),
         );
-        if (rij === null) throw new KassaFout(502, 'database: geen bestelling terug');
+        if (rij === null) throw new KassaFout(502, 'database', 'geen bestelling terug');
         return rij;
       },
       async lees(betaling) {
@@ -237,7 +246,10 @@ Deno.serve(async (verzoek) => {
     if (fout instanceof KassaFout) {
       // Een webhook die faalt moet falen: Mollie probeert het dan opnieuw, en dat
       // is precies wat een mail die niet aankwam nodig heeft.
-      console.error(`kassa ${actie}: ${fout.reden}`);
+      // Naar de log gaat alles; naar de browser gaat alleen het grove woord. Wat
+      // Mollie of Postgres precies antwoordt kan een tabelnaam of een kolom
+      // bevatten, en dat is niets voor het scherm van wie dit aanroept.
+      console.error(`kassa ${actie}: ${fout.message}`);
       return antwoord({ fout: fout.reden }, fout.code);
     }
     console.error(`kassa ${actie}:`, fout);
