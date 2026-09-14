@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="noindex" />
+    <!--
+      Het adres van de kassa. De build vult het in (tools/kassa-adres.mjs) uit de
+      variabele KASSA_URL; staat er nog een placeholder, dan is er geen kassa en
+      zegt de pagina dat, net zoals de premiumpagina dat doet zonder database.
+    -->
+    <meta name="kassa" content="__KASSA_URL__" />
+    <link rel="icon" href="/logo/svg/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/kopen/stijl.css" />
+    <title>Premium kopen — leer.nu</title>
+  </head>
+  <body>
+    <main>
+      <a class="merk" href="/">leer.nu</a>
+
+      <h1>Premium voor een schooljaar</h1>
+
+      <p>
+        Oefenen op leer.nu is en blijft gratis. Premium onthoudt vóór je: het houdt bij wat je kind
+        al kan, plant wanneer iets terug moet komen, en laat zien wat er over drie weken nog van
+        over is.
+      </p>
+
+      <section class="kaart">
+        <h2>Wat je krijgt</h2>
+        <ul class="lijst">
+          <li>Wat je onthoudt, per onderwerp en door de weken heen</li>
+          <li>Oefen je fouten: alles wat ooit fout ging, bij elkaar</li>
+          <li>De bliksemronde en overleven</li>
+          <li>De oefentoets: zelf checken of je het kent</li>
+          <li>De diploma’s voor vlaggen, klok en topo</li>
+          <li>Badges, je reeks, en meer dan één kind op hetzelfde apparaat</li>
+        </ul>
+        <p class="prijs">€ 24,95</p>
+        <p class="hulp">
+          Eén code, een heel schooljaar, voor alle kinderen thuis en op maximaal drie apparaten.
+          Geen abonnement: hij loopt vanzelf af en er wordt niets afgeschreven.
+        </p>
+      </section>
+
+      <form class="kaart" id="bestelling" novalidate>
+        <div>
+          <label for="email">Waar sturen we de code heen?</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="jouw@email.nl"
+            required
+          />
+        </div>
+        <p class="fout" id="fout" role="alert" hidden></p>
+        <button type="submit" id="knop">Betalen met iDEAL</button>
+        <p class="hulp">
+          We gebruiken je e-mailadres alleen om je de code te sturen. Het wordt niet bewaard in
+          leer.nu en er komt geen nieuwsbrief.
+        </p>
+      </form>
+
+      <p class="hulp">Heb je al een code? Vul hem in op <a href="/premium">leer.nu/premium</a>.</p>
+    </main>
+
+    <script>
+      // Geen build en geen framework: één formulier dat één ding doet.
+      (function () {
+        var kassa = document.querySelector('meta[name="kassa"]').content;
+        var form = document.getElementById('bestelling');
+        var veld = document.getElementById('email');
+        var knop = document.getElementById('knop');
+        var fout = document.getElementById('fout');
+
+        function zegFout(tekst) {
+          fout.textContent = tekst;
+          fout.hidden = false;
+          knop.disabled = false;
+          knop.textContent = 'Betalen met iDEAL';
+        }
+
+        if (kassa.indexOf('__') === 0) {
+          knop.disabled = true;
+          zegFout('De kassa is nog niet open. Mail ons voor een code.');
+          knop.disabled = true;
+          return;
+        }
+
+        form.addEventListener('submit', function (gebeurtenis) {
+          gebeurtenis.preventDefault();
+          fout.hidden = true;
+
+          var adres = veld.value.trim();
+          if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/.test(adres)) {
+            zegFout('Dat lijkt geen e-mailadres. Kijk het nog even na.');
+            veld.focus();
+            return;
+          }
+
+          knop.disabled = true;
+          knop.textContent = 'Een moment…';
+
+          fetch(kassa + '?actie=start', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ email: adres }),
+          })
+            .then(function (antwoord) {
+              return antwoord.json().then(function (inhoud) {
+                if (!antwoord.ok) throw new Error(inhoud.fout || 'onbekend');
+                return inhoud;
+              });
+            })
+            .then(function (inhoud) {
+              // Het betaal-id blijft hier, zodat de pagina na afloop de code kan
+              // laten zien. Het staat niet in de adresbalk: daar zou het in de
+              // geschiedenis en in elke gedeelde link belanden.
+              try {
+                localStorage.setItem('leernu.bestelling', inhoud.betaling);
+              } catch (genegeerd) {
+                // Een browser die niets wil bewaren is geen probleem: de mail komt toch.
+              }
+              window.location.href = inhoud.checkoutUrl;
+            })
+            .catch(function () {
+              zegFout('Het lukte even niet om de betaling te starten. Probeer het zo nog eens.');
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

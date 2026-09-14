@@ -511,6 +511,14 @@ export const nl = {
   'premium.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
   'premium.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'premium.fout.niet-ingesteld': 'Premium is nog niet beschikbaar.',
+  // De kassa (ADR-123). Het bedrag staat hier niet: het staat op de kassapagina
+  // zelf, op één plek, zodat een prijs die verandert niet op twee plekken uit
+  // elkaar kan lopen.
+  'premium.kopenTitel': 'Nog geen code?',
+  'premium.kopenUitleg':
+    'Je koopt er een voor een heel schooljaar, voor alle kinderen thuis. Geen abonnement: hij loopt vanzelf af.',
+  'premium.kopenKnop': 'Een code kopen',
+
   // Wat er staat waar een premiumblok zou staan, zonder code.
   'premium.slot': 'Dit hoort bij premium.',
   'premium.slotKnop': 'Code invullen',

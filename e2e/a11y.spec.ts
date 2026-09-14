@@ -247,3 +247,30 @@ test('explore has no violations, empty or with something chosen', async ({ page 
 
   expect((await scan(page)).violations).toEqual([]);
 });
+
+/**
+ * De kassa (ADR-123), en de pagina erna.
+ *
+ * Deze twee staan buiten de app: geen bundle, geen tokens uit Tailwind, eigen
+ * CSS. Precies daarom horen ze hier — wat buiten het systeem staat, erft de
+ * zorgvuldigheid van het systeem niet vanzelf, en dit is de pagina waar een
+ * ouder een e-mailadres en geld achterlaat.
+ */
+test('the kassa and the page after it have no violations', async ({ page }) => {
+  await page.goto('/kopen/');
+  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // Met een foutmelding erbij: die staat in een rode kaart en is de enige tekst
+  // op deze pagina's die op kleur leunt.
+  await page.getByLabel('Waar sturen we de code heen?').fill('geen adres');
+  await page.getByRole('button', { name: 'Betalen met iDEAL' }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // De pagina na het betalen, zoals een ouder hem zonder bestelling in de
+  // browser ziet: "je code komt per mail".
+  await page.goto('/kopen/klaar/');
+  await expect(page.getByRole('heading', { name: 'Bedankt' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+});

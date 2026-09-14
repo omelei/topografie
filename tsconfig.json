@@ -17,6 +17,9 @@
     "exactOptionalPropertyTypes": true,
 
     "resolveJsonModule": true,
+    // De edge function draait op Deno en importeert met de .ts erbij, zoals Deno
+    // wil. Met noEmit is dat hier alleen een leesregel (ADR-123).
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
@@ -29,5 +32,13 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "e2e", "tools", "vite.config.ts", "playwright.config.ts", "tailwind.config.ts"]
+  "include": [
+    "src",
+    "e2e",
+    "tools",
+    "supabase",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "tailwind.config.ts"
+  ]
 }

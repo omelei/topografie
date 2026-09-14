@@ -1,7 +1,7 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react';
 import { CorrectIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
-import { activeer, meldAf, type PremiumReden } from '@/store/premium';
+import { activeer, isTeKoop, meldAf, type PremiumReden } from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
@@ -20,6 +20,12 @@ const WAT: readonly TranslationKey[] = [
   'premium.functie.goed',
   'premium.functie.kinderen',
 ];
+
+/**
+ * De kassa, als adres. Geen route van de app maar een echte pagina onder
+ * `public/kopen`, dus een gewone link die de app verlaat (ADR-123).
+ */
+const KASSA_PAD = '/kopen/';
 
 const FOUT: Record<PremiumReden, TranslationKey> = {
   leeg: 'premium.fout.leeg',
@@ -126,6 +132,24 @@ export function PremiumScreen({ aside }: { readonly aside: ReactNode }) {
           </ul>
           <p className="tk-hulp">{t('premium.gratis')}</p>
         </section>
+
+        {/* Waar je er een koopt (ADR-123). Een gewone link naar een gewone pagina
+            op dit adres: de kassa staat buiten de app, praat met Mollie en met
+            niemand anders, en de app zelf blijft vragen aan niemand stellen. Hij
+            staat er alleen als er een premiumserver is om een code bij te
+            controleren — een knop naar een winkel die niet bestaat is erger dan
+            geen knop. */}
+        {actief || !isTeKoop() ? null : (
+          <section className="flex flex-col gap-3" aria-label={t('premium.kopenTitel')}>
+            <h2 className="tk-sectie">{t('premium.kopenTitel')}</h2>
+            <div className="tk-card flex flex-col gap-3">
+              <p className="text-lopend">{t('premium.kopenUitleg')}</p>
+              <a className="tk-button self-start" href={KASSA_PAD}>
+                {t('premium.kopenKnop')}
+              </a>
+            </div>
+          </section>
+        )}
 
         <p className="tk-hulp">{t('premium.voorOuders')}</p>
       </div>

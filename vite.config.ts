@@ -30,7 +30,9 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     // game-core is pure and must stay runnable without a DOM, so it is also
     // exercised in a node environment.
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // De kassa hoort er ook bij: zijn beslissingen zijn puur en worden hier
+    // getest, al draait hij straks op Deno (ADR-123).
+    include: ['src/**/*.{test,spec}.{ts,tsx}', 'supabase/**/*.{test,spec}.ts'],
     exclude: ['e2e/**'],
   },
 });
