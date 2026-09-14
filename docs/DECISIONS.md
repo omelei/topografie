@@ -5985,6 +5985,69 @@ blokken bij. Dat is het moment waarop het mag.
 
 ---
 
+## ADR-125 — Een premiumtegel zegt waar hij heen gaat, en de regel van ADR-124 staat in het type
+
+**Status:** accepted. **Date:** 2026-09-14. Volgt op ADR-124, uit een tweede
+UX-doorloop die naast de eerste liep. Vult ADR-124 aan; niets ervan wordt
+teruggedraaid.
+
+### Context
+
+Twee sessies liepen dezelfde opdracht naast elkaar en kwamen op dezelfde
+diagnose: de knip van ADR-122 klopt, de tekening ervan niet. ADR-124 is de
+uitkomst die het haalde, en het is de sterkere van de twee — het bouwde ook de
+prijs in de app en de gratis voorproef op Onthouden, die de andere alleen als
+open vraag neerlegde. Wat hier staat is wat er na vergelijking van de twee
+overbleef: drie dingen die ADR-124 niet raakt.
+
+**Een premiumtegel kondigt niet aan dat hij de pagina vervangt.** Hij is
+bewust niet uitgeschakeld (ADR-116): indrukken brengt je naar de premiumpagina,
+waar staat wat het is. Op het scherm is dat te zien — de pagina verandert onder
+je ogen — maar `metPremium` zette alleen het woord "Premium" achter de naam, en
+een woord is geen aankondiging. Wie met een schermlezer werkt, koos een manier
+van oefenen en stond ergens anders.
+
+**De regel van ADR-124 was met één weggelaten prop te omzeilen.** "Elk slot
+zegt wat er achter de deur zit" stond in een comment, en `wat` was optioneel met
+een terugval op "Dit hoort bij premium" — precies de zin die ADR-124 afschafte.
+Een regel die alleen in proza staat is over een halfjaar geen regel meer.
+
+**`PremiumSectie` had geen gebruikers meer.** ADR-124 liet elk premiumblok
+zichzelf zonder code niet tekenen, wat de sectievariant — een kop met een slot
+eronder — overbodig maakte. Hij bleef staan.
+
+En één fout in het spoor van de verhuizing: het commentaar boven de
+kassasleutels in `nl.ts` zei nog "Het bedrag staat hier niet", achttien regels
+onder het bedrag dat er sinds ADR-124 wél staat.
+
+### Decision
+
+**Zonder code eindigt de naam van een premiumtegel op waar hij heen gaat.**
+"Bliksemronde. Kun je het ook snel? Premium. Je gaat naar de premiumpagina."
+Met een code is er nergens heen te sturen en staat het woord er weer alleen, zoals
+ADR-111 het zette. `metPremium` krijgt daarvoor een derde argument.
+
+**`wat` is verplicht.** Het type bewaakt de regel in plaats van een comment, en
+de zin waarop teruggevallen werd (`premium.slot`) bestaat niet meer. Wie niets
+te zeggen heeft over wat er achter de deur zit, zet er geen deur.
+
+**`PremiumSectie` is weg**, en het verweesde commentaar over de prijs ook.
+
+### Consequences
+
+`metPremium(label, premium, actief = true)`; de drie aanroepen in
+`ModuleScreen` geven `actief` mee. `PremiumSlot` heeft één verplichte prop
+erbij en één export minder. Geen enkel blok verandert van kant: `isPremiumVorm`,
+`isPremiumOnderwerp` en wat `App` zonder code weigert zijn ongewijzigd, en alles
+wat ADR-124 op de premiumpagina en op Onthouden zette blijft staan zoals het
+staat.
+
+**Niet hier besloten:** wat ADR-124 als eigen open vraag liet staan. De tweede
+doorloop bevestigde alleen zijn oordeel dat de voorproef op Onthouden de juiste
+plek is om de betaalde kant te laten werken zonder hem weg te geven.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

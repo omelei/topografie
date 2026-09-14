@@ -187,11 +187,15 @@ test('without a code the premium page points at the kassa, and with one it does 
   // De volgorde van de beslissing (ADR-124): wat het doet, wat gratis blijft,
   // waarom wij, wat het kost, en pas daarna het veld voor wie al een code heeft.
   // Gescoped op de pagina zelf: de blokken in de kolom ernaast zijn ook h2.
-  const koppen = await page
-    .locator('.tk-page-main')
-    .getByRole('heading', { level: 2 })
-    .allInnerTexts();
-  expect(koppen).toEqual([
+  //
+  // Met `expect(locator)` en niet met `allInnerTexts()`. Dat laatste vraagt de
+  // koppen op zoals ze op dát ogenblik staan en wacht nergens op, dus tussen
+  // `goto` en de eerste render van React leverde het een lege lijst — een test
+  // die meestal slaagt en soms niet, en die dan niets zegt over de pagina maar
+  // over de timing (ADR-125). `toHaveText` op een locator probeert het opnieuw
+  // tot het klopt of de tijd om is.
+  const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
+  await expect(koppen).toHaveText([
     'Wat premium voor je doet',
     'Wat gratis blijft',
     'Waarom leer.nu',
