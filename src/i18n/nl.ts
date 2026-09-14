@@ -1131,7 +1131,7 @@ export const nl = {
   'you.nameIs': 'Je oefent als {naam}.',
   // De persoon bovenaan Jij (ADR-126), met de naam die tot nu toe nergens te
   // veranderen was.
-  'you.who': 'Wie oefent hier?',
+  'you.who': 'Jouw naam',
   'you.nameChange': 'Naam wijzigen',
   'you.nameSave': 'Bewaren',
   'you.nameCancel': 'Laat maar',
@@ -1188,6 +1188,11 @@ export const nl = {
   'you.lijstenAantalEen': '1 woord',
   'you.lijstenVol': 'Deze lijst is vol.',
   'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
+  // De ouderpagina, losgetrokken van "Jij" (ADR-136).
+  'ouder.title': 'Voor ouders',
+  'ouder.uitleg': 'Hoe het gaat, de lijst van school, en wat je geregeld hebt.',
+  'ouder.naar': 'Voor ouders',
+  'ouder.terug': 'Naar Jij',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
   'you.berichtTitel': 'Hoe gaat het?',

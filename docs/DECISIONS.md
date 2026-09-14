@@ -6641,6 +6641,64 @@ en die is er met opzet niet.
 
 ---
 
+## ADR-136 — "Jij" is van het kind, "Voor ouders" is van de ouder
+
+**Status:** accepted. **Date:** 2026-09-14. Gevraagd door de product owner: "maak
+duidelijk onderscheid tussen jij en ouder, trek dit los".
+
+### Context
+
+"Jij" was één pagina met acht blokken, waarvan er vijf niets met het kind te
+maken hadden: de week met een cijfer, het weekbericht (ADR-133), de
+woordenlijsten van school (ADR-135), premium en de instellingen van het
+apparaat.
+
+Zo is het gegroeid, en de groei is het leerzame deel: er stond toch al iets van
+een ouder op die pagina, dus kwam het volgende er ook bij. Drie van de vijf zijn
+er dezelfde dag bij gezet. Het gevolg is een pagina die "Jij" heet en voor de
+helft over de rekening gaat — en een kind dat zijn eigen prijzenkast pas ziet na
+een cijfer, een verkoopblok en twee formulieren.
+
+### Decision
+
+**Twee pagina's, twee adressen.** `/jij` houdt wie het kind is (de naam, met de
+knop om hem te wijzigen), wie er oefent, en de prijzenkast. `/ouder` krijgt de
+week, het weekbericht, de lijsten van school, premium en de instellingen.
+
+**Een eigen adres en geen uitklapper.** Een ouder kan `/ouder` bewaren en er
+rechtstreeks heen, zonder langs de pagina van zijn kind.
+
+**"Wie oefent er?" blijft op /jij.** Het wisselen van kind is de weg van een kind
+naar zijn eigen beurt (ADR-046) en de knop in de balk bestaat ervoor. Het is het
+enige blok dat op het eerste gezicht van een ouder lijkt en het niet is.
+
+**Geen slot ervoor.** Een oudersectie in een kinderapp wordt vaak afgeschermd met
+een sommetje — en dit is een app waarin kinderen sommen oefenen. Dat slot zou
+theater zijn: het houdt niemand tegen die het zou moeten tegenhouden, en het kost
+de ouder elke keer een handeling. Wat deze scheiding oplost is dat de verkeerde
+dingen op het verkeerde scherm staan, niet dat een kind ze niet mag zien.
+
+**De instellingen gaan mee naar de ouder.** Ze waren al beschreven als van het
+apparaat en niet van een kind. Dat kost een kind dat het geluid uit wil één
+handeling extra; een knop in de ronde zelf is een andere beslissing.
+
+### Consequences
+
+`ParentScreen` neemt vier blokken over die in `ProfileScreen` stonden;
+`ProfileScreen` houdt er drie en verliest de helft van zijn imports.
+
+De splitsing maakte iets zichtbaar dat er al stond: `you.who` heette "Wie oefent
+hier?" en `you.children` "Wie oefent er?", twee koppen onder elkaar die
+hetzelfde leken te vragen. De eerste heet nu "Jouw naam", want dat is wat het
+blok is.
+
+Vijf e2e-bestanden zochten een verhuisd blok op `/jij`. `ouder.spec.ts` legt de
+scheiding zelf vast — op "Jij" staat niets over de rekening, op "Voor ouders"
+staat geen prijzenkast — en `a11y.spec.ts` haalt de nieuwe pagina er ook
+doorheen.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

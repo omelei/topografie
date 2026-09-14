@@ -150,6 +150,11 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
+  // En de andere helft, sinds ADR-136 een pagina op zichzelf.
+  await page.goto('/ouder');
+  await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
   await page.goto('/onthouden');
   await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);

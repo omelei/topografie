@@ -84,17 +84,19 @@ test('without a code the premium parts are labelled once, and say what they do',
     'true',
   );
 
-  // Op Jij: één premiumblok in plaats van vijf (ADR-124). De tafeldiploma's
-  // staan er gewoon, want die zijn gratis.
+  // Op Jij: de tafeldiploma's staan er gewoon, want die zijn gratis.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
+
+  // En op de ouderpagina: één premiumblok in plaats van vijf (ADR-124, ADR-136).
+  await page.goto('/ouder');
   await expect(page.getByRole('region', { name: 'Premium' })).toContainText(
     'De diploma’s voor vlaggen, klok en topo',
   );
-  await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
 });
 
 /**
