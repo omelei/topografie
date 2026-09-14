@@ -23,9 +23,11 @@ async function maakLijst(page: Page, naam: string, woorden: readonly string[]) {
   await blok.getByLabel('Naam van de lijst').fill(naam);
   await blok.getByRole('button', { name: 'Lijst maken' }).click();
 
+  // Elke lijst heeft een eigen woordveld, dus de kaart van déze lijst.
+  const kaart = blok.locator('.tk-card').filter({ hasText: naam });
   for (const woord of woorden) {
-    await blok.getByLabel('Woord', { exact: true }).fill(woord);
-    await blok.getByRole('button', { name: 'Woord toevoegen' }).click();
+    await kaart.getByLabel('Woord', { exact: true }).fill(woord);
+    await kaart.getByRole('button', { name: 'Woord toevoegen' }).click();
   }
 }
 
@@ -36,18 +38,39 @@ test('een ingetypte lijst wordt een set die je kunt oefenen', async ({ page }) =
   const blok = page.getByRole('region', { name: 'Eigen woorden' });
   await expect(blok.getByText('3 woorden')).toBeVisible();
 
-  // Hij staat op de taalpagina, als onderwerp met de naam die de ouder typte.
+  // Hij staat op de taalpagina, als een eigen deel naast Spelling en
+  // Werkwoorden — en niet als onderwerp binnen Spelling, want de vormen volgen
+  // op deze module het deel en niet het onderwerp (ADR-118).
   await page.goto('/taal');
   await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Eigen woorden/ })
+    .getByRole('region', { name: 'Welk deel?' })
+    .getByRole('button', { name: 'Eigen woorden', exact: true })
     .click();
+
+  await expect(
+    page
+      .getByRole('region', { name: /Kies een onderwerp/ })
+      .getByRole('button', { name: /^Eigen woorden/ }),
+  ).toBeVisible();
 
   // En de enige vorm is het flitsdictee: kiezen tussen letters kan niet op een
   // woord waar niemand een gat in heeft gezet.
   const vormen = page.getByRole('region', { name: /Hoe wil je/ });
   await expect(vormen.getByRole('button', { name: /Flitsdictee/ })).toBeVisible();
   await expect(vormen.getByRole('button', { name: /Kies de letters/ })).toHaveCount(0);
+});
+
+/** Zonder lijst is er geen deel: een knop naar een lege kamer is erger dan geen knop. */
+test('het deel Eigen woorden bestaat alleen als er een lijst is', async ({ page }) => {
+  await signIn(page, 'Fenna');
+
+  await page.goto('/taal');
+  const delen = page.getByRole('region', { name: 'Welk deel?' });
+  await expect(delen.getByRole('button')).toHaveCount(2);
+
+  await maakLijst(page, 'Week 1', ['trein']);
+  await page.goto('/taal');
+  await expect(delen.getByRole('button')).toHaveCount(3);
 });
 
 /** Hetzelfde woord twee keer zou twee onderdelen met hetzelfde id geven. */
@@ -75,7 +98,31 @@ test('een woord en een hele lijst gaan er weer af', async ({ page }) => {
   await page.goto('/taal');
   await expect(
     page
-      .getByRole('region', { name: /Kies een onderwerp/ })
-      .getByRole('button', { name: /^Eigen woorden/ }),
+      .getByRole('region', { name: 'Welk deel?' })
+      .getByRole('button', { name: 'Eigen woorden', exact: true }),
   ).toHaveCount(0);
+});
+
+/**
+ * Met meer dan één lijst worden het chips onder één tegel, zoals de tafels er
+ * twaalf zijn onder één tegel — en dáár staat de naam die de ouder typte.
+ */
+test('met twee lijsten draagt elke chip de naam die de ouder typte', async ({ page }) => {
+  await signIn(page, 'Jesse');
+  await maakLijst(page, 'Week 12', ['trein']);
+  await maakLijst(page, 'Week 13', ['fiets']);
+
+  await page.goto('/taal');
+  await page
+    .getByRole('region', { name: 'Welk deel?' })
+    .getByRole('button', { name: 'Eigen woorden', exact: true })
+    .click();
+  // De chips staan onder het gekozen onderwerp, zoals de twaalf tafels.
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Eigen woorden/ })
+    .click();
+
+  await expect(page.getByRole('button', { name: /Week 12/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Week 13/ })).toBeVisible();
 });

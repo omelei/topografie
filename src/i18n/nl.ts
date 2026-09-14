@@ -1168,6 +1168,7 @@ export const nl = {
   'you.premiumAan': 'Premium staat aan tot en met {datum}.',
   'you.premiumVandaag': 'Vandaag is de laatste dag van premium.',
   // Het weekbericht: de week gelezen in plaats van geteld (ADR-133).
+  'regio.eigen': 'Eigen woorden',
   'onderwerp.taal.eigen': 'Eigen woorden',
   'onderwerp.taal.eigen.uitleg': 'De lijst die je zelf hebt ingevoerd.',
   'onderwerp.taal.eigen.keuze': 'Welke lijst?',

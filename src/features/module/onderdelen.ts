@@ -11,6 +11,7 @@ import {
 } from '@/content/loadTaal';
 import { KIES_VORM, type TaalMode } from '@/features/taal/taalRegels';
 import { itemId, leesLijsten, setIdVan } from '@/store/woordlijsten';
+import { EIGEN_DEEL } from './regios';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
 import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
 import { loadVlagSet, loadVlagSets, type VlagOnderwerp, type VlagSet } from '@/content/loadVlaggen';
@@ -828,7 +829,7 @@ function eigenOnderwerp(): Onderwerp[] {
       naam: 'onderwerp.taal.eigen',
       uitleg: 'onderwerp.taal.eigen.uitleg',
       keuze: sets.length > 1 ? 'onderwerp.taal.eigen.keuze' : null,
-      regio: 'spelling',
+      regio: EIGEN_DEEL,
       sets,
     },
   ];
