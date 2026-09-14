@@ -29,6 +29,10 @@ const NOT_COPY: ReadonlyMap<string, string> = new Map([
     'src/design/Gallery.tsx',
     'a development-only page whose labels are query addresses for its own test, and which never ships',
   ],
+  [
+    'src/features/diagnose/DiagnoseScherm.tsx',
+    "an instrument behind #diagnose, for the owner and never for a child: its labels are names of measurements, and putting them in nl.ts would work against the one thing that file is for — being readable as the product's whole voice (ADR-128)",
+  ],
 ]);
 
 const LABELLED_ATTRIBUTES =

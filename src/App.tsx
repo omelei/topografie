@@ -5,6 +5,7 @@ import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
 import { ProfileGate } from '@/features/player/ProfileGate';
 import { Gallery } from '@/design/Gallery';
+import { DiagnoseScherm } from '@/features/diagnose/DiagnoseScherm';
 import { Shell } from '@/features/shell/Shell';
 import { TopBar } from '@/features/shell/TopBar';
 import { RetentionScreen } from '@/features/retention/RetentionScreen';
@@ -324,6 +325,14 @@ export default function App() {
   // is a belief until something checks.
   if (import.meta.env.DEV && window.location.hash === '#componenten') {
     return <Gallery />;
+  }
+
+  // Waar haken ze af (ADR-128). Anders dan de galerij hierboven gaat dit wél
+  // mee in de build, en dat is de reden dat het bestaat: de geschiedenis waar
+  // het over rekent staat op het apparaat waarop een kind oefent, en dat is de
+  // echte app. Het staat in geen enkel menu en leest alleen wat er al staat.
+  if (window.location.hash === '#diagnose') {
+    return <DiagnoseScherm />;
   }
 
   // No spinner: reading one record from IndexedDB is fast enough that a spinner

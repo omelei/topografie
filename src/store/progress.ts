@@ -147,7 +147,7 @@ export interface OpenRound {
  * on two days is not the test it certifies, and the tafeldiploma stops at the
  * first mistake on purpose — a stopped one is a finished one.
  */
-const NIET_AF_TE_MAKEN: ReadonlySet<ModeId> = new Set<ModeId>([
+export const NIET_AF_TE_MAKEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'bliksemronde',
   'overleven',
   'ontdekken',
