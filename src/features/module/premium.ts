@@ -68,7 +68,15 @@ export function isPremiumOnderwerp(id: string): boolean {
  * An accessible name with the label on the end, so a screen reader hears it
  * after what the tile is — the name still leads, and a query anchored on it
  * still finds it.
+ *
+ * **Without a code it says what pressing does** (ADR-124). A premium tile is
+ * not disabled: pressing it replaces the whole page with the premium page. On
+ * screen that is at least visible — the page changes under your eyes — but the
+ * word "Premium" on its own never said that a press would take you somewhere,
+ * and a screen reader user met the new page with no warning that they had left
+ * the chooser. So while premium is off the tile's name ends with where it goes.
  */
-export function metPremium(label: string, premium: boolean): string {
-  return premium ? `${label}. ${t('premium.label')}` : label;
+export function metPremium(label: string, premium: boolean, actief = true): string {
+  if (!premium) return label;
+  return actief ? `${label}. ${t('premium.label')}` : `${label}. ${t('premium.tegelSlot')}`;
 }

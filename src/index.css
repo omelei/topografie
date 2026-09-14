@@ -548,6 +548,54 @@
     background: var(--papier);
   }
 
+  /* ---- Gratis naast premium (ADR-124) -----------------------------------
+   * Twee kaarten naast elkaar vanaf 768, onder elkaar daaronder. Even breed en
+   * even zwaar: de gratis kant is sinds ADR-122 het hele oefenprogramma, en een
+   * vergelijking waarin één helft een voetnoot is, is geen vergelijking.
+   *
+   * De premiumkaart staat op papier in plaats van op karton — hetzelfde
+   * verschil dat de testdatum op K1 krijgt. Geen kleur, geen rand die schreeuwt:
+   * het is de kant die je nog niet hebt, niet de kant die beter is.
+   */
+  .tk-vergelijk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    /* Elke kaart zo hoog als zijn eigen inhoud. Even hoog trekken leest als een
+     * nettere vergelijking en zet in de praktijk een halve kaart leeg karton
+     * onder de gratis kant, want de premiumkant heeft bijna twee keer zoveel
+     * regels. */
+    align-items: start;
+  }
+  @media (min-width: 768px) {
+    .tk-vergelijk {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+  }
+  .tk-card-premium {
+    background: var(--papier);
+  }
+  .tk-kaartkop {
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    line-height: var(--type-kaartkop-lh);
+    font-weight: var(--type-kaartkop-weight);
+    color: var(--inkt);
+  }
+  /* Een opsomming die leest als een opsomming: een bolletje, en regels die
+   * onder elkaar uitlijnen in plaats van onder het bolletje door te lopen. */
+  .tk-punten {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 20px;
+    list-style: disc;
+    font-size: var(--type-lopend);
+    line-height: var(--type-lopend-lh);
+    color: var(--inkt);
+  }
+
   /* ---- Buttons ---------------------------------------------------------
    * Three weights and no more. Primary is the way on and there is one per
    * screen; secondary is the alternative that is still an action; tertiary is

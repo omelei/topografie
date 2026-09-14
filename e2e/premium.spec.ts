@@ -50,7 +50,12 @@ test('without a code the premium parts are locked, and every lock leads to the c
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Wanneer onthoud je iets?' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Code invullen' }).first().click();
+  // The lock says what would stand here, and the way on is the page that both
+  // sells a code and takes one (ADR-124).
+  await expect(page.locator('.tk-page-main')).toContainText(
+    'Met premium zie je hier per onderwerp wat je onthoudt',
+  );
+  await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
@@ -80,15 +85,22 @@ test('without a code the premium parts are locked, and every lock leads to the c
   // not — they are the one wall a family gets without a code (ADR-122).
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toContainText(
-    'Dit hoort bij premium.',
+    'Met premium staan hier de tien badges die je kunt verdienen.',
   );
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toContainText(
-    'Dit hoort bij premium.',
+    'Met premium oefent ieder kind op dit apparaat met een eigen voortgang.',
   );
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).not.toContainText(
-    'Dit hoort bij premium.',
+    'Met premium',
   );
+
+  // One way on per region rather than one per lock (ADR-124). In this column
+  // two: the first lock on the page, and the block about this device. There
+  // were eight here before, all saying the same sentence.
+  await expect(
+    page.locator('.tk-page-main').getByRole('button', { name: 'Bekijk premium' }),
+  ).toHaveCount(2);
 });
 
 test('without a code a child can still discover, repeat their misses, and see the forecast', async ({
@@ -159,6 +171,11 @@ test('without a code the premium page points at the kassa, and with one it does 
   await page.goto('/premium');
   const knop = page.getByRole('link', { name: 'Een code kopen' });
   await expect(knop).toBeVisible();
+
+  // Waar je er een koopt staat vóór het veld voor een code die deze lezer nog
+  // niet heeft (ADR-124).
+  const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
+  await expect(koppen).toHaveText(['Gratis en premium', 'Nog geen code?', 'Heb je al een code?']);
 
   const doel = new URL((await knop.getAttribute('href')) ?? '', origin);
   expect(doel.origin, 'de kassa staat op dit adres zelf').toBe(origin);

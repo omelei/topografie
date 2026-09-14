@@ -466,17 +466,36 @@ export const nl = {
   'start.nogKiezen': 'Nog even kiezen',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
-  // Premium (ADR-111, ADR-116, ADR-122): een code die een ouder één keer
-  // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
+  // Premium (ADR-111, ADR-116, ADR-122, ADR-124): een code die een ouder één
+  // keer invult. Geen e-mail en geen wachtwoord; er is geen account om in te
+  // loggen.
   //
   // De knip staat sinds ADR-122 tussen oefenen en onthouden, en de intro zegt
   // hem in die volgorde: eerst wat gratis is en blijft, dan waar premium over
   // gaat. Andersom leest elke zin als een muur.
+  //
+  // ADR-124 zet de twee kanten naast elkaar in plaats van de gratis kant als
+  // voetnoot onder de premiumkant: wie een aanbod moet wegen, moet beide
+  // helften kunnen zien, en de gratis helft is sinds ADR-122 een compleet
+  // oefenprogramma in plaats van een uitgeklede versie.
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
   'premium.intro':
     'Oefenen is en blijft gratis: alle vakken, alle onderwerpen, voor altijd. Premium onthoudt vóór je — het houdt bij wat je kind al kan en laat zien wat er over drie weken nog van over is.',
+
+  // De twee kanten naast elkaar (ADR-124). De gratis kant eerst en even breed:
+  // het is wat je al hebt, en zonder die helft is de premiumlijst een lijst
+  // zonder maat.
+  'premium.vergelijkTitel': 'Gratis en premium',
+  'premium.gratisTitel': 'Altijd gratis',
+  'premium.gratis.vakken': 'Alle vakken en alle onderwerpen, zonder code',
+  'premium.gratis.manieren': 'Ontdekken, zoeken, meerkeuze en zelf typen',
+  'premium.gratis.fouten': 'Herhaal je fouten, meteen na de ronde',
+  'premium.gratis.tafeldiploma': 'Je twaalf tafeldiploma’s',
+  'premium.gratis.voorspelling': 'Na elke ronde: hoeveel je hier over drie weken nog van weet',
+
   'premium.codeTitel': 'Je code',
+  'premium.codeTitelNog': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
   'premium.codeGebruiken': 'Code gebruiken',
@@ -486,6 +505,13 @@ export const nl = {
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
   'premium.watTitel': 'Wat er bij premium hoort',
+  'premium.premiumTitel': 'Met premium erbij',
+  // Drie kopjes in plaats van negen punten op een hoop (ADR-124). De volgorde
+  // is het argument van ADR-122: eerst het systeem dat over weken werkt, dan de
+  // twee manieren om te controleren of je het kent, dan wat je verzamelt.
+  'premium.groep.onthouden': 'Onthouden',
+  'premium.groep.checken': 'Weten of je het kent',
+  'premium.groep.bijhouden': 'Bijhouden en verzamelen',
   'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp en door de weken heen',
   'premium.functie.fouten': 'Oefen je fouten: alles wat ooit fout ging, bij elkaar',
   // De bliksemronde en overleven zijn geen extraatjes maar een controle: ze
@@ -499,8 +525,6 @@ export const nl = {
   'premium.functie.reeks': 'Jouw reeks',
   'premium.functie.goed': 'Goed beantwoord',
   'premium.functie.kinderen': 'Meer dan één kind op dit apparaat',
-  'premium.gratis':
-    'Zonder code kun je in elk vak ontdekken, zoeken, meerkeuze doen en zelf typen — en je tafeldiploma’s halen.',
   'premium.voorOuders':
     'Voor ouders: alleen de code gaat naar onze server, om te kijken of hij klopt. Wat je kind oefent, blijft op dit apparaat.',
   'premium.fout.leeg': 'Typ eerst de code.',
@@ -513,15 +537,39 @@ export const nl = {
   'premium.fout.niet-ingesteld': 'Premium is nog niet beschikbaar.',
   // De kassa (ADR-123). Het bedrag staat hier niet: het staat op de kassapagina
   // zelf, op één plek, zodat een prijs die verandert niet op twee plekken uit
-  // elkaar kan lopen.
+  // elkaar kan lopen. Sinds ADR-124 staat dit blok vóór het codeveld: wie hier
+  // vanaf een slot binnenkomt, heeft nog geen code.
   'premium.kopenTitel': 'Nog geen code?',
   'premium.kopenUitleg':
     'Je koopt er een voor een heel schooljaar, voor alle kinderen thuis. Geen abonnement: hij loopt vanzelf af.',
   'premium.kopenKnop': 'Een code kopen',
 
-  // Wat er staat waar een premiumblok zou staan, zonder code.
+  // Wat er staat waar een premiumblok zou staan, zonder code (ADR-116).
+  //
+  // Eén zin per plek in plaats van één zin voor alle plekken (ADR-124). "Dit
+  // hoort bij premium" op zeven blokken achter elkaar zegt zeven keer niets;
+  // wat een ouder moet weten is wat er op díé plek zou staan. De knop heet
+  // "Bekijk premium" en niet "Code invullen": wie hier voor het eerst komt
+  // heeft geen code, en een knop die een code veronderstelt is voor die lezer
+  // een doodlopende weg.
   'premium.slot': 'Dit hoort bij premium.',
-  'premium.slotKnop': 'Code invullen',
+  'premium.slotKnop': 'Bekijk premium',
+  'premium.slot.onthouden':
+    'Met premium zie je hier per onderwerp wat je onthoudt, en wat er door de weken heen van over blijft.',
+  'premium.slot.reeks': 'Met premium tel je hier je dagen op rij, met de week erachter.',
+  'premium.slot.goed': 'Met premium staat hier hoeveel je er goed had, van alles bij elkaar.',
+  'premium.slot.badges': 'Met premium staan hier de tien badges die je kunt verdienen.',
+  'premium.slot.diplomas':
+    'Met premium haal je ook de diploma’s voor vlaggen, klok en topo. Je tafeldiploma’s zijn gratis.',
+  'premium.slot.vlagDiplomas': 'Met premium haal je hier een diploma per werelddeel.',
+  'premium.slot.klokDiplomas': 'Met premium haal je hier een diploma per soort tijd.',
+  'premium.slot.topoDiplomas': 'Met premium haal je hier een diploma per gebied.',
+  'premium.slot.kinderen': 'Met premium oefent ieder kind op dit apparaat met een eigen voortgang.',
+  'premium.slot.kolom': 'Met premium staan hier je reeks en hoeveel je er goed had.',
+  // Wat er in de naam van een tegel staat die naar de premiumpagina gaat. Een
+  // tegel die de hele pagina vervangt hoort dat te zeggen voordat hij wordt
+  // ingedrukt (ADR-124).
+  'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
 
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
@@ -1067,6 +1115,10 @@ export const nl = {
   // Het blok voor de volwassene. Nadrukkelijk geen rapport over het kind: geen
   // voorspelling, geen percentage, geen vergelijking. Wat er staat is wat er
   // gebeurd is — rondes, en waar ze op uitkwamen.
+  // De drie premiumdiploma's staan op Jij als één blok in plaats van drie losse
+  // sloten onder elkaar (ADR-124). Op de pagina van een vak staat alleen die
+  // van dat vak, en die houdt zijn eigen naam.
+  'you.diplomas': 'Jouw andere diploma’s',
   'you.week': 'Deze week',
   'you.weekNone': 'Deze week nog niet geoefend.',
   // Vier tegels, zoals de reekspagina ze heeft (ADR-112). Een streepje waar
@@ -1087,7 +1139,8 @@ export const nl = {
   'you.premium': 'Premium',
   'you.premiumAan': 'Premium staat aan tot en met {datum}.',
   'you.premiumUit': 'Premium staat nog niet aan op dit apparaat.',
-  'you.premiumBekijk': 'Naar premium',
+  // Dezelfde woorden als op elk slot: één deur, één naam (ADR-124).
+  'you.premiumBekijk': 'Bekijk premium',
 
   // Badges: de tien reisstempels, anders getekend en op de pagina Jij (ADR-112).
   'badges.titel': 'Jouw badges',

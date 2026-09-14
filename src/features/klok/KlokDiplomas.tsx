@@ -18,9 +18,17 @@ import { usePremium } from '@/features/premium/usePremium';
  */
 export function KlokDiplomas({
   onKies,
+  stil = false,
 }: {
   /** Where pressing a diploma chooses its step. Absent where the wall is only shown. */
   readonly onKies?: ((setId: KlokDiplomaSet) => void) | undefined;
+  /**
+   * Whether this wall says nothing at all without a code (ADR-124). On the page
+   * of its own module it carries the lock, because it is the only one there;
+   * on Jij, where all three would stand under each other, one merged block
+   * speaks for them and these three keep quiet.
+   */
+  readonly stil?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<KlokDiplomaSet> | null>(null);
@@ -29,7 +37,11 @@ export function KlokDiplomas({
     void loadKlokDiplomas().then(setBehaald);
   }, []);
 
-  if (!actief) return <PremiumSectie titel={t('klok.diplomasTitle')} />;
+  if (!actief) {
+    return stil ? null : (
+      <PremiumSectie titel={t('klok.diplomasTitle')} wat="premium.slot.klokDiplomas" />
+    );
+  }
 
   // Nothing until it is known: a wall that shows four gaps and then fills two
   // of them has told a child they had none.

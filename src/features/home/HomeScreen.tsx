@@ -18,9 +18,8 @@ import {
   type Onderdeel,
   type Populair,
 } from '@/features/module/onderdelen';
-import { ReeksBlok } from './ReeksBlok';
 import { ScrollRij } from './ScrollRij';
-import { FavorietenBlok, GoedBlok } from './SideColumn';
+import { KolomBlokken } from './SideColumn';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
@@ -109,9 +108,6 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
   );
 
   const toetsen = <ToetsenBlok />;
-  const reeks = <ReeksBlok onReeks={onReeks} />;
-  const goed = <GoedBlok />;
-  const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   if (desk) {
     return (
@@ -122,10 +118,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder }: HomeScreenProps
         </div>
 
         <aside className="tk-home-aside">
-          {toetsen}
-          {reeks}
-          {goed}
-          {favorieten}
+          <KolomBlokken onReeks={onReeks} onBegin={onBegin} />
         </aside>
       </div>
     );

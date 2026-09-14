@@ -70,7 +70,7 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
       <div className="tk-page">
         <div className="tk-page-main">
           <Kop />
-          <PremiumSlot />
+          <PremiumSlot wat="premium.slot.onthouden" />
           <Regels />
         </div>
         {aside}

@@ -56,11 +56,45 @@ export function SideColumn({
 
   return (
     <aside className="tk-home-aside">
-      <ToetsenBlok />
-      <ReeksBlok onReeks={onReeks} />
-      <GoedBlok />
-      <FavorietenBlok onBegin={onBegin} />
+      <KolomBlokken onReeks={onReeks} onBegin={onBegin} />
     </aside>
+  );
+}
+
+/**
+ * The four blocks themselves, so the front door can lay them out in its own
+ * aside and still get the same column (ADR-094).
+ *
+ * **Two blocks become one without a code** (ADR-124). The streak and "Goed
+ * beantwoord" are both premium, and each used to draw its own lock: two
+ * identical cards, one under the other, saying the same sentence with the same
+ * button — on every page in the app, because this column is on every page. One
+ * block now says what a code would put here, and says it once.
+ */
+export function KolomBlokken({
+  onReeks,
+  onBegin,
+}: {
+  readonly onReeks: () => void;
+  readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+}) {
+  const { actief } = usePremium();
+
+  return (
+    <>
+      <ToetsenBlok />
+      {actief ? (
+        <>
+          <ReeksBlok onReeks={onReeks} />
+          <GoedBlok />
+        </>
+      ) : (
+        <Blok titel={t('premium.label')}>
+          <PremiumSlot kaal wat="premium.slot.kolom" />
+        </Blok>
+      )}
+      <FavorietenBlok onBegin={onBegin} />
+    </>
   );
 }
 
@@ -72,7 +106,6 @@ export function SideColumn({
  * how the work is going, and a material is a reward (ADR-071).
  */
 export function GoedBlok() {
-  const { actief } = usePremium();
   const [accuracy, setAccuracy] = useState<Accuracy | null>(null);
   const [run, setRun] = useState<FlawlessRun | null>(null);
 
@@ -80,16 +113,6 @@ export function GoedBlok() {
     void loadAccuracy().then(setAccuracy);
     void loadRun().then(setRun);
   }, []);
-
-  // Premium since ADR-116. The block keeps its place and its name, so the
-  // column does not change shape when a code is entered.
-  if (!actief) {
-    return (
-      <Blok titel={t('home.accuracyTitle')}>
-        <PremiumSlot kaal />
-      </Blok>
-    );
-  }
 
   // Empty until it is known: a block that says nought and then changes its
   // mind has told a child something that was not true.

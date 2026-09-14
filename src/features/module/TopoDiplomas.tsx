@@ -18,9 +18,17 @@ import { KAART_NAAM } from './topoDiplomaNamen';
  */
 export function TopoDiplomas({
   onKies,
+  stil = false,
 }: {
   /** Where pressing a diploma chooses its map. Absent where the wall is only shown. */
   readonly onKies?: ((setId: TopoDiplomaSet) => void) | undefined;
+  /**
+   * Whether this wall says nothing at all without a code (ADR-124). On the page
+   * of its own module it carries the lock, because it is the only one there;
+   * on Jij, where all three would stand under each other, one merged block
+   * speaks for them and these three keep quiet.
+   */
+  readonly stil?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<TopoDiplomaSet> | null>(null);
@@ -29,7 +37,11 @@ export function TopoDiplomas({
     void loadTopoDiplomas().then(setBehaald);
   }, []);
 
-  if (!actief) return <PremiumSectie titel={t('topo.diplomasTitle')} />;
+  if (!actief) {
+    return stil ? null : (
+      <PremiumSectie titel={t('topo.diplomasTitle')} wat="premium.slot.topoDiplomas" />
+    );
+  }
 
   // Nothing until it is known, for the reason every wall gives.
   if (behaald === null) return null;

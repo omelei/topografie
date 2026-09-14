@@ -400,6 +400,7 @@ export function ModuleScreen({
                   aria-label={metPremium(
                     `${t(vak.naam)}. ${vorderingVan(vak, known, now)}`,
                     premium,
+                    actief,
                   )}
                   aria-pressed={open}
                   // A subject with one set chooses it. One whose sets are a
@@ -501,7 +502,11 @@ export function ModuleScreen({
                   key={candidate.id}
                   type="button"
                   className="tk-tegel"
-                  aria-label={metPremium(`${t(candidate.name)}. ${t(candidate.reason)}`, premium)}
+                  aria-label={metPremium(
+                    `${t(candidate.name)}. ${t(candidate.reason)}`,
+                    premium,
+                    actief,
+                  )}
                   aria-pressed={gekozenVorm}
                   onClick={() => {
                     if (premium && !actief) {
@@ -536,6 +541,7 @@ export function ModuleScreen({
                 aria-label={metPremium(
                   `${t('choose.testMode')}. ${t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')}`,
                   true,
+                  actief,
                 )}
                 aria-pressed={alsToets}
                 onClick={() => (actief ? setToetsstand(true) : naarPremium())}

@@ -19,9 +19,11 @@ import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences 
 /**
  * K10, "Jij": the child's own page (ADR-112).
  *
- * In the order a child reads it. **What they have earned** first — the badges
- * and the two walls of diplomas, which used to be on the collection page and
- * are the part of it that stays while the rest is thought through again. Then
+ * In the order a child reads it. **What they have earned** first — the
+ * diplomas and the badges, which used to be on the collection page and are the
+ * part of it that stays while the rest is thought through again; the
+ * tafeldiploma's lead, because they are the wall that is there without a code
+ * and a page should not open on a lock (ADR-122, ADR-124). Then
  * **this week**, for the adult in the room, as the same tiles the streak page
  * uses. Then **who is practising**, and the one switch.
  *
@@ -72,11 +74,12 @@ export function ProfileScreen({
           </p>
         </div>
 
-        <BadgeSectie />
+        {/* The tafeldiploma's first: they are free (ADR-122), so without a code
+            this page opens on something the child owns rather than on a lock —
+            the rule ADR-122 wrote for the chooser, kept here too (ADR-124). */}
         <Tafeldiplomas />
-        <VlagDiplomas />
-        <KlokDiplomas />
-        <TopoDiplomas />
+        <BadgeSectie />
+        <AndereDiplomas />
 
         <Week />
 
@@ -132,7 +135,9 @@ function Children({ active }: { readonly active: ProfileRecord }) {
   // More than one child is premium (ADR-116). Without a code the one who is
   // practising is the one named at the top of this page, and this section
   // says what a code adds.
-  if (!actief) return <PremiumSectie titel={t('you.children')} />;
+  if (!actief) {
+    return <PremiumSectie titel={t('you.children')} wat="premium.slot.kinderen" knop={false} />;
+  }
 
   async function add(event: FormEvent) {
     event.preventDefault();
@@ -217,6 +222,33 @@ function Children({ active }: { readonly active: ProfileRecord }) {
       {/* Said once, where a parent adding the second child will read it. */}
       <p className="tk-hulp">{t('you.childExplain')}</p>
     </section>
+  );
+}
+
+/**
+ * The three diplomas that are premium — vlaggen, klok and topo — on the page
+ * where all three would otherwise stand under each other (ADR-124).
+ *
+ * With a code they are three walls, as they always were: three subjects, three
+ * counts, three sets of gaps to go and fill. Without one they were three
+ * identical locks under three headings, and with the badges and the children
+ * that made five copies of the same sentence and the same button on one page.
+ * One block says it once, without a button of its own: the premium block
+ * further down this page is the door, and there is no second one.
+ */
+function AndereDiplomas() {
+  const { actief } = usePremium();
+
+  if (!actief) {
+    return <PremiumSectie titel={t('you.diplomas')} wat="premium.slot.diplomas" knop={false} />;
+  }
+
+  return (
+    <>
+      <VlagDiplomas />
+      <KlokDiplomas />
+      <TopoDiplomas />
+    </>
   );
 }
 

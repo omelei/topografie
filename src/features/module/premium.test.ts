@@ -57,6 +57,18 @@ describe('premium', () => {
     expect(metPremium('Oefentoets', true)).toBe('Oefentoets. Premium');
     expect(metPremium('Meerkeuze', false)).toBe('Meerkeuze');
   });
+
+  it('says where a locked tile goes, because pressing it leaves the page', () => {
+    // ADR-124. A premium tile is not disabled: it replaces the whole chooser
+    // with the premium page. On screen that is at least visible; in a name that
+    // ends with the bare word "Premium" it was not announced at all.
+    expect(metPremium('Oefentoets', true, false)).toBe(
+      'Oefentoets. Premium. Je gaat naar de premiumpagina.',
+    );
+    // With a code there is nowhere to be sent, so the word stands alone again.
+    expect(metPremium('Oefentoets', true, true)).toBe('Oefentoets. Premium');
+    expect(metPremium('Meerkeuze', false, false)).toBe('Meerkeuze');
+  });
 });
 
 describe('the map a page opens on', () => {

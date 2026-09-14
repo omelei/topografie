@@ -76,7 +76,7 @@ export function BadgeSectie() {
   }, []);
 
   // Premium since ADR-116. Still earned underneath, so none is lost.
-  if (!actief) return <PremiumSectie titel={t('badges.titel')} />;
+  if (!actief) return <PremiumSectie titel={t('badges.titel')} wat="premium.slot.badges" />;
 
   // Nothing until it is known: a wall of ten gaps that then fills three has
   // told a child they had none.

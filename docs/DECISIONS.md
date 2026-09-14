@@ -5867,6 +5867,110 @@ is a different sale with a different unit.
 
 ---
 
+## ADR-124 — De premiumpagina leest voor wie er binnenkomt, en een slot zegt wat er zou staan
+
+**Status:** accepted. **Date:** 2026-09-14. Asked for by the product owner: loop
+de app door als UX'er en kijk of het verschil tussen gratis en premium goed
+staat. Amends ADR-116, ADR-122 and ADR-123 in how they are drawn; the line
+itself (ADR-122) is unchanged.
+
+### Context
+
+ADR-122 drew the line — oefenen gratis, onthouden premium — and ADR-123 built
+the kassa. Walking the app afterwards, the line is right and the drawing of it
+is not. Four things, and each is the same mistake seen from a different page.
+
+**The premium page was written for the reader who already has a code.** It
+opened with "Je code" and an input field, then nine bullets, and only then —
+below the fold on every size — where you buy one. Practically everybody who
+arrives pressed a lock and has no code: the first thing they met was a field
+they could not fill, and the offer ADR-123 built was the last thing on the page.
+
+**Only half the offer was on the page.** The free side was one grey `tk-hulp`
+line under the premium list. ADR-122 made the free tier the whole of oefenen —
+five real things, not a crippled demo — and a reader who cannot see what they
+already have cannot weigh what a code adds to it.
+
+**Nine bullets on a heap.** "Wat je onthoudt, door de weken heen" and "Jouw
+badges" stood as equals in one list, which is exactly the flattening ADR-122
+argued against: it sells the part anyone can copy alongside the part nobody can.
+
+**Every lock said the same sentence.** "Dit hoort bij premium", with a button
+marked "Code invullen", drawn identically wherever a premium block would be.
+On Jij that was seven copies on one page — badges, three walls of diplomas, the
+children, and twice in the column beside it. Seven copies of one sentence tell a
+reader nothing seven times and teach them to stop reading. And "Code invullen"
+presumes a code, so for the reader who has never heard of premium every door in
+the app was marked with a key they do not own.
+
+### Decision
+
+**The premium page follows who arrives at it.** Without a code: what it is →
+**gratis naast premium** → where you buy one → and the code field last, under
+"Heb je al een code?". With a code: the state of this device first, because
+that is the returning parent's question, then what is in it. The price still
+lives only on the kassapagina (ADR-123): one place, so it cannot drift.
+
+**The two sides stand next to each other, free side first and the same width.**
+Two cards from 768 and stacked below it. The premium card sits on papier rather
+than karton — the same quiet distinction the test date gets on K1. No colour,
+no border that shouts: it is the side you do not have yet, not the better side.
+
+**The premium list is three groups**, in ADR-122's own order: _Onthouden_
+(the Onthouden page, the collected mistakes), _Weten of je het kent_ (the
+oefentoets, and the bliksemronde and overleven as the checks they are), and
+_Bijhouden en verzamelen_ (the three diplomas, badges, reeks, "Goed
+beantwoord", more than one child).
+
+**A lock says what would stand there.** Every place that draws one passes its
+own sentence — "Met premium zie je hier per onderwerp wat je onthoudt, en wat
+er door de weken heen van over blijft" on Onthouden, and so on for each. A test
+refuses a lock without one.
+
+**One way on per region, and it is called "Bekijk premium".** The first lock in
+a column carries the button; the rest are a line under their own heading. The
+name is the same everywhere, including on Jij, which said "Naar premium" for
+the same door. It is a page that both sells a code and takes one, so it is the
+right destination for a reader with neither.
+
+**Two locks become one where two stood under each other.** The streak and "Goed
+beantwoord" in the child's own column are one block that names both; the
+vlaggen-, klok- and topodiploma walls on Jij are one "Jouw andere diploma's".
+On a module's own page each wall keeps its own name, because there is only one
+of them there.
+
+**Jij opens on the tafeldiploma's.** They are free (ADR-122), so the page now
+opens on a wall the child owns instead of on a lock — ADR-122 wrote that rule
+for the chooser, and it is the same rule.
+
+**A locked tile says where pressing it goes.** A premium tile is not disabled:
+it replaces the chooser with the premium page. On screen that is at least
+visible; a name ending in the bare word "Premium" announced nothing. Without a
+code the name now ends with "Premium. Je gaat naar de premiumpagina."
+
+### Consequences
+
+`PremiumSlot` takes what to say (`wat`) and whether it carries the door
+(`knop`); `PremiumSectie` passes both on. The three premium diploma walls take
+`stil`, so Jij can speak for all three at once. `ReeksBlok` and `GoedBlok` no
+longer draw their own lock — the column that composes them decides, which is
+why both the front door and `SideColumn` now build the column from one
+`KolomBlokken`. `metPremium` takes whether premium is on.
+
+Counted on the pages that had the most of them: Jij went from eight premium
+calls to action to three, and every remaining lock says something a reader did
+not already know. Nothing moved across the line: `isPremiumVorm`,
+`isPremiumOnderwerp` and what `App` refuses without a code are untouched.
+
+**Not decided here:** the price in the app, which stays on the kassapagina; and
+whether a family should be able to see the Onthouden page once, for one set,
+before they buy. That last is the real open question about this line — ADR-122
+left the forecast on "Ronde klaar" as the one place the paid side can be seen
+working, and whether that is enough is something the kassa's numbers will say
+before an argument will.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
