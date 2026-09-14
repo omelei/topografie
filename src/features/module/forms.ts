@@ -20,6 +20,7 @@ import {
 import { t, type TranslationKey } from '@/i18n';
 import { isVlagFouten, isVlagMix } from '@/content/loadVlaggen';
 import { isTaalFouten, isTaalMix } from '@/content/loadTaal';
+import { EIGEN_DEEL } from './regios';
 import { TAAL_ROUND_RULE } from '@/features/taal/taalRegels';
 import { loadItemSets } from '@/content/loadSets';
 import {
@@ -490,6 +491,31 @@ export const SPELLING_FORMS: readonly PracticeForm[] = [
 ];
 
 /**
+ * Een eigen lijst kent maar één manier (ADR-135).
+ *
+ * "Kies de letters", "Ontdekken" en "Overleven" vragen alle drie naar de letters
+ * die beslissen, en die staan in het bestand naast het woord. Een ouder die de
+ * lijst van school intypt schrijft geen gaten, en dat horen we ook niet te
+ * vragen. Het flitsdictee laat het woord even zien en laat het dan typen — en
+ * dat ís een dictee.
+ *
+ * Dit is een eigen deel van Taal en geen `geldtVoor` op de spellingvormen. Op
+ * deze module staan de vormen er namelijk vóórdat een onderwerp gekozen is
+ * (ADR-118), en `ModuleScreen` laat dan elke vorm mét een `geldtVoor` weg — dus
+ * zou die aanpak "Kies de letters" van de spellingpagina halen.
+ */
+export const EIGEN_FORMS: readonly PracticeForm[] = [
+  {
+    id: 'taal-flitsdictee',
+    name: 'mode.taal-flitsdictee',
+    reason: 'way.taal-flitsdictee',
+    icon: KeyboardIcon,
+    rule: TAAL_ROUND_RULE['taal-flitsdictee'],
+    seconds: 12,
+  },
+];
+
+/**
  * Werkwoorden, in the same order and missing the same three, for the same
  * reasons (ADR-118).
  *
@@ -581,7 +607,10 @@ export function formsFor(moduleId: string, deel: string | null = null): readonly
   if (moduleId === 'tafels') return SUM_FORMS;
   if (moduleId === 'klok') return KLOK_FORMS;
   if (moduleId === 'vlaggen') return VLAG_FORMS;
-  if (moduleId === 'woorden') return deel === 'werkwoorden' ? WERKWOORD_FORMS : SPELLING_FORMS;
+  if (moduleId === 'woorden') {
+    if (deel === EIGEN_DEEL) return EIGEN_FORMS;
+    return deel === 'werkwoorden' ? WERKWOORD_FORMS : SPELLING_FORMS;
+  }
   return TOPO_FORMS;
 }
 

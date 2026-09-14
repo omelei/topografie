@@ -1,4 +1,5 @@
 export * from './types';
+export * from './tempo';
 export * from './leitner';
 export * from './answer';
 export * from './distractors';

@@ -208,7 +208,9 @@ async function addTest(page: Page, date: string, subject: string) {
 test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   await signIn(page, 'Rik');
 
-  const rij = page.getByRole('group', { name: 'Meest geoefend' });
+  // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee" en niet
+  // "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is.
+  const rij = page.getByRole('group', { name: 'Hier begin je mee' });
   await rij.focus();
   await page.keyboard.press('ArrowRight');
 
@@ -639,3 +641,42 @@ test('overleven spends a life on a wrong answer', async ({ page }) => {
   await answerWrongly(page);
   await expect(levens).toContainText('1');
 });
+
+/**
+ * De rij met starters heet naar wie ernaar kijkt (ADR-131).
+ *
+ * "Meest geoefend" is een kop over een geschiedenis, en het allereerste wat een
+ * kind op deze pagina leest is precies die kop — terwijl er dan nog geen
+ * geschiedenis is.
+ */
+test('the starter row is not called "most practised" before anything is practised', async ({
+  page,
+}) => {
+  await signIn(page, 'Sam');
+  await expect(page.getByRole('group', { name: 'Hier begin je mee' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Meest geoefend' })).toHaveCount(0);
+
+  await eenRondeProvincies(page);
+  await page.goto('/');
+  await expect(page.getByRole('group', { name: 'Meest geoefend' })).toBeVisible();
+});
+
+/** Eén ronde provincies, helemaal uitgespeeld, zodat er geschiedenis is. */
+async function eenRondeProvincies(page: Page) {
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
+  await page.getByRole('button', { name: 'Limburg' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+}

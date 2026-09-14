@@ -1,17 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   STAMPS,
-  COINS_PERFECT_ROUND,
   correctForLevel,
   correctToNextLevel,
   diplomaFor,
   levelFor,
   levelProgress,
   newStamps,
-  rewardForRound,
   tableOfDiploma,
-  XP_COMBO_BONUS,
-  XP_PER_CORRECT,
   type RewardSnapshot,
 } from './rewards';
 
@@ -90,33 +86,6 @@ describe('levels', () => {
       expect(level).toBeGreaterThanOrEqual(previous);
       previous = level;
     }
-  });
-});
-
-describe('rewardForRound', () => {
-  it('pays per correct answer', () => {
-    expect(rewardForRound({ correct: 8, answered: 12, comboAnswers: 0 }).xp).toBe(
-      8 * XP_PER_CORRECT,
-    );
-  });
-
-  it('pays a bonus for answers inside a run', () => {
-    const reward = rewardForRound({ correct: 10, answered: 12, comboAnswers: 6 });
-    expect(reward.xp).toBe(10 * XP_PER_CORRECT + 6 * XP_COMBO_BONUS);
-  });
-
-  it('adds coins for a perfect round', () => {
-    const perfect = rewardForRound({ correct: 12, answered: 12, comboAnswers: 0 });
-    const nearly = rewardForRound({ correct: 11, answered: 12, comboAnswers: 0 });
-
-    expect(perfect.coins - nearly.coins).toBe(COINS_PERFECT_ROUND + 1);
-  });
-
-  it('pays nothing for a round with no answers', () => {
-    expect(rewardForRound({ correct: 0, answered: 0, comboAnswers: 0 })).toEqual({
-      xp: 0,
-      coins: 0,
-    });
   });
 });
 

@@ -60,8 +60,11 @@ export interface ProfileRecord {
   naam: string;
   avatarConfig: Record<string, string>;
   niveau: Niveau;
-  xp: number;
-  munten: number;
+  /**
+   * `xp` en `munten` stonden hier en zijn weg (ADR-130): ze werden elke ronde
+   * geschreven en door niets gelezen. Rijen van vóór die beslissing dragen ze
+   * nog; niets leest ze, en IndexedDB heeft er geen migratie voor nodig.
+   */
   aangemaaktOp: string;
 }
 

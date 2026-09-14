@@ -1,3 +1,4 @@
+import { leesLijsten } from '@/store/woordlijsten';
 import type { TaalDeel } from '@/game-core';
 import type { TranslationKey } from '@/i18n';
 import type { Module } from '@/features/shell/modules';
@@ -34,6 +35,9 @@ import type { Module } from '@/features/shell/modules';
  * under another name would be two places to keep in step. So for Taal a
  * region is a part; the row asks its own question (`regioVraag`).
  */
+/** Het derde deel van Taal: de lijsten die een ouder zelf intypte (ADR-135). */
+export const EIGEN_DEEL = 'eigen';
+
 export interface Regio {
   readonly id:
     | 'wereld'
@@ -44,7 +48,9 @@ export interface Regio {
     | 'zuid-amerika'
     | 'oceanie'
     | 'nederland'
-    | TaalDeel;
+    | TaalDeel
+    /** Het derde deel van Taal: de lijsten die een ouder zelf intypte (ADR-135). */
+    | typeof EIGEN_DEEL;
   readonly naam: TranslationKey;
   /** Whether there are sets behind it today. */
   readonly built: boolean;
@@ -77,7 +83,7 @@ export const TOPO_REGIOS: readonly Regio[] = [
  * a row of one, which is a label you cannot press, so the row waits for two.
  */
 export function regiosVan(moduleId: Module['id']): readonly Regio[] {
-  if (moduleId === 'woorden') return TAAL_DELEN;
+  if (moduleId === 'woorden') return taalDelen();
   return moduleId === 'topo' || moduleId === 'vlaggen' ? TOPO_REGIOS : [];
 }
 
@@ -90,6 +96,23 @@ export const TAAL_DELEN: readonly Regio[] = [
   { id: 'spelling', naam: 'regio.spelling', built: true },
   { id: 'werkwoorden', naam: 'regio.werkwoorden', built: true },
 ];
+
+/**
+ * De delen van Taal, met het eigen deel erbij zodra er een lijst is.
+ *
+ * Een deel en geen `geldtVoor` op de spellingvormen, want op deze module staan
+ * de vormen er vóórdat een onderwerp gekozen is (ADR-118): `ModuleScreen` laat
+ * dan elke vorm mét een `geldtVoor` weg, en dat zou "Kies de letters" van de
+ * spellingpagina halen.
+ *
+ * Zonder lijsten is er geen deel. Een knop naar een leeg deel is een deur naar
+ * een lege kamer, en dat is dezelfde regel waarmee een onderwerp zonder sets
+ * ook niet getekend wordt.
+ */
+function taalDelen(): readonly Regio[] {
+  const heeft = leesLijsten().some((lijst) => lijst.woorden.length > 0);
+  return heeft ? [...TAAL_DELEN, { id: EIGEN_DEEL, naam: 'regio.eigen', built: true }] : TAAL_DELEN;
+}
 
 /** What the row asks: where on the map, or which part of Taal. */
 export function regioVraag(moduleId: Module['id']): TranslationKey {

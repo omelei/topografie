@@ -15,6 +15,8 @@ import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/us
 import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
+import { Weekbericht } from './Weekbericht';
+import { EigenLijsten } from './EigenLijsten';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
@@ -38,12 +40,21 @@ import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences 
 export function ProfileScreen({
   profile,
   aside,
+  now = new Date(),
 }: {
   readonly profile: ProfileRecord;
   readonly aside: ReactNode;
+  readonly now?: Date;
 }) {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
+  const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
+
+  useEffect(() => {
+    void loadPlayedRounds().then(setRondes);
+  }, []);
+
+  const afgemaakt = (rondes ?? []).map((ronde) => ronde.at);
 
   useEffect(() => {
     void loadPreferences().then((value) => {
@@ -78,7 +89,17 @@ export function ProfileScreen({
             is: het gezin, premium en de instellingen. */}
         <Ikben profile={profile} />
 
-        <Week />
+        <Week rondes={rondes} />
+
+        {/* Boven dit blok staan de feiten, hier staat de lezing ervan — de vraag
+            achter een abonnement is niet "hoeveel rondes" maar "gaat het goed"
+            (ADR-133). De rondes worden één keer gelezen en door beide gebruikt. */}
+        <Weekbericht afgemaakt={afgemaakt} now={now} />
+
+        {/* De lijst van school, ingetypt door een ouder (ADR-135). Naast het
+            weekbericht en de instellingen, want dit is invoerwerk voor een
+            volwassene en geen scherm voor een kind. */}
+        <EigenLijsten />
 
         <Prijzenkast />
 
@@ -95,6 +116,14 @@ export function ProfileScreen({
                 label={t('you.readAloud')}
                 why={t('you.readAloudWhy')}
                 onToggle={() => toggle('readAloud')}
+              />
+            </li>
+            <li>
+              <Switch
+                on={prefs.geluid}
+                label={t('you.geluid')}
+                why={t('you.geluidWhy')}
+                onToggle={() => toggle('geluid')}
               />
             </li>
           </ul>
@@ -430,13 +459,14 @@ function Switch({
  * questions, and the mark they came to. Seven days rather than "recently",
  * because a week is the unit a parent thinks in and a school test is set in.
  */
-function Week({ now = new Date() }: { readonly now?: Date }) {
-  const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
+function Week({
+  rondes,
+  now = new Date(),
+}: {
+  readonly rondes: readonly PlayedRound[] | null;
+  readonly now?: Date;
+}) {
   const plan = useTestPlan(now);
-
-  useEffect(() => {
-    void loadPlayedRounds().then(setRondes);
-  }, []);
 
   if (rondes === null) return null;
 

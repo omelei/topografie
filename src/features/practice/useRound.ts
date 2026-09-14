@@ -3,7 +3,6 @@ import {
   alleenDeze,
   buildOptions,
   composeRound,
-  COMBO_THRESHOLD,
   countMastered,
   emptyState,
   judgeAnswer,
@@ -21,6 +20,8 @@ import { loadAllItems, loadItemSets } from '@/content/loadSets';
 import { loadNeighbours } from '@/content/loadNeighbours';
 import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { recordRoundFinished } from '@/store/streakStore';
+import { usePreferences } from '@/features/player/settings';
+import { speelUitkomst } from '@/features/round/geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 import type { AnswerLayer } from './MapCanvas';
 
@@ -503,6 +504,7 @@ export function useRound(
   const masteredAtStart = useRef(0);
   const [questions, setQuestions] = useState<RoundQuestion[]>([]);
   const [index, setIndex] = useState(0);
+  const { geluid: geluidAan } = usePreferences();
   const [phase, setPhase] = useState<RoundPhase>('loading');
   const [chosenId, setChosen] = useState<string | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
@@ -523,7 +525,6 @@ export function useRound(
   const [streak, setStreak] = useState<StreakChange | null>(null);
   const [reward, setReward] = useState<RoundOutcome | null>(null);
   /** Correct answers given while five or more were already right in a row. */
-  const [comboAnswers, setComboAnswers] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const sessionId = useRef<string | null>(null);
@@ -685,10 +686,11 @@ export function useRound(
       setChosen(params.chosenForMap);
       setVerdict(params.judged);
       setLastCorrect(correct);
+      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
+      speelUitkomst(correct, geluidAan);
       setPhase('revealed');
       const nextCombo = correct ? combo + 1 : 0;
       setCombo(nextCombo);
-      if (nextCombo >= COMBO_THRESHOLD) setComboAnswers(comboAnswers + 1);
       setAnswered(answeredCount + 1);
       if (correct) setCorrectCount(correctCount + 1);
       else setMissed([...missed, question.item]);
@@ -712,7 +714,7 @@ export function useRound(
       question,
       states,
       combo,
-      comboAnswers,
+      geluidAan,
       correctCount,
       answeredCount,
       missed,
@@ -837,8 +839,6 @@ export function useRound(
       const ids = items.map((item) => item.id);
       void applyRoundRewards({
         correct: correctCount,
-        answered: answeredCount,
-        comboAnswers,
         snapshot: {
           setId,
           perfectRound: answeredCount > 0 && correctCount === answeredCount,
@@ -853,17 +853,7 @@ export function useRound(
         },
       }).then(setReward);
     });
-  }, [
-    phase,
-    correctCount,
-    answeredCount,
-    comboAnswers,
-    items,
-    questions.length,
-    setId,
-    states,
-    practiceMode,
-  ]);
+  }, [phase, correctCount, answeredCount, items, questions.length, setId, states, practiceMode]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;

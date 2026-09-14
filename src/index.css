@@ -3439,6 +3439,16 @@
     background: var(--kaart);
     color: var(--inkt);
   }
+  /* Het teken komt aan in plaats van te verschijnen (ADR-134). Een uitkomst die
+   * er ineens staat, wordt gelezen; een die beweegt, wordt gezien — en dat
+   * scheelt de halve seconde waarin een kind anders zelf moet uitzoeken of het
+   * goed was. Kort, één keer, en niets dat de stand van het teken verandert:
+   * wie beweging heeft uitgezet, ziet precies hetzelfde beeld. */
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-teken {
+      animation: tk-teken-aan 260ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+  }
   /* The dimmed provinces behind a capitals exercise. They recede, but they are
    * not decoration: they are how a child knows where on the map they are, and
    * WCAG asks 3:1 for a graphical object you need in order to understand the
@@ -3482,6 +3492,20 @@
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+/* Het uitkomstteken, dat aankomt (ADR-134). Iets voorbij honderd procent en dan
+ * terug: dat leest als iets dat landt, waar een rechte schaal leest als iets
+ * dat groeit. */
+@keyframes tk-teken-aan {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
     opacity: 1;
   }
 }

@@ -68,8 +68,6 @@ export async function createChild(naam: string): Promise<ProfileRecord> {
     naam: naam.trim(),
     avatarConfig: {},
     niveau: 1,
-    xp: 0,
-    munten: 0,
     aangemaaktOp: new Date().toISOString(),
   };
 

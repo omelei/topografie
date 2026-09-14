@@ -21,11 +21,17 @@ export interface Preferences {
    * child turns it off rather than having to find it.
    */
   readonly readAloud: boolean;
+  /**
+   * Ook aan bij het begin (ADR-134). Twee tonen bij een antwoord zijn de
+   * snelste terugkoppeling die er is — sneller dan lezen — en wie ze niet wil,
+   * in de klas of naast een slapende broer, zet ze hier uit.
+   */
+  readonly geluid: boolean;
 }
 
-export const DEFAULT_PREFERENCES: Preferences = { readAloud: true };
+export const DEFAULT_PREFERENCES: Preferences = { readAloud: true, geluid: true };
 
-const KEY = { readAloud: 'voorlezen' } as const;
+const KEY = { readAloud: 'voorlezen', geluid: 'geluid' } as const;
 
 /** Stored as strings because that is what the settings store holds. */
 function read(value: string | undefined, fallback: boolean): boolean {
@@ -34,8 +40,14 @@ function read(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function loadPreferences(): Promise<Preferences> {
-  const readAloud = await getSetting(KEY.readAloud);
-  return { readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud) };
+  const [readAloud, geluid] = await Promise.all([
+    getSetting(KEY.readAloud),
+    getSetting(KEY.geluid),
+  ]);
+  return {
+    readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud),
+    geluid: read(geluid, DEFAULT_PREFERENCES.geluid),
+  };
 }
 
 export async function savePreference(name: keyof Preferences, on: boolean): Promise<void> {

@@ -29,8 +29,6 @@ device itself.
   naam: string; // what the player typed; never leaves the device
   avatarConfig: object;
   niveau: 1 | 2 | 3;
-  xp: number;
-  munten: number;
   aangemaaktOp: string; // ISO
 }
 

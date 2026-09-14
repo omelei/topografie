@@ -21,6 +21,11 @@ vi.mock('@/store/streakStore', () => ({
 vi.mock('@/store/rewardStore', () => ({
   applyRoundRewards: vi.fn(async () => null),
 }));
+// Om dezelfde reden: de voorkeuren komen uit dezelfde store, en of er een toon
+// klinkt is niet wat dit bestand test (ADR-134).
+vi.mock('@/features/player/settings', () => ({
+  usePreferences: () => ({ readAloud: true, geluid: false }),
+}));
 
 interface Vraag {
   readonly item: { readonly id: string };

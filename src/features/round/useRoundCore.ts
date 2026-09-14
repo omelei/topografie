@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  COMBO_THRESHOLD,
   countMastered,
   emptyState,
   review,
@@ -12,6 +11,8 @@ import {
 } from '@/game-core';
 import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { recordRoundFinished } from '@/store/streakStore';
+import { usePreferences } from '@/features/player/settings';
+import { speelUitkomst } from './geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 
 /**
@@ -121,6 +122,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [itemIds, setItemIds] = useState<readonly string[]>([]);
   const [questions, setQuestions] = useState<readonly Q[]>([]);
   const [states, setStates] = useState<Map<string, ItemState>>(new Map());
+  const { geluid: geluidAan } = usePreferences();
   const [phase, setPhase] = useState<RondeFase>('loading');
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState<A | null>(null);
@@ -128,7 +130,6 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [combo, setCombo] = useState(0);
-  const [comboAnswers, setComboAnswers] = useState(0);
   const [missed, setMissed] = useState<T[]>([]);
   const [streak, setStreak] = useState<StreakChange | null>(null);
   const [reward, setReward] = useState<RoundOutcome | null>(null);
@@ -214,11 +215,12 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
       setGiven(antwoord.given);
       setLastCorrect(correct);
+      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
+      speelUitkomst(correct, geluidAan);
       setPhase('revealed');
 
       const nextCombo = correct ? combo + 1 : 0;
       setCombo(nextCombo);
-      if (nextCombo >= COMBO_THRESHOLD) setComboAnswers(comboAnswers + 1);
       setAnswered(answeredCount + 1);
       if (correct) setCorrectCount(correctCount + 1);
       else setMissed([...missed, item]);
@@ -245,7 +247,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       itemVan,
       states,
       combo,
-      comboAnswers,
+      geluidAan,
       answeredCount,
       correctCount,
       missed,
@@ -268,8 +270,6 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
       void applyRoundRewards({
         correct: correctCount,
-        answered: answeredCount,
-        comboAnswers,
         snapshot: {
           setId,
           perfectRound: answeredCount > 0 && correctCount === answeredCount,
@@ -283,7 +283,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
         },
       }).then(setReward);
     });
-  }, [phase, correctCount, answeredCount, comboAnswers, setId, questions, states, itemIds, mode]);
+  }, [phase, correctCount, answeredCount, setId, questions, states, itemIds, mode]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;
