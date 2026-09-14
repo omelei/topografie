@@ -37,10 +37,12 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-test('een code die bijna om is zegt dat, op Jij en op de premiumpagina', async ({ page }) => {
+test('een code die bijna om is zegt dat, op Voor ouders en op de premiumpagina', async ({
+  page,
+}) => {
   await signIn(page, 'Noor');
 
-  await page.goto('/jij');
+  await page.goto('/ouder');
   await zetCode(page, dag(10));
 
   const blok = page.getByRole('region', { name: 'Premium' });
@@ -55,7 +57,7 @@ test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen 
 }) => {
   await signIn(page, 'Noor');
 
-  await page.goto('/jij');
+  await page.goto('/ouder');
   await zetCode(page, dag(-1));
 
   const blok = page.getByRole('region', { name: 'Premium' });

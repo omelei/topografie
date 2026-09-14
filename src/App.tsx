@@ -33,6 +33,7 @@ import {
   type Onderdeel,
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
+import { ParentScreen } from '@/features/player/ParentScreen';
 import { ReeksScreen } from '@/features/reeks/ReeksScreen';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
 import { usePremium } from '@/features/premium/usePremium';
@@ -442,6 +443,8 @@ export default function App() {
 
   /** The way to the streak's page, from the block that shows the streak. */
   const goReeks = () => go({ name: 'reeks' });
+  const goOuder = () => go({ name: 'ouder' });
+  const goJij = () => go({ name: 'you' });
 
   /** The child's own column, which every screen inside the shell carries. */
   const eigenKolom = <SideColumn onReeks={goReeks} onBegin={beginRonde} />;
@@ -530,7 +533,16 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen profile={boot.profile} aside={eigenKolom} />
+        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
+      </Shell>
+    );
+  }
+
+  // Wat van de ouder is, op een eigen adres (ADR-136).
+  if (route.name === 'ouder') {
+    return (
+      <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
+        <ParentScreen aside={eigenKolom} onJij={goJij} />
       </Shell>
     );
   }

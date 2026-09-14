@@ -7,6 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
+import { Klim } from '@/features/round/Klim';
 import { Vlag } from './Vlag';
 import { VlagResultScreen } from './VlagResultScreen';
 import { useVlagRound, type VlagMode } from './useVlagRound';
@@ -178,6 +179,8 @@ export function VlagScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackSub(state.lastCorrect, state.given, zoeken)}
                   </p>
+                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
+                  {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
               {/* A bliksemronde moves on by itself, so there is nothing to

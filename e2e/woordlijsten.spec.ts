@@ -17,7 +17,7 @@ async function signIn(page: Page, naam: string) {
 }
 
 async function maakLijst(page: Page, naam: string, woorden: readonly string[]) {
-  await page.goto('/jij');
+  await page.goto('/ouder');
   const blok = page.getByRole('region', { name: 'Eigen woorden' });
 
   await blok.getByLabel('Naam van de lijst').fill(naam);

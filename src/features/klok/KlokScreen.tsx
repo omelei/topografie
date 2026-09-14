@@ -7,6 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
+import { Klim } from '@/features/round/Klim';
 import { KlokFace } from './KlokFace';
 import { klokVoluit, klokWoorden } from './klokTaal';
 import { useKlokRound, typesTheKlok, wijstDeKlokAan, type KlokMode } from './useKlokRound';
@@ -198,6 +199,8 @@ export function KlokScreen({
                         ? t('klok.dontKnowSub')
                         : t('klok.wrongSub', { gegeven })}
                   </p>
+                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
+                  {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
               {/* A timed round moves on by itself, so there is nothing to

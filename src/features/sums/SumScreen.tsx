@@ -7,6 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
+import { Klim } from '@/features/round/Klim';
 import { useSumRound, stopsOnAMistake, typesTheSum, type SumMode } from './useSumRound';
 import { SumResultScreen } from './SumResultScreen';
 
@@ -179,6 +180,8 @@ export function SumScreen({
                         ? t('sums.dontKnowSub')
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
+                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
+                  {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
               {/* A timed round moves on by itself, so there is nothing to

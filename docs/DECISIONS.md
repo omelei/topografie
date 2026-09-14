@@ -6641,6 +6641,132 @@ en die is er met opzet niet.
 
 ---
 
+## ADR-136 — "Jij" is van het kind, "Voor ouders" is van de ouder
+
+**Status:** accepted. **Date:** 2026-09-14. Gevraagd door de product owner: "maak
+duidelijk onderscheid tussen jij en ouder, trek dit los".
+
+### Context
+
+"Jij" was één pagina met acht blokken, waarvan er vijf niets met het kind te
+maken hadden: de week met een cijfer, het weekbericht (ADR-133), de
+woordenlijsten van school (ADR-135), premium en de instellingen van het
+apparaat.
+
+Zo is het gegroeid, en de groei is het leerzame deel: er stond toch al iets van
+een ouder op die pagina, dus kwam het volgende er ook bij. Drie van de vijf zijn
+er dezelfde dag bij gezet. Het gevolg is een pagina die "Jij" heet en voor de
+helft over de rekening gaat — en een kind dat zijn eigen prijzenkast pas ziet na
+een cijfer, een verkoopblok en twee formulieren.
+
+### Decision
+
+**Twee pagina's, twee adressen.** `/jij` houdt wie het kind is (de naam, met de
+knop om hem te wijzigen), wie er oefent, en de prijzenkast. `/ouder` krijgt de
+week, het weekbericht, de lijsten van school, premium en de instellingen.
+
+**Een eigen adres en geen uitklapper.** Een ouder kan `/ouder` bewaren en er
+rechtstreeks heen, zonder langs de pagina van zijn kind.
+
+**"Wie oefent er?" blijft op /jij.** Het wisselen van kind is de weg van een kind
+naar zijn eigen beurt (ADR-046) en de knop in de balk bestaat ervoor. Het is het
+enige blok dat op het eerste gezicht van een ouder lijkt en het niet is.
+
+**Geen slot ervoor.** Een oudersectie in een kinderapp wordt vaak afgeschermd met
+een sommetje — en dit is een app waarin kinderen sommen oefenen. Dat slot zou
+theater zijn: het houdt niemand tegen die het zou moeten tegenhouden, en het kost
+de ouder elke keer een handeling. Wat deze scheiding oplost is dat de verkeerde
+dingen op het verkeerde scherm staan, niet dat een kind ze niet mag zien.
+
+**De instellingen gaan mee naar de ouder.** Ze waren al beschreven als van het
+apparaat en niet van een kind. Dat kost een kind dat het geluid uit wil één
+handeling extra; een knop in de ronde zelf is een andere beslissing.
+
+### Consequences
+
+`ParentScreen` neemt vier blokken over die in `ProfileScreen` stonden;
+`ProfileScreen` houdt er drie en verliest de helft van zijn imports.
+
+De splitsing maakte iets zichtbaar dat er al stond: `you.who` heette "Wie oefent
+hier?" en `you.children` "Wie oefent er?", twee koppen onder elkaar die
+hetzelfde leken te vragen. De eerste heet nu "Jouw naam", want dat is wat het
+blok is.
+
+Vijf e2e-bestanden zochten een verhuisd blok op `/jij`. `ouder.spec.ts` legt de
+scheiding zelf vast — op "Jij" staat niets over de rekening, op "Voor ouders"
+staat geen prijzenkast — en `a11y.spec.ts` haalt de nieuwe pagina er ook
+doorheen.
+
+---
+
+## ADR-137 — De motor wordt zichtbaar: elk goed antwoord klimt een trede
+
+**Status:** accepted. **Date:** 2026-09-14. Gevraagd door de product owner: "de
+app voelt te statisch".
+
+### Context
+
+Dat is een scherpere klacht dan "meer gamification", en hij klopt. Dit product
+toont overal een **stand** en nergens een **verandering**: hoeveel je onthoudt,
+wat er klaarstaat, hoe de week ging, welke diploma's je hebt. Allemaal
+momentopnamen.
+
+Ondertussen draait er wel degelijk iets. Elk goed antwoord schuift een onderdeel
+een Leitner-doos op, waardoor het later terugkomt en langer blijft hangen. Dat is
+de hele motor van leer.nu — en een kind heeft hem nog nooit gezien. De dozen
+komen in geen enkele zin naar het kind toe voor; het woord "doos" staat alleen in
+commentaar.
+
+Er is dus een beweging die er al is, die betekenis heeft, en die niemand ziet.
+Dat is een betere plek om te beginnen dan een dertiende beloningssysteem.
+
+### Decision
+
+**Na een goed antwoord klimt het onderdeel zichtbaar een trede**, op een trap van
+vijf, met één zin ernaast.
+
+**Alleen omhoog.** Een fout antwoord zet een onderdeel terug naar doos één, en
+dat te zien geven zou straffen. ADR-048 maakt het niet weten overal goedkoop —
+geen leven, geen doos, geen stempel — en een zichtbare val draait dat in één
+beeld terug. Bij een fout antwoord staat er niets; het uitkomstteken en het goede
+antwoord zijn de terugkoppeling die daar hoort.
+
+**Geen nummers en geen "doos".** Dat is het woord van het algoritme en niet van
+een kind. Wat een kind ziet is dat er iets vol loopt, en wat het leest is dat het
+dit steeds beter kent.
+
+**De vierde trede is een grens die al bestond.** `ONTHOUDEN_BOX` is waar dit
+product "dit onthoud je" zegt, op de onthoudpagina en op de modulepagina. Daar
+verandert de zin. Het is dus geen nieuw beloninkje maar het moment waarop iets
+dat al gold, waar wordt.
+
+**Een onderdeel dat nog nooit gezien is komt van de grond af**, niet uit doos
+één: `emptyState` zet de doos alvast op één, en dan zou de eerste goede beurt een
+stap van één naar twee lijken terwijl het er twee zijn.
+
+**Inkt en geen accent**, hoewel dit een voortgangsbalk is en die volgens §B een
+accent mag dragen. Er staat een woord naast, dus de kleur hoeft niets te
+betekenen; het uitkomstteken ernaast is al groen of gearceerd, en een derde kleur
+in dezelfde regel is ruis. En `accent.test.ts` waarschuwt precies voor de
+redenering waarmee je hem hier wél zou zetten — elke stap ziet er op zichzelf uit
+als een verbetering. De guard ving dit; de allow-list blijft zoals hij was.
+
+### Consequences
+
+`klim.ts` is puur en heeft vijf tests, waarvan de eerste de regel is die het
+meest kan afglijden: bij een fout antwoord komt er niets terug.
+
+De stap komt uit beide rondehooks, dus alle vijf de modules hebben hem in één
+keer. `klim.spec.ts` speelt een echte ronde en kijkt of er iets beweegt — en of
+er bij een fout antwoord niets staat.
+
+**Niet hier besloten:** de rest van het antwoord op "te statisch". Het dagplan dat
+slinkt terwijl je werkt, een ronde met een aangekondigd einde, de prijzenkast die
+zich vult op het moment zelf in plaats van achteraf, en een dagdoel dat een kind
+zelf zet. Dit is de eerste omdat het de enige is die de motor zelf laat zien.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

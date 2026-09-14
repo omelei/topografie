@@ -244,6 +244,8 @@ export type Route =
   | { readonly name: 'home' }
   | { readonly name: 'retention' }
   | { readonly name: 'you' }
+  /** Wat van de ouder is: de week, het gezin, de lijsten, premium (ADR-136). */
+  | { readonly name: 'ouder' }
   /** The streak: the days in a row, the days behind them, and how it works. */
   | { readonly name: 'reeks' }
   /** A module that exists, opened on one of its sets or on its own first. */
@@ -266,6 +268,13 @@ export const PREMIUM_SLUG = 'premium';
 
 export const RETENTION_SLUG = 'onthouden';
 export const YOU_SLUG = 'jij';
+/**
+ * De ouderpagina (ADR-136).
+ *
+ * Een eigen adres en niet een stuk van /jij, zodat een ouder hem kan bewaren —
+ * en zodat "Jij" weer over het kind gaat.
+ */
+export const OUDER_SLUG = 'ouder';
 /*
  * /voortgang (and the older /ontdekkingsreis) was the collection: the heroes,
  * the chest and the level. It is hidden while it is thought through again
@@ -319,6 +328,7 @@ export function routeFor(pathname: string): Route {
   if (slug === '') return { name: 'home' };
   if (slug === RETENTION_SLUG) return { name: 'retention' };
   if (slug === YOU_SLUG) return { name: 'you' };
+  if (slug === OUDER_SLUG) return { name: 'ouder' };
   if (slug === REEKS_SLUG) return { name: 'reeks' };
   if (slug === PREMIUM_SLUG) return { name: 'premium' };
 
@@ -347,6 +357,7 @@ function slugFor(route: Route): string {
   if (route.name === 'home') return '';
   if (route.name === 'retention') return RETENTION_SLUG;
   if (route.name === 'you') return YOU_SLUG;
+  if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'reeks') return REEKS_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'category') return route.category.id;
