@@ -693,12 +693,29 @@
   .tk-premiumknop:hover {
     background: var(--nadruk-tekst);
   }
+  /* Op een smal scherm staat het woord er niet, maar het is er wél: `display:
+   * none` haalde het ook uit de toegankelijke naam, en dan is de enige knop in
+   * de app die verkoopt voor een schermlezer "knop". Weggeklemd in plaats van
+   * weggehaald, zoals .tk-sr-only doet. */
   .tk-premiumknop-woord {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
   @media (min-width: 480px) {
     .tk-premiumknop-woord {
-      display: inline;
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
     }
   }
 
