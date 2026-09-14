@@ -663,6 +663,16 @@
    * `--accent` — dit is geen modulekleur en verandert nergens mee mee. Op een
    * telefoon valt het woord weg en blijft de ster over, want daar vecht de balk
    * al met de naam van het kind. */
+  /* Het vooruitzicht onder een toets (ADR-127): een hele regel onder de badge,
+   * de dagen en de weg-knop, dus over de volle breedte van de rij. */
+  .tk-toets-zicht {
+    flex-basis: 100%;
+    margin-top: 4px;
+    font-size: var(--type-hulp);
+    line-height: var(--type-hulp-lh);
+    color: var(--tekst-secundair);
+  }
+
   .tk-premiumknop {
     display: inline-flex;
     flex-shrink: 0;

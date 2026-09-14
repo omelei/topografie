@@ -246,6 +246,11 @@ export const nl = {
   'home.testTomorrow': 'De toets is morgen',
   'home.testInDays': 'Toets over {aantal} dagen',
   'home.testPick': 'Wanneer is de toets?',
+  // Het vooruitzicht per toets (ADR-127): de enige plek waar de voorspelling
+  // naar een dátum rekent in plaats van naar drie weken vooruit.
+  'home.testNothingYet': 'Hier heb je nog niets van geoefend.',
+  'home.testForecast': 'Op de dag van de toets weet je hier naar verwachting {procent}% van.',
+  'home.testForecastRound': 'Doe vandaag een ronde: dan is het {procent}%.',
   'home.testAdd': 'Toets toevoegen',
   'home.testSave': 'Toevoegen',
   'home.testRemove': 'Verwijder',
@@ -574,6 +579,8 @@ export const nl = {
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
+  'premium.wat.toets':
+    'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
   'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
   'premium.wat.jij':
     'De diploma’s voor vlaggen, klok en topo, de badges, en meer dan één kind op dit apparaat.',

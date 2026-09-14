@@ -6153,6 +6153,68 @@ punten van de roadmap die bij deze doorloop hoort, en ze staan er los van.
 
 ---
 
+## ADR-127 — De toets krijgt een vooruitzicht: wat weet je op die dag nog, en wat doet één ronde vandaag
+
+**Status:** accepted. **Date:** 2026-09-14. Stap 2 van de roadmap bij ADR-126,
+gevraagd door de product owner ("voer de stappen van de roadmap uit").
+
+### Context
+
+Het toetsblok was een aftelklok. Een vak, een datum en "over 3 dagen", en verder
+niets — precies wat ADR-077 ervoor bedacht had, en het is jaren genoeg geweest.
+Wat eromheen is gegroeid maakt het nu zonde: `itemRetention` neemt élke datum,
+dus ook de dag van de toets, en `retentionAfterRound` rekent uit wat één ronde
+vandaag oplevert. Allebei stonden ze er al, en allebei rekenden ze alleen naar
+"over drie weken" — een horizon die niemand gekozen heeft omdat er niets anders
+was om naar te rekenen.
+
+De vraag waar een ouder mee zit op het moment dat de brief van school op tafel
+ligt, is geen andere: _haalt hij het vrijdag?_ Dat is de enige plek in het
+product waar de voorspelling ergens naartoe rekent in plaats van vooruit.
+
+### Decision
+
+**Onder elke toets staat wat dit kind op die dag naar verwachting nog weet**, en
+daaronder, als het iets uitmaakt, wat één ronde vandaag daaraan verandert.
+
+**Waar de toets over gaat, is wat dit kind geoefend heeft.** Een toets wordt
+gezet op een vak en niet op een set — dat is wat een ouder weet als de brief
+binnenkomt — dus rekent de voorspelling over elk onderdeel van dat vak waar een
+Leitner-stand voor is (`toetsOnderdelen`). Dezelfde twee uitzonderingen als het
+dagplan van ADR-126: een mix is de andere sets bij elkaar en zou ze dubbel
+wegen, en een foutenlijst is een dwarsdoorsnede en geen set.
+
+**Nog niets geoefend is geen nul procent.** Dan staat er dat er nog niets van
+geoefend is. Nul is een uitspraak, en over iets wat nooit gevraagd is valt er
+geen te doen.
+
+**De tweede zin staat er alleen als hij iets toevoegt** — vijf procentpunt of
+meer. "Doe vandaag een ronde: dan is het 62%" naast een 61% is ruis, en een
+advies dat niets verandert leert een kind het advies te negeren.
+
+**Premium**, en zonder code staat het er één keer onder de lijst in plaats van
+onder elke toets: dezelfde regel als ADR-124, en herhalen maakt van een aanbod
+ruis.
+
+### Consequences
+
+`toetsZicht.ts` is puur en heeft vijf tests, waarvan drie over wat er _niet_ in
+mag: de mix, de foutenlijst, en wat nooit geoefend is.
+
+Het toetsblok leest nu de Leitner-standen. Dat is de eerste keer dat dat blok
+iets van voortgang weet; het stond er met opzet buiten (ADR-077: "geen cijfer,
+geen balk, geen projectie"). Die regel gold voor de tijd dat het blok een
+aftelklok was en de voorspelling nergens stond. Nu staat ze overal — op de
+voordeur, op "Ronde klaar" en per onderdeel op Onthouden — en is het toetsblok
+de enige plek waar ze ontbrak.
+
+**Niet hier besloten:** het werk verdelen over de dagen tot de toets. Dat is een
+plan maken over meerdere dagen vooruit, met aannames over hoe vaak een kind
+oefent, en dat verdient een eigen beslissing. Wat hier staat is de vraag ervoor:
+staat het er goed voor of niet.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
