@@ -47,8 +47,22 @@ import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } fr
  * remembering changed in ADR-114, and a definition nobody can read is one
  * nobody can trust.
  *
- * Premium since ADR-116. The rules are there without a code as well: what
- * remembering means is not something to sell.
+ * Premium since ADR-116, en sinds ADR-124 met een gratis voorproef, want dit is
+ * de pagina die de hele propositie ís en hij liet er niets van zien. Er stond
+ * een kaal slot waar het product hoort. Een belofte die een ouder niet kan zien
+ * is geen belofte — dezelfde redenering die de voorspelling op "Ronde klaar"
+ * gratis maakte (ADR-122), doorgetrokken naar de pagina waar die voorspelling
+ * vandaan komt.
+ *
+ * **Wat gratis te zien is:** de vier tegels en de stippen, voor het onderwerp
+ * waar de pagina op opent. Dat is de vorm van het ding — hoeveel je onthoudt,
+ * hoeveel er opgefrist moet, wat je nog niet gedaan hebt — en het is waar.
+ * **Wat premium is:** elk ander onderwerp, en de tabel per onderdeel. Het
+ * inzicht is gratis, het bijhouden is betaald.
+ *
+ * Dit is geen teaser van een beloning en botst dus niet met de regel van
+ * `PremiumSlot`: er wordt geen kist getekend die een kind niet mag openmaken.
+ * Het is de eigen voortgang van dat kind, in het klein.
  */
 
 /** The four statuses, in the order a child moves through them. */
@@ -64,21 +78,7 @@ const REGELS: readonly TranslationKey[] = [
 
 export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
   const { actief } = usePremium();
-
-  if (!actief) {
-    return (
-      <div className="tk-page">
-        <div className="tk-page-main">
-          <Kop />
-          <PremiumSlot />
-          <Regels />
-        </div>
-        {aside}
-      </div>
-    );
-  }
-
-  return <Onthouden aside={aside} />;
+  return <Onthouden aside={aside} premium={actief} />;
 }
 
 function Kop() {
@@ -103,7 +103,7 @@ function Regels() {
   );
 }
 
-function Onthouden({ aside }: { readonly aside: ReactNode }) {
+function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly premium: boolean }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [moduleId, setModuleId] = useState<Module['id']>('topo');
   /** Which kind of sum, on rekenen only. Null for the first. */
@@ -158,88 +158,99 @@ function Onthouden({ aside }: { readonly aside: ReactNode }) {
 
         {/* Which subject: the module, then the set. Chips rather than a
             select: every option is worth seeing, and a select on a touch
-            screen is a menu that covers the thing you were looking at. */}
-        <div className="flex flex-col gap-3">
-          <div className="tk-keuzes" role="group" aria-label={t('retention.welkVak')}>
-            {modules.map((module) => {
-              const ModuleIcon = MODULE_ICON[module.id];
+            screen is a menu that covers the thing you were looking at.
+            Zonder code staan ze er niet (ADR-124): de pagina laat dan één
+            onderwerp zien en zegt welk. */}
+        {!premium ? (
+          <p className="text-tekst-secundair">
+            {t('retention.voorproef', { onderwerp: deel ? naamVan(deel) : '' })}
+          </p>
+        ) : null}
+        {/* Niet met `hidden`: dat verliest van Tailwinds `display: flex` op
+            hetzelfde element, en dan staat de keuze er alsnog. */}
+        {premium ? (
+          <div className="flex flex-col gap-3">
+            <div className="tk-keuzes" role="group" aria-label={t('retention.welkVak')}>
+              {modules.map((module) => {
+                const ModuleIcon = MODULE_ICON[module.id];
 
-              return (
+                return (
+                  <button
+                    key={module.id}
+                    type="button"
+                    className="tk-keuze"
+                    aria-pressed={module.id === moduleId}
+                    onClick={() => {
+                      setModuleId(module.id);
+                      setSoortId(null);
+                      setSetId(null);
+                    }}
+                  >
+                    <ModuleIcon size={20} />
+                    {t(module.name)}
+                  </button>
+                );
+              })}
+            </div>
+
+            {soorten.length > 0 ? (
+              <div className="tk-keuzes" role="group" aria-label={t('retention.welkeSom')}>
+                {soorten.map((vak) => (
+                  <button
+                    key={vak.id}
+                    type="button"
+                    className="tk-keuze"
+                    aria-pressed={vak.id === soort?.id}
+                    onClick={() => {
+                      setSoortId(vak.id);
+                      setSetId(null);
+                    }}
+                  >
+                    {t(vak.naam)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            {delen.length > 0 ? (
+              <div className="tk-keuzes" role="group" aria-label={t('deel.title')}>
+                {delen.map((kandidaat) => (
+                  <button
+                    key={kandidaat.id}
+                    type="button"
+                    className="tk-keuze"
+                    aria-pressed={kandidaat.id === deelKeuze?.id}
+                    onClick={() => {
+                      setSoortId(kandidaat.id);
+                      setSetId(null);
+                    }}
+                  >
+                    {t(kandidaat.naam)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="tk-keuzes" role="group" aria-label={t('retention.welkOnderwerp')}>
+              {sets.map((kandidaat) => (
                 <button
-                  key={module.id}
+                  key={kandidaat.setId}
                   type="button"
                   className="tk-keuze"
-                  aria-pressed={module.id === moduleId}
-                  onClick={() => {
-                    setModuleId(module.id);
-                    setSoortId(null);
-                    setSetId(null);
-                  }}
+                  aria-label={naamVan(kandidaat)}
+                  aria-pressed={kandidaat.setId === deel?.setId}
+                  onClick={() => setSetId(kandidaat.setId)}
                 >
-                  <ModuleIcon size={20} />
-                  {t(module.name)}
-                </button>
-              );
-            })}
-          </div>
-
-          {soorten.length > 0 ? (
-            <div className="tk-keuzes" role="group" aria-label={t('retention.welkeSom')}>
-              {soorten.map((vak) => (
-                <button
-                  key={vak.id}
-                  type="button"
-                  className="tk-keuze"
-                  aria-pressed={vak.id === soort?.id}
-                  onClick={() => {
-                    setSoortId(vak.id);
-                    setSetId(null);
-                  }}
-                >
-                  {t(vak.naam)}
+                  <span aria-hidden="true">
+                    {moduleId === 'tafels'
+                      ? (kandidaat.kortNaam ?? naamVan(kandidaat))
+                      : naamVan(kandidaat)}
+                  </span>
                 </button>
               ))}
             </div>
-          ) : null}
-
-          {delen.length > 0 ? (
-            <div className="tk-keuzes" role="group" aria-label={t('deel.title')}>
-              {delen.map((kandidaat) => (
-                <button
-                  key={kandidaat.id}
-                  type="button"
-                  className="tk-keuze"
-                  aria-pressed={kandidaat.id === deelKeuze?.id}
-                  onClick={() => {
-                    setSoortId(kandidaat.id);
-                    setSetId(null);
-                  }}
-                >
-                  {t(kandidaat.naam)}
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          <div className="tk-keuzes" role="group" aria-label={t('retention.welkOnderwerp')}>
-            {sets.map((kandidaat) => (
-              <button
-                key={kandidaat.setId}
-                type="button"
-                className="tk-keuze"
-                aria-label={naamVan(kandidaat)}
-                aria-pressed={kandidaat.setId === deel?.setId}
-                onClick={() => setSetId(kandidaat.setId)}
-              >
-                <span aria-hidden="true">
-                  {moduleId === 'tafels'
-                    ? (kandidaat.kortNaam ?? naamVan(kandidaat))
-                    : naamVan(kandidaat)}
-                </span>
-              </button>
-            ))}
           </div>
-        </div>
+        ) : null}
 
         <dl className="tk-cijfers">
           {tegels.map(([label, waarde]) => (
@@ -268,19 +279,22 @@ function Onthouden({ aside }: { readonly aside: ReactNode }) {
 
         <section className="flex flex-col gap-3" aria-label={t('retention.detail')}>
           <h2 className="tk-sectie">{t('retention.detail')}</h2>
+          {!premium ? <PremiumSlot wat="premium.wat.onthouden" /> : null}
           {/* A stop in the tab order with a name of its own: on a phone the
               table is wider than the screen and scrolls sideways inside its
               card, and a region that scrolls has to be reachable from the
               keyboard too (axe, scrollable-region-focusable) — as the rows on
               the front door are (ScrollRij). */}
-          <div
-            className="tk-tabelkaart"
-            role="group"
-            aria-label={t('retention.detail')}
-            tabIndex={0}
-          >
-            <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
-          </div>
+          {premium ? (
+            <div
+              className="tk-tabelkaart"
+              role="group"
+              aria-label={t('retention.detail')}
+              tabIndex={0}
+            >
+              <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
+            </div>
+          ) : null}
         </section>
 
         <Regels />

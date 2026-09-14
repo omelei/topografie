@@ -159,6 +159,14 @@ describe('het bedrag en de geldigheid', () => {
     expect(bedragVoorMens()).toBe('€ 24,95');
   });
 
+  it('staat in de app met hetzelfde bedrag als hier (ADR-124)', () => {
+    // De premiumpagina noemt de prijs, want een knop naar een winkel waarvan je
+    // het bedrag niet weet voelt als een val. Twee plekken met een prijs is
+    // alleen veilig als iets ze gelijk houdt, en dat is deze regel.
+    const app = readFileSync('src/i18n/nl.ts', 'utf8');
+    expect(app).toContain(`'premium.prijs': '${bedragVoorMens()}',`);
+  });
+
   it('geldt een jaar vanaf de dag van betalen', () => {
     expect(geldigTot(new Date('2026-09-14T10:00:00Z'))).toBe('2027-09-14');
     // Een schrikkeljaar ertussen schuift de datum een dag, en dat is goed: het

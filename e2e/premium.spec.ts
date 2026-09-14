@@ -39,18 +39,26 @@ async function beantwoord(route: Route, body: unknown) {
   await route.fulfill({ status: 200, headers: cors, json: body });
 }
 
-test('without a code the premium parts are locked, and every lock leads to the code', async ({
+test('without a code the premium parts are labelled once, and say what they do', async ({
   page,
 }) => {
   await signIn(page, 'Noor');
 
-  // The Onthouden page: no table, but what remembering means is still there.
+  // De Onthouden-pagina laat sinds ADR-124 zien wat ze zou laten zien: de vier
+  // tegels en de stippen voor het onderwerp waar ze op opent. Wat premium is:
+  // elk ander onderwerp, en de tabel per onderdeel.
   await page.goto('/onthouden');
   await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
+  await expect(page.getByText('Je ziet hier Provincies van Nederland')).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
   await expect(page.getByRole('table')).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Welk vak?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Wanneer onthoud je iets?' })).toBeVisible();
 
-  await page.getByRole('button', { name: 'Code invullen' }).first().click();
+  // Het slot zegt wat er achter de deur zit, niet dat er een deur is, en de
+  // knop gaat naar de uitleg in plaats van naar een codeveld.
+  await expect(page.getByText('Zie per onderdeel wat je kind onthoudt')).toBeVisible();
+  await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
@@ -76,19 +84,37 @@ test('without a code the premium parts are locked, and every lock leads to the c
     'true',
   );
 
-  // On Jij: the badges and the second child are locked. The tafeldiploma's are
-  // not — they are the one wall a family gets without a code (ADR-122).
+  // Op Jij: één premiumblok in plaats van vijf (ADR-124). De tafeldiploma's
+  // staan er gewoon, want die zijn gratis.
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw badges' })).toContainText(
-    'Dit hoort bij premium.',
-  );
-  await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toContainText(
-    'Dit hoort bij premium.',
+  await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Premium' })).toContainText(
+    'De diploma’s voor vlaggen, klok en topo',
   );
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).not.toContainText(
-    'Dit hoort bij premium.',
-  );
+});
+
+/**
+ * De kolom die op élke pagina meegaat, vraagt zonder code niets (ADR-124).
+ *
+ * Er stonden twee sloten in — de reeks en "Goed beantwoord" — dus twee keer nee
+ * op de voordeur, op elke modulepagina, en zelfs op de premiumpagina zelf.
+ */
+test('without a code the column beside every page carries no lock at all', async ({ page }) => {
+  await signIn(page, 'Sep');
+
+  for (const pad of ['/', '/premium', '/onthouden', '/rekenen']) {
+    await page.goto(pad);
+    await expect(page.getByText('Jouw reeks'), pad).toHaveCount(0);
+    await expect(page.getByText('Goed beantwoord'), pad).toHaveCount(0);
+  }
+
+  // En de voordeur zegt nergens "Dit hoort bij premium".
+  await page.goto('/');
+  await expect(page.getByText('Dit hoort bij premium.')).toHaveCount(0);
 });
 
 test('without a code a child can still discover, repeat their misses, and see the forecast', async ({
@@ -157,6 +183,23 @@ test('without a code the premium page points at the kassa, and with one it does 
   await signIn(page, 'Tess');
 
   await page.goto('/premium');
+
+  // De volgorde van de beslissing (ADR-124): wat het doet, wat gratis blijft,
+  // waarom wij, wat het kost, en pas daarna het veld voor wie al een code heeft.
+  // Gescoped op de pagina zelf: de blokken in de kolom ernaast zijn ook h2.
+  const koppen = await page
+    .locator('.tk-page-main')
+    .getByRole('heading', { level: 2 })
+    .allInnerTexts();
+  expect(koppen).toEqual([
+    'Wat premium voor je doet',
+    'Wat gratis blijft',
+    'Waarom leer.nu',
+    'Wat het kost',
+    'Heb je al een code?',
+  ]);
+  await expect(page.getByText('€ 24,95')).toBeVisible();
+
   const knop = page.getByRole('link', { name: 'Een code kopen' });
   await expect(knop).toBeVisible();
 
@@ -203,8 +246,11 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Laatst geoefend' })).toBeVisible();
 
-  // En de kassa is weg: iemand die net betaald heeft hoeft niet te lezen waar je
-  // kunt betalen (ADR-123).
+  // En er wordt niets meer verkocht: wie net betaald heeft hoeft geen prijs,
+  // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124).
   await page.goto('/premium');
   await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
+  await expect(page.getByText('€ 24,95')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
+  await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 });

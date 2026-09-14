@@ -13,7 +13,6 @@ import {
   type Gespeeld,
   type Onderdeel,
 } from '@/features/module/onderdelen';
-import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
@@ -42,6 +41,11 @@ import { ToetsenBlok } from './ToetsenBlok';
  *
  * "Samen met" belongs at the foot of it. It is three friends, and there are
  * none until ADR-050's backend, so it is absent rather than empty.
+ *
+ * **Zonder code is de kolom korter** (ADR-124). De reeks en "Goed beantwoord"
+ * zijn er dan niet, in plaats van er als twee sloten te staan: dit is de kolom
+ * die op élke pagina meegaat, en wat daar staat zegt een kind op elke pagina
+ * opnieuw. Wat premium is, staat één keer uitgelegd op de premiumpagina.
  */
 export function SideColumn({
   onReeks,
@@ -81,15 +85,9 @@ export function GoedBlok() {
     void loadRun().then(setRun);
   }, []);
 
-  // Premium since ADR-116. The block keeps its place and its name, so the
-  // column does not change shape when a code is entered.
-  if (!actief) {
-    return (
-      <Blok titel={t('home.accuracyTitle')}>
-        <PremiumSlot kaal />
-      </Blok>
-    );
-  }
+  // Weg zonder code sinds ADR-124, om de reden die bij de reeks staat: een
+  // tweede slot in dezelfde kolom, op elke pagina, boven een teller van nul.
+  if (!actief) return null;
 
   // Empty until it is known: a block that says nought and then changes its
   // mind has told a child something that was not true.

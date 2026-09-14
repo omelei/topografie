@@ -1,36 +1,55 @@
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { useNaarPremium } from './usePremium';
 
 /**
- * What stands where a premium block would be, without a code (ADR-116).
+ * Wat er staat waar iets van premium zou staan (ADR-116, ADR-124).
  *
- * The block's own title stays above it, so a child can see what there is; this
- * says in one line that it belongs to premium and offers the one way on. It is
- * not a teaser: nothing of the block is drawn behind it, blurred or otherwise,
- * because a picture of a reward a child cannot have is a small cruelty.
+ * **Het is geen teaser.** Er wordt niets van het blok achter getekend, vervaagd
+ * of anders: een plaatje van een beloning die een kind niet kan krijgen is een
+ * kleine wreedheid. Die regel staat sinds ADR-116 en blijft staan — voor
+ * belóningen. Wat een ouder moet begrijpen om te kunnen kiezen is geen beloning,
+ * en daar toont het product sinds ADR-124 wél iets (de Onthouden-pagina laat
+ * zien wat ze zou laten zien).
+ *
+ * **Het zegt wat het doet.** "Dit hoort bij premium" draagt geen informatie: het
+ * meldt een deur, niet wat erachter zit. Elk slot geeft daarom een `wat` mee —
+ * één zin over wat dít ding voor je doet. Wie niets te zeggen heeft over wat er
+ * achter de deur zit, hoort er ook geen deur te zetten.
+ *
+ * **De knop past bij wie ervoor staat.** "Code invullen" veronderstelt dat je al
+ * gekocht hebt, en dat is bijna niemand die dit leest. De weg is naar de pagina
+ * die uitlegt wat premium is; daar staat het codeveld voor wie er wel een heeft.
  */
-/**
- * A whole section that is premium — the badges, a wall of diplomas, the
- * children — without a code: its heading, and the slot under it.
- */
-export function PremiumSectie({ titel }: { readonly titel: string }) {
+export function PremiumSectie({
+  titel,
+  wat,
+}: {
+  readonly titel: string;
+  readonly wat?: TranslationKey | undefined;
+}) {
   return (
     <section className="flex flex-col gap-3" aria-label={titel}>
       <h2 className="tk-sectie">{titel}</h2>
-      <PremiumSlot />
+      <PremiumSlot wat={wat} />
     </section>
   );
 }
 
-export function PremiumSlot({ kaal = false }: { readonly kaal?: boolean }) {
+export function PremiumSlot({
+  kaal = false,
+  wat,
+}: {
+  readonly kaal?: boolean;
+  readonly wat?: TranslationKey | undefined;
+}) {
   const naarPremium = useNaarPremium();
 
   return (
     <div className={kaal ? 'flex flex-col gap-3' : 'tk-card flex flex-col gap-3'}>
       <p className="flex flex-wrap items-center gap-2 text-tekst-secundair">
         <PremiumLabel hoorbaar />
-        {t('premium.slot')}
+        {t(wat ?? 'premium.slot')}
       </p>
       <button
         type="button"

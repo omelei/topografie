@@ -11,7 +11,6 @@ import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
 import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { BadgeSectie } from '@/features/badges/Badges';
-import { PremiumSectie } from '@/features/premium/PremiumSlot';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
@@ -80,9 +79,9 @@ export function ProfileScreen({
 
         <Week />
 
-        <PremiumBlok />
-
         <Children active={profile} />
+
+        <PremiumBlok />
 
         <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
           <h2 className="tk-sectie">{t('you.settings')}</h2>
@@ -129,10 +128,10 @@ function Children({ active }: { readonly active: ProfileRecord }) {
     void listChildren().then(setChildren);
   }, []);
 
-  // More than one child is premium (ADR-116). Without a code the one who is
-  // practising is the one named at the top of this page, and this section
-  // says what a code adds.
-  if (!actief) return <PremiumSectie titel={t('you.children')} />;
+  // Meer dan één kind is premium (ADR-116). Zonder code staat deze sectie er
+  // niet meer (ADR-124): wie in zijn eentje oefent heeft geen wisselaar nodig,
+  // en het premiumblok onderaan deze pagina noemt het.
+  if (!actief) return null;
 
   async function add(event: FormEvent) {
     event.preventDefault();
@@ -228,20 +227,24 @@ function PremiumBlok() {
   const { actief, stand } = usePremium();
   const naarPremium = useNaarPremium();
 
+  // Met code is dit een statusregel voor de volwassene: staat het aan, tot
+  // wanneer, en waar je het afzet. Zonder code is het het enige premiumblok op
+  // deze pagina, en dan zegt het wat er mist in plaats van dat er iets mist
+  // (ADR-124). Vijf sloten werden er één.
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.premium')}>
       <h2 className="tk-sectie">{t('you.premium')}</h2>
       <p className="text-tekst-secundair">
         {actief && stand
           ? t('you.premiumAan', { datum: leesbareDatum(stand.geldigTot) })
-          : t('you.premiumUit')}
+          : t('premium.wat.jij')}
       </p>
       <button
         type="button"
         className="tk-button tk-button-secondary self-start"
         onClick={naarPremium}
       >
-        {t('you.premiumBekijk')}
+        {actief ? t('you.premiumBekijk') : t('premium.slotKnop')}
       </button>
     </section>
   );

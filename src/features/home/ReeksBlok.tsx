@@ -2,7 +2,6 @@ import { NextIcon } from '@/components/Icon';
 import { laatsteZevenDagen } from '@/game-core';
 import { ReeksGetal, WeekRij } from '@/features/reeks/WeekRij';
 import { useReeks } from '@/features/reeks/useReeks';
-import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { t } from '@/i18n';
 import { Blok } from './Blok';
@@ -23,15 +22,13 @@ export function ReeksBlok({ onReeks }: { readonly onReeks: () => void }) {
   const { actief } = usePremium();
   const reeks = useReeks();
 
-  // Premium since ADR-116. The block keeps its place and its name; the days
-  // are still counted underneath, so the streak is all there once a code is.
-  if (!actief) {
-    return (
-      <Blok titel={t('reeks.titel')}>
-        <PremiumSlot kaal />
-      </Blok>
-    );
-  }
+  // Premium sinds ADR-116, en zonder code sinds ADR-124 helemaal weg in plaats
+  // van op slot. ADR-116 liet het blok staan zodat de kolom niet van vorm
+  // verandert als er een code komt. Die vormvastheid is één moment waard; het
+  // slot stond op élke pagina, naast het tweede slot eronder, bij een reeks van
+  // nul — twee keer nee zeggen tegen een kind dat nog niets gedaan heeft. De
+  // dagen worden onderhuids wel geteld, dus een code opent een geschiedenis.
+  if (!actief) return null;
 
   // Empty until it is known, for the reason the progress card gives.
   if (reeks === null) return <Blok titel={t('reeks.titel')} bezig />;
