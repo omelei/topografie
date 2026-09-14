@@ -6215,6 +6215,88 @@ staat het er goed voor of niet.
 
 ---
 
+## ADR-128 — Waar haken ze af: een meetinstrument op het apparaat, omdat er met opzet geen analytics is
+
+**Status:** accepted. **Date:** 2026-09-14. Gevraagd door de product owner, die
+zag dat zijn kinderen snel afhaken en meer gamification voorstelde.
+
+### Context
+
+De roadmap bij ADR-126 stond op stap 3, het weekbericht voor de ouder. Die stap
+is uitgesteld voor deze, en de reden is het nakijken waard.
+
+Het voorstel was een dertiende beloningssysteem. Er staan er al twaalf: XP,
+munten, niveau, tien badges, drieëndertig diploma's, de dagreeks, de foutloze
+reeks, sterren, kisten, twaalf helden in vijf reeksen, een cijfer per ronde en
+"erbij geleerd". Twee ervan zijn dood: **munten** worden elke ronde
+weggeschreven (`rewardStore.ts`) en nergens gelezen, en **XP** komt in geen
+enkel `.tsx`-bestand voor. De code zegt het zelf: ze zijn voor een winkel die
+niet bestaat. Een dertiende toevoegen aan elf die om aandacht vechten is
+waarschijnlijk niet het antwoord.
+
+Maar het waaróm was niet bekend. "Afhaken" is minstens twee verschillende
+dingen met tegengestelde oplossingen: een ronde die te moeilijk is en een ronde
+die te lang is. Voor de eerste is korter maken precies verkeerd, voor de tweede
+is makkelijker maken precies verkeerd. Er is geen enkele reden om te gokken,
+want **het staat er al**: elke ronde schrijft `gestart`, elk antwoord schrijft
+`tijdstip`, `correct` en `responseMs`.
+
+Dit product heeft met opzet geen analytics, en dat blijft zo. Het gevolg is wel
+dat de enige vraag die over het voortbestaan gaat alleen te beantwoorden was met
+een onderbuikgevoel. Een product zonder analytics heeft in plaats daarvan een
+spiegel nodig die niets doorgeeft.
+
+### Decision
+
+**Een meetinstrument achter `#diagnose`, dat rekent over wat er op het apparaat
+staat en niets verstuurt.** Het staat in geen enkel menu.
+
+**Het gaat mee in de productiebundel**, en dat is het hele punt — hierin
+verschilt het van de componentengalerij, die achter `import.meta.env.DEV` staat
+en nooit meegaat. De geschiedenis waar dit over rekent staat op het apparaat
+waarop een kind oefent, en dat is de echte app. Een instrument dat alleen in
+`npm run dev` draait meet een leeg apparaat.
+
+**Het trekt zelf de conclusie.** "Veertig procent afgebroken" laat de lezer
+gissen, en dan is het weer een onderbuikgevoel met een getal ernaast. `duiding`
+zet het foutpercentage in de laatste drie antwoorden vóór een afbreking af tegen
+dat over alles: gaat het daar vaker mis, dan is het te moeilijk; gaat het juist
+goed en stoppen ze toch, dan is het te lang. De drempels zijn een oordeel en
+geen meting, en ze staan daarom bij elkaar in één bestand in plaats van verspreid
+door een scherm.
+
+**Een ronde zonder vast einde telt niet mee.** Een bliksemronde duurt een minuut
+en een overlevingsronde drie levens, dus negen antwoorden is daar het einde en
+geen afhaken; een tafeldiploma stopt bij de eerste fout. `NIET_AF_TE_MAKEN` in
+`progress.ts` was die lijst al en wordt nu door beide lezers gebruikt, want twee
+lijsten van hetzelfde feit gaan een keer uit elkaar lopen. Zonder die regel zou
+het afbreekpercentage vooral meten hoeveel van die rondes er gespeeld zijn.
+
+**Per kind, en niet alleen wie er nu oefent.** Elke andere lezer vraagt om de
+actieve, want dat is wat een scherm nodig heeft. Met twee kinderen op één iPad
+zit het verschil tussen hen vaak dichter bij het antwoord dan hun gemiddelde.
+
+**De woorden staan niet in `nl.ts`.** Dat bestand bestaat om als geheel gelezen
+te worden — één woord voor onthouden, één taak voor "score" — en namen van
+metingen die geen kind ooit ziet werken daartegenin. Het is de tweede vrijstelling
+in `copy.test.ts`, met een andere reden dan de eerste: niet "het gaat nooit mee",
+maar "het is geen copy".
+
+### Consequences
+
+`afhaken.ts` is puur en heeft zeventien tests. De twee die het meest tellen zijn
+de tegenpolen: vijf goed en dan drie fout wijst moeilijkheid aan, acht goed en
+dan weg wijst lengte aan. De dagentest draait in vier tijdzones, want `dayKey`
+is lokaal.
+
+**Niet hier besloten:** wat er daarna gebeurt. Dit instrument kiest tussen
+"korter" en "makkelijker" en bouwt geen van beide. De dode valuta staan er nog:
+munten en XP verdienen een winkel of een verwijdering, en niet nog een release
+waarin ze worden weggeschreven zonder ooit gelezen te worden. Het weekbericht
+voor de ouder schuift op tot een kind terugkomt om over te berichten.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
