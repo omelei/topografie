@@ -278,6 +278,11 @@ jobs:
           # and a build without them says "nog niet beschikbaar".
           VITE_PREMIUM_URL: ${{ vars.PREMIUM_URL }}
           VITE_PREMIUM_KEY: ${{ vars.PREMIUM_KEY }}
+          # De kassa (ADR-123): het adres van de edge function die een betaling
+          # in een code verandert. Geen sleutel — die staat bij Supabase en komt
+          # nooit in een build. Leeg tot de kassa is ingesteld, en dan zeggen de
+          # pagina's onder /kopen dat ze dicht zijn.
+          KASSA_URL: ${{ vars.KASSA_URL }}
       # Cheap, and it closes the only way this build can be wrong while every
       # test passes: the tests run against a dev server that does not have a
       # base at all, so nothing else in this file ever looks at the paths that

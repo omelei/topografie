@@ -149,3 +149,144 @@ revoke all on function public.premium_ping() from public;
 grant execute on function public.premium_controleer(text, uuid) to anon;
 grant execute on function public.premium_afmelden(text, uuid) to anon;
 grant execute on function public.premium_ping() to anon;
+
+-- ---------------------------------------------------------------------------
+-- De kassa (ADR-123): van een betaling bij Mollie naar een code.
+--
+-- Wat hier bij komt te staan is één rij per betaling: het betaal-id van Mollie,
+-- de hash van de code, en de code zelf tot hij gemaild is en dertig dagen oud.
+-- Geen naam, geen adres, geen e-mailadres — dat laatste blijft bij Mollie, die
+-- het voor de transactie toch moet bewaren, en de edge function leest het daar
+-- per keer op.
+--
+-- Waarom de code hier even leesbaar staat: bij een code die met de hand wordt
+-- uitgedeeld is een hash genoeg, want het origineel is net afgedrukt. Bij een
+-- betaling is er een plicht — er is betaald, dus de code moet aankomen — en een
+-- code die alleen als hash bestaat is voorgoed weg als het mailen mislukt.
+-- `premium_bestellingen_opschonen` haalt hem weg zodra dat niet meer kan gebeuren.
+
+create table if not exists public.premium_bestellingen (
+  betaling   text primary key,
+  code_hash  text not null references public.premium_codes (code_hash) on delete cascade,
+  code       text,
+  gemaild    timestamptz,
+  aangemaakt timestamptz not null default now()
+);
+
+alter table public.premium_bestellingen enable row level security;
+revoke all on public.premium_bestellingen from anon, authenticated;
+
+-- Een betaling vastleggen. Idempotent, en dat is de hele truc: Mollie stuurt
+-- dezelfde melding met opzet vaker, en twee codes voor één betaling zou zowel
+-- verwarrend als duur zijn. De tweede keer wordt er niets gemaakt en komt de
+-- bestelling terug zoals hij was.
+create or replace function public.premium_bestelling_vastleggen(
+  p_betaling   text,
+  p_code_hash  text,
+  p_code       text,
+  p_geldig_tot date
+)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_rij public.premium_bestellingen%rowtype;
+begin
+  select * into v_rij from public.premium_bestellingen where betaling = p_betaling;
+  if found then
+    return json_build_object(
+      'nieuw', false,
+      'code', v_rij.code,
+      'geldig_tot', (select geldig_tot from public.premium_codes where code_hash = v_rij.code_hash),
+      'gemaild', v_rij.gemaild is not null
+    );
+  end if;
+
+  insert into public.premium_codes (code_hash, geldig_tot, max_apparaten, notitie)
+  values (p_code_hash, p_geldig_tot, 3, 'kassa ' || p_betaling)
+  on conflict (code_hash) do nothing;
+
+  insert into public.premium_bestellingen (betaling, code_hash, code)
+  values (p_betaling, p_code_hash, p_code);
+
+  return json_build_object(
+    'nieuw', true, 'code', p_code, 'geldig_tot', p_geldig_tot, 'gemaild', false
+  );
+end;
+$$;
+
+create or replace function public.premium_bestelling_lezen(p_betaling text)
+returns json
+language sql
+security definer
+set search_path = public
+as $$
+  select json_build_object(
+    'nieuw', false,
+    'code', b.code,
+    'geldig_tot', c.geldig_tot,
+    'gemaild', b.gemaild is not null
+  )
+  from public.premium_bestellingen b
+  join public.premium_codes c using (code_hash)
+  where b.betaling = p_betaling;
+$$;
+
+create or replace function public.premium_bestelling_gemaild(p_betaling text)
+returns boolean
+language sql
+security definer
+set search_path = public
+as $$
+  update public.premium_bestellingen set gemaild = now()
+  where betaling = p_betaling and gemaild is null
+  returning true;
+$$;
+
+-- De leesbare code weghalen zodra hij zijn werk gedaan heeft: gemaild, en dertig
+-- dagen oud. Draait mee met de workflow die de database wakker houdt.
+create or replace function public.premium_bestellingen_opschonen()
+returns integer
+language sql
+security definer
+set search_path = public
+as $$
+  with opgeruimd as (
+    update public.premium_bestellingen set code = null
+    where code is not null and gemaild is not null and aangemaakt < now() - interval '30 days'
+    returning 1
+  )
+  select count(*)::integer from opgeruimd;
+$$;
+
+-- Alleen de edge function, met de service-sleutel, mag deze vier. De app kent ze
+-- niet en heeft ze niet nodig: die vult alleen een code in.
+revoke all on function public.premium_bestelling_vastleggen(text, text, text, date) from public, anon, authenticated;
+revoke all on function public.premium_bestelling_lezen(text) from public, anon, authenticated;
+revoke all on function public.premium_bestelling_gemaild(text) from public, anon, authenticated;
+revoke all on function public.premium_bestellingen_opschonen() from public, anon, authenticated;
+grant execute on function public.premium_bestelling_vastleggen(text, text, text, date) to service_role;
+grant execute on function public.premium_bestelling_lezen(text) to service_role;
+grant execute on function public.premium_bestelling_gemaild(text) to service_role;
+grant execute on function public.premium_bestellingen_opschonen() to service_role;
+
+-- De leesbare codes opruimen zonder dat er ergens een sleutel voor nodig is:
+-- pg_cron draait het in de database zelf, elke nacht. Draait dit script op een
+-- plek zonder pg_cron, dan zegt het dat en gaat het verder — het opschonen kan
+-- dan met de hand of vanuit de edge function.
+do $$
+begin
+  create extension if not exists pg_cron;
+  perform cron.unschedule('premium-bestellingen-opschonen')
+  where exists (select 1 from cron.job where jobname = 'premium-bestellingen-opschonen');
+  perform cron.schedule(
+    'premium-bestellingen-opschonen',
+    '23 3 * * *',
+    $cron$select public.premium_bestellingen_opschonen();$cron$
+  );
+exception when others then
+  raise notice 'pg_cron niet beschikbaar (%): ruim premium_bestellingen.code met de hand op.', sqlerrm;
+end
+$$;

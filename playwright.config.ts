@@ -119,6 +119,10 @@ export default defineConfig({
     env: {
       VITE_PREMIUM_URL: 'https://premium.leer.test',
       VITE_PREMIUM_KEY: 'e2e-sleutel',
+      // En een kassa die er net zo min is (ADR-123), zodat de kassapagina's in
+      // de tests open staan en `network.spec.ts` kan nakijken dat ze met dit
+      // ene adres praten en met niets anders.
+      KASSA_URL: 'https://kassa.leer.test/kassa',
     },
   },
 });

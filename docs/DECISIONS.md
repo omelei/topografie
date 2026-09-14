@@ -5764,6 +5764,109 @@ way to buy one yet; a price on a page with no way to pay is a dead end.
 
 ---
 
+## ADR-123 — De kassa staat buiten de app: Mollie, een edge function, en een code per mail
+
+**Status:** accepted. **Date:** 2026-09-14. Asked for by the product owner:
+"bouw de kassa". Amends ADR-116; the price comes from the market and pricing
+review that led to ADR-122.
+
+### Context
+
+ADR-116 gave premium a lock and a key: a code, checked against a small table.
+What it did not give was a way to get one. Codes were made by hand and handed
+out to test families, and the premium page took a code without ever saying where
+one comes from. ADR-122 then sharpened what premium is for. Both left the same
+hole: a parent who wants to pay cannot.
+
+ADR-013 parked payments behind a `PaymentProvider` interface for schools on
+invoice. That is not this. This is one product, one price, one button, and an
+interface with a single implementation is a guess about the second one.
+
+### Decision
+
+**€ 24,95 voor een schooljaar, per gezin, tot drie apparaten.** One amount, in
+one constant (`PRIJS_CENTEN`), used by the edge function and printed on the
+kassa page. Not a subscription and nothing to cancel: the code runs out and the
+parent decides again. The reasoning is in the pricing review — a fifth of
+Squla's year, above the "too cheap to be serious" line and under the twenty-five
+euro impulse ceiling where a parent starts comparing instead of buying.
+
+**Mollie, for iDEAL.** € 0,29 per transaction and no percentage, which at this
+price is 1,2 % — every other provider charges a percentage that costs more. It
+is the method Dutch parents already use, and it needs no card.
+
+**The kassa is not the app.** Two plain pages under `public/kopen`, with their
+own stylesheet, no bundle, no framework and no build. The app links to them with
+an ordinary anchor and knows nothing else about paying. That is what keeps
+ADR-015's claim whole: the app still asks nobody anything, and the one page that
+must talk to a payment provider is not a page a child ever opens.
+
+`network.spec.ts` now draws that line as a test rather than an intention. The
+kassa page may talk to one address and no other: no font from a CDN, no button
+from a social network, no measurement pixel from the payment provider. It asks
+nothing at all until a parent presses the button.
+
+**One edge function, three doors.** `supabase/functions/kassa` takes an e-mail
+address and makes a payment, takes Mollie's webhook and makes a code, and
+answers the page that comes after with a status. Everything that is a decision
+lives in `kassa.ts` and is pure, so all of it is played out in `kassa.test.ts`
+against fake services; `index.ts` is the only file that touches Mollie, the
+database and the mailer.
+
+**Mollie's webhook carries no signature, so nothing in it is believed.** It
+sends an id. The function asks Mollie about that id and acts only on what Mollie
+answers. Two of the same webhook must not mint two codes, and Mollie sends them
+again on purpose, so `premium_bestelling_vastleggen` is idempotent — and the
+mail hangs on `gemaild` rather than on `nieuw`, so a retry after a mailer outage
+still sends the mail that did not get out.
+
+**The e-mail address is not ours to keep.** It goes to Mollie as metadata —
+Mollie has to keep it for the transaction anyway — and the webhook reads it back
+there each time. Our own table holds the payment id, the hash of the code, and
+nothing about a person. This is ADR-116's rule carried into the shop: keep what
+the service needs and not a field more.
+
+**The readable code is the one exception, and it expires.** ADR-116 keeps only
+hashes, which is right for a code that was just printed. Money changes that: it
+has been paid for, so it has to arrive, and a code that exists only as a hash is
+gone for good the moment the mail fails. So `premium_bestellingen.code` holds it
+until it has been mailed and the order is thirty days old, and a nightly pg_cron
+job nulls it. It is also what the page after the payment shows, so a parent can
+type the code straight in rather than wait for mail.
+
+**The price is not in the app.** The app says a code opens premium and links to
+where you buy one; what it costs is on the kassa page, in one place, next to the
+button that charges it. Two places with a price is one place with an old price.
+
+### Consequences
+
+The build gains a step (`tools/kassa-adres.mjs`) that writes the kassa's address
+into the shipped pages, because those pages go around Vite and have no
+`import.meta.env`. Without `KASSA_URL` the placeholder stays and the pages say
+the kassa is closed — the same choice ADR-116 made for a build without a premium
+server.
+
+Vitest and `tsc` now reach into `supabase/`, and `allowImportingTsExtensions` is
+on so the function can import the way Deno wants. `deno.d.ts` declares the two
+pieces of Deno that `index.ts` uses, so the one file in this project that talks
+about money is typechecked rather than excluded.
+
+`a11y.spec.ts` scans the kassa pages. They are outside the design system, and
+what stands outside a system does not inherit its care by itself — least of all
+the page where a parent leaves an address and money.
+
+What none of this proves is that Mollie and Resend behave as their documentation
+says. That is one test-mode payment, and `tools/premium/README.md` names it as
+the step to do before the key goes from `test_` to `live_`.
+
+**Not decided here.** A reminder before a code runs out — it needs the address
+back from Mollie at send time, and that is a second decision about a second
+piece of machinery. An invoice or receipt beyond what Mollie sends. Anything for
+schools: ADR-013 still stands unbuilt, and the klascode from the pricing review
+is a different sale with a different unit.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

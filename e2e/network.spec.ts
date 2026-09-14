@@ -19,6 +19,12 @@ import { expect, test, type Request } from '@playwright/test';
  * about the child. Every run here has a code that was checked in 2099, so the
  * app has no reason to ask, and this test still sees nothing leave. The ask
  * itself is tested in `premium.spec.ts`, against a server that is not there.
+ *
+ * Since ADR-123 there is a second place that talks to anybody, and the tests
+ * below draw the line round it rather than leaving it to good intentions. The
+ * kassa under /kopen is not the app: no bundle, no child, no progress. It has to
+ * reach a payment provider — that is what paying is — and the tests hold it to
+ * exactly one address and no fonts, no analytics and no third party besides.
  */
 
 const ALLOWED_SCHEMES = ['data:', 'blob:', 'about:'];
@@ -90,4 +96,58 @@ test('carries no link or import pointing off-origin', async ({ page, baseURL }) 
   });
 
   expect(offOrigin, 'markup references something off-origin').toEqual([]);
+});
+
+/**
+ * De kassa (ADR-123): één adres, en verder niemand.
+ *
+ * Dit is de enige pagina op dit domein die met een ander bedrijf praat, en er is
+ * geen versie van betalen waarin dat niet zo is. Wat wél te kiezen valt is met
+ * hoevéél anderen, en het antwoord hoort één te zijn: geen lettertype van een
+ * CDN, geen knop van een socialemediabedrijf, geen meetpixel van de betaaldienst.
+ */
+test('the kassa asks one address and nobody else', async ({ page, baseURL }) => {
+  const origin = new URL(baseURL ?? 'http://localhost:4173').origin;
+  // Hetzelfde adres als playwright.config.ts de build meegeeft; het bestaat niet,
+  // dus het verzoek mislukt — maar het is wel te zien, en dat is wat hier telt.
+  const kassa = 'https://kassa.leer.test';
+  const vreemd: string[] = [];
+
+  page.on('request', (request) => {
+    const url = request.url();
+    if (isForeign(request, origin) && !url.startsWith(kassa)) vreemd.push(url);
+  });
+
+  await page.goto('/kopen/');
+  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+
+  // Tot hier is er nog niets gevraagd aan wie dan ook: het formulier praat pas
+  // als een ouder op de knop drukt.
+  expect(vreemd, 'de kassapagina vroeg iets aan een derde').toEqual([]);
+
+  const naarDeKassa = page.waitForRequest((request) => request.url().startsWith(kassa));
+  await page.getByLabel('Waar sturen we de code heen?').fill('ouder@example.nl');
+  await page.getByRole('button', { name: 'Betalen met iDEAL' }).click();
+  await naarDeKassa;
+
+  expect(vreemd, 'de kassapagina vroeg iets aan een derde').toEqual([]);
+});
+
+test('the kassa carries no link or import pointing off-origin', async ({ page, baseURL }) => {
+  const origin = new URL(baseURL ?? 'http://localhost:4173').origin;
+
+  for (const pagina of ['/kopen/', '/kopen/klaar/']) {
+    await page.goto(pagina);
+    const verwijzingen = await page.evaluate(() =>
+      [
+        ...[...document.querySelectorAll('link[href]')].map((el) => el.getAttribute('href')),
+        ...[...document.querySelectorAll('script[src]')].map((el) => el.getAttribute('src')),
+        ...[...document.querySelectorAll('img[src]')].map((el) => el.getAttribute('src')),
+      ].filter((value): value is string => value !== null),
+    );
+
+    const buitenaf = verwijzingen.filter((href) => new URL(href, origin).origin !== origin);
+    expect(buitenaf, `${pagina} verwijst naar iets buiten dit adres`).toEqual([]);
+  }
 });

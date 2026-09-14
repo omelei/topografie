@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="noindex" />
+    <meta name="kassa" content="__KASSA_URL__" />
+    <link rel="icon" href="/logo/svg/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/kopen/stijl.css" />
+    <title>Bedankt — leer.nu</title>
+  </head>
+  <body>
+    <main>
+      <a class="merk" href="/">leer.nu</a>
+
+      <h1 id="kop">Een moment…</h1>
+      <p id="uitleg">We kijken of de betaling rond is.</p>
+
+      <section class="kaart" id="klaar" hidden>
+        <h2>Je code</h2>
+        <p class="code" id="code"></p>
+        <p id="geldig" class="hulp"></p>
+        <p>
+          Vul hem in op <a href="/premium">leer.nu/premium</a>. Hij staat ook in de mail die we net
+          hebben gestuurd — bewaar die, want de code staat nergens anders.
+        </p>
+      </section>
+
+      <p class="fout" id="fout" role="alert" hidden></p>
+
+      <p class="hulp">
+        Iets niet goed gegaan? Mail ons en noem het tijdstip van je betaling; we zoeken het op.
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        var kassa = document.querySelector('meta[name="kassa"]').content;
+        var kop = document.getElementById('kop');
+        var uitleg = document.getElementById('uitleg');
+        var klaar = document.getElementById('klaar');
+        var fout = document.getElementById('fout');
+
+        var betaling = null;
+        try {
+          betaling = localStorage.getItem('leernu.bestelling');
+        } catch (genegeerd) {
+          betaling = null;
+        }
+
+        function zeg(titel, tekst) {
+          kop.textContent = titel;
+          uitleg.textContent = tekst;
+        }
+
+        function perMail() {
+          // Zonder betaal-id valt hier niets te tonen, en dat hoeft ook niet: de
+          // mail is het kanaal dat altijd werkt. Dit is geen fout, dus het staat
+          // er ook niet als een fout.
+          zeg('Bedankt', 'Je code gaat per mail naar het adres dat je hebt ingevuld.');
+        }
+
+        if (kassa.indexOf('__') === 0 || betaling === null) {
+          perMail();
+          return;
+        }
+
+        var pogingen = 0;
+
+        function kijk() {
+          pogingen += 1;
+          fetch(kassa + '?actie=status&betaling=' + encodeURIComponent(betaling))
+            .then(function (antwoord) {
+              return antwoord.json();
+            })
+            .then(function (inhoud) {
+              if (inhoud.status === 'betaald') {
+                try {
+                  localStorage.removeItem('leernu.bestelling');
+                } catch (genegeerd) {
+                  // Niets aan te doen, en niets dat stuk gaat.
+                }
+                zeg('Bedankt', 'De betaling is rond.');
+                if (inhoud.code) {
+                  document.getElementById('code').textContent = inhoud.code;
+                  document.getElementById('geldig').textContent = inhoud.geldigTot
+                    ? 'Geldig tot en met ' + inhoud.geldigTot + '.'
+                    : '';
+                  klaar.hidden = false;
+                } else {
+                  perMail();
+                }
+                return;
+              }
+
+              if (inhoud.status === 'mislukt') {
+                zeg('De betaling is niet doorgegaan', 'Er is niets afgeschreven.');
+                fout.textContent = 'Je kunt het opnieuw proberen op leer.nu/kopen.';
+                fout.hidden = false;
+                return;
+              }
+
+              // Nog bezig. De webhook van Mollie is meestal binnen een paar
+              // seconden langs geweest; daarna is wachten zinloos en is de mail
+              // het eerlijkste antwoord.
+              if (pogingen >= 12) {
+                perMail();
+                return;
+              }
+              window.setTimeout(kijk, 2000);
+            })
+            .catch(function () {
+              perMail();
+            });
+        }
+
+        kijk();
+      })();
+    </script>
+  </body>
+</html>

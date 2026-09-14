@@ -144,6 +144,29 @@ test('without a code a child can still discover, repeat their misses, and see th
   await expect(page.getByPlaceholder('Antwoord')).toBeVisible();
 });
 
+/**
+ * De weg naar de kassa (ADR-123): een gewone link naar een gewone pagina op dit
+ * adres. Daarom hoeft de app zelf niets van betalen te weten — hij wijst, en
+ * laat los. En hij wijst alleen zolang er nog niets gekocht is.
+ */
+test('without a code the premium page points at the kassa, and with one it does not', async ({
+  page,
+  baseURL,
+}) => {
+  const origin = new URL(baseURL ?? 'http://localhost:4173').origin;
+  await signIn(page, 'Tess');
+
+  await page.goto('/premium');
+  const knop = page.getByRole('link', { name: 'Een code kopen' });
+  await expect(knop).toBeVisible();
+
+  const doel = new URL((await knop.getAttribute('href')) ?? '', origin);
+  expect(doel.origin, 'de kassa staat op dit adres zelf').toBe(origin);
+
+  await knop.click();
+  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+});
+
 test('a code is checked once, and then everything opens', async ({ page }) => {
   const gevraagd: Record<string, unknown>[] = [];
   await page.route(`${SERVER}/rest/v1/rpc/premium_controleer`, async (route) => {
@@ -179,4 +202,9 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await page.goto('/onthouden');
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Laatst geoefend' })).toBeVisible();
+
+  // En de kassa is weg: iemand die net betaald heeft hoeft niet te lezen waar je
+  // kunt betalen (ADR-123).
+  await page.goto('/premium');
+  await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
 });

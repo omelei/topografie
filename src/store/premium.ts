@@ -63,6 +63,18 @@ function server(): { readonly url: string; readonly sleutel: string } | null {
 }
 
 /**
+ * Of er überhaupt iets te kopen valt op deze build (ADR-123).
+ *
+ * De premiumpagina wijst naar de kassa, en de kassa staat op dit adres zelf
+ * (`/kopen`) — geen variabele, geen ander domein. Maar een build zonder
+ * premiumserver heeft niets te verkopen, en een knop naar een winkel die er niet
+ * is, is erger dan geen knop. Dezelfde voorwaarde dus als voor de code zelf.
+ */
+export function isTeKoop(): boolean {
+  return server() !== null;
+}
+
+/**
  * What a parent typed, as the server stores it: capitals and digits only, and
  * without the "LEER" in front that the printed code carries. "leer-7k3m q9tx"
  * and "7K3MQ9TX" are the same code.
