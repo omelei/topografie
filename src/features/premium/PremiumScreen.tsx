@@ -5,27 +5,44 @@ import { activeer, isTeKoop, meldAf, type PremiumReden } from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
- * Everything premium opens, with what it is for at the top (ADR-122): the two
- * that keep a record over weeks come first, then the two ways of checking
- * yourself, then what a family gets for the year.
- */
-const WAT: readonly TranslationKey[] = [
-  'premium.functie.onthouden',
-  'premium.functie.fouten',
-  'premium.functie.manieren',
-  'premium.functie.toets',
-  'premium.functie.diplomas',
-  'premium.functie.badges',
-  'premium.functie.reeks',
-  'premium.functie.goed',
-  'premium.functie.kinderen',
-];
-
-/**
  * De kassa, als adres. Geen route van de app maar een echte pagina onder
  * `public/kopen`, dus een gewone link die de app verlaat (ADR-123).
  */
 const KASSA_PAD = '/kopen/';
+
+/**
+ * Wat premium voor je doet, in vier dingen (ADR-124).
+ *
+ * Hiervoor stond hier een lijst van negen functies — badges, reeks, "Goed
+ * beantwoord" — allemaal even zwaar, allemaal de naam van een knop in plaats
+ * van wat hij oplevert. Een ouder die "Jouw badges" leest weet niet meer dan
+ * daarvoor. Dit zijn de vier klussen waarvoor betaald wordt, met de
+ * belangrijkste bovenaan: het plannen. De kleine dingen staan eronder in één
+ * regel, waar ze thuishoren.
+ */
+const DOET: readonly (readonly [TranslationKey, TranslationKey])[] = [
+  ['premium.usp.plan', 'premium.usp.planUit'],
+  ['premium.usp.zicht', 'premium.usp.zichtUit'],
+  ['premium.usp.zelf', 'premium.usp.zelfUit'],
+  ['premium.usp.gezin', 'premium.usp.gezinUit'],
+];
+
+/** Waarom dit product en niet een ander. Geen functies: redenen om het te vertrouwen. */
+const WAAROM: readonly TranslationKey[] = [
+  'premium.waarom.reclame',
+  'premium.waarom.apparaat',
+  'premium.waarom.abonnement',
+  'premium.waarom.gok',
+];
+
+/** Wat er gratis is en blijft. Staat vóór de prijs: het is het sterkste dat er te zeggen valt. */
+const GRATIS: readonly TranslationKey[] = [
+  'premium.vrij.alles',
+  'premium.vrij.vormen',
+  'premium.vrij.fouten',
+  'premium.vrij.diploma',
+  'premium.vrij.voorspelling',
+];
 
 const FOUT: Record<PremiumReden, TranslationKey> = {
   leeg: 'premium.fout.leeg',
@@ -38,19 +55,151 @@ const FOUT: Record<PremiumReden, TranslationKey> = {
 };
 
 /**
- * The premium page: what it is, and the one field that turns it on (ADR-116).
+ * De premiumpagina: wat het is, wat het kost, en pas daarna het veld (ADR-116,
+ * ADR-124).
  *
- * Written for the parent, who is the one holding the code, and short enough
- * for the child who pressed a lock to read too. It says what is in premium,
- * what the code does and does not send, and — once it is on — until when, with
- * the way to take it off this device again so its place can go to another.
+ * Hij stond op zijn kop. Bovenaan een codeveld — een formulier voor wie al
+ * gekocht heeft, en dat is bijna niemand die hier komt — dan een lijst met
+ * functienamen, en onderaan, na alles, de weg om er een te kopen. Wie hier
+ * binnenkwam zonder te weten wat premium was, moest langs de kassa van iemand
+ * anders om bij de etalage te komen.
  *
- * "Inloggen" is a code and nothing more. No e-mail and no password: there is no
- * account to sign in to (ADR-015), and a field for either would collect exactly
- * what this product has promised not to.
+ * Nu leest hij in de volgorde van de beslissing: wat doet het voor mij, wat
+ * blijft gratis, waarom zou ik jullie vertrouwen, wat kost het, hoe koop ik het
+ * — en helemaal onderaan, klein, het veld voor wie al een code heeft.
+ *
+ * **Met een code verandert de pagina van rol.** Dan is er niets meer te
+ * verkopen: bovenaan staat tot wanneer het aanstaat en hoe je het van dit
+ * apparaat haalt, en de rest is er niet. Doorverkopen aan wie al betaald heeft
+ * is het duidelijkste teken dat een pagina niet naar zijn lezer kijkt.
  */
 export function PremiumScreen({ aside }: { readonly aside: ReactNode }) {
   const { actief, stand } = usePremium();
+
+  return (
+    <div className="tk-page">
+      <div className="tk-page-main">
+        <div className="flex flex-col gap-2">
+          <h1 className="tk-titel">{t('premium.titel')}</h1>
+          <p className="text-lopend text-tekst-secundair">
+            {actief ? t('premium.introAan') : t('premium.intro')}
+          </p>
+        </div>
+
+        {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
+      </div>
+
+      {aside}
+    </div>
+  );
+}
+
+/** Voor wie al betaald heeft: de stand, en de weg terug. Verder niets. */
+function Aan({ tot }: { readonly tot: string }) {
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
+      <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
+      <div className="tk-card flex flex-col gap-3">
+        <p className="flex items-center gap-2 text-lopend">
+          <CorrectIcon size={24} />
+          {t('premium.aan', { datum: leesbareDatum(tot) })}
+        </p>
+        <button
+          type="button"
+          className="tk-button tk-button-secondary self-start"
+          onClick={() => void meldAf()}
+        >
+          {t('premium.afmelden')}
+        </button>
+        <p className="tk-hulp">{t('premium.afmeldenUitleg')}</p>
+      </div>
+    </section>
+  );
+}
+
+function Aanbod() {
+  return (
+    <>
+      <section className="flex flex-col gap-3" aria-label={t('premium.watTitel')}>
+        <h2 className="tk-sectie">{t('premium.watTitel')}</h2>
+        <ul className="tk-lijst">
+          {DOET.map(([kop, uitleg]) => (
+            <li key={kop}>
+              <div className="tk-lijstrij">
+                <span className="tk-lijstrij-tekst">
+                  <span className="tk-lijstrij-titel">{t(kop)}</span>
+                  <span className="tk-lijstrij-regel">{t(uitleg)}</span>
+                </span>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="tk-hulp">{t('premium.watKlein')}</p>
+      </section>
+
+      {/* Vóór de prijs, en met opzet: dit is het sterkste dat er te zeggen valt,
+          en een ouder die twijfelt of het een muur is hoort hier af te haken met
+          een gerust hart in plaats van door te scrollen met een onbehaaglijk
+          gevoel. */}
+      <section className="flex flex-col gap-3" aria-label={t('premium.vrijTitel')}>
+        <h2 className="tk-sectie">{t('premium.vrijTitel')}</h2>
+        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
+          {GRATIS.map((sleutel) => (
+            <li key={sleutel}>{t(sleutel)}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-3" aria-label={t('premium.waaromTitel')}>
+        <h2 className="tk-sectie">{t('premium.waaromTitel')}</h2>
+        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
+          {WAAROM.map((sleutel) => (
+            <li key={sleutel}>{t(sleutel)}</li>
+          ))}
+        </ul>
+      </section>
+
+      <Kopen />
+      <Code />
+
+      <p className="tk-hulp">{t('premium.voorOuders')}</p>
+    </>
+  );
+}
+
+/**
+ * De prijs staat er (ADR-124). ADR-123 hield hem met opzet alleen op de
+ * kassapagina — twee plekken met een prijs is één plek met een oude prijs — maar
+ * dat kostte meer dan het opleverde: een knop naar een winkel waarvan je het
+ * bedrag niet weet, voelt als een val. Het bedrag staat nu op één plek in de app
+ * (`premium.prijs`) en `kassa.test.ts` houdt het gelijk aan `PRIJS_CENTEN`.
+ */
+function Kopen() {
+  if (!isTeKoop()) return null;
+
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('premium.kopenTitel')}>
+      <h2 className="tk-sectie">{t('premium.kopenTitel')}</h2>
+      <div className="tk-card flex flex-col gap-3">
+        <p className="tk-display text-paginakop">{t('premium.prijs')}</p>
+        <p className="text-lopend">{t('premium.kopenUitleg')}</p>
+        <a className="tk-button self-start" href={KASSA_PAD}>
+          {t('premium.kopenKnop')}
+        </a>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Het veld, onderaan en klein. Het is de laatste stap van een reis die ergens
+ * anders begon: je hebt betaald, je hebt een mail, je typt hem over.
+ *
+ * "Inloggen" is een code en niets meer. Geen e-mail en geen wachtwoord: er is
+ * geen account om in te loggen (ADR-015), en een veld voor een van beide zou
+ * precies verzamelen wat dit product beloofd heeft niet te verzamelen.
+ */
+function Code() {
   const [invoer, setInvoer] = useState('');
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<PremiumReden | null>(null);
@@ -68,93 +217,34 @@ export function PremiumScreen({ aside }: { readonly aside: ReactNode }) {
   }
 
   return (
-    <div className="tk-page">
-      <div className="tk-page-main">
-        <div className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('premium.titel')}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('premium.intro')}</p>
-        </div>
-
-        <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
-          <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
-
-          {actief && stand ? (
-            <div className="tk-card flex flex-col gap-3">
-              <p className="flex items-center gap-2 text-lopend">
-                <CorrectIcon size={24} />
-                {t('premium.aan', { datum: leesbareDatum(stand.geldigTot) })}
-              </p>
-              <button
-                type="button"
-                className="tk-button tk-button-secondary self-start"
-                onClick={() => void meldAf()}
-              >
-                {t('premium.afmelden')}
-              </button>
-              <p className="tk-hulp">{t('premium.afmeldenUitleg')}</p>
-            </div>
-          ) : (
-            <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void gebruik(event)}>
-              <label htmlFor={veld} className="tk-label">
-                {t('premium.codeLabel')}
-              </label>
-              <input
-                id={veld}
-                className="tk-input max-w-xs"
-                value={invoer}
-                onChange={(event) => setInvoer(event.target.value)}
-                placeholder={t('premium.codePlaceholder')}
-                autoComplete="off"
-                autoCapitalize="characters"
-                spellCheck={false}
-                maxLength={20}
-                aria-describedby={fout ? melding : undefined}
-                aria-invalid={fout ? true : undefined}
-              />
-              <button type="submit" className="tk-button self-start" disabled={bezig}>
-                {bezig ? t('premium.bezig') : t('premium.codeGebruiken')}
-              </button>
-              {fout ? (
-                <p id={melding} role="alert" className="text-lopend">
-                  {t(FOUT[fout])}
-                </p>
-              ) : null}
-            </form>
-          )}
-        </section>
-
-        <section className="flex flex-col gap-3" aria-label={t('premium.watTitel')}>
-          <h2 className="tk-sectie">{t('premium.watTitel')}</h2>
-          <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
-            {WAT.map((sleutel) => (
-              <li key={sleutel}>{t(sleutel)}</li>
-            ))}
-          </ul>
-          <p className="tk-hulp">{t('premium.gratis')}</p>
-        </section>
-
-        {/* Waar je er een koopt (ADR-123). Een gewone link naar een gewone pagina
-            op dit adres: de kassa staat buiten de app, praat met Mollie en met
-            niemand anders, en de app zelf blijft vragen aan niemand stellen. Hij
-            staat er alleen als er een premiumserver is om een code bij te
-            controleren — een knop naar een winkel die niet bestaat is erger dan
-            geen knop. */}
-        {actief || !isTeKoop() ? null : (
-          <section className="flex flex-col gap-3" aria-label={t('premium.kopenTitel')}>
-            <h2 className="tk-sectie">{t('premium.kopenTitel')}</h2>
-            <div className="tk-card flex flex-col gap-3">
-              <p className="text-lopend">{t('premium.kopenUitleg')}</p>
-              <a className="tk-button self-start" href={KASSA_PAD}>
-                {t('premium.kopenKnop')}
-              </a>
-            </div>
-          </section>
-        )}
-
-        <p className="tk-hulp">{t('premium.voorOuders')}</p>
-      </div>
-
-      {aside}
-    </div>
+    <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
+      <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
+      <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void gebruik(event)}>
+        <label htmlFor={veld} className="tk-label">
+          {t('premium.codeLabel')}
+        </label>
+        <input
+          id={veld}
+          className="tk-input max-w-xs"
+          value={invoer}
+          onChange={(event) => setInvoer(event.target.value)}
+          placeholder={t('premium.codePlaceholder')}
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          maxLength={20}
+          aria-describedby={fout ? melding : undefined}
+          aria-invalid={fout ? true : undefined}
+        />
+        <button type="submit" className="tk-button tk-button-secondary self-start" disabled={bezig}>
+          {bezig ? t('premium.bezig') : t('premium.codeGebruiken')}
+        </button>
+        {fout ? (
+          <p id={melding} role="alert" className="text-lopend">
+            {t(FOUT[fout])}
+          </p>
+        ) : null}
+      </form>
+    </section>
   );
 }

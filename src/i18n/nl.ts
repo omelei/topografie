@@ -212,6 +212,10 @@ export const nl = {
   'retention.dagenGeleden': '{aantal} dagen geleden',
   'retention.nooit': '–',
   // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114).
+  // De gratis voorproef (ADR-124): de pagina zegt welk onderwerp ze laat zien,
+  // want zonder de chips kan een kind niet zien dat er meer is.
+  'retention.voorproef':
+    'Je ziet hier {onderwerp}. Met premium kies je elk vak en elk onderwerp, en zie je het per onderdeel.',
   'retention.regelsTitel': 'Wanneer onthoud je iets?',
   'retention.regel1':
     'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
@@ -475,8 +479,9 @@ export const nl = {
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
   'premium.intro':
-    'Oefenen is en blijft gratis: alle vakken, alle onderwerpen, voor altijd. Premium onthoudt vóór je — het houdt bij wat je kind al kan en laat zien wat er over drie weken nog van over is.',
-  'premium.codeTitel': 'Je code',
+    'Oefenen is en blijft gratis: alle vakken, alle onderwerpen, voor altijd. Premium onthoudt vóór je — het plant wanneer iets terug moet komen en laat zien wat er over drie weken nog van over is.',
+  'premium.introAan': 'Alles staat open op dit apparaat.',
+  'premium.codeTitel': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
   'premium.codeGebruiken': 'Code gebruiken',
@@ -485,22 +490,56 @@ export const nl = {
   'premium.afmelden': 'Code van dit apparaat halen',
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
-  'premium.watTitel': 'Wat er bij premium hoort',
-  'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp en door de weken heen',
-  'premium.functie.fouten': 'Oefen je fouten: alles wat ooit fout ging, bij elkaar',
-  // De bliksemronde en overleven zijn geen extraatjes maar een controle: ze
-  // slaan pas ergens op als je het al kent (ADR-122).
-  'premium.functie.manieren':
-    'De bliksemronde en overleven: kun je het ook snel, en hou je het vol?',
-  'premium.functie.toets':
-    'De oefentoets: zelf checken of je het kent, zonder dat iemand overhoort',
-  'premium.functie.diplomas': 'De diploma’s voor vlaggen, klok en topo',
-  'premium.functie.badges': 'Jouw badges',
-  'premium.functie.reeks': 'Jouw reeks',
-  'premium.functie.goed': 'Goed beantwoord',
-  'premium.functie.kinderen': 'Meer dan één kind op dit apparaat',
-  'premium.gratis':
-    'Zonder code kun je in elk vak ontdekken, zoeken, meerkeuze doen en zelf typen — en je tafeldiploma’s halen.',
+  // Wat premium dóét, in vier klussen (ADR-124). Hiervoor stond hier een lijst
+  // van negen functienamen — "Jouw badges", "Jouw reeks" — allemaal even zwaar.
+  // Een ouder die die woorden leest weet niets meer dan daarvoor. Dit zijn de
+  // vier dingen waarvoor betaald wordt, het plannen bovenaan.
+  'premium.watTitel': 'Wat premium voor je doet',
+  'premium.usp.plan': 'Het plant het herhalen',
+  'premium.usp.planUit':
+    'Je kind hoeft niet te bedenken wat het vandaag moet doen. Leer.nu zet klaar wat aan de beurt is, net voordat het vergeten wordt.',
+  'premium.usp.zicht': 'Je ziet wat blijft hangen',
+  'premium.usp.zichtUit':
+    'Per onderdeel: wat je kind onthoudt, wat opgefrist moet worden, en hoeveel er over drie weken nog van over is.',
+  'premium.usp.zelf': 'Je hoeft niet meer te overhoren',
+  'premium.usp.zelfUit':
+    'Met de oefentoets checkt je kind zichzelf: geen hulp onderweg, en een cijfer aan het eind.',
+  'premium.usp.gezin': 'Voor alle kinderen thuis',
+  'premium.usp.gezinUit':
+    'Eén code voor het hele gezin, op maximaal drie apparaten, een schooljaar lang.',
+  'premium.watKlein':
+    'En verder: de bliksemronde en overleven, de diploma’s voor vlaggen, klok en topo, je badges en je reeks.',
+
+  // Wat gratis blijft, vóór de prijs. Het sterkste dat er te zeggen valt, dus
+  // het staat niet als grijze voetnoot onder een lijst maar als eigen kop.
+  'premium.vrijTitel': 'Wat gratis blijft',
+  'premium.vrij.alles': 'Alle vakken en alle onderwerpen, voor altijd.',
+  'premium.vrij.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen.',
+  'premium.vrij.fouten': 'Je fouten meteen nog een keer doen na een ronde.',
+  'premium.vrij.diploma': 'Je twaalf tafeldiploma’s.',
+  'premium.vrij.voorspelling': 'Na elke ronde: hoeveel je er over drie weken nog van weet.',
+
+  // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen — en
+  // alle vier controleerbaar, want dat is het punt.
+  'premium.waaromTitel': 'Waarom leer.nu',
+  'premium.waarom.reclame':
+    'Geen advertenties en geen trackers. Niet als belofte: de broncode staat openbaar, dus je kunt het nakijken.',
+  'premium.waarom.apparaat':
+    'Wat je kind oefent blijft op dit apparaat. Alleen de code gaat naar onze server, om te kijken of hij klopt.',
+  'premium.waarom.abonnement':
+    'Geen abonnement. De code loopt na een schooljaar vanzelf af en er wordt niets afgeschreven.',
+  'premium.waarom.gok':
+    'Belonen zonder gokje: tien goed is een ster, altijd. Geen kisten die misschien iets geven.',
+
+  // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
+  // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
+  // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
+  'premium.prijs': '€ 24,95',
+  'premium.kopenTitel': 'Wat het kost',
+  'premium.kopenUitleg':
+    'Voor een heel schooljaar, voor alle kinderen thuis. Je betaalt met iDEAL en krijgt je code meteen.',
+  'premium.kopenKnop': 'Een code kopen',
+
   'premium.voorOuders':
     'Voor ouders: alleen de code gaat naar onze server, om te kijken of hij klopt. Wat je kind oefent, blijft op dit apparaat.',
   'premium.fout.leeg': 'Typ eerst de code.',
@@ -514,14 +553,18 @@ export const nl = {
   // De kassa (ADR-123). Het bedrag staat hier niet: het staat op de kassapagina
   // zelf, op één plek, zodat een prijs die verandert niet op twee plekken uit
   // elkaar kan lopen.
-  'premium.kopenTitel': 'Nog geen code?',
-  'premium.kopenUitleg':
-    'Je koopt er een voor een heel schooljaar, voor alle kinderen thuis. Geen abonnement: hij loopt vanzelf af.',
-  'premium.kopenKnop': 'Een code kopen',
 
-  // Wat er staat waar een premiumblok zou staan, zonder code.
+  // Wat er staat waar een premiumblok zou staan, zonder code (ADR-124). Elk
+  // slot zegt wat dát ding doet: "dit hoort bij premium" meldt een deur en niet
+  // wat erachter zit, en daar koopt niemand iets van. De knop gaat naar de
+  // uitleg, niet naar een codeveld — wie hier staat heeft meestal geen code.
   'premium.slot': 'Dit hoort bij premium.',
-  'premium.slotKnop': 'Code invullen',
+  'premium.slotKnop': 'Bekijk premium',
+  'premium.wat.onthouden':
+    'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
+  'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
+  'premium.wat.jij':
+    'De diploma’s voor vlaggen, klok en topo, de badges, en meer dan één kind op dit apparaat.',
 
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als

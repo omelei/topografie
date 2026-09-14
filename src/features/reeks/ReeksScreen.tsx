@@ -49,7 +49,7 @@ export function ReeksScreen({ aside }: { readonly aside: ReactNode }) {
       <div className="tk-page">
         <div className="tk-page-main">
           <h1 className="tk-titel">{t('reeks.titel')}</h1>
-          <PremiumSlot />
+          <PremiumSlot wat="premium.wat.reeks" />
         </div>
         {aside}
       </div>

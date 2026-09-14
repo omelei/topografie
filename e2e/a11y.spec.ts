@@ -256,6 +256,38 @@ test('explore has no violations, empty or with something chosen', async ({ page 
  * zorgvuldigheid van het systeem niet vanzelf, en dit is de pagina waar een
  * ouder een e-mailadres en geld achterlaat.
  */
+/**
+ * De premiumpagina heeft sinds ADR-124 twee gezichten, en ze moeten allebei
+ * gemeten worden: met een code is het een statusregel, zonder code een
+ * verkooppagina met koppen, een lijst van twee niveaus, een prijs en een link
+ * die als knop is opgemaakt. De rest van dit bestand draait mét code
+ * (playwright.config.ts), dus de verkoopkant krijgt een eigen sessie.
+ */
+test('the premium page has no violations once a code is in', async ({ page }) => {
+  await signIn(page, 'Vera');
+  await page.goto('/premium');
+  await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+});
+
+test.describe('zonder code', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('the premium page has no violations while it is still selling', async ({ page }) => {
+    await signIn(page, 'Wout');
+    await page.goto('/premium');
+    await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();
+    expect((await scan(page)).violations).toEqual([]);
+  });
+
+  test('the Onthouden page has no violations while showing its free preview', async ({ page }) => {
+    await signIn(page, 'Wout');
+    await page.goto('/onthouden');
+    await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
+    expect((await scan(page)).violations).toEqual([]);
+  });
+});
+
 test('the kassa and the page after it have no violations', async ({ page }) => {
   await page.goto('/kopen/');
   await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();

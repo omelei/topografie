@@ -5867,6 +5867,124 @@ is a different sale with a different unit.
 
 ---
 
+## ADR-124 — Eén slot per pagina, en het zegt wat erachter zit; de premiumpagina leest in de volgorde van de beslissing
+
+**Status:** accepted. **Date:** 2026-09-14. Asked for by the product owner:
+"controleer of de premium knoppen nu op de juiste plek staan, zorg voor de
+juiste USP's en premiumpagina, redeneer vanuit UX." Amends ADR-116 and ADR-122.
+
+### Context
+
+ADR-122 zette de knip op de goede plek en ADR-123 bouwde de kassa. Wat geen van
+beide deed, was kijken naar wat een bezoeker zónder code werkelijk ziet. Geteld
+op de gebouwde app, ingelogd als nieuw kind, op acht pagina's:
+
+| Pagina                              | "Dit hoort bij premium" |
+| ----------------------------------- | ----------------------- |
+| Jij                                 | 7                       |
+| Onthouden                           | 3                       |
+| Reeks                               | 3                       |
+| Topografie, Vlaggen                 | 3 elk                   |
+| Voordeur, Rekenen, **Premium zelf** | 2 elk                   |
+
+Vijfentwintig sloten, waarvan twee op de premiumpagina zelf — de kolom die op
+elke pagina meegaat, droeg er twee, en die kolom staat ook naast de pagina die
+premium verkoopt. Een kind dat net zijn naam heeft ingevuld en nog geen vraag
+heeft beantwoord, kreeg op de voordeur twee keer te lezen dat het iets niet
+heeft.
+
+En de premiumpagina stond op zijn kop: bovenaan een codeveld — een formulier
+voor wie al gekocht heeft — dan negen functienamen op één hoop ("Jouw badges",
+"Jouw reeks", "Goed beantwoord"), en helemaal onderaan pas de weg om er een te
+kopen. De prijs stond er niet.
+
+### Decision
+
+**Vier regels, en elke verandering hieronder volgt er een van.**
+
+1. **Een slot is alleen een slot waar iets achter zit.** Een reeks van nul, een
+   teller van nul goed beantwoord: daar zit niets achter. Een lege doos op slot
+   doen blokkeert niets en leert alleen dat het product grotendeels dicht is.
+2. **Eén keer vragen per pagina.** Vijf identieke blokken onder elkaar zijn geen
+   aanbod maar ruis.
+3. **Zeg wat het doet, niet dat het op slot zit.** "Dit hoort bij premium" meldt
+   een deur en niet wat erachter zit, en daar koopt niemand iets van.
+4. **Wie ervoor staat bepaalt de knop.** "Code invullen" veronderstelt dat je al
+   gekocht hebt, en dat is bijna niemand die het leest.
+
+**De kolom naast elke pagina draagt geen slot meer.** De reeks en "Goed
+beantwoord" zijn er zonder code niet, in plaats van er als twee sloten te staan.
+ADR-116 liet ze staan zodat de kolom niet van vorm verandert als er een code
+komt; die vormvastheid is één moment waard en het slot stond op élke pagina.
+Wat eronder geteld wordt, blijft geteld, dus een code opent een geschiedenis.
+
+**Op Jij werden vijf sloten er één.** De badges, de drie diplomamuren en de
+kinderwisselaar worden zonder code niet getekend; het premiumblok dat er al
+stond, zegt nu wat ze samen zijn. De tafeldiplomamuur blijft staan, want die is
+gratis (ADR-122) — en met vier sloten eromheen zag dat eruit als een vergissing.
+
+**De Onthouden-pagina laat zien wat ze laat zien.** Dit is de pagina die de hele
+propositie ís, en er stond een kaal slot waar het product hoort. Gratis zijn nu
+de vier tegels en de stippen voor het onderwerp waar de pagina op opent; premium
+zijn elk ander onderwerp en de tabel per onderdeel. Het inzicht is gratis, het
+bijhouden is betaald — dezelfde redenering die de voorspelling op "Ronde klaar"
+gratis maakte (ADR-122), doorgetrokken naar de pagina waar die voorspelling
+vandaan komt.
+
+Dit botst niet met de regel van `PremiumSlot` dat er geen beloning wordt
+getekend die een kind niet mag hebben. Die regel gaat over belóningen — kisten,
+badges, diploma's — en die blijven onzichtbaar. De eigen voortgang van een kind
+is geen beloning.
+
+**Elk overgebleven slot zegt wat het opent.** `PremiumSlot` krijgt een `wat`:
+één zin over wat dít ding voor je doet. Wie daar niets over te zeggen heeft,
+hoort er ook geen deur te zetten. De knop heet "Bekijk premium" en gaat naar de
+uitleg, niet naar een codeveld.
+
+**De premiumpagina leest in de volgorde van de beslissing:** wat doet het voor
+mij → wat blijft gratis → waarom zou ik jullie vertrouwen → wat kost het → hoe
+koop ik het. Het codeveld staat onderaan onder "Heb je al een code?".
+
+- **Vier USP's in plaats van negen functies**, met het plannen bovenaan, want
+  dat is de klus waarvoor betaald wordt: _het plant het herhalen_, _je ziet wat
+  blijft hangen_, _je hoeft niet meer te overhoren_, _voor alle kinderen thuis_.
+  De bliksemronde, de badges en de reeks staan er als één regel onder, waar ze
+  thuishoren.
+- **"Wat gratis blijft" is een eigen kop**, geen grijze voetnoot. Het is het
+  sterkste dat er te zeggen valt, en een ouder die twijfelt of dit een muur is
+  hoort hier gerustgesteld te worden in plaats van door te scrollen.
+- **"Waarom leer.nu" zijn geen functies maar redenen**, en alle vier
+  controleerbaar: geen advertenties en geen trackers (de broncode staat
+  openbaar), wat je kind oefent blijft op het apparaat, geen abonnement dat
+  doorloopt, en belonen zonder gokje.
+- **De prijs staat erop.** ADR-123 hield hem met opzet alleen op de kassapagina
+  — twee plekken met een prijs is één plek met een oude prijs — maar dat kostte
+  meer dan het opleverde: een knop naar een winkel waarvan je het bedrag niet
+  weet, voelt als een val. Het bedrag staat op één plek in de app
+  (`premium.prijs`) en `kassa.test.ts` houdt het gelijk aan `PRIJS_CENTEN`.
+
+**Met een code verkoopt de pagina niets meer.** Dan staat er wat er aanstaat, tot
+wanneer, en hoe je het van dit apparaat haalt. Doorverkopen aan wie al betaald
+heeft is het duidelijkste teken dat een pagina niet naar zijn lezer kijkt.
+
+### Consequences
+
+Van vijfentwintig sloten naar vier, en geen enkele meer op de voordeur of in de
+kolom. Wat de modulepagina al goed deed — een stil label op de tegel, niets
+geblokkeerd, en pas bij het indrukken de uitleg — is nu het patroon van de hele
+app in plaats van de uitzondering.
+
+`premium.spec.ts` telt het: geen slot in de kolom op vier pagina's, één
+premiumblok op Jij, de voorproef op Onthouden, en de koppen van de premiumpagina
+in de volgorde hierboven. `a11y.spec.ts` scant die pagina in allebei zijn
+gezichten — de rest van dat bestand draait met een code, dus de verkoopkant
+krijgt een eigen sessie.
+
+De kolom verandert nu wél van vorm als er een code wordt ingevuld: er komen twee
+blokken bij. Dat is het moment waarop het mag.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

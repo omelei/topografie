@@ -4,7 +4,6 @@ import { t, type TranslationKey } from '@/i18n';
 import { loadVlagDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { PremiumSectie } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 
 /**
@@ -28,7 +27,11 @@ export function VlagDiplomas({
     void loadVlagDiplomas().then(setBehaald);
   }, []);
 
-  if (!actief) return <PremiumSectie titel={t('vlag.diplomasTitle')} />;
+  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
+  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
+  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
+  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
+  if (!actief) return null;
 
   // Nothing until it is known: a wall that shows six gaps and then fills two of
   // them has told a child they had none.

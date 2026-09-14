@@ -3,7 +3,6 @@ import { TOPO_DIPLOMA_SETS, type TopoDiplomaSet } from '@/game-core';
 import { t } from '@/i18n';
 import { loadTopoDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
-import { PremiumSectie } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { PremiumLabel } from './PremiumLabel';
 import { KAART_NAAM } from './topoDiplomaNamen';
@@ -29,7 +28,11 @@ export function TopoDiplomas({
     void loadTopoDiplomas().then(setBehaald);
   }, []);
 
-  if (!actief) return <PremiumSectie titel={t('topo.diplomasTitle')} />;
+  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
+  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
+  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
+  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
+  if (!actief) return null;
 
   // Nothing until it is known, for the reason every wall gives.
   if (behaald === null) return null;

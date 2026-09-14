@@ -17,7 +17,6 @@ import { STAMP_NAME } from '@/features/reis/stampNames';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadStamps } from '@/store/rewardStore';
-import { PremiumSectie } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { Embleem } from './Embleem';
 
@@ -76,7 +75,11 @@ export function BadgeSectie() {
   }, []);
 
   // Premium since ADR-116. Still earned underneath, so none is lost.
-  if (!actief) return <PremiumSectie titel={t('badges.titel')} />;
+  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
+  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
+  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
+  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
+  if (!actief) return null;
 
   // Nothing until it is known: a wall of ten gaps that then fills three has
   // told a child they had none.
