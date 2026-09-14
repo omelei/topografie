@@ -5671,6 +5671,99 @@ words, and the control names what it does.
 
 ---
 
+## ADR-122 — The line is between oefenen and onthouden, not between three ways and the rest
+
+**Status:** accepted. **Date:** 2026-09-14. Asked for by the product owner,
+after a market and pricing review. Amends ADR-112 and ADR-116.
+
+### Context
+
+ADR-116 locked what ADR-112 had labelled: three ways of practising free on
+every page, everything else premium. That line was drawn along the shape of the
+product — ways of asking a question — rather than along what a family is
+actually being asked to pay for, and it put four things on the wrong side.
+
+The owner's review named the job the paying parent has, and it is not a test on
+Friday. A Dutch primary school does not set homework to be scored; the first
+leerwerk in groep 5 or 6 is where a child learns _how_ you learn something at
+home — what to do, when, and how to tell whether you know it yet. That is the
+job this product is uniquely able to do, because it is the only one here that
+plans the repeating (Leitner, ADR-005) and forecasts what is left of it
+(`game-core/retention.ts`). Every Dutch competitor is adaptive — it chooses how
+hard the next question is — and adaptive answers a different question from
+spaced repetition. Selling extra ways of asking questions sold the part anyone
+can copy.
+
+### Decision
+
+**Oefenen is free. Onthouden is premium.** One sentence, and every element is
+placed by it.
+
+**Four things move to free.**
+
+- **Ontdekken.** It asks nothing at all and exists so that a child's first
+  meeting with an item is not a question they get wrong (ADR-049). Behind a
+  lock it did the opposite of the thing it was built for.
+- **"Herhaal je fouten"** on the result page. It reaches no further than the
+  round that has just ended, so it belongs to that round. Going back over what
+  you just got wrong, while you still remember getting it wrong, is the
+  mechanism the product is named after; charging for it sells the promise
+  rather than keeping it. **"Oefen je fouten"** — the collected list on the
+  module page, across weeks — stays premium, because that is a record.
+- **The forecast, on "Ronde klaar".** "67% weet je hier over drie weken nog
+  van", under the round's own numbers, for the set just practised. Free because
+  a claim a family cannot check is not a claim. It is the whole set rather than
+  the ten questions just asked: those were answered a minute ago and would
+  forecast at nearly a hundred per cent, which is true and useless, and the
+  front door already shows this same figure for this same set. There is **no
+  button to premium beside it** — a child who has just finished a round is not
+  someone to show a lock to (`PremiumSlot`).
+- **The tafeldiploma**, alone of the four diplomas. It is the one a Dutch child
+  wants before they ever meet this app, and the moment a parent photographs,
+  which is the only way a product with no marketing budget travels. The
+  vlaggen-, klok- and topodiploma stay premium (ADR-104, ADR-117).
+
+**What premium is, said as one thing.** The Onthouden page over every module
+and over time, the collected mistakes, the oefentoets, the three other
+diplomas, the badges, the streak, "Goed beantwoord", and more than one child.
+
+**The bliksemronde and overleven stay premium, with a better reason.** They are
+not treats. A minute against the clock is a check on speed and three lives is a
+check on holding it, and both are only worth anything once you already know the
+material — which puts them on the onthouden side, not the oefenen side. The
+premium page now says so instead of listing them as extras.
+
+**The oefentoets keeps its name and changes its pitch.** "Oefentoets" is the
+word a child knows from school and ADR-100 chose it for that; renaming the tile
+would cost a child the word and gain a parent nothing. What changed is how it
+is sold: on the premium page it is "zelf checken of je het kent, zonder dat
+iemand overhoort" — the planning skill, not the score.
+
+### Consequences
+
+`isPremiumVorm` now returns false for `ontdekken` and `tafeldiploma`, and
+`App`'s `herhaal` no longer refuses without a code; `isPremiumOnderwerp` is
+unchanged and is what still holds the collected mistakes.
+
+One invariant in `forms.test.ts` is gone: the free ways no longer all come
+before the premium ones, because the tafeldiploma is free and stands last where
+ADR-112's order puts a diploma, and ontdekken is free and stands in the middle.
+What replaces it is the rule that actually matters — **a page never opens on a
+lock**: the first way on every page is free.
+
+The free tier is now a complete practice programme and the paid tier is a
+system that keeps a record over weeks. That is a sharper split than "three ways
+versus the rest", and a harder sell: the value of the paid side is not visible
+on the day it is bought. The forecast on "Ronde klaar" is the answer to that —
+it is the only place in the product where a family, without paying, can see the
+thing they would be paying for working.
+
+**Not decided here:** the price and where a code is bought. The premium page
+still only takes a code and does not say what one costs, because there is no
+way to buy one yet; a price on a page with no way to pay is a dead end.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

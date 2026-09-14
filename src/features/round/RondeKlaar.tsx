@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { DiplomaIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
-import type { ModeId, StreakChange } from '@/game-core';
+import { setRetention, type ItemState, type ModeId, type StreakChange } from '@/game-core';
 import { BadgeRijen, isBadge } from '@/features/badges/Badges';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
@@ -9,6 +9,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
+import { loadItemStates } from '@/store/progress';
 import type { RoundOutcome } from '@/store/rewardStore';
 import { HerhaalFouten } from './HerhaalFouten';
 
@@ -25,7 +26,8 @@ import { HerhaalFouten } from './HerhaalFouten';
  * - **the round in numbers**, as tiles: how many were right, how many more the
  *   child now remembers, and after an oefentoets the mark — with one sentence
  *   under them saying what changed, which is the one thing a child could not
- *   have counted themselves;
+ *   have counted themselves, and since ADR-122 one saying what is left of this
+ *   subject in three weeks, which is the one thing nobody can count at all;
  * - **the way on**, straight after that and before anything that can be long:
  *   another round, "herhaal je fouten", or back to the front door;
  * - **what the round earned**, a diploma or a badge, when it earned one;
@@ -134,6 +136,7 @@ export function RondeKlaar({
                   : t('result.gainedMany', { aantal: gained })}
             </p>
             {missed.length === 0 ? <p className="text-lopend">{t('result.allCorrect')}</p> : null}
+            <OnthoudRegel setId={setId} />
             {gestopt ? (
               <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
             ) : null}
@@ -210,4 +213,53 @@ function reeksZin(streak: StreakChange | null): string | null {
   if (streak.rustdagenGebruikt > 0) zinnen.push(t('result.streakSaved'));
   if (streak.rustdagVerdiend) zinnen.push(t('result.restDayEarned'));
   return zinnen.join(' ');
+}
+
+/** Three weeks out: the horizon the product has always forecast to (`home.retention`). */
+const DRIE_WEKEN_MS = 21 * 86_400_000;
+
+/**
+ * What is left of this subject in three weeks, under the round's own numbers
+ * (ADR-122).
+ *
+ * Free, and on purpose: it is the one sentence in this product that is about
+ * what happens if you do nothing, and a forecast a family cannot see is a
+ * promise they cannot check. It is also the whole argument for coming back
+ * tomorrow, which is not an argument to put behind a code.
+ *
+ * **The whole set, not the ten questions just asked.** A round's own items were
+ * answered a minute ago and would forecast at very nearly a hundred per cent,
+ * which is true and useless. The figure that means something is the one the
+ * front door already shows for this set, and it is the same function
+ * (`setRetention`) reading the same boxes.
+ *
+ * Nothing at all until the states are loaded and the set has items: a number
+ * that appears as nought and then jumps has told a child something false on the
+ * way. A list of mistakes has no fixed set of its own, so it has no forecast.
+ */
+function OnthoudRegel({ setId }: { readonly setId: string }) {
+  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
+
+  useEffect(() => {
+    let levend = true;
+    void loadItemStates().then((geladen) => {
+      if (levend) setStates(geladen);
+    });
+    return () => {
+      levend = false;
+    };
+  }, []);
+
+  if (states === null) return null;
+
+  const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
+  if (!deel || deel.items.length === 0 || setId.endsWith('fouten')) return null;
+
+  const procent = setRetention(
+    states,
+    deel.items.map((item) => item.id),
+    new Date(Date.now() + DRIE_WEKEN_MS),
+  );
+
+  return <p className="text-tekst-secundair">{t('result.onthoud', { procent })}</p>;
 }

@@ -4,13 +4,17 @@ import { t, type TranslationKey } from '@/i18n';
 import { activeer, meldAf, type PremiumReden } from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
-/** Everything premium opens, in the order a parent would look for it. */
+/**
+ * Everything premium opens, with what it is for at the top (ADR-122): the two
+ * that keep a record over weeks come first, then the two ways of checking
+ * yourself, then what a family gets for the year.
+ */
 const WAT: readonly TranslationKey[] = [
   'premium.functie.onthouden',
+  'premium.functie.fouten',
   'premium.functie.manieren',
   'premium.functie.toets',
   'premium.functie.diplomas',
-  'premium.functie.fouten',
   'premium.functie.badges',
   'premium.functie.reeks',
   'premium.functie.goed',

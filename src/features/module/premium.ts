@@ -2,29 +2,32 @@ import type { ModeId } from '@/game-core';
 import { t } from '@/i18n';
 
 /**
- * What premium opens (ADR-111, ADR-112, ADR-116).
+ * What premium opens (ADR-111, ADR-112, ADR-116, ADR-122).
  *
- * The rule is said the other way round since ADR-112: three kinds of way stay
- * free on every page — **zoeken** (finding the place, the clock or the flag
- * that goes with a name), **meerkeuze** and **zelf typen** — and every other
- * way of practising is premium: ontdekken, the bliksemronde, overleven, every
- * diploma and the oefentoets. So is every way of going back over your own
- * mistakes — the "Oefen je fouten" subject and "Herhaal je fouten" after a
- * round.
+ * Since ADR-122 the line is drawn between **oefenen** and **onthouden**.
+ * Practising is free, all of it: finding the place, the clock or the flag that
+ * goes with a name, meerkeuze, typing the answer, and — new — **ontdekken**,
+ * which is where a child meets an item before anybody asks them anything. So
+ * is the **tafeldiploma**, the one diploma a child can earn without a code.
  *
- * Since ADR-116 it is locked, behind a code (`store/premium.ts`), and the owner
- * added what is not a way of practising: the badges, the diplomas on the
- * child's own page, more than one child, the streak, "Goed beantwoord" and the
- * Onthouden page. Those are gated where they are drawn, each with the same
- * slot (`PremiumSlot`); the ways are gated here and in `App`, where a round
+ * What premium opens is the part that works over weeks rather than inside one
+ * round: the Onthouden page, the child's own collected mistakes, the
+ * oefentoets, the other three diplomas, the badges, the streak, "Goed
+ * beantwoord", more than one child, and the two ways that only mean something
+ * once you already know it — the bliksemronde (a check on speed) and overleven
+ * (a check on holding it). Those are gated here and in `App`, where a round
  * starts, so a way into a round from anywhere — a favourite, the history, an
- * unfinished round — meets the same rule.
+ * unfinished round — meets the same rule; the rest is gated where it is drawn,
+ * each with the same slot (`PremiumSlot`).
  */
 const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Zoeken: on the map the name is given and the child finds the place.
   'wijs-aan',
   'klok-welke-klok',
   'vlag-zoeken',
+  // Ontdekken: the first meeting with an item, which asks nothing and so can
+  // never be the thing a child is turned away from (ADR-122).
+  'ontdekken',
   // Meerkeuze. On Taal: the letters of the gap, or one of three forms.
   'meerkeuze',
   'som-meerkeuze',
@@ -38,14 +41,25 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'klok-typen',
   'taal-flitsdictee',
   'taal-vorm-typen',
+  // The one diploma that is free (ADR-122): the tafeltoets is the thing a
+  // Dutch child already wants before they meet this app, and it is the moment
+  // a parent photographs. The other three stay premium.
+  'tafeldiploma',
 ]);
 
-/** A way of practising that will need an account. The oefentoets is its own tile. */
+/** A way of practising that is premium. The oefentoets is its own tile. */
 export function isPremiumVorm(id: ModeId): boolean {
   return !GRATIS_VORMEN.has(id);
 }
 
-/** A child's own list of mistakes, in any module: rekenen's `fouten`, and `*-fouten`. */
+/**
+ * A child's own collected list of mistakes, in any module: rekenen's `fouten`,
+ * and `*-fouten`. Premium because it is a record kept across rounds.
+ *
+ * Not to be confused with "Herhaal je fouten" on the result page, which is free
+ * since ADR-122: that one asks about the round that just ended and nothing
+ * else, so it belongs to the round rather than to the record.
+ */
 export function isPremiumOnderwerp(id: string): boolean {
   return id === 'fouten' || id.endsWith('-fouten');
 }

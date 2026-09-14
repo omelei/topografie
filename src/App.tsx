@@ -261,14 +261,15 @@ export default function App() {
    * "Herhaal je fouten" (ADR-111): the same set straight away, asking what the
    * round just finished got wrong and nothing else — as practice, with the
    * answers shown, in a way that has a length (`round/herhaal.ts`).
+   *
+   * Free since ADR-122, unlike the collected list of mistakes on the module
+   * page: this one reaches no further than the round a child has just played,
+   * so it is part of that round rather than a record kept across weeks — and
+   * going back over what you just got wrong is the mechanism the product is
+   * named after, which is not a thing to sell.
    */
   const herhaal = (ids: readonly string[]) => {
     if (ids.length === 0) return;
-    // Premium, like every way of going back over your own mistakes (ADR-116).
-    if (!premium) {
-      naarPremium();
-      return;
-    }
     const alleen = [...ids];
     const aantal = alleen.length;
     setVisit(visit + 1);

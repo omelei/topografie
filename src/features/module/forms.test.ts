@@ -113,10 +113,27 @@ describe('the ways of practising', () => {
     }
   });
 
-  it('puts the free ways before the premium ones', () => {
+  it('opens every page on a way that is free', () => {
+    // Until ADR-122 the free ways happened to come first and the premium ones
+    // last, and this test asserted that. It is no longer true and should not
+    // be: the tafeldiploma is free and stands last, where the order of the ways
+    // puts a diploma (ADR-112), and ontdekken is free and stands in the middle.
+    // What has to hold is that a page never opens on a lock — the first way a
+    // child sees is always one they can play.
     for (const forms of ALLE) {
-      const premium = forms.map((form) => isPremiumVorm(form.id));
-      expect(premium).toEqual([...premium].sort((a, b) => Number(a) - Number(b)));
+      const eerste = forms[0];
+      expect(eerste, 'a page with no ways').toBeDefined();
+      expect(isPremiumVorm(eerste!.id), eerste!.id).toBe(false);
+    }
+  });
+
+  it('leaves ontdekken and the tafeldiploma free wherever they appear (ADR-122)', () => {
+    for (const forms of ALLE) {
+      for (const form of forms) {
+        if (form.id === 'ontdekken' || form.id === 'tafeldiploma') {
+          expect(isPremiumVorm(form.id), form.id).toBe(false);
+        }
+      }
     }
   });
 
