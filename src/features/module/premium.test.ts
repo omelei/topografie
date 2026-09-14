@@ -7,13 +7,15 @@ import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './r
  * map each page opens on.
  */
 describe('premium', () => {
-  it('leaves zoeken, meerkeuze and zelf typen free, and marks every other way', () => {
-    // ADR-112: the three ways that ask about one thing at a time are free on
-    // every page; the rest is premium.
+  it('leaves practising free, and marks what works over weeks', () => {
+    // ADR-121: oefenen is free — the three ways that ask about one thing at a
+    // time, ontdekken, and the tafeldiploma. The rest is premium.
     const gratis = [
       'wijs-aan',
       'klok-welke-klok',
       'vlag-zoeken',
+      'ontdekken',
+      'tafeldiploma',
       'meerkeuze',
       'som-meerkeuze',
       'klok-meerkeuze',
@@ -31,10 +33,8 @@ describe('premium', () => {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
     }
     for (const vorm of [
-      'ontdekken',
       'bliksemronde',
       'overleven',
-      'tafeldiploma',
       'vlag-diploma',
       'klok-diploma',
       'topo-diploma',
@@ -44,7 +44,7 @@ describe('premium', () => {
     }
   });
 
-  it("marks every module's list of mistakes and nothing else", () => {
+  it("marks every module's collected list of mistakes and nothing else", () => {
     for (const id of ['fouten', 'nl-fouten', 'wereld-fouten', 'klok-fouten', 'taal-sp-fouten']) {
       expect(isPremiumOnderwerp(id), id).toBe(true);
     }

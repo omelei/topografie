@@ -2,9 +2,6 @@ import { useEffect, useState } from 'react';
 import { t } from '@/i18n';
 import { loadDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
-import { PremiumSectie } from '@/features/premium/PremiumSlot';
-import { usePremium } from '@/features/premium/usePremium';
-import { PremiumLabel } from './PremiumLabel';
 
 /** One to twelve, which is every table the product has. */
 const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -24,6 +21,11 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  * afternoon: on the rekenen page pressing one chooses that table and the
  * diploma. On the child's own page the same wall is shown, not pressed — it is
  * where the badges are (ADR-112).
+ *
+ * Free since ADR-121, alone among the four diplomas. It is the one a Dutch
+ * child already wants before they meet this app, and the moment a parent
+ * photographs — which is the only way this product travels by word of mouth.
+ * The vlaggen-, klok- and topodiploma stay premium (ADR-117).
  */
 export function Tafeldiplomas({
   onKies,
@@ -31,14 +33,11 @@ export function Tafeldiplomas({
   /** Where pressing a diploma chooses its table. Absent where the wall is only shown. */
   readonly onKies?: ((setId: string) => void) | undefined;
 }) {
-  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<number> | null>(null);
 
   useEffect(() => {
     void loadDiplomas().then(setBehaald);
   }, []);
-
-  if (!actief) return <PremiumSectie titel={t('rekenen.diplomasTitle')} />;
 
   // Nothing until it is known: a wall that shows twelve gaps and then fills
   // four of them has told a child they had none.
@@ -48,7 +47,6 @@ export function Tafeldiplomas({
     <section className="flex flex-col gap-3" aria-label={t('rekenen.diplomasTitle')}>
       <div className="tk-sectie">
         <h2>{t('rekenen.diplomasTitle')}</h2>
-        <PremiumLabel hoorbaar />
         <span className="tk-sectie-meta">
           {t('rekenen.diplomasCount', { aantal: behaald.size, totaal: TAFELS.length })}
         </span>

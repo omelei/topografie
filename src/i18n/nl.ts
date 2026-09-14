@@ -464,12 +464,16 @@ export const nl = {
   'start.nogKiezen': 'Nog even kiezen',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
-  // Premium (ADR-111, ADR-116): een code die een ouder één keer invult. Geen
-  // e-mail en geen wachtwoord; er is geen account om in te loggen.
+  // Premium (ADR-111, ADR-116, ADR-121): een code die een ouder één keer
+  // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
+  //
+  // De knip staat sinds ADR-121 tussen oefenen en onthouden, en de intro zegt
+  // hem in die volgorde: eerst wat gratis is en blijft, dan waar premium over
+  // gaat. Andersom leest elke zin als een muur.
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
   'premium.intro':
-    'Met premium kun je alles van leer.nu gebruiken. Eén code geldt een jaar, voor alle kinderen op dit apparaat, en je kunt hem op drie apparaten gebruiken.',
+    'Oefenen is en blijft gratis: alle vakken, alle onderwerpen, voor altijd. Premium onthoudt vóór je — het houdt bij wat je kind al kan en laat zien wat er over drie weken nog van over is.',
   'premium.codeTitel': 'Je code',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
@@ -480,16 +484,21 @@ export const nl = {
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
   'premium.watTitel': 'Wat er bij premium hoort',
-  'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp',
-  'premium.functie.manieren': 'Ontdekken, de bliksemronde en overleven',
-  'premium.functie.toets': 'De oefentoets',
-  'premium.functie.diplomas': 'De diploma’s: tafels, vlaggen, klok en topo',
-  'premium.functie.fouten': 'Oefen je fouten en herhaal je fouten',
+  'premium.functie.onthouden': 'Wat je onthoudt, per onderwerp en door de weken heen',
+  'premium.functie.fouten': 'Oefen je fouten: alles wat ooit fout ging, bij elkaar',
+  // De bliksemronde en overleven zijn geen extraatjes maar een controle: ze
+  // slaan pas ergens op als je het al kent (ADR-121).
+  'premium.functie.manieren':
+    'De bliksemronde en overleven: kun je het ook snel, en hou je het vol?',
+  'premium.functie.toets':
+    'De oefentoets: zelf checken of je het kent, zonder dat iemand overhoort',
+  'premium.functie.diplomas': 'De diploma’s voor vlaggen, klok en topo',
   'premium.functie.badges': 'Jouw badges',
   'premium.functie.reeks': 'Jouw reeks',
   'premium.functie.goed': 'Goed beantwoord',
   'premium.functie.kinderen': 'Meer dan één kind op dit apparaat',
-  'premium.gratis': 'Zonder code kun je in elk vak zoeken, meerkeuze doen en zelf typen.',
+  'premium.gratis':
+    'Zonder code kun je in elk vak ontdekken, zoeken, meerkeuze doen en zelf typen — en je tafeldiploma’s halen.',
   'premium.voorOuders':
     'Voor ouders: alleen de code gaat naar onze server, om te kijken of hij klopt. Wat je kind oefent, blijft op dit apparaat.',
   'premium.fout.leeg': 'Typ eerst de code.',
@@ -1023,6 +1032,11 @@ export const nl = {
   'result.gainedOne': 'Eén vraag meer die je nu onthoudt.',
   'result.gainedMany': '{aantal} vragen meer die je nu onthoudt.',
   'result.gainedNone': 'Nog niets erbij. Deze komen morgen terug.',
+  // De voorspelling, gratis en zonder code (ADR-121). Dezelfde woorden als op
+  // de voordeur, want het is dezelfde som: wat er over is als je niets doet.
+  // Geen knop ernaast naar premium — een kind een slot voorhouden op de pagina
+  // waar het net iets goed deed, is precies wat PremiumSlot niet doet.
+  'result.onthoud': '{procent}% weet je hier over drie weken nog van.',
   'result.again': 'Nog een ronde',
   // Alleen wat er in deze ronde fout ging, meteen nog een keer (ADR-111).
   'result.herhaalFouten': 'Herhaal je fouten',

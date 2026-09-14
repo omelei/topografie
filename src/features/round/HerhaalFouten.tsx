@@ -1,6 +1,4 @@
 import { t } from '@/i18n';
-import { metPremium } from '@/features/module/premium';
-import { PremiumLabel } from '@/features/module/PremiumLabel';
 
 /**
  * "Herhaal je fouten", on every result screen that has a miss to repeat.
@@ -8,8 +6,13 @@ import { PremiumLabel } from '@/features/module/PremiumLabel';
  * Beside "Nog een ronde" rather than instead of it, and secondary: another
  * round is still the way on, and this is the shorter way back over what just
  * went wrong — exactly those, straight away, while the child still remembers
- * getting them wrong (ADR-111). Premium, like the list of mistakes on the
- * module page; the label is there before the account is.
+ * getting them wrong (ADR-111).
+ *
+ * Free since ADR-121. It was premium, with the collected list of mistakes on
+ * the module page; the two were separated because this one asks only about the
+ * round that has just ended. Locking it put the paywall on the exact moment a
+ * child is most able to learn something, which is the opposite of what the
+ * product promises.
  */
 export function HerhaalFouten({
   missed,
@@ -24,13 +27,9 @@ export function HerhaalFouten({
     <button
       type="button"
       className="tk-button tk-button-secondary"
-      aria-label={metPremium(t('result.herhaalFouten'), true)}
       onClick={() => onHerhaal(missed.map((item) => item.id))}
     >
-      <span className="inline-flex items-center gap-2">
-        {t('result.herhaalFouten')}
-        <PremiumLabel />
-      </span>
+      {t('result.herhaalFouten')}
     </button>
   );
 }
