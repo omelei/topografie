@@ -258,3 +258,77 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 });
+
+/**
+ * "Vandaag herhalen" (ADR-126): de belofte die de premiumpagina doet, in het
+ * product. Zonder code staat er hoevéél er klaarstaat — dat is een feit over dit
+ * kind — en het plan zelf is waar premium voor is.
+ */
+test('the day plan says how much without a code, and is the plan with one', async ({ page }) => {
+  await signIn(page, 'Fenna');
+
+  // Zonder geoefend te hebben is er niets te herhalen, en dan staat er niets:
+  // een leeg plan aanprijzen is een lege doos op slot doen.
+  await expect(page.getByRole('region', { name: 'Vandaag herhalen' })).toHaveCount(0);
+
+  // Eén ronde, en de standen een week terug, zodat er iets aan de beurt is.
+  await oefenTafelVanEen(page);
+  await zetStandenTerug(page);
+
+  await page.goto('/');
+  const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
+  await expect(vandaag).toContainText('die je bijna vergeet');
+  await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
+  await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
+
+  // En de premiumknop staat in de balk, op elke pagina, zolang er geen code is.
+  // Exact, want "Bekijk premium" in het blok hierboven bevat hetzelfde woord.
+  const inDeBalk = page.getByRole('banner').getByRole('button', { name: 'Premium', exact: true });
+  await expect(inDeBalk).toBeVisible();
+  await page.goto('/onthouden');
+  await expect(inDeBalk).toBeVisible();
+});
+
+/** Een ronde tafel van 1, getypt: elk antwoord is de vermenigvuldiger zelf. */
+async function oefenTafelVanEen(page: Page) {
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
+    .click();
+  await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Zelf typen/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  for (let vraag = 1; vraag <= 10; vraag++) {
+    const som = await page.locator('.tk-sum').innerText();
+    await page.getByPlaceholder('Antwoord').fill((som.split('×')[1] ?? '').trim());
+    await page.getByRole('button', { name: 'Kijk na' }).click();
+    await page.getByRole('button', { name: 'Volgende vraag' }).click();
+  }
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+}
+
+/** De Leitner-standen een week terugzetten, zodat ze vandaag aan de beurt zijn. */
+async function zetStandenTerug(page: Page) {
+  await page.evaluate(async () => {
+    const open = indexedDB.open('leernu');
+    const db = await new Promise<IDBDatabase>((ok) => {
+      open.onsuccess = () => ok(open.result);
+    });
+    const tx = db.transaction('progress', 'readwrite');
+    const store = tx.objectStore('progress');
+    const rijen = await new Promise<{ volgendeReview: string }[]>((ok) => {
+      const vraag = store.getAll();
+      vraag.onsuccess = () => ok(vraag.result as { volgendeReview: string }[]);
+    });
+    const toen = new Date(Date.now() - 7 * 86_400_000).toISOString();
+    for (const rij of rijen) store.put({ ...rij, volgendeReview: toen, laatsteReview: toen });
+    await new Promise((ok) => {
+      tx.oncomplete = ok;
+    });
+  });
+}

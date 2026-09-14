@@ -4,13 +4,18 @@ import { PaperIcon, PlusIcon } from '@/components/Icon';
 // The streak already needs "which day is it, locally" and writes it the same
 // way. One of them, so a date that is Tuesday to the streak cannot be Monday
 // to the test.
-import { dayKey } from '@/game-core';
+import { dayKey, retentionAfterRound, setRetention, type ItemState } from '@/game-core';
+import { startbareOnderdelen } from '@/features/module/onderdelen';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { t } from '@/i18n';
+import { loadItemStates } from '@/store/progress';
 import { Blok } from './Blok';
 import { daysUntil, TEST_SUBJECTS, useTestPlan, type Toets } from './testPlan';
+import { toetsOnderdelen } from './toetsZicht';
 
 /**
  * The tests that are coming, and a way to add one.
@@ -41,6 +46,12 @@ import { daysUntil, TEST_SUBJECTS, useTestPlan, type Toets } from './testPlan';
 export function ToetsenBlok({ now = new Date() }: { readonly now?: Date }) {
   const plan = useTestPlan(now);
   const desk = useDesk();
+  const { actief } = usePremium();
+  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
+
+  useEffect(() => {
+    void loadItemStates().then(setStates);
+  }, []);
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const kort = useRef<HTMLButtonElement>(null);
@@ -93,11 +104,15 @@ export function ToetsenBlok({ now = new Date() }: { readonly now?: Date }) {
                   key={toets.id}
                   toets={toets}
                   now={now}
+                  states={actief ? states : null}
                   onRemove={() => plan.remove(toets.id)}
                 />
               ))}
             </ul>
           )}
+
+          {/* Wat premium hier doet, zonder het per toets te herhalen (ADR-127). */}
+          {!actief && plan.toetsen.length > 0 ? <PremiumSlot kaal wat="premium.wat.toets" /> : null}
 
           <button
             ref={toevoegen}
@@ -161,10 +176,13 @@ function wanneerLang(toets: Toets, now: Date): string {
 function ToetsRegel({
   toets,
   now,
+  states,
   onRemove,
 }: {
   readonly toets: Toets;
   readonly now: Date;
+  /** De Leitner-standen, of null zonder code: dan is er geen voorspelling. */
+  readonly states: ReadonlyMap<string, ItemState> | null;
   readonly onRemove: () => void;
 }) {
   const subject = TEST_SUBJECTS.find((module) => module.id === toets.subject) ?? null;
@@ -193,7 +211,57 @@ function ToetsRegel({
       >
         {t('home.testRemove')}
       </button>
+
+      {states === null ? null : <Vooruitzicht toets={toets} now={now} states={states} />}
     </li>
+  );
+}
+
+/**
+ * Wat je op de dag van de toets naar verwachting nog weet — en wat één ronde
+ * vandaag daaraan verandert (ADR-127).
+ *
+ * Het toetsblok was een aftelklok: een vak en "over 3 dagen", en verder niets.
+ * De machinerie om er meer van te maken lag er al: `itemRetention` neemt elke
+ * datum, dus ook de dag van de toets, en `retentionAfterRound` rekent uit wat
+ * een ronde vandaag oplevert. Dat is precies de vraag waar een ouder die de
+ * brief van school leest mee zit, en het is de enige plek in het product waar
+ * de voorspelling ergens naartoe rekent in plaats van naar drie weken vooruit.
+ *
+ * **Alleen over wat dit kind geoefend heeft** (`toetsOnderdelen`). Heeft het van
+ * dat vak nog niets gedaan, dan staat er dat, en geen nul procent: nul is een
+ * uitspraak, en over iets wat nooit gevraagd is valt niets te zeggen.
+ *
+ * **De tweede zin alleen als hij iets toevoegt.** "Doe vandaag een ronde: dan is
+ * het 62%" naast een 61% is ruis, en een advies dat niets verandert leert een
+ * kind het advies te negeren.
+ */
+function Vooruitzicht({
+  toets,
+  now,
+  states,
+}: {
+  readonly toets: Toets;
+  readonly now: Date;
+  readonly states: ReadonlyMap<string, ItemState>;
+}) {
+  const ids = toetsOnderdelen(toets.subject, startbareOnderdelen(), states);
+  if (ids.length === 0) {
+    return <p className="tk-toets-zicht text-tekst-secundair">{t('home.testNothingYet')}</p>;
+  }
+
+  const dag = new Date(`${toets.date}T12:00:00`);
+  const nu = setRetention(states, ids, dag);
+  const na = retentionAfterRound(states, ids, dag, now);
+  // Vijf procentpunt of meer, anders is het advies ruis. Hierboven uitgerekend
+  // en niet in de JSX: een vergelijking tussen accolades leest als tekst.
+  const helptHet = na - nu >= 5;
+
+  return (
+    <p className="tk-toets-zicht">
+      <span>{t('home.testForecast', { procent: nu })}</span>
+      {helptHet ? <span> {t('home.testForecastRound', { procent: na })}</span> : null}
+    </p>
   );
 }
 

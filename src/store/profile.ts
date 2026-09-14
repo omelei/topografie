@@ -26,4 +26,4 @@ export async function createProfile(naam: string): Promise<ProfileRecord> {
 
 /** Re-exported so the screens that ask for a setting keep one import. */
 export { getSetting, setSetting } from './settings';
-export { setSticker } from './children';
+export { setSticker, renameChild } from './children';

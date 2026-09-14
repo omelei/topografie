@@ -80,6 +80,31 @@ export async function createChild(naam: string): Promise<ProfileRecord> {
 }
 
 /**
+ * Een kind hernoemen (ADR-126).
+ *
+ * Tot nu toe kon dat niet: `createChild` schreef de naam één keer en er was
+ * geen weg terug. Een kind dat zijn naam verkeerd typt — en dat is het eerste
+ * wat er van hem gevraagd wordt, op het eerste scherm — zat er voorgoed aan
+ * vast, en de enige uitweg was de site-data wissen, wat ook alle voortgang
+ * weggooit. Dat is geen ontbrekende functie maar een val.
+ *
+ * Alleen de naam verandert. Het id blijft, en daarmee blijft elke Leitner-doos,
+ * elk diploma en elke dag van de reeks bij het kind waar hij bij hoort.
+ */
+export async function renameChild(id: string, naam: string): Promise<ProfileRecord | undefined> {
+  const schoon = naam.trim();
+  if (schoon === '') return undefined;
+
+  const db = await getDb();
+  const kind = await db.get('profile', id);
+  if (!kind) return undefined;
+
+  const hernoemd: ProfileRecord = { ...kind, naam: schoon };
+  await db.put('profile', hernoemd);
+  return hernoemd;
+}
+
+/**
  * The sticker this child chose, written where the schema already had a place
  * for it.
  *

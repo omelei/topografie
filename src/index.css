@@ -651,6 +651,88 @@
    * foot of the screen — see .tk-startbalk-mobiel — which ADR-052 put off after
    * three attempts produced three bugs.
    */
+  /* "Vandaag herhalen" op de voordeur (ADR-126): het enige blok in de app dat
+   * zegt wat er nú te doen is, en daarom het enige op die pagina dat een vlak
+   * van zichzelf heeft. Dezelfde vorm als de startbalk van een modulepagina —
+   * zachte grond, kleur langs de aanlopende rand — want het is dezelfde
+   * belofte: hier begint een ronde. Buiten een module is de accentkleur de
+   * groene nadruk, en dat is precies de bedoeling: op de voordeur is dit de
+   * enige plek waar die kleur staat. */
+  /* De premiumknop in de balk (ADR-126). De enige knop in de app die verkoopt,
+   * en dus de enige die om aandacht vraagt: wit op de groene nadruk. Niet
+   * `--accent` — dit is geen modulekleur en verandert nergens mee mee. Op een
+   * telefoon valt het woord weg en blijft de ster over, want daar vecht de balk
+   * al met de naam van het kind. */
+  /* Het vooruitzicht onder een toets (ADR-127): een hele regel onder de badge,
+   * de dagen en de weg-knop, dus over de volle breedte van de rij. */
+  .tk-toets-zicht {
+    flex-basis: 100%;
+    margin-top: 4px;
+    font-size: var(--type-hulp);
+    line-height: var(--type-hulp-lh);
+    color: var(--tekst-secundair);
+  }
+
+  .tk-premiumknop {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: var(--stroke-hair) solid transparent;
+    border-radius: var(--radius-pil);
+    background: var(--nadruk);
+    color: var(--kaart);
+    font-family: var(--font-tekst);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tk-premiumknop:hover {
+    background: var(--nadruk-tekst);
+  }
+  /* Op een smal scherm staat het woord er niet, maar het is er wél: `display:
+   * none` haalde het ook uit de toegankelijke naam, en dan is de enige knop in
+   * de app die verkoopt voor een schermlezer "knop". Weggeklemd in plaats van
+   * weggehaald, zoals .tk-sr-only doet. */
+  .tk-premiumknop-woord {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  @media (min-width: 480px) {
+    .tk-premiumknop-woord {
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 0;
+      overflow: visible;
+      clip: auto;
+    }
+  }
+
+  .tk-vandaag {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 20px 20px 24px;
+    border: var(--stroke-hair) solid var(--accent);
+    border-left-width: 8px;
+    border-radius: var(--radius-kaart);
+    /* De kaart en niet de zachte accenttint: dit blok staat alleen op de
+     * voordeur, en die grond is sinds ADR-120 zelf al het groene mengsel. Tint
+     * op tint is geen nadruk. De kleur zit in de rand, waar hij het werk doet. */
+    background: var(--kaart);
+  }
+
   .tk-startbalk {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;

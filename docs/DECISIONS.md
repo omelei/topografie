@@ -6048,6 +6048,173 @@ plek is om de betaalde kant te laten werken zonder hem weg te geven.
 
 ---
 
+## ADR-126 — "Vandaag herhalen": de eerste belofte van premium wordt waargemaakt, en Jij gaat over wie je bent
+
+**Status:** accepted. **Date:** 2026-09-14. Asked for by the product owner, die
+de vier beloftes van de premiumpagina naast het product legde en vroeg: is dit
+allemaal gebouwd? Volgt op ADR-122, ADR-124 en ADR-125.
+
+### Context
+
+De premiumpagina belooft sinds ADR-124 vier dingen. Nagelopen tegen de code:
+
+| Belofte                                  | Gebouwd |
+| ---------------------------------------- | ------- |
+| Het plant het herhalen                   | **nee** |
+| Je ziet wat blijft hangen, per onderdeel | half    |
+| Je hoeft niet meer te overhoren          | ja      |
+| Voor alle kinderen thuis                 | ja      |
+
+De eerste is de kop van de lijst en de reden dat de knip loopt zoals hij loopt,
+en hij was er niet. `volgendeReview` — de datum waarop een onderdeel weer aan de
+beurt is — werd nergens in de app gelezen om te tónen wat er te doen was. De
+Leitner-planning koos wél wat een ronde vroeg, maar nooit wélke ronde je vandaag
+moest doen. Een kind dat de voordeur opendeed kreeg drie rijen geschiedenis en
+geen opdracht: "Meest geoefend", "Recent geoefend", "Maak af" — alle drie over
+gisteren. De pagina heet Vandaag.
+
+De tweede belooft "per onderdeel … hoeveel er over drie weken nog van over is",
+en dat getal stond alleen per set op "Ronde klaar". De tabel had kolommen voor
+aantal, percentage goed en hoe lang geleden — alles behalve de voorspelling.
+
+Daarnaast twee dingen uit dezelfde doorloop. **Premium was alleen te vinden door
+ergens tegen een slot te lopen**, en sinds ADR-124 staan die sloten er veel
+minder: goed voor wie oefent, maar een ouder die wil weten wat het kost moest
+ernaar zoeken. En **Jij ging niet over jou**: drieënveertig lege vakjes — tien
+badges, twaalf tafels, zes vlaggen, vier klokken, elf kaarten — voordat er één
+woord over de gebruiker stond, en de naam die een kind op het eerste scherm
+typte was nergens te veranderen.
+
+### Decision
+
+**"Vandaag herhalen" staat boven aan de voordeur.** Wat er vandaag aan de beurt
+is, per set, met één druk op de knop: die set, de manier waarop dit kind hem het
+laatst deed, en alleen de onderdelen die wachten. `beginRonde` kon dit al — het
+neemt `alleen` — dus er was geen architectuur voor nodig, alleen de vraag die
+niemand stelde.
+
+Drie regels maken het een plan in plaats van een lijst:
+
+- **Alleen herhalen, nooit nieuw.** Een onderdeel zonder Leitner-stand is niet
+  "aan de beurt" maar nog nooit gezien. Zonder die regel stond er op dag één
+  1025 sommen en 196 vlaggen klaar en betekende het niets.
+- **Per set, niet als één hoop.** Vier sommen hier, acht provincies daar. Dat is
+  ook eerlijker tegen een kind dan één ronde van tweeëntwintig gemengde vragen.
+- **Het langst verlopen eerst**, want dat is het dichtst bij vergeten.
+
+**Zonder code staat er hoevéél, niet wat.** Het getal is een feit over dit kind
+en dat houd je niet achter; het plan is waar premium voor is. De twee zinnen zijn
+verschillend, elk waar op zijn eigen plek: met een code staan de vragen "klaar"
+— er is een knop — en zonder is er "1 vraag die je bijna vergeet", want die is
+gewoon te oefenen in zijn eigen set. Heeft een kind niets te herhalen, dan staat
+er niets: een leeg plan aanprijzen is een lege doos op slot doen (ADR-124).
+
+**De tabel op Onthouden krijgt de kolom "Over 3 weken"**, per onderdeel, uit
+dezelfde `itemRetention` die de voordeur en "Ronde klaar" gebruiken. Daarmee
+staat er wat de premiumpagina belooft, in de woorden waarin ze het belooft.
+
+**Premium staat in de balk**, op elke pagina, zolang er geen code is — en alleen
+als er iets te verkopen valt. Wit op de groene nadruk: het is het ene
+commerciële element in de app en het heeft de ene kleur die het product voor
+nadruk heeft. Niet `--accent`, want dit is geen modulekleur en verandert nergens
+mee mee. Wie betaald heeft ziet geen knop die hem vraagt te betalen.
+
+**Jij begint bij wie je bent.** Eerst de persoon, met de naam en een knop om hem
+te wijzigen; dan wat die deze week deed; dan de prijzenkast, als één blok; dan
+wat van de ouder is — het gezin, premium, de instellingen. `renameChild` raakt
+alleen de naam: het id blijft, dus elke Leitner-doos, elk diploma en elke dag van
+de reeks blijft bij het kind horen. Dat hernoemen ontbrak was geen ontbrekende
+functie maar een val: de enige uitweg uit een typefout was de site-data wissen,
+en dat gooit ook alle voortgang weg.
+
+**De voordeur heeft nu een primaire actie, en die is groen.** Dat is de hele
+kleurwijziging, en hij volgt uit het bovenstaande in plaats van uit smaak: de
+app gebruikte kleur om _staat_ te tonen — gekozen, deze module — en nooit om
+_actie_ te tonen. Het blok heeft de vorm van de startbalk op een modulepagina,
+om dezelfde reden: hier begint een ronde. Buiten een module is de accentkleur de
+groene nadruk, dus op de voordeur is dit de enige plek waar die kleur staat.
+De zachte tint eronder verviel: die grond is sinds ADR-120 zelf al het groene
+mengsel, en tint op tint is geen nadruk.
+
+### Consequences
+
+`game-core/dagplan.ts` is puur en wordt als zodanig getest — zes gevallen,
+waarvan het eerste het geval is dat het meest telt: een kind dat vandaag begint
+ziet niets. `premium.spec.ts` speelt een ronde, zet de standen een week terug en
+kijkt wat er dan staat, met en zonder code, plus de knop in de balk.
+
+`.tk-vandaag` staat in `accent.test.ts` bij de zes plekken die een accent mogen
+dragen, met de reden erbij, zoals dat bestand vraagt.
+
+**Niet hier besloten.** De bliksemronde staat nog aan de betaalde kant en hoort
+er waarschijnlijk niet; de toetsdatum wordt nog niet omgezet in een werkplan; er
+is geen weekbericht voor de ouder en geen eigen woordenlijst. Dat zijn de eerste
+punten van de roadmap die bij deze doorloop hoort, en ze staan er los van.
+
+---
+
+## ADR-127 — De toets krijgt een vooruitzicht: wat weet je op die dag nog, en wat doet één ronde vandaag
+
+**Status:** accepted. **Date:** 2026-09-14. Stap 2 van de roadmap bij ADR-126,
+gevraagd door de product owner ("voer de stappen van de roadmap uit").
+
+### Context
+
+Het toetsblok was een aftelklok. Een vak, een datum en "over 3 dagen", en verder
+niets — precies wat ADR-077 ervoor bedacht had, en het is jaren genoeg geweest.
+Wat eromheen is gegroeid maakt het nu zonde: `itemRetention` neemt élke datum,
+dus ook de dag van de toets, en `retentionAfterRound` rekent uit wat één ronde
+vandaag oplevert. Allebei stonden ze er al, en allebei rekenden ze alleen naar
+"over drie weken" — een horizon die niemand gekozen heeft omdat er niets anders
+was om naar te rekenen.
+
+De vraag waar een ouder mee zit op het moment dat de brief van school op tafel
+ligt, is geen andere: _haalt hij het vrijdag?_ Dat is de enige plek in het
+product waar de voorspelling ergens naartoe rekent in plaats van vooruit.
+
+### Decision
+
+**Onder elke toets staat wat dit kind op die dag naar verwachting nog weet**, en
+daaronder, als het iets uitmaakt, wat één ronde vandaag daaraan verandert.
+
+**Waar de toets over gaat, is wat dit kind geoefend heeft.** Een toets wordt
+gezet op een vak en niet op een set — dat is wat een ouder weet als de brief
+binnenkomt — dus rekent de voorspelling over elk onderdeel van dat vak waar een
+Leitner-stand voor is (`toetsOnderdelen`). Dezelfde twee uitzonderingen als het
+dagplan van ADR-126: een mix is de andere sets bij elkaar en zou ze dubbel
+wegen, en een foutenlijst is een dwarsdoorsnede en geen set.
+
+**Nog niets geoefend is geen nul procent.** Dan staat er dat er nog niets van
+geoefend is. Nul is een uitspraak, en over iets wat nooit gevraagd is valt er
+geen te doen.
+
+**De tweede zin staat er alleen als hij iets toevoegt** — vijf procentpunt of
+meer. "Doe vandaag een ronde: dan is het 62%" naast een 61% is ruis, en een
+advies dat niets verandert leert een kind het advies te negeren.
+
+**Premium**, en zonder code staat het er één keer onder de lijst in plaats van
+onder elke toets: dezelfde regel als ADR-124, en herhalen maakt van een aanbod
+ruis.
+
+### Consequences
+
+`toetsZicht.ts` is puur en heeft vijf tests, waarvan drie over wat er _niet_ in
+mag: de mix, de foutenlijst, en wat nooit geoefend is.
+
+Het toetsblok leest nu de Leitner-standen. Dat is de eerste keer dat dat blok
+iets van voortgang weet; het stond er met opzet buiten (ADR-077: "geen cijfer,
+geen balk, geen projectie"). Die regel gold voor de tijd dat het blok een
+aftelklok was en de voorspelling nergens stond. Nu staat ze overal — op de
+voordeur, op "Ronde klaar" en per onderdeel op Onthouden — en is het toetsblok
+de enige plek waar ze ontbrak.
+
+**Niet hier besloten:** het werk verdelen over de dagen tot de toets. Dat is een
+plan maken over meerdere dagen vooruit, met aannames over hoe vaak een kind
+oefent, en dat verdient een eigen beslissing. Wat hier staat is de vraag ervoor:
+staat het er goed voor of niet.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -12,6 +12,7 @@ import {
   type VlagItem,
   type WerkwoordItem,
 } from '@/game-core';
+import { itemRetention } from '@/game-core';
 import { klokVoluit } from '@/features/klok/klokTaal';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
 import { regiosVan } from '@/features/module/regios';
@@ -403,6 +404,11 @@ function Heatmap({
   );
 }
 
+/** De horizon van de voorspelling, overal in het product dezelfde: drie weken. */
+function overDrieWeken(now: Date): Date {
+  return new Date(now.getTime() + 21 * 86_400_000);
+}
+
 /** "vandaag", "1 dag geleden", "12 dagen geleden" — or a dash for never. */
 function laatstGeoefend(dagen: number | null): string {
   if (dagen === null) return t('retention.nooit');
@@ -430,6 +436,7 @@ function RetentionTable({
           <th>{t('retention.status')}</th>
           <th className="tk-num">{t('retention.aantal')}</th>
           <th className="tk-num">{t('retention.procentGoed')}</th>
+          <th className="tk-num">{t('retention.overDrieWeken')}</th>
           <th>{t('retention.laatst')}</th>
         </tr>
       </thead>
@@ -454,6 +461,18 @@ function RetentionTable({
               <td className="tk-num">{aantalAntwoorden(state)}</td>
               <td className="tk-num">
                 {procent === null ? t('retention.nooit') : t('retention.procent', { procent })}
+              </td>
+              {/* De voorspelling per onderdeel (ADR-126). De premiumpagina
+                  belooft "per onderdeel: hoeveel er over drie weken nog van over
+                  is", en tot nu toe stond dat getal alleen per set op "Ronde
+                  klaar". Een streepje waar niets geoefend is: nul procent is een
+                  uitspraak over iets wat niemand ooit gevraagd heeft. */}
+              <td className="tk-num">
+                {state === undefined
+                  ? t('retention.nooit')
+                  : t('retention.procent', {
+                      procent: Math.round(itemRetention(state, overDrieWeken(now)) * 100),
+                    })}
               </td>
               <td>{laatstGeoefend(dagenGeleden(state, now))}</td>
             </tr>

@@ -1,8 +1,8 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { t } from '@/i18n';
 import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { dayKey, grade, formatGrade } from '@/game-core';
-import { createChild, listChildren, switchChild } from '@/store/children';
+import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
@@ -66,18 +66,20 @@ export function ProfileScreen({
       <div className="tk-page-main">
         <div className="flex flex-col gap-2">
           <h1 className="tk-titel">{t('you.title')}</h1>
-          <p className="text-lopend text-tekst-secundair">
-            {t('you.nameIs', { naam: profile.naam })}
-          </p>
         </div>
 
-        <BadgeSectie />
-        <Tafeldiplomas />
-        <VlagDiplomas />
-        <KlokDiplomas />
-        <TopoDiplomas />
+        {/* Wie je bent, bovenaan (ADR-126). Deze pagina heet "Jij" en begon met
+            drieënveertig lege prijzenkasten: tien badges, twaalf tafels, zes
+            vlaggen, vier klokken en elf kaarten, allemaal "nog niet", voordat er
+            één woord over de gebruiker stond. En de naam die het kind op het
+            eerste scherm typte was nergens te veranderen. Nu eerst de persoon,
+            dan wat die deze week deed, dan de kast, en onderaan wat van de ouder
+            is: het gezin, premium en de instellingen. */}
+        <Ikben profile={profile} />
 
         <Week />
+
+        <Prijzenkast />
 
         <Children active={profile} />
 
@@ -101,6 +103,110 @@ export function ProfileScreen({
       </div>
 
       {aside}
+    </div>
+  );
+}
+
+/** Zo lang als het naamscherm toestaat (`ProfileGate`): één limiet, twee velden. */
+const NAAM_MAX = 24;
+
+/**
+ * Wie er oefent, en hoe die heet (ADR-126).
+ *
+ * De naam en de held stonden er als een regel tekst onder de titel — "Je oefent
+ * als Noor" — en waren geen van beide aan te raken. De held kiest een kind op
+ * zijn eigen pagina; de naam kon nergens. Hier staat hij, met één knop ernaast.
+ *
+ * Hernoemen raakt alleen de naam: het id blijft, dus elke Leitner-doos, elk
+ * diploma en elke dag van de reeks blijft bij dit kind horen.
+ */
+function Ikben({ profile }: { readonly profile: ProfileRecord }) {
+  const [open, setOpen] = useState(false);
+  const [naam, setNaam] = useState(profile.naam);
+  const [bezig, setBezig] = useState(false);
+  const veld = useId();
+
+  async function bewaar(event: FormEvent) {
+    event.preventDefault();
+    if (naam.trim() === '' || naam.trim() === profile.naam) {
+      setOpen(false);
+      return;
+    }
+    setBezig(true);
+    await renameChild(profile.id, naam);
+    // Elk scherm houdt een stukje van dit kind in React-state, en de naam staat
+    // ook in de balk. Opnieuw laden is bot en het is het juiste: het is de
+    // enige manier waarop nergens de oude naam blijft staan (zoals switchChild).
+    window.location.reload();
+  }
+
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('you.who')}>
+      <h2 className="tk-sectie">{t('you.who')}</h2>
+
+      {open ? (
+        <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void bewaar(event)}>
+          <label htmlFor={veld} className="tk-label">
+            {t('you.childName')}
+          </label>
+          <input
+            id={veld}
+            className="tk-input max-w-xs"
+            value={naam}
+            onChange={(event) => setNaam(event.target.value)}
+            maxLength={NAAM_MAX}
+            autoComplete="off"
+            autoFocus
+          />
+          <div className="flex flex-wrap gap-3">
+            <button type="submit" className="tk-button self-start" disabled={bezig}>
+              {t('you.nameSave')}
+            </button>
+            <button
+              type="button"
+              className="tk-button tk-button-tertiary self-start"
+              onClick={() => {
+                setNaam(profile.naam);
+                setOpen(false);
+              }}
+            >
+              {t('you.nameCancel')}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <div className="tk-card flex flex-wrap items-center justify-between gap-3">
+          <p className="text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>
+          <button
+            type="button"
+            className="tk-button tk-button-secondary"
+            onClick={() => setOpen(true)}
+          >
+            {t('you.nameChange')}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * De prijzenkast: de badges en de vier muren met diploma's, onder één kop.
+ *
+ * Ze stonden als vijf losse secties boven aan de pagina, samen goed voor
+ * drieënveertig vakjes die op dag één allemaal leeg zijn. Dat is niet minder
+ * waard geworden — de gaten zijn juist het punt (ADR-064) — maar het is wat een
+ * kind ziet nadat het iets gedaan heeft, niet waarmee een pagina over hemzelf
+ * hoort te beginnen.
+ */
+function Prijzenkast() {
+  return (
+    <div className="flex flex-col gap-6">
+      <BadgeSectie />
+      <Tafeldiplomas />
+      <VlagDiplomas />
+      <KlokDiplomas />
+      <TopoDiplomas />
     </div>
   );
 }
