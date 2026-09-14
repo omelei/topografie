@@ -2810,55 +2810,90 @@
     background: var(--kaart);
   }
 
-  /* ---- The menu the rail becomes below 1200 (ADR-093) --------------------
-   * A row under the app bar with a word and a button in it; open, a panel in
-   * the flow of the page under that, holding a card of five rows. In the flow
+  /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------
+   * A row under the app bar with one button across it; open, a panel in the
+   * flow of the page under that, holding a card of five rows. In the flow
    * rather than over it, so nothing under it is covered while it is open and
    * nothing has to be told to stop scrolling.
+   *
+   * ADR-121: below 1200 this is the only way to a vak, and as drawn it was a
+   * hairline pill hugging its own words, level with everything else on the
+   * screen and gone as soon as the page moved. It is now the widest control
+   * under the app bar, ruled in ink, and stuck to the top of the glass.
    */
+
+  /* What sticks. The row *and*, while it is open, its panel: one box, because
+   * the panel is anchored to the flow and a row that travelled without it would
+   * open a list somewhere the page has already scrolled past.
+   *
+   * The app bar above it is deliberately not sticky. 56 of height on a phone is
+   * the mark and the streak, and the thing worth keeping in reach the whole way
+   * down a page is the way to a vak — so the bar scrolls off and the menu
+   * arrives at the top exactly as it goes. */
+  .tk-vakmenu-houder {
+    position: sticky;
+    top: 0;
+    /* Over the page that runs under it, and over the start bar stuck to the
+     * foot of a module page, which is 1. */
+    z-index: 2;
+    /* Opaque on purpose: a sticky box with no ground of its own shows the page
+     * through itself. */
+    background: var(--kaart);
+  }
   .tk-vakmenu-rij {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: var(--stroke-hair) solid var(--rand-licht);
+    padding: 10px 16px;
+    /* The screen's frame rather than the light rule. This is the edge a page
+     * scrolls under, and 1.40:1 against a moving ground reads as nothing. */
+    border-bottom: var(--stroke-hair) solid var(--rand-sterk);
   }
+  /* Across the row rather than around its words, at the height of a button and
+   * ruled in two pixels of ink. Not the ink *fill* of a primary button: §C
+   * allows one of those per screen and a module page already spends it on
+   * "Start". A wide outline is the next thing down, and there is nothing else
+   * on a phone drawn this way. */
   .tk-vakmenu-knop {
-    display: inline-flex;
+    display: flex;
+    flex: 1;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     min-width: 0;
-    min-height: var(--raak);
-    padding: 0 14px 0 8px;
+    min-height: var(--knop-hoogte);
+    padding: 0 14px 0 10px;
     border-radius: var(--radius-pil);
-    border: var(--stroke-hair) solid var(--rand-bediening);
+    border: var(--stroke-active) solid var(--inkt);
     background: var(--kaart);
     color: var(--inkt);
     font-size: var(--type-knop);
     line-height: var(--type-knop-lh);
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
   }
   .tk-vakmenu-knop:hover {
     background: var(--vlak-hover);
   }
-  /* Open: the rule turns to ink, and the chevron turns over. */
+  /* Open: the ground drops to the page's, and the chevron turns over. The rule
+   * is already ink, so it has nowhere left to go. */
   .tk-vakmenu-knop[aria-expanded='true'] {
-    border-color: var(--inkt);
+    background: var(--vlak-hover);
   }
-  .tk-vakmenu-knop .tk-plaat {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-chip-groot);
+  /* The name takes the width the mark and the chevron leave, and wraps rather
+   * than being cut: at a reader's 200% "Tijdvakken" is wider than the pill, and
+   * a button whose min-height is a floor can simply grow. */
+  .tk-vakmenu-naam {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
   }
   .tk-vakmenu-paneel {
     padding: 10px 16px 14px;
     background: var(--papier);
-    border-bottom: var(--stroke-hair) solid var(--rand-licht);
+    border-bottom: var(--stroke-hair) solid var(--rand-sterk);
   }
   @media (min-width: 768px) {
     .tk-vakmenu-rij {
-      padding: 12px 20px;
+      padding: 10px 20px;
     }
     .tk-vakmenu-paneel {
       padding: 10px 20px 14px;

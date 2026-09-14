@@ -5604,6 +5604,73 @@ wears the module's colour still holds.
 
 ---
 
+## ADR-121 — Below 1200 the vak menu is stuck to the top of the screen, and where you are in no vak it says "Oefenen"
+
+**Status:** accepted. **Date:** 2026-09-13. Asked for by the product owner: the
+control was not noticeable enough on a phone and did not stay in view.
+
+### Context
+
+ADR-093 made the rail below 1200 into one control under the app bar. As drawn
+it was a hairline pill in the tertiary ink, hugging its own words, with the
+grey word "vak" in front of it — the same weight as a field, an option and a
+secondary button, on a screen full of all three. And it scrolled away with the
+page, so on every screen below 1200 the only way to a vak was gone after the
+first swipe.
+
+Both are the same mistake from two directions. Below 1200 there is no rail:
+this control _is_ the navigation of the product, and it was drawn and placed as
+though it were one more thing on the page.
+
+### Decision
+
+**It sticks, and the app bar above it does not.** `Shell` wraps it in
+`.tk-vakmenu-houder`, which carries `position: sticky; top: 0`. The wrapper
+rather than the component's own root, because a sticky box travels only inside
+its containing block and on the root that block is the wrapper itself — it
+would not move at all. The row _and_ its open panel are inside one sticky box,
+so an open menu is never anchored to a place the page has scrolled past.
+
+The app bar is left alone on purpose. It is 56 of height carrying the mark, the
+streak and the child; the thing worth keeping within reach the whole way down a
+page is the way to a vak. So the bar scrolls off and the menu arrives at the
+top exactly as it goes, and no height is spent twice.
+
+**It is the widest control under the app bar, ruled in two pixels of ink.**
+Across the row rather than around its words, at a button's full height, with
+the module's plate at 36. Not the ink _fill_ of a primary button: §C allows one
+of those per screen and a module page already spends it on "Start". A wide ink
+outline is the next weight down and nothing else below 1200 is drawn that way.
+No accent — §B does not let a colour say "press here", and the plate inside it
+already carries the module's own tint (ADR-094).
+
+**Where no module is open it says "Oefenen".** In that state the control is not
+a read-out of where you are; it is the way to a round, and a control that names
+its own job is pressed. Where a module _is_ open it still says which one.
+
+**The word "vak" left the row.** It was a grey label in front of the button
+that took width off a 393 phone and, with "Oefenen" on the button, said the
+same thing twice. It survives in the button's accessible name — `vak Topo` —
+where "Topo" alone does not say what kind of thing Topo is. In no vak the
+accessible name is "Oefenen", which is the visible word, as §A wants it.
+
+### Consequences
+
+`nav.vak` is gone and `nav.vakHuidig` takes its place; `nav.vakKies` is now
+"Oefenen". The stylesheet gains `.tk-vakmenu-houder` and `.tk-vakmenu-naam`,
+and the bar's bottom rule moves from the light line to the screen's frame — a
+1.40:1 hairline against a moving ground reads as nothing. Its `z-index` is 2,
+over the start bar stuck to the foot of a module page, which is 1.
+
+The e2e spec finds the control by its class rather than by an accessible name
+beginning "vak ", since it no longer always does, and a new test scrolls a
+module page to the bottom at the four sizes below 1200 and asserts the control
+is still on the glass and higher up it than it started. The front door's own
+sentence still reads "Kies een vak, doe een ronde…": the page may ask in
+words, and the control names what it does.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

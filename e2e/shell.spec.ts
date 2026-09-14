@@ -174,8 +174,10 @@ test('below 1200 the modules are a menu under the app bar', async ({ page }, tes
 
   await signIn(page, 'Ilse');
 
-  const knop = page.getByRole('button', { name: /^vak / });
-  await expect(knop).toHaveAccessibleName('vak Kies een vak');
+  const knop = page.locator('.tk-vakmenu-knop');
+  // In no vak it names its own job rather than asking a question (ADR-121).
+  await expect(knop).toHaveText('Oefenen');
+  await expect(knop).toHaveAccessibleName('Oefenen');
   await expect(knop).toHaveAttribute('aria-expanded', 'false');
 
   await knop.click();
@@ -195,6 +197,38 @@ test('below 1200 the modules are a menu under the app bar', async ({ page }, tes
   await page.keyboard.press('Escape');
   await expect(knop).toHaveAttribute('aria-expanded', 'false');
   await expect(knop).toBeFocused();
+});
+
+/**
+ * ADR-121: below 1200 the vak menu is the only way to a vak, and it used to
+ * scroll away with the page. Checked on a page long enough to scroll on every
+ * size that gets the menu — a module page, which carries the chips, the modes
+ * and the start bar.
+ */
+test('below 1200 the vak menu stays on the glass while the page scrolls', async ({
+  page,
+}, testInfo) => {
+  test.skip(['chromebook', 'desktop-1440'].includes(testInfo.project.name), 'the rail, at a desk');
+
+  await signIn(page, 'Ilse');
+  await page.goto('/topografie');
+  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+
+  const knop = page.locator('.tk-vakmenu-knop');
+  const voor = await knop.boundingBox();
+
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const gescrold = await page.evaluate(() => window.scrollY);
+  expect(
+    gescrold,
+    'the page has to be longer than the screen for this to mean anything',
+  ).toBeGreaterThan(0);
+
+  // Still on the glass, and higher up it than it started: the app bar above it
+  // has gone and the menu has taken its place at the top.
+  await expect(knop).toBeInViewport();
+  expect(voor?.y ?? 0).toBeGreaterThan(0);
+  expect((await knop.boundingBox())?.y ?? -1).toBeLessThan(voor?.y ?? 0);
 });
 
 /**
