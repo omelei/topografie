@@ -11,6 +11,8 @@ import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import type { RoundOutcome } from '@/store/rewardStore';
+import { behaaldDiploma } from '@/features/home/doel';
+import { leesDoel } from '@/store/doelStore';
 import { HerhaalFouten } from './HerhaalFouten';
 import { Kist } from '@/features/reis/Kist';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
@@ -187,6 +189,7 @@ export function RondeKlaar({
                     <Embleem icon={DiplomaIcon} module={moduleId} gehaald klein />
                     <span className="tk-lijstrij-tekst">
                       <span className="tk-lijstrij-titel">{diploma}</span>
+                      <DoelRegel reward={reward} />
                     </span>
                   </div>
                 </li>
@@ -205,6 +208,31 @@ export function RondeKlaar({
       </div>
     </main>
   );
+}
+
+/**
+ * "Dit was waar je voor ging" (ADR-141).
+ *
+ * Alleen die ene regel, en alleen als dit diploma het gekozen doel was. Het
+ * vieren gebeurt hier, op het moment zelf, want dat is waar het gebeurde; de
+ * vraag wat nu staat op de voordeur, want een nieuw doel kiezen hoort niet aan
+ * het eind van een ronde waar het kind al vier dingen moet lezen.
+ *
+ * De uitslag draagt het diploma in woorden, en woorden zijn niet te vergelijken
+ * met wat er bewaard staat. `behaaldDiploma` rekent de id terug uit de beloning
+ * zelf, zodat er niets door vijf schermen heen hoeft.
+ */
+function DoelRegel({ reward }: { readonly reward: RoundOutcome | null }) {
+  const [gehaald, setGehaald] = useState(false);
+  const id = behaaldDiploma(reward);
+
+  useEffect(() => {
+    if (id === null) return;
+    void leesDoel().then((doel) => setGehaald(doel === id));
+  }, [id]);
+
+  if (!gehaald) return null;
+  return <span className="tk-lijstrij-regel">{t('doel.gehaaldRonde')}</span>;
 }
 
 /**
