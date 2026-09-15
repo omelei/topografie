@@ -7281,6 +7281,103 @@ vraag of een kind van acht ooit uit zichzelf op "Onthouden" drukt, is er een die
 
 ---
 
+## ADR-144 — Leisteen: één koele ondergrond, indigo voor wat je indrukt, en een ring in de kleur van het merk
+
+**Status:** accepted. **Date:** 2026-09-15. Na de levering van een nieuwe
+styleguide voor leer.nu (`docs/leer.nu Styleguide - Leisteen.dc.html`, richting
+"Leisteen"), met de opdracht daar de kleuren en het logo uit toe te passen en
+niets anders.
+
+### Context
+
+De styleguide begint met een diagnose, niet met een palet: **de paginabrede
+vaktint maakte de schermen flets en vuil.** Witte kaarten op een zandtint zien
+er altijd grauw uit, en dat was precies wat ADR-120 had ingevoerd — elke
+vakpagina op een zachte versie van zijn eigen kleur. De styleguide zet daar één
+koele grijsblauwe ondergrond voor in de plaats, met zuiver witte kaarten erop,
+en laat het vak zich noemen door zijn icoontegel.
+
+Daarnaast maakt hij één kleur vrij die dit product niet had: **indigo, de enige
+kleur die "hier druk je op" betekent.** Dat is bewust geen van de vakkleuren, en
+de styleguide geeft er de reden bij die je alleen ziet als je de schermen naast
+elkaar legt: de groene premiumknop stond naast het groene Rekenen-icoon, en dan
+zegt groen twee dingen tegelijk. Wat overblijft voor verzadigde kleur zijn drie
+dingen: de actieknop, voortgang, en goed/fout.
+
+### Beslissing
+
+**Het palet is dat van de styleguide, in sRGB.** De styleguide schrijft oklch;
+`src/index.css` schrijft de hex die een browser daarvan maakt, met de oklch
+ernaast in het commentaar. Dat is geen vertaling maar een notatiekeuze: het
+bestand houdt één notatie, `contrast.test.ts` kan elke waarde meten zoals hij
+dat altijd deed, en de bron staat er leesbaar bij. Ondergrond `#EFF1F5`, kaart
+`#FFFFFF`, inkt `#1B2230`, randen `#DDE1E8` en `#D6DBE3`.
+
+**Eén grond, overal.** `--topo-grond` tot en met `--vandaag-grond` bestaan nog
+en wijzen alle zeven naar `--papier`. De tokens blijven staan omdat een scherm
+dan niets hoeft te weten: `Shell` zet nog steeds `data-grond`, en als er ooit
+een reden komt om een pagina weer een eigen grond te geven, is het één regel.
+Dit neemt ADR-120 terug.
+
+**Het accent is de actiekleur, in elk vak.** ADR-112 liet een vak het accent
+overnemen — een gekozen tegel was blauw op topografie en oranje op klokkijken.
+De styleguide tekent diezelfde keuzetegel (§06 is letterlijk stap 3 van een
+vakpagina: Aanwijzen, Meerkeuze, Zelf typen, Bliksem) in indigo, en zegt in §05
+dat een vakkleur _uitsluitend_ als lichte tegel of dunne voortgangsbalk
+verschijnt. Dus: `[data-accent='module']` bestaat niet meer, wat je indrukt is
+overal indigo, en `--module` draagt de twee dingen die een vak aanduiden — zijn
+tegel en zijn balk. De primaire knop gaat van inkt naar indigo.
+`data-accent="module"` staat nog in de schermen en verandert niets meer; het
+weghalen is opruimwerk en geen kleur.
+
+**De plaat is weer een zachte tegel met een donker pictogram.** ADR-142 maakte
+hem verzadigd. §03 geeft twee sterktes en zegt welke waar hoort: de lichte tegel
+is de standaard, overal in lijsten en in de rail, en de volle vulling is voor
+voortgangsbalken en voor de actieve staat. Dus alleen het vak waar je nú in
+bent draagt in de rail zijn volle kleur.
+
+**Het zesde vak.** De styleguide tekent er vijf en zegt dat een zesde op hue 25
+of 105 past. Tijdvakken krijgt 105: 25 is het rood dat fout betekent, en een vak
+mag dat niet dragen.
+
+**Het logo.** De letters staan in inkt en de ring met het naaldje in de
+actiekleur, zoals de styleguide het merk in de balk tekent. Dat is een eigen
+token (`--merk`) en niet het accent, want het merk is in elk vak hetzelfde en
+mag nooit van een vak leren (`accent.test.ts` bewaakt dat al). Uit de inkt
+gespaard is alles het licht: een gekleurde ring op een donkere grond leest niet.
+Het app-icoon en de favicon krijgen de kleur van het merk als vlak, met de ring
+in het wit — het icoon is het merk alleen, en op zestien pixels is de kleur het
+enige wat het herkenbaar maakt.
+
+### Wat er niet gebeurd is, en waarom
+
+**De donkere modus (§08) is niet overgenomen.** Dit product heeft er geen sinds
+ADR-112: een ronde is licht zoals elk ander scherm. Een donkere modus bouwen is
+een functie, geen kleur.
+
+**De typografie is niet aangeraakt.** De styleguide zet zichzelf in Figtree en
+JetBrains Mono; de app levert Archivo en Public Sans van het eigen domein mee
+(ADR-109) en laadt geen lettertype van een ander domein. Dat is een beslissing
+over privacy en niet over vorm, en de opdracht ging over kleur.
+
+**De focusring blijft inkt.** De styleguide geeft hem als 3 px indigo op 35%,
+maar dat is één spec voor één context. Indigo op volle sterkte is op een
+indigoknop en op een volle vaktegel niet te zien, en een focusring die op de ene
+plek verdwijnt is geen focusring. Inkt haalt het overal.
+
+**De derde inkt is twee stappen donkerder dan de styleguide hem geeft.**
+`#6A7385` haalt 4,77 op een kaart — dat meet de styleguide zelf — maar 4,22 op
+de ondergrond, en dit product zet bijschriften op allebei. `#636C7E` is dezelfde
+hue en dezelfde chroma, twee stappen donkerder, en haalt 5,28 en 4,67. Dat is de
+enige plek waar het palet bewust niet de letterlijke hex is, en het staat in
+`index.css`, in `huisstijl.test.ts` en hier.
+
+**De metalen van de reeks (ADR-071) zijn niet aangeraakt.** Brons, zilver, goud,
+platina en ultra staan buiten de tabel van de styleguide, omdat een materiaal
+geen rol is. Ze zijn wel opnieuw gemeten tegen de witte kaart.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

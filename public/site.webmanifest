@@ -1,8 +1,8 @@
 {
   "name": "leer.nu",
   "short_name": "leer.nu",
-  "background_color": "#FBFAF6",
-  "theme_color": "#1A201B",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1B2230",
   "icons": [
     {
       "src": "logo/png/app-icoon-192.png",

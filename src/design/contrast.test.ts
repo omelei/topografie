@@ -23,9 +23,10 @@ const css = readFileSync(CSS_PATH, 'utf8');
 
 /**
  * The one theme there is: `:root`. A round used to redefine the roles with the
- * handoff's dark values (ADR-109); since ADR-112 it is light like the rest of
- * the app, so every colour is measured once, where it is declared. The root
- * block has no nested braces, so it ends at the first `}`.
+ * dark values (ADR-109); since ADR-112 it is light like the rest of the app —
+ * and the styleguide's own dark half (§08) is not carried either — so every
+ * colour is measured once, where it is declared. The root block has no nested
+ * braces, so it ends at the first `}`.
  */
 const rootStart = css.indexOf(':root {');
 if (rootStart < 0) throw new Error(`No :root block in ${CSS_PATH}`);
@@ -49,8 +50,8 @@ function token(name: string, seen: string[] = []): string {
   const reference = /^var\(\s*--([a-z0-9-]+)\s*\)$/.exec(value);
   if (reference?.[1]) return token(reference[1], [...seen, name]);
 
-  // A ground is two tokens mixed (ADR-120), and is measured as the browser
-  // mixes it rather than trusted from the comment beside it.
+  // A mixed token is measured as the browser mixes it rather than trusted from
+  // the comment beside it.
   const mengsel =
     /^color-mix\(in srgb,\s*var\(--([a-z0-9-]+)\)\s+(\d+)%,\s*var\(--([a-z0-9-]+)\)\s*\)$/.exec(
       value,
@@ -105,21 +106,22 @@ describe('contrast', () => {
     ['inkt', 'papier'],
     ['tekst-secundair', 'kaart'],
     ['tekst-secundair', 'papier'],
-    // The handoff made the third ink a text colour, and it is one: 5.15 on a
-    // card and 4.58 on the ground, just over the line.
+    // The third ink is a text colour, and it is one: 5.28 on a card and 4.67 on
+    // the ground. The styleguide's own #6a7385 reaches 4.22 there, which is why
+    // index.css carries it two steps darker.
     ['tekst-tertiair', 'kaart'],
     ['tekst-tertiair', 'papier'],
     // The primary button, and the tick on the one solid fill there is.
     ['kaart', 'inkt'],
     ['kaart', 'nadruk'],
-    // Green as text on a card. Not on the ground, where it reaches 4.20 —
-    // there it is nadruk-tekst, which is measured on both.
+    // Green as text on a card, 5.17. On the ground it is 4.58 — still over the
+    // line, and nadruk-tekst, which is measured on both, is the safer one.
     ['nadruk', 'kaart'],
     ['nadruk-tekst', 'nadruk-vlak'],
     ['nadruk-tekst', 'papier'],
     ['accent-text', 'accent-tint'],
-    // Wrong as text sits on a card (4.72); on the ground it reaches 4.21 and
-    // is only ever an edge there, measured below.
+    // Wrong as text sits on a card (5.76); on the ground it is 5.09 and is only
+    // ever an edge there, measured below.
     ['fout', 'kaart'],
     ['fout-tekst', 'fout-arcering-grond'],
     ['inkt', 'vlak-hover'],
@@ -132,7 +134,7 @@ describe('contrast', () => {
 
   /**
    * WCAG 1.4.11: the edge of a control and the marks that identify a state
-   * need 3:1. The light rule does not clear it (1.40) and is never the only
+   * need 3:1. The light rule does not clear it (1.31) and is never the only
    * thing that shows where a control is — which is why every field, option and
    * secondary button is drawn in rand-bediening, as the screens draw them.
    */
@@ -157,23 +159,25 @@ describe('contrast', () => {
   });
 });
 
-describe('the colours outside the handoff table', () => {
+describe('the colours outside the styleguide’s table', () => {
   /**
-   * A module's pictogram on its own tint: the plate, the one place a module
-   * still has a colour of its own. Text on it is the module's text colour.
+   * A module's pictogram on its own tint: the plate, §03's standard strength
+   * and the one place a module still has a colour of its own. The glyph on it,
+   * and any text beside it that names the module, is the module's text colour.
    */
   it.each(MODULES.map((name) => [name] as const))('%s-text clears 4.5:1 on its tint', (name) => {
     expect(ratio(`${name}-text`, `${name}-tint`)).toBeGreaterThanOrEqual(4.5);
   });
 
   /**
-   * The plate itself since ADR-142: the module's own colour filled solid, with
-   * the pictogram drawn on it in the card's light. A drawing rather than text,
-   * so the floor is three — all six clear four, which is what let the plate go
-   * saturated in the first place.
+   * The full strength, §03: a progress bar against its empty track, and the
+   * plate of the subject you are in — filled solid, with the pictogram on it in
+   * the card's light. Drawings rather than text, so the floor is three.
    */
-  it.each(MODULES.map((name) => [name] as const))('draws a pictogram on %s', (name) => {
-    expect(ratio('kaart', name)).toBeGreaterThanOrEqual(3);
+  it.each(MODULES.map((name) => [name] as const))('fills a bar and a plate in %s', (name) => {
+    expect(ratio(name, 'balk-leeg'), 'a bar against its track').toBeGreaterThanOrEqual(3);
+    expect(ratio('kaart', name), 'the pictogram on the plate').toBeGreaterThanOrEqual(3);
+    expect(ratio(name, `${name}-tint`), 'the plate against a quiet one').toBeGreaterThanOrEqual(3);
   });
 
   /**
@@ -210,10 +214,12 @@ describe('the colours outside the handoff table', () => {
 });
 
 /**
- * The ground a page stands on (ADR-120): a module's page on a soft version of
- * its tint, the front door on a soft version of the green. Every ink that
- * stands on papier has to stand on each of them too, and a card has to stay a
- * card on it.
+ * The ground a page stands on. ADR-120 gave a module's page a soft version of
+ * its own tint; §01 of the styleguide takes that back — a page-wide subject
+ * tint is what made the screens look grey — and every page now stands on the
+ * one neutral ground. The tokens stay, so a screen still says bg-module-grond,
+ * and this is what holds them to it: every ink that stands on papier stands on
+ * each of them, because each of them is papier.
  */
 describe('the ground under a page', () => {
   const GRONDEN = [...MODULES.map((name) => `${name}-grond`), 'vandaag-grond'];
@@ -232,8 +238,8 @@ describe('the ground under a page', () => {
     expect(ratio(name, `${name}-grond`)).toBeGreaterThanOrEqual(3);
   });
 
-  it.each(GRONDEN.map((grond) => [grond] as const))('is neither a card nor paper: %s', (grond) => {
+  it.each(GRONDEN.map((grond) => [grond] as const))('is the one ground: %s', (grond) => {
+    expect(token(grond)).toBe(token('papier'));
     expect(token(grond)).not.toBe(token('kaart'));
-    expect(token(grond)).not.toBe(token('papier'));
   });
 });

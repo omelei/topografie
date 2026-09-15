@@ -44,43 +44,83 @@
    * huisstijl.test.ts holds every value of the handoff's table to the letter.
    */
   :root {
-    /* ---- Colour, light: the handoff's table ------------------------------
-     * Ratios as text, on kaart / on papier. */
-    --canvas: #dcd9cd; /* outside the screen */
-    --papier: #efede4; /* the ground of a screen */
-    --kaart: #fbfaf6; /* card and panel, and the frame round the page */
-    --inkt: #1a201b; /* text and the primary button              15.88 / 14.14 */
-    --tekst-secundair: #525953; /*                                  6.90 / 6.15 */
-    --tekst-tertiair: #666c67; /*                                    5.15 / 4.58 */
-    --rand-licht: #d8d6cc; /* 1px, carries no text                   1.40 on kaart */
-    --rand-sterk: #c1beb2; /* the screen's frame                      1.78 on kaart */
-    --nadruk: #327f48; /* accent groen: goed, nadruk     4.71 / 4.20 — text on kaart only */
-    --nadruk-vlak: #eafbec; /* accent groen licht */
-    --nadruk-tekst: #2c5c3a; /* accent groen donker              7.23 on nadruk-vlak */
+    /* ---- Colour, light: the styleguide's table ---------------------------
+     * "Leisteen" (docs/leer.nu Styleguide - Leisteen.dc.html §01-02). One cool, clean
+     * ground under clean white cards: the page-wide subject tint is gone, and
+     * saturated colour is kept for three things — the action button, progress,
+     * and good/wrong.
+     *
+     * The styleguide writes its colours in oklch. They are written here as the
+     * sRGB a browser resolves them to, so this file keeps one notation and
+     * contrast.test.ts can measure every one of them; the oklch stands in the
+     * comment beside the value it came from.
+     *
+     * Ratios as text, on kaart / on papier.
+     */
+    --canvas: #e3e7ef; /* outside the screen: one step under the ground */
+    --papier: #eff1f5; /* the ground of every screen */
+    --kaart: #ffffff; /* card and panel, and the frame round the page */
+    --inkt: #1b2230; /* text and headings                       15.93 / 14.09 */
+    --tekst-secundair: #5a6274; /*                                  6.12 / 5.41 */
+    /* The styleguide's caption ink is #6a7385, which it measures on a card
+     * (4.77) and not on the ground, where it reaches 4.22 and fails AA. This is
+     * that colour at the same hue and chroma, two steps darker, so it clears on
+     * both — the one place the palette is deliberately not the literal hex. */
+    --tekst-tertiair: #636c7e; /* oklch(.53 .03 264)                5.28 / 4.67 */
+    --rand-licht: #dde1e8; /* 1px, carries no text                   1.31 on kaart */
+    --rand-sterk: #d6dbe3; /* the screen's frame                      1.39 on kaart */
+
+    /* ---- The action colour, §02 -------------------------------------------
+     * Indigo is the only colour that means "here you press". It is deliberately
+     * none of the six subject hues, so a button can never be mistaken for a
+     * subject — the green premium button beside the green Rekenen icon is the
+     * mistake this replaces.
+     */
+    --actie: #385db8; /* oklch(.50 .15 265)      white on it 6.13 — 6.13 on kaart */
+    --actie-hover: #264698; /* oklch(.42 .14 265)                white on it 8.71 */
+    --actie-tint: #e2ebff; /* oklch(.94 .035 265): the fill behind a label */
+    --actie-tekst: #264698; /* oklch(.42 .14 265)            7.28 on actie-tint */
+
+    /* ---- The mark, §07 -----------------------------------------------------
+     * The ring between the words, and the beeldmerk on its own, are drawn in
+     * the action colour as the styleguide's app bar draws them; the letters
+     * stay ink. A brand role of its own rather than the accent, because the
+     * mark is identical in every module and may never learn about one
+     * (accent.test.ts). Reversed out of ink it is simply the light.
+     */
+    --merk: var(--actie);
+
+    /* ---- Good, §05 ---------------------------------------------------------
+     * Green is a status and nothing else now that the action colour has the
+     * buttons: it says "onthouden", never "press here".
+     */
+    --nadruk: #0a7e3a; /* oklch(.52 .14 150)                      5.17 / 4.58 */
+    --nadruk-vlak: #d1f2d7; /* oklch(.93 .05 150) */
+    --nadruk-tekst: #005724; /* oklch(.40 .12 150)             7.28 on nadruk-vlak */
 
     /* ---- Roles the table leaves to the screens ---------------------------
-     * Each is one of the table's colours put to a named use, or a value read
-     * off the screens where the table is silent. A round uses them as they are:
-     * it is light like the rest of the app since ADR-112, and the handoff's dark
-     * set is no longer carried.
+     * Each is one of the colours above put to a named use, or a value read off
+     * the styleguide's components where the table is silent. A round uses them
+     * as they are: it is light like the rest of the app since ADR-112, and the
+     * styleguide's dark set (§08) is not carried.
      */
     /* The edge of a control. The screens draw every field, option and
-     * secondary button in the tertiary ink — 5.15:1, where the light rule's
-     * 1.40 would fail WCAG 1.4.11 for the one line that says "press here". */
+     * secondary button in the tertiary ink — 5.28:1, where the light rule's
+     * 1.31 would fail WCAG 1.4.11 for the one line that says "press here". */
     --rand-bediening: var(--tekst-tertiair);
     /* What a control turns to under the pointer, and the fill of a chosen row. */
     --vlak-hover: var(--papier);
-    /* The empty part of a bar, and an empty dot. */
-    --balk-leeg: var(--rand-licht);
-    /* Wrong, in the light. The table gives wrong only for the round; the
-     * screens draw an error's text and edge in #b0554e on a #ffe6e2 panel (S1,
-     * stap 2), and stap 10's legend hatches #c98a8a on #f3e3e3. Text in this
-     * red stands on a card: 4.72 there, 4.21 on the ground. */
-    --fout: #b0554e;
-    --fout-vlak: #ffe6e2;
-    --fout-tekst: var(--inkt); /* on the hatching */
-    --fout-arcering-grond: #f3e3e3;
-    --fout-arcering-streep: #c98a8a;
+    /* The empty part of a bar, an empty dot, and a switched-off button: the
+     * styleguide's own track, one step darker than the light rule (§06). */
+    --balk-leeg: #e7eaf1;
+    /* Wrong, §05. Wrong is a hatched area and a cross; this is the colour that
+     * goes with the shape, never the shape itself. Text in this red stands on a
+     * card: 5.76 there, 5.09 on the ground. */
+    --fout: #ba3535; /* oklch(.53 .17 25) */
+    --fout-vlak: #ffe4e1; /* oklch(.94 .04 25) */
+    --fout-tekst: var(--inkt); /* on the hatching                13.23 on fout-vlak */
+    --fout-arcering-grond: var(--fout-vlak);
+    --fout-arcering-streep: #eb827b; /* oklch(.72 .13 25) */
     /* The same on the map, where the round has a pair of its own. */
     --fout-kaart-rand: var(--fout);
     --fout-kaart-grond: var(--fout-arcering-grond);
@@ -93,16 +133,18 @@
     --map-land-hover: var(--rand-licht);
     --map-grens: var(--inkt);
     /* Behind a dialog. */
-    --scrim: rgb(26 32 27 / 45%);
-    /* What is chosen, done, or being asked about: the handoff's green. The
-     * accent rule (accent.test.ts) still says where it may go; what changed is
-     * that it no longer changes colour per module (ADR-109). */
-    --accent: var(--nadruk);
-    --accent-text: var(--nadruk-tekst);
-    --accent-tint: var(--nadruk-vlak);
+    --scrim: rgb(27 34 48 / 45%);
+    /* What is chosen, done, or being asked about. Outside a module this is the
+     * action colour: the styleguide keeps green for "goed" and gives indigo
+     * everything a child presses. Inside a module it becomes the module's own
+     * colour (data-accent below, ADR-112); the accent rule (accent.test.ts)
+     * still says where it may go at all. */
+    --accent: var(--actie);
+    --accent-text: var(--actie-tekst);
+    --accent-tint: var(--actie-tint);
 
     /* ---- The collection's five materials, ADR-071 -------------------------
-     * Outside the handoff's table and deliberately so: a material is not a
+     * Outside the styleguide's table and deliberately so: a material is not a
      * role. It says which reeks of the collection a hero belongs to — bronze,
      * silver, gold, platinum, ultra — and it is the only place in this product
      * where a colour is a reward. They carry a drawing rather than text, so
@@ -130,55 +172,63 @@
     --reeks-platina-zacht: #dceaed;
     --reeks-ultra-diep: #6b3aa0;
     --reeks-ultra-zacht: #eadff7;
-    --reeks-licht: #fbfaf6;
+    --reeks-licht: #ffffff;
 
-    /* ---- A module's own colour, for its plate only -------------------------
-     * The handoff's table has no module colours, and in the screens a module
-     * shows as its pictogram on its own tint and nowhere else. So that is all
-     * these are for: the plate and the two badges that name a module, resolved
-     * from data-module below. Chosen, done and asked-about are the accent
-     * above — the same green in every module.
+    /* ---- The six subjects, §03 ---------------------------------------------
+     * One hue each, and equal lightness and chroma across all six, so none of
+     * them shouts louder than the rest. Each comes in three strengths: a light
+     * tile with a dark glyph on it (the standard, in lists and in the rail),
+     * the full colour (progress bars and the chosen state), and the dark tone
+     * that names the subject in words.
+     *
+     * The styleguide draws five — 255, 155, 55, 310, 200 — and says a sixth
+     * belongs on hue 25 or 105. Tijdvakken takes 105: 25 is the red that means
+     * wrong, and a subject may not wear it.
      */
-    --topo: #2e75b7;
-    --topo-text: #005a9d; /* on tint 5.80:1 */
-    --topo-tint: #d7eaff;
-    --tafels: #008863;
-    --tafels-text: #006e4a; /* on tint 5.21:1 */
-    --tafels-tint: #d3f0e3;
-    --klok: #a9591f;
-    --klok-text: #823c00; /* on tint 6.47:1 */
-    --klok-tint: #ffe0cd;
-    --woorden: #6f64b6;
-    --woorden-text: #56489b; /* on tint 6.09:1 */
-    --woorden-tint: #e6e5ff;
-    --tijdvakken: #797600;
-    --tijdvakken-text: #605c00; /* on tint 5.67:1 */
-    --tijdvakken-tint: #eaead0;
-    --vlaggen: #00868e;
-    --vlaggen-text: #006b74; /* on tint 5.14:1 */
-    --vlaggen-tint: #ceeff1;
-    --module: var(--topo);
-    --module-tekst: var(--topo-text);
-    --module-tint: var(--topo-tint);
-    --module-grond: var(--topo-grond);
+    --topo: #3072c1; /* oklch(.55 .14 255)             white on it 4.88 */
+    --topo-text: #004b96; /* oklch(.42 .14 255)              on tint 6.37 */
+    --topo-tint: #c9e0ff; /* oklch(.90 .055 255) */
+    --tafels: #00884d; /* oklch(.55 .14 155)             white on it 4.54 */
+    --tafels-text: #005d33; /* oklch(.42 .13 155)              on tint 6.47 */
+    --tafels-tint: #c9f0d5; /* oklch(.92 .055 155) */
+    --klok: #b75f0b; /* oklch(.58 .14 55)              white on it 4.51 */
+    --klok-text: #834100; /* oklch(.45 .13 55)               on tint 6.03 */
+    --klok-tint: #ffddc7; /* oklch(.92 .06 55) */
+    --woorden: #8a57ae; /* oklch(.55 .14 310)             white on it 5.18 */
+    --woorden-text: #643185; /* oklch(.42 .14 310)              on tint 6.83 */
+    --woorden-tint: #edd8fd; /* oklch(.91 .055 310) */
+    --tijdvakken: #7c7400; /* oklch(.55 .13 105)             white on it 4.82 */
+    --tijdvakken-text: #554f00; /* oklch(.42 .12 105)              on tint 6.64 */
+    --tijdvakken-tint: #e9e7bd; /* oklch(.92 .055 105) */
+    --vlaggen: #008287; /* oklch(.55 .14 200)             white on it 4.62 */
+    --vlaggen-text: #00585c; /* oklch(.42 .12 200)              on tint 6.42 */
+    --vlaggen-tint: #b7edf0; /* oklch(.91 .055 200) */
+    /* What a module's colour is where no module is named: the action colour
+     * rather than the first module's, so a bar on the front door is the brand's
+     * own blue and never "topografie" by accident. data-module below points
+     * these at a real subject. */
+    --module: var(--actie);
+    --module-tekst: var(--actie-tekst);
+    --module-tint: var(--actie-tint);
+    --module-grond: var(--papier);
 
-    /* ---- The ground a page stands on, by where it is (ADR-120) ----------
-     * A module's page stands on a soft version of its plate's tint and the
-     * front door on a soft version of the handoff's green, so a child sees
-     * where they are before reading a word. Mixed from the tokens above
-     * rather than written as a hex: a change to the tint reaches its ground by
-     * itself. A module's tint is mixed with the card's light and not the
-     * paper's, so every ground is lighter than papier and every ink measured
-     * there still clears; contrast.test.ts measures each one as mixed.
-     * Tertiary ink and the module's text colour, on each: */
-    --topo-grond: color-mix(in srgb, var(--topo-tint) 60%, var(--kaart)); /* 4.66 / 6.17 */
-    --tafels-grond: color-mix(in srgb, var(--tafels-tint) 60%, var(--kaart)); /* 4.71 / 5.53 */
-    --klok-grond: color-mix(in srgb, var(--klok-tint) 60%, var(--kaart)); /* 4.61 / 6.93 */
-    --woorden-grond: color-mix(in srgb, var(--woorden-tint) 60%, var(--kaart)); /* 4.64 / 6.49 */
-    --tijdvakken-grond: color-mix(in srgb, var(--tijdvakken-tint) 60%, var(--kaart)); /* 4.68 */
-    --vlaggen-grond: color-mix(in srgb, var(--vlaggen-tint) 60%, var(--kaart)); /* 4.68 / 5.45 */
-    /* Vandaag: the green's light half and half with the paper.  4.79 */
-    --vandaag-grond: color-mix(in srgb, var(--nadruk-vlak) 50%, var(--papier));
+    /* ---- The ground a page stands on --------------------------------------
+     * One ground, everywhere. ADR-120 gave a module's page a soft version of
+     * its own tint and the front door a soft version of the green; §01 of the
+     * styleguide takes that back in its first sentence — a page-wide subject
+     * tint makes white cards look grey, and "flets en vuil" was exactly that.
+     * A child sees which subject they are in from the icon tile instead.
+     *
+     * The tokens stay, so a screen still says bg-module-grond and does not have
+     * to know: they all resolve to the one ground.
+     */
+    --topo-grond: var(--papier);
+    --tafels-grond: var(--papier);
+    --klok-grond: var(--papier);
+    --woorden-grond: var(--papier);
+    --tijdvakken-grond: var(--papier);
+    --vlaggen-grond: var(--papier);
+    --vandaag-grond: var(--papier);
 
     /* ---- Typefaces (see @font-face) --------------------------------------- */
     --font-kop: 'Archivo', system-ui, sans-serif; /* 600 and 700 */
@@ -256,7 +306,7 @@
     /* The one shadow: on a reward image, and nowhere else. The arguments of a
      * drop-shadow() filter rather than a box-shadow, so it follows the
      * drawing and not its box. */
-    --schaduw-beloning: 0 10px 18px rgb(26 32 27 / 22%);
+    --schaduw-beloning: 0 10px 18px rgb(27 34 48 / 22%);
 
     /* ---- Hit targets ---------------------------------------------------------
      * brand.minTouchTargetPx carries the floor of 44 (ADR-032).
@@ -348,10 +398,14 @@
    * and one entry in the content, and touches no component.
    */
   [data-module='topo'] {
-    --module: var(--topo);
-    --module-tekst: var(--topo-text);
-    --module-tint: var(--topo-tint);
-    --module-grond: var(--topo-grond);
+    /* What a module's colour is where no module is named: the action colour
+     * rather than the first module's, so a bar on the front door is the brand's
+     * own blue and never "topografie" by accident. data-module below points
+     * these at a real subject. */
+    --module: var(--actie);
+    --module-tekst: var(--actie-tekst);
+    --module-tint: var(--actie-tint);
+    --module-grond: var(--papier);
   }
   [data-module='tafels'] {
     --module: var(--tafels);
@@ -384,17 +438,13 @@
     --module-grond: var(--vlaggen-grond);
   }
 
-  /* ---- Inside a module, what is chosen wears the module (ADR-112) ---------
-   * On a module's own page, in its rounds, in the rail and on its card on the
-   * front door, the accent is the module's colour rather than the green: a
-   * chosen tile on topografie is blue, on klokkijken orange. Everywhere else
-   * the accent stays the handoff's green. Set next to data-module, which says
-   * which module; this says that the module colours the choices as well. */
-  [data-accent='module'] {
-    --accent: var(--module);
-    --accent-text: var(--module-tekst);
-    --accent-tint: var(--module-tint);
-  }
+  /* ADR-112 let a module take the accent over, so a chosen tile was blue on
+   * topografie and orange on klokkijken. The styleguide takes that back in §02
+   * and §06: what you press is indigo, everywhere, precisely so a control is
+   * never mistaken for a subject — and the subject's own colour is kept for the
+   * two things that denote a subject, its tile and its bar. The attribute
+   * data-accent="module" is still written by the screens and no longer changes
+   * anything; data-module is what names the subject. */
 
   /* ---- A round (ADR-109, ADR-112) ------------------------------------------
    * Switched on by data-thema="ronde" on the root of every round screen. A
@@ -579,7 +629,7 @@
     padding: 0 24px;
     border: var(--stroke-hair) solid transparent;
     border-radius: var(--radius-kaart);
-    background: var(--inkt);
+    background: var(--actie);
     color: var(--kaart);
     font-family: var(--font-tekst);
     font-size: var(--type-knop);
@@ -589,10 +639,10 @@
     cursor: pointer;
   }
   .tk-button:hover {
-    background: var(--tekst-secundair);
+    background: var(--actie-hover);
   }
   .tk-button:active {
-    background: var(--tekst-secundair);
+    background: var(--actie-hover);
     /* Pressed reads as movement, not as another colour. */
     transform: translateY(1px);
   }
@@ -741,9 +791,9 @@
     border: var(--stroke-hair) solid var(--accent);
     border-left-width: 8px;
     border-radius: var(--radius-kaart);
-    /* De kaart en niet de zachte accenttint: dit blok staat alleen op de
-     * voordeur, en die grond is sinds ADR-120 zelf al het groene mengsel. Tint
-     * op tint is geen nadruk. De kleur zit in de rand, waar hij het werk doet. */
+    /* De kaart en niet de zachte accenttint: dit blok staat op de voordeur, op
+     * de gewone grond, en een tint daarop is een derde vlak dat niets zegt. De
+     * kleur zit in de rand, waar hij het werk doet. */
     background: var(--kaart);
   }
 
@@ -1522,7 +1572,10 @@
     display: block;
     height: 100%;
     border-radius: var(--radius-pil);
-    background: var(--accent);
+    /* The bar carries the subject's colour and not the accent (§06): progress
+     * through topografie is blue and through klokkijken orange, while what you
+     * press stays indigo either way. */
+    background: var(--module);
   }
 
   /* ---- The page inside the shell ----------------------------------------
@@ -1561,10 +1614,11 @@
   .tk-grond {
     background: var(--papier);
   }
-  /* Where the ground says where you are (ADR-120): a module's page, and a
-   * category's, on the module's own ground; the front door on the green's.
-   * Everywhere else it stays papier. Set by the shell on `main`, with
-   * data-module beside it to say which module. */
+  /* Where the ground used to say where you are (ADR-120). The styleguide's §01
+   * takes that back: the grounds all resolve to papier now, so these two rules
+   * paint what every other page paints. They stay because the shell still sets
+   * data-grond, and because giving a page its own ground again is then one
+   * value rather than a hunt through the components. */
   .tk-grond[data-grond='vak'] {
     background: var(--module-grond);
   }
@@ -1908,14 +1962,18 @@
    * about one module, and it is the one case §E lets an icon take an accent: it
    * denotes the module. Listed in accent.test.ts for that reason.
    */
-  /* De plaat draagt de kleur van de module zelf en niet zijn bleke tint
-   * (ADR-142). Een plaat staat overal — de voordeur, de favorieten, de toetsen,
-   * de rail, het menu — dus dit is de goedkoopste kleur in het hele product:
-   * één regel, en zes verzadigde kleuren verschijnen op elke pagina.
+  /* De plaat is een zachte tegel met een donker pictogram erop — de standaard
+   * uit §03 van de styleguide, overal waar een vak zich noemt. ADR-142 maakte
+   * hem verzadigd; dat is teruggenomen om de reden die §01 geeft: een plaat
+   * staat overal — de voordeur, de favorieten, de toetsen, de rail, het menu —
+   * en zes volle vlakken op elke pagina is precies de kleur die geen betekenis
+   * draagt. De volle vulling blijft over voor de twee dingen die hem wél
+   * verdienen: een voortgangsbalk, en het vak waar je nu in bent (hieronder).
    *
-   * Het pictogram staat er wit op. Geen tekst, dus 3:1 volstaat (WCAG 1.4.11)
-   * en de zes kleuren halen alle zes boven de vier. De woorden ernaast blijven
-   * inkt, zoals §E wil: de plaat duidt de module aan, hij benadrukt hem niet. */
+   * Het pictogram is geen tekst, dus 3:1 volstaat (WCAG 1.4.11); in de tekst-
+   * kleur van de module op zijn eigen tint halen alle zes boven de zes. De
+   * woorden ernaast blijven inkt, zoals §E wil: de plaat duidt de module aan,
+   * hij benadrukt hem niet. */
   .tk-plaat {
     display: inline-flex;
     align-items: center;
@@ -1924,6 +1982,15 @@
     width: 40px;
     height: 40px;
     border-radius: var(--radius-chip);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+  }
+  /* Het vak waar je nu in bent, in de rail en in het menu dat de rail onder
+   * 1200 wordt: de volle vulling, met het pictogram in het licht. Dat is de
+   * tweede sterkte uit §03, en het enige wat de actieve staat van de rest
+   * onderscheidt nu de tegel zelf zacht is — 3,5 tot 3,9 tegen zijn eigen tint. */
+  .tk-rail-item[aria-current='page'] .tk-plaat,
+  .tk-vakmenu-optie[aria-current='page'] .tk-plaat {
     background: var(--module);
     color: var(--kaart);
   }
@@ -2095,7 +2162,7 @@
     gap: 12px;
   }
   .tk-verder .tk-progress-rail {
-    background: var(--accent-tint);
+    background: var(--module-tint);
   }
   /* A module the plan has and the product does not: a dashed rule and a
    * plate with no module in it. A shape rather than a colour, so "not yet" is
@@ -2490,7 +2557,7 @@
    * module it belongs to. The question beside it stays ink. */
   .tk-stap-nummer {
     font-variant-numeric: tabular-nums;
-    color: var(--accent-text);
+    color: var(--module-tekst);
   }
 
   /* ---- Chips: where on the map, which kind of sum, which one, how many ----
@@ -2726,9 +2793,9 @@
   }
 
   /* ---- Module entrance -------------------------------------------------
-   * The third and last place an accent may appear. The tint is the fill and
-   * the accent is the rule, so the card is recognisable across a rail without
-   * a single word of it being coloured.
+   * The subject's own tint as the fill and its own colour as the rule, so the
+   * card is recognisable across a rail without a single word of it being
+   * coloured.
    */
   .tk-module-card {
     display: flex;
@@ -2736,9 +2803,9 @@
     gap: 16px;
     min-height: var(--knop-hoogte);
     padding: var(--kaart-padding);
-    border: var(--stroke-hair) solid var(--accent);
+    border: var(--stroke-hair) solid var(--module);
     border-radius: var(--kaart-radius);
-    background: var(--accent-tint);
+    background: var(--module-tint);
     color: var(--inkt);
     cursor: pointer;
     text-align: left;
@@ -2998,14 +3065,13 @@
   /* The module entrance is one of the things an accent may colour, and the
    * rail is where it does most of its work.
    *
-   * De plaat hield hier zijn eigen kleur (ADR-143). Hiervoor werd hij papier op
-   * de tint, want een bleke tint op een bleke tint is geen teken meer — maar
-   * sinds ADR-142 is de plaat de volle modulekleur met het pictogram er wit op,
-   * en die stond met dit voorschrift wit op papier: het vak waar je in zát was
-   * het enige in de rail zonder teken. */
+   * Het vak waar je in zit draagt zijn eigen tint, en de plaat erin zijn volle
+   * kleur (§03, de tweede sterkte). Dat laatste is wat het teken draagt: de
+   * plaat van elk ánder vak is de zachte tegel, en een bleke tint op een bleke
+   * tint zou geen teken meer zijn. */
   .tk-rail-item[aria-current='page'] {
-    background: var(--accent-tint);
-    color: var(--accent-text);
+    background: var(--module-tint);
+    color: var(--module-tekst);
   }
 
   /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------
@@ -3134,8 +3200,8 @@
     outline-offset: -4px;
   }
   .tk-vakmenu-optie[aria-current='page'] {
-    background: var(--accent-tint);
-    color: var(--accent-text);
+    background: var(--module-tint);
+    color: var(--module-tekst);
     font-weight: 700;
   }
 
@@ -3296,11 +3362,11 @@
     }
   }
   .tk-round-dot-done {
-    background: var(--accent);
+    background: var(--module);
   }
   .tk-round-dot-now {
     background: transparent;
-    border: var(--stroke-active) solid var(--accent);
+    border: var(--stroke-active) solid var(--module);
   }
 
   /* ---- The two things that share the screen ---------------------------- */
@@ -3380,7 +3446,7 @@
    * staan wat er niet is.
    *
    * Dus voegt dit podium zich naar zijn inhoud, en wat overblijft is de grond
-   * van de module — die sinds ADR-120 zelf al gekleurd is. Alleen waar de twee
+   * waar de pagina toch al op staat. Alleen waar de twee
    * kolommen naast elkaar staan: daaronder is het podium de rest van het
    * scherm, en een kaart die daar krimpt laat een gat onderaan. */
   @media (min-width: 1024px) {

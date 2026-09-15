@@ -6,13 +6,20 @@ beneden in de ring wijst.
 
 ## Kleuren
 
-| naam   | waarde    | gebruik                                 |
-| ------ | --------- | --------------------------------------- |
-| inkt   | `#1A201B` | op papier; de grond van het app-icoon   |
-| papier | `#FBFAF6` | op inkt                                 |
-| mos    | `#5B6A5E` | alleen in de uitwerking, niet in de app |
+| naam   | waarde    | gebruik                                        |
+| ------ | --------- | ---------------------------------------------- |
+| inkt   | `#1B2230` | de letters, op papier                          |
+| ring   | `#385DB8` | de ring en het naaldje; de grond van het icoon |
+| papier | `#FFFFFF` | op inkt, en het merk uit het icoonvlak gespaard |
+| mos    | `#5B6A5E` | alleen in de uitwerking, niet in de app        |
 
-Inkt en papier zijn precies `--inkt` en `--kaart` uit `src/index.css`.
+Inkt, ring en papier zijn precies `--inkt`, `--merk` en `--kaart` uit
+`src/index.css`. De ring draagt de actiekleur van de styleguide: het merk is
+overal dezelfde en neemt nooit de kleur van een vak aan.
+
+De levering in `png/` en de beeldmerken in `svg/` staan nog in de kleuren
+waarin de ontwerper ze gaf. Dat is met opzet — dat is de levering. Wat het
+product laadt staat in `public/logo/` en wordt door het script omgekleurd.
 
 ## Welk bestand wanneer
 

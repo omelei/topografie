@@ -3,10 +3,9 @@ import { expect, test, type Page } from '@playwright/test';
 /**
  * The house style in the running app (ADR-109).
  *
- * The unit tests hold the tokens to the handoff's values; this holds that the
- * page actually uses them: the ground is the handoff's papier, headings are
- * Archivo, and a round stays on that paper with its controls at 56 on every
- * size (ADR-112).
+ * The unit tests hold the tokens to the styleguide's values; this holds that
+ * the page actually uses them: the ground is papier, headings are Archivo, and
+ * a round stays on that paper with its controls at 56 on every size (ADR-112).
  */
 
 async function signIn(page: Page, naam: string) {
@@ -30,11 +29,11 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
-test('stands on the handoff’s paper and sets its headings in Archivo', async ({ page }) => {
+test('stands on the styleguide’s ground and sets its headings in Archivo', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(ground).toBe('rgb(239, 237, 228)');
+  expect(ground).toBe('rgb(239, 241, 245)');
 
   const heading = page.getByRole('heading', { name: /^Welkom / });
   await expect(heading).toBeVisible();
@@ -53,11 +52,11 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   await signIn(page, 'Daan');
   await startRound(page);
 
-  // Light like every other screen since ADR-112: the handoff's papier.
+  // Light like every other screen since ADR-112: the same ground.
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(239, 237, 228)',
+    'rgb(239, 241, 245)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();

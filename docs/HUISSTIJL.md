@@ -1,9 +1,18 @@
 # Huisstijl
 
-De huisstijl van leer.nu komt uit de overdracht `design_handoff_leernu` (in
-`topo-prive`, README onder "Ontwerptokens"). De waarden daarin zijn definitief.
+De huisstijl van leer.nu staat in twee bladen, en allebei zijn ze definitief
+voor hun eigen deel:
+
+- **Kleur en logo** komen uit `docs/leer.nu Styleguide - Leisteen.dc.html`, de
+  richting "Leisteen" (ADR-144). Eén koele ondergrond, witte kaarten, indigo
+  voor wat je indrukt, zes vakhues op gelijke lichtheid, en groen en rood alleen
+  voor goed en fout.
+- **Typografie, ruimte, vorm, iconen en trefmaten** komen uit de overdracht
+  `design_handoff_leernu` (in `topo-prive`, README onder "Ontwerptokens") en de
+  styleguide die daarbij hoort, `docs/leer.nu Styleguide.dc.html`.
+
 Dit blad zegt hoe je een scherm bouwt dat erbij hoort; ADR-109 zegt waarom het
-zo staat, ADR-112 wat daarna is gelijkgetrokken.
+zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
 
 ## Waar de waarden staan
 
@@ -67,11 +76,12 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken.
    doen `.tk-shape-correct`, `.tk-shape-wrong` en `.tk-shape-missed-outer` het.
    Nooit kleur als enige drager.
 
-9. **De grond zegt waar je bent** (ADR-120). De pagina van een vak staat op de
-   grond van dat vak, Vandaag op de groene grond: geef `Shell` een `grond` mee
-   (`"vandaag"` of het vak) en het zet `data-grond` op `main`. Elke andere
-   pagina staat op `papier`. Een grond is gemengd uit tokens (`--topo-grond`,
-   `--vandaag-grond`); maak er geen nieuwe hex voor.
+9. **Eén grond, overal** (styleguide §01, die ADR-120 terugneemt). De
+   paginabrede vaktint is weg: die maakte witte kaarten grauw. Elk scherm staat
+   op `papier`, en waar je bent lees je af aan de tegel van het vak. De tokens
+   `--topo-grond` en `--vandaag-grond` blijven bestaan — `Shell` zet nog steeds
+   `data-grond` — maar ze wijzen alle zeven naar `papier`, zodat een scherm het
+   niet hoeft te weten. Maak er geen nieuwe hex voor.
 
 ## Wat het bewaakt
 

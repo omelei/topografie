@@ -16,8 +16,14 @@ Wat dit schrijft:
 - src/design/logo.ts: dezelfde paden en maten, voor Wordmark en Brandmark;
 - public/logo/: de favicon, de app-iconen en de sociale kaart.
 
+De kleuren komen uit de styleguide ("Leisteen"): de letters staan in inkt en de
+ring van het merk in de actiekleur, zoals de styleguide het merk in de balk
+tekent. De levering in docs/logo/png blijft zoals de ontwerper hem gaf; wat naar
+public/logo gaat wordt hier omgekleurd, zodat er maar een plek is waar de kleur
+van het logo staat.
+
 Draaien vanuit de root van de repo:  python tools/logo/maak-logo.py
-Nodig: fontTools (met brotli) en Pillow.
+Nodig: fontTools (met brotli), Pillow en CairoSVG.
 """
 
 import base64
@@ -26,6 +32,8 @@ import json
 import re
 import shutil
 from pathlib import Path
+
+import cairosvg
 
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.svgPathPen import SVGPathPen
@@ -38,8 +46,17 @@ ROOT = Path(__file__).resolve().parents[2]
 LOGO = ROOT / "docs" / "logo"
 BUNDEL = LOGO / "uitwerking" / "leer-nu-logo-uitwerking.html"
 
-INKT = "#1A201B"
-PAPIER = "#FBFAF6"
+# De styleguide, §02 en §07. Inkt en papier zijn precies --inkt en --kaart uit
+# src/index.css, de ring is --merk: de actiekleur, de enige kleur die in dit
+# product "hier druk je op" betekent en dus ook de kleur van het merk.
+INKT = "#1B2230"
+PAPIER = "#FFFFFF"
+RING = "#385DB8"
+
+# Wat de ontwerper leverde, in de kleuren van toen: waar de omkleuring vandaan
+# rekent (herkleur). De levering zelf blijft ongemoeid.
+LEVERING_INKT = (26, 32, 27)
+LEVERING_PAPIER = (251, 250, 246)
 
 # De uitwerking zet het woordbeeld op 132 px met een rondje van 63 px, 3 px
 # tussenruimte aan weerszijden en het rondje 2 px boven de basislijn.
@@ -55,6 +72,28 @@ MERK = {"cx": 50, "cy": 50, "r": 38, "stroke": 13}
 NAALD = [(31, 41), (69, 41), (50, 65)]
 # Onder 20 px: alleen de ring, dikker (de favicon van 16 in de uitwerking).
 MERK_KLEIN = {"r": 36, "stroke": 18}
+
+
+def herkleur(beeld: Image.Image) -> Image.Image:
+    """De levering (twee kleuren met antialiasing ertussen) in de huisstijl.
+
+    Elke pixel is een menging van de inkt en het papier van toen. Hoeveel van
+    elk, leest het groene kanaal af — de twee liggen daar 218 stappen uit
+    elkaar — en met datzelfde mengsel worden de nieuwe twee gemengd. Zo blijven
+    de randen zacht en verschuift alleen de kleur. De doorzichtige hoeken van
+    een icoon krijgen de nieuwe inkt mee, zodat er bij het verkleinen geen
+    zwarte rand uit tevoorschijn komt.
+    """
+    beeld = beeld.convert("RGBA")
+    laag, hoog = LEVERING_INKT[1], LEVERING_PAPIER[1]
+    mengsel = beeld.getchannel("G").point(
+        lambda v: max(0, min(255, round((hoog - v) * 255 / (hoog - laag))))
+    )
+    uit = Image.composite(
+        Image.new("RGB", beeld.size, INKT), Image.new("RGB", beeld.size, PAPIER), mengsel
+    ).convert("RGBA")
+    uit.putalpha(beeld.getchannel("A"))
+    return uit
 
 
 def getal(v: float) -> str:
@@ -179,23 +218,27 @@ def main() -> None:
     # --- docs/logo/svg -----------------------------------------------------
     svg_map = LOGO / "svg"
     svg_map.mkdir(parents=True, exist_ok=True)
-    for naam, kleur in (("inkt", INKT), ("papier", PAPIER)):
-        (svg_map / f"woordbeeld-{naam}.svg").write_text(
+    # Op papier staan de letters in inkt en het merk in zijn eigen kleur; uit de
+    # inkt gespaard is alles het licht, want een gekleurde ring op een donkere
+    # grond leest niet.
+    woordbeelden = {}
+    for naam, kleur, merk in (("inkt", INKT, RING), ("papier", PAPIER, PAPIER)):
+        woordbeelden[naam] = (
             f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {getal(breedte)} '
             f'{getal(hoogte + doorzakken)}" fill="{kleur}">'
             + "".join(f'<path d="{d}"/>' for d in paden)
             + f'<circle cx="{rondje["cx"]}" cy="{rondje["cy"]}" r="{rondje["r"]}" fill="none" '
-            f'stroke="{kleur}" stroke-width="{rondje["stroke"]}"/>'
-            + f'<path d="{naald}"/></svg>\n',
-            encoding="utf-8",
+            f'stroke="{merk}" stroke-width="{rondje["stroke"]}"/>'
+            + f'<path d="{naald}" fill="{merk}"/></svg>\n'
         )
+        (svg_map / f"woordbeeld-{naam}.svg").write_text(woordbeelden[naam], encoding="utf-8")
 
     # De favicon: het tegeltje van 16 uit de uitwerking. Onder 20 px valt het
     # naaldje weg en blijft de ring over.
     k = 11 / 100
     favicon = (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">'
-        f'<rect width="16" height="16" rx="4" fill="{INKT}"/>'
+        f'<rect width="16" height="16" rx="4" fill="{RING}"/>'
         f'<circle cx="8" cy="8" r="{round(MERK_KLEIN["r"] * k, 2)}" '
         f'fill="none" stroke="{PAPIER}" stroke-width="{round(MERK_KLEIN["stroke"] * k, 2)}"/></svg>\n'
     )
@@ -262,11 +305,41 @@ export const LOCKUP_MIN_PX = 20;
     (pub / "svg").mkdir(parents=True, exist_ok=True)
     (pub / "png").mkdir(parents=True, exist_ok=True)
     shutil.copyfile(svg_map / "favicon.svg", pub / "svg" / "favicon.svg")
-    shutil.copyfile(png / "favicon-32.png", pub / "png" / "favicon-32.png")
-    shutil.copyfile(png / "social-kaart-1200x630.png", pub / "png" / "social-kaart-1200x630.png")
+
+    # De favicon en het app-icoon: het merk uit een vlak gespaard, dus een
+    # tekening in een kleur — omkleuren volstaat. Het vlak wordt de kleur van
+    # het merk en het merk het licht.
+    def tegel(bestand: str) -> Image.Image:
+        beeld = herkleur(Image.open(png / bestand))
+        vlak = Image.new("RGBA", beeld.size, RING)
+        merk = Image.new("RGBA", beeld.size, PAPIER)
+        # Het mengsel opnieuw: wat inkt was wordt het vlak, wat papier was het merk.
+        laag, hoog = LEVERING_INKT[1], LEVERING_PAPIER[1]
+        mengsel = Image.open(png / bestand).convert("RGBA").getchannel("G").point(
+            lambda v: max(0, min(255, round((v - laag) * 255 / (hoog - laag))))
+        )
+        uit = Image.composite(merk, vlak, mengsel).convert("RGBA")
+        uit.putalpha(Image.open(png / bestand).convert("RGBA").getchannel("A"))
+        return uit
+
+    tegel("favicon-32.png").save(pub / "png" / "favicon-32.png")
+
+    # De sociale kaart is het woordbeeld midden op een kaart: opnieuw getekend
+    # uit hetzelfde pad, zodat de ring er net zo in staat als op een scherm.
+    # De maat is die van de levering: 384 breed, in het midden van 1200 bij 630.
+    kaart = Image.open(
+        io.BytesIO(
+            cairosvg.svg2png(
+                bytestring=woordbeelden["inkt"].encode("utf-8"), output_width=384 * 2
+            )
+        )
+    ).convert("RGBA")
+    doek = Image.new("RGB", (1200 * 2, 630 * 2), PAPIER)
+    doek.paste(kaart, ((1200 * 2 - kaart.width) // 2, (630 * 2 - kaart.height) // 2), kaart)
+    doek.resize((1200, 630), Image.LANCZOS).save(pub / "png" / "social-kaart-1200x630.png")
 
     # The rounded icon as delivered, for the manifest's "any".
-    icoon = Image.open(png / "app-icoon-1024.png").convert("RGBA")
+    icoon = tegel("app-icoon-1024.png")
     for maat in (192, 512):
         icoon.resize((maat, maat), Image.LANCZOS).save(pub / "png" / f"app-icoon-{maat}.png")
 
@@ -275,7 +348,7 @@ export const LOCKUP_MIN_PX = 20;
     # own proportions, a mark of 532 on 1024.
     def vol(maat: int) -> Image.Image:
         groot = maat * 4
-        beeld = Image.new("RGB", (groot, groot), INKT)
+        beeld = Image.new("RGB", (groot, groot), RING)
         teken = ImageDraw.Draw(beeld)
         kk = 532 / 1024 * groot / 100
         o = (groot - 100 * kk) / 2
