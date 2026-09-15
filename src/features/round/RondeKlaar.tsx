@@ -12,6 +12,7 @@ import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import type { RoundOutcome } from '@/store/rewardStore';
 import { HerhaalFouten } from './HerhaalFouten';
+import { Kist } from '@/features/reis/Kist';
 
 /**
  * "Ronde klaar": the page after every round, in every module (K8, ADR-112).
@@ -145,6 +146,13 @@ export function RondeKlaar({
             {reeks ? <p className="text-tekst-secundair">{reeks}</p> : null}
           </div>
         </section>
+
+        {/* De kist, vóór de knoppen (ADR-138). Alles op dit scherm is te lézen —
+            de tegels, het diploma, de missers — en dit is het enige dat
+            ingedrukt moet worden. Onder "Nog een ronde" zou een kind er
+            telkens langs drukken, en dan staat de kist volgende ronde weer op
+            dezelfde plek. */}
+        <Kist />
 
         {/* One primary button, and it is another round rather than the way
             out: the shortest path back to practising, same as K1. Before the

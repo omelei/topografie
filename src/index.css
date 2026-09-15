@@ -3439,6 +3439,74 @@
     background: var(--kaart);
     color: var(--inkt);
   }
+  /* De kist die opengaat (ADR-138). Een kaart met de drie helden ernaast, in
+   * een rij die wikkelt: op een telefoon staan ze onder elkaar en blijven het
+   * drie even grote keuzes. De kaart draagt geen accent — wat hier opvalt zijn
+   * de helden zelf, en die dragen hun eigen kleur in het beeld. */
+  .tk-kist {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+  }
+  .tk-kist-kop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+  }
+  .tk-kist-rij {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tk-kist-rij > li {
+    flex: 1 1 140px;
+  }
+  .tk-kist-kaart {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--papier);
+    text-align: center;
+  }
+  .tk-kist-kaart:hover:not(:disabled) {
+    border-color: var(--rand-bediening);
+  }
+  .tk-kist-kaart:disabled {
+    opacity: 0.6;
+  }
+  .tk-kist-naam {
+    font-weight: 600;
+  }
+  .tk-kist-doet {
+    color: var(--tekst-secundair);
+  }
+  .tk-kist-gewonnen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+  }
+  .tk-kist-uitkomst {
+    font-weight: 600;
+  }
+  /* De held komt aan. Één keer, en niets dat zijn beeld verandert: wie beweging
+   * heeft uitgezet ziet dezelfde held, even groot. */
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-kist-held {
+      animation: tk-kist-held 420ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+  }
+
   /* De trap die een goed antwoord oplevert (ADR-137). Vijf treden naast een
    * zin, klein en op één regel: het is terugkoppeling naast de uitkomst en
    * niet een blok op zichzelf.
@@ -3546,6 +3614,17 @@
 /* Het uitkomstteken, dat aankomt (ADR-134). Iets voorbij honderd procent en dan
  * terug: dat leest als iets dat landt, waar een rechte schaal leest als iets
  * dat groeit. */
+@keyframes tk-kist-held {
+  from {
+    transform: scale(0.4) rotate(-8deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
 @keyframes tk-klim-trede {
   from {
     transform: scale(0.2);

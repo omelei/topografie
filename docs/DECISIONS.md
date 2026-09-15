@@ -6767,6 +6767,83 @@ zelf zet. Dit is de eerste omdat het de enige is die de motor zelf laat zien.
 
 ---
 
+## ADR-138 — De kist gaat open: een ceremonie die af was en nergens bereikbaar
+
+**Status:** accepted. **Date:** 2026-09-15. Gevraagd door de product owner als
+"de prijzenkast die zich vult op het moment zelf", en gekozen boven de
+diplomamuur nadat bleek wat er al klaarstond.
+
+### Context
+
+Tien goede antwoorden zijn een ster, vijf sterren een kist, en een kist biedt
+drie helden waarvan het kind er één omdraait (ADR-096, ADR-097). Dat staat
+helemaal uitgewerkt: `aanbod`, `openKist`, `watKistDoet` en `kistenTeGoed` in
+`game-core/helden.ts`, `kistenOpenstaand` en `kiesHeld` in de store, twaalf
+helden met vijf trappen, en `applyRoundRewards` rekent elke ronde uit hoeveel
+kisten er klaarstaan.
+
+**En `kiesHeld` werd door geen enkel scherm aangeroepen.** De pagina waar dit op
+stond (`/voortgang`) is met ADR-112 verborgen "tot het opnieuw doordacht is", en
+de kist ging mee. Sindsdien verdient een kind kisten die niet opengaan, met in
+de balk een dicht kistje als er nog geen held op die plek staat.
+
+Dat is het derde systeem deze week dat rekent zonder gelezen te worden, na munten
+en XP (ADR-130). Maar die twee waren onzichtbaar en dit is zichtbaar: het kistje
+staat er, en het gaat niet open. Dat is erger dan een beloning die niet bestaat.
+
+### Decision
+
+**De kist gaat open aan het eind van de ronde**, en dit is dus ook het besluit
+van ADR-112 dat teruggedraaid wordt — voor de kist, niet voor de rest van
+`/voortgang`.
+
+**Vóór de knoppen en niet bij de beloningen.** Dat is een afwijking van de
+volgorde die `RondeKlaar` zelf beschrijft, met een reden: alles op dat scherm is
+te _lézen_ — de tegels, het diploma, de missers — en dit is het enige dat
+ingedrukt moet worden. Onder "Nog een ronde" zou een kind er telkens langs
+drukken, en dan staat de kist de volgende ronde weer op dezelfde plek.
+
+**Ná de cijfers**, zoals de reeks daar al staat: "told after the numbers, never
+before them". Eerst wat er gebeurde, dan wat het opleverde.
+
+**De drie zeggen wat ze doen.** `watKistDoet` stond er al voor: drie dingen die
+niet zeggen wat ze zijn is geen keuze maar drie knoppen.
+
+**De gekozen held wordt de held die je draagt.** `setSticker` bestond en werd
+nergens aangeroepen, dus niemand heeft ooit een keuze gemaakt die dit overschrijft.
+Zo verandert de balk op elk scherm en is de beloning meteen ergens te zien —
+zonder dat er een verzamelpagina voor terug hoeft te komen.
+
+**De verzameling telt pas vanaf de helft.** "0 van de 12" bij je eerste kist is
+een berg; "7 van de 12" is een doel. De gaten verdienen zich, net als de rest —
+de regel die de product owner koos voor de diplomamuren, hier toegepast.
+
+**Geen tweede ingang.** Een kist is een aftrekking en geen gebeurtenis, dus een
+kist die niemand opende staat er aan het eind van de volgende ronde weer. Dat is
+het bestaande gedrag en het is genoeg; een rij op de voordeur zou hetzelfde
+zeggen op een plek waar niets te doen is.
+
+### Consequences
+
+`game-core/helden.ts` en `store/heldenStore.ts` zijn ongemoeid: er kwam een
+scherm bij en verder niets. `kiesHeld` beschermde zichzelf al tegen twee keer
+uitgeven, en `kist.spec.ts` legt precies dat vast — een kist die twee keer uit te
+geven was, zou het enige in dit product zijn dat niet in antwoorden betaald is.
+
+**Twee dingen die de tests vingen en ik niet.** `--grond` en `--radius-kaart`
+bestaan niet meer; `huisstijl.test.ts` wees ze af. En de eerste versie van de
+e2e was een dobbelsteen: `loadHelden` draait `uitLadder`, die kisten waarvoor al
+betaald is als geopend telt, dus of dat vóór of ná het zaad gebeurt bepaalt de
+uitkomst. De test zet de heldenstand nu expliciet op nul.
+
+**Niet hier besloten:** de verzamelpagina. Een kind kan nu helden krijgen en
+alleen de gedragen held zien. `/voortgang` blijft verborgen tot het opnieuw
+doordacht is — dit besluit haalt er één ding uit, de ceremonie, omdat die af was.
+Ook niet besloten: zelf kiezen welke held je draagt. `setSticker` kan het, er is
+alleen nergens een keuze.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

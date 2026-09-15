@@ -1191,6 +1191,26 @@ export const nl = {
   // De ouderpagina, losgetrokken van "Jij" (ADR-136).
   // De trap na een goed antwoord (ADR-137). Geen "doos": dat is het woord van
   // het algoritme en niet van een kind.
+  // De kist die opengaat (ADR-138). "Reeks" betekent in deze app al de
+  // dagenreeks, dus de trap van een held heet hier bij naam en niet als soort.
+  'held.brons': 'brons',
+  'held.zilver': 'zilver',
+  'held.goud': 'goud',
+  'held.platina': 'platina',
+  'held.ultra': 'ultra',
+  'kist.titel': 'Je hebt een kist verdiend.',
+  'kist.titelMeer': 'Je hebt {aantal} kisten verdiend.',
+  'kist.kies': 'Kies er één.',
+  'kist.nieuw': 'Nieuw voor jou',
+  'kist.hoger': 'Gaat naar {reeks}',
+  'kist.dubbel': 'Nog {aantal} voor de volgende stap',
+  'kist.vol': 'Al helemaal klaar',
+  'kist.gewonnen': '{naam} is van jou.',
+  'kist.gewonnenHoger': '{naam} gaat naar {reeks}.',
+  'kist.gewonnenDubbel': '{naam} komt dichterbij: nog {aantal} te gaan.',
+  'kist.gewonnenVol': '{naam} was al helemaal klaar.',
+  'kist.volgende': 'De volgende kist',
+  'kist.verzameling': 'Je hebt {aantal} van de {totaal} helden.',
   'klim.beter': 'Je kent dit steeds beter.',
   'klim.onthouden': 'Dit onthoud je nu.',
   'ouder.title': 'Voor ouders',
