@@ -3469,6 +3469,41 @@
     background: var(--kaart);
   }
 
+  /* "Waar je voor gaat" (ADR-141). Dezelfde kaart als "Vandaag herhalen", maar
+   * met een hairline rondom in plaats van de dikke band aan de voorkant: dat
+   * blok zegt wat er nú moet, dit zegt waar het naartoe gaat. Twee keer
+   * dezelfde nadruk boven elkaar is geen nadruk meer. */
+  .tk-doel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+  }
+  /* De knop en de uitweg ernaast, en onder elkaar zodra er geen ruimte is: op
+   * een telefoon is "Ander doel kiezen" naast een knop van 56 hoog een regel
+   * die tegen de rand aan loopt. */
+  .tk-doel-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Een uitweg, geen tweede knop. Hij moet te vinden zijn en niet mee willen
+   * doen met de keuze ernaast. */
+  .tk-doel-ander {
+    min-height: var(--knop-hoogte);
+    padding: 0 8px;
+    color: var(--tekst-secundair);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tk-doel-ander:hover {
+    color: var(--inkt);
+  }
+
   /* De kist die opengaat (ADR-138). Een kaart met de drie helden ernaast, in
    * een rij die wikkelt: op een telefoon staan ze onder elkaar en blijven het
    * drie even grote keuzes. De kaart draagt geen accent — wat hier opvalt zijn

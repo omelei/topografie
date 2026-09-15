@@ -19,6 +19,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { ReeksBlok } from './ReeksBlok';
+import { DoelBlok } from './DoelBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { FavorietenBlok, GoedBlok } from './SideColumn';
@@ -111,6 +112,11 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScr
   // (ADR-126). De rijen eronder zijn geschiedenis.
   const vandaag = <VandaagBlok gespeeld={gespeeld} onPlan={onPlan} />;
 
+  // En waar het naartoe gaat (ADR-141). Onder "Vandaag" en niet erboven: eerst
+  // wat er nu te doen is, dan waarvoor. Andersom leest de voordeur als een
+  // doelstelling met huiswerk eronder.
+  const doel = <DoelBlok gespeeld={gespeeld} onBegin={onBegin} />;
+
   const rijen = (
     <>
       <Populairst populair={populair} onBegin={onBegin} />
@@ -130,6 +136,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScr
         <div className="tk-home-main">
           {kop}
           {vandaag}
+          {doel}
           {rijen}
         </div>
 
@@ -148,6 +155,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScr
     <div className="tk-home">
       {kop}
       {vandaag}
+      {doel}
       {toetsen}
       {rijen}
     </div>

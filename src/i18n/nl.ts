@@ -62,6 +62,25 @@ export const nl = {
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
   'vandaag.verder': 'Volgende ronde',
+  // Waar dit kind zelf voor gaat (ADR-141). Een diploma, want dat is de enige
+  // mijlpaal in dit product die een kind van acht zelf zou noemen — en de
+  // voortgang eronder is hoeveel het van die set onthoudt, wat toevallig ook
+  // precies zegt wat er nog te doen is.
+  'doel.titel': 'Waar je voor gaat',
+  'doel.vraag': 'Kies een diploma om voor te gaan.',
+  'doel.nu': 'Waar ga je nu voor?',
+  'doel.rij': 'Diploma \u00b7 je onthoudt er {onthouden} van de {totaal}',
+  'doel.diplomaVan': 'Diploma {naam}',
+  'doel.onthouden': 'Je onthoudt er {onthouden} van de {totaal}.',
+  'doel.balk': '{onthouden} van de {totaal} onthouden',
+  'doel.rijp': 'Je kent ze allemaal. Nu de toets.',
+  'doel.oefenen': 'Oefenen',
+  'doel.toets': 'Doe de toets',
+  'doel.ander': 'Ander doel kiezen',
+  'doel.gehaald': 'Gehaald! Je hebt het diploma {naam}.',
+  'doel.later': 'Even geen doel',
+  'doel.alles': 'Je hebt alle diploma\u2019s die je kunt halen.',
+  'doel.gehaaldRonde': 'Dit was waar je voor ging.',
   // Het einde van een ronde, aangekondigd (ADR-140).
   'practice.laatsteVraag': 'Laatste vraag',
   // Het begin van een ronde (ADR-140): de zin waarmee dit product zijn eigen

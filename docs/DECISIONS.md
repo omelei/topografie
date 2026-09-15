@@ -6972,6 +6972,91 @@ in één bestand terug te draaien als dat niet de bedoeling was.
 de bedoeling" is een bewering, geen uitleg; de uitleg staat op de onthoudpagina.
 Of een kind van acht die twee met elkaar verbindt, weet niemand hier.
 
+## ADR-141 — Een doel dat het kind zelf kiest: een diploma om voor te gaan
+
+**Status:** accepted. **Date:** 2026-09-15. Punt 4 van de lijst na "de app voelt
+te statisch", en het laatste van de vier.
+
+### Context
+
+De voordeur wist na ADR-139 wat er vandaag te doen was en wanneer het af was. Wat
+ze nooit wist is waar dat naartoe ging. Het dagplan is een portie — hoogstens vier
+rondes, vandaag — en dat is een goed antwoord op _wat nu_ en geen antwoord op
+_waarvoor_. Alles wat een kind in dit product zag was van de planning: vandaag
+herhalen, nog twee van vandaag, klaar voor vandaag. Niets was van hem.
+
+Een kind van acht heeft wel degelijk een eigen zin klaarliggen: _ik ga voor de
+tafel van 7._ Die zin bestond in dit product al als beloning — 33 diploma's,
+twaalf tafels, zes werelddelen aan vlaggen, vier stappen van de klok, elf kaarten
+— maar alleen achteraf, als iets wat je overkwam nadat je het gehaald had. Als
+doel vooraf bestond het nergens.
+
+### Decision
+
+**Het doel is een diploma en niets anders.** Geen nieuw soort beloning erbij; er
+stonden er al twaalf in dit product en ADR-130 haalde er twee weg omdat niets ze
+ooit las. De diploma's zijn de enige mijlpalen hier die een kind zelf zou noemen,
+en ze zijn er al.
+
+**Alleen een diploma dat dit kind ook kan halen.** Zonder code is het
+tafeldiploma het enige vrije diploma (ADR-122), dus staan de twaalf tafels in de
+lijst en de andere eenentwintig niet. Dat is `vormVoor`'s regel, hardop: een plan
+dat naar de betaalpagina leidt is geen plan, en ADR-124 laat één slot per pagina
+toe — de premiumpagina heeft er al een.
+
+**De voortgang is `countMastered` en geen percentage van een diploma.** Een
+diploma is geslaagd of niet geslaagd; "60% van een diploma" bestaat niet. Wat wél
+bestaat is hoeveel van die set dit kind onthoudt — dezelfde som als op de
+modulepagina en op de onthoudpagina — en dat getal zegt toevallig ook precies wat
+er nog te doen is. Acht van de tien onthouden betekent: oefen die twee.
+
+**De knop verandert van woord en niet van plek.** "Oefenen" wordt "Doe de toets"
+zodra `standVan` het doel rijp noemt, en de lat daarvoor is de lat van het
+diploma zelf: het tafeldiploma is de hele tafel zonder fout, de andere drie negen
+op de tien (`diplomaDrempel`), dus dezelfde verhouding over de hele set. Een
+toets die twintig van de zesenveertig landen vraagt haal je door zesenveertig
+landen te kennen, niet door twintig. Te vroeg aanbieden kost een kind een poging
+en een teleurstelling; dat is duurder dan een dag langer oefenen.
+
+**Voorgesteld wordt wat het dichtst bij is**, hoogstens drie. Niet wat het
+makkelijkst is: tien van de twaalf provincies onthouden is twee provincies van
+een diploma af, en dat is een betere eerste zin dan "begin bij de tafel van 1" —
+die suggestie wint vanzelf zodra er nog niets geoefend is, want dan staat alles
+op nul en beslist de volgorde van de modules zelf.
+
+**Vieren waar het gebeurde, vragen waar gekozen wordt.** Het uitslagscherm zegt
+één regel naast het diploma: "Dit was waar je voor ging." De vraag wat nu staat
+op de voordeur. Een nieuw doel kiezen aan het eind van een ronde waar al vier
+dingen te lezen zijn is een keuze die niemand leest.
+
+**Bewaard wordt alleen de id van het diploma**, in `settings` onder
+`doel:<kind>`, zoals de dagstand en de heldenstand. Niet de naam, niet de
+voortgang, niet de datum: dat is allemaal elders af te leiden, en een tweede
+kopie gaat scheelopen.
+
+### Consequences
+
+`behaaldDiploma` rekent de diploma-id terug uit `RoundOutcome`, die alle vier de
+gevallen al draagt. Daardoor hoefde er niets door vijf modulescherm-lagen heen
+gegeven te worden om het uitslagscherm die ene regel te laten zeggen — de vorige
+drie ADR's van deze week deden dat wel, en dit was de eerste keer dat het niet
+hoefde.
+
+`doelwitVan` herkent het diploma aan de vorm van de set-id, precies zoals
+`rewards.ts` dat doet. Eén plek dus, en niet twee die bij een hernoemde set uit
+elkaar lopen. De tests dekken alle vier de soorten en de mix, die er geen heeft.
+
+**Niet hier besloten:** wat er gebeurt als een doel te zwaar blijkt. Er is een
+uitweg ("Ander doel kiezen"), maar niets dat een doel afraadt of een kind na drie
+weken zonder voortgang aanstoot. Dat zou een oordeel zijn over hoe hard iemand
+werkt, en dit product geeft dat nergens.
+
+**Niet hier besloten:** of het doel ook op de modulepagina hoort te staan. Het
+staat nu alleen op de voordeur, waar ook het dagplan staat. Een tweede plek is
+een tweede plek om hetzelfde te vergeten.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)
