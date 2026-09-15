@@ -53,6 +53,7 @@ export function TaalScreen({
   aantal = null,
   toetsstand = false,
   onHome,
+  onVandaagVerder,
   onAgain,
   alleen = null,
   onHerhaal,
@@ -67,6 +68,8 @@ export function TaalScreen({
    */
   readonly toetsstand?: boolean;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   readonly onAgain: () => void;
   /** "Herhaal je fouten": the ids this round asks and nothing else (ADR-111). */
   readonly alleen?: readonly string[] | null;
@@ -102,6 +105,7 @@ export function TaalScreen({
         state={state}
         setId={setId}
         onHome={onHome}
+        onVandaagVerder={onVandaagVerder}
         onAgain={onAgain}
         onHerhaal={onHerhaal}
       />

@@ -76,6 +76,7 @@ export function PracticeScreen({
   aantal = null,
   toetsstand = false,
   onHome,
+  onVandaagVerder,
   onAgain,
   alleen = null,
   onHerhaal,
@@ -94,6 +95,8 @@ export function PracticeScreen({
    */
   readonly toetsstand?: boolean;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   /** Another round of the same thing: K8's one primary button. */
   readonly onAgain: () => void;
   /** "Herhaal je fouten": the ids this round asks and nothing else (ADR-111). */
@@ -128,7 +131,15 @@ export function PracticeScreen({
   }
 
   if (state.phase === 'finished')
-    return <ResultScreen state={state} onHome={onHome} onAgain={onAgain} onHerhaal={onHerhaal} />;
+    return (
+      <ResultScreen
+        state={state}
+        onHome={onHome}
+        onAgain={onAgain}
+        onHerhaal={onHerhaal}
+        onVandaagVerder={onVandaagVerder}
+      />
+    );
 
   if (state.phase === 'loading' || !state.geo || !state.answers || !state.question) {
     return (

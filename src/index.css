@@ -3439,6 +3439,16 @@
     background: var(--kaart);
     color: var(--inkt);
   }
+  /* De weg naar de volgende ronde van vandaag, op het uitslagscherm (ADR-139).
+   * Een rij zoals op de voordeur, zodat een kind hem herkent, maar met de
+   * groene nadruk langs de voorkant: hier gaat de dag verder. Dezelfde reden
+   * als `.tk-vandaag` op de voordeur — daar begint een ronde, hier gaat er een
+   * door. */
+  .tk-vandaag-verder {
+    border-left: 8px solid var(--nadruk);
+    background: var(--kaart);
+  }
+
   /* De kist die opengaat (ADR-138). Een kaart met de drie helden ernaast, in
    * een rij die wikkelt: op een telefoon staan ze onder elkaar en blijven het
    * drie even grote keuzes. De kaart draagt geen accent — wat hier opvalt zijn

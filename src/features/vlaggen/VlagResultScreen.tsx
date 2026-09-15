@@ -18,12 +18,15 @@ export function VlagResultScreen({
   state,
   setId,
   onHome,
+  onVandaagVerder,
   onAgain,
   onHerhaal,
 }: {
   readonly state: VlagRoundState;
   readonly setId: string;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -65,6 +68,7 @@ export function VlagResultScreen({
       onAgain={onAgain}
       onHerhaal={onHerhaal}
       onHome={onHome}
+      onVandaagVerder={onVandaagVerder}
     >
       <ul className="tk-lijst">
         {state.missed.map((vlag) => (

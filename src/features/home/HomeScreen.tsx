@@ -109,7 +109,7 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScr
 
   // Bovenaan, boven alles: het is het enige blok dat zegt wat er nú te doen is
   // (ADR-126). De rijen eronder zijn geschiedenis.
-  const vandaag = <VandaagBlok alles={alles} gespeeld={gespeeld} onPlan={onPlan} />;
+  const vandaag = <VandaagBlok gespeeld={gespeeld} onPlan={onPlan} />;
 
   const rijen = (
     <>

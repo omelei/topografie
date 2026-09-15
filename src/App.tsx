@@ -41,7 +41,12 @@ import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
 import type { Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
-import type { ModeId } from '@/game-core';
+import { dagplan, type ModeId } from '@/game-core';
+import { geplaatst, startbareOnderdelen } from '@/features/module/onderdelen';
+import { loadItemStates, loadPlayedRounds } from '@/store/progress';
+import { leesDagstand } from '@/store/dagstandStore';
+import { standVoor, volgendeSet } from '@/features/home/dagstand';
+import { planSets, vormVoor } from '@/features/home/useVandaag';
 import {
   isFoutenSet,
   isMixSet,
@@ -260,6 +265,30 @@ export default function App() {
   };
 
   /**
+   * De volgende ronde van vandaag, vanaf het uitslagscherm (ADR-139).
+   *
+   * Het plan wordt hier vers gerekend en niet meegedragen: tussen het begin van
+   * de ronde en dit moment is er precies één ding veranderd — de ronde die net
+   * gespeeld is — en dat is nou juist wat eraf moet.
+   */
+  const vandaagVerder = () => {
+    void (async () => {
+      const states = await loadItemStates();
+      const plan = dagplan(planSets(startbareOnderdelen()), states, new Date());
+      const open = plan.rondes.map((ronde) => ronde.set.setId);
+      const stand = standVoor(await leesDagstand(), open, new Date());
+      if (stand === null) return;
+
+      const eerste = volgendeSet(stand, open);
+      const ronde = eerste === null ? null : plan.rondes.find((r) => r.set.setId === eerste);
+      if (!ronde) return;
+
+      const gespeeld = geplaatst(await loadPlayedRounds(), startbareOnderdelen());
+      maakAf(ronde.set, vormVoor(ronde.set, gespeeld), ronde.ids);
+    })();
+  };
+
+  /**
    * "Herhaal je fouten" (ADR-111): the same set straight away, asking what the
    * round just finished got wrong and nothing else — as practice, with the
    * answers shown, in a way that has a length (`round/herhaal.ts`).
@@ -365,6 +394,7 @@ export default function App() {
         onAgain={() => setVisit(visit + 1)}
         alleen={screen.alleen}
         onHerhaal={herhaal}
+        onVandaagVerder={vandaagVerder}
       />
     );
   }
@@ -381,6 +411,7 @@ export default function App() {
         onAgain={() => setVisit(visit + 1)}
         alleen={screen.alleen}
         onHerhaal={herhaal}
+        onVandaagVerder={vandaagVerder}
       />
     );
   }
@@ -401,6 +432,7 @@ export default function App() {
         onAgain={() => setVisit(visit + 1)}
         alleen={screen.alleen}
         onHerhaal={herhaal}
+        onVandaagVerder={vandaagVerder}
       />
     );
   }
@@ -421,6 +453,7 @@ export default function App() {
         onAgain={() => setVisit(visit + 1)}
         alleen={screen.alleen}
         onHerhaal={herhaal}
+        onVandaagVerder={vandaagVerder}
       />
     );
   }
@@ -437,6 +470,7 @@ export default function App() {
         onAgain={() => setVisit(visit + 1)}
         alleen={screen.alleen}
         onHerhaal={herhaal}
+        onVandaagVerder={vandaagVerder}
       />
     );
   }
