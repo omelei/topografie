@@ -19,6 +19,7 @@ export function KlokResultScreen({
   setId,
   mode,
   onHome,
+  onVandaagVerder,
   onAgain,
   onHerhaal,
 }: {
@@ -26,6 +27,8 @@ export function KlokResultScreen({
   readonly setId: string;
   readonly mode: KlokMode;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -68,6 +71,7 @@ export function KlokResultScreen({
       onAgain={onAgain}
       onHerhaal={onHerhaal}
       onHome={onHome}
+      onVandaagVerder={onVandaagVerder}
     >
       <ul className="tk-lijst">
         {state.missed.map((tijd) => (

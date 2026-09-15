@@ -13,6 +13,7 @@ import { loadItemStates } from '@/store/progress';
 import type { RoundOutcome } from '@/store/rewardStore';
 import { HerhaalFouten } from './HerhaalFouten';
 import { Kist } from '@/features/reis/Kist';
+import { VandaagVerder } from '@/features/home/VandaagVerder';
 
 /**
  * "Ronde klaar": the page after every round, in every module (K8, ADR-112).
@@ -59,6 +60,7 @@ export function RondeKlaar({
   onAgain,
   onHerhaal,
   onHome,
+  onVandaagVerder,
 }: {
   readonly moduleId: Module['id'];
   readonly setId: string;
@@ -83,6 +85,8 @@ export function RondeKlaar({
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag. Absent waar er geen dagplan speelt (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
 }) {
   const module = MODULES.find((kandidaat) => kandidaat.id === moduleId);
   const ModuleIcon = MODULE_ICON[moduleId];
@@ -146,6 +150,12 @@ export function RondeKlaar({
             {reeks ? <p className="text-tekst-secundair">{reeks}</p> : null}
           </div>
         </section>
+
+        {/* Hoeveel er nog van vandaag over is, en de weg erheen (ADR-139).
+            Boven de kist, want dit gaat over doorgaan en de kist over wat je
+            al hebt — en onder de knoppen zou een kind er langs drukken, net als
+            de kist. */}
+        {onVandaagVerder ? <VandaagVerder onVerder={onVandaagVerder} /> : null}
 
         {/* De kist, vóór de knoppen (ADR-138). Alles op dit scherm is te lézen —
             de tegels, het diploma, de missers — en dit is het enige dat

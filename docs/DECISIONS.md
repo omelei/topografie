@@ -6844,6 +6844,74 @@ alleen nergens een keuze.
 
 ---
 
+## ADR-139 — Het dagplan slinkt zichtbaar, en een dag kan af zijn
+
+**Status:** accepted. **Date:** 2026-09-15. Punt 2 van de lijst na "de app voelt
+te statisch".
+
+### Context
+
+Het dagplan slonk al: het wordt bij elk bezoek opnieuw uit de Leitner-standen
+gerekend, dus een gedane ronde is een kleinere of verdwenen rij. Twee dingen
+ontbraken.
+
+**Een kind zag het niet gebeuren.** Het verliet het scherm en kwam terug op een
+ander — dezelfde klacht als bij ADR-137: wel een stand, geen verandering.
+
+**En afmaken leverde niets op.** Stond er niets meer open, dan gaf `VandaagBlok`
+`null` terug en verdween het blok zonder een woord. De beloning voor precies op
+schema zijn — het enige dat een product met spaced repetition een kind eerlijk
+kan vertellen — was dat er iets ophield te bestaan.
+
+### Decision
+
+**Na een ronde staat er hoeveel er nog van vandaag over is, met de weg erheen.**
+De dag loopt door in plaats van telkens via de voordeur.
+
+**Boven de knoppen**, om dezelfde reden als de kist (ADR-138): onder "Nog een
+ronde" drukt een kind eraan voorbij.
+
+**Vandaag ligt vast.** Wat later op de dag vervalt, komt morgen. Een dag die
+gaandeweg groeit is nooit af, en afmaken is het punt — `PLAN_RONDES` begrenst het
+plan al tot vier rondes, dus een dag is een portie en geen bodemloze lijst.
+
+**"Klaar voor vandaag" en niet "je bent bij".** Het plan is hoogstens vier
+rondes; verderop kan nog werk liggen. De eerste zin is waar, de tweede zou dat
+niet altijd zijn.
+
+**De sets liggen vast, de vragen niet.** Vastgelegd wordt wélke sets er vanochtend
+open stonden. Wat een ronde vraagt komt vers uit de standen, dus er wordt nooit
+iets gevraagd dat net beantwoord is.
+
+**Een dag die leeg begon is niet "klaar".** Er viel niets af te maken, en dat
+vieren zou een compliment zijn voor niets doen.
+
+### Consequences
+
+`dagstand.ts` is puur en heeft twaalf tests. `useVandaag` doet de rekensom voor
+beide plekken die hem nodig hebben — de voordeur en het uitslagscherm — want twee
+keer dezelfde som is een keer te veel, zeker als één ervan ook vastlegt.
+
+**Een flaky e2e legde een echte fout bloot.** De eerste versie legde óók een lege
+dag vast. Dan zet de eerste ronde van de ochtend — toen er nog niets aan de beurt
+was — de dag vast op niets, en telt alles wat er die dag nog vervalt niet meer
+mee. Een dag begint nu pas als er iets te doen is. Zonder die test was dit pas
+opgevallen bij een kind dat 's ochtends oefende en 's middags niets meer zag
+meetellen.
+
+De callback naar de volgende ronde loopt van `App` door vijf modules heen, langs
+hetzelfde pad als `onHome` en `onAgain`. Dat is veel doorgeven voor één knop, en
+het alternatief — een module-level functie zoals `naarPremium` — verbergt waar
+het vandaan komt. Deze codebase heeft zijn eigen router met de hand geschreven;
+expliciet doorgeven past daarbij.
+
+**Niet hier besloten:** wat er gebeurt als een kind vier rondes doet en er nog
+twintig sets over tijd staan. "Klaar voor vandaag" klopt dan, en morgen staat er
+weer een portie klaar. Of dat genoeg is voor een kind met een grote achterstand
+is een vraag voor als er zo'n kind is.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

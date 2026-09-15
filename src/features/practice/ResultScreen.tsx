@@ -19,11 +19,14 @@ import { setsInRound, type RoundState } from './useRound';
 export function ResultScreen({
   state,
   onHome,
+  onVandaagVerder,
   onAgain,
   onHerhaal,
 }: {
   readonly state: RoundState;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -79,6 +82,7 @@ export function ResultScreen({
       onAgain={onAgain}
       onHerhaal={onHerhaal}
       onHome={onHome}
+      onVandaagVerder={onVandaagVerder}
     >
       <div className={kaart ? 'tk-uitslag-duo' : undefined}>
         <ul className="tk-lijst">

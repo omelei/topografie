@@ -19,12 +19,15 @@ export function SumResultScreen({
   state,
   setId,
   onHome,
+  onVandaagVerder,
   onAgain,
   onHerhaal,
 }: {
   readonly state: SumRoundState;
   readonly setId: string;
   readonly onHome: () => void;
+  /** Naar de volgende ronde van vandaag (ADR-139). */
+  readonly onVandaagVerder?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -56,6 +59,7 @@ export function SumResultScreen({
       onAgain={onAgain}
       onHerhaal={onHerhaal}
       onHome={onHome}
+      onVandaagVerder={onVandaagVerder}
     >
       <ul className="tk-lijst">
         {state.missed.map((sum) => (

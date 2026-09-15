@@ -54,6 +54,14 @@ export const nl = {
   'vandaag.eenVraag': 'Er is 1 vraag die je bijna vergeet.',
   'vandaag.vragen': 'Er zijn {aantal} vragen die je bijna vergeet.',
   'vandaag.ronde': '{aantal} vragen',
+  // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
+  // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
+  'vandaag.gedaan': '{gedaan} van de {totaal} gedaan.',
+  'vandaag.klaarVoorVandaag': 'Klaar voor vandaag.',
+  'vandaag.klaarUitleg': 'Je hebt alles herhaald wat vandaag aan de beurt was.',
+  'vandaag.over': 'Nog {aantal} van vandaag.',
+  'vandaag.overEen': 'Nog 1 van vandaag.',
+  'vandaag.verder': 'Volgende ronde',
 
   'home.recentTitle': 'Recent geoefend',
   'home.recentNone': 'Nog niets geoefend. Na je eerste ronde staat het hier.',

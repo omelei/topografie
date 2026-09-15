@@ -1,14 +1,11 @@
-import { useEffect, useState } from 'react';
 import { NextIcon } from '@/components/Icon';
-import { dagplan, type ItemState, type ModeId, type PlanSet } from '@/game-core';
-import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
-import { formsFor } from '@/features/module/forms';
+import type { ModeId } from '@/game-core';
 import { naamVan, type Gespeeld, type Onderdeel } from '@/features/module/onderdelen';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { t } from '@/i18n';
-import { loadItemStates } from '@/store/progress';
+import { useVandaag, vormVoor } from './useVandaag';
 
 /**
  * "Vandaag": wat er klaarstaat om te herhalen (ADR-126).
@@ -29,26 +26,38 @@ import { loadItemStates } from '@/store/progress';
  * een leeg plan aanprijzen is een lege doos op slot doen.
  */
 export function VandaagBlok({
-  alles,
   gespeeld,
   onPlan,
 }: {
-  readonly alles: readonly Onderdeel[];
   readonly gespeeld: readonly Gespeeld[];
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
 }) {
   const { actief } = usePremium();
-  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
-
-  useEffect(() => {
-    void loadItemStates().then(setStates);
-  }, []);
+  const vandaag = useVandaag();
 
   // Niets tot het bekend is: een blok dat "0 klaar" zegt en dan van gedachten
   // verandert heeft een kind iets verteld wat niet waar was.
-  if (states === null) return null;
+  if (vandaag === null) return null;
 
-  const plan = dagplan(planSets(alles), states, new Date());
+  const { plan, voortgang } = vandaag;
+
+  // Klaar voor vandaag (ADR-139). Hiervoor gaf dit blok `null` terug zodra er
+  // niets meer openstond: de beloning voor precies op schema zijn was dat het
+  // blok verdween. "Vandaag" is de vier rondes waar de dag mee begon, dus er
+  // staat "klaar voor vandaag" en niet "je bent bij" — dat laatste zou onwaar
+  // zijn zolang er verderop nog werk ligt.
+  if (voortgang.klaar) {
+    return (
+      <section className="tk-vandaag" aria-label={t('vandaag.titel')}>
+        <div className="flex flex-col gap-1">
+          <h2 className="tk-sectie">{t('vandaag.titel')}</h2>
+          <p className="text-lopend">{t('vandaag.klaarVoorVandaag')}</p>
+          <p className="text-tekst-secundair">{t('vandaag.klaarUitleg')}</p>
+        </div>
+      </section>
+    );
+  }
+
   if (plan.vragen === 0) return null;
 
   return (
@@ -59,6 +68,11 @@ export function VandaagBlok({
             vragen echt klaar — er is een knop. Zonder code is het een feit over
             dit kind en geen wachtrij: die vragen zijn gewoon te oefenen in hun
             eigen set, alleen niet met één druk vanaf hier. */}
+        {voortgang.gedaan > 0 ? (
+          <p className="text-tekst-secundair">
+            {t('vandaag.gedaan', { gedaan: voortgang.gedaan, totaal: voortgang.totaal })}
+          </p>
+        ) : null}
         <p className="text-lopend">
           {actief
             ? plan.vragen === 1
@@ -106,38 +120,4 @@ export function VandaagBlok({
       )}
     </section>
   );
-}
-
-/**
- * Waarover het plan gaat: elke set die een eigen Leitner-doos heeft.
- *
- * Mixen tellen niet mee. Een mix is de andere sets bij elkaar, dus zijn
- * onderdelen staan al ergens in — meetellen zou elke vraag twee keer plannen en
- * "22 vragen klaar" maken van elf. De foutenlijsten vallen af om dezelfde
- * reden: dat is een dwarsdoorsnede, geen set.
- */
-function planSets(alles: readonly Onderdeel[]): readonly PlanSet<Onderdeel>[] {
-  return alles
-    .filter((deel) => !deel.mix && !isPremiumOnderwerp(deel.setId))
-    .map((deel) => ({ sleutel: deel.setId, set: deel, items: deel.items }));
-}
-
-/**
- * Hoe dit kind deze set het laatst deed, en anders de eerste manier die de
- * module aanbiedt.
- *
- * Een geplande ronde hoort te voelen als de ronde die je gisteren deed, niet
- * als een manier die de app voor je koos. En nooit een premiummanier: dit blok
- * is er ook zonder code geweest, en een plan dat naar de betaalpagina leidt is
- * geen plan.
- */
-function vormVoor(deel: Onderdeel, gespeeld: readonly Gespeeld[]): ModeId {
-  const laatst = gespeeld.find(
-    (ronde) => ronde.deel.setId === deel.setId && !isPremiumVorm(ronde.ronde.mode),
-  );
-  if (laatst) return laatst.ronde.mode;
-
-  const vormen = formsFor(deel.moduleId, deel.setId);
-  const gratis = vormen.find((vorm) => !isPremiumVorm(vorm.id));
-  return gratis?.id ?? vormen[0]!.id;
 }
