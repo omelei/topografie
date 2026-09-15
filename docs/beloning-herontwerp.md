@@ -105,12 +105,33 @@ niets voor teruggenomen. Het enige dat een deterministische beloning kan wat
 een kansbeloning niet kan, is **een belofte doen**. Die belofte wordt niet
 gedaan.
 
-### Het derde gat: twee tellers die niets uitkeren
+### Het derde gat: zes dingen die berekend werden en nergens aankwamen
 
-Op élk scherm staat "Niveau 34" en "nog 143 goede antwoorden tot niveau 35"
-(`SideColumn.tsx`). Sinds ADR-096 deelt een niveau niets uit. Het is de
-zichtbaarste onwaarheid in het product: een aftelling naar niets, op elke
-pagina, elke dag. De combo-teller is dezelfde fout op een kleiner scherm.
+**Correctie op een eerdere versie van dit stuk.** Daarin stond dat "Niveau 34"
+en "nog 143 goede antwoorden tot niveau 35" op élk scherm staan. Dat klopt niet:
+ADR-112 heeft "Jouw voortgang" uit de zijkolom gehaald, en sindsdien staat het
+niveau nergens. Het is erger dan ik schreef, maar anders.
+
+Wat er feitelijk stond, nagerekend in de code:
+
+| wat                           | staat in               | gelezen door                      |
+| ----------------------------- | ---------------------- | --------------------------------- |
+| `goedInSter`                  | `game-core/helden.ts`  | niets                             |
+| `goedTotKist`                 | `game-core/helden.ts`  | niets                             |
+| `kistProgress`                | `game-core/helden.ts`  | niets                             |
+| `RoundOutcome.sterren`        | `store/rewardStore.ts` | niets                             |
+| `levelProgress`               | `game-core/rewards.ts` | niets                             |
+| `correctToNextLevel`          | `game-core/rewards.ts` | niets                             |
+| `combo` (`×0`, `×1`, `×2`, …) | vijf rondeschermen     | het kind, en het keerde niets uit |
+
+Zes pure functies en een veld, allemaal getest, allemaal per antwoord of per
+ronde uitgerekend, en geen enkel scherm dat ze aanriep. `RoundOutcome.sterren`
+werd élke ronde berekend uit twee tellingen over de hele geschiedenis van een
+kind, en verdween.
+
+Dat is precies de fout van de munten en de XP (ADR-130), drie keer over. En de
+comboteller is de zichtbare variant ervan: een getal dat oploopt, alleen boven
+768 pixels, en dat nergens toe leidt.
 
 ### Oordeel
 
@@ -134,6 +155,42 @@ die nooit iets doet, nooit wordt aangekondigd en nooit iets zegt, is geen
 personage maar een portret.** Het kind heeft gelijk. Alleen zit het saaie niet
 in de tekening maar in het feit dat de tekening nergens aan meedoet.
 
+### Het enige gebruikersbewijs dat er is, en het spreekt mij half tegen
+
+Na de eerste versie van dit stuk kwam er informatie die er daarvoor niet was.
+De kinderen van de eigenaar hebben het gebruikt. Wat zij lieten zien:
+
+- ze vonden **de helden niet leuk**;
+- ze gingen er **niet meer of langer door spelen**;
+- ze **haken snel af** en hebben **geen interesse**.
+
+Dat is het eerste directe bewijs in dit hele project, en het is scherper dan
+alles wat ik hierboven heb beredeneerd. Drie dingen volgen eruit, en ik moet ze
+alle drie noemen omdat ze niet alle drie in mijn voordeel zijn.
+
+**H1 is sterker dan ik hem weeg.** "Ze vonden de helden niet leuk" is precies de
+helft van mijn eigen afkeurcriterium hieronder. Ik heb de tekeningen in §4 met
+rust gelaten en dat op de goedkoopte gebaseerd, niet op bewijs. Dit is bewijs de
+andere kant op. Het maakt fase 3 (een tweede pose, en de vraag of twaalf
+Nederlandse bosdieren zijn wat een tienjarige cool vindt) urgenter dan waar ik
+hem heb gezet.
+
+**"Geen interesse" is geen beloningsprobleem.** Dit is de ongemakkelijkste
+regel in dit document. Een kind dat snel afhaakt en geen belangstelling heeft,
+wordt niet gered door een ster elke drie en een halve minuut. Er zijn oorzaken
+die één niveau hóger liggen dan alles wat hier staat: het is schoolwerk zonder
+spel eromheen, terwijl Squla dezelfde vragen in een spelvorm giet; en het is een
+app die een ouder installeert, die concurreert met spellen die het kind zelf
+koos. Voor geen van beide is dit document het medicijn.
+
+**En toch verandert het fase 1 niet.** Wat fase 1 doet is geen gok op een
+hypothese maar het wegwerken van gebreken die op zichzelf staan: een teller die
+oploopt en niets uitkeert, een beloning die berekend wordt en nergens aankomt,
+een belofte die het product wel kan doen en niet doet. Die horen weg, welke van
+de drie hypothesen ook klopt. Wat het bewijs wél verandert is de **verwachting**:
+fase 1 haalt gebreken weg, en het is onwaarschijnlijk dat het op zichzelf een
+kind terugbrengt dat geen interesse heeft.
+
 ### Welk bewijs mij ongelijk zou geven
 
 Concreet en gratis, want het staat al op het apparaat. `afhaken.ts` (ADR-128)
@@ -152,6 +209,11 @@ rekent uit waar in een ronde een kind stopt en of het daarvóór foutging.
 is leeg, en het blijft leeg tot er gezinnen zijn (§0b). Deze toets is dus niet
 afgeschaft maar uitgesteld, en hij is het eerste dat gelezen wordt zodra er vijf
 tot tien kinderen regelmatig oefenen. Wat dat betekent voor nu staat in §8.
+
+Met één uitzondering, en die is nu al te doen: de kinderen die het al gebruikt
+hebben, kunnen het antwoord op de derde vraag gewoon geven. _"Wat zou je wél een
+leuke held vinden?"_ is tien minuten werk en het is op dit moment het enige
+bewijs dat er te halen valt.
 
 ---
 
@@ -229,7 +291,6 @@ Het uitslagscherm blijft in de volgorde die ADR-143 en ADR-126 hebben gezet:
 eerst wat er geleerd is, dan pas wat het opleverde. Dat is geen smaak maar de
 demping tegen overjustification (§7). Twee toevoegingen:
 
-- **De sterren van deze ronde landen**, met 80 ms ertussen, totaal ~600 ms.
 - **De volgende kist wordt bij naam genoemd.** Onder de balk: _"Nog 12 goede
   antwoorden tot je kist. Erin zitten Willem Wolf, Fem Flamingo en Daan Das —
   je kiest er één."_ `aanbod()` rekent dat al uit en niemand vraagt het.
@@ -431,22 +492,21 @@ Frequenties bij **vijf dagen van tien minuten per week** — de voorzichtige
 variant van het plafond uit §0b: 135 vragen, 110 goede antwoorden, 15 rondes,
 11 sterren, 2,2 kisten. Bij zeven dagen ligt alles ongeveer 40% hoger.
 
-| trigger              | wat beweegt                                     | duur    | curve | geluid                         | per week | reduced motion                  |
-| -------------------- | ----------------------------------------------- | ------- | ----- | ------------------------------ | -------- | ------------------------------- |
-| antwoord nagekeken   | uitkomstteken 44px landt                        | 260 ms  | veer  | ja (bestaand)                  | 135×     | teken staat er, geen beweging   |
-| antwoord goed        | maatje veert door en terug                      | 420 ms  | veer  | nee                            | 110×     | plaat verschijnt zonder veer    |
-| antwoord goed        | klimtrede komt aan                              | 300 ms  | veer  | nee                            | ~95×     | trede is gevuld                 |
-| antwoord goed        | sterpip vult                                    | 120 ms  | uit   | nee                            | 110×     | pip is gevuld                   |
-| **3 op rij**         | ring om maatje sluit                            | 300 ms  | uit   | nee                            | ~30×     | ring staat er, woord verschijnt |
-| **ster (10 goed)**   | pips lopen vol, sterteken landt                 | 420 ms  | veer  | ja, derde toon op de bestaande | 10×      | ster staat er, regel eronder    |
-| ronde klaar          | kistbalk loopt naar nieuwe stand                | 240 ms  | uit   | nee                            | 15×      | balk staat op stand             |
-| ronde klaar          | sterren van deze ronde landen, 80 ms uit elkaar | ~600 ms | veer  | nee                            | 15×      | sterren staan er                |
-| kist verdiend        | drie kaarten komen op, gestaffeld               | 420 ms  | veer  | nee                            | 2,2×     | kaarten staan er                |
-| kist gekozen         | held komt op (`tk-kist-held`, bestaat)          | 420 ms  | veer  | ja                             | 2,2×     | held staat er                   |
-| **reeks omhoog**     | materiaalwissel + ring sluit                    | 1200 ms | uit   | ja                             | ~0,7×    | nieuwe plaat + zin              |
-| dag af               | held 120px, ring sluit                          | 420 ms  | uit   | nee                            | 5×       | staat er                        |
-| week                 | weekgetal telt op                               | 240 ms  | uit   | nee                            | 1×       | getal staat er                  |
-| alle twaalf compleet | confetti, één keer ooit                         | 900 ms  | uit   | ja                             | 1× ooit  | statisch beeld + zin            |
+| trigger              | wat beweegt                            | duur    | curve | geluid                         | per week | reduced motion                  |
+| -------------------- | -------------------------------------- | ------- | ----- | ------------------------------ | -------- | ------------------------------- |
+| antwoord nagekeken   | uitkomstteken 44px landt               | 260 ms  | veer  | ja (bestaand)                  | 135×     | teken staat er, geen beweging   |
+| antwoord goed        | maatje veert door en terug             | 420 ms  | veer  | nee                            | 110×     | plaat verschijnt zonder veer    |
+| antwoord goed        | klimtrede komt aan                     | 300 ms  | veer  | nee                            | ~95×     | trede is gevuld                 |
+| antwoord goed        | sterpip vult                           | 120 ms  | uit   | nee                            | 110×     | pip is gevuld                   |
+| **3 op rij**         | ring om maatje sluit                   | 300 ms  | uit   | nee                            | ~30×     | ring staat er, woord verschijnt |
+| **ster (10 goed)**   | pips lopen vol, sterteken landt        | 420 ms  | veer  | ja, derde toon op de bestaande | 10×      | ster staat er, regel eronder    |
+| ronde klaar          | kistbalk loopt naar nieuwe stand       | 240 ms  | uit   | nee                            | 15×      | balk staat op stand             |
+| kist verdiend        | drie kaarten komen op, gestaffeld      | 420 ms  | veer  | nee                            | 2,2×     | kaarten staan er                |
+| kist gekozen         | held komt op (`tk-kist-held`, bestaat) | 420 ms  | veer  | ja                             | 2,2×     | held staat er                   |
+| **reeks omhoog**     | materiaalwissel + ring sluit           | 1200 ms | uit   | ja                             | ~0,7×    | nieuwe plaat + zin              |
+| dag af               | held 120px, ring sluit                 | 420 ms  | uit   | nee                            | 5×       | staat er                        |
+| week                 | weekgetal telt op                      | 240 ms  | uit   | nee                            | 1×       | getal staat er                  |
+| alle twaalf compleet | confetti, één keer ooit                | 900 ms  | uit   | ja                             | 1× ooit  | statisch beeld + zin            |
 
 Alles binnen de bestaande tokens (`--beweeg-vlot` 120 ms, `--beweeg-rustig`
 240 ms, `--beweeg-traag` 420 ms, twee curves), met precies twee uitzonderingen:
@@ -497,10 +557,13 @@ landt. Dat is het verschil tussen ceremonie en wachttijd.
 
 ## 6. Wat eruit gaat
 
-**1. "Niveau N" en "nog X tot niveau N+1" uit de zijkolom.** Sinds ADR-096 keert
-een niveau niets uit. Het staat op élk scherm en het telt af naar niets. Het
-wordt vervangen door de kistregel, die wél iets uitkeert. `levelFor()` is
-afgeleid uit een teller; er gaat niets verloren, er wordt niets gewist.
+**1. De dode tellers uit `game-core`.** `levelProgress`, `correctToNextLevel`
+en `kistProgress` worden door geen enkel scherm gelezen en kunnen dat ook niet
+zinvol worden: sinds ADR-096 keert een niveau niets uit, en de balk die ADR-099
+beloofde staat in een kolom die ADR-112 heeft verborgen. Ze gaan weg, met hun
+tests. `levelFor` blijft, want `uitLadder` heeft hem nodig voor de migratie —
+dat is een migratie en geen beloning. Er wordt niets gewist dat een kind bezit:
+het zijn afgeleiden van één teller.
 
 **2. De combo-teller `×N` in de rondebalk.** Hij telt iets echts, hij staat
 alleen boven 768 pixels, en hij keert niets uit. Hij wordt de
@@ -795,6 +858,52 @@ een ster die het vier weken geleden verdiende.
 tegelijk ziet verschijnen, moet één zin krijgen: _"Deze had je al."_ Zes
 gelijktijdige vieringen voor werk van vorige maand is een leugen over wanneer
 er iets gebeurde, en het holt de zevende uit.
+
+---
+
+## 11. Wat er gebouwd is
+
+Fase 1 staat. Wat er feitelijk in de code veranderd is, en waar het afwijkt van
+wat hierboven staat:
+
+| ingreep                                                                                                   | waar                                                                              | frequentie   |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------ |
+| **Het stermoment** — tien treden die vollopen, de ster die landt, en een derde toon op het antwoordgeluid | `features/round/ster.ts`, `Ster.tsx`, in alle vijf de rondeschermen naast de klim | 2,2× per dag |
+| **Drie op rij** — een ring in de modulekleur om het maatje, en een teller die pas vanaf drie iets zegt    | `features/round/dreef.ts`, `Maatje.tsx`                                           | ~6× per dag  |
+| **Het kistvooruitzicht** — vijf sterren, hoeveel antwoorden de kist nog is, en wie erin zit, bij naam     | `features/reis/Kist.tsx`                                                          | 3× per dag   |
+| **De dag die af is** — de held op 120px, en wat er morgen klaarstaat                                      | `features/home/VandaagVerder.tsx`, `useVandaag.ts`                                | 1× per dag   |
+| **Badges en streak uit premium**                                                                          | `badges/Badges.tsx`, `home/ReeksBlok.tsx`, `round/RondeKlaar.tsx`                 | —            |
+| **Dode tellers weg** — `levelProgress`, `correctToNextLevel`, `kistProgress`, `RoundOutcome.sterren`      | `game-core/rewards.ts`, `helden.ts`, `store/rewardStore.ts`                       | —            |
+
+### Drie afwijkingen van dit document, met reden
+
+**De sterrij staat niet in de rondebalk maar in de terugkoppelkaart.** In §3.1
+schreef ik "sterpips in de rondebalk". In de balk staan al tien stippen — de
+tien vragen van deze ronde — en twee rijen van tien die verschillende dingen
+tellen, is voor een kind van tien geen voortgang maar een raadsel. De
+terugkoppelkaart is bovendien waar het gebeurt: daar klinkt het geluid, landt
+het teken en komt het maatje binnen, dus het is één gebeurtenis en geen vier.
+
+**"De sterren van deze ronde landen" op het uitslagscherm is er niet.** §3.4
+vroeg erom. Maar de ster landt nu ín de ronde, op het moment dat hij verdiend
+wordt; hem twee minuten later nog eens vieren is hetzelfde twee keer zeggen, en
+bij tien minuten per dag is dat leertijd. Wat er wél staat is het
+vooruitzicht — dat zegt iets nieuws.
+
+**De streak is ruimer vrijgegeven dan §6 beschreef.** Daar stond "de streakzin".
+Het getal en de week in de zijkolom zijn het ook geworden, want anders zou
+hetzelfde feit op het ene scherm gratis zijn en op het andere niet. Wat premium
+blijft is de reekspagina: de kalender, de zes getallen en het bijhouden week na
+week. De premiumteksten zijn daarop aangepast, en badges en reeks staan nu in
+"Wat gratis blijft".
+
+### Wat nog niet gebouwd is
+
+Alles van fase 2 en 3: de karakterregels en de momentregels, de eerste held
+kiezen uit alle twaalf, de reeksstap op 1200 ms, de terugkomregel na veertien
+dagen, en de tweede pose. En, gezien het bewijs in §1: de vraag of twaalf
+Nederlandse bosdieren zijn wat een tienjarige wil hebben, staat nu vóór dat
+rijtje in plaats van erachter.
 
 ---
 

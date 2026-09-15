@@ -114,15 +114,15 @@ export function goedInSter(correct: number): number {
 }
 
 /**
- * How full the next chest is, 0 to 1.
+ * `kistProgress` stond hier, voor de balk die ADR-099 in de zijkolom beloofde.
+ * Die kolom is met ADR-112 verborgen en de balk is er nooit gekomen, dus riep
+ * niets deze functie aan.
  *
- * The bar in the child's own column measures this rather than the level
- * (ADR-099): a bar should fill towards the thing that hands something over, and
- * since ADR-096 a level hands out nothing.
+ * Wat ervoor in de plaats is gekomen staat op het uitslagscherm en telt in
+ * dingen in plaats van in een breuk: vijf sterren waarvan er zoveel staan, en
+ * hoeveel goede antwoorden de kist nog is (`features/reis/Kist.tsx`). Een kind
+ * van tien telt sterren; een balk op 0,64 telt niemand.
  */
-export function kistProgress(correct: number): number {
-  return (Math.max(0, correct) % GOED_PER_KIST) / GOED_PER_KIST;
-}
 
 /** The reeks above this one, or null at ultra. */
 export function volgendeReeks(reeks: Reeks): Reeks | null {

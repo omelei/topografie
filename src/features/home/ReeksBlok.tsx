@@ -22,13 +22,16 @@ export function ReeksBlok({ onReeks }: { readonly onReeks: () => void }) {
   const { actief } = usePremium();
   const reeks = useReeks();
 
-  // Premium sinds ADR-116, en zonder code sinds ADR-124 helemaal weg in plaats
-  // van op slot. ADR-116 liet het blok staan zodat de kolom niet van vorm
-  // verandert als er een code komt. Die vormvastheid is één moment waard; het
-  // slot stond op élke pagina, naast het tweede slot eronder, bij een reeks van
-  // nul — twee keer nee zeggen tegen een kind dat nog niets gedaan heeft. De
-  // dagen worden onderhuids wel geteld, dus een code opent een geschiedenis.
-  if (!actief) return null;
+  // **Het getal en de week zijn niet meer premium**, de pagina erachter wel.
+  //
+  // Dit is dezelfde herziening van ADR-116 als bij de badges, en de grens loopt
+  // binnen dit blok: hoeveel dagen op rij is één regel over dit kind, en die
+  // hoort het te zien. Wat je koopt is het bijhouden ervan — de kalender, de
+  // zes getallen en de week na week, die op de reekspagina staan.
+  //
+  // ADR-124 haalde dit blok zonder code helemaal weg, om te voorkomen dat er
+  // twee sloten onder elkaar in dezelfde kolom stonden. Dat bezwaar vervalt met
+  // het slot: er staat nu gewoon wat er is.
 
   // Empty until it is known, for the reason the progress card gives.
   if (reeks === null) return <Blok titel={t('reeks.titel')} bezig />;
@@ -37,10 +40,15 @@ export function ReeksBlok({ onReeks }: { readonly onReeks: () => void }) {
     <Blok titel={t('reeks.titel')}>
       <ReeksGetal dagen={reeks.dagen} />
       <WeekRij dagen={laatsteZevenDagen(reeks.geoefend, reeks.vandaag)} />
-      <button type="button" className="tk-blok-knop" onClick={onReeks}>
-        <NextIcon size={20} />
-        {t('reeks.bekijk')}
-      </button>
+      {/* De pagina erachter is wél premium: daar staan de kalender en de zes
+          getallen, en dat is het bijhouden waarvoor betaald wordt. Zonder code
+          staat de knop er niet, in plaats van dat hij op een slot uitkomt. */}
+      {actief ? (
+        <button type="button" className="tk-blok-knop" onClick={onReeks}>
+          <NextIcon size={20} />
+          {t('reeks.bekijk')}
+        </button>
+      ) : null}
     </Blok>
   );
 }

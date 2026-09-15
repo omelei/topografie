@@ -2,10 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   STAMPS,
   correctForLevel,
-  correctToNextLevel,
   diplomaFor,
   levelFor,
-  levelProgress,
   newStamps,
   tableOfDiploma,
   type RewardSnapshot,
@@ -70,13 +68,6 @@ describe('levels', () => {
     expect(levelFor(25)).toBe(2);
     expect(levelFor(74)).toBe(2);
     expect(levelFor(75)).toBe(3);
-  });
-
-  it('reports progress through the current level', () => {
-    expect(levelProgress(25)).toBe(0);
-    // Level two spans 25 to 75, so halfway is 50.
-    expect(levelProgress(50)).toBeCloseTo(0.5, 6);
-    expect(levelProgress(74)).toBeCloseTo(0.98, 2);
   });
 
   it('never goes backwards as the answers add up', () => {
@@ -172,31 +163,6 @@ describe('stamps', () => {
     expect(new Set(ids).size).toBe(ids.length);
     for (const stamp of STAMPS) {
       expect(typeof stamp.criterion, stamp.id).toBe('function');
-    }
-  });
-});
-
-/**
- * The one number on a child's own column that is written in what they actually
- * do. "Nog 340 XP" is a currency nobody counts in (ADR-065).
- */
-describe('how far the next level is', () => {
-  it('is a subtraction, in the unit the card says out loud', () => {
-    expect(correctToNextLevel(0)).toBe(25);
-    expect(correctToNextLevel(19)).toBe(6);
-    expect(correctToNextLevel(24)).toBe(1);
-  });
-
-  it('never says nought, at any point on the curve', () => {
-    for (let goed = 0; goed < 12000; goed += 7) {
-      expect(correctToNextLevel(goed), `${goed}`).toBeGreaterThanOrEqual(1);
-    }
-  });
-
-  it('agrees with the level it is counting towards', () => {
-    for (let goed = 0; goed < 4000; goed += 13) {
-      const naNog = goed + correctToNextLevel(goed);
-      expect(levelFor(naNog), `${goed}`).toBeGreaterThan(levelFor(goed));
     }
   });
 });

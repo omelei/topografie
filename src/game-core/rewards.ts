@@ -60,26 +60,22 @@ export function levelFor(correct: number): number {
   return level;
 }
 
-/** How much of the current level is done, 0 to 1. Drives a progress bar. */
-export function levelProgress(correct: number): number {
-  const level = levelFor(correct);
-  const start = correctForLevel(level);
-  const next = correctForLevel(level + 1);
-  if (next === start) return 1;
-  return (correct - start) / (next - start);
-}
-
 /**
- * How many more correct answers there are between here and the next level.
+ * `levelProgress` en `correctToNextLevel` stonden hier, en ze zijn weg.
  *
- * The one number on the front door written in what a child actually does. It is
- * now a subtraction rather than a conversion, which is the whole reason the
- * ladder moved off XP: what the card says and what the ladder counts are the
- * same thing (ADR-070).
+ * Allebei waren ze geschreven voor "Jouw voortgang" in de zijkolom — "Niveau
+ * 34", "nog 143 goede antwoorden tot niveau 35" — en die is met ADR-112
+ * verborgen. Sindsdien riep geen enkel scherm ze aan: de enige plek waar ze nog
+ * voorkwamen was hun eigen test.
+ *
+ * Ze terugzetten zou ook niet helpen, want sinds ADR-096 deelt een niveau niets
+ * uit. Een balk die vult naar een mijlpaal die niets overhandigt, en een zin die
+ * aftelt naar niets, zijn dezelfde fout als de munten en de XP van ADR-130 —
+ * alleen dan met de aftelling in beeld, wat erger is dan onzichtbaar.
+ *
+ * `levelFor` blijft, want `uitLadder` heeft hem nodig om te weten wat een kind
+ * op de oude ladder had verdiend. Dat is een migratie en geen beloning.
  */
-export function correctToNextLevel(correct: number): number {
-  return Math.max(1, correctForLevel(levelFor(correct) + 1) - correct);
-}
 
 // ---------------------------------------------------------------------------
 

@@ -4,8 +4,6 @@ import {
   klokDiplomaFor,
   klokVanDiploma,
   newStamps,
-  sterrenInKist,
-  sterrenVoor,
   tableOfDiploma,
   topoDiplomaFor,
   vlagDiplomaFor,
@@ -19,7 +17,6 @@ import {
 import { getDb } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
 import { kistenOpenstaand } from './heldenStore';
-import { loadAccuracy } from './progress';
 
 /**
  * XP, coins, travel stamps, stars and chests, on the device.
@@ -45,12 +42,6 @@ export interface RoundOutcome {
   readonly klokDiploma: KlokDiplomaSet | null;
   /** The map this round earned a topodiploma for, or null (ADR-117). */
   readonly topoDiploma: TopoDiplomaSet | null;
-  /**
-   * The stars this round added, and how many of the next chest's five are there
-   * now. Worked out from the count of correct answers either side of the round,
-   * which cannot drift from the count the rest of the product shows.
-   */
-  readonly sterren: { readonly erbij: number; readonly inKist: number };
   /**
    * Chests this round paid for that nobody has chosen from yet. Almost always
    * none; one when the round crossed a fifty.
@@ -161,19 +152,18 @@ export async function applyRoundRewards(params: {
     await db.put('kindBadges', { kindId, badgeId: topoDiplomaId, behaaldOp });
   }
 
-  // Every one of this round's answers is already written by now, so the total
-  // afterwards is read from the store and the round's own count subtracted
-  // back off it for the total before.
-  const na = (await loadAccuracy()).correct;
-  const voor = Math.max(0, na - params.correct);
-
+  // De sterren stonden hier ook, als `erbij` en `inKist`, en ze werden door
+  // geen enkel scherm gelezen — de derde keer dat dit product iets uitrekende
+  // dat nergens terechtkwam, na de munten en de XP van ADR-130. Ze zijn weg.
+  // Wat een ster is en wanneer hij valt, staat nu waar het gebeurt: in de ronde
+  // zelf (`features/round/ster.ts`) en op het uitslagscherm, waar de kist zijn
+  // eigen vooruitzicht rekent uit dezelfde tellerstand.
   return {
     stamps: earned,
     diploma: diplomaId === null ? null : tableOfDiploma(diplomaId),
     vlagDiploma: vlagDiplomaId === null ? null : werelddeelVanDiploma(vlagDiplomaId),
     klokDiploma: klokDiplomaId === null ? null : klokVanDiploma(klokDiplomaId),
     topoDiploma: topoDiplomaId === null ? null : kaartVanDiploma(topoDiplomaId),
-    sterren: { erbij: sterrenVoor(na) - sterrenVoor(voor), inKist: sterrenInKist(na) },
     kistenTeGoed: await kistenOpenstaand(),
   };
 }

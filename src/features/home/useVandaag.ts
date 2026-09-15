@@ -25,7 +25,21 @@ export interface Vandaag {
   readonly voortgang: Voortgang;
   /** De eerstvolgende ronde van vandaag, of null als vandaag klaar is. */
   readonly volgende: { readonly deel: Onderdeel; readonly ids: readonly string[] } | null;
+  /**
+   * Hoeveel er morgen klaarstaat: dezelfde rekensom, een dag verder.
+   *
+   * Leitner weet dit allang — elk onderdeel draagt zijn eigen `volgendeReview` —
+   * en het product zei het nooit. Bij hoogstens tien minuten per dag is de
+   * laatste zin die een kind ziet het enige dat over morgen kan gaan, en een
+   * product dat eindigt met wat er net gebeurde, eindigt met het verleden.
+   *
+   * Wat vandaag is geoefend, schuift vooruit en telt hier niet mee. Wat vandaag
+   * bleef liggen wél: dat staat er morgen nog steeds.
+   */
+  readonly morgen: number;
 }
+
+const DAG_MS = 86_400_000;
 
 /**
  * Waarover het plan gaat: elke set die een eigen Leitner-doos heeft.
@@ -52,7 +66,9 @@ export function useVandaag(now: Date = new Date()): Vandaag | null {
   useEffect(() => {
     if (states === null) return;
 
-    const plan = dagplan(planSets(startbareOnderdelen()), states, now);
+    const sets = planSets(startbareOnderdelen());
+    const plan = dagplan(sets, states, now);
+    const morgen = dagplan(sets, states, new Date(now.getTime() + DAG_MS)).vragen;
     const open = plan.rondes.map((ronde) => ronde.set.setId);
 
     void (async () => {
@@ -62,7 +78,12 @@ export function useVandaag(now: Date = new Date()): Vandaag | null {
       // Geen dag zolang er niets te doen was: dan is er niets af te maken en
       // niets te vieren, en er wordt niets weggeschreven.
       if (stand === null) {
-        setVandaag({ plan, voortgang: voortgangVan({ dag: '', sets: [] }, open), volgende: null });
+        setVandaag({
+          plan,
+          voortgang: voortgangVan({ dag: '', sets: [] }, open),
+          volgende: null,
+          morgen,
+        });
         return;
       }
       if (stand !== bewaard) await schrijfDagstand(stand);
@@ -74,6 +95,7 @@ export function useVandaag(now: Date = new Date()): Vandaag | null {
         plan,
         voortgang: voortgangVan(stand, open),
         volgende: ronde ? { deel: ronde.set, ids: ronde.ids } : null,
+        morgen,
       });
     })();
     // `now` is per render een nieuw object; de dag erin is wat telt.

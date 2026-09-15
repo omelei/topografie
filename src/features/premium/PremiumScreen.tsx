@@ -48,6 +48,8 @@ const GRATIS: readonly TranslationKey[] = [
   'premium.vrij.vormen',
   'premium.vrij.fouten',
   'premium.vrij.diploma',
+  'premium.vrij.badges',
+  'premium.vrij.reeks',
   'premium.vrij.voorspelling',
 ];
 
