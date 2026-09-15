@@ -249,6 +249,7 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   expect(Object.keys(gevraagd.at(-1) ?? {}).sort()).toEqual(['p_apparaat', 'p_code']);
 
   await page.goto('/onthouden');
+  await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Laatst geoefend' })).toBeVisible();
 

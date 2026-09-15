@@ -238,7 +238,11 @@ export function SumScreen({
 
         {/* Where the map goes on the other screen. The sum gets the same stage,
             because it is the same thing: what the child is being asked about. */}
-        <div className="tk-round-map flex items-center justify-center">
+        {/* Een podium dat zich naar de som voegt (ADR-143): een som rekt niet
+            uit zoals een kaart of een klok, en een wit vlak van negenhonderd
+            bij zevenhonderdtachtig met één regel erin leest als iets dat
+            ontbreekt. */}
+        <div className="tk-round-map tk-round-map-krap flex items-center justify-center">
           <p className={`${somKlasse} tk-display tabular-nums`}>{som}</p>
         </div>
       </div>

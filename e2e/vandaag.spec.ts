@@ -66,6 +66,9 @@ test('the Onthouden table counts the answers, the share right, and the days sinc
   await eenProvincieEnStop(page);
 
   await page.goto('/onthouden');
+  // De tabel staat sinds ADR-143 achter een knop: wat de pagina opent is het
+  // beeld, en dit is de test over de tabel.
+  await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   const tabel = page.getByRole('table');
   for (const kop of ['Onderdeel', 'Hoe het gaat', 'Aantal', '% goed', 'Laatst geoefend']) {
     await expect(tabel.getByRole('columnheader', { name: kop, exact: true })).toBeVisible();

@@ -17,9 +17,12 @@ import { usePremium } from '@/features/premium/usePremium';
  */
 export function KlokDiplomas({
   onKies,
+  alleenBehaald = false,
 }: {
   /** Where pressing a diploma chooses its step. Absent where the wall is only shown. */
   readonly onKies?: ((setId: KlokDiplomaSet) => void) | undefined;
+  /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
+  readonly alleenBehaald?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<KlokDiplomaSet> | null>(null);
@@ -50,7 +53,10 @@ export function KlokDiplomas({
 
       <DiplomaRaster
         module="klok"
-        vakken={KLOK_DIPLOMA_SETS.map((set) => {
+        vakken={(alleenBehaald
+          ? KLOK_DIPLOMA_SETS.filter((id) => behaald.has(id))
+          : KLOK_DIPLOMA_SETS
+        ).map((set) => {
           const stap = t(`set.${set}` as TranslationKey);
           const gehaald = behaald.has(set);
 

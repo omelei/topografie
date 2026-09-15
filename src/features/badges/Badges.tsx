@@ -66,7 +66,7 @@ function uitleg(id: StampId): string {
 }
 
 /** All ten, the ones not earned yet as well, on the child's own page. */
-export function BadgeSectie() {
+export function BadgeSectie({ alleenBehaald = false }: { readonly alleenBehaald?: boolean }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
 
@@ -97,7 +97,7 @@ export function BadgeSectie() {
       </div>
 
       <ul className="tk-badges">
-        {STAMPS.map((stamp) => {
+        {(alleenBehaald ? STAMPS.filter((stamp) => behaald.has(stamp.id)) : STAMPS).map((stamp) => {
           const gehaald = behaald.has(stamp.id);
           const { icon, module } = BADGE[stamp.id];
 

@@ -17,9 +17,12 @@ import { KAART_NAAM } from './topoDiplomaNamen';
  */
 export function TopoDiplomas({
   onKies,
+  alleenBehaald = false,
 }: {
   /** Where pressing a diploma chooses its map. Absent where the wall is only shown. */
   readonly onKies?: ((setId: TopoDiplomaSet) => void) | undefined;
+  /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
+  readonly alleenBehaald?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<TopoDiplomaSet> | null>(null);
@@ -49,7 +52,10 @@ export function TopoDiplomas({
 
       <DiplomaRaster
         module="topo"
-        vakken={TOPO_DIPLOMA_SETS.map((set) => {
+        vakken={(alleenBehaald
+          ? TOPO_DIPLOMA_SETS.filter((id) => behaald.has(id))
+          : TOPO_DIPLOMA_SETS
+        ).map((set) => {
           const kaart = t(KAART_NAAM[set]);
           const gehaald = behaald.has(set);
 

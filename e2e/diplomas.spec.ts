@@ -69,6 +69,9 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
 
   // And on the child's own page, as pictures rather than buttons.
   await page.goto('/jij');
+  // De muur staat sinds ADR-143 achter een knop: de pagina opent met wat je
+  // hebt, en dit is de test over de hele muur.
+  await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
   const verzameling = page.getByRole('region', { name: 'Jouw topodiploma’s' });
   await expect(verzameling.getByRole('img')).toHaveCount(11);
   await expect(

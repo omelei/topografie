@@ -50,10 +50,22 @@ import { ToetsenBlok } from './ToetsenBlok';
 export function SideColumn({
   onReeks,
   onBegin,
+  vanOuder = false,
 }: {
   /** The way to the streak's own page, which is what the streak block leads to. */
   readonly onReeks: () => void;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+  /**
+   * Op de ouderpagina (ADR-143). Daar stonden alle vier de blokken, elk met een
+   * kop die begint met "Jouw" — een ouder die "Voor ouders" opende werd in de
+   * kolom ernaast aangesproken alsof hij het kind was, met zijn reeks, zijn
+   * cijfer en zijn favorieten.
+   *
+   * De toetsen blijven staan, en dat is geen uitzondering maar de regel die
+   * eronder ligt: een toetsdatum wordt door de ouder ingevoerd. De andere drie
+   * gaan over hoe het kind het doet, en die staan op de pagina's van het kind.
+   */
+  readonly vanOuder?: boolean;
 }) {
   const desk = useDesk();
   if (!desk) return null;
@@ -61,9 +73,13 @@ export function SideColumn({
   return (
     <aside className="tk-home-aside">
       <ToetsenBlok />
-      <ReeksBlok onReeks={onReeks} />
-      <GoedBlok />
-      <FavorietenBlok onBegin={onBegin} />
+      {vanOuder ? null : (
+        <>
+          <ReeksBlok onReeks={onReeks} />
+          <GoedBlok />
+          <FavorietenBlok onBegin={onBegin} />
+        </>
+      )}
     </aside>
   );
 }
