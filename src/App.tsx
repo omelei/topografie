@@ -40,7 +40,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
 import type { Route } from '@/features/shell/routes';
-import { getProfile } from '@/store/profile';
+import { getProfile, setSticker } from '@/store/profile';
 import { dagplan, type ModeId } from '@/game-core';
 import { geplaatst, startbareOnderdelen } from '@/features/module/onderdelen';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
@@ -259,6 +259,19 @@ export default function App() {
    * "Maak af" (ADR-115): the round a child left, picked up where it stopped —
    * the same set, the same way, and only the questions it had not asked yet.
    */
+  /**
+   * Wie dit kind wil zijn (ADR-142). De held staat groot op de voordeur en
+   * klein in de balk, dus het profiel wordt hier bijgewerkt en niet in het blok
+   * zelf: dan wisselen allebei op hetzelfde moment. `renameChild` laadt de
+   * pagina opnieuw omdat een naam overal staat; een held staat op twee plekken,
+   * en twee plekken zijn te doen zonder een kind uit zijn app te gooien.
+   */
+  const kiesHeldVoor = (sticker: string) => {
+    void setSticker(sticker).then((profile) => {
+      if (profile) setBoot({ status: 'ready', profile });
+    });
+  };
+
   const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => {
     if (rest.length === 0) return;
     beginRonde(deel, mode, rest.length, false, [...rest]);
@@ -593,6 +606,8 @@ export default function App() {
     <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule} grond="vandaag">
       <HomeScreen
         naam={boot.profile.naam}
+        sticker={boot.profile.avatarConfig.sticker}
+        onHeld={kiesHeldVoor}
         onReeks={goReeks}
         onBegin={beginRonde}
         onVerder={maakAf}

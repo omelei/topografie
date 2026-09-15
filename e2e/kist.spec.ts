@@ -15,6 +15,45 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
+  await wachtOpHeldenrij(page);
+}
+
+/**
+ * Wachten tot de heldenrij er staat.
+ *
+ * De balk vraagt bij het opstarten naar de helden, en `loadHelden` schrijft dan
+ * de rij die er nog niet was. Dat is een schrijfactie die na `signIn` nog kan
+ * lopen — de knop met de naam staat er eerder dan de rij — en die dus over het
+ * zaad van `vijftigGoed` heen kan gaan. Dan is er gerekend met vijftig goede
+ * antwoorden, telt `uitLadder` de kist als allang geopend, en ligt er geen kist
+ * klaar. Zonder dit is deze test een dobbelsteen, en dat was hij ook.
+ */
+async function wachtOpHeldenrij(page: Page) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            new Promise<boolean>((klaar) => {
+              const open = indexedDB.open('leernu');
+              open.onerror = () => klaar(false);
+              open.onsuccess = () => {
+                const db = open.result;
+                const rij = db.transaction('settings').objectStore('settings').get('helden:me');
+                rij.onsuccess = () => {
+                  db.close();
+                  klaar(rij.result !== undefined);
+                };
+                rij.onerror = () => {
+                  db.close();
+                  klaar(false);
+                };
+              };
+            }),
+        ),
+      { timeout: 5000 },
+    )
+    .toBe(true);
 }
 
 /**

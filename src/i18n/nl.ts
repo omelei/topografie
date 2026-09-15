@@ -188,6 +188,10 @@ export const nl = {
   'held.fem': 'Fem Flamingo',
   'held.richard': 'Richard Ree',
   'held.ben': 'Ben Buizerd',
+  // De held op de voordeur (ADR-142): groot, van dit kind, en te wisselen.
+  'held.titel': 'Jouw held',
+  'held.wissel': '{naam}, in {reeks}. Kies een andere held.',
+  'held.klaar': 'Klaar',
   'home.modules': 'Wat je kunt oefenen',
   'home.continueTitle': 'Verder waar je was',
   'home.retention': 'weet je hier over drie weken nog van',

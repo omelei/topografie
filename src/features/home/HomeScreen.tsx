@@ -19,6 +19,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { ReeksBlok } from './ReeksBlok';
+import { HeldHoek } from '@/features/reis/HeldHoek';
 import { DoelBlok } from './DoelBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -68,6 +69,10 @@ const OPEN_SHOWN = 10;
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
   readonly naam: string;
+  /** Welke held dit kind draagt, groot naast de begroeting (ADR-142). */
+  readonly sticker: string | undefined;
+  /** Een andere held kiezen. Gaat naar App, want de balk toont hem ook. */
+  readonly onHeld: (sticker: string) => void;
   /** The way to the streak's own page, which their column links to. */
   readonly onReeks: () => void;
   /**
@@ -85,7 +90,15 @@ export interface HomeScreenProps {
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
 }
 
-export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScreenProps) {
+export function HomeScreen({
+  naam,
+  sticker,
+  onHeld,
+  onReeks,
+  onBegin,
+  onVerder,
+  onPlan,
+}: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const desk = useDesk();
@@ -103,8 +116,14 @@ export function HomeScreen({ naam, onReeks, onBegin, onVerder, onPlan }: HomeScr
 
   const kop = (
     <div className="tk-home-kop">
-      <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
-      <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
+      {/* De held van dit kind, groot, als eerste ding op het scherm (ADR-142).
+          Naast de begroeting en niet erboven: samen zijn ze één zin — dit is
+          jouw voordeur en dit ben jij. */}
+      <HeldHoek sticker={sticker} onHeld={onHeld} />
+      <div className="tk-home-welkom">
+        <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
+        <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
+      </div>
     </div>
   );
 

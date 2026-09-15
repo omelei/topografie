@@ -8,6 +8,7 @@ import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { Klim } from '@/features/round/Klim';
+import { Maatje } from '@/features/round/Maatje';
 import { Vlag } from './Vlag';
 import { VlagResultScreen } from './VlagResultScreen';
 import { useVlagRound, type VlagMode } from './useVlagRound';
@@ -187,6 +188,9 @@ export function VlagScreen({
                   {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
+
+              {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
+              <Maatje goed={state.lastCorrect} />
               {/* A bliksemronde moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (

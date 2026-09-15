@@ -22,6 +22,7 @@ import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { Klim } from '@/features/round/Klim';
+import { Maatje } from '@/features/round/Maatje';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
 import { TaalResultScreen } from './TaalResultScreen';
@@ -305,6 +306,9 @@ function Vraag({
                   {state.klim ? <Klim klim={state.klim} /> : null}
                 </div>
               </div>
+
+              {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
+              <Maatje goed={correct} />
               <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>
                 {t('practice.next')}
               </button>

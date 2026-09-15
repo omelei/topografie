@@ -167,6 +167,16 @@ describe('the colours outside the handoff table', () => {
   });
 
   /**
+   * The plate itself since ADR-142: the module's own colour filled solid, with
+   * the pictogram drawn on it in the card's light. A drawing rather than text,
+   * so the floor is three — all six clear four, which is what let the plate go
+   * saturated in the first place.
+   */
+  it.each(MODULES.map((name) => [name] as const))('draws a pictogram on %s', (name) => {
+    expect(ratio('kaart', name)).toBeGreaterThanOrEqual(3);
+  });
+
+  /**
    * Inside a module the accent is the module's colour (ADR-112), so its colour
    * is the double rule round a chosen tile and the fill of a round's dots: a
    * non-text indicator, on a card and on the ground.
