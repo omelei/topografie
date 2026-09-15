@@ -8,7 +8,7 @@ Basis: `src/game-core/{helden,rewards,klim,streak,dagplan}.ts`,
 
 ---
 
-## 0. Drie feiten uit de opdracht die niet kloppen
+## 0. Vier feiten die de opdracht weerspreken
 
 Ze veranderen het ontwerp, dus ze staan vooraan.
 
@@ -31,10 +31,44 @@ leest — na munten, XP en de kist die nergens bereikbaar was.
 zonder code verdient badges die het nooit ziet, en hoort nooit dat zijn reeks
 groeide. Dat is de vijfde keer.
 
-Aanname die ik nergens kan verifiëren en die onder alle getallen hieronder
-ligt: **20 seconden per vraag inclusief nakijken, 80% goed, rondes van tien
-vragen** (topo vijftien, `ROUND_SIZE`). Dus 27 vragen en 22 goede antwoorden
-per tien minuten. Klopt dit niet, dan schuift de hele kadans mee.
+**En een vierde feit, van buiten de code: er is nog geen verkeer.** Het
+diagnosescherm van ADR-128 staat er, en er staat niets in. Dat betekent twee
+dingen die door dit hele document heen lopen. De klacht "de helden zijn saai"
+komt niet uit het veld maar van binnen het project — wat haar niet onwaar
+maakt, maar wel iets anders dan gebruikersbewijs. En de falsificatietoets die
+ik in §1 voorstel is nu niet uit te voeren. Zie §8.
+
+---
+
+## 0b. De getallen waar dit op rust, en wat de eigenaar besloot
+
+**20 seconden per vraag** inclusief nakijken, **80% goed**, **rondes van tien
+vragen** (topo vijftien, `ROUND_SIZE`), en — opgegeven door de eigenaar —
+**hoogstens tien minuten per dag, op één apparaat**. Dat is 27 vragen, 22 goede
+antwoorden en drie rondes per dag. Klopt die twintig seconden niet, dan schuift
+alles hieronder mee.
+
+Dat plafond is geen detail maar de scherpste ontwerpbeperking in dit document:
+**een sessie is niet te verlengen.** De ouder bepaalt de lengte, niet het
+ontwerp. Elke mechaniek die probeert een kind langer vast te houden is dus
+verspilling, en de enige vraag die telt is of het morgen terugkomt. Dat
+verschuift gewicht van de lus ín de ronde naar de afsluiting van de dag (§3.5)
+en naar de belofte die over meerdere dagen loopt (§3.4) — bij tien minuten per
+dag ligt een kist twee à drie dagen weg, en dat maakt hem een terugkomreden in
+plaats van een sessiebeloning.
+
+Eén risico dat direct uit "één apparaat" volgt: bij twee kinderen is het vijf
+minuten per kind, en dan halveert alles. Eén ster per dag, één kist per vijf
+dagen, alle twaalf helden pas na acht weken. Dan is het stermoment niet
+belangrijk maar het enige dat er dagelijks nog gebeurt.
+
+Drie vragen stonden open. Ze zijn beantwoord en hieronder verwerkt:
+
+- **De reeksstap mag de 420 ms-grens breken.** Toegestaan (§4, §5).
+- **ADR-116 mag sneuvelen waar dat beter werkt.** Dat doet hij: badges en de
+  streakzin gaan uit premium (§6).
+- **Het diagnosescherm heeft geen data.** Fase 1 gaat dus op redenering de deur
+  uit, en dat is verantwoord juist omdát er nog niemand is (§8, §9).
 
 ---
 
@@ -114,7 +148,10 @@ rekent uit waar in een ronde een kind stopt en of het daarvóór foutging.
   enkele held bij naam kan noemen én desgevraagd zegt dat het de dieren niet
   leuk vindt, terwijl het wél kan zeggen wanneer de volgende kist komt.
 
-Lees dat scherm vóórdat er iets gebouwd wordt.
+**En dat kan nu niet**, want er is nog geen verkeer: het scherm staat er, het
+is leeg, en het blijft leeg tot er gezinnen zijn (§0b). Deze toets is dus niet
+afgeschaft maar uitgesteld, en hij is het eerste dat gelezen wordt zodra er vijf
+tot tien kinderen regelmatig oefenen. Wat dat betekent voor nu staat in §8.
 
 ---
 
@@ -124,7 +161,7 @@ Zeven regels. Elke latere keuze wordt hiermee beslecht.
 
 1. **Wat bestaat, wordt aangekondigd.** Determinisme is pas iets waard als het
    wordt uitgesproken. Elke beloning die vaststaat, is vooraf te zien.
-2. **Ceremonie schaalt met zeldzaamheid.** Iets dat 27× per sessie gebeurt mag
+2. **Ceremonie schaalt met zeldzaamheid.** Iets dat 27× per dag gebeurt mag
    260 ms kosten. Iets dat 2× per week gebeurt mag 1200 ms kosten. Alles even
    lang vieren is niets vieren.
 3. **Een teller keert uit of gaat weg.** Geen getal op het scherm dat nergens
@@ -144,7 +181,7 @@ Zeven regels. Elke latere keuze wordt hiermee beslecht.
 
 ## 3. De lus op vijf tijdschalen
 
-### 3.1 Per antwoord — 27× per sessie
+### 3.1 Per antwoord — 27× per dag
 
 **Blijft zoals het is.** Geluid (twee tonen omhoog, 90 + 120 ms), uitkomstteken
 44px dat landt in 260 ms, maatje 88px dat doorveert bij goed, klimtrede 300 ms.
@@ -156,7 +193,7 @@ iets kleiners aankomt dan een kist.
 
 _Wat het kind erna wil:_ de volgende vraag.
 
-### 3.2 Drie goed op rij — ~6× per sessie
+### 3.2 Drie goed op rij — ~6× per dag
 
 **Nieuw, uit een teller die er al is.** Bij de derde, zesde en negende
 opeenvolgende goede antwoord sluit een ring in de modulekleur om het maatje,
@@ -169,7 +206,7 @@ is een ster, altijd, voor iedereen. Dit is **erkenning, geen valuta**.
 
 _Wat het kind erna wil:_ een vierde goede op rij.
 
-### 3.3 Het stermoment — 2× per sessie
+### 3.3 Het stermoment — 2,2× per dag
 
 **Dit is de belangrijkste ingreep van het hele document.** De tiende goede
 antwoord is nu een vijfde van een balk in een kolom. Vanaf nu is het een
@@ -186,7 +223,7 @@ Geen scherm, geen onderbreking, geen wachttijd. De volgende vraag staat er al.
 
 _Wat het kind erna wil:_ de volgende tien.
 
-### 3.4 Einde ronde — 3× per sessie
+### 3.4 Einde ronde — 3× per dag
 
 Het uitslagscherm blijft in de volgorde die ADR-143 en ADR-126 hebben gezet:
 eerst wat er geleerd is, dan pas wat het opleverde. Dat is geen smaak maar de
@@ -228,42 +265,80 @@ _Wat het kind erna wil:_ morgen.
 
 ### 3.7 De kadans doorgerekend
 
-Per sessie van tien minuten (27 vragen, 22 goed):
+Per dag van tien minuten — het plafond uit §0b — dus 27 vragen, 22 goede
+antwoorden, drie rondes:
 
-| moment                         | nu       | na       |
-| ------------------------------ | -------- | -------- |
-| antwoord                       | 27       | 27       |
-| 3 op rij                       | 0        | 6        |
-| ster                           | 0        | 2        |
-| ronde klaar                    | 3        | 3        |
-| kist                           | 0,44     | 0,44     |
-| **totaal**                     | **30,4** | **38,4** |
-| waarvan op het kleinste niveau | 89%      | 70%      |
+| moment                    | nu       | na       |
+| ------------------------- | -------- | -------- |
+| antwoord                  | 27       | 27       |
+| 3 op rij                  | 0        | 6        |
+| ster                      | 0        | 2,2      |
+| ronde klaar               | 3        | 3        |
+| dag af                    | 0,5      | 1        |
+| kist                      | 0,44     | 0,44     |
+| **totaal per dag**        | **30,9** | **39,6** |
+| waarvan op antwoordniveau | 87%      | 68%      |
 
-Het aantal momenten stijgt met een kwart; belangrijker is dat het middengat
-dicht is. Er is nooit meer dan ~90 seconden tussen twee gebeurtenissen die
-groter zijn dan één antwoord.
+Het aantal momenten stijgt met ruim een kwart; belangrijker is dat het
+middengat dicht is. Er zit nooit meer dan ~90 seconden tussen twee
+gebeurtenissen die groter zijn dan één antwoord.
 
-### 3.8 Het eerste uur van een nieuw kind, minuut voor minuut
+En over langere afstanden, bij tien minuten per dag:
 
-| tijd      | wat er gebeurt                                                                                                                                                                           |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0:00      | Naam typen. **Nieuw:** kies je held uit alle twaalf, met hun karakterregel. Nu krijgt een kind de eerste drie en draagt het de eerste, zonder keuze.                                     |
-| 0:01      | Eerste ronde. Vraag 1: geluid, teken, maatje. Het kind ziet zijn eigen gekozen held terugkomen.                                                                                          |
-| 0:02      | Vraag 4: drie goed op rij, ring om het maatje. Eerste gebeurtenis boven antwoordniveau, binnen anderhalve minuut.                                                                        |
-| 0:04      | Ronde klaar, 8 van 10 goed. Balk op 8 van de 10 pips. Regel: _"Nog 2 goede antwoorden tot je eerste ster."_ Geen ster, en dat is eerlijk — maar het is geteld, benoemd en binnen bereik. |
-| 0:05      | Ronde 2, vraag 2: **de eerste ster landt, ín de ronde.** ~4 minuten na het begin.                                                                                                        |
-| 0:08      | Ronde 2 klaar. _"Nog 32 tot je kist. Erin zitten Willem Wolf, Fem Flamingo en Daan Das."_ Eerste keer dat het kind weet wat er komt.                                                     |
-| 0:12      | Ster 2.                                                                                                                                                                                  |
-| 0:16      | Ster 3, halverwege de kist. Regel: "Nog 2 sterren."                                                                                                                                      |
-| 0:20      | Ster 4.                                                                                                                                                                                  |
-| 0:24      | **Ster 5 → de kist.** Drie kaarten komen op, elk zegt wat het doet, het kind kiest. De gekozen held wordt meteen gedragen (bestaat al).                                                  |
-| 0:25      | _"De volgende kist: Harm Havik, Minou Marter of Esmee Egel."_ De belofte staat er weer, 50 antwoorden verderop.                                                                          |
-| 0:26–0:48 | Sterren 6 t/m 10, kist 2 rond 0:48.                                                                                                                                                      |
-| 0:50      | Dagplan leeg of sessie voorbij: dag af, held op 120px, "morgen staan er 14 klaar".                                                                                                       |
+| mijlpaal              | wanneer, bij dagelijks oefenen                 |
+| --------------------- | ---------------------------------------------- |
+| eerste ster           | dag 1, na ~4 minuten                           |
+| eerste kist           | dag 3 (50 goede antwoorden)                    |
+| daarna elke kist      | elke 2,3 dagen                                 |
+| alle twaalf helden    | dag 27 (600 goede antwoorden), ~4 weken        |
+| daarna elke reeksstap | elke 7 dagen (3 kisten = 150 goede antwoorden) |
+| alles op ultra        | ~7800 goede antwoorden, ruim een jaar          |
 
-Het eerste uur: 2 kisten, 10 sterren, ~35 keer drie-op-rij, 3 helden in bezit.
-Onder de huidige lus is dat: 2 kisten, en verder niets.
+Bij vijf dagen per week in plaats van zeven duurt alles in die tabel ongeveer
+anderhalf keer zo lang: de eerste kist op dag 4, alle twaalf helden na
+vijfenhalve week, een reeksstap elke tien dagen.
+
+Die voorlaatste regel is het best bewaarde geheim van de bestaande economie:
+**na de twaalfde held gaat er wekelijks een held een materiaal omhoog**, meer
+dan een jaar lang. Er is geen enkel product in dit vergelijk met een
+lange-termijnlus die zo netjes uitkomt, en op dit moment krijgt die stap
+dezelfde 420 ms als elke andere kist. Vandaar §4.
+
+### 3.8 Het eerste uur van een nieuw kind
+
+Bij tien minuten per dag is een uur spelen geen uur maar **zes dagen**. Dat is
+niet hetzelfde ontwerpprobleem, en het is de reden dat de dagafsluiting in fase
+1 zit en niet in fase 2.
+
+**Dag 1, de eerste tien minuten, minuut voor minuut:**
+
+| tijd | wat er gebeurt                                                                                                                                                                         |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0:00 | Naam typen. **Nieuw:** kies je held uit alle twaalf, met hun karakterregel. Nu krijgt een kind de eerste drie toegewezen en draagt het de eerste, zonder ooit gekozen te hebben.       |
+| 0:01 | Ronde 1, vraag 1: geluid, teken, maatje. Het kind ziet de held terug die het zelf koos.                                                                                                |
+| 0:02 | Vraag 4: drie goed op rij, ring om het maatje. Eerste gebeurtenis boven antwoordniveau, binnen anderhalve minuut.                                                                      |
+| 0:04 | Ronde 1 klaar, 8 van 10 goed. Acht van de tien pips vol. Regel: _"Nog 2 goede antwoorden tot je eerste ster."_ Geen ster — en dat is eerlijk, maar het is geteld, benoemd en dichtbij. |
+| 0:05 | Ronde 2, vraag 2: **de eerste ster landt, ín de ronde.** Vier minuten na het begin.                                                                                                    |
+| 0:08 | Ronde 2 klaar. _"Nog 32 tot je kist. Erin zitten Willem Wolf, Fem Flamingo en Daan Das — je kiest er één."_ Eerste keer dat het kind weet wat er komt.                                 |
+| 0:09 | Ronde 3, ster 2.                                                                                                                                                                       |
+| 0:10 | Dag af: de held op 120px, de ring sluit, _"Morgen staan er 14 klaar."_ Het laatste wat een kind ziet gaat over morgen.                                                                 |
+
+**Dag 2 tot en met 6, het eerste uur vol:**
+
+| dag   | wat er gebeurt                                                                                                                                                                                          |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dag 2 | Sterren 3 en 4. Aan het eind: _"Nog 6 tot je kist."_ De belofte van gisteren is nu binnen één dag.                                                                                                      |
+| dag 3 | Ster 5 → **de eerste kist**, rond minuut 3. Drie kaarten, elk zegt wat hij doet, het kind kiest en draagt de gekozen held meteen. Daarna: _"De volgende kist: Harm Havik, Minou Marter of Esmee Egel."_ |
+| dag 4 | Sterren 8 en 9. Niets bijzonders — en dat mag: de streakzin zegt dat dit dag vier is.                                                                                                                   |
+| dag 5 | Ster 10, en tegen het eind kist 2. Tweede held.                                                                                                                                                         |
+| dag 6 | Sterren 12 en 13. Het eerste uur is vol.                                                                                                                                                                |
+
+Het eerste uur, uitgesmeerd over zes dagen: **2 kisten, 13 sterren, ~36 keer
+drie-op-rij, 6 dagafsluitingen, 3 helden in bezit** (de gekozen eerste plus
+twee uit kisten). Onder de huidige lus is datzelfde uur: 2 kisten, en verder
+niets dat groter is dan één antwoord.
+
+Dat verschil — zesendertig tegenover twee — is de hele diagnose in één getal.
 
 ---
 
@@ -322,10 +397,13 @@ opklimmen**, en dat is een kwestie van ceremonie, niet van tekeningen:
   (`kist.gewonnenHoger`), maar hij krijgt nu zijn eigen moment in plaats van een
   regel onder een kaart;
 - het is het enige moment in het product dat de 420 ms-grens overschrijdt.
-  **Dit vraagt een expliciet besluit van de eigenaar** (§9, vraag 2). Mijn
-  motivering: die grens gaat over interfacebeweging — iets waar een kind
-  doorheen wil. Dit is geen interface maar een afsluiting, er staat niets te
-  lezen, en het gebeurt hoogstens tweemaal per maand.
+  **Besloten: toegestaan** (§0b). De motivering die daaronder ligt: die grens
+  gaat over interfacebeweging — iets waar een kind dóórheen wil. Dit is geen
+  interface maar een afsluiting, er staat niets te lezen, de volgende handeling
+  wacht niet, en het gebeurt ongeveer één keer per week. Omdat het de enige
+  uitzondering is, hoort ze ook als uitzondering in het blad te staan: één
+  klasse, één `@keyframes`, met de reden erboven — niet als een vierde token,
+  want dan is het geen uitzondering meer maar een maat die overal opduikt.
 
 ### Wat er met de zestig tekeningen gebeurt
 
@@ -349,8 +427,9 @@ Afschrijven: niets.
 
 ## 5. Animatie-inventaris
 
-Frequenties bij vijf sessies van tien minuten per week: 135 vragen, 110 goede
-antwoorden, 15 rondes, 10 sterren, 2,2 kisten.
+Frequenties bij **vijf dagen van tien minuten per week** — de voorzichtige
+variant van het plafond uit §0b: 135 vragen, 110 goede antwoorden, 15 rondes,
+11 sterren, 2,2 kisten. Bij zeven dagen ligt alles ongeveer 40% hoger.
 
 | trigger              | wat beweegt                                     | duur    | curve | geluid                         | per week | reduced motion                  |
 | -------------------- | ----------------------------------------------- | ------- | ----- | ------------------------------ | -------- | ------------------------------- |
@@ -370,9 +449,10 @@ antwoorden, 15 rondes, 10 sterren, 2,2 kisten.
 | alle twaalf compleet | confetti, één keer ooit                         | 900 ms  | uit   | ja                             | 1× ooit  | statisch beeld + zin            |
 
 Alles binnen de bestaande tokens (`--beweeg-vlot` 120 ms, `--beweeg-rustig`
-240 ms, `--beweeg-traag` 420 ms, twee curves), behalve de twee vetgedrukte
-uitzonderingen die om een besluit vragen. Alleen `transform` en kleur; niets dat
-de doos van een element verandert.
+240 ms, `--beweeg-traag` 420 ms, twee curves), met precies twee uitzonderingen:
+de reeksstap op 1200 ms (toegestaan, §0b) en de eenmalige confetti op 900 ms.
+Allebei staan ze los in het blad met hun reden erboven, niet als token. Alleen
+`transform` en kleur; niets dat de doos van een element verandert.
 
 ### Confetti: nee, met één uitzondering
 
@@ -428,9 +508,21 @@ drie-op-rij-gebeurtenis of hij gaat weg. Als getal blijft hij niet staan.
 
 **3. De premiumgrens om de badges en de streakzin (ADR-116).** Een badge die
 verdiend wordt en niet getoond, is hetzelfde probleem als munten en XP, alleen
-dan met een prijskaartje eromheen. Premium houdt wat het waard is: het dagplan,
-de rapportage, de oefentoets, de herhaalplanning — allemaal dingen die een ouder
-koopt. De beloningslus is van het kind.
+dan met een prijskaartje eromheen.
+
+**Besloten: ADR-116 wordt op dit punt herzien** (§0b). De grens komt te liggen
+waar hij hoort: premium verkoopt wat een óuder koopt en elke extra manier van
+oefenen — het dagplan (ADR-126), Onthouden, de oefentoets, het weekbericht, de
+reekspagina, "Goed beantwoord", meerdere kinderen, ontdekken, overleven, de
+bliksemronde, de eigen lijsten. Dat is het overgrote deel van ADR-116 en het is
+ruim genoeg om te verkopen. Wat eruit gaat zijn de twee dingen die niets anders
+doen dan een kind motiveren en die nu verdiend-maar-verborgen zijn: de tien
+badges en de streakzin.
+
+Het strategische argument staat los van het ethische en wijst dezelfde kant op:
+er is nog geen verkeer (§0b). Er valt dus geen omzet te verliezen, en een
+dikkere gratis lus is precies wat de eerste gezinnen binnenhaalt. Dit is het
+goedkoopste moment dat er ooit zal zijn om deze grens te verleggen.
 
 **4. De verborgen verzamelpagina (ADR-112).** Ze staat sinds die beslissing
 uit "tot het opnieuw doordacht is", en de heldenkiezer op de voordeur doet
@@ -520,47 +612,87 @@ Er is geen analytics en er komt er geen. Er is wel `afhaken.ts` en
 `DiagnoseScherm.tsx` (ADR-128): een rekeninstrument op het apparaat zelf, over
 data die er al staat.
 
-### Wat gratis te toetsen is, vandaag, vóór er iets gebouwd wordt
+Alleen: **er staat nog niets in, want er is nog geen verkeer.** Dat is het
+belangrijkste dat er over dit hoofdstuk te zeggen valt, en het verandert de
+volgorde van alles.
+
+### Wat dat betekent voor nu
+
+Fase 1 gaat **op redenering** de deur uit, niet op meting. Dat is geen
+concessie maar de juiste volgorde, om een reden die over een halfjaar niet meer
+geldt: met nul gebruikers kost een verkeerde gok niemand iets. Geen kind raakt
+geïrriteerd, geen ouder zegt op, geen gewoonte wordt verstoord. Het enige dat
+op het spel staat zijn één tot twee dagen werk aan vier ingrepen die allemaal
+functies lezen die al bestaan en al getest zijn.
+
+Dat is ook het omgekeerde van de fout die dit product eerder maakte. Munten, XP
+en de verborgen kist gingen niet mis omdat ze ongemeten waren, maar omdat ze
+nooit op een scherm kwamen. Fase 1 is per ingreep gebonden aan een scherm en een
+frequentie (§3). Dat is de controle die hier beschikbaar is.
+
+Wat er wél volgt uit "geen verkeer": **bouw niets in fase 1 dat later moeilijk
+terug te draaien is.** Alle vier de ingrepen zijn beeld en tekst over bestaande
+gegevens. Geen nieuwe opslag, geen migratie, geen wijziging in de economie.
+Ongelijk krijgen kost dan een commit, geen ADR.
+
+### De toets die klaarligt, voor het moment dat er wél kinderen zijn
+
+Zodra vijf tot tien kinderen regelmatig oefenen, is dit het eerste dat gelezen
+wordt — en het is gratis, want het rekent over data die er dan al staat:
 
 **H-B (het stermoment).** `afhaken.ts` geeft de vorm van het afhaken: waar in de
-ronde het stopt en hoeveel er misging in de laatste drie antwoorden. Twee
-uitkomsten, twee conclusies:
+ronde het stopt en hoeveel er misging in de laatste drie antwoorden.
 
-- Afhaken in het middenstuk, normaal foutaandeel → verveling → §3.3 bouwen.
+- Afhaken in het middenstuk, normaal foutaandeel → verveling → de diagnose van
+  §1 klopt.
 - Afhaken met een hoog foutaandeel vlak ervoor → te moeilijk → dit document is
-  het verkeerde medicijn en de vraag gaat over rondelengte.
+  het verkeerde medicijn en de vraag gaat over rondelengte en itemselectie.
 
-Dit kost nul bouwuren. **Dit is de eerste stap, niet fase 1.**
+**Leg de voorspelling nu vast, niet achteraf.** Anders is elke uitkomst
+verenigbaar met wat ik hierboven heb geschreven, en dan heeft de meting niets
+gedaan. Mijn voorspelling staat in §1 en is daarmee vastgelegd.
 
-### Wat alleen met kinderen te toetsen is
+**Wat er níét bij hoort:** het diagnosescherm mag geen aanleiding worden om
+alsnog iets over een kind te versturen. Het rekent op het apparaat, voor wie dat
+apparaat vasthoudt, en dat is de hele reden dat het mag bestaan.
 
-Vijf kinderen, 8 tot 11, twintig minuten per kind, hardop denken, twee toestellen
-naast elkaar (huidige build en de fase-1-build). Drie vragen na afloop, elk met
-een vooraf vastgelegd afkeurcriterium:
+### Wat alleen met kinderen te toetsen is, en dat kan wél nu
+
+Vijf kinderen, 8 tot 11, twintig minuten per kind, hardop denken, twee
+toestellen naast elkaar (huidige build en de fase-1-build). Dit is op dit moment
+het **enige** instrument dat er is, en dus geen fase-3-controle maar iets dat
+tussen fase 1 en fase 2 hoort.
+
+Drie vragen na afloop, elk met een vooraf vastgelegd afkeurcriterium:
 
 1. _"Wat gebeurt er als je er tien goed hebt?"_ — Kan een kind dat na twintig
    minuten niet zeggen, dan is het stermoment niet zichtbaar genoeg.
 2. _"Wie zit er in de volgende kist?"_ — Kan een kind dat niet zeggen, dan is de
    aankondiging mislukt, en daarmee de kern van dit hele voorstel.
 3. _"Welke held wil je hebben, en waarom?"_ — Een antwoord zonder "waarom"
-   betekent dat de karakterregels niet werken (H1 leeft nog).
+   betekent dat H1 nog leeft en dat fase 3 naar voren moet.
 
 Eén observatie zonder vraag, en die is het meest waard: **stopt het kind uit
 zichzelf vlak ná een kist, of gaat het door?** Doorgaan na de beloning is het
 enige gedrag dat laat zien dat de lus draait in plaats van dat hij afrekent.
 
+Bij een plafond van tien minuten per dag hoort er een vierde observatie bij, en
+die kost een week in plaats van een middag: **komt het kind op dag twee terug
+zonder dat een volwassene erom vraagt?** Dat is de enige uitkomst die er bij dit
+plafond werkelijk toe doet, en geen enkele sessie van twintig minuten meet hem.
+
 ### Wat ik hier eerlijk over moet zeggen
 
 Vijf kinderen is genoeg voor bruikbaarheid en niet voor smaak. De bekende
 vuistregel dat vijf gebruikers het merendeel van de problemen vinden, gaat over
-_kunnen bedienen_, niet over _leuk vinden_. Op vraag 3 is n=5 een anekdote.
-Op vraag 1 en 2 is het een test.
+_kunnen bedienen_, niet over _leuk vinden_. Op vraag 3 is n=5 een anekdote. Op
+vraag 1 en 2 is het een test, want daar is het antwoord goed of fout.
 
 En: er is geen A/B-test mogelijk zonder server. Een vergelijking vóór en ná op
 hetzelfde toestel is besmet door nieuwigheid. Dat is de prijs van geen tracking,
 en het is een prijs die dit product bewust betaalt — maar het betekent wel dat
 elke uitspraak over effect hier een beredeneerde inschatting blijft en geen
-meting.
+meting. Dat geldt ook voor dit document.
 
 ---
 
@@ -568,56 +700,73 @@ meting.
 
 ### Eén aanbeveling
 
-**Bouw de middenschaal en spreek de belofte uit. Laat de tekeningen met rust.**
+**Bouw de middenschaal, maak van de dagafsluiting een terugkomreden, en laat de
+tekeningen met rust.**
 
 De klacht "de helden zijn saai" is echt en de oorzaak ligt niet bij de helden.
-Het gat zit tussen het antwoord (elke 20 seconden) en de kist (elke 17 minuten),
+Het gat zit tussen het antwoord (elke 20 seconden) en de kist (elke 2,3 dagen),
 en het product zwijgt over het enige dat het beter kan dan Brawl Stars en
 Duolingo samen: het weet precies wat er komt en het mag het zeggen.
 
+Het plafond van tien minuten per dag (§0b) scherpt dat aan. Een sessie is niet
+te verlengen, dus alles wat een kind langer zou moeten vasthouden is
+verspilling. Wat overblijft is: vaker iets laten gebeuren bínnen die tien
+minuten, en ervoor zorgen dat het laatste wat een kind ziet over morgen gaat.
+
 ### Fase 1 — binnen een week, en het meeste effect
 
-Eerst het diagnosescherm lezen (§8). Dan, in deze volgorde:
+Er is geen meting om op te wachten (§8), dus dit gaat nu de deur uit. In deze
+volgorde, want zo loopt hij van dagelijks naar zeldzaam:
 
 1. **Het stermoment in de ronde** (§3.3) — `goedInSter()` bestaat, de pips zijn
-   tien `<span>`s, de derde toon is één regel in `geluid.ts`.
-2. **"Nog X tot je kist. Erin zitten A, B en C."** op het uitslagscherm —
-   `aanbod()` en `goedTotKist()` bestaan allebei en worden nergens gelezen.
-3. **De drie-op-rij-ring**, uit `state.combo` die er al is.
-4. **"Niveau N" uit de kolom**, vervangen door de kistregel.
+   tien `<span>`s, de derde toon is één regel in `geluid.ts`. Vuurt 2,2× per
+   dag: de enige beloning die élke dag valt.
+2. **De dagafsluiting met "morgen staan er 14 klaar"** (§3.5) — plus de
+   streakzin, die hiervoor uit premium moet (punt 5). Bij dit plafond is dit de
+   enige groeias die er is, en daarom staat het niet meer in fase 2.
+3. **"Nog X tot je kist. Erin zitten A, B en C."** op het uitslagscherm —
+   `aanbod()` en `goedTotKist()` bestaan allebei en worden nergens gelezen. Bij
+   tien minuten per dag overspant die belofte twee à drie dagen, wat haar
+   sterker maakt, niet zwakker.
+4. **De drie-op-rij-ring**, uit `state.combo` die er al is.
+5. **"Niveau N" uit de kolom** (§6), vervangen door de kistregel — en **badges
+   en streakzin uit premium** (§6), want punt 2 hangt daaraan.
 
-_Afhankelijkheden:_ geen. Alle vier lezen functies die al bestaan en getest zijn.
-Geen nieuwe opslag, geen migratie, geen tekening.
-_Bouwinspanning:_ grove orde één tot twee dagen plus tests.
-_Risico als je hier stopt:_ de kadans is gerepareerd en de anticipatie staat er,
-maar de held blijft een portret. De klacht kan terugkomen rond kist 12 — ongeveer
-vijfenhalve week — in de vorm "ik heb ze allemaal al". Het antwoord daarop
-(de reeksstap, elke anderhalve week) bestaat al maar wordt nog niet gevierd.
+_Afhankelijkheden:_ geen, op één na — punt 5 raakt `premium.ts` en ADR-116, en
+dat is een besloten maar zichtbare wijziging. Verder leest alles functies die al
+bestaan en getest zijn. Geen nieuwe opslag, geen migratie, geen tekening, niets
+dat later moeilijk terug te draaien is.
+_Bouwinspanning:_ grove orde twee tot drie dagen plus tests.
+_Risico als je hier stopt:_ de kadans is gerepareerd, de belofte staat er en de
+dag eindigt op morgen — maar de held blijft een portret. De klacht kan terugkomen
+rond kist 12, bij dit plafond ongeveer **dag 27**, in de vorm "ik heb ze
+allemaal al". Het antwoord daarop (de wekelijkse reeksstap) bestaat al maar
+wordt dan nog niet gevierd.
 
 ### Fase 2 — twee tot drie weken
 
-5. **Zesendertig momentregels en twaalf karakterregels** (§4).
-6. **De eerste held kiezen uit alle twaalf**, op minuut nul.
-7. **De reeksstap krijgt 1200 ms** (§4, vraag 2 hieronder).
-8. **Badges en streakzin uit premium** (§6) — inclusief de eenmalige zin voor
-   een kind dat er ineens zes tegelijk ziet (§10).
-9. **De dag-af-ceremonie en "morgen staan er 14 klaar"** (§3.5).
-10. **De terugkomregel na veertien dagen** (§7).
+6. **Zesendertig momentregels en twaalf karakterregels** (§4).
+7. **De eerste held kiezen uit alle twaalf**, op minuut nul.
+8. **De reeksstap krijgt 1200 ms** (§4) — bij dit plafond is dat een wekelijkse
+   gebeurtenis en daarmee de belangrijkste beloning van de lange termijn.
+9. **De terugkomregel na veertien dagen** (§7).
 
-_Afhankelijkheden:_ een kopijbesluit (36 regels in de stem van twaalf dieren,
-Nederlands, voor achtjarigen) en twee expliciete besluiten van de eigenaar: de
-420 ms-uitzondering en ADR-116.
+_Afhankelijkheden:_ een kopijbesluit — 36 regels in de stem van twaalf dieren,
+Nederlands, voor achtjarigen — en bij voorkeur de observatie uit §8, want die
+zegt of fase 3 naar voren moet.
 _Bouwinspanning:_ grove orde één week bouwen, plus het schrijven.
 _Risico als je hier stopt:_ geen. Dit is een af product.
 
-### Fase 3 — alleen op bewijs
+### Fase 3 — alleen op bewijs, of eerder als de observatie daarom vraagt
 
-11. **Een tweede pose per held** (twaalf tekeningen) voor het stermoment en de
+10. **Een tweede pose per held** (twaalf tekeningen) voor het stermoment en de
     drie-op-rij.
-12. **De galerij** die ADR-112 verborg, terug of weg.
+11. **De galerij** die ADR-112 verborg, terug of weg.
 
-_Afhankelijkheid:_ uitkomst van vraag 3 bij vijf kinderen (§8). Zonder die
-uitkomst is dit weken handwerk op een vermoeden.
+_Afhankelijkheid:_ vraag 3 bij vijf kinderen (§8). Komt daar uit dat de
+tekeningen zélf het probleem zijn, dan wisselt dit met fase 2 — dan zijn woorden
+het verkeerde gereedschap en is er geen reden om er eerst zesendertig te
+schrijven.
 
 ---
 
@@ -754,13 +903,14 @@ waarop "leren wint van spelen" geen vroom voornemen is maar een getal.
 
 ## Slot — de drie zwakste plekken in dit voorstel
 
-**1. De diagnose leunt op een redenering, niet op data — terwijl de data er
-ligt.** Ik beweer dat het middengat de oorzaak is, maar het enige harde bewijs
-dat ik kan aanwijzen — de afhaakvorm uit `afhaken.ts` — heb ik niet gezien. Ligt
-het afhaken gelijkmatig over de ronde in plaats van vlak vóór het tiende goede
-antwoord, dan valt mijn belangrijkste argument voor het stermoment weg en blijft
-er esthetiek over. Dat scherm lezen kost nul uur en ik heb het hele document
-eromheen gebouwd zonder het.
+**1. Er is geen enkel empirisch anker, en dat is nu een feit en niet langer een
+verzuim.** In de eerste versie van dit stuk was mijn zwakste plek dat ik het
+diagnosescherm niet had gelezen. Dat scherm is leeg en blijft leeg tot er
+gezinnen zijn. Dus rust dit hele document op één redenering — de kadanstabel in
+§1 — en op mijn oordeel over wat een kind van tien voelt. Ik heb dat oordeel
+niet. Het klopt dat de kosten van ongelijk krijgen nu laag zijn (§8), maar
+"goedkoop fout" is iets anders dan "waarschijnlijk goed", en ik heb in §9 de
+neiging om dat door elkaar te laten lopen.
 
 **2. "Noem de volgende drie helden" kan precies averechts werken.** Ik verkoop
 het als anticipatie. Het kan net zo goed lezen als een menu waarvan een kind
@@ -768,12 +918,14 @@ weet dat het uiteindelijk alles krijgt — en dan is de spanning eruit in plaats
 van erin. Loot boxes werken juist doordat je het níét weet. Ik heb geen enkel
 bewijs dat determinisme mét aankondiging even hard trekt als onzekerheid, en het
 is exact het punt waarop dit product structureel afwijkt van alles wat bewezen
-werkt. Als één ding in dit voorstel omvalt, is het dit.
+werkt. Als één ding in dit voorstel omvalt, is het dit — en punt 1 betekent dat
+ik het pas merk als er kinderen zijn.
 
-**3. De heldenidentiteit blijft tekst, en kinderen lezen tekst één keer.**
-Zesendertig regels kopij in de stem van twaalf dieren is veel schrijfwerk voor
-iets wat een kind van tien na de derde keer wegklikt. Als "saai" over beeld
-gaat, lost geen enkele zin het op — en dan is fase 3 eigenlijk fase 1 en heb ik
-de volgorde omgedraaid om de goedkope ingreep eerst te kunnen doen. Dat is een
-eerlijke afweging, maar het is ook precies het soort redenering waarmee je het
-dure antwoord blijft uitstellen.
+**3. Ik heb het plafond van tien minuten laat in het ontwerp gekregen en niet
+overal doorgetrokken.** §3 en §9 zijn herrekend, maar het hele middenstuk —
+zesendertig momentregels, twaalf karakterregels, een tweede pose — is bedacht
+toen ik nog aannam dat een sessie kon uitlopen. Bij tien minuten per dag zijn
+dat negen minuten oefenen en één minuut ceremonie, en de vraag of zesendertig
+regels kopij dan hun schrijftijd waard zijn, heb ik niet opnieuw gesteld. Mijn
+vermoeden is dat fase 2 bij dit plafond kleiner hoort te zijn dan ik hem heb
+opgeschreven, en dat ik dat niet heb doorgezet omdat het stuk toen al stond.
