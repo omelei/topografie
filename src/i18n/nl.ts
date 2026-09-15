@@ -192,6 +192,17 @@ export const nl = {
   'held.titel': 'Jouw held',
   'held.wissel': '{naam}, in {reeks}. Kies een andere held.',
   'held.klaar': 'Klaar',
+  // De prijzenkast op Jij (ADR-143): eerst wat je hébt, en de gaten pas als je
+  // erom vraagt. Op een modulepagina blijft elk gat een uitnodiging, want daar
+  // is hij aan te raken; hier was hij dat niet.
+  'prijzenkast.meer': 'Laat zien wat er nog te halen is',
+  'prijzenkast.minder': 'Laat alleen zien wat ik heb',
+  // Wat er wel is maar niet vooraan hoeft (ADR-143).
+  'uitklap.tabel': 'Laat de tabel zien',
+  'uitklap.tabelDicht': 'Verberg de tabel',
+  'uitklap.uitlegDicht': 'Verberg de uitleg',
+  'uitklap.getallen': 'Laat de getallen zien',
+  'uitklap.getallenDicht': 'Verberg de getallen',
   'home.modules': 'Wat je kunt oefenen',
   'home.continueTitle': 'Verder waar je was',
   'home.retention': 'weet je hier over drie weken nog van',
@@ -1252,6 +1263,7 @@ export const nl = {
   'ouder.title': 'Voor ouders',
   'ouder.uitleg': 'Hoe het gaat, de lijst van school, en wat je geregeld hebt.',
   'ouder.naar': 'Voor ouders',
+  'ouder.naarOnthouden': 'Bekijk per onderwerp wat je kind onthoudt',
   'ouder.terug': 'Naar Jij',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',

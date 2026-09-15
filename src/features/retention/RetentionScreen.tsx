@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { Uitklap } from '@/components/Uitklap';
 import { Dot } from '@/components/Dot';
 import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
 import {
@@ -94,12 +95,13 @@ function Kop() {
 function Regels() {
   return (
     <section className="flex flex-col gap-3" aria-label={t('retention.regelsTitel')}>
-      <h2 className="tk-sectie">{t('retention.regelsTitel')}</h2>
-      <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
-        {REGELS.map((regel) => (
-          <li key={regel}>{t(regel)}</li>
-        ))}
-      </ul>
+      <Uitklap open={t('retention.regelsTitel')} titel={t('uitklap.uitlegDicht')}>
+        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
+          {REGELS.map((regel) => (
+            <li key={regel}>{t(regel)}</li>
+          ))}
+        </ul>
+      </Uitklap>
     </section>
   );
 }
@@ -278,6 +280,10 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
           </div>
         </section>
 
+        {/* De tabel staat er nog, maar niet vooraan (ADR-143). Zes kolommen
+            met een percentage en een voorspelling over drie weken zijn voor de
+            volwassene in de kamer; een kind dat deze pagina opent ziet het
+            beeld erboven. */}
         <section className="flex flex-col gap-3" aria-label={t('retention.detail')}>
           <h2 className="tk-sectie">{t('retention.detail')}</h2>
           {!premium ? <PremiumSlot wat="premium.wat.onthouden" /> : null}
@@ -287,14 +293,16 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
               keyboard too (axe, scrollable-region-focusable) — as the rows on
               the front door are (ScrollRij). */}
           {premium ? (
-            <div
-              className="tk-tabelkaart"
-              role="group"
-              aria-label={t('retention.detail')}
-              tabIndex={0}
-            >
-              <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
-            </div>
+            <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
+              <div
+                className="tk-tabelkaart"
+                role="group"
+                aria-label={t('retention.detail')}
+                tabIndex={0}
+              >
+                <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
+              </div>
+            </Uitklap>
           ) : null}
         </section>
 

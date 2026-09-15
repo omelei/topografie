@@ -36,10 +36,13 @@ import type { ReactNode } from 'react';
 export function ParentScreen({
   aside,
   onJij,
+  onOnthouden,
   now = new Date(),
 }: {
   readonly aside: ReactNode;
   readonly onJij: () => void;
+  /** De weg naar wat het kind onthoudt, per onderwerp (ADR-143). */
+  readonly onOnthouden: () => void;
   readonly now?: Date;
 }) {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
@@ -83,6 +86,17 @@ export function ParentScreen({
             achter een abonnement is niet "hoeveel rondes" maar "gaat het goed"
             (ADR-133). De rondes worden één keer gelezen en door beide gebruikt. */}
         <Weekbericht afgemaakt={afgemaakt} now={now} />
+
+        {/* De weg naar het detail (ADR-143). "Voor ouders" gaf twee zinnen over
+            deze week en verder niets, terwijl de vraag waarmee een ouder deze
+            pagina opent — wat kent hij nu eigenlijk? — één pagina verderop
+            helemaal beantwoord wordt. Die pagina stond alleen in het menu van
+            het kind, en hier stond er geen woord over. */}
+        <p>
+          <button type="button" className="tk-button tk-button-secondary" onClick={onOnthouden}>
+            {t('ouder.naarOnthouden')}
+          </button>
+        </p>
 
         <EigenLijsten />
 

@@ -7178,6 +7178,109 @@ in plaats van gestapeld.
 
 ---
 
+## ADR-143 — Het podium past zich aan, en de grens tussen kind en ouder loopt door het hele product
+
+**Status:** accepted. **Date:** 2026-09-15. Na de opdracht om elke pagina eerst
+door de ogen van een kind en daarna door die van een ouder te bekijken, met bij
+elk onderdeel één vraag: is het logisch dat ik dit hier zie?
+
+### Context
+
+Elke pagina is met schermafdrukken bekeken, als kind en als ouder. Wat eruit
+kwam is niet één fout maar één patroon: **de pagina's zeggen de waarheid, alleen
+niet tegen degene die ernaar kijkt.**
+
+**Het podium van een ronde.** Op een breed scherm kreeg "3 × 6" een wit vlak van
+negenhonderd bij zevenhonderdtachtig. De kaart, de klok en de vlag vullen zo'n
+vlak — dat zijn tekeningen die zich uitrekken — maar een som is één regel, en
+een leeg vlak is erger dan een klein vlak: het zegt dat er iets hoort te staan
+wat er niet is.
+
+**"Jij", de pagina van het kind, was een muur van drieënveertig keer "nog
+niet".** Tien badges, twaalf tafeldiploma's, zes vlaggendiploma's, vier
+klokdiploma's en elf topodiploma's, vrijwel allemaal leeg. Een kind dat zijn
+eerste ronde had gespeeld kreeg een lijst van drieënveertig dingen die het niet
+had gedaan. De pagina opende bovendien met een naamveld en een kindwisselaar —
+twee dingen die een kind nooit aanraakt — en liet nergens zien wie dit kind ís,
+terwijl de voordeur dat sinds ADR-142 wel doet.
+
+**"Onthouden" en "Reeks" zijn spreadsheets, en ze staan in het menu van het
+kind.** Van de drie plekken in de balk — Vandaag, Onthouden, Jij — leidden er
+twee naar een tabel met een kolom "% goed" en een kolom "Over 3 weken", zes
+losse getallen, een kalender van vijfendertig vakjes en vier regels uitleg over
+het algoritme.
+
+**En "Voor ouders" sprak de ouder aan als het kind.** In de kolom ernaast stond
+"Jouw reeks", "Jouw favorieten" en een cijfer over hoe het gaat — vier blokken
+in de tweede persoon, op de pagina waar een volwassene het abonnement regelt.
+Diezelfde pagina beantwoordde de vraag waarmee een ouder hem opent ("wat kent
+hij nu eigenlijk?") met twee zinnen, terwijl het volledige antwoord één pagina
+verderop staat waar niets naar verwees.
+
+### Decision
+
+**Een podium dat zich naar zijn inhoud voegt.** De somkaart krimpt tot wat erop
+staat en staat gecentreerd in de kolom; de som zelf gaat van zeven naar negen
+rem — de grootste maat waarop "1000 − 999" nog past. Wat overblijft is de grond
+van de module, die sinds ADR-120 zelf al gekleurd is. Alleen waar de twee
+kolommen naast elkaar staan: daaronder is het podium de rest van het scherm, en
+een kaart die daar krimpt laat een gat onderaan.
+
+**De prijzenkast toont eerst wat je hébt.** De koppen met hun stand blijven —
+"0 van de 12 gehaald" is waar en het is één regel — maar de vakjes zijn er
+alleen voor wat gehaald is. Eén knop eronder laat de hele muur zien.
+
+Dat is geen weerlegging van ADR-064's argument dat de gaten het punt zijn, maar
+de toepassing ervan. Dat argument geldt op een **modulepagina**, waar elk gat
+aan te raken is: daar kies je met één druk die tafel én het diploma. Op "Jij"
+werd dezelfde muur alleen getoond, nooit ingedrukt — en een gat dat niets doet
+is geen uitnodiging maar een verwijt.
+
+**De held staat ook op "Jij"**, als eerste ding, en de prijzenkast staat vóór de
+naam en de kindwisselaar. De pagina heet "Jij" en opent nu met wie je bent en
+wat je hebt.
+
+**Wat een tabel is, staat achter een knop** (`components/Uitklap.tsx`): de tabel
+per onderdeel op Onthouden, de zes getallen, de kalender en de regels op Reeks,
+en de uitleg van het algoritme onder allebei. Weghalen zou te ver gaan — het is
+de voortgang van dít kind, en dit product houdt niets voor hem achter — maar wat
+de pagina ópent is nu het beeld.
+
+**De kolom naast een ouderpagina is de kolom van de ouder.** Op /ouder en
+/premium blijft alleen het toetsblok staan, want een toetsdatum voert de ouder
+in; de reeks, het cijfer en de favorieten gaan over hoe het kind het doet en
+staan op de pagina's van het kind. En "Voor ouders" wijst nu door naar
+Onthouden, waar het antwoord op zijn eigen vraag al stond.
+
+### Consequences
+
+**Een regressie van ADR-142, gevonden door ernaar te kijken.** De actieve
+rail-knop zette de plaat op papier, zodat een bleke tint niet op een bleke tint
+zou staan. Sinds de plaat de volle modulekleur draagt met het pictogram er wit
+op, stond dat pictogram wit op papier: het vak waar je in zát was het enige in
+de rail zonder teken. Twee regels weg. Geen enkele test ving dit — een
+schermafdruk wel.
+
+**Wat blijft staan, met reden.** De zin "11% weet je hier over drie weken nog
+van" op het uitslagscherm is voor een kind van acht abstract, en bij een
+mislukte ronde komt hij hard aan. Hij blijft: ADR-122 legt uit dat dit de enige
+zin in het product is over wat er gebeurt als je niets doet, en dat is het hele
+argument om morgen terug te komen. Dat argument weegt zwaarder dan mijn
+vermoeden over de leesbaarheid ervan, en het is geen wijziging die je op een
+vermoeden doet.
+
+**Ook blijven staan: "Wie oefent er?" op Jij.** Dat is ouderwerk op de pagina van
+het kind, en het is toch de goede plek — het is hoe een broer of zus aan de beurt
+komt, en die knop op /ouder zetten maakt van elke wissel een omweg langs de
+pagina over de rekening. Zonder code staat de sectie er sowieso niet (ADR-124).
+
+**Niet hier besloten:** of Onthouden en Reeks überhaupt in de balk van het kind
+horen. Ze zijn nu leesbaar voor een kind in plaats van een rapportage, maar de
+vraag of een kind van acht ooit uit zichzelf op "Onthouden" drukt, is er een die
+`#diagnose` kan beantwoorden en dit ADR niet.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

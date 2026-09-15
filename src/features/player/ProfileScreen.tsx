@@ -9,6 +9,7 @@ import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { BadgeSectie } from '@/features/badges/Badges';
 import { usePremium } from '@/features/premium/usePremium';
+import { HeldHoek } from '@/features/reis/HeldHoek';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
@@ -32,17 +33,26 @@ import { usePremium } from '@/features/premium/usePremium';
 export function ProfileScreen({
   profile,
   aside,
+  onHeld,
   onOuder,
 }: {
   readonly profile: ProfileRecord;
   readonly aside: ReactNode;
+  /** Een andere held kiezen (ADR-142). Gaat naar App, want de balk toont hem ook. */
+  readonly onHeld: (sticker: string) => void;
   readonly onOuder: () => void;
 }) {
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <div className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('you.title')}</h1>
+        {/* Wie je bent, als eerste ding (ADR-143). Deze pagina heet "Jij" en
+            liet tot nu toe geen enkel beeld van dit kind zien — de voordeur wel.
+            Naast de titel en niet erboven, precies zoals daar. */}
+        <div className="tk-home-kop">
+          <HeldHoek sticker={profile.avatarConfig.sticker} onHeld={onHeld} />
+          <div className="tk-home-welkom">
+            <h1 className="tk-titel">{t('you.title')}</h1>
+          </div>
         </div>
 
         {/* Wie je bent, bovenaan (ADR-126), en verder alleen wat van dit kind
@@ -50,11 +60,15 @@ export function ProfileScreen({
             weekbericht, de woordenlijsten van school, premium en de
             instellingen vast — vijf blokken die niets met het kind te maken
             hebben, op een pagina die "Jij" heet. Die staan nu op /ouder. */}
+        {/* Eerst wat je hebt, dan pas wie je bent en wie er meedoet (ADR-143).
+            Andersom opende de pagina die "Jij" heet met een naamveld en een
+            kindwisselaar — twee dingen die een kind nooit aanraakt — en stond
+            waar het voor komt eronder. */}
+        <Prijzenkast />
+
         <Ikben profile={profile} />
 
         <Children active={profile} />
-
-        <Prijzenkast />
 
         {/* De deur naar de andere helft, onderaan en zonder nadruk: een kind
             hoeft er niet heen, en een ouder die de iPad oppakt vindt hem. */}
@@ -163,13 +177,26 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
  * hoort te beginnen.
  */
 function Prijzenkast() {
+  const [alles, setAlles] = useState(false);
+
   return (
     <div className="flex flex-col gap-6">
-      <BadgeSectie />
-      <Tafeldiplomas />
-      <VlagDiplomas />
-      <KlokDiplomas />
-      <TopoDiplomas />
+      <BadgeSectie alleenBehaald={!alles} />
+      <Tafeldiplomas alleenBehaald={!alles} />
+      <VlagDiplomas alleenBehaald={!alles} />
+      <KlokDiplomas alleenBehaald={!alles} />
+      <TopoDiplomas alleenBehaald={!alles} />
+
+      <p>
+        <button
+          type="button"
+          className="tk-button tk-button-secondary"
+          aria-expanded={alles}
+          onClick={() => setAlles(!alles)}
+        >
+          {alles ? t('prijzenkast.minder') : t('prijzenkast.meer')}
+        </button>
+      </p>
     </div>
   );
 }

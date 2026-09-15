@@ -29,9 +29,12 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  */
 export function Tafeldiplomas({
   onKies,
+  alleenBehaald = false,
 }: {
   /** Where pressing a diploma chooses its table. Absent where the wall is only shown. */
   readonly onKies?: ((setId: string) => void) | undefined;
+  /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
+  readonly alleenBehaald?: boolean;
 }) {
   const [behaald, setBehaald] = useState<ReadonlySet<number> | null>(null);
 
@@ -54,15 +57,17 @@ export function Tafeldiplomas({
 
       <DiplomaRaster
         module="tafels"
-        vakken={TAFELS.map((tafel) => ({
-          key: String(tafel),
-          titel: t('sums.table', { tafel }),
-          label: behaald.has(tafel)
-            ? t('rekenen.diplomaHave', { tafel })
-            : t('rekenen.diplomaWant', { tafel }),
-          gehaald: behaald.has(tafel),
-          onKies: onKies ? () => onKies(`tafel-${tafel}`) : undefined,
-        }))}
+        vakken={(alleenBehaald ? TAFELS.filter((tafel) => behaald.has(tafel)) : TAFELS).map(
+          (tafel) => ({
+            key: String(tafel),
+            titel: t('sums.table', { tafel }),
+            label: behaald.has(tafel)
+              ? t('rekenen.diplomaHave', { tafel })
+              : t('rekenen.diplomaWant', { tafel }),
+            gehaald: behaald.has(tafel),
+            onKies: onKies ? () => onKies(`tafel-${tafel}`) : undefined,
+          }),
+        )}
       />
     </section>
   );

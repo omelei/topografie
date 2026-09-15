@@ -16,9 +16,12 @@ import { usePremium } from '@/features/premium/usePremium';
  */
 export function VlagDiplomas({
   onKies,
+  alleenBehaald = false,
 }: {
   /** Where pressing a diploma chooses it. Absent where the wall is only shown. */
   readonly onKies?: ((deel: DiplomaWerelddeel) => void) | undefined;
+  /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
+  readonly alleenBehaald?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<DiplomaWerelddeel> | null>(null);
@@ -49,7 +52,10 @@ export function VlagDiplomas({
 
       <DiplomaRaster
         module="vlaggen"
-        vakken={DIPLOMA_WERELDDELEN.map((deel) => {
+        vakken={(alleenBehaald
+          ? DIPLOMA_WERELDDELEN.filter((id) => behaald.has(id))
+          : DIPLOMA_WERELDDELEN
+        ).map((deel) => {
           const naam = t(`regio.${deel}` as TranslationKey);
           const gehaald = behaald.has(deel);
 

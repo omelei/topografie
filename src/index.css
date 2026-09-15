@@ -1075,7 +1075,12 @@
    * has to read.
    */
   .tk-sum {
-    font-size: clamp(3rem, 14vw, 7rem);
+    /* Groter dan de zeven rem van hiervoor (ADR-143). Op een breed scherm is
+     * het podium negenhonderd bij zevenhonderdtachtig en stond de som er als
+     * een onderschrift in: vier procent van het vlak. Negen rem is de grootste
+     * maat waarop de langste som die dit product kent — "1000 − 999", negen
+     * tekens — nog binnen het podium past. */
+    font-size: clamp(3rem, 14vw, 9rem);
     line-height: 1.1;
     font-weight: 700;
     letter-spacing: -0.02em;
@@ -2991,14 +2996,16 @@
     background: var(--vlak-hover);
   }
   /* The module entrance is one of the things an accent may colour, and the
-   * rail is where it does most of its work. The plate turns to paper on the
-   * tint, so the mark stays a mark on a ground rather than vanishing into it. */
+   * rail is where it does most of its work.
+   *
+   * De plaat hield hier zijn eigen kleur (ADR-143). Hiervoor werd hij papier op
+   * de tint, want een bleke tint op een bleke tint is geen teken meer — maar
+   * sinds ADR-142 is de plaat de volle modulekleur met het pictogram er wit op,
+   * en die stond met dit voorschrift wit op papier: het vak waar je in zát was
+   * het enige in de rail zonder teken. */
   .tk-rail-item[aria-current='page'] {
     background: var(--accent-tint);
     color: var(--accent-text);
-  }
-  .tk-rail-item[aria-current='page'] .tk-plaat {
-    background: var(--kaart);
   }
 
   /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------
@@ -3130,9 +3137,6 @@
     background: var(--accent-tint);
     color: var(--accent-text);
     font-weight: 700;
-  }
-  .tk-vakmenu-optie[aria-current='page'] .tk-plaat {
-    background: var(--kaart);
   }
 
   /* ---- The tab bar, below 1200 ------------------------------------------
@@ -3364,6 +3368,31 @@
     .tk-round-question,
     .tk-round-map {
       padding: 24px;
+    }
+  }
+
+  /* Een podium dat niet groter is dan wat erop staat (ADR-143).
+   *
+   * De kaart, de klok en de vlag vullen hun podium: dat zijn tekeningen die
+   * zich uitrekken tot de ruimte die ze krijgen. Een som is dat niet. Die stond
+   * als één regel in een wit vlak van negenhonderd bij zevenhonderdtachtig, en
+   * een leeg vlak is erger dan een klein vlak: het zegt dat er iets hoort te
+   * staan wat er niet is.
+   *
+   * Dus voegt dit podium zich naar zijn inhoud, en wat overblijft is de grond
+   * van de module — die sinds ADR-120 zelf al gekleurd is. Alleen waar de twee
+   * kolommen naast elkaar staan: daaronder is het podium de rest van het
+   * scherm, en een kaart die daar krimpt laat een gat onderaan. */
+  @media (min-width: 1024px) {
+    .tk-round-map-krap {
+      align-self: center;
+      /* En niet breder dan hij hoeft: "3 × 3" in een kaart van negenhonderd
+       * breed staat er net zo verloren in als ervoor, alleen lager. Hij mag
+       * groeien tot de hele kolom voor de langste som die er is. */
+      justify-self: center;
+      min-width: min(100%, 30rem);
+      max-width: 100%;
+      padding-block: 56px;
     }
   }
 

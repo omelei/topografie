@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Uitklap } from '@/components/Uitklap';
 import { dagenInMaand, dayKey, kalenderWeken, laatsteZevenDagen, type Oefendag } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { dagKort, dagLang, ReeksGetal, WeekRij } from './WeekRij';
@@ -89,27 +90,33 @@ function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
           <p className="text-tekst-secundair">{vandaagZin(reeks.dagen, vandaagGeoefend)}</p>
         </section>
 
+        {/* Zes getallen, een kalender van vijf weken en vier regels uitleg
+            (ADR-143). Voor een kind is "Dagen deze maand: 1" geen reeks maar
+            een rapportage, en vijfendertig lege vakjes zijn vijfendertig dagen
+            waarop het niets deed. Het staat er nog — het is zijn voortgang —
+            maar achter één druk, en wat de pagina opent is de reeks zelf. */}
         <section className="flex flex-col gap-3" aria-label={t('reeks.cijfersTitel')}>
-          <h2 className="tk-sectie">{t('reeks.cijfersTitel')}</h2>
-          <dl className="tk-cijfers">
-            {cijfers.map(([label, waarde]) => (
-              <div key={label} className="tk-cijfer">
-                <dt className="tk-cijfer-label">{t(label)}</dt>
-                <dd className="tk-cijfer-getal">{waarde}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
+          <Uitklap open={t('uitklap.getallen')} titel={t('uitklap.getallenDicht')}>
+            <dl className="tk-cijfers">
+              {cijfers.map(([label, waarde]) => (
+                <div key={label} className="tk-cijfer">
+                  <dt className="tk-cijfer-label">{t(label)}</dt>
+                  <dd className="tk-cijfer-getal">{waarde}</dd>
+                </div>
+              ))}
+            </dl>
 
-        <Kalender weken={kalenderWeken(reeks.geoefend, reeks.vandaag, WEKEN)} />
+            <Kalender weken={kalenderWeken(reeks.geoefend, reeks.vandaag, WEKEN)} />
 
-        <section className="flex flex-col gap-3" aria-label={t('reeks.regelsTitel')}>
-          <h2 className="tk-sectie">{t('reeks.regelsTitel')}</h2>
-          <ul className="tk-regels">
-            {REGELS.map((regel) => (
-              <li key={regel}>{t(regel)}</li>
-            ))}
-          </ul>
+            <section className="flex flex-col gap-3" aria-label={t('reeks.regelsTitel')}>
+              <h2 className="tk-sectie">{t('reeks.regelsTitel')}</h2>
+              <ul className="tk-regels">
+                {REGELS.map((regel) => (
+                  <li key={regel}>{t(regel)}</li>
+                ))}
+              </ul>
+            </section>
+          </Uitklap>
         </section>
       </div>
 

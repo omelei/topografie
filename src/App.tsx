@@ -501,7 +501,9 @@ export default function App() {
   if (route.name === 'premium') {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        <PremiumScreen aside={eigenKolom} />
+        {/* Ook hier de kolom van de ouder (ADR-143): dit is de pagina waar
+            een volwassene betaalt, en "Jouw reeks" hoort daar niet naast. */}
+        <PremiumScreen aside={<SideColumn onReeks={goReeks} onBegin={beginRonde} vanOuder />} />
       </Shell>
     );
   }
@@ -580,7 +582,12 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
+        <ProfileScreen
+          profile={boot.profile}
+          aside={eigenKolom}
+          onHeld={kiesHeldVoor}
+          onOuder={goOuder}
+        />
       </Shell>
     );
   }
@@ -589,7 +596,11 @@ export default function App() {
   if (route.name === 'ouder') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ParentScreen aside={eigenKolom} onJij={goJij} />
+        <ParentScreen
+          aside={<SideColumn onReeks={goReeks} onBegin={beginRonde} vanOuder />}
+          onJij={goJij}
+          onOnthouden={() => go({ name: 'retention' })}
+        />
       </Shell>
     );
   }
