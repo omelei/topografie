@@ -26,6 +26,17 @@ const GOED: readonly Toon[] = [
   { hz: 880, na: 0.08, duur: 0.12 },
 ];
 
+/**
+ * Het tiende goede antwoord: dezelfde twee tonen, en er komt er één achteraan.
+ *
+ * **Geen eigen geluid.** Een ster valt op hetzelfde moment als het antwoord dat
+ * hem vol maakte, en twee geluiden binnen vierhonderd milliseconden zijn geen
+ * twee gebeurtenissen maar één rommelige. Dus klinkt het antwoord zoals het
+ * altijd klinkt en gaat het één trede verder — een octaaf boven de eerste toon,
+ * dus het hoort als hetzelfde en toch als meer.
+ */
+const STER: readonly Toon[] = [...GOED, { hz: 1320, na: 0.19, duur: 0.16 }];
+
 /** Eén lage, zachte toon. Geen tweede, want herhaling maakt er een oordeel van. */
 const FOUT: readonly Toon[] = [{ hz: 200, na: 0, duur: 0.16 }];
 
@@ -51,11 +62,15 @@ function audio(): AudioContext | null {
 /**
  * Speelt de toon die bij deze uitkomst hoort.
  *
+ * `ster` maakt van de twee tonen er drie: het tiende goede antwoord klinkt als
+ * de negen ervoor en gaat dan één trede verder. Alleen op een goed antwoord —
+ * een ster kan niet uit een misser komen.
+ *
  * Doet niets als er geen AudioContext is, als het geluid uitstaat, of als er
  * iets misgaat. Nooit een uitzondering naar buiten: dit hangt aan het nakijken
  * van een antwoord.
  */
-export function speelUitkomst(goed: boolean, aan: boolean): void {
+export function speelUitkomst(goed: boolean, aan: boolean, ster = false): void {
   if (!aan) return;
 
   const ctx = audio();
@@ -69,7 +84,7 @@ export function speelUitkomst(goed: boolean, aan: boolean): void {
     const nu = ctx.currentTime;
     const volume = goed ? VOLUME.goed : VOLUME.fout;
 
-    for (const toon of goed ? GOED : FOUT) {
+    for (const toon of goed ? (ster ? STER : GOED) : FOUT) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';

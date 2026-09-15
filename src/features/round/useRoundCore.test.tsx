@@ -11,6 +11,9 @@ import { useRoundCore, type RondeOpzet } from './useRoundCore';
  */
 vi.mock('@/store/progress', () => ({
   loadItemStates: vi.fn(async () => new Map()),
+  // De ster telt vanaf alle goede antwoorden ooit, dus de kern leest die bij de
+  // start één keer (`ster.ts`). Nul is de stand van een kind dat begint.
+  loadAccuracy: vi.fn(async () => ({ correct: 0, answered: 0 })),
   startSession: vi.fn(async () => 'sessie'),
   saveAnswer: vi.fn(async () => undefined),
   finishSession: vi.fn(async () => undefined),

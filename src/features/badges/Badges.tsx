@@ -17,7 +17,6 @@ import { STAMP_NAME } from '@/features/reis/stampNames';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadStamps } from '@/store/rewardStore';
-import { usePremium } from '@/features/premium/usePremium';
 import { Embleem } from './Embleem';
 
 /**
@@ -67,20 +66,24 @@ function uitleg(id: StampId): string {
 
 /** All ten, the ones not earned yet as well, on the child's own page. */
 export function BadgeSectie({ alleenBehaald = false }: { readonly alleenBehaald?: boolean }) {
-  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
 
   useEffect(() => {
     void loadStamps().then(setBehaald);
   }, []);
 
-  // Premium since ADR-116. Still earned underneath, so none is lost.
-  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
-  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
-  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
-  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
-  if (!actief) return null;
-
+  // **Niet meer premium**, en dat is een herziening van ADR-116 op één punt.
+  //
+  // Een badge werd verdiend en niet getoond: het kind haalde hem, de regel
+  // rekende hem uit, de store schreef hem weg, en op het scherm gebeurde er
+  // niets. Dat is precies de fout van de munten en de XP (ADR-130) — iets dat
+  // bestaat en dat niemand ziet — alleen dan met een prijskaartje eromheen, en
+  // dat maakt het erger in plaats van beter.
+  //
+  // De grens ligt nu waar hij hoort: premium verkoopt wat een óuder koopt — het
+  // dagplan, Onthouden, de oefentoets, het weekbericht, de reekspagina, meer
+  // dan één kind — en elke extra manier van oefenen. De beloningslus is van het
+  // kind.
   // Nothing until it is known: a wall of ten gaps that then fills three has
   // told a child they had none.
   if (behaald === null) return null;

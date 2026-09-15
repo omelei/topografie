@@ -8,6 +8,8 @@ import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { Klim } from '@/features/round/Klim';
+import { Ster } from '@/features/round/Ster';
+import { DREEF, opDreef } from '@/features/round/dreef';
 import { Maatje } from '@/features/round/Maatje';
 import { Vlag } from './Vlag';
 import { VlagResultScreen } from './VlagResultScreen';
@@ -155,11 +157,13 @@ export function VlagScreen({
           {state.secondsLeft !== null || state.livesLeft !== null ? (
             <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
           ) : null}
-          <Counter
-            label={t('practice.counterCombo')}
-            value={`×${state.combo}`}
-            onlyWide={state.rule.kind === 'fixed'}
-          />
+          {state.combo >= DREEF ? (
+            <Counter
+              label={t('practice.counterCombo')}
+              value={String(state.combo)}
+              onlyWide={state.rule.kind === 'fixed'}
+            />
+          ) : null}
         </div>
       </header>
 
@@ -186,11 +190,13 @@ export function VlagScreen({
                   </p>
                   {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
                   {state.klim ? <Klim klim={state.klim} /> : null}
+                  {/* En de ster die dit antwoord opleverde (ster.ts). */}
+                  {state.ster ? <Ster stand={state.ster} /> : null}
                 </div>
               </div>
 
               {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
-              <Maatje goed={state.lastCorrect} />
+              <Maatje goed={state.lastCorrect} opDreef={opDreef(state.combo)} />
               {/* A bliksemronde moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (

@@ -1,10 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Heldplaat } from '@/components/Heldplaat';
-import { stickerById } from '@/components/stickerSet';
-import { STICKERS } from '@/components/stickerSet';
-import type { Reeks } from '@/game-core';
-import { useHelden } from '@/features/reis/useHelden';
-import { getProfile } from '@/store/profile';
+import { useEigenHeld } from '@/features/reis/useEigenHeld';
 
 /**
  * Het maatje: de held van dit kind, in beeld zodra een antwoord nagekeken is
@@ -28,23 +23,37 @@ import { getProfile } from '@/store/profile';
  * **Altijd even hoog.** Ook als er niets te tekenen valt, want een kaart die van
  * hoogte verspringt tussen goed en fout verplaatst de knop waar een kind net
  * naartoe bewoog.
+ *
+ * **Drie goed op rij sluit er een ring omheen.** Dat getal werd al geteld —
+ * `useRoundCore` houdt `combo` bij en alle vijf de rondeschermen zetten hem als
+ * `×3` in de balk — en het keerde niets uit, op een scherm van minstens 768
+ * pixels, naast een `×0` aan het begin van elke ronde. Nu is het een
+ * gebeurtenis: bij drie, zes en negen komt er een ring om je maatje.
+ *
+ * **Erkenning, geen valuta.** Tien goed is een ster, altijd, voor iedereen; dit
+ * verandert daar niets aan en kan dat ook niet. Het zegt alleen dat het even
+ * lekker loopt — en dat is precies het moment dat Brawl Stars en Duolingo
+ * allebei pakken en dit product liet liggen.
+ *
+ * Geen geluid. Het antwoordgeluid klonk nul milliseconden eerder, en twee
+ * geluiden binnen vierhonderd milliseconden zijn geen twee gebeurtenissen maar
+ * één rommelige.
  */
-export function Maatje({ goed }: { readonly goed: boolean }) {
-  const stand = useHelden();
-  const [sticker, setSticker] = useState<string | undefined>(undefined);
-
-  // Het profiel wordt hier zelf gelezen. Vijf rondeschermen zouden het anders
-  // alle vijf moeten doorgeven, en wie je bent verandert niet tijdens een ronde.
-  useEffect(() => {
-    void getProfile().then((profile) => setSticker(profile?.avatarConfig.sticker));
-  }, []);
-
-  const held = stickerById(sticker);
-  const plek = STICKERS.indexOf(held);
-  const reeks: Reeks = stand?.helden.find((rij) => rij.plek === plek)?.reeks ?? 'brons';
+export function Maatje({
+  goed,
+  opDreef = false,
+}: {
+  readonly goed: boolean;
+  readonly opDreef?: boolean;
+}) {
+  const { held, reeks } = useEigenHeld();
 
   return (
-    <p className="tk-maatje" data-goed={goed ? '' : undefined}>
+    <p
+      className="tk-maatje"
+      data-goed={goed ? '' : undefined}
+      data-dreef={goed && opDreef ? '' : undefined}
+    >
       <Heldplaat sticker={held.id} reeks={reeks} size={88} className="tk-maatje-beeld" />
     </p>
   );
