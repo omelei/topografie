@@ -62,6 +62,11 @@ export const nl = {
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
   'vandaag.verder': 'Volgende ronde',
+  // Het einde van een ronde, aangekondigd (ADR-140).
+  'practice.laatsteVraag': 'Laatste vraag',
+  // Het begin van een ronde (ADR-140): de zin waarmee dit product zijn eigen
+  // methode uitlegt, op het moment dat die methode op een fout lijkt.
+  'start.eerderGehad': '{eerder} van de {totaal} heb je eerder gehad. Dat is de bedoeling.',
 
   'home.recentTitle': 'Recent geoefend',
   'home.recentNone': 'Nog niets geoefend. Na je eerste ronde staat het hier.',

@@ -6912,6 +6912,68 @@ is een vraag voor als er zo'n kind is.
 
 ---
 
+## ADR-140 — De ronde kondigt zichzelf aan: haar laatste vraag, en waarom ze herhaalt
+
+**Status:** accepted. **Date:** 2026-09-15. Punt 3 van de lijst na "de app voelt
+te statisch". Het tweede deel is er niet om gevraagd; zie daar.
+
+### Context
+
+**Het einde.** De stippen tonen al hoeveel vragen er nog zijn, maar ze zijn
+omgeving: een kind dat naar de vraag kijkt telt geen stippen. Het slot komt
+daardoor onaangekondigd.
+
+**Het begin.** `roundPreview` staat in `game-core`, is getest, en werd door geen
+enkel scherm aangeroepen. In zijn eigen commentaar staat waarvoor het bestaat:
+
+> K1 opens with "Vandaag oefen je 10 vragen. Zeven daarvan heb je eerder gehad.
+> Dat is de bedoeling." — a sentence that argues for spaced repetition by saying
+> out loud the thing that looks like a mistake.
+
+Die zin is het argument van dit product voor zijn eigen methode, uitgesproken op
+precies het moment dat die methode op een fout lijkt: _waarom krijg ik vragen die
+ik al weet?_ En hij stond nergens.
+
+Dat is deze week de vierde keer dat iets gebouwd en getest is en nooit getoond
+wordt, na munten, XP (ADR-130) en de kist (ADR-138).
+
+### Decision
+
+**"Laatste vraag", naast de stippen**, in `RoundProgress` — dus in één keer voor
+alle vijf de modules, en alleen daar waar er een laatste vraag ís: dat component
+wordt niet getekend voor de eindeloze vormen.
+
+**Het woord krimpt niet en de stippen wel.** De stippen hebben `overflow: hidden`
+en knippen netjes af; een kind dat weet dat dit de laatste vraag is heeft meer
+aan dat woord dan aan de tiende stip. Een eerdere versie verstopte het onder
+480px omdat de balk daar krap is — precies de fout die ADR-126 al maakte met de
+premiumknop: het weghalen bij de gebruikers die het het hardst nodig hebben. De
+e2e op android ving het.
+
+**Buiten de balk en niet erin.** De voortgangsbalk draagt zijn stand al in
+`aria-valuetext`, en hetzelfde twee keer voorlezen is één keer te veel.
+
+**De zin over herhaling staat op de startbalk**, in beide vormen ervan, en
+alleen als er iets eerder gehad ís. "Nul eerder gehad" legt niets uit en neemt
+niets weg — er valt dan ook niets te verbazen.
+
+### Consequences
+
+De voorwaarde is zonder vergelijkingstekens geschreven. `copy.test.ts` leest een
+`>` gevolgd door een `<` op één regel als zichtbare tekst, en dat is hier een som
+— dezelfde val als bij ADR-127, en de tweede keer dat die test hem vangt.
+
+**Het tweede deel is niet gevraagd.** De product owner vroeg om een aangekondigd
+rondeeinde; de startzin kwam erbij omdat `roundPreview` tijdens het zoeken
+opdook. Het hoort bij hetzelfde idee — een ronde die zegt wat ze is — en het is
+in één bestand terug te draaien als dat niet de bedoeling was.
+
+**Niet hier besloten:** wat er gebeurt als een kind de zin niet gelooft. "Dat is
+de bedoeling" is een bewering, geen uitleg; de uitleg staat op de onthoudpagina.
+Of een kind van acht die twee met elkaar verbindt, weet niemand hier.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon } from '@/components/Icon';
-import { countMastered, type ItemState, type ModeId } from '@/game-core';
+import { countMastered, roundPreview, type ItemState, type ModeId } from '@/game-core';
 import { t } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -245,6 +245,26 @@ export function ModuleScreen({
   // order it asked them, and how long the round will be.
   const regioNaam = heeftRegio ? regios.find((kandidaat) => kandidaat.id === hier) : undefined;
   const ronde = rondeVan(form, vragen, minuten);
+  /**
+   * Hoeveel van de vragen dit kind eerder gehad heeft (ADR-140).
+   *
+   * `roundPreview` stond er al, getest en ongebruikt, met in zijn eigen
+   * commentaar de zin waarvoor het bestaat. Die zin is het argument van dit
+   * product voor zijn eigen methode, uitgesproken op het moment dat die methode
+   * op een fout lijkt: waarom krijg ik vragen die ik al weet?
+   *
+   * Alleen als het er zijn. "Nul eerder gehad" legt niets uit en neemt niets
+   * weg — er valt dan ook niets te verbazen.
+   */
+  const vooraf =
+    klaar && chosen !== null && vragen !== null && form?.rule?.kind === 'fixed'
+      ? roundPreview({ items: chosen.items, states: known, size: vragen, now: new Date() })
+      : null;
+  const eerderZin =
+    vooraf !== null && vooraf.seen > 0
+      ? t('start.eerderGehad', { eerder: vooraf.seen, totaal: vooraf.total })
+      : null;
+
   const gekozenLijst: readonly { readonly label: string; readonly waarde: string }[] = [
     ...(regioNaam ? [{ label: t(regioLabel(module.id)), waarde: t(regioNaam.naam) }] : []),
     ...(onderwerp
@@ -610,6 +630,7 @@ export function ModuleScreen({
                   {nogTeKiezen(wachtend)}
                 </p>
               )}
+              {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
             </div>
             {startKnop}
           </div>
@@ -682,6 +703,7 @@ export function ModuleScreen({
                       : t('choose.minutes', { aantal: minuten })}
                   </span>
                 )}
+                {eerderZin ? <span className="tk-hulp block">{eerderZin}</span> : null}
               </>
             ) : (
               <span id={nogId} className="tk-hulp block">
