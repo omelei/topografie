@@ -7057,6 +7057,127 @@ een tweede plek om hetzelfde te vergeten.
 
 ---
 
+## ADR-142 — Het product gaat bewegen, en de helden komen op het toneel
+
+**Status:** accepted. **Date:** 2026-09-15. Na "Squla gebruikt kleuren,
+animaties en afbeeldingen; leer.nu is nog steeds heel erg statisch" — de derde
+keer dat die klacht komt, en de eerste keer dat hij over het uiterlijk gaat en
+niet over het gedrag.
+
+### Context
+
+ADR-137 tot en met ADR-141 beantwoordden "statisch" met gedrag: de trede, de
+kist, het slinkende dagplan, het aangekondigde einde, het zelfgekozen doel. Dat
+was het verkeerde antwoord op de goede klacht. De vraag ging over wat je ziet.
+
+Drie metingen aan het product zelf, en ze zijn alle drie hard:
+
+**Er was bijna geen beweging.** Drieduizendzevenhonderd regels stijl, vijf
+`@keyframes` en precies één `transition`. Niets in dit product reageerde op een
+aanraking: een knop sprong één pixel en verder stond alles stil. Een balk die
+opliep sprong naar zijn nieuwe stand, dus de winst van vandaag was af te lezen
+maar niet te zien.
+
+**De hoofdrolspelers stonden niet op het toneel.** In `public/helden` liggen
+zestig tekeningen: twaalf dieren in vijf materialen. Een kind zag er één van, op
+dertig pixels, in de balk. De verzamelpagina is met ADR-112 verborgen. En
+`setSticker` — kiezen wie je bent — werd door niets anders aangeroepen dan de
+kist, dus een kind kon het nooit zelf.
+
+**Het palet is papier en inkt.** Dat is een mooi systeem en het is met opzet zo
+gebouwd, maar de modulekleuren kwamen alleen voor als bleke pasteltint achter
+een pictogram van twintig pixels. Het scherm waar een kind de meeste tijd
+doorbrengt — de ronde — was een wit vlak met een som erin en een teken van
+tweeëndertig pixels ernaast.
+
+### Decision
+
+**Eén bewegingslaag, bij elkaar in het blad.** Drie duren en twee curves als
+tokens, en daaronder één blok dat zegt wát er beweegt: knoppen, kaarten,
+lijstrijen, tegels, platen, de rail, het menu. Kaarten komen naar je toe onder de
+muis, knoppen krimpen onder je vinger, de voortgangsbalk loopt echt op.
+
+Bij elkaar en niet bij elke regel apart, met opzet: beweging is een laag over het
+hele product, en het moet in één oogopslag te zien zijn wat er beweegt, hoe lang,
+en dat er niets buiten `prefers-reduced-motion` om beweegt. Verspreid over dertig
+regels is dat geen laag maar een gewoonte.
+
+**Alleen `transform` en kleur.** Geen `box-shadow` — de huisstijl laat er precies
+één toe, op een beloningsplaatje — en niets dat de doos van een element
+verandert. Een hover die iets groter maakt duwt de rij eronder weg, en een lijst
+die schuift onder je vinger is erger dan een lijst die stilstaat.
+
+**De held staat groot op de voordeur, en is te kiezen.** Achtentachtig pixels,
+als eerste ding op het scherm, met de drie tot twaalf helden die dit kind heeft
+eronder zodra je erop drukt. Dat doet drie dingen tegelijk die geen tekst kan
+doen: het maakt de voordeur van dít kind, het zet kleur op een pagina van papier
+en inkt, en het geeft de kist een reden — een held die je nooit ziet is geen
+beloning.
+
+Alleen de helden die dit kind hééft. Geen grijze silhouetten van wat er nog te
+halen valt: welke held uit een kist komt is de kist zijn werk (ADR-081), en een
+rij dichte deuren op de voordeur is elke dag hetzelfde verwijt.
+
+**De naam klein onder de tekening en niet ernaast.** Naast "Welkom Fien" leest
+een dierennaam op kopgrootte als de titel van de pagina, en de titel hoort over
+het kind te gaan. Dat was de eerste versie en een schermafdruk haalde hem eruit.
+
+**Een maatje in de ronde.** Dezelfde held, achtentachtig pixels, in de
+terugkoppelkaart zodra er nagekeken is — hetzelfde moment waarop het geluid
+klinkt (ADR-134) en het teken landt, dus één gebeurtenis en niet drie. Goed veert
+door en terug, fout komt gewoon aan: er is één pose per held, dus het verschil zit
+in hoe hij binnenkomt, en een kind dat het even niet weet heeft geen dansend dier
+nodig. De kaart blijft even hoog of er nu een held staat of niet, want een kaart
+die verspringt verplaatst de knop waar een vinger net naartoe onderweg was.
+
+**De plaat krijgt de kleur van de module zelf.** Eén regel — `--module-tint` werd
+`--module` — en zes verzadigde kleuren verschijnen op elke pagina, want een plaat
+staat overal: de voordeur, de favorieten, de toetsen, de rail, het menu. Het
+pictogram staat er wit op; geen tekst, dus drie op één volstaat (WCAG 1.4.11) en
+alle zes halen boven de vier. De woorden ernaast blijven inkt, zoals §E wil: de
+plaat duidt de module aan, hij benadrukt hem niet.
+
+**Het uitkomstteken is groter in een ronde**, vierenveertig in plaats van
+tweeëndertig, en goed krijgt zijn eigen komst. Dat is het moment dat het vaakst
+voorkomt in dit hele product — tien keer per ronde. Buiten een ronde blijft het
+klein: daar is het een opsomming van wat er gebeurd is, geen gebeurtenis.
+
+### Consequences
+
+**De accentregel is niet aangeraakt en dat is geen toeval.** `accent.test.ts`
+bewaakt `--accent`, de kleur die per module verschilt, en het argument eronder
+staat nog overeind: een kind moet naar een woord leren kijken en niet naar een
+kleur. De primaire knop is dus níét groen geworden, hoe verleidelijk dat ook was
+— in dit product betekent groen "goed", en een knop "Kijk na" in dezelfde groen
+als het vinkje is precies de verwarring die die regel voorkomt. De kleur die er
+bij kwam is de kleur die iets aanduidt: welke module dit is.
+
+**De heldenmigratie draait nog maar één keer tegelijk.** `loadHelden` is
+lezen-en-misschien-schrijven, en sinds dit ADR vraagt er meer dan één scherm
+tegelijk naar de helden: de balk, de kist en het maatje. Twee vragers die allebei
+niets vonden, rekenden allebei `uitLadder` uit en schreven allebei — en wat de
+tweede schreef was gerekend op een tellerstand die intussen veranderd kon zijn.
+Nu is er één vlucht per kind.
+
+Dat was ook de oorzaak van een e2e die al vóór dit werk wisselvallig was: de
+kisttest viel twee van de achttien keer om op `main`. Met de ene vlucht én een
+test die wacht tot de heldenrij er staat voordat hij zijn zaad schrijft, is het
+achttien van de achttien.
+
+**Niet hier besloten: het podium van een ronde blijft leeg.** Op een scherm van
+1440 staat "1 × 6" in een kaart van negenhonderd bij zevenhonderdtachtig, en
+verder niets. Het maatje staat in de kaart ernaast, niet daar. Dat is per module
+werk — de kaart van topografie is vol, die van rekenen niet — en het is de
+grootste resterende bron van leegte.
+
+**Niet hier besloten: geen geluid bij beweging, geen confetti, geen tussenscherm
+tussen twee vragen.** Alles wat hier beweegt beweegt omdat er iets gebeurde, en
+duurt hoogstens vierhonderdtwintig milliseconden. De volgende stap in deze
+richting is een keuze over tempo, niet over smaak, en die hoort gemeten te worden
+in plaats van gestapeld.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

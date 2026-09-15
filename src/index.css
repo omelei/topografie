@@ -275,6 +275,20 @@
     --raak: var(--touch-wijzer); /* the smallest a control may be */
     --kaart-radius: var(--radius-kaart);
     --kaart-padding: var(--padding-kaart);
+
+    /* ---- Beweging (ADR-142) ----------------------------------------------
+     * Drie duren en twee curves, en niet meer. Beweging is hier taal: iets dat
+     * reageert op een aanraking gaat vlot, iets dat een waarde laat veranderen
+     * gaat rustig, en iets dat aankomt veert. Alles wat deze tokens gebruikt
+     * staat achter `prefers-reduced-motion: no-preference` — de regel bovenaan
+     * zet ze ook uit, maar twee sloten op een deur die een kind kan misselijk
+     * maken is er een te weinig.
+     */
+    --beweeg-vlot: 120ms; /* een knop onder je vinger */
+    --beweeg-rustig: 240ms; /* een balk die oploopt */
+    --beweeg-traag: 420ms; /* iets dat het toneel op komt */
+    --beweeg-uit: cubic-bezier(0.2, 0, 0, 1); /* vaart eraf, zoals een deur */
+    --beweeg-veer: cubic-bezier(0.34, 1.4, 0.64, 1); /* voorbij en terug */
   }
 
   /* A tablet: a finger, on a screen wider than a phone. */
@@ -1595,8 +1609,95 @@
 
   .tk-home-kop {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 20px;
+  }
+  .tk-home-welkom {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 240px;
     flex-direction: column;
     gap: 8px;
+  }
+
+  /* ---- De held op de voordeur (ADR-142) ----------------------------------
+   * Zestig tekeningen lagen er, en een kind zag er één van op dertig pixels in
+   * de balk. Hier staat hij op zesennegentig, als eerste ding op het scherm.
+   * De knop is geen knopvorm: het is de tekening met twee regels ernaast, en
+   * de rand komt pas op als je erbij bent — een omlijnde knop om een dier heen
+   * maakt er een bediening van in plaats van een hoofdpersoon.
+   */
+  .tk-heldhoek {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-heldhoek-knop {
+    display: flex;
+    width: 112px;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 4px;
+    border: var(--stroke-hair) solid transparent;
+    border-radius: var(--kaart-radius);
+    text-align: center;
+    cursor: pointer;
+  }
+  .tk-heldhoek-knop:hover {
+    border-color: var(--rand-licht);
+    background: var(--kaart);
+  }
+  .tk-heldhoek-tekst {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tk-heldhoek-naam {
+    font-size: var(--type-klein);
+    line-height: var(--type-klein-lh);
+    color: var(--tekst-secundair);
+  }
+  .tk-heldhoek-regel {
+    color: var(--tekst-secundair);
+  }
+  /* De rij met wie je nog meer hebt. Wikkelt, want twaalf helden naast elkaar
+   * is op een telefoon een zijwaartse reis. */
+  .tk-heldhoek-rij {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-heldhoek-kaart {
+    display: flex;
+    width: 88px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+    cursor: pointer;
+    text-align: center;
+  }
+  .tk-heldhoek-kaart:hover {
+    border-color: var(--rand-bediening);
+  }
+  /* Wie je nu draagt, met een dikkere rand: de tekening is al kleur, en nog
+   * een vlak eronder zou de held zelf wegdrukken. */
+  .tk-heldhoek-kaart[aria-pressed='true'] {
+    border-color: var(--inkt);
+    border-width: var(--stroke-active);
+  }
+  .tk-heldhoek-kaartnaam {
+    font-size: var(--type-klein);
+    line-height: var(--type-klein-lh);
   }
 
   /* ---- A block in the child's own column --------------------------------
@@ -1802,6 +1903,14 @@
    * about one module, and it is the one case §E lets an icon take an accent: it
    * denotes the module. Listed in accent.test.ts for that reason.
    */
+  /* De plaat draagt de kleur van de module zelf en niet zijn bleke tint
+   * (ADR-142). Een plaat staat overal — de voordeur, de favorieten, de toetsen,
+   * de rail, het menu — dus dit is de goedkoopste kleur in het hele product:
+   * één regel, en zes verzadigde kleuren verschijnen op elke pagina.
+   *
+   * Het pictogram staat er wit op. Geen tekst, dus 3:1 volstaat (WCAG 1.4.11)
+   * en de zes kleuren halen alle zes boven de vier. De woorden ernaast blijven
+   * inkt, zoals §E wil: de plaat duidt de module aan, hij benadrukt hem niet. */
   .tk-plaat {
     display: inline-flex;
     align-items: center;
@@ -1810,8 +1919,8 @@
     width: 40px;
     height: 40px;
     border-radius: var(--radius-chip);
-    background: var(--module-tint);
-    color: var(--module-tekst);
+    background: var(--module);
+    color: var(--kaart);
   }
   .tk-plaat-groot {
     width: 44px;
@@ -3445,6 +3554,14 @@
     background: var(--nadruk);
     color: var(--kaart);
   }
+  /* In een ronde is het teken groter (ADR-142). Dat is het moment dat het
+   * vaakst voorkomt in dit hele product — tien keer per ronde — en het was
+   * tweeëndertig pixels naast een regel tekst. Buiten een ronde blijft het
+   * klein: daar is het een opsomming van wat er gebeurd is, geen gebeurtenis. */
+  [data-thema='ronde'] .tk-teken {
+    width: 44px;
+    height: 44px;
+  }
   .tk-teken-fout {
     border: var(--stroke-active) solid var(--fout);
     background: repeating-linear-gradient(
@@ -3626,7 +3743,13 @@
    * wie beweging heeft uitgezet, ziet precies hetzelfde beeld. */
   @media (prefers-reduced-motion: no-preference) {
     .tk-teken {
-      animation: tk-teken-aan 260ms cubic-bezier(0.34, 1.4, 0.64, 1);
+      animation: tk-teken-aan 260ms var(--beweeg-veer);
+    }
+    /* Goed krijgt zijn eigen komst (ADR-142): iets verder door, met een knik
+     * erin. Fout niet — een fout hoort te landen en niet te juichen, en een
+     * kind dat het even niet weet heeft geen dansend kruis nodig. */
+    .tk-teken-goed {
+      animation: tk-teken-goed var(--beweeg-traag) var(--beweeg-veer);
     }
   }
   /* The dimmed provinces behind a capitals exercise. They recede, but they are
@@ -3650,6 +3773,117 @@
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border-width: 0;
+  }
+
+  /* ---- Het maatje in een ronde (ADR-142) --------------------------------
+   * De held van dit kind, in de terugkoppelkaart, zodra er nagekeken is. Altijd
+   * even hoog — ook als er niets staat — want een kaart die verspringt tussen
+   * goed en fout verplaatst de knop waar een vinger net naartoe onderweg was.
+   */
+  .tk-maatje {
+    display: flex;
+    min-height: 88px;
+    align-items: center;
+    /* Rechts in de kaart, tegenover het teken links: samen maken ze een regel
+     * van de terugkoppeling in plaats van een stapeltje losse dingen. */
+    justify-content: flex-end;
+    margin: 4px 0 0;
+  }
+
+  /* ---- De bewegingslaag (ADR-142) ---------------------------------------
+   * Drieduizend regels stijl en precies één transition: niets in dit product
+   * reageerde op een aanraking. Een knop sprong een pixel en verder stond
+   * alles stil, en dat is waarom de app aanvoelt als een werkblad in plaats
+   * van als iets waar je mee speelt.
+   *
+   * Hier staat het bij elkaar in plaats van bij elke regel apart, en dat is
+   * met opzet. Beweging is een laag over het hele product: het moet in één
+   * oogopslag te zien zijn wát er beweegt, hoe lang, en dat er niets buiten
+   * `prefers-reduced-motion` om beweegt. Verspreid over dertig regels is dat
+   * geen laag maar een gewoonte.
+   *
+   * **Alleen transform en kleur.** Geen `box-shadow` (de huisstijl laat er
+   * precies één toe, op een beloningsplaatje) en niets dat de doos van een
+   * element verandert: een hover die iets groter maakt duwt de rij eronder
+   * weg, en een lijst die schuift onder je vinger is erger dan een lijst die
+   * stilstaat.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-button,
+    .tk-kaart,
+    .tk-lijstrij,
+    .tk-tegel,
+    .tk-keuze,
+    .tk-tafel,
+    .tk-module-card,
+    .tk-blok-knop,
+    .tk-profiel,
+    .tk-kist-kaart,
+    .tk-rail-item,
+    .tk-vakmenu-optie,
+    .tk-doel-ander,
+    .tk-toets-weg {
+      transition:
+        transform var(--beweeg-vlot) var(--beweeg-uit),
+        background-color var(--beweeg-vlot) var(--beweeg-uit),
+        border-color var(--beweeg-vlot) var(--beweeg-uit),
+        color var(--beweeg-vlot) var(--beweeg-uit);
+    }
+
+    /* Iets dat je kunt indrukken komt naar je toe onder de muis. Twee pixels:
+     * genoeg om te zien dat het leeft, te weinig om de bladspiegel te laten
+     * ademen. */
+    .tk-kaart:hover,
+    .tk-lijstrij:hover,
+    .tk-tegel:hover:not(:disabled),
+    .tk-module-card:hover:not(:disabled),
+    .tk-kist-kaart:hover:not(:disabled),
+    .tk-blok-knop:hover {
+      transform: translateY(-2px);
+    }
+
+    /* En gaat onder je vinger in. Een knop krimpt in plaats van te zakken:
+     * zakken is wat een kaart doet die terugkomt, indrukken is wat een knop
+     * doet die iets doet. */
+    .tk-button:active,
+    .tk-blok-knop:active,
+    .tk-keuze:active,
+    .tk-tafel:active,
+    .tk-tegel:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    .tk-kaart:active,
+    .tk-lijstrij:active,
+    .tk-module-card:active:not(:disabled),
+    .tk-kist-kaart:active:not(:disabled) {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* Het maatje komt binnen: goed veert door en terug, fout komt gewoon aan.
+     * Eén pose per held, dus het verschil zit in hóé hij verschijnt — en een
+     * kind dat het even niet weet heeft geen dansend dier nodig. */
+    .tk-maatje-beeld {
+      animation: tk-verschijn var(--beweeg-rustig) var(--beweeg-uit);
+    }
+    .tk-maatje[data-goed] .tk-maatje-beeld {
+      animation: tk-kist-held var(--beweeg-traag) var(--beweeg-veer);
+    }
+
+    /* Een balk die oploopt loopt ook echt op. Hij stond altijd al op de goede
+     * stand; hij sprong er alleen heen, en dan is de winst van vandaag niet te
+     * zien maar alleen af te lezen. */
+    .tk-progress-fill {
+      transition: width var(--beweeg-rustig) var(--beweeg-uit);
+    }
+
+    /* De stippen van een ronde vullen zich veerkrachtig: dat is de enige plek
+     * waar je tijdens het spelen ziet dat er iets vordert. */
+    .tk-round-dot-done,
+    .tk-round-dot-now {
+      transition:
+        background-color var(--beweeg-vlot) var(--beweeg-uit),
+        transform var(--beweeg-vlot) var(--beweeg-veer);
+    }
   }
 }
 
@@ -3697,6 +3931,21 @@
   }
   to {
     transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes tk-teken-goed {
+  0% {
+    transform: scale(0.3) rotate(-14deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.14) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
     opacity: 1;
   }
 }

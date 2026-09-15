@@ -74,14 +74,46 @@ function parse(raw: string | undefined): HeldenStand | null {
   }
 }
 
+/**
+ * De migratie die nog moet draaien, terwijl hij draait — per kind.
+ *
+ * `loadHelden` is lezen-en-misschien-schrijven, en sinds ADR-142 vraagt er meer
+ * dan één scherm tegelijk naar de helden: de balk, de kist op het uitslagscherm
+ * en het maatje in een ronde. Twee vragers die allebei niets vinden, rekenen
+ * allebei `uitLadder` uit en schrijven allebei — en wat de tweede schrijft, is
+ * gerekend op een tellerstand die intussen veranderd kan zijn.
+ *
+ * Eén vlucht dus: wie tijdens de migratie binnenkomt, krijgt dezelfde belofte
+ * en er wordt één keer geschreven. Dit is geen slot over de database — dat kan
+ * hier niet — maar het haalt de enige samenloop weg die dit proces zelf maakt.
+ */
+const onderweg = new Map<string, Promise<HeldenStand>>();
+
 export async function loadHelden(): Promise<HeldenStand> {
   const kindId = await activeChildId();
   const bewaard = parse(await getSetting(sleutel(kindId)));
   if (bewaard) return bewaard;
 
-  const stand = uitLadder((await loadAccuracy()).correct);
-  await setSetting(sleutel(kindId), JSON.stringify(stand));
-  return stand;
+  const bezig = onderweg.get(kindId);
+  if (bezig) return bezig;
+
+  const vlucht = (async () => {
+    // Nog een keer kijken: tussen de lezing hierboven en nu kan een andere
+    // vrager klaar zijn geweest. Dan is die van hem de waarheid.
+    const nu = parse(await getSetting(sleutel(kindId)));
+    if (nu) return nu;
+
+    const stand = uitLadder((await loadAccuracy()).correct);
+    await setSetting(sleutel(kindId), JSON.stringify(stand));
+    return stand;
+  })();
+
+  onderweg.set(kindId, vlucht);
+  try {
+    return await vlucht;
+  } finally {
+    onderweg.delete(kindId);
+  }
 }
 
 /**
