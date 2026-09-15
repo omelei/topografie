@@ -24,12 +24,12 @@ export function Brandmark({
   className,
 }: {
   readonly size?: number;
-  /** Ink on paper, or paper on ink. Never a module accent. */
+  /** The mark's own colour on paper, or paper on ink. Never a module accent. */
   readonly tone?: 'ink' | 'paper';
   readonly className?: string;
 }) {
   const klein = size < MERK_NAALD_VANAF_PX;
-  const kleur = tone === 'ink' ? 'var(--inkt)' : 'var(--kaart)';
+  const kleur = tone === 'ink' ? 'var(--merk)' : 'var(--kaart)';
 
   return (
     <span className={className} aria-hidden="true">

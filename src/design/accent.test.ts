@@ -3,19 +3,20 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /**
- * A module may colour exactly three things.
+ * The accent colours what is chosen, and nothing else.
  *
- * Styleguide §B: the highlight on the image, the progress bar and the module
- * entrance. Not a button, not a message, not a table, and never the mark — the
- * dot is ink on paper or paper on ink in every module.
+ * The accent is the action colour now: indigo, everywhere, in every module
+ * (index.css, styleguide §02). A module's own colour is `--module` and is not
+ * an accent — it denotes a subject on its tile and in its bar, and a subject is
+ * not a state. Neither of them ever touches the mark: the dot is ink on paper
+ * or paper on ink in every module.
  *
  * The reason it is worth enforcing rather than agreeing is that an accent is
  * always the tempting colour. It is the one that looks like the brand, so it
  * creeps onto the primary button, then onto the number that matters, then onto
  * a badge — and each step looks like an improvement on its own. What it costs
  * is the thing the rule protects: a child learns to look for a colour instead
- * of for a word, and then the seventh module arrives and the colour means
- * something else.
+ * of for a word.
  *
  * So: every use of an accent in the source has to be named here, with a reason.
  * Adding one is deliberate and shows up in a diff as what it is.
@@ -26,21 +27,11 @@ const ROOT = process.cwd();
 /** CSS rules that may paint with an accent, and why. */
 const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   ['.tk-shape-asked', 'the highlight on the image'],
-  ['.tk-progress-fill', 'the progress bar'],
-  // The ten dots of a round are the progress bar too — the same idea counted
-  // out rather than drawn as a rail, because a round is a countable number of
-  // questions and a child can see how many are left.
-  ['.tk-round-dot-done', 'the progress bar, as ten dots'],
-  ['.tk-round-dot-now', 'the progress bar, as ten dots'],
-  ['.tk-module-card', 'the module entrance'],
-  ['.tk-module-card:hover', 'the module entrance'],
-  ['.tk-module-card:disabled', 'the module entrance'],
-  // The fourth thing, added deliberately in ADR-089 and kept in ADR-095: the
-  // answer a child has already given, on a page that is nothing but questions.
-  // Every question on a module page is answered by a chip, a tile or a square,
-  // and the chosen one of each is the only thing worth finding again after
-  // looking away. Each also changes its rule or carries a tick, because §A does
-  // not let a hue carry a state on its own.
+  // The answer a child has already given (ADR-089, ADR-095), on a page that is
+  // nothing but questions. Every question on a module page is answered by a
+  // chip, a tile or a square, and the chosen one of each is the only thing
+  // worth finding again after looking away. Each also changes its rule or
+  // carries a tick, because §A does not let a hue carry a state on its own.
   [".tk-keuze[aria-pressed='true']", 'the answer already given, as a chip'],
   [".tk-tegel[aria-pressed='true']", 'the answer already given, as a tile'],
   [".tk-tegel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a tile'],
@@ -50,59 +41,25 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   [".tk-verken-item[aria-current='true']", 'the answer already given, in a list'],
   [".tk-tafel[aria-pressed='true']", 'the answer already given, as a square'],
   [".tk-tafel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a square'],
-  // The start bar is all of those answers at once, on the module's soft ground
-  // with its colour down the leading edge (ADR-095). Its label is in the
-  // module's text colour; the chips on it are ink.
+  // De startbalk is al die antwoorden tegelijk, met de accentkleur langs de
+  // voorste rand (ADR-095), en hij is ook de weg verder — dus de kleur die
+  // "hier druk je op" zegt hoort er precies. De chips erop blijven inkt.
   // Vandaag (ADR-126): de voordeur had geen primaire actie, en dit is hem. Het
-  // is dezelfde vorm als de startbalk om dezelfde reden — hier begint een ronde
-  // — en buiten een module is de accentkleur de groene nadruk.
+  // is dezelfde vorm als de startbalk om dezelfde reden: hier begint een ronde.
   ['.tk-vandaag', 'the one thing to do today'],
   ['.tk-startbalk', 'the answers already given, together'],
   ['.tk-startbalk-label', 'the answers already given, together'],
-  // The rail is where the module entrance does most of its work: a column of
-  // seven accents is the only place in the product that shows them together.
-  [".tk-rail-item[aria-current='page']", 'the module entrance, in the rail'],
-  // The plate: a module's pictogram on the module's own tint (ADR-094). The
-  // handoff draws it wherever a card, a row or a line is about one module —
-  // the front door's rows, the favourites, the tests, the rail and the menu —
-  // and it is the one case §E lets an icon take an accent: it denotes the
-  // module. The words beside a plate stay ink.
-  ['.tk-plaat', 'the module entrance, as a plate'],
-  // The menu the rail becomes below 1200 (ADR-093): the module you are in,
-  // marked the way the rail marks it.
-  [".tk-vakmenu-optie[aria-current='page']", 'the module entrance, in the menu'],
-  // A test's subject, as the module's mark and name in its tint. It says
-  // which door the test is behind; it is not a badge about the child.
-  ['.tk-vakbadge', 'the module entrance, naming a test'],
-  // The track under a module's bar on the front door, in that module's tint
-  // rather than the sunken grey. The fill is already allowed as the progress
-  // bar, and the handoff draws the track as the same module.
-  ['.tk-verder .tk-progress-rail', 'the progress bar, on the front door'],
-  // The same pair as .tk-plaat — the module's pictogram and the module's
-  // name — at the head of the module's own page. If anything in the product is
-  // the module entrance, the line that says which module you have entered is,
-  // and on a phone it is the only thing that says so at all: §D drops the rail
-  // at that width. The heading under it stays ink.
-  ['.tk-modulebadge', 'the module entrance, at the head of its own page'],
-  // The number of each question on that page: the page's own order, told in
-  // the module's colour. The question beside it stays ink.
-  ['.tk-stap-nummer', 'the module entrance, numbering its own page'],
 ]);
 
 /**
- * Where an accent may be *defined* rather than used: the root, where it is the
- * handoff's green, and `data-accent="module"`, which points it at the module's
- * own colour inside a module — its page, its rounds, its rail entry (ADR-112).
+ * Where an accent may be *defined* rather than used: the root, and nowhere
+ * else. ADR-112 let `data-accent="module"` point it at the module's own colour;
+ * the styleguide takes that back, and the accent is one colour in every module.
  */
-const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
+const DEFINITION_SELECTORS = /^:root$/;
 
 /** Lines in components that may name an accent, and why. */
 const ALLOWED_LINES: readonly { file: string; snippet: string; why: string }[] = [
-  {
-    file: 'src/features/practice/PracticeScreen.tsx',
-    snippet: 'bg-accent',
-    why: 'the progress bar',
-  },
   {
     file: 'src/features/practice/MapCanvas.tsx',
     snippet: 'var(--accent',
@@ -129,7 +86,7 @@ function isComment(line: string): boolean {
   return /^\s*(\/\/|\/\*|\*)/.test(line.trim()) || line.trim().startsWith('{/*');
 }
 
-describe('a module accent colours three things and nothing else', () => {
+describe('the accent colours what is chosen and nothing else', () => {
   it('paints with an accent only in rules that are allowed to', () => {
     const css = readFileSync(join(ROOT, 'src', 'index.css'), 'utf8').replace(
       /\/\*[\s\S]*?\*\//g,

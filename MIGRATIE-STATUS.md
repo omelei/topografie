@@ -39,8 +39,11 @@ rest is gelijkgetrokken:
 
 - **Een ronde is licht.** De donkere set (`--donker-*`) is weg;
   `data-thema="ronde"` zet alleen nog de trefmaten op 56.
-- **Het accent volgt het vak.** Binnen een vak draagt wat gekozen is de kleur
-  van dat vak (`data-accent="module"`); daarbuiten blijft het groen.
+- **Het accent is de actiekleur.** Wat je kunt indrukken is overal indigo, in
+  elk vak (styleguide §02). De kleur van een vak duidt het vak aan — zijn tegel
+  en zijn balk — en groen is alleen nog een status. ADR-112 liet een vak het
+  accent overnemen; dat is teruggenomen, en `data-accent="module"` verandert
+  niets meer.
 - Eén sectiekop (`tk-sectie`), één lijst (`tk-lijst`), één tegel voor getallen
   (`tk-cijfer`) en één typografische rol per soort tekst — zie
   `docs/HUISSTIJL.md`.
@@ -48,11 +51,15 @@ rest is gelijkgetrokken:
   zijn badges op de pagina Jij.
 - Het logo is uitwerking 3a: Hanken Grotesk met de ring en het naaldje
   (`docs/logo`).
-- **De grond zegt waar je bent (ADR-120).** Op de pagina van een vak staat
-  `main` op een zachte versie van de tint van dat vak (`--topo-grond` enz.), op
-  Vandaag op een zachte versie van het groen (`--vandaag-grond`). Beide zijn
-  gemengd uit bestaande tokens met `color-mix`, zonder nieuwe hex, en
-  `contrast.test.ts` meet elke inkt er opnieuw op.
+- **Eén grond, overal.** ADR-120 gaf elke vakpagina een zachte versie van zijn
+  eigen tint; de styleguide neemt dat terug in §01 — een paginabrede vaktint
+  maakt witte kaarten grauw. `--topo-grond` en `--vandaag-grond` bestaan nog,
+  `Shell` zet nog steeds `data-grond`, maar ze wijzen alle zeven naar
+  `--papier`. Waar je bent lees je af aan de tegel van het vak.
+- **Het palet is dat van de styleguide "Leisteen".** Koel grijsblauw als grond,
+  zuiver witte kaarten, indigo als actiekleur, zes vakhues op gelijke lichtheid
+  en chroma. De styleguide schrijft in oklch, `src/index.css` in de sRGB die een
+  browser daarvan maakt; de oklch staat ernaast in het commentaar.
 
 ## 2a. Stap 1: de tokens stonden ernaast
 

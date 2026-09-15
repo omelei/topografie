@@ -3,16 +3,21 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 /* eslint-disable no-restricted-syntax -- the one place a hex is quoted on
-   purpose: the handoff's table, to hold the stylesheet to it letter for letter. */
+   purpose: the palette's table, to hold the stylesheet to it letter for letter. */
 
 /**
  * The house style, held in place (ADR-109, docs/HUISSTIJL.md).
  *
- * The tokens come from design_handoff_leernu/README.md and are definitive. This
- * file is what makes that true for the next page as well as for this one: a new
- * screen that reaches for a literal colour, a shadow, a third typeface or one
- * of the old token names fails here, with the file and the line, before anyone
- * has to notice it in a screenshot.
+ * The colours are the styleguide's ("Leisteen", docs/leer.nu Styleguide - Leisteen.dc.html)
+ * and the rest of the tokens are design_handoff_leernu/README.md's; both are
+ * definitive. This file is what makes that true for the next page as well as
+ * for this one: a new screen that reaches for a literal colour, a shadow, a
+ * third typeface or one of the old token names fails here, with the file and
+ * the line, before anyone has to notice it in a screenshot.
+ *
+ * The styleguide writes its colours in oklch and index.css in the sRGB a
+ * browser resolves them to, so the hexes below are that resolution — the oklch
+ * they came from stands beside each one in index.css.
  */
 
 const ROOT = process.cwd();
@@ -54,22 +59,81 @@ function offenders(pattern: RegExp, files: string[]): string[] {
   return found;
 }
 
-describe('the tokens are the handoff’s', () => {
+describe('the tokens are the styleguide’s', () => {
   it.each([
-    ['canvas', '#dcd9cd'],
-    ['papier', '#efede4'],
-    ['kaart', '#fbfaf6'],
-    ['inkt', '#1a201b'],
-    ['tekst-secundair', '#525953'],
-    ['tekst-tertiair', '#666c67'],
-    ['rand-licht', '#d8d6cc'],
-    ['rand-sterk', '#c1beb2'],
-    ['nadruk', '#327f48'],
-    ['nadruk-vlak', '#eafbec'],
-    ['nadruk-tekst', '#2c5c3a'],
-    // The handoff's dark half is not carried since ADR-112: a round is light.
+    ['canvas', '#e3e7ef'],
+    ['papier', '#eff1f5'],
+    ['kaart', '#ffffff'],
+    ['inkt', '#1b2230'],
+    ['tekst-secundair', '#5a6274'],
+    // The styleguide's caption ink is #6a7385, which it measures on a card and
+    // not on the ground, where it fails AA. index.css carries that colour two
+    // steps darker, on the same hue and chroma; contrast.test.ts is what holds
+    // it there, and this is the note that says the difference is deliberate.
+    ['tekst-tertiair', '#636c7e'],
+    ['rand-licht', '#dde1e8'],
+    ['rand-sterk', '#d6dbe3'],
+    ['balk-leeg', '#e7eaf1'],
+    ['actie', '#385db8'],
+    ['actie-hover', '#264698'],
+    ['actie-tint', '#e2ebff'],
+    ['actie-tekst', '#264698'],
+    ['nadruk', '#0a7e3a'],
+    ['nadruk-vlak', '#d1f2d7'],
+    ['nadruk-tekst', '#005724'],
+    ['fout', '#ba3535'],
+    ['fout-vlak', '#ffe4e1'],
+    // The styleguide's dark half (§08) is not carried since ADR-112: a round
+    // is light.
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
+  });
+
+  /**
+   * The six subjects, §03: one hue each, at equal lightness and chroma, in
+   * three strengths — the light tile, the full colour and the dark tone that
+   * names the subject in words. The styleguide draws five and says a sixth
+   * belongs on hue 25 or 105; tijdvakken takes 105, because 25 is the red that
+   * means wrong.
+   */
+  it.each([
+    ['topo-tint', '#c9e0ff'],
+    ['topo', '#3072c1'],
+    ['topo-text', '#004b96'],
+    ['tafels-tint', '#c9f0d5'],
+    ['tafels', '#00884d'],
+    ['tafels-text', '#005d33'],
+    ['klok-tint', '#ffddc7'],
+    ['klok', '#b75f0b'],
+    ['klok-text', '#834100'],
+    ['woorden-tint', '#edd8fd'],
+    ['woorden', '#8a57ae'],
+    ['woorden-text', '#643185'],
+    ['tijdvakken-tint', '#e9e7bd'],
+    ['tijdvakken', '#7c7400'],
+    ['tijdvakken-text', '#554f00'],
+    ['vlaggen-tint', '#b7edf0'],
+    ['vlaggen', '#008287'],
+    ['vlaggen-text', '#00585c'],
+  ])('--%s is %s', (name, hex) => {
+    expect(rootValue(name)?.toLowerCase()).toBe(hex);
+  });
+
+  /**
+   * And no page stands on a subject tint any more (§01, which takes ADR-120
+   * back): the tint made white cards look grey, and every screen now carries
+   * the same neutral ground. The tokens stay so a screen need not know.
+   */
+  it.each([
+    ['topo-grond'],
+    ['tafels-grond'],
+    ['klok-grond'],
+    ['woorden-grond'],
+    ['tijdvakken-grond'],
+    ['vlaggen-grond'],
+    ['vandaag-grond'],
+  ])('--%s is the one ground', (name) => {
+    expect(rootValue(name)).toBe('var(--papier)');
   });
 
   it.each([
@@ -115,8 +179,8 @@ describe('the tokens are the handoff’s', () => {
     ['touch-duim', '56px'],
     ['touch-ronde', '56px'],
     ['touch-vo', '44px'],
-    // The one shadow.
-    ['schaduw-beloning', '0 10px 18px rgb(26 32 27 / 22%)'],
+    // The one shadow, on the styleguide's ink.
+    ['schaduw-beloning', '0 10px 18px rgb(27 34 48 / 22%)'],
   ])('--%s is %s', (name, value) => {
     expect(rootValue(name)).toBe(value);
   });

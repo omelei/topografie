@@ -14,8 +14,10 @@ import { LOCKUP, LOCKUP_GLYPHS, LOCKUP_MERK, LOCKUP_MIN_PX, LOCKUP_X_HOOGTE } fr
  *   clear space   the diameter of the ring, on all four sides
  *   case          always lower, including at the start of a sentence
  *
- * The mark never takes a module accent. What a module changes is the path behind
- * the name — leer.nu/topo — and nothing about the mark itself.
+ * The letters are ink and the ring is the brand's own colour, as the styleguide
+ * draws the mark in the app bar. The mark never takes a module accent: what a
+ * module changes is the path behind the name — leer.nu/topo — and nothing about
+ * the mark itself.
  */
 
 /** The ring's outer diameter, as a share of the box's height. */
@@ -28,7 +30,7 @@ const QUIET_X_HEIGHT = 1034 / 2000;
 export interface WordmarkProps {
   /** Height in px of the letters' box, from the baseline to the top of the l. */
   readonly height?: number;
-  /** Ink on paper, or paper on ink. Never an accent. */
+  /** The mark on paper, or paper on ink. Never an accent. */
   readonly tone?: 'ink' | 'paper';
   /**
    * The clear space the logo asks for: the ring's diameter on all four sides.
@@ -53,6 +55,9 @@ export function Wordmark({
   className,
 }: WordmarkProps) {
   const drawn = Math.max(LOCKUP_MIN_PX, height);
+  // The letters are ink and the mark is the brand's own colour. Reversed out
+  // of ink both are the light: a coloured ring on a dark ground does not read.
+  const merk = tone === 'ink' ? 'var(--merk)' : 'currentColor';
 
   return (
     <span
@@ -89,10 +94,10 @@ export function Wordmark({
           cy={LOCKUP_MERK.cy}
           r={LOCKUP_MERK.r}
           fill="none"
-          stroke="currentColor"
+          stroke={merk}
           strokeWidth={LOCKUP_MERK.stroke}
         />
-        <path d={LOCKUP_MERK.naald} />
+        <path d={LOCKUP_MERK.naald} fill={merk} />
       </svg>
 
       {path ? (

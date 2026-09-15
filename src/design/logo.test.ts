@@ -3,6 +3,10 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { LOCKUP, LOCKUP_GLYPHS, LOCKUP_MERK, MERK, MERK_KLEIN, MERK_NAALD_VANAF_PX } from './logo';
 
+/* eslint-disable no-restricted-syntax -- the second place a hex is quoted on
+   purpose: the logo's own files, to hold the drawing to the colours the
+   styleguide gives it. index.css keeps the same two under --inkt and --merk. */
+
 const svg = (name: string) =>
   readFileSync(join(process.cwd(), 'docs', 'logo', 'svg', name), 'utf8');
 
@@ -44,7 +48,29 @@ describe('the logo is the one in docs/logo', () => {
       `<circle cx="${LOCKUP_MERK.cx}" cy="${LOCKUP_MERK.cy}" r="${LOCKUP_MERK.r}"`,
     );
     expect(file).toContain(`stroke-width="${LOCKUP_MERK.stroke}"`);
-    expect(file).toContain(`<path d="${LOCKUP_MERK.naald}"/>`);
+    expect(file).toContain(`<path d="${LOCKUP_MERK.naald}"`);
+  });
+
+  it('draws the letters in ink and the ring in the mark’s own colour', () => {
+    // The styleguide draws the mark in the action colour and the name in ink;
+    // --merk and --inkt in index.css are the same two, which is why the wordmark
+    // component can hand the ring a token and get this drawing. Reversed out of
+    // ink everything is the light: a coloured ring on a dark ground does not read.
+    const licht = svg('woordbeeld-inkt.svg');
+    expect(licht).toContain('fill="#1B2230"');
+    expect(licht).toContain('stroke="#385DB8"');
+    expect(licht).toContain(`<path d="${LOCKUP_MERK.naald}" fill="#385DB8"/>`);
+
+    const donker = svg('woordbeeld-papier.svg');
+    expect(donker).toContain('fill="#FFFFFF"');
+    expect(donker).toContain('stroke="#FFFFFF"');
+    expect(donker).not.toContain('#385DB8');
+  });
+
+  it('puts the mark’s colour under the favicon and the light on top of it', () => {
+    const favicon = svg('favicon.svg');
+    expect(favicon).toContain('fill="#385DB8"');
+    expect(favicon).toContain('stroke="#FFFFFF"');
   });
 
   it('keeps the ring between the words in the proportions of the mark on its own', () => {
