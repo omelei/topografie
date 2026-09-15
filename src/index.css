@@ -3132,6 +3132,26 @@
    * button and a counter do not all fit across 393 (ADR-032's smallest phone),
    * and a progress bar missing its tail is a smaller lie than a counter that
    * is half a character wide. */
+  /* De stippen met het woord ernaast (ADR-140).
+   *
+   * Het woord krimpt niet en de stippen wel: die hebben `overflow: hidden` en
+   * knippen netjes af, en een kind dat weet dat dit de laatste vraag is heeft
+   * meer aan dat woord dan aan de tiende stip. Een eerdere versie verstopte het
+   * onder 480px omdat de balk daar krap is — precies de fout die ADR-126 al
+   * maakte met de premiumknop: het weghalen bij de gebruikers die het het
+   * hardst nodig hebben. */
+  .tk-round-voortgang {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-round-laatste {
+    flex: none;
+    color: var(--tekst-secundair);
+    font-weight: 600;
+    white-space: nowrap;
+  }
   .tk-round-dots {
     display: flex;
     align-items: center;
