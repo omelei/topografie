@@ -9,9 +9,16 @@ import {
   type Schedulable,
   type StreakChange,
 } from '@/game-core';
-import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
+import {
+  finishSession,
+  loadAccuracy,
+  loadItemStates,
+  saveAnswer,
+  startSession,
+} from '@/store/progress';
 import { recordRoundFinished } from '@/store/streakStore';
 import { klimVan, type Klim } from './klim';
+import { sterstandVan, type Sterstand } from './ster';
 import { usePreferences } from '@/features/player/settings';
 import { speelUitkomst } from './geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
@@ -99,6 +106,13 @@ export interface RondeKern<S, Q, T, A> {
   readonly correctCount: number;
   readonly answeredCount: number;
   readonly combo: number;
+  /**
+   * De ster die dit antwoord opleverde, of null als het antwoord fout was.
+   *
+   * Tien goede antwoorden zijn een ster — dat stond in `game-core` en het werd
+   * door geen enkel scherm gelezen. Zie `ster.ts`.
+   */
+  readonly ster: Sterstand | null;
   readonly given: A | null;
   readonly lastCorrect: boolean;
   /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
@@ -134,6 +148,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [ster, setSter] = useState<Sterstand | null>(null);
   const [missed, setMissed] = useState<T[]>([]);
   const [streak, setStreak] = useState<StreakChange | null>(null);
   const [reward, setReward] = useState<RoundOutcome | null>(null);
@@ -151,6 +166,16 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const sessionId = useRef<string | null>(null);
   const askedAt = useRef(0);
   const masteredAtStart = useRef(0);
+  /**
+   * Alle goede antwoorden van vóór deze ronde.
+   *
+   * Eén keer gelezen en daarna opgeteld bij wat deze ronde oplevert, in plaats
+   * van bij elk antwoord opnieuw: `loadAccuracy` loopt over élke poging die dit
+   * kind ooit deed, en dat tien keer per ronde doen op een schoollaptop is een
+   * ronde die hapert op het moment dat ze zou moeten belonen. Elk goed antwoord
+   * verhoogt beide tellingen met één, dus de optelling klopt de hele ronde.
+   */
+  const goedVoorRonde = useRef(0);
   /**
    * Wall-clock end of a timed round, set once. Counting down on a tick loses
    * whatever each tick was late by, and over sixty seconds on a school
@@ -171,8 +196,9 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
     async function boot() {
       try {
-        const loadedStates = await loadItemStates();
+        const [loadedStates, tot_nu] = await Promise.all([loadItemStates(), loadAccuracy()]);
         if (cancelled) return;
+        goedVoorRonde.current = tot_nu.correct;
 
         const opzet = await stel.current(loadedStates, rule);
         if (cancelled) return;
@@ -222,8 +248,13 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       // De motor, zichtbaar gemaakt (ADR-137): dit onderdeel schuift een trede
       // op en komt daardoor later terug. Alleen omhoog — zie `klim.ts`.
       setKlim(klimVan(previous, nextState, correct));
+      // De ster die dit antwoord vol maakte, of geen. Hij wordt hier gerekend
+      // en niet bij het tekenen, omdat het geluid hem nodig heeft: een ster
+      // klinkt als het antwoord met één toon erachteraan, op hetzelfde moment.
+      const sterstand = correct ? sterstandVan(goedVoorRonde.current + correctCount + 1) : null;
+      setSter(sterstand);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
-      speelUitkomst(correct, geluidAan);
+      speelUitkomst(correct, geluidAan, sterstand?.voltooid === true);
       setPhase('revealed');
 
       const nextCombo = correct ? combo + 1 : 0;
@@ -366,6 +397,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     correctCount,
     answeredCount,
     combo,
+    ster,
     given,
     lastCorrect,
     klim,

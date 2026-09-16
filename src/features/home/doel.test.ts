@@ -162,7 +162,6 @@ describe('welk diploma een ronde opleverde', () => {
     vlagDiploma: null,
     klokDiploma: null,
     topoDiploma: null,
-    sterren: { erbij: 0, inKist: 0 },
     kistenTeGoed: 0,
   } as const;
 

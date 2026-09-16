@@ -22,6 +22,8 @@ import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { Klim } from '@/features/round/Klim';
+import { Ster } from '@/features/round/Ster';
+import { DREEF, opDreef } from '@/features/round/dreef';
 import { Maatje } from '@/features/round/Maatje';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
@@ -148,11 +150,13 @@ export function TaalScreen({
               <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
             </>
           ) : null}
-          <Counter
-            label={t('practice.counterCombo')}
-            value={`×${state.combo}`}
-            onlyWide={state.rule.kind === 'fixed'}
-          />
+          {state.combo >= DREEF ? (
+            <Counter
+              label={t('practice.counterCombo')}
+              value={String(state.combo)}
+              onlyWide={state.rule.kind === 'fixed'}
+            />
+          ) : null}
         </div>
       </header>
 
@@ -304,11 +308,13 @@ function Vraag({
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
                   {/* Wat dit antwoord met dit woord deed (ADR-137). */}
                   {state.klim ? <Klim klim={state.klim} /> : null}
+                  {/* En de ster die dit antwoord opleverde (ster.ts). */}
+                  {state.ster ? <Ster stand={state.ster} /> : null}
                 </div>
               </div>
 
               {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
-              <Maatje goed={correct} />
+              <Maatje goed={correct} opDreef={opDreef(state.combo)} />
               <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>
                 {t('practice.next')}
               </button>

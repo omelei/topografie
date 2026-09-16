@@ -5,7 +5,6 @@ import { setRetention, type ItemState, type ModeId, type StreakChange } from '@/
 import { BadgeRijen, isBadge } from '@/features/badges/Badges';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
-import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -94,11 +93,13 @@ export function RondeKlaar({
   const ModuleIcon = MODULE_ICON[moduleId];
   const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
   const vorm = toetsstand ? t('choose.testMode') : t(`mode.${mode}` as TranslationKey);
-  // The badges and the streak are premium (ADR-116). They are still earned
-  // and counted underneath; without a code this page just does not say so.
-  const { actief } = usePremium();
-  const badges = actief ? (reward?.stamps ?? []).filter(isBadge) : [];
-  const reeks = actief ? reeksZin(streak) : null;
+  // De badges en de streakzin waren premium (ADR-116) en zijn dat niet meer.
+  // Ze werden verdiend, geteld en weggeschreven, en op dit scherm gebeurde er
+  // niets — dezelfde fout als de munten en de XP van ADR-130, met een
+  // prijskaartje eromheen. Wat een kind verdient, ziet een kind; premium
+  // verkoopt het plannen en het bijhouden.
+  const badges = (reward?.stamps ?? []).filter(isBadge);
+  const reeks = reeksZin(streak);
 
   return (
     <main className="tk-uitslag" data-module={moduleId} data-accent="module">

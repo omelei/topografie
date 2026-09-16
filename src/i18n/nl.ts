@@ -61,6 +61,10 @@ export const nl = {
   'vandaag.klaarUitleg': 'Je hebt alles herhaald wat vandaag aan de beurt was.',
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
+  'vandaag.afTitel': 'Vandaag is af',
+  'vandaag.af': 'Vandaag is af.',
+  'vandaag.morgen': 'Morgen staan er {aantal} klaar.',
+  'vandaag.morgenEen': 'Morgen staat er 1 klaar.',
   'vandaag.verder': 'Volgende ronde',
   // Waar dit kind zelf voor gaat (ADR-141). Een diploma, want dat is de enige
   // mijlpaal in dit product die een kind van acht zelf zou noemen — en de
@@ -578,7 +582,7 @@ export const nl = {
   'premium.usp.gezinUit':
     'Eén code voor het hele gezin, op maximaal drie apparaten, een schooljaar lang.',
   'premium.watKlein':
-    'En verder: de bliksemronde en overleven, de diploma’s voor vlaggen, klok en topo, je badges en je reeks.',
+    'En verder: de bliksemronde en overleven, de diploma’s voor vlaggen, klok en topo, en het bijhouden van je reeks week na week.',
 
   // Wat gratis blijft, vóór de prijs. Het sterkste dat er te zeggen valt, dus
   // het staat niet als grijze voetnoot onder een lijst maar als eigen kop.
@@ -588,6 +592,10 @@ export const nl = {
   'premium.vrij.fouten': 'Je fouten meteen nog een keer doen na een ronde.',
   'premium.vrij.diploma': 'Je twaalf tafeldiploma’s.',
   'premium.vrij.voorspelling': 'Na elke ronde: hoeveel je er over drie weken nog van weet.',
+  // Badges en reeks zijn hierheen verhuisd: ze werden verdiend en niet
+  // getoond, en dat is geen aanbod maar een gemis met een prijskaartje.
+  'premium.vrij.badges': 'Je sterren, je kisten, je helden en je tien badges.',
+  'premium.vrij.reeks': 'Hoeveel dagen op rij je hebt geoefend.',
 
   // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen — en
   // alle vier controleerbaar, want dat is het punt.
@@ -641,7 +649,7 @@ export const nl = {
     'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
   'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
   'premium.wat.jij':
-    'De diploma’s voor vlaggen, klok en topo, de badges, en meer dan één kind op dit apparaat.',
+    'De diploma’s voor vlaggen, klok en topo, en meer dan één kind op dit apparaat.',
 
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
@@ -1256,8 +1264,16 @@ export const nl = {
   'kist.gewonnenHoger': '{naam} gaat naar {reeks}.',
   'kist.gewonnenDubbel': '{naam} komt dichterbij: nog {aantal} te gaan.',
   'kist.gewonnenVol': '{naam} was al helemaal klaar.',
+  'kist.vooruitTitel': 'De volgende kist',
+  'kist.vooruit': 'Nog {aantal} goede antwoorden tot je kist.',
+  'kist.vooruitEen': 'Nog 1 goed antwoord tot je kist.',
+  'kist.vooruitWie': 'Erin zitten {namen} — je kiest er één.',
+  'kist.vooruitWieEen': 'Erin zit {naam}.',
+  'kist.vooruitEn': 'en',
   'kist.volgende': 'De volgende kist',
   'kist.verzameling': 'Je hebt {aantal} van de {totaal} helden.',
+  'ster.onderweg': 'Nog {aantal} tot je kist.',
+  'ster.gehaald': 'Ster {ster} van {totaal}.',
   'klim.beter': 'Je kent dit steeds beter.',
   'klim.onthouden': 'Dit onthoud je nu.',
   'ouder.title': 'Voor ouders',

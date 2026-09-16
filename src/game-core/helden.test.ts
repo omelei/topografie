@@ -9,7 +9,6 @@ import {
   KIST_VOLGORDE,
   kistenTeGoed,
   kistenVoor,
-  kistProgress,
   openKist,
   sterrenInKist,
   sterrenVoor,
@@ -63,12 +62,6 @@ describe('stars and chests', () => {
     expect(goedInSter(7)).toBe(7);
     expect(goedInSter(10)).toBe(0);
     expect(goedInSter(23)).toBe(3);
-  });
-
-  it('fills the bar towards the chest rather than towards the level', () => {
-    expect(kistProgress(0)).toBe(0);
-    expect(kistProgress(25)).toBe(0.5);
-    expect(kistProgress(50)).toBe(0);
   });
 
   it('never counts backwards from a negative number', () => {

@@ -18,11 +18,18 @@ import {
 import { loadGeoSet, loadPointSet, type Detailniveau, type GeoSet } from '@/content/loadGeo';
 import { loadAllItems, loadItemSets } from '@/content/loadSets';
 import { loadNeighbours } from '@/content/loadNeighbours';
-import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
+import {
+  finishSession,
+  loadAccuracy,
+  loadItemStates,
+  saveAnswer,
+  startSession,
+} from '@/store/progress';
 import { recordRoundFinished } from '@/store/streakStore';
 import { usePreferences } from '@/features/player/settings';
 import { speelUitkomst } from '@/features/round/geluid';
 import { klimVan, type Klim } from '@/features/round/klim';
+import { sterstandVan, type Sterstand } from '@/features/round/ster';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 import type { AnswerLayer } from './MapCanvas';
 
@@ -419,6 +426,8 @@ export interface RoundState {
   readonly total: number;
   readonly correctCount: number;
   readonly combo: number;
+  /** De ster die dit antwoord opleverde, of null als het antwoord fout was. */
+  readonly ster: Sterstand | null;
   readonly chosenId: string | null;
   readonly lastCorrect: boolean;
   /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
@@ -505,6 +514,14 @@ export function useRound(
    * not have worked out for themselves.
    */
   const masteredAtStart = useRef(0);
+  /**
+   * Alle goede antwoorden van vóór deze ronde, één keer gelezen.
+   *
+   * Zie `round/useRoundCore.ts` voor het waarom: `loadAccuracy` loopt over elke
+   * poging ooit, en dat tien keer per ronde doen is een ronde die hapert op het
+   * moment dat ze zou moeten belonen.
+   */
+  const goedVoorRonde = useRef(0);
   const [questions, setQuestions] = useState<RoundQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const { geluid: geluidAan } = usePreferences();
@@ -515,6 +532,7 @@ export function useRound(
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [combo, setCombo] = useState(0);
+  const [ster, setSter] = useState<Sterstand | null>(null);
   const [missed, setMissed] = useState<Item[]>([]);
   // Memoised, and that is not a micro-optimisation: `rule` is a dependency of
   // the effect that composes the round, so a fresh object every render would
@@ -557,12 +575,14 @@ export function useRound(
         // what `setsInRound` guarantees, so the first one decides for all.
         const achtergrond = SETS[sets[0]?.id as SetId];
 
-        const [loadedGeo, loadedLayers, loadedStates] = await Promise.all([
+        const [loadedGeo, loadedLayers, loadedStates, totNu] = await Promise.all([
           loadGeoSet(achtergrond.achtergrond, 'region', achtergrond.regio),
           Promise.all(sets.map((set) => loadAnswerLayer(SETS[set.id as SetId]))),
           loadItemStates(),
+          loadAccuracy(),
         ]);
         if (cancelled) return;
+        goedVoorRonde.current = totNu.correct;
 
         const layerBySet = new Map<SetId, AnswerLayer>(
           sets.map((set, at) => [set.id as SetId, loadedLayers[at] as AnswerLayer]),
@@ -692,8 +712,13 @@ export function useRound(
       setLastCorrect(correct);
       // De motor, zichtbaar gemaakt (ADR-137). Alleen omhoog — zie `klim.ts`.
       setKlim(klimVan(previous, nextState, correct));
+      // De ster die dit antwoord vol maakte, of geen. Hier gerekend en niet bij
+      // het tekenen, omdat het geluid hem nodig heeft: een ster klinkt als het
+      // antwoord met één toon erachteraan, op hetzelfde moment.
+      const sterstand = correct ? sterstandVan(goedVoorRonde.current + correctCount + 1) : null;
+      setSter(sterstand);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
-      speelUitkomst(correct, geluidAan);
+      speelUitkomst(correct, geluidAan, sterstand?.voltooid === true);
       setPhase('revealed');
       const nextCombo = correct ? combo + 1 : 0;
       setCombo(nextCombo);
@@ -952,6 +977,7 @@ export function useRound(
     total: questions.length,
     correctCount,
     combo,
+    ster,
     chosenId,
     lastCorrect,
     klim,

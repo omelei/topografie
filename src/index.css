@@ -3681,6 +3681,39 @@
     background: var(--kaart);
   }
 
+  /* De dag die af is: de held groot, en één zin over morgen.
+   *
+   * Honderdtwintig pixels — groter dan het maatje in een ronde en kleiner dan
+   * de kist. Dit gebeurt één keer per dag, en ceremonie schaalt met
+   * zeldzaamheid: wat zevenentwintig keer per dag gebeurt mag tweehonderdzestig
+   * milliseconden en acht­enachtig pixels kosten, wat één keer per dag gebeurt
+   * meer.
+   *
+   * Geen band en geen kaart. "Vandaag herhalen" heeft een dikke band omdat er
+   * iets moet; hier hoeft niets meer, en een tweede nadruk op hetzelfde scherm
+   * is geen nadruk. */
+  .tk-dagaf {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .tk-dagaf-tekst {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tk-dagaf-titel {
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    /* De held komt op. Dezelfde komst als bij de kist, want dit is dezelfde
+     * soort gebeurtenis: iets dat af is. */
+    .tk-dagaf-held {
+      animation: tk-kist-held var(--beweeg-traag) var(--beweeg-veer);
+    }
+  }
+
   /* "Waar je voor gaat" (ADR-141). Dezelfde kaart als "Vandaag herhalen", maar
    * met een hairline rondom in plaats van de dikke band aan de voorkant: dat
    * blok zegt wat er nú moet, dit zegt waar het naartoe gaat. Twee keer
@@ -3728,6 +3761,37 @@
     border: var(--stroke-hair) solid var(--rand-licht);
     border-radius: var(--kaart-radius);
     background: var(--kaart);
+  }
+  /* Het vooruitzicht: geen kaart maar een regel.
+   *
+   * Een kist die te openen is, is het enige op het uitslagscherm dat ingedrukt
+   * moet worden en staat daarom in een kaart (ADR-138). Dit is alleen te lezen,
+   * en een tweede kaart in dezelfde kolom zou even hard om aandacht vragen als
+   * de kist zelf — terwijl dit juist zegt dat de kist er nog niet is. */
+  .tk-vooruit {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tk-vooruit-rij {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-vooruit-sterren {
+    display: inline-flex;
+    gap: 2px;
+  }
+  /* Leeg is de randkleur, vol is inkt. Geen modulekleur: dit staat op het
+   * uitslagscherm van élke module, en de kist hoort bij geen enkele (ADR-098).
+   * Vol tegen leeg is bovendien ook hier een vorm en niet alleen een kleur. */
+  .tk-vooruit-ster {
+    display: inline-flex;
+    color: var(--rand);
+  }
+  .tk-vooruit-ster[data-vol='ja'] {
+    color: var(--inkt);
   }
   .tk-kist-kop {
     display: flex;
@@ -3831,6 +3895,72 @@
     }
   }
 
+  /* ---- De ster (ster.ts) ------------------------------------------------
+   * Tien treden en een ster erachter, in dezelfde vorm als de klim ernaast:
+   * dat zijn twee dingen die allebei zeggen "dit antwoord bracht je verder",
+   * en twee verschillende vormen naast elkaar zouden lezen als twee soorten
+   * beloning terwijl het er één is.
+   *
+   * De treden zijn rond en de klim heeft hoekige: de klim gaat over dít
+   * onderdeel, de ster over alles bij elkaar. Vol tegen leeg is ook hier een
+   * vorm en niet alleen een kleur (§A).
+   *
+   * **De ster staat er altijd**, grijs zolang de rij loopt. Een teken dat pas
+   * verschijnt op het moment dat het verdiend is, verspringt de regel eronder
+   * — en dat is precies de knop waar een vinger net naartoe onderweg was. */
+  .tk-ster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 0;
+  }
+  .tk-ster-rij {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .tk-ster-trede {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--rand);
+    border-radius: 50%;
+    background: transparent;
+  }
+  .tk-ster-trede[data-vol='ja'] {
+    border-color: var(--inkt);
+    background: var(--inkt);
+  }
+  .tk-ster-teken {
+    display: inline-flex;
+    margin-left: 5px;
+    color: var(--rand);
+  }
+  /* Verdiend: de ster neemt de kleur van de module aan. Dat is de enige plek
+   * waar kleur hier iets betekent, en het is duiding en geen nadruk (§E) —
+   * het woord ernaast zegt al wát er gebeurde. */
+  .tk-ster[data-vol='ja'] .tk-ster-teken {
+    color: var(--module);
+  }
+  .tk-ster-woord {
+    color: var(--tekst-secundair);
+  }
+  .tk-ster[data-vol='ja'] .tk-ster-woord {
+    color: var(--tekst);
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tk-ster-trede[data-nieuw='ja'] {
+      animation: tk-klim-trede 300ms cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+    /* De ster landt: voorbij en terug, zoals het uitkomstteken. Vierhonderd­-
+     * twintig milliseconden, de traagste maat die dit product kent, want dit
+     * gebeurt twee keer per tien minuten en niet tien keer per ronde. */
+    .tk-ster[data-vol='ja'] .tk-ster-teken {
+      animation: tk-ster-aan var(--beweeg-traag) var(--beweeg-veer);
+    }
+  }
+
   /* Het teken komt aan in plaats van te verschijnen (ADR-134). Een uitkomst die
    * er ineens staat, wordt gelezen; een die beweegt, wordt gezien — en dat
    * scheelt de halve seconde waarin een kind anders zelf moet uitzoeken of het
@@ -3883,6 +4013,19 @@
      * van de terugkoppeling in plaats van een stapeltje losse dingen. */
     justify-content: flex-end;
     margin: 4px 0 0;
+  }
+  /* Drie goed op rij: een ring om je maatje, in de kleur van de module.
+   *
+   * Een pseudo-element en geen `box-shadow` — de huisstijl laat er precies één
+   * toe, op een beloningsplaatje — en absoluut, zodat er niets aan de doos
+   * verandert: de kaart blijft even hoog en de knop eronder blijft staan waar
+   * een vinger net naartoe onderweg was. */
+  .tk-maatje[data-dreef] .tk-maatje-beeld::after {
+    position: absolute;
+    content: '';
+    inset: -5px;
+    border: 2px solid var(--module);
+    border-radius: 50%;
   }
 
   /* ---- De bewegingslaag (ADR-142) ---------------------------------------
@@ -3963,6 +4106,11 @@
     .tk-maatje[data-goed] .tk-maatje-beeld {
       animation: tk-kist-held var(--beweeg-traag) var(--beweeg-veer);
     }
+    /* De ring sluit zich, één keer. Alleen schaal, dus de plaat eronder komt
+     * gewoon binnen zoals hij altijd doet. */
+    .tk-maatje[data-dreef] .tk-maatje-beeld::after {
+      animation: tk-dreef-ring 300ms var(--beweeg-uit);
+    }
 
     /* Een balk die oploopt loopt ook echt op. Hij stond altijd al op de goede
      * stand; hij sprong er alleen heen, en dan is de winst van vandaag niet te
@@ -4016,6 +4164,34 @@
   to {
     transform: scale(1) rotate(0);
     opacity: 1;
+  }
+}
+
+/* De ster die aankomt. Alleen transform en niets dat de doos verandert, dus de
+ * regel eronder blijft staan waar hij stond. */
+/* De ring van drie-op-rij die dichtloopt. Van iets te groot naar precies goed,
+ * zoals iets dat zich sluit — en niet van klein naar groot, want dat leest als
+ * iets dat verschijnt. */
+@keyframes tk-dreef-ring {
+  from {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes tk-ster-aan {
+  0% {
+    transform: scale(0.2) rotate(-30deg);
+  }
+  60% {
+    transform: scale(1.25) rotate(8deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
   }
 }
 
