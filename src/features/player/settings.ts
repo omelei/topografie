@@ -12,6 +12,11 @@ import { getSetting, setSetting } from '@/store/profile';
  * second, "Klok bij het oefenen", whose only job was to hide the bliksemronde.
  * ADR-112 offers the bliksemronde on every page, so the switch had nothing left
  * to switch and went. A value a child stored for it is simply no longer read.
+ *
+ * ADR-145 adds two, and only two, by the same rule: each is wired to something
+ * that exists and that a family has a reason to turn off. Since ADR-142 the
+ * product moves and a hero turns up after every answer — both good for most
+ * children and both too much for some.
  */
 
 export interface Preferences {
@@ -27,11 +32,33 @@ export interface Preferences {
    * in de klas of naast een slapende broer, zet ze hier uit.
    */
   readonly geluid: boolean;
+  /**
+   * Minder beweging (ADR-145). Uit bij het begin: het systeem van het apparaat
+   * zegt het al als iemand dat nodig heeft (`prefers-reduced-motion`). Maar een
+   * iPad in de keuken staat zelden zo ingesteld, en een kind dat snel afgeleid
+   * is heeft er dan niets aan. Dit zet dezelfde regel aan, voor deze app alleen.
+   */
+  readonly rustig: boolean;
+  /**
+   * De held na een antwoord (ADR-142, ADR-145). Aan bij het begin. Uit laat de
+   * ruimte staan, zodat de knop eronder niet verspringt.
+   */
+  readonly maatje: boolean;
 }
 
-export const DEFAULT_PREFERENCES: Preferences = { readAloud: true, geluid: true };
+export const DEFAULT_PREFERENCES: Preferences = {
+  readAloud: true,
+  geluid: true,
+  rustig: false,
+  maatje: true,
+};
 
-const KEY = { readAloud: 'voorlezen', geluid: 'geluid' } as const;
+const KEY = {
+  readAloud: 'voorlezen',
+  geluid: 'geluid',
+  rustig: 'rustig',
+  maatje: 'maatje',
+} as const;
 
 /** Stored as strings because that is what the settings store holds. */
 function read(value: string | undefined, fallback: boolean): boolean {
@@ -40,18 +67,32 @@ function read(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function loadPreferences(): Promise<Preferences> {
-  const [readAloud, geluid] = await Promise.all([
+  const [readAloud, geluid, rustig, maatje] = await Promise.all([
     getSetting(KEY.readAloud),
     getSetting(KEY.geluid),
+    getSetting(KEY.rustig),
+    getSetting(KEY.maatje),
   ]);
   return {
     readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud),
     geluid: read(geluid, DEFAULT_PREFERENCES.geluid),
+    rustig: read(rustig, DEFAULT_PREFERENCES.rustig),
+    maatje: read(maatje, DEFAULT_PREFERENCES.maatje),
   };
 }
 
 export async function savePreference(name: keyof Preferences, on: boolean): Promise<void> {
   await setSetting(KEY[name], on ? 'aan' : 'uit');
+}
+
+/**
+ * Minder beweging, op het hele document. Een attribuut op `<html>` en niet een
+ * prop, want de bewegingslaag staat in de stylesheet (ADR-142) en die hoort het
+ * op dezelfde plek te lezen als `prefers-reduced-motion`.
+ */
+export function zetRustig(aan: boolean): void {
+  if (aan) document.documentElement.dataset.beweging = 'rustig';
+  else delete document.documentElement.dataset.beweging;
 }
 
 /**

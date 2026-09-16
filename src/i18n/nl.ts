@@ -196,6 +196,13 @@ export const nl = {
   'held.titel': 'Jouw held',
   'held.wissel': '{naam}, in {reeks}. Kies een andere held.',
   'held.klaar': 'Klaar',
+  // Wat die held daar doet, naast de begroeting. Stond er niet, en een kind kon
+  // dus niet weten dat het zijn held is en dat spelen er meer oplevert.
+  'held.uitlegJouw': '{naam} is jouw held.',
+  'held.uitlegVerdien': 'Speel rondes en verdien nieuwe helden.',
+  'held.uitlegSterker': 'Je hebt ze allemaal! Speel verder en maak je helden sterker.',
+  'held.uitlegKlaar': 'Al je helden staan op ultra. Knap gedaan!',
+  'held.uitlegWissel': 'Druk op je held om een andere te kiezen.',
   // De prijzenkast op Jij (ADR-143): eerst wat je hébt, en de gaten pas als je
   // erom vraagt. Op een modulepagina blijft elk gat een uitnodiging, want daar
   // is hij aan te raken; hier was hij dat niet.
@@ -546,9 +553,15 @@ export const nl = {
   // gaat. Andersom leest elke zin als een muur.
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
+  // De knip van ADR-122, in de woorden van een ouder: oefenen kost niets, en
+  // premium zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
+  // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Oefenen is en blijft gratis: alle vakken, alle onderwerpen, voor altijd. Premium onthoudt vóór je — het plant wanneer iets terug moet komen en laat zien wat er over drie weken nog van over is.',
+    'Je kind oefent alle vakken en onderwerpen gratis, voor altijd. Premium plant het herhalen, laat zien wat er blijft hangen en laat je kind zichzelf overhoren. Voor het hele gezin, een schooljaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
+  'premium.etalageLabel': 'Voor ouders',
+  'premium.etalageKop': 'Oefenen is gratis. Met premium blijft het hangen.',
+  'premium.perSchooljaar': 'per schooljaar',
   'premium.codeTitel': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
@@ -557,69 +570,93 @@ export const nl = {
   'premium.aan': 'Premium staat aan op dit apparaat, tot en met {datum}.',
   // Het einde van een jaar, aangekondigd in plaats van afgewacht (ADR-129).
   'premium.bijnaAf':
-    'Je code loopt af op {datum}. Verleng hem voor die dag, dan merkt er thuis niemand iets van.',
+    'Je code loopt af op {datum}. Verleng hem vóór die dag, dan merkt niemand thuis er iets van.',
   'premium.verlopen':
-    'Je code is afgelopen op {datum}. Alles wat je kinderen geoefend hebben staat gewoon op dit apparaat en komt terug zodra je verlengt.',
+    'Je code is verlopen op {datum}. Alles wat je kinderen hebben geoefend, staat nog gewoon op dit apparaat en komt terug zodra je verlengt.',
   'premium.verlengen': 'Premium verlengen',
   'premium.afmelden': 'Code van dit apparaat halen',
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
-  // Wat premium dóét, in vier klussen (ADR-124). Hiervoor stond hier een lijst
-  // van negen functienamen — "Jouw badges", "Jouw reeks" — allemaal even zwaar.
-  // Een ouder die die woorden leest weet niets meer dan daarvoor. Dit zijn de
-  // vier dingen waarvoor betaald wordt, het plannen bovenaan.
+  // Wat premium dóét, in vier klussen (ADR-124), sinds ADR-145 als kaarten met
+  // een teken. De kop is wat het oplevert, de regel eronder hoe.
   'premium.watTitel': 'Wat premium voor je doet',
-  'premium.usp.plan': 'Het plant het herhalen',
+  'premium.usp.plan': 'Het herhalen wordt voor je gepland',
   'premium.usp.planUit':
-    'Je kind hoeft niet te bedenken wat het vandaag moet doen. Leer.nu zet klaar wat aan de beurt is, net voordat het vergeten wordt.',
+    'Je kind hoeft niet te bedenken waar het moet beginnen. Leer.nu zet elke dag klaar wat aan de beurt is, net voordat het vergeten wordt.',
   'premium.usp.zicht': 'Je ziet wat blijft hangen',
   'premium.usp.zichtUit':
-    'Per onderdeel: wat je kind onthoudt, wat opgefrist moet worden, en hoeveel er over drie weken nog van over is.',
-  'premium.usp.zelf': 'Je hoeft niet meer te overhoren',
+    'Per onderwerp zie je wat je kind al kent, wat opgefrist moet worden en hoeveel het er over drie weken nog van weet.',
+  'premium.usp.zelf': 'Je kind overhoort zichzelf',
   'premium.usp.zelfUit':
-    'Met de oefentoets checkt je kind zichzelf: geen hulp onderweg, en een cijfer aan het eind.',
-  'premium.usp.gezin': 'Voor alle kinderen thuis',
+    'Met de oefentoets test je kind zelf of het de stof kent: zonder hulp, met een cijfer aan het eind. Jij hoeft niet meer te overhoren.',
+  'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
-    'Eén code voor het hele gezin, op maximaal drie apparaten, een schooljaar lang.',
-  'premium.watKlein':
-    'En verder: de bliksemronde en overleven, de diploma’s voor vlaggen, klok en topo, en het bijhouden van je reeks week na week.',
+    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel schooljaar lang.',
 
-  // Wat gratis blijft, vóór de prijs. Het sterkste dat er te zeggen valt, dus
-  // het staat niet als grijze voetnoot onder een lijst maar als eigen kop.
-  'premium.vrijTitel': 'Wat gratis blijft',
-  'premium.vrij.alles': 'Alle vakken en alle onderwerpen, voor altijd.',
-  'premium.vrij.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen.',
-  'premium.vrij.fouten': 'Je fouten meteen nog een keer doen na een ronde.',
-  'premium.vrij.diploma': 'Je twaalf tafeldiploma’s.',
-  'premium.vrij.voorspelling': 'Na elke ronde: hoeveel je er over drie weken nog van weet.',
-  // Badges en reeks zijn hierheen verhuisd: ze werden verdiend en niet
-  // getoond, en dat is geen aanbod maar een gemis met een prijskaartje.
-  'premium.vrij.badges': 'Je sterren, je kisten, je helden en je tien badges.',
-  'premium.vrij.reeks': 'Hoeveel dagen op rij je hebt geoefend.',
+  // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
+  // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
+  // manieren op elke modulepagina. Die drie toetsen, en dat staat er nu.
+  'premium.vergelijkTitel': 'Basis en premium naast elkaar',
+  'premium.vergelijkUitleg':
+    'Oefenen kost niets. De bliksemronde, overleven en de oefentoets zijn premium: daarmee test je kind of het de stof al kent, en dat hoort bij onthouden.',
+  'premium.basisNaam': 'Basis',
+  'premium.basisPrijs': 'Gratis',
+  'premium.basisVoor': 'Alles om te oefenen, in elk vak. Voor altijd, zonder code.',
+  'premium.premiumVoor':
+    'Alles uit Basis, en daarbovenop het onthouden: plannen, bijhouden en zelf overhoren.',
+  'premium.aanrader': 'Aanrader',
+  'premium.tabelWat': 'Onderdeel',
+  'premium.tabelJa': 'Zit erin',
+  'premium.tabelNee': 'Zit er niet in',
+  'premium.groep.oefenen': 'Oefenen',
+  'premium.groep.belonen': 'Belonen',
+  'premium.groep.onthouden': 'Onthouden',
+  'premium.groep.uitdagen': 'Uitdagen',
+  'premium.groep.ouders': 'Voor ouders',
+  'premium.regel.vakken': 'Alle vakken en alle onderwerpen',
+  'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
+  'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
+  'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
+  'premium.regel.helden': 'Sterren, kisten, helden en badges',
+  'premium.regel.tafeldiploma': 'De twaalf tafeldiploma’s',
+  'premium.regel.reeks': 'Het aantal dagen op rij',
+  'premium.regel.diplomas': 'Diploma’s voor vlaggen, klok en topografie',
+  'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
+  'premium.regel.onthouden': 'Per onderwerp zien wat je kind onthoudt',
+  'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
+  'premium.regel.toets': 'Zien wat je kind op de dag van de toets nog weet',
+  'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
+  'premium.regel.bliksem': 'De bliksemronde en overleven',
+  'premium.regel.bericht': 'Het weekbericht: hoe de week ging',
+  'premium.regel.lijsten': 'Oefenstof van school intypen of importeren',
+  'premium.regel.kalender': 'De reeks week na week, als kalender',
+  'premium.regel.gezin': 'Meer kinderen, op maximaal drie apparaten',
 
-  // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen — en
-  // alle vier controleerbaar, want dat is het punt.
+  // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen, en
+  // alle vier controleerbaar, want dat is het punt. Sinds ADR-145 een kop en
+  // een regel, zodat de reden in één oogopslag te lezen is.
   'premium.waaromTitel': 'Waarom leer.nu',
-  'premium.waarom.reclame':
-    'Geen advertenties en geen trackers. Niet als belofte: de broncode staat openbaar, dus je kunt het nakijken.',
-  'premium.waarom.apparaat':
-    'Wat je kind oefent blijft op dit apparaat. Alleen de code gaat naar onze server, om te kijken of hij klopt.',
-  'premium.waarom.abonnement':
-    'Geen abonnement. De code loopt na een schooljaar vanzelf af en er wordt niets afgeschreven.',
-  'premium.waarom.gok':
-    'Belonen zonder gokje: tien goed is een ster, altijd. Geen kisten die misschien iets geven.',
+  'premium.waarom.reclame': 'Geen advertenties, geen trackers',
+  'premium.waarom.reclameUit':
+    'Dat hoef je niet op ons woord te geloven: de broncode is openbaar, dus je kunt het zelf controleren.',
+  'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
+  'premium.waarom.apparaatUit':
+    'Wat je kind oefent, gaat nergens heen. Alleen de code gaat naar onze server, om te controleren of hij klopt.',
+  'premium.waarom.abonnement': 'Geen abonnement',
+  'premium.waarom.abonnementUit':
+    'Je betaalt één keer. De code verloopt na een schooljaar vanzelf, en er wordt nooit iets afgeschreven.',
+  'premium.waarom.gok': 'Belonen zonder gokken',
+  'premium.waarom.gokUit':
+    'Tien goede antwoorden leveren altijd een ster op, en uit elke kist kiest je kind zelf een held.',
 
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
   // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
   'premium.prijs': '€ 24,95',
-  'premium.kopenTitel': 'Wat het kost',
   'premium.kopenUitleg':
-    'Voor een heel schooljaar, voor alle kinderen thuis. Je betaalt met iDEAL en krijgt je code meteen.',
+    'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
 
-  'premium.voorOuders':
-    'Voor ouders: alleen de code gaat naar onze server, om te kijken of hij klopt. Wat je kind oefent, blijft op dit apparaat.',
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',
   'premium.fout.verlopen': 'Deze code is verlopen.',
@@ -640,7 +677,8 @@ export const nl = {
   'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
     'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
-  'premium.wat.lijsten': 'De lijst van school zelf intypen, en je kind oefent hem als flitsdictee.',
+  'premium.wat.lijsten':
+    'De oefenstof van school zelf intypen of importeren, en je kind oefent deze als flitsdictee.',
   'premium.wat.bericht':
     'Hoe de week ging: of er geoefend is, wat er blijft hangen, en wat er wacht.',
   'premium.wat.vandaag':
@@ -649,7 +687,7 @@ export const nl = {
     'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
   'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
   'premium.wat.jij':
-    'De diploma’s voor vlaggen, klok en topo, en meer dan één kind op dit apparaat.',
+    'Premium plant het herhalen, laat zien wat je kind onthoudt en werkt voor al je kinderen.',
 
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
@@ -1213,6 +1251,8 @@ export const nl = {
   'you.geenCijfer': '–',
   'you.weekMost': 'Het meest geoefend: {set}.',
   'you.settings': 'Instellingen',
+  'you.settingsBijOuder':
+    'Voorlezen, geluid, beweging en je held na een antwoord stel je in bij Voor ouders.',
   'you.readAloud': 'Vragen voorlezen',
   'you.readAloudWhy': 'Je kunt elke vraag laten voorlezen.',
   'you.on': 'aan',
@@ -1229,7 +1269,20 @@ export const nl = {
   'onderwerp.taal.eigen.keuze': 'Welke lijst?',
   // Eigen woordenlijsten (ADR-135).
   'you.lijstenTitel': 'Eigen woorden',
-  'you.lijstenUitleg': 'Typ de lijst van school over. Je kind oefent hem als flitsdictee.',
+  'you.lijstenUitleg':
+    'Typ de oefenstof van school zelf in of importeer een bestand, en je kind oefent deze als flitsdictee.',
+  // Importeren (ADR-145): een CSV of een tekstbestand, met de uitleg zo kort
+  // dat een ouder hem leest voordat hij iets kiest.
+  'you.lijstenImport': 'Bestand importeren',
+  'you.lijstenImportTitel': 'Importeren uit een bestand',
+  'you.lijstenImportUitleg':
+    'Kies een CSV- of tekstbestand, bijvoorbeeld opgeslagen vanuit Excel. Zet één woord per regel. Wil je meer lijsten tegelijk? Zet dan in de eerste kolom de naam van de lijst en in de tweede kolom het woord.',
+  'you.lijstenImportVoorbeeld': 'Voorbeeld: Blok 2;fiets',
+  'you.lijstenImportKlaar': '{woorden} woorden toegevoegd aan {lijsten} lijsten.',
+  'you.lijstenImportKlaarEen': '{woorden} woorden toegevoegd aan 1 lijst.',
+  'you.lijstenImportOver': '{aantal} overgeslagen: dubbel, te lang of er was geen plek meer.',
+  'you.lijstenImportLeeg': 'In dit bestand stonden geen woorden die we konden gebruiken.',
+  'you.lijstenImportFout': 'Dit bestand konden we niet lezen. Kies een CSV- of tekstbestand.',
   'you.lijstenGeen': 'Je hebt nog geen lijst.',
   'you.lijstenNieuw': 'Nieuwe lijst',
   'you.lijstenNaam': 'Naam van de lijst',
@@ -1277,12 +1330,19 @@ export const nl = {
   'klim.beter': 'Je kent dit steeds beter.',
   'klim.onthouden': 'Dit onthoud je nu.',
   'ouder.title': 'Voor ouders',
-  'ouder.uitleg': 'Hoe het gaat, de lijst van school, en wat je geregeld hebt.',
+  'ouder.uitleg':
+    'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',
   'ouder.naar': 'Voor ouders',
   'ouder.naarOnthouden': 'Bekijk per onderwerp wat je kind onthoudt',
   'ouder.terug': 'Naar Jij',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
+  // Twee schakelaars erbij (ADR-145), allebei voor een kind dat snel afgeleid is.
+  'you.maatje': 'Held na een antwoord',
+  'you.maatjeWhy': 'Na elk antwoord verschijnt de held van je kind even in beeld.',
+  'you.rustig': 'Minder beweging',
+  'you.rustigWhy':
+    'Knoppen, kaarten en beloningen bewegen niet meer. Rustiger voor wie snel afgeleid is.',
   'you.berichtTitel': 'Hoe gaat het?',
   'you.berichtNiets': 'Er is deze week niet geoefend.',
   'you.berichtGeoefend': 'Er is geoefend op {dagen} van de {schooldagen} schooldagen.',

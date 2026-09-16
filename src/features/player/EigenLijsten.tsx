@@ -1,9 +1,17 @@
-import { useCallback, useId, useState, useSyncExternalStore, type FormEvent } from 'react';
+import {
+  useCallback,
+  useId,
+  useState,
+  useSyncExternalStore,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
 import { t } from '@/i18n';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import {
   abonneerLijsten,
+  importeer,
   leesLijsten,
   MAX_LIJSTEN,
   MAX_NAAM,
@@ -16,11 +24,11 @@ import {
 } from '@/store/woordlijsten';
 
 /**
- * Waar een ouder de lijst van school intypt (ADR-135).
+ * Waar een ouder de oefenstof van school intypt of importeert (ADR-135,
+ * ADR-145).
  *
- * Op "Jij" en niet op een pagina van een kind: dit is invoerwerk voor een
- * volwassene, en het staat naast het weekbericht en de instellingen omdat het
- * daar thuishoort.
+ * Op "Voor ouders" en niet op een pagina van een kind: dit is invoerwerk voor
+ * een volwassene, en het staat naast de instellingen omdat het daar thuishoort.
  *
  * **Premium.** Dit is de functie waar het schoolwerk van deze week in gaat, en
  * daarmee de duidelijkste reden om te betalen. De ingebouwde spellingsets
@@ -68,7 +76,108 @@ export function EigenLijsten() {
           onMaak={(naam) => zet([...lijsten, { id: crypto.randomUUID(), naam, woorden: [] }])}
         />
       )}
+
+      {/* Ook als er geen lijst meer bij past: een bestand kan een bestaande
+          lijst nog aanvullen. */}
+      <Importeer lijsten={lijsten} onKlaar={zet} />
     </section>
+  );
+}
+
+type Melding =
+  | {
+      readonly soort: 'klaar';
+      readonly woorden: number;
+      readonly geraakt: number;
+      readonly over: number;
+    }
+  | { readonly soort: 'leeg' | 'fout' };
+
+/**
+ * Een bestand in plaats van intypen (ADR-145).
+ *
+ * School stuurt de woorden vaak al als lijstje mee, in een mail of een
+ * spreadsheet, en veertig woorden één voor één overtypen is precies het werk
+ * waarvoor een ouder deze functie níét gebruikt. De uitleg staat erboven en
+ * niet achter een knop: wie een bestand kiest zonder te weten hoe het eruit
+ * moet zien, krijgt een lijst met "lijst;woord" als eerste woord.
+ *
+ * Het bestand blijft op het apparaat. Het wordt gelezen, in lijsten gezet
+ * (`importeer`) en weggeschreven zoals intypen dat doet.
+ */
+function Importeer({
+  lijsten,
+  onKlaar,
+}: {
+  readonly lijsten: readonly Woordlijst[];
+  readonly onKlaar: (volgende: readonly Woordlijst[]) => void;
+}) {
+  const [melding, setMelding] = useState<Melding | null>(null);
+  const veld = useId();
+
+  async function lees(event: ChangeEvent<HTMLInputElement>) {
+    const bestand = event.target.files?.[0];
+    // Leeg maken, zodat hetzelfde bestand nog een keer gekozen kan worden.
+    event.target.value = '';
+    if (!bestand) return;
+
+    try {
+      const naam = bestand.name
+        .replace(/\.[^.]+$/, '')
+        .trim()
+        .slice(0, MAX_NAAM);
+      const uit = importeer(
+        await bestand.text(),
+        naam === '' ? t('you.lijstenImport') : naam,
+        lijsten,
+        () => crypto.randomUUID(),
+      );
+      if (uit.woorden === 0) {
+        setMelding({ soort: 'leeg' });
+        return;
+      }
+      onKlaar(uit.lijsten);
+      setMelding({
+        soort: 'klaar',
+        woorden: uit.woorden,
+        geraakt: uit.geraakt,
+        over: uit.overgeslagen,
+      });
+    } catch {
+      setMelding({ soort: 'fout' });
+    }
+  }
+
+  return (
+    <div className="tk-card flex flex-col gap-3">
+      <h3 className="tk-lijstrij-titel">{t('you.lijstenImportTitel')}</h3>
+      <p className="text-tekst-secundair">{t('you.lijstenImportUitleg')}</p>
+      <p className="tk-hulp">{t('you.lijstenImportVoorbeeld')}</p>
+      <label className="tk-label" htmlFor={veld}>
+        {t('you.lijstenImport')}
+      </label>
+      <input
+        id={veld}
+        type="file"
+        className="tk-bestand"
+        accept=".csv,.txt,text/csv,text/plain"
+        onChange={(event) => void lees(event)}
+      />
+      <p role="status" className="text-lopend">
+        {melding === null ? null : melding.soort === 'klaar' ? (
+          <>
+            {melding.geraakt === 1
+              ? t('you.lijstenImportKlaarEen', { woorden: melding.woorden })
+              : t('you.lijstenImportKlaar', { woorden: melding.woorden, lijsten: melding.geraakt })}
+            {melding.over > 0 ? ` ${t('you.lijstenImportOver', { aantal: melding.over })}` : null}
+          </>
+        ) : melding.soort === 'leeg' ? (
+          t('you.lijstenImportLeeg')
+        ) : (
+          t('you.lijstenImportFout')
+        )}
+      </p>
+    </div>
   );
 }
 

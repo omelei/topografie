@@ -122,6 +122,131 @@ export function ontleed(ruw: string | null): Woordlijst[] {
 }
 
 // ---------------------------------------------------------------------------
+// Importeren uit een bestand (ADR-145).
+
+export interface ImportUitkomst {
+  /** Alle lijsten na het importeren: de bestaande, aangevuld, en de nieuwe. */
+  readonly lijsten: readonly Woordlijst[];
+  /** Hoeveel woorden erbij kwamen. */
+  readonly woorden: number;
+  /** In hoeveel lijsten er iets bij kwam. */
+  readonly geraakt: number;
+  /** Woorden die er niet in gingen: dubbel, te lang, of geen plek. */
+  readonly overgeslagen: number;
+}
+
+/** Eén regel in velden. Puntkomma, tab of komma, en aanhalingstekens zoals Excel ze zet. */
+function velden(regel: string): string[] {
+  const scheiding = regel.includes(';') ? ';' : regel.includes('\t') ? '\t' : ',';
+  const uit: string[] = [];
+  let veld = '';
+  let tussen = false;
+
+  for (let i = 0; i < regel.length; i++) {
+    const teken = regel[i] as string;
+    if (teken === '"') {
+      if (tussen && regel[i + 1] === '"') {
+        veld += '"';
+        i++;
+      } else {
+        tussen = !tussen;
+      }
+    } else if (teken === scheiding && !tussen) {
+      uit.push(veld.trim());
+      veld = '';
+    } else {
+      veld += teken;
+    }
+  }
+  uit.push(veld.trim());
+  return uit;
+}
+
+/** Een kopregel zoals een spreadsheet hem heeft: geen lijst en geen woord. */
+const KOP = /^(lijst|naam|woord|woorden)$/i;
+
+/**
+ * Een bestand van een ouder, in lijsten gezet.
+ *
+ * **Twee vormen, en het bestand zegt welke.** Eén veld op een regel is een
+ * woord, voor de lijst die naar het bestand heet. Twee of meer velden zijn een
+ * lijstnaam en daarna woorden. Zo werkt zowel het lijstje dat een ouder uit een
+ * mail van school plakt als het blad waarin een heel blok weken staat.
+ *
+ * **Er wordt niets afgekapt.** Een woord dat langer is dan een veld aankan gaat
+ * er niet in, in plaats van er half in te gaan: "onafhankelijkheidsverklar" is
+ * een spelfout die dit product dan zelf zou aanleren. Dezelfde regels als bij
+ * intypen — geen dubbelen, niet meer dan er passen — en wat er daardoor niet in
+ * ging wordt geteld, zodat het scherm het kan zeggen.
+ *
+ * Een lijst met dezelfde naam als een bestaande wordt aangevuld, niet
+ * verdubbeld: wie hetzelfde bestand twee keer kiest, krijgt niets twee keer.
+ *
+ * Puur: de id komt van de aanroeper, net als het schrijven.
+ */
+export function importeer(
+  tekst: string,
+  standaardNaam: string,
+  bestaand: readonly Woordlijst[],
+  nieuwId: () => string,
+): ImportUitkomst {
+  const oud = new Set(bestaand.map((lijst) => lijst.id));
+  const lijsten = bestaand.map((lijst) => ({ ...lijst, woorden: [...lijst.woorden] }));
+  const geraakt = new Set<string>();
+  let woorden = 0;
+  let overgeslagen = 0;
+
+  const BOM = String.fromCharCode(0xfeff);
+  const regels = (tekst.startsWith(BOM) ? tekst.slice(1) : tekst).split(/\r?\n/);
+
+  regels.forEach((regel, index) => {
+    const delen = velden(regel).filter((veld) => veld !== '');
+    if (delen.length === 0) return;
+    if (index === 0 && delen.every((veld) => KOP.test(veld))) return;
+
+    const naam = (delen.length >= 2 ? (delen[0] as string) : standaardNaam).slice(0, MAX_NAAM);
+    const nieuwe = delen.length >= 2 ? delen.slice(1) : delen;
+
+    let lijst = lijsten.find(
+      (kandidaat) => kandidaat.naam.trim().toLowerCase() === naam.trim().toLowerCase(),
+    );
+    if (!lijst) {
+      if (lijsten.length >= MAX_LIJSTEN) {
+        overgeslagen += nieuwe.length;
+        return;
+      }
+      lijst = { id: nieuwId(), naam, woorden: [] };
+      lijsten.push(lijst);
+    }
+
+    for (const ruw of nieuwe) {
+      const schoon = ruw.trim();
+      const sleutel = woordSleutel(schoon);
+      const dubbel = lijst.woorden.some((woord) => woordSleutel(woord) === sleutel);
+      if (schoon.length > MAX_WOORD || sleutel === '' || dubbel) {
+        overgeslagen++;
+        continue;
+      }
+      if (lijst.woorden.length >= MAX_WOORDEN) {
+        overgeslagen++;
+        continue;
+      }
+      lijst.woorden.push(schoon);
+      geraakt.add(lijst.id);
+      woorden++;
+    }
+  });
+
+  return {
+    // Een nieuwe lijst waar niets in terechtkwam, hoort er niet bij.
+    lijsten: lijsten.filter((lijst) => lijst.woorden.length > 0 || oud.has(lijst.id)),
+    woorden,
+    geraakt: geraakt.size,
+    overgeslagen,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // De waarde, en wie ernaar luistert. Dezelfde vorm als `store/premium.ts`.
 
 const luisteraars = new Set<() => void>();

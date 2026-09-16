@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { Heldplaat } from '@/components/Heldplaat';
+import { loadPreferences } from '@/features/player/settings';
 import { useEigenHeld } from '@/features/reis/useEigenHeld';
 
 /**
@@ -47,14 +49,23 @@ export function Maatje({
   readonly opDreef?: boolean;
 }) {
   const { held, reeks } = useEigenHeld();
+  // Uit te zetten op Voor ouders (ADR-145). Null tot het gelezen is: een held
+  // die verschijnt en meteen weer weggaat is erger dan een die even wacht.
+  const [aan, setAan] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    void loadPreferences().then((prefs) => setAan(prefs.maatje));
+  }, []);
 
   return (
     <p
       className="tk-maatje"
       data-goed={goed ? '' : undefined}
-      data-dreef={goed && opDreef ? '' : undefined}
+      data-dreef={goed && opDreef && aan ? '' : undefined}
     >
-      <Heldplaat sticker={held.id} reeks={reeks} size={88} className="tk-maatje-beeld" />
+      {aan ? (
+        <Heldplaat sticker={held.id} reeks={reeks} size={88} className="tk-maatje-beeld" />
+      ) : null}
     </p>
   );
 }

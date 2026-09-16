@@ -25,9 +25,15 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
 
-  for (const weg of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium', 'Instellingen']) {
+  for (const weg of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium']) {
     await expect(page.getByRole('region', { name: weg })).toHaveCount(0);
   }
+
+  // Eerst wie je bent, dan waar de instellingen staan, dan wat je hebt (ADR-145).
+  const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
+  const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
+  expect(plek('Jouw naam')).toBeLessThan(plek('Instellingen'));
+  expect(plek('Instellingen')).toBeLessThan(plek('Jouw badges'));
 });
 
 test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page }) => {
@@ -37,6 +43,14 @@ test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page
   for (const blok of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium', 'Instellingen']) {
     await expect(page.getByRole('region', { name: blok })).toBeVisible();
   }
+
+  // Wat je geregeld hebt, hoe de app werkt, de oefenstof, en dan de cijfers
+  // (ADR-145). Tot nu toe opende de pagina met de cijfers.
+  const koppen = page.locator('.tk-page-main h2');
+  await expect(koppen.first()).toHaveText('Premium');
+  const teksten = await koppen.allInnerTexts();
+  expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
+  expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Deze week'));
 
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);

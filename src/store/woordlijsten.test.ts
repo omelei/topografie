@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
+  importeer,
   itemId,
   leesLijsten,
   LIJSTEN_SLEUTEL,
+  MAX_LIJSTEN,
   MAX_WOORDEN,
   ontleed,
   schoonWoord,
@@ -82,5 +84,78 @@ describe('een eigen woordenlijst', () => {
     expect(leesLijsten()[0]?.woorden).toEqual(['trein']);
     schrijfLijsten([{ id: 'l1', naam: 'Week 3', woorden: ['trein', 'fiets'] }]);
     expect(leesLijsten()[0]?.woorden).toEqual(['trein', 'fiets']);
+  });
+});
+
+/**
+ * Importeren uit een bestand (ADR-145). Wat een ouder uit Excel opslaat, en wat
+ * er uit een mail van school geplakt wordt.
+ */
+describe('een bestand importeren', () => {
+  let teller = 0;
+  const id = () => `n${++teller}`;
+
+  afterEach(() => {
+    teller = 0;
+  });
+
+  it('zet één woord per regel in een lijst die naar het bestand heet', () => {
+    const uit = importeer('fiets\r\ntrein\n\nbus\n', 'Week 12', [], id);
+    expect(uit.lijsten).toEqual([
+      { id: 'n1', naam: 'Week 12', woorden: ['fiets', 'trein', 'bus'] },
+    ]);
+    expect(uit.woorden).toBe(3);
+    expect(uit.geraakt).toBe(1);
+    expect(uit.overgeslagen).toBe(0);
+  });
+
+  it('leest een lijstnaam in de eerste kolom, met puntkomma, komma of tab', () => {
+    const uit = importeer('lijst;woord\nWeek 1;fiets\nWeek 2,trein\nWeek 1\tbus', 'x', [], id);
+    expect(uit.lijsten.map((lijst) => [lijst.naam, lijst.woorden])).toEqual([
+      ['Week 1', ['fiets', 'bus']],
+      ['Week 2', ['trein']],
+    ]);
+    expect(uit.geraakt).toBe(2);
+  });
+
+  it('slaat de BOM en de aanhalingstekens van Excel over', () => {
+    const bom = String.fromCharCode(0xfeff);
+    const uit = importeer(`${bom}"Week 3";"de ""kat"""`, 'x', [], id);
+    expect(uit.lijsten[0]?.naam).toBe('Week 3');
+    expect(uit.lijsten[0]?.woorden).toEqual(['de "kat"']);
+  });
+
+  it('vult een bestaande lijst aan in plaats van hem te verdubbelen', () => {
+    const bestaand = [{ id: 'l1', naam: 'Week 3', woorden: ['trein'] }];
+    const uit = importeer('week 3;Trein\nweek 3;fiets', 'x', bestaand, id);
+    expect(uit.lijsten).toEqual([{ id: 'l1', naam: 'Week 3', woorden: ['trein', 'fiets'] }]);
+    expect(uit.overgeslagen).toBe(1);
+    expect(bestaand[0]?.woorden).toEqual(['trein']);
+  });
+
+  it('kapt een te lang woord niet af maar laat het weg', () => {
+    const uit = importeer('onafhankelijkheidsverklaringen\nfiets', 'x', [], id);
+    expect(uit.lijsten[0]?.woorden).toEqual(['fiets']);
+    expect(uit.overgeslagen).toBe(1);
+  });
+
+  it('stopt bij een volle lijst en bij het maximum aantal lijsten', () => {
+    const veel = Array.from({ length: MAX_WOORDEN + 2 }, (_, i) => `woord${i}`).join('\n');
+    expect(importeer(veel, 'x', [], id).overgeslagen).toBe(2);
+
+    const vol = Array.from({ length: MAX_LIJSTEN }, (_, i) => ({
+      id: `l${i}`,
+      naam: `Lijst ${i}`,
+      woorden: [],
+    }));
+    const uit = importeer('Nieuw;fiets', 'x', vol, id);
+    expect(uit.lijsten).toHaveLength(MAX_LIJSTEN);
+    expect(uit.overgeslagen).toBe(1);
+  });
+
+  it('voegt een nieuwe lijst zonder bruikbare woorden niet toe', () => {
+    const uit = importeer('!!!\n', 'Leeg', [], id);
+    expect(uit.lijsten).toEqual([]);
+    expect(uit.woorden).toBe(0);
   });
 });

@@ -1,5 +1,15 @@
-import { useId, useState, type FormEvent, type ReactNode } from 'react';
-import { CorrectIcon } from '@/components/Icon';
+import { useId, useState, type ComponentType, type FormEvent } from 'react';
+import {
+  CorrectIcon,
+  DiplomaIcon,
+  FamilyIcon,
+  type IconProps,
+  OogIcon,
+  PupilIcon,
+  ShieldIcon,
+  StarIcon,
+  TodayIcon,
+} from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import {
   activeer,
@@ -17,40 +27,85 @@ import { leesbareDatum, usePremium } from './usePremium';
  */
 const KASSA_PAD = '/kopen/';
 
+type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
+
 /**
- * Wat premium voor je doet, in vier dingen (ADR-124).
- *
- * Hiervoor stond hier een lijst van negen functies — badges, reeks, "Goed
- * beantwoord" — allemaal even zwaar, allemaal de naam van een knop in plaats
- * van wat hij oplevert. Een ouder die "Jouw badges" leest weet niet meer dan
- * daarvoor. Dit zijn de vier klussen waarvoor betaald wordt, met de
- * belangrijkste bovenaan: het plannen. De kleine dingen staan eronder in één
- * regel, waar ze thuishoren.
+ * Wat premium voor je doet, in vier klussen (ADR-124), elk met een teken
+ * (ADR-145). De volgorde is die van ADR-124: het plannen bovenaan.
  */
-const DOET: readonly (readonly [TranslationKey, TranslationKey])[] = [
-  ['premium.usp.plan', 'premium.usp.planUit'],
-  ['premium.usp.zicht', 'premium.usp.zichtUit'],
-  ['premium.usp.zelf', 'premium.usp.zelfUit'],
-  ['premium.usp.gezin', 'premium.usp.gezinUit'],
+const DOET: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = [
+  [TodayIcon, 'premium.usp.plan', 'premium.usp.planUit'],
+  [OogIcon, 'premium.usp.zicht', 'premium.usp.zichtUit'],
+  [DiplomaIcon, 'premium.usp.zelf', 'premium.usp.zelfUit'],
+  [FamilyIcon, 'premium.usp.gezin', 'premium.usp.gezinUit'],
 ];
 
 /** Waarom dit product en niet een ander. Geen functies: redenen om het te vertrouwen. */
-const WAAROM: readonly TranslationKey[] = [
-  'premium.waarom.reclame',
-  'premium.waarom.apparaat',
-  'premium.waarom.abonnement',
-  'premium.waarom.gok',
+const WAAROM: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = [
+  [ShieldIcon, 'premium.waarom.reclame', 'premium.waarom.reclameUit'],
+  [PupilIcon, 'premium.waarom.apparaat', 'premium.waarom.apparaatUit'],
+  [CorrectIcon, 'premium.waarom.abonnement', 'premium.waarom.abonnementUit'],
+  [StarIcon, 'premium.waarom.gok', 'premium.waarom.gokUit'],
 ];
 
-/** Wat er gratis is en blijft. Staat vóór de prijs: het is het sterkste dat er te zeggen valt. */
-const GRATIS: readonly TranslationKey[] = [
-  'premium.vrij.alles',
-  'premium.vrij.vormen',
-  'premium.vrij.fouten',
-  'premium.vrij.diploma',
-  'premium.vrij.badges',
-  'premium.vrij.reeks',
-  'premium.vrij.voorspelling',
+/**
+ * Basis tegen premium, regel voor regel (ADR-145).
+ *
+ * `basis` zegt of de regel ook zonder code geldt. Elke regel is nagelopen tegen
+ * waar het product het echt afschermt — `isPremiumVorm`, `isPremiumOnderwerp`,
+ * en de blokken die zonder code een `PremiumSlot` tekenen — want een
+ * vergelijking die iets belooft wat de app weigert, is de snelste manier om een
+ * ouder kwijt te raken die net betaald heeft.
+ */
+interface Regel {
+  readonly tekst: TranslationKey;
+  readonly basis: boolean;
+}
+
+const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
+  [
+    'premium.groep.oefenen',
+    [
+      { tekst: 'premium.regel.vakken', basis: true },
+      { tekst: 'premium.regel.vormen', basis: true },
+      { tekst: 'premium.regel.herhaal', basis: true },
+      { tekst: 'premium.regel.voorspelling', basis: true },
+    ],
+  ],
+  [
+    'premium.groep.belonen',
+    [
+      { tekst: 'premium.regel.helden', basis: true },
+      { tekst: 'premium.regel.tafeldiploma', basis: true },
+      { tekst: 'premium.regel.reeks', basis: true },
+      { tekst: 'premium.regel.diplomas', basis: false },
+    ],
+  ],
+  [
+    'premium.groep.onthouden',
+    [
+      { tekst: 'premium.regel.plan', basis: false },
+      { tekst: 'premium.regel.onthouden', basis: false },
+      { tekst: 'premium.regel.fouten', basis: false },
+      { tekst: 'premium.regel.toets', basis: false },
+    ],
+  ],
+  [
+    'premium.groep.uitdagen',
+    [
+      { tekst: 'premium.regel.oefentoets', basis: false },
+      { tekst: 'premium.regel.bliksem', basis: false },
+    ],
+  ],
+  [
+    'premium.groep.ouders',
+    [
+      { tekst: 'premium.regel.bericht', basis: false },
+      { tekst: 'premium.regel.lijsten', basis: false },
+      { tekst: 'premium.regel.kalender', basis: false },
+      { tekst: 'premium.regel.gezin', basis: false },
+    ],
+  ],
 ];
 
 const FOUT: Record<PremiumReden, TranslationKey> = {
@@ -65,42 +120,42 @@ const FOUT: Record<PremiumReden, TranslationKey> = {
 
 /**
  * De premiumpagina: wat het is, wat het kost, en pas daarna het veld (ADR-116,
- * ADR-124).
+ * ADR-124, ADR-145).
  *
- * Hij stond op zijn kop. Bovenaan een codeveld — een formulier voor wie al
- * gekocht heeft, en dat is bijna niemand die hier komt — dan een lijst met
- * functienamen, en onderaan, na alles, de weg om er een te kopen. Wie hier
- * binnenkwam zonder te weten wat premium was, moest langs de kassa van iemand
- * anders om bij de etalage te komen.
+ * Hij leest in de volgorde van de beslissing: in één zin wat het is en wat het
+ * kost, wat het voor je doet, wat je precies krijgt tegenover wat gratis is,
+ * waarom je ons kunt vertrouwen — en helemaal onderaan het veld voor wie al een
+ * code heeft.
  *
- * Nu leest hij in de volgorde van de beslissing: wat doet het voor mij, wat
- * blijft gratis, waarom zou ik jullie vertrouwen, wat kost het, hoe koop ik het
- * — en helemaal onderaan, klein, het veld voor wie al een code heeft.
+ * **Tot ADR-145 was hij een lijst.** Vier koppen met een regel eronder, twee
+ * opsommingen met bolletjes en een prijs in een kaart: alles even zwaar, en
+ * niets dat een ouder uitnodigde. Nu is het een etalage, zoals een prijspagina
+ * er een is: een kop met de prijs en de knop, vier kaarten met een teken, en
+ * Basis en Premium naast elkaar met per regel wat erin zit. Binnen de huisstijl:
+ * indigo voor wat je indrukt, groen voor premium, geen schaduw.
+ *
+ * **Zonder kolom ernaast** (ADR-145). Het toetsblok stond hier sinds ADR-143,
+ * met de redenering dat een ouder de toetsdatum invoert. Maar niemand opent de
+ * premiumpagina om een toets te plannen, en de vergelijking heeft de breedte
+ * nodig.
  *
  * **Met een code verandert de pagina van rol.** Dan is er niets meer te
  * verkopen: bovenaan staat tot wanneer het aanstaat en hoe je het van dit
- * apparaat haalt, en de rest is er niet. Doorverkopen aan wie al betaald heeft
- * is het duidelijkste teken dat een pagina niet naar zijn lezer kijkt.
+ * apparaat haalt, en de rest is er niet.
  */
-export function PremiumScreen({
-  aside,
-  now = new Date(),
-}: {
-  readonly aside: ReactNode;
-  readonly now?: Date;
-}) {
+export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
   const { actief, stand } = usePremium();
   const verlopen = isVerlopen(stand, now);
   const bijnaAf = actief && verlooptBinnenkort(stand, now);
 
   return (
-    <div className="tk-page">
+    <div className="tk-page tk-page-enkel">
       <div className="tk-page-main">
         <div className="flex flex-col gap-2">
           <h1 className="tk-titel">{t('premium.titel')}</h1>
-          <p className="text-lopend text-tekst-secundair">
-            {actief ? t('premium.introAan') : t('premium.intro')}
-          </p>
+          {actief ? (
+            <p className="text-lopend text-tekst-secundair">{t('premium.introAan')}</p>
+          ) : null}
         </div>
 
         {/* Wie een jaar betaald heeft en over de datum is, kreeg tot ADR-129
@@ -122,8 +177,6 @@ export function PremiumScreen({
 
         {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
       </div>
-
-      {aside}
     </div>
   );
 }
@@ -152,76 +205,186 @@ function Aan({ tot }: { readonly tot: string }) {
 }
 
 function Aanbod() {
+  // De prijs en de knop alleen als er echt gekocht kan worden (ADR-123): een
+  // bedrag op een pagina zonder kassa is een doodlopende weg.
+  const teKoop = isTeKoop();
+
   return (
     <>
-      <section className="flex flex-col gap-3" aria-label={t('premium.watTitel')}>
+      <Etalage teKoop={teKoop} />
+
+      <section className="flex flex-col gap-4" aria-label={t('premium.watTitel')}>
         <h2 className="tk-sectie">{t('premium.watTitel')}</h2>
-        <ul className="tk-lijst">
-          {DOET.map(([kop, uitleg]) => (
-            <li key={kop}>
-              <div className="tk-lijstrij">
-                <span className="tk-lijstrij-tekst">
-                  <span className="tk-lijstrij-titel">{t(kop)}</span>
-                  <span className="tk-lijstrij-regel">{t(uitleg)}</span>
-                </span>
-              </div>
+        <ul className="tk-premium-usps">
+          {DOET.map(([Teken, kop, uitleg]) => (
+            <li key={kop} className="tk-premium-usp">
+              <span className="tk-premium-teken">
+                <Teken size={24} />
+              </span>
+              <span className="tk-premium-usp-kop">{t(kop)}</span>
+              <span className="text-lopend text-tekst-secundair">{t(uitleg)}</span>
             </li>
           ))}
         </ul>
-        <p className="tk-hulp">{t('premium.watKlein')}</p>
       </section>
 
-      {/* Vóór de prijs, en met opzet: dit is het sterkste dat er te zeggen valt,
-          en een ouder die twijfelt of het een muur is hoort hier af te haken met
-          een gerust hart in plaats van door te scrollen met een onbehaaglijk
-          gevoel. */}
-      <section className="flex flex-col gap-3" aria-label={t('premium.vrijTitel')}>
-        <h2 className="tk-sectie">{t('premium.vrijTitel')}</h2>
-        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
-          {GRATIS.map((sleutel) => (
-            <li key={sleutel}>{t(sleutel)}</li>
-          ))}
-        </ul>
-      </section>
+      <Vergelijking teKoop={teKoop} />
 
-      <section className="flex flex-col gap-3" aria-label={t('premium.waaromTitel')}>
+      <section className="flex flex-col gap-4" aria-label={t('premium.waaromTitel')}>
         <h2 className="tk-sectie">{t('premium.waaromTitel')}</h2>
-        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
-          {WAAROM.map((sleutel) => (
-            <li key={sleutel}>{t(sleutel)}</li>
+        <ul className="tk-premium-waarom">
+          {WAAROM.map(([Teken, kop, uitleg]) => (
+            <li key={kop} className="tk-premium-waarom-rij">
+              <span className="tk-plaat tk-plaat-neutraal">
+                <Teken size={24} />
+              </span>
+              <span className="flex min-w-0 flex-col gap-1">
+                <span className="tk-lijstrij-titel">{t(kop)}</span>
+                <span className="text-tekst-secundair">{t(uitleg)}</span>
+              </span>
+            </li>
           ))}
         </ul>
       </section>
 
-      <Kopen />
       <Code />
-
-      <p className="tk-hulp">{t('premium.voorOuders')}</p>
     </>
   );
 }
 
 /**
- * De prijs staat er (ADR-124). ADR-123 hield hem met opzet alleen op de
- * kassapagina — twee plekken met een prijs is één plek met een oude prijs — maar
- * dat kostte meer dan het opleverde: een knop naar een winkel waarvan je het
- * bedrag niet weet, voelt als een val. Het bedrag staat nu op één plek in de app
- * (`premium.prijs`) en `kassa.test.ts` houdt het gelijk aan `PRIJS_CENTEN`.
+ * De kop van de pagina: wat premium is in één zin, de prijs, en de knop.
+ *
+ * Een vlak in de actiekleur, want dit is de ene plek in het product die om een
+ * besluit vraagt. De knop erop is licht in plaats van indigo — indigo op indigo
+ * is geen knop — en de prijs staat ernaast en niet ergens onderaan: een knop
+ * naar een winkel waarvan je het bedrag niet weet, voelt als een val (ADR-124).
  */
-function Kopen() {
-  if (!isTeKoop()) return null;
+function Etalage({ teKoop }: { readonly teKoop: boolean }) {
+  const kop = useId();
 
   return (
-    <section className="flex flex-col gap-3" aria-label={t('premium.kopenTitel')}>
-      <h2 className="tk-sectie">{t('premium.kopenTitel')}</h2>
-      <div className="tk-card flex flex-col gap-3">
-        <p className="tk-display text-paginakop">{t('premium.prijs')}</p>
-        <p className="text-lopend">{t('premium.kopenUitleg')}</p>
-        <a className="tk-button self-start" href={KASSA_PAD}>
-          {t('premium.kopenKnop')}
-        </a>
+    <section className="tk-premium-etalage" aria-labelledby={kop}>
+      <span className="tk-premium-pil">{t('premium.etalageLabel')}</span>
+      <h2 id={kop} className="tk-premium-etalage-kop">
+        {t('premium.etalageKop')}
+      </h2>
+      <p className="tk-premium-etalage-tekst">{t('premium.intro')}</p>
+      {teKoop ? (
+        <div className="tk-premium-etalage-koop">
+          <a className="tk-button tk-premium-knop-licht" href={KASSA_PAD}>
+            {t('premium.kopenKnop')}
+          </a>
+          <p className="tk-premium-etalage-prijs">
+            <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
+          </p>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+/**
+ * Basis en premium naast elkaar, zoals op de prijspagina van elk abonnement —
+ * behalve dat dit er geen is.
+ *
+ * Twee kaarten met wat ze kosten en voor wie ze zijn, en daaronder één tabel
+ * met per regel een vinkje of een streep. De tabel is een echte tabel: een
+ * schermlezer loopt hem af per rij en hoort bij elke cel of het erin zit.
+ *
+ * **De zin boven de tabel beantwoordt de vraag die de pagina zelf opriep.**
+ * "Oefenen is en blijft gratis" stond bovenaan, en op elke modulepagina stond
+ * "Premium" bij de bliksemronde, overleven en de oefentoets. Beide waren waar
+ * (ADR-122): die drie oefenen niet, ze toetsen of je het al kent. Maar dat stond
+ * nergens, en een ouder die het tegenstrijdig vond had gelijk.
+ */
+function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
+  return (
+    <section className="flex flex-col gap-4" aria-label={t('premium.vergelijkTitel')}>
+      <h2 className="tk-sectie">{t('premium.vergelijkTitel')}</h2>
+      <p className="text-lopend text-tekst-secundair">{t('premium.vergelijkUitleg')}</p>
+
+      <div className="tk-premium-plannen">
+        <div className="tk-premium-plan">
+          <p className="tk-premium-plan-naam">{t('premium.basisNaam')}</p>
+          <p className="tk-premium-plan-prijs">
+            <span className="tk-display">{t('premium.basisPrijs')}</span>
+          </p>
+          <p className="text-tekst-secundair">{t('premium.basisVoor')}</p>
+        </div>
+
+        <div className="tk-premium-plan" data-premium="">
+          <p className="flex flex-wrap items-center justify-between gap-2">
+            <span className="tk-premium-plan-naam">{t('premium.titel')}</span>
+            <span className="tk-premium-pil">{t('premium.aanrader')}</span>
+          </p>
+          {teKoop ? (
+            <p className="tk-premium-plan-prijs">
+              <span className="tk-display">{t('premium.prijs')}</span>{' '}
+              <span className="text-tekst-secundair">{t('premium.perSchooljaar')}</span>
+            </p>
+          ) : null}
+          <p className="text-tekst-secundair">{t('premium.premiumVoor')}</p>
+          {teKoop ? (
+            <>
+              <a className="tk-button self-start" href={KASSA_PAD}>
+                {t('premium.kopenKnop')}
+              </a>
+              <p className="tk-hulp">{t('premium.kopenUitleg')}</p>
+            </>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="tk-premium-tabel-rol">
+        <table className="tk-premium-tabel">
+          <caption className="tk-sr-only">{t('premium.vergelijkTitel')}</caption>
+          <thead>
+            <tr>
+              <th scope="col">
+                <span className="tk-sr-only">{t('premium.tabelWat')}</span>
+              </th>
+              <th scope="col">{t('premium.basisNaam')}</th>
+              <th scope="col" data-premium="">
+                {t('premium.titel')}
+              </th>
+            </tr>
+          </thead>
+          {VERGELIJK.map(([groep, regels]) => (
+            <tbody key={groep}>
+              <tr>
+                <th scope="colgroup" colSpan={3} className="tk-premium-tabel-groep">
+                  {t(groep)}
+                </th>
+              </tr>
+              {regels.map((regel) => (
+                <tr key={regel.tekst}>
+                  <th scope="row">{t(regel.tekst)}</th>
+                  <td>
+                    <Cel ja={regel.basis} />
+                  </td>
+                  <td data-premium="">
+                    <Cel ja />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          ))}
+        </table>
       </div>
     </section>
+  );
+}
+
+/** Een vinkje of een streep, en voor een schermlezer allebei in woorden. */
+function Cel({ ja }: { readonly ja: boolean }) {
+  return ja ? (
+    <CorrectIcon size={20} label={t('premium.tabelJa')} />
+  ) : (
+    <>
+      <span aria-hidden="true">—</span>
+      <span className="tk-sr-only">{t('premium.tabelNee')}</span>
+    </>
   );
 }
 

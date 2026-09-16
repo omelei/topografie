@@ -7378,6 +7378,121 @@ geen rol is. Ze zijn wel opnieuw gemeten tegen de witte kaart.
 
 ---
 
+## ADR-145 — Premium wordt een etalage, de held krijgt uitleg, en Jij en Voor ouders lezen als een profielpagina
+
+**Status:** accepted. **Date:** 2026-09-16. Na feedback van de eigenaar op de
+huidige app, per pagina. Wijzigt ADR-124 (de premiumpagina), ADR-143 (de
+volgorde van Jij en de kolom naast /premium) en ADR-135 (de eigen woorden).
+
+### Context
+
+**Vandaag.** Sinds ADR-142 staat de held groot naast de begroeting, zonder één
+woord erbij. Een kind zag een vos met een naam en kon niet weten dat dit zíjn
+held is, of dat spelen er meer oplevert.
+
+**Premium.** Drie problemen tegelijk. De intro zei "Oefenen is en blijft gratis:
+alle vakken, alle onderwerpen", en op elke modulepagina stond "Premium" bij de
+bliksemronde, overleven en de oefentoets. Beide waren waar — ADR-122 legt uit dat
+die drie toetsen of je het al kent, en dus bij onthouden horen — maar dat stond
+nergens, en een ouder die het tegenstrijdig vond had gelijk. Verder las de pagina
+als een lijst: vier koppen met een regel, twee opsommingen met bolletjes, alles
+even zwaar, en niets dat uitnodigde. En het toetsblok stond ernaast (ADR-143),
+op een pagina waar niemand een toets komt plannen.
+
+De Nederlandse tekst had fouten. "Premium onthoudt vóór je" betekent met dat
+accent "eerder dan jij"; bedoeld was "in jouw plaats". "Hoeveel er over drie
+weken nog van over is" zegt twee keer "over". "Checkt je kind zichzelf" is geen
+Nederlands dat een ouder schrijft.
+
+**Jij en Voor ouders.** Geen van beide volgde de volgorde van een
+instellingenpagina. Voor ouders opende met de cijfers van de week en had de
+schakelaars helemaal onderaan, onder de rekening. Jij opende met de prijzenkast
+(ADR-143) en had de naam eronder.
+
+### Decision
+
+**De held zegt wat hij is.** Onder de begroeting, op Vandaag en op Jij:
+"Valerie Vos is jouw held. Speel rondes en verdien nieuwe helden.", met daaronder
+het vooruitzicht dat het uitslagscherm al had (`Vooruitzicht` uit `Kist.tsx`):
+vijf sterren, hoeveel goede antwoorden de kist nog is, en wie erin zit. Eén bron,
+zodat de voordeur en de uitslag nooit twee getallen noemen. Wie meer dan één held
+heeft, leest ook dat een druk op de held wisselt.
+
+**De knip van ADR-122 blijft, en de pagina zegt hem nu.** Het laatste besluit is
+nagelopen tegen de code (`isPremiumVorm`, `isPremiumOnderwerp` en elk blok dat
+zonder code een `PremiumSlot` tekent): oefenen is gratis, onthouden is premium,
+en de bliksemronde, overleven en de oefentoets zitten aan de kant van onthouden.
+Er verandert niets aan wat premium is. Wat verandert is dat de vergelijking het
+per regel zegt, met één zin erboven over precies die drie.
+
+**De premiumpagina is een etalage.** Zoals de prijspagina van software, binnen
+de huisstijl:
+
+1. een kop in de actiekleur met één zin, de prijs en de knop;
+2. vier kaarten "Wat premium voor je doet", elk met een teken;
+3. Basis en Premium naast elkaar — twee plannen en een tabel met per regel een
+   vinkje of een streep, in vijf groepen (oefenen, belonen, onthouden, uitdagen,
+   voor ouders);
+4. "Waarom leer.nu" als vier redenen met een teken;
+5. het codeveld.
+
+Indigo is wat je indrukt en waar je een besluit neemt, groen is premium (zoals
+de knop in de balk), en er is geen schaduw. De tabel is een echte tabel met een
+bijschrift, en een schermlezer hoort in elke cel "Zit erin" of "Zit er niet in".
+Prijs en koopknop staan er alleen als er echt gekocht kan worden (ADR-123).
+
+**Geen kolom naast /premium.** Het toetsblok gaat weg; de pagina krijgt één
+kolom van hoogstens 1080 breed.
+
+**Jij en Voor ouders volgen één patroon: profiel, instellingen, informatie.**
+
+- Jij: de held met zijn uitleg, de naam, wie er oefent, dan "Instellingen" — een
+  regel en een knop naar Voor ouders, want de schakelaars zijn van het apparaat
+  (ADR-136) — en pas daarna de prijzenkast. Dit draait de volgorde van ADR-143
+  om op verzoek van de eigenaar; de held staat nog steeds als eerste ding.
+- Voor ouders: premium, de instellingen, de eigen oefenstof, en dan de week, het
+  weekbericht en de weg naar Onthouden.
+
+**Twee instellingen erbij, en alleen deze twee.** Elk zet iets uit wat sinds
+ADR-142 bestaat en wat voor een kind dat snel afgeleid is te veel kan zijn:
+
+- **Minder beweging.** Zet dezelfde regel aan als `prefers-reduced-motion`, via
+  `data-beweging="rustig"` op `<html>`. Een iPad in de keuken staat zelden zo
+  ingesteld. Het wordt bij het opstarten gezet, niet pas als iemand Voor ouders
+  opent.
+- **Held na een antwoord.** Laat het maatje weg; de ruimte blijft, zodat de knop
+  eronder niet verspringt.
+
+Overwogen en niet gedaan: een standaard aantal vragen (dat is al een stap bij
+het starten), een dagelijkse herinnering (er zijn geen meldingen), en een
+lettertype voor dyslexie (dat is een ontwerpvraag, geen schakelaar).
+
+**De eigen oefenstof is ook te importeren.** Een CSV- of tekstbestand, met de
+uitleg erboven: één woord per regel, of de naam van de lijst in de eerste kolom
+en het woord in de tweede. Puntkomma, tab en komma werken allemaal, net als de
+aanhalingstekens en de BOM van Excel. `importeer()` in `store/woordlijsten.ts`
+is puur en houdt de regels van intypen aan: geen dubbelen, niet meer dan er
+passen. Een woord dat te lang is gaat er niet in, in plaats van afgekapt: een
+half woord is een spelfout die dit product dan zelf aanleert. Een lijst met een
+bestaande naam wordt aangevuld, niet verdubbeld. Het scherm zegt hoeveel woorden
+er in hoeveel lijsten gingen, en hoeveel niet.
+
+De zin op het premiumslot wordt die van de eigenaar: "De oefenstof van school
+zelf intypen of importeren, en je kind oefent deze als flitsdictee."
+
+### Consequences
+
+`PremiumScreen` neemt geen `aside` meer. `Vooruitzicht` in `Kist.tsx` is
+geëxporteerd. `Preferences` heeft `rustig` en `maatje`; `Switch` op Voor ouders
+krijgt een teken per schakelaar, waar het er twee met hetzelfde teken waren.
+`e2e/premium.spec.ts`, `ouder.spec.ts`, `held.spec.ts` en `woordlijsten.spec.ts`
+zijn bijgewerkt en uitgebreid; `woordlijsten.test.ts` test het importeren.
+
+**Niet hier besloten:** hoe kleine landen op de wereldkaart aan te wijzen zijn.
+Die keuze ligt bij de eigenaar, met opties en een advies.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

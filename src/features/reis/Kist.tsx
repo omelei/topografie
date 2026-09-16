@@ -256,8 +256,11 @@ function uitkomstZin(uitkomst: KistUitkomst, naam: string): string {
  *
  * **Niets wanneer alles op ultra staat.** Dan is er geen held meer om te
  * beloven, en een belofte over niets is erger dan geen belofte.
+ *
+ * Geëxporteerd voor de voordeur (`HeldUitleg`): daar staat de held zonder dat
+ * iets zei waar hij vandaan kwam, en dit is precies dat antwoord.
  */
-function Vooruitzicht({
+export function Vooruitzicht({
   stand,
   correct,
 }: {
