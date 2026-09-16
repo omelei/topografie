@@ -49,7 +49,7 @@ test('een code die bijna om is zegt dat, op Voor ouders en op de premiumpagina',
   await expect(blok.getByText(/over 10 dagen/)).toBeVisible();
 
   await page.goto('/premium');
-  await expect(page.getByText(/Verleng hem voor die dag/)).toBeVisible();
+  await expect(page.getByText(/Verleng hem vóór die dag/)).toBeVisible();
 });
 
 test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen aan', async ({
@@ -65,7 +65,7 @@ test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen 
   await expect(blok.getByRole('button', { name: 'Premium verlengen' })).toBeVisible();
 
   await page.goto('/premium');
-  await expect(page.getByText(/staat gewoon op dit apparaat/)).toBeVisible();
+  await expect(page.getByText(/staat nog gewoon op dit apparaat/)).toBeVisible();
   // En het aanbod staat er weer onder: verlengen is kopen.
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();
 });
