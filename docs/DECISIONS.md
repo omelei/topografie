@@ -7583,6 +7583,56 @@ foto van.
 
 ---
 
+## ADR-147 — Het woordbeeld wordt leernu, met nu in de kleur van het merk
+
+**Status:** accepted. **Date:** 2026-09-16. Op verzoek van de eigenaar: "vervang
+het huidige logo in de app met dit logo", bij een nieuwe levering van de
+ontwerper (`leernu-woordbeeld`). Vervangt het woordbeeld uit ADR-113; het
+beeldmerk uit ADR-113 blijft.
+
+### Context
+
+Het woordbeeld van ADR-113 was _leer_, de ring met het naaldje, _nu_, in Hanken
+Grotesk 600. De ontwerper leverde het als afbeelding, dus sneed
+`tools/logo/maak-logo.py` het uit tot paden uit het lettertype in de
+uitwerking. De nieuwe levering is een ander woordbeeld: _leernu_ zonder ring,
+Hanken Grotesk 500 met −0,028 em letterafstand, _leer_ in inkt en _nu_ in
+indigo, en al als paden, in vier kleurvarianten.
+
+### Decision
+
+**Het woordbeeld in de app is `leernu-woordbeeld-positief.svg`.** `Wordmark`
+tekent de twee paden uit die levering: _leer_ in `--inkt`, _nu_ in `--merk`
+(precies de kleuren van het bestand). Op inkt zijn beide woorden het licht, de
+variant `wit`. De negatieve variant (_nu_ in `#8FB5FF`) staat in
+`docs/logo/svg`, maar de app gebruikt hem niet; die kleur heeft geen token.
+
+- **Overgenomen, niet gegenereerd.** De paden staan in
+  `src/design/woordbeeld.ts`; `logo.test.ts` houdt ze aan alle vier de
+  geleverde bestanden. `maak-logo.py` snijdt geen woordbeeld meer uit een
+  lettertype en schrijft in `logo.ts` alleen het beeldmerk. De sociale kaart
+  tekent het uit de geleverde SVG.
+- **Hoogte** is van de basislijn tot de bovenkant van de l, zoals eerder. Op
+  28 px wordt het woordbeeld 109 px breed; met de ring was dat 128 px.
+- **Vrije ruimte** is de x-hoogte, zoals de levering voorschrijft; eerst was
+  het de diameter van de ring.
+- **De naam** blijft als tekst leer.nu (`brand.name`), voor schermlezers en de
+  titel: het domein schrijf je altijd zo, alleen de tekening is leernu.
+
+### Consequences
+
+Onder 1200 px, in de favicon en op de app-iconen staat nog het beeldmerk van
+ADR-113, de ring met het naaldje. De levering bevat een nieuw beeldmerk (de
+zwaluw, `leernu-beeldmerk.svg` en `-klein.svg`); of dat de ring vervangt, is
+een aparte keuze en niet hier besloten.
+
+De favicon en de iconen in `public/logo/` zijn niet opnieuw gemaakt: daar
+verandert niets. De sociale kaart is opnieuw getekend, met PyMuPDF in plaats
+van CairoSVG (dat op de Windows-machine niet draait), op dezelfde maten als het
+script.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

@@ -3,8 +3,8 @@ import { MERK, MERK_KLEIN, MERK_NAALD_VANAF_PX } from '@/design/logo';
 /**
  * The beeldmerk: the logo without the name (ADR-113).
  *
- * A ring with a needle pointing down into it — the same mark that stands
- * between the words in the wordmark (docs/logo/svg/beeldmerk-inkt.svg). Below
+ * A ring with a needle pointing down into it (docs/logo/svg/beeldmerk-inkt.svg),
+ * in the colour of "nu" in the wordmark (ADR-147). Below
  * 20px the needle goes and the ring is drawn heavier, as the designer's
  * favicon of 16 is: at that size a needle is a smudge, and a ring is still a
  * ring.
