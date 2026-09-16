@@ -196,7 +196,8 @@ export function importeer(
   let woorden = 0;
   let overgeslagen = 0;
 
-  const regels = tekst.replace(/^﻿/, '').split(/\r?\n/);
+  const BOM = String.fromCharCode(0xfeff);
+  const regels = (tekst.startsWith(BOM) ? tekst.slice(1) : tekst).split(/\r?\n/);
 
   regels.forEach((regel, index) => {
     const delen = velden(regel).filter((veld) => veld !== '');

@@ -119,7 +119,8 @@ describe('een bestand importeren', () => {
   });
 
   it('slaat de BOM en de aanhalingstekens van Excel over', () => {
-    const uit = importeer('﻿"Week 3";"de ""kat"""', 'x', [], id);
+    const bom = String.fromCharCode(0xfeff);
+    const uit = importeer(`${bom}"Week 3";"de ""kat"""`, 'x', [], id);
     expect(uit.lijsten[0]?.naam).toBe('Week 3');
     expect(uit.lijsten[0]?.woorden).toEqual(['de "kat"']);
   });

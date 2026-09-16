@@ -140,12 +140,9 @@ test('een CSV-bestand zet de woorden in de lijsten die erin staan', async ({ pag
   await blok.getByLabel('Bestand importeren').setInputFiles({
     name: 'woorden.csv',
     mimeType: 'text/csv',
-    buffer: Buffer.from('lijst;woord
-Week 20;trein
-Week 20;fiets
-Week 21;bus
-Week 21;bus
-'),
+    buffer: Buffer.from(
+      ['lijst;woord', 'Week 20;trein', 'Week 20;fiets', 'Week 21;bus', 'Week 21;bus'].join('\n'),
+    ),
   });
 
   await expect(blok.getByRole('status')).toContainText('3 woorden toegevoegd aan 2 lijsten.');
