@@ -16,3 +16,4 @@ export * from './oefendagen';
 export * from './rewards';
 export * from './collection';
 export * from './helden';
+export * from './wereldRegios';

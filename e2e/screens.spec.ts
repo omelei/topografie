@@ -172,6 +172,29 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
   }
 });
 
+/**
+ * Aanwijzen op de wereldkaart, ingezoomd op West-Europa (ADR-146). De foto
+ * waarop te zien is of de knoppen de kaart op een telefoon niet wegdrukken, en
+ * of de grenzen ingezoomd even dun blijven.
+ */
+test('the round: pointing on the world, zoomed in', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+
+  await signIn(page, 'Sem');
+  await page.goto('/topografie/wereld');
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await start(page);
+  await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible(READY);
+
+  const zoom = page.getByRole('navigation', { name: 'Inzoomen op de kaart' });
+  await zoom.getByRole('button', { name: 'Europa', exact: true }).click();
+  await zoom.getByRole('button', { name: 'West-Europa' }).click();
+  await shoot(page, size, '15-wereld-ingezoomd');
+});
+
 test('the round: choosing between four names', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 

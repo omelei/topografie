@@ -1,10 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  afstandTotVorm,
   boxCentre,
   detailFor,
+  dichtstbijzijndeVorm,
   fitView,
   helpTargetFor,
+  helpTargets,
   keyboardOrder,
+  padPunten,
   reachablePoints,
   MIN_TOUCH_PX,
   needsHelpTarget,
@@ -182,5 +186,73 @@ describe('reachablePoints', () => {
 
     expect(reachablePoints(points, fitView(1000, 1200), 'a')).toHaveLength(2);
     expect(reachablePoints(points, fitView(1000, 400), 'a')).toHaveLength(1);
+  });
+});
+
+/**
+ * Een tik in zee, naast een land (ADR-146). Twee vierkante eilanden van tien
+ * eenheden, twintig uit elkaar.
+ */
+describe('dichtstbijzijndeVorm', () => {
+  const west = { id: 'west', d: 'M0 0L10 0L10 10L0 10Z', bbox: [0, 0, 10, 10] as BoundingBox };
+  const oost = { id: 'oost', d: 'M30 0L40 0L40 10L30 10Z', bbox: [30, 0, 40, 10] as BoundingBox };
+
+  it('leest de ringen van een pad', () => {
+    expect(padPunten('M0 0L10 0L10 10ZM20 20L30 20L30 30Z')).toEqual([
+      [
+        [0, 0],
+        [10, 0],
+        [10, 10],
+      ],
+      [
+        [20, 20],
+        [30, 20],
+        [30, 30],
+      ],
+    ]);
+    expect(padPunten('M-5.5 2L3 -4Z')).toEqual([
+      [
+        [-5.5, 2],
+        [3, -4],
+      ],
+    ]);
+  });
+
+  it('meet de afstand tot de kust, niet tot het midden', () => {
+    expect(afstandTotVorm([13, 5], west.d)).toBe(3);
+    expect(afstandTotVorm([13, 14], west.d)).toBe(5);
+  });
+
+  it('kiest het land dat het dichtst bij de tik ligt', () => {
+    expect(dichtstbijzijndeVorm([14, 5], [west, oost], 8)).toBe('west');
+    expect(dichtstbijzijndeVorm([26, 5], [west, oost], 8)).toBe('oost');
+  });
+
+  it('en niets als geen land binnen bereik ligt', () => {
+    expect(dichtstbijzijndeVorm([20, 5], [west, oost], 8)).toBeNull();
+    expect(dichtstbijzijndeVorm([5, 60], [west, oost], 8)).toBeNull();
+  });
+});
+
+describe('helpTargets met ringOnderPx', () => {
+  /**
+   * Een groot land van dertig pixels naast een klein land van vier. Met de
+   * standaardregel krijgen ze allebei een ring, en krimpt die van het kleine
+   * mee; met de regel van een landenkaart houdt alleen het kleine land er een.
+   */
+  it('geeft een land dat zelf te raken is geen ring', () => {
+    const fit = fitView(100, 100);
+    const shapes = [
+      { id: 'groot', bbox: [0, 0, 30, 30] as BoundingBox, punt: [15, 15] as const },
+      { id: 'klein', bbox: [50, 13, 54, 17] as BoundingBox, punt: [52, 15] as const },
+    ];
+
+    const standaard = helpTargets(shapes, fit, (shape) => shape.punt);
+    expect([...standaard.keys()].sort()).toEqual(['groot', 'klein']);
+    expect(standaard.get('klein')?.r).toBeLessThan(MIN_TOUCH_PX / 2);
+
+    const landen = helpTargets(shapes, fit, (shape) => shape.punt, MIN_TOUCH_PX, MIN_TOUCH_PX / 2);
+    expect([...landen.keys()]).toEqual(['klein']);
+    expect(landen.get('klein')?.r).toBe(MIN_TOUCH_PX / 2);
   });
 });
