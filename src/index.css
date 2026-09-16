@@ -1804,8 +1804,11 @@
       padding: 48px;
     }
   }
+  /* Wit, en expliciet: de kop erft anders de inkt die elke h2 krijgt, en inkt
+   * op indigo haalt 2,6. */
   .tk-premium-etalage-kop {
     max-width: 22ch;
+    color: var(--kaart);
     font-family: var(--font-kop);
     font-size: var(--type-paginakop);
     line-height: var(--type-paginakop-lh);
