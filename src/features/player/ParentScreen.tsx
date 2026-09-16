@@ -1,13 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import { t } from '@/i18n';
-import { SpeakIcon } from '@/components/Icon';
+import { type IconProps, OogIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { dayKey, grade, formatGrade } from '@/game-core';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
-import { DEFAULT_PREFERENCES, loadPreferences, savePreference, type Preferences } from './settings';
+import {
+  DEFAULT_PREFERENCES,
+  loadPreferences,
+  savePreference,
+  zetRustig,
+  type Preferences,
+} from './settings';
 import { Weekbericht } from './Weekbericht';
 import { EigenLijsten } from './EigenLijsten';
 import type { ReactNode } from 'react';
@@ -69,7 +75,10 @@ export function ParentScreen({
    */
   const toggle = (name: keyof Preferences) => {
     const next = { ...prefs, [name]: !prefs[name] };
-    void savePreference(name, next[name]).then(() => setPrefs(next));
+    void savePreference(name, next[name]).then(() => {
+      setPrefs(next);
+      if (name === 'rustig') zetRustig(next.rustig);
+    });
   };
 
   return (
@@ -79,6 +88,56 @@ export function ParentScreen({
           <h1 className="tk-titel">{t('ouder.title')}</h1>
           <p className="text-lopend text-tekst-secundair">{t('ouder.uitleg')}</p>
         </div>
+
+        {/* De volgorde van een instellingenpagina (ADR-145): eerst wat je
+            geregeld hebt, dan hoe de app zich gedraagt, dan wat je kind
+            oefent, en pas daarna de cijfers. Tot nu toe opende de pagina met
+            de cijfers en stonden de schakelaars onderaan, onder de rekening. */}
+        <PremiumBlok now={now} />
+
+        <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
+          <h2 className="tk-sectie">{t('you.settings')}</h2>
+          <ul className="tk-lijst">
+            <li>
+              <Switch
+                icon={SpeakIcon}
+                on={prefs.readAloud}
+                label={t('you.readAloud')}
+                why={t('you.readAloudWhy')}
+                onToggle={() => toggle('readAloud')}
+              />
+            </li>
+            <li>
+              <Switch
+                icon={SpeakIcon}
+                on={prefs.geluid}
+                label={t('you.geluid')}
+                why={t('you.geluidWhy')}
+                onToggle={() => toggle('geluid')}
+              />
+            </li>
+            <li>
+              <Switch
+                icon={PupilIcon}
+                on={prefs.maatje}
+                label={t('you.maatje')}
+                why={t('you.maatjeWhy')}
+                onToggle={() => toggle('maatje')}
+              />
+            </li>
+            <li>
+              <Switch
+                icon={OogIcon}
+                on={prefs.rustig}
+                label={t('you.rustig')}
+                why={t('you.rustigWhy')}
+                onToggle={() => toggle('rustig')}
+              />
+            </li>
+          </ul>
+        </section>
+
+        <EigenLijsten />
 
         <Week rondes={rondes} now={now} />
 
@@ -97,32 +156,6 @@ export function ParentScreen({
             {t('ouder.naarOnthouden')}
           </button>
         </p>
-
-        <EigenLijsten />
-
-        <PremiumBlok now={now} />
-
-        <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
-          <h2 className="tk-sectie">{t('you.settings')}</h2>
-          <ul className="tk-lijst">
-            <li>
-              <Switch
-                on={prefs.readAloud}
-                label={t('you.readAloud')}
-                why={t('you.readAloudWhy')}
-                onToggle={() => toggle('readAloud')}
-              />
-            </li>
-            <li>
-              <Switch
-                on={prefs.geluid}
-                label={t('you.geluid')}
-                why={t('you.geluidWhy')}
-                onToggle={() => toggle('geluid')}
-              />
-            </li>
-          </ul>
-        </section>
 
         <p>
           <button type="button" className="tk-button tk-button-secondary" onClick={onJij}>
@@ -203,11 +236,14 @@ function afloopZin(geldigTot: string, bijnaAf: boolean, dagen: number | null): s
  * blind, and aria-pressed carries it to a screen reader without either.
  */
 function Switch({
+  icon: Teken,
   on,
   label,
   why,
   onToggle,
 }: {
+  /** Wat de schakelaar raakt. Het waren er twee met hetzelfde teken; nu vier. */
+  readonly icon: ComponentType<Omit<IconProps, 'children'>>;
   readonly on: boolean;
   readonly label: string;
   readonly why: string;
@@ -216,7 +252,7 @@ function Switch({
   return (
     <button type="button" className="tk-lijstrij" aria-pressed={on} onClick={onToggle}>
       <span className="tk-plaat tk-plaat-neutraal">
-        <SpeakIcon size={24} />
+        <Teken size={24} />
       </span>
       <span className="tk-lijstrij-tekst">
         <span className="tk-lijstrij-titel">{label}</span>

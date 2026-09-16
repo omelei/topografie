@@ -34,6 +34,7 @@ import {
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
 import { ParentScreen } from '@/features/player/ParentScreen';
+import { loadPreferences, zetRustig } from '@/features/player/settings';
 import { ReeksScreen } from '@/features/reeks/ReeksScreen';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
 import { usePremium } from '@/features/premium/usePremium';
@@ -361,6 +362,12 @@ export default function App() {
     void controleerOpnieuw();
   }, []);
 
+  // Minder beweging staat op het document, dus het wordt gezet voordat er een
+  // scherm beweegt, en niet pas wanneer iemand Voor ouders opent (ADR-145).
+  useEffect(() => {
+    void loadPreferences().then((prefs) => zetRustig(prefs.rustig));
+  }, []);
+
   // The component gallery, in development only. import.meta.env.DEV is
   // replaced with a literal at build time, so this branch and everything under
   // it is dropped from the production bundle rather than hidden in it —
@@ -501,9 +508,10 @@ export default function App() {
   if (route.name === 'premium') {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        {/* Ook hier de kolom van de ouder (ADR-143): dit is de pagina waar
-            een volwassene betaalt, en "Jouw reeks" hoort daar niet naast. */}
-        <PremiumScreen aside={<SideColumn onReeks={goReeks} onBegin={beginRonde} vanOuder />} />
+        {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
+            maar niemand komt hier om een toets te plannen, en de vergelijking
+            tussen basis en premium heeft de breedte nodig. */}
+        <PremiumScreen />
       </Shell>
     );
   }

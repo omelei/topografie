@@ -97,7 +97,7 @@ test('without a code the premium parts are labelled once, and say what they do',
   // En op de ouderpagina: één premiumblok in plaats van vijf (ADR-124, ADR-136).
   await page.goto('/ouder');
   await expect(page.getByRole('region', { name: 'Premium' })).toContainText(
-    'De diploma’s voor vlaggen, klok en topo',
+    'Premium plant het herhalen',
   );
 });
 
@@ -200,8 +200,9 @@ test('without a code the premium page points at the kassa, and with one it does 
 
   await page.goto('/premium');
 
-  // De volgorde van de beslissing (ADR-124): wat het doet, wat gratis blijft,
-  // waarom wij, wat het kost, en pas daarna het veld voor wie al een code heeft.
+  // De volgorde van de beslissing (ADR-124, ADR-145): in één zin wat het is en
+  // wat het kost, wat het doet, basis en premium naast elkaar, waarom wij, en
+  // pas daarna het veld voor wie al een code heeft.
   // Gescoped op de pagina zelf: de blokken in de kolom ernaast zijn ook h2.
   //
   // Met `expect(locator)` en niet met `allInnerTexts()`. Dat laatste vraagt de
@@ -212,15 +213,28 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
+    'Oefenen is gratis. Met premium blijft het hangen.',
     'Wat premium voor je doet',
-    'Wat gratis blijft',
+    'Basis en premium naast elkaar',
     'Waarom leer.nu',
-    'Wat het kost',
     'Heb je al een code?',
   ]);
-  await expect(page.getByText('€ 24,95')).toBeVisible();
+  await expect(page.getByText('€ 24,95').first()).toBeVisible();
 
-  const knop = page.getByRole('link', { name: 'Een code kopen' });
+  // En de vergelijking zegt per regel wat erin zit: de bliksemronde niet in
+  // basis, alle vakken wel (ADR-122, ADR-145).
+  const tabel = page.getByRole('table', { name: 'Basis en premium naast elkaar' });
+  await expect(
+    tabel.getByRole('row', { name: /De bliksemronde en overleven/ }).getByText('Zit er niet in'),
+  ).toHaveCount(1);
+  await expect(
+    tabel.getByRole('row', { name: /Alle vakken en alle onderwerpen/ }).getByRole('img'),
+  ).toHaveCount(2);
+
+  // Zonder de kolom ernaast: het toetsblok hoort niet op de pagina waar je betaalt.
+  await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toHaveCount(0);
+
+  const knop = page.getByRole('link', { name: 'Een code kopen' }).first();
   await expect(knop).toBeVisible();
 
   const doel = new URL((await knop.getAttribute('href')) ?? '', origin);

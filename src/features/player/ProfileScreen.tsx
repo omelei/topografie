@@ -10,15 +10,14 @@ import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { BadgeSectie } from '@/features/badges/Badges';
 import { usePremium } from '@/features/premium/usePremium';
 import { HeldHoek } from '@/features/reis/HeldHoek';
+import { HeldUitleg } from '@/features/reis/HeldUitleg';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
  *
- * In the order a child reads it. **What they have earned** first — the badges
- * and the two walls of diplomas, which used to be on the collection page and
- * are the part of it that stays while the rest is thought through again. Then
- * **this week**, for the adult in the room, as the same tiles the streak page
- * uses. Then **who is practising**, and the one switch.
+ * In the order of a profile page (ADR-145): **who you are** — the hero, the
+ * name and who is practising — then **where the settings are**, then **what
+ * you have earned**: the badges and the walls of diplomas.
  *
  * Most of what the design draws here needs something that does not exist yet.
  * The avatar set, the group, the friend code all belong to the parent account
@@ -52,31 +51,33 @@ export function ProfileScreen({
           <HeldHoek sticker={profile.avatarConfig.sticker} onHeld={onHeld} />
           <div className="tk-home-welkom">
             <h1 className="tk-titel">{t('you.title')}</h1>
+            <HeldUitleg sticker={profile.avatarConfig.sticker} />
           </div>
         </div>
 
-        {/* Wie je bent, bovenaan (ADR-126), en verder alleen wat van dit kind
-            is. Deze pagina hield tot ADR-136 ook de week met een cijfer, het
-            weekbericht, de woordenlijsten van school, premium en de
-            instellingen vast — vijf blokken die niets met het kind te maken
-            hebben, op een pagina die "Jij" heet. Die staan nu op /ouder. */}
-        {/* Eerst wat je hebt, dan pas wie je bent en wie er meedoet (ADR-143).
-            Andersom opende de pagina die "Jij" heet met een naamveld en een
-            kindwisselaar — twee dingen die een kind nooit aanraakt — en stond
-            waar het voor komt eronder. */}
-        <Prijzenkast />
-
+        {/* De volgorde van een profielpagina (ADR-145): eerst wie je bent, dan
+            de instellingen, dan wat je verdiend hebt. ADR-143 zette de
+            prijzenkast bovenaan; de eigenaar vroeg om deze volgorde, op Jij en
+            op Voor ouders hetzelfde, zodat de twee pagina's één patroon delen.
+            De held staat nog steeds als eerste ding, naast de titel. */}
         <Ikben profile={profile} />
 
         <Children active={profile} />
 
-        {/* De deur naar de andere helft, onderaan en zonder nadruk: een kind
-            hoeft er niet heen, en een ouder die de iPad oppakt vindt hem. */}
-        <p>
-          <button type="button" className="tk-button tk-button-secondary" onClick={onOuder}>
-            {t('ouder.naar')}
-          </button>
-        </p>
+        {/* De instellingen zelf staan op Voor ouders (ADR-136): het zijn
+            schakelaars van het apparaat. Hier staat waar je ze vindt, op de
+            plek waar je ze zoekt. */}
+        <section className="flex flex-col gap-3" aria-label={t('you.settings')}>
+          <h2 className="tk-sectie">{t('you.settings')}</h2>
+          <div className="tk-card flex flex-wrap items-center justify-between gap-3">
+            <p className="text-lopend">{t('you.settingsBijOuder')}</p>
+            <button type="button" className="tk-button tk-button-secondary" onClick={onOuder}>
+              {t('ouder.naar')}
+            </button>
+          </div>
+        </section>
+
+        <Prijzenkast />
       </div>
 
       {aside}

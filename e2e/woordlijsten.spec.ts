@@ -126,3 +126,30 @@ test('met twee lijsten draagt elke chip de naam die de ouder typte', async ({ pa
   await expect(page.getByRole('button', { name: /Week 12/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Week 13/ })).toBeVisible();
 });
+
+/**
+ * Een bestand in plaats van intypen (ADR-145): de oefenstof die school als
+ * lijstje meestuurt, in één keer erin. Met een lijstnaam in de eerste kolom
+ * worden het meer lijsten tegelijk.
+ */
+test('een CSV-bestand zet de woorden in de lijsten die erin staan', async ({ page }) => {
+  await signIn(page, 'Lotte');
+  await page.goto('/ouder');
+
+  const blok = page.getByRole('region', { name: 'Eigen woorden' });
+  await blok.getByLabel('Bestand importeren').setInputFiles({
+    name: 'woorden.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from('lijst;woord
+Week 20;trein
+Week 20;fiets
+Week 21;bus
+Week 21;bus
+'),
+  });
+
+  await expect(blok.getByRole('status')).toContainText('3 woorden toegevoegd aan 2 lijsten.');
+  await expect(blok.getByRole('status')).toContainText('1 overgeslagen');
+  await expect(blok.locator('.tk-card').filter({ hasText: 'Week 20' })).toContainText('2 woorden');
+  await expect(blok.locator('.tk-card').filter({ hasText: 'Week 21' })).toContainText('1 woord');
+});

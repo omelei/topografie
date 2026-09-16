@@ -24,6 +24,12 @@ test('de held staat groot op de voordeur en is te wisselen', async ({ page }) =>
   // Elk kind draagt er een vanaf het begin (ADR-067): de eerste van de twaalf.
   await expect(hoek).toContainText('Valerie Vos');
 
+  // En er staat bij wat hij is en hoe je er meer krijgt (ADR-145): zonder die
+  // regels stond er een dier naast je naam en verder niets.
+  await expect(page.getByText('Valerie Vos is jouw held.')).toBeVisible();
+  await expect(page.getByText('Speel rondes en verdien nieuwe helden.')).toBeVisible();
+  await expect(page.getByText('Nog 50 goede antwoorden tot je kist.')).toBeVisible();
+
   await hoek.getByRole('button', { name: /Kies een andere held/ }).click();
 
   // De drie die een nieuw kind heeft, en niet de negen die het nog niet heeft.

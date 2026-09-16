@@ -20,6 +20,7 @@ import {
 } from '@/features/module/onderdelen';
 import { ReeksBlok } from './ReeksBlok';
 import { HeldHoek } from '@/features/reis/HeldHoek';
+import { HeldUitleg } from '@/features/reis/HeldUitleg';
 import { DoelBlok } from './DoelBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -123,6 +124,9 @@ export function HomeScreen({
       <div className="tk-home-welkom">
         <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
         <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
+        {/* Wat die held is en hoe je er meer krijgt: zonder deze regels stond
+            er een dier naast je naam en verder niets. */}
+        <HeldUitleg sticker={sticker} />
       </div>
     </div>
   );
