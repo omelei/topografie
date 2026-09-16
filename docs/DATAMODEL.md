@@ -50,7 +50,7 @@ device itself.
 
 // object store: streak        exactly one record, key 'me'
 {
-  (id, huidigeStreak, langsteStreak, laatsteActieveDag, rustdagen, rustdagWeek);
+  (id, huidigeStreak, langsteStreak, laatsteActieveDag, foutloosNu, foutloosBeste);
 }
 
 // object store: badges        { badgeId, behaaldOp }
@@ -58,10 +58,9 @@ device itself.
 // object store: settings      { key, value } — device preferences, not player data
 ```
 
-`rustdagWeek` is the ISO week in which the last rest day was earned, so a week of
-practice yields exactly one. It is not in part B's `streaks` table because part B
-was written before the rule existed; it belongs there too when that table is
-built.
+Rest days (`rustdagen`, `rustdagWeek`) are gone since ADR-148: a missed school day
+ends the streak. Rows written before still carry the two fields, and nothing reads
+them; the next save of the streak drops them.
 
 Field names are camelCase here and snake_case in Postgres. That single renaming is
 the only translation between part A and part B, and it belongs in one mapping
@@ -362,8 +361,7 @@ create table streaks (
   organisation_id   uuid not null,
   huidige_streak    integer not null default 0,
   langste_streak    integer not null default 0,
-  laatste_actieve_dag date,
-  rustdagen         smallint not null default 0 check (rustdagen between 0 and 2)
+  laatste_actieve_dag date
 );
 
 create table league_entries (

@@ -118,9 +118,12 @@ export interface StreakRecord {
   huidigeStreak: number;
   langsteStreak: number;
   laatsteActieveDag: string | null;
-  rustdagen: number;
-  /** ISO week in which the last rest day was earned, so one week gives one. */
-  rustdagWeek: string | null;
+  /**
+   * Rest days, from ADR-031 until ADR-148 took them out. Still on rows written
+   * before, and read by nothing: a missed school day ends the streak now.
+   */
+  rustdagen?: number;
+  rustdagWeek?: string | null;
   /**
    * Correct answers in a row, and the longest run there has been (ADR-072).
    *

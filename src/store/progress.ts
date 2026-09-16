@@ -260,6 +260,20 @@ export async function loadAccuracy(): Promise<Accuracy> {
   return { correct, answered };
 }
 
+/**
+ * Every answer this child gave, as when and whether it was right: what the
+ * Onthouden page draws week by week (ADR-148). Nothing else of the attempt —
+ * not what was chosen, not how long it took.
+ */
+export async function loadAntwoorden(): Promise<{ tijdstip: string; correct: boolean }[]> {
+  const db = await getDb();
+  const kindId = await activeChildId();
+
+  return (await db.getAll('attempts'))
+    .filter((attempt) => (attempt.kindId ?? SINGLETON_KEY) === kindId)
+    .map((attempt) => ({ tijdstip: attempt.tijdstip, correct: attempt.correct }));
+}
+
 export async function recordAttempt(attempt: Omit<AttemptRecord, 'id'>): Promise<void> {
   const db = await getDb();
   await db.add('attempts', attempt as AttemptRecord);

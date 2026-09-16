@@ -38,14 +38,21 @@ export async function loadStreak(): Promise<StreakState> {
     huidigeStreak: row.huidigeStreak,
     langsteStreak: row.langsteStreak,
     laatsteActieveDag: row.laatsteActieveDag,
-    rustdagen: row.rustdagen,
-    rustdagWeek: row.rustdagWeek,
   };
 }
 
 export async function saveStreak(state: StreakState): Promise<void> {
   const db = await getDb();
-  await db.put('streak', { id: await activeChildId(), ...state });
+  const id = await activeChildId();
+  // The run of correct answers lives on this row too (`loadRun`), and a put of
+  // the streak alone wiped its record every morning. It is carried over; the
+  // rest days of before ADR-148 are not.
+  const oud = await db.get('streak', id);
+  const run =
+    oud?.foutloosNu === undefined
+      ? {}
+      : { foutloosNu: oud.foutloosNu, foutloosBeste: oud.foutloosBeste ?? oud.foutloosNu };
+  await db.put('streak', { id, ...state, ...run });
 }
 
 /** Applies a finished round and saves the result. Returns what changed. */

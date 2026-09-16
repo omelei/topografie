@@ -14,7 +14,7 @@ const WEKEN = 5;
 const WEEKDAGEN = [1, 2, 3, 4, 5, 6, 0];
 
 /** The rules of the streak, in the order a child meets them. */
-const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3', 'reeks.regel4'] as const;
+const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3'] as const;
 
 /**
  * The streak's own page: the number, the days behind it, and how it works
@@ -23,20 +23,19 @@ const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3', 'reeks.regel4'] 
  * one block rather than a section of the product.
  *
  * **It opens on what the block says**, larger: days in a row and the last
- * seven. Under it, what a round today would do. Then the numbers a child or a
- * parent asks after, each one a count of something that happened: the longest
- * streak, the days practised, this month's, the rounds, the questions, and the
- * rest days in hand.
+ * seven. Under it, what a round today would do. Then the three numbers about
+ * turning up: the longest streak, the days practised, and this month's. The
+ * rounds and the questions are counts of the practising rather than of the
+ * days, and they stand on Onthouden with the rest of those (ADR-148).
  *
  * **The calendar is the last five weeks**, Monday to Sunday, with a practised
  * day in ink. It is a table because it is one: a screen reader can walk it by
  * weekday and hear which dates had a round.
  *
  * **The rules are written out.** A streak a child cannot predict feels unfair
- * the first time it does something they did not expect, so the four rules
+ * the first time it does something they did not expect, so the three rules
  * `streak.ts` works by are here in words: a day counts once, weekends and
- * holidays never break it, a missed school day spends a rest day, and a week
- * of practice earns one.
+ * holidays never break it, and a missed school day does.
  *
  * What it does not do is compare. There is no other child here, no average and
  * no "beter dan vorige week" — the only streak on the page is this one.
@@ -72,9 +71,6 @@ function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
     ['reeks.cijferLangste', reeks.langste],
     ['reeks.cijferDagen', reeks.geoefend.size],
     ['reeks.cijferMaand', dagenInMaand(reeks.geoefend, reeks.vandaag)],
-    ['reeks.cijferRondes', reeks.rondes],
-    ['reeks.cijferVragen', reeks.vragen],
-    ['reeks.cijferRustdagen', reeks.rustdagen],
   ];
 
   return (
@@ -90,7 +86,7 @@ function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
           <p className="text-tekst-secundair">{vandaagZin(reeks.dagen, vandaagGeoefend)}</p>
         </section>
 
-        {/* Zes getallen, een kalender van vijf weken en vier regels uitleg
+        {/* Drie getallen (ADR-148; het waren er zes), een kalender van vijf weken en drie regels uitleg
             (ADR-143). Voor een kind is "Dagen deze maand: 1" geen reeks maar
             een rapportage, en vijfendertig lege vakjes zijn vijfendertig dagen
             waarop het niets deed. Het staat er nog — het is zijn voortgang —

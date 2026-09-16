@@ -3,7 +3,7 @@
  *
  * Spec §4.3 asks for a streak "met opzet ontworpen om níét te straffen", which
  * is harder than it sounds: the whole force of a streak comes from not wanting
- * to lose it, and every softening trades some of that away. Three rules do the
+ * to lose it, and every softening trades some of that away. Two rules do the
  * work here, and each buys back more than it costs.
  *
  * **A weekend or a holiday can never break it.** School holidays are not days a
@@ -16,9 +16,12 @@
  * school day. Pausing both ways would punish a child for practising on Sunday
  * by making it worth nothing.
  *
- * **A missed school day spends a rest day rather than resetting.** One is earned
- * for every week in which the child practised, two can be saved. One illness,
- * one school trip, one bad week does not erase two months of work.
+ * **A missed school day ends it** (ADR-148). Until then a missed school day
+ * spent a rest day, earned one a week, and the streak stood. That kept a child
+ * from losing two months over one illness, and it also put "4 dagen op rij
+ * geoefend" above a week with an empty Monday in it — a number the row under
+ * it contradicted. "Op rij" is now what it says: every school day since the
+ * streak began had a round.
  *
  * All dates here are calendar days in local time, formatted as YYYY-MM-DD. A
  * streak is about days a child lived through, not about hours elapsed, and
@@ -39,20 +42,13 @@ export interface StreakState {
   readonly langsteStreak: number;
   /** YYYY-MM-DD of the last day a round was finished, or null. */
   readonly laatsteActieveDag: string | null;
-  readonly rustdagen: number;
-  /** ISO week key (YYYY-Www) in which the last rest day was earned. */
-  readonly rustdagWeek: string | null;
 }
-
-export const MAX_RUSTDAGEN = 2;
 
 export function emptyStreak(): StreakState {
   return {
     huidigeStreak: 0,
     langsteStreak: 0,
     laatsteActieveDag: null,
-    rustdagen: 0,
-    rustdagWeek: null,
   };
 }
 
@@ -69,7 +65,7 @@ function parseDay(key: string): Date {
   return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
 }
 
-/** ISO week key, YYYY-Www — the unit a rest day is earned in. */
+/** ISO week key, YYYY-Www: Monday to Sunday, as a school calendar is drawn. */
 export function weekKey(date: Date): string {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   // ISO weeks run Monday to Sunday and belong to the year of their Thursday.
@@ -127,12 +123,8 @@ export interface StreakChange {
   readonly state: StreakState;
   /** True when this round was the first of a new day. */
   readonly counted: boolean;
-  /** Rest days spent to bridge missed school days. */
-  readonly rustdagenGebruikt: number;
-  /** True when the streak restarted because there were not enough rest days. */
+  /** True when the streak restarted because a school day was missed. */
   readonly broken: boolean;
-  /** True when this round earned a rest day. */
-  readonly rustdagVerdiend: boolean;
 }
 
 /**
@@ -150,52 +142,22 @@ export function recordActivity(
   const today = dayKey(on);
 
   if (state.laatsteActieveDag === today) {
-    return { state, counted: false, rustdagenGebruikt: 0, broken: false, rustdagVerdiend: false };
+    return { state, counted: false, broken: false };
   }
 
-  let streak: number;
-  let rustdagen = state.rustdagen;
-  let rustdagenGebruikt = 0;
-  let broken = false;
-
-  if (state.laatsteActieveDag === null) {
-    streak = 1;
-  } else {
-    const missed = missedSchoolDays(state.laatsteActieveDag, today, holidays);
-    if (missed === 0) {
-      streak = state.huidigeStreak + 1;
-    } else if (missed <= rustdagen) {
-      rustdagen -= missed;
-      rustdagenGebruikt = missed;
-      streak = state.huidigeStreak + 1;
-    } else {
-      streak = 1;
-      broken = true;
-    }
-  }
-
-  // One rest day per week in which the child practised, up to two saved. Earned
-  // after the streak is settled, so a rest day earned today cannot also have
-  // rescued today.
-  const thisWeek = weekKey(on);
-  let rustdagVerdiend = false;
-  if (state.rustdagWeek !== thisWeek && rustdagen < MAX_RUSTDAGEN) {
-    rustdagen += 1;
-    rustdagVerdiend = true;
-  }
+  const broken =
+    state.laatsteActieveDag !== null &&
+    missedSchoolDays(state.laatsteActieveDag, today, holidays) > 0;
+  const streak = state.laatsteActieveDag === null || broken ? 1 : state.huidigeStreak + 1;
 
   return {
     state: {
       huidigeStreak: streak,
       langsteStreak: Math.max(state.langsteStreak, streak),
       laatsteActieveDag: today,
-      rustdagen,
-      rustdagWeek: state.rustdagWeek === thisWeek ? state.rustdagWeek : thisWeek,
     },
     counted: true,
-    rustdagenGebruikt,
     broken,
-    rustdagVerdiend,
   };
 }
 
@@ -217,7 +179,7 @@ export function currentStreak(
   if (state.laatsteActieveDag === today) return state.huidigeStreak;
 
   const missed = missedSchoolDays(state.laatsteActieveDag, today, holidays);
-  return missed <= state.rustdagen ? state.huidigeStreak : 0;
+  return missed === 0 ? state.huidigeStreak : 0;
 }
 
 // ---------------------------------------------------------------------------

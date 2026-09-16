@@ -11,11 +11,8 @@ export interface Reeks {
   readonly dagen: number;
   /** The longest there has been, never less than today's. */
   readonly langste: number;
-  readonly rustdagen: number;
   /** The days a round was finished on, YYYY-MM-DD. */
   readonly geoefend: ReadonlySet<string>;
-  readonly rondes: number;
-  readonly vragen: number;
 }
 
 /**
@@ -37,10 +34,7 @@ export function useReeks(): Reeks | null {
         vandaag,
         dagen,
         langste: Math.max(streak.langsteStreak, dagen),
-        rustdagen: streak.rustdagen,
         geoefend: dagenGeoefend(rondes.map((ronde) => ronde.at)),
-        rondes: rondes.length,
-        vragen: rondes.reduce((samen, ronde) => samen + ronde.answered, 0),
       });
     });
   }, [vandaag]);

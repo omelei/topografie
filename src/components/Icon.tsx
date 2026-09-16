@@ -194,7 +194,7 @@ export function EraIcon(props: Omit<IconProps, 'children'>) {
  * The streak: days in a row, three behind and today still open.
  *
  * Dots rather than a flame. A flame is a metaphor for pressure, and the streak
- * here forgives a rest day (ADR-031) — it counts days, so it is drawn as days.
+ * here counts days, so it is drawn as days.
  */
 export function StreakIcon(props: Omit<IconProps, 'children'>) {
   return (

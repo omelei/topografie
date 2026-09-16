@@ -10,10 +10,6 @@
  */
 export const nl = {
   // Home
-  // "Rustdag", not "vriezer": ADR-031 gives that word back to the item status,
-  // where it means something a child is done with rather than a day off.
-  'home.restDay': '{aantal} rustdag bewaard',
-  'home.restDays': '{aantal} rustdagen bewaard',
   // K1, de landingspagina. De begroeting zet het kind bovenaan het scherm; de
   // zin eronder zegt wat je hier doet, in de volgorde waarin je het doet: een
   // vak kiezen, een ronde doen, en wat dat oplevert (herontwerp 2026-09).
@@ -100,24 +96,10 @@ export const nl = {
   'home.rowBack': 'Terug in {rij}',
   'home.rowOn': 'Verder in {rij}',
 
-  // Alles bij elkaar, over alle rondes ooit. Nadrukkelijk niet hetzelfde als
-  // wat je onthoudt: dit gaat over antwoorden die je gaf, dat over wat er
-  // blijft hangen.
-  'home.accuracyTitle': 'Goed beantwoord',
-  'home.accuracyOf': '{goed} van de {totaal} vragen',
-  'home.accuracyNone': 'Nog geen antwoorden. Doe één ronde.',
-
   // Waar je zelf steeds naar teruggaat, in één tik. Geen aanbeveling en geen
   // algoritme: het is wat je het vaakst gekozen hebt.
   'home.favouritesTitle': 'Jouw favorieten',
   'home.favouritesNone': 'Nog geen favorieten. Wat je vaak oefent, komt hier te staan.',
-
-  // De andere streak: goede antwoorden op rij, zonder dag ertussen. Hij staat
-  // onder het percentage en niet erboven, want het is het enige getal in het
-  // product dat één fout antwoord meteen afpakt.
-  'home.runLabel': 'Foutloos op rij',
-  // "beste 12" las als een lijstje van de beste twaalf. Het is je record.
-  'home.runBest': 'je record is {aantal}',
 
   // De reeks in de rechterkolom en op zijn eigen pagina (ADR-110). Het getal is
   // dat van de pil in de balk; het rijtje eronder zegt welke dagen erachter
@@ -145,22 +127,18 @@ export const nl = {
   'reeks.cijferLangste': 'Langste reeks in dagen',
   'reeks.cijferDagen': 'Dagen geoefend',
   'reeks.cijferMaand': 'Dagen deze maand',
-  'reeks.cijferRondes': 'Rondes gespeeld',
-  'reeks.cijferVragen': 'Vragen beantwoord',
-  'reeks.cijferRustdagen': 'Rustdagen bewaard',
   'reeks.kalenderTitel': 'De laatste vijf weken',
   'reeks.kalGeoefend': 'geoefend',
   'reeks.kalVandaag': 'vandaag',
   'reeks.kalVandaagGeoefend': 'vandaag, geoefend',
-  // De vier regels van streak.ts, in woorden. Een reeks die je niet kunt
+  // De drie regels van streak.ts, in woorden. Een reeks die je niet kunt
   // voorspellen voelt oneerlijk zodra hij iets doet wat je niet verwachtte.
   'reeks.regelsTitel': 'Zo werkt je reeks',
   'reeks.regel1':
     'Elke dag waarop je een ronde afmaakt, telt mee. Vier rondes op één dag zijn één dag.',
   'reeks.regel2':
     'In het weekend en in de schoolvakantie gaat je reeks nooit kapot. Oefen je dan toch, dan telt het wel.',
-  'reeks.regel3': 'Mis je een schooldag? Dan gebruik je een rustdag en blijft je reeks staan.',
-  'reeks.regel4': 'Elke week waarin je oefent, krijg je een rustdag. Je kunt er twee bewaren.',
+  'reeks.regel3': 'Mis je een schooldag, dan begint je reeks de volgende keer weer bij één.',
   // De dagen van de week: kort boven een streepje, voluit voor wie voorleest.
   // Genummerd zoals Date.getDay telt: zondag is 0.
   'dag.kort.0': 'zo',
@@ -256,7 +234,39 @@ export const nl = {
   // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat
   // onthouden hier betekent (ADR-114): na een week nog goed.
   'retention.intro':
-    'Iets onthoud je als je het nog weet nadat er een week tussen zat. Hier zie je per onderwerp hoe ver je bent.',
+    'Hoeveel je onthoudt en hoe je oefent. Iets onthoud je als je het nog weet nadat er een week tussen zat.',
+  // De bovenkant van de pagina (ADR-148): alles bij elkaar, over elk vak.
+  'retention.geheugenTitel': 'Je geheugen',
+  'retention.geheugenEen': 'onderdeel onthoud je',
+  'retention.geheugenVeel': 'onderdelen onthoud je',
+  'retention.geheugenVan': 'van de {aantal} die je geoefend hebt',
+  'retention.geheugenLeeg':
+    'Je hebt nog niets geoefend. Na je eerste ronde zie je hier wat je onthoudt.',
+  // In de ring staat het getal met deze twee woorden eronder; de zin ernaast
+  // zegt het voluit, en dat is ook wat een schermlezer hoort.
+  'retention.ringLabel': 'over 3 weken',
+  'retention.ringZin': 'Over drie weken weet je van alles wat je geoefend hebt nog {procent}%.',
+  'retention.vakTitel': 'Per vak',
+  'retention.vakRegel': '{onthouden} onthoud je, {geoefend} geoefend, {totaal} in totaal',
+  'retention.vakLeeg': 'Nog niet geoefend, {totaal} in totaal',
+  // Alles wat er ooit geoefend is, en de laatste acht weken. "Goed beantwoord"
+  // en "Foutloos op rij" stonden in de kolom naast elke pagina; hier staan ze
+  // bij de rest van hoe het oefenen gaat. Nadrukkelijk niet hetzelfde als wat
+  // je onthoudt: dit gaat over antwoorden die je gaf, dat over wat blijft.
+  'retention.verloopTitel': 'Week na week',
+  'retention.cijferGoed': 'Goed beantwoord',
+  'retention.cijferOpRij': 'Foutloos op rij',
+  'retention.cijferRecord': 'Je record foutloos',
+  'retention.cijferRondes': 'Rondes in totaal',
+  'retention.cijferVragen': 'Vragen in totaal',
+  'retention.grafiek': 'Vragen per week',
+  'retention.grafiekWk': 'wk {nummer}',
+  'retention.grafiekNu': 'nu',
+  'retention.grafiekZin': 'Week {nummer}: {goed} van de {totaal} vragen goed.',
+  'retention.grafiekDezeZin': 'Deze week: {goed} van de {totaal} vragen goed.',
+  'retention.grafiekGoed': 'goed',
+  'retention.grafiekFout': 'niet goed',
+  'retention.onderwerpTitel': 'Per onderwerp',
   'retention.welkVak': 'Welk vak?',
   'retention.welkOnderwerp': 'Welk onderwerp?',
   'retention.welkeSom': 'Welke sommen?',
@@ -622,7 +632,7 @@ export const nl = {
   'premium.regel.reeks': 'Het aantal dagen op rij',
   'premium.regel.diplomas': 'Diploma’s voor vlaggen, klok en topografie',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
-  'premium.regel.onthouden': 'Per onderwerp zien wat je kind onthoudt',
+  'premium.regel.onthouden': 'Per vak en per onderwerp zien wat je kind onthoudt, week na week',
   'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
   'premium.regel.toets': 'Zien wat je kind op de dag van de toets nog weet',
   'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
@@ -676,7 +686,7 @@ export const nl = {
   // in een naam die eindigt op het kale woord "Premium" stond het nergens.
   'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
   'premium.wat.onthouden':
-    'Zie per onderdeel wat je kind onthoudt, en wat er over drie weken nog van over is.',
+    'Zie per vak en per onderdeel wat je kind onthoudt, hoe het oefenen week na week gaat, en wat er over drie weken nog van over is.',
   'premium.wat.lijsten':
     'De oefenstof van school zelf intypen of importeren, en je kind oefent deze als flitsdictee.',
   'premium.wat.bericht':
@@ -1208,8 +1218,6 @@ export const nl = {
   'result.streakStarted': 'Je bent begonnen. Kom morgen terug!',
   'result.streakGrew': 'Dat is {aantal} dagen op rij.',
   'result.streakGrewOne': 'Dat is je eerste dag.',
-  'result.streakSaved': 'Je rustdag heeft je streak gered.',
-  'result.restDayEarned': 'Je hebt er een rustdag bij verdiend.',
   'result.newStamp': 'Nieuwe badge: {naam}',
   // De ronde in getallen, als tegels bovenaan "Ronde klaar" (ADR-112).
   'result.samenvatting': 'Hoe de ronde ging',
@@ -1357,7 +1365,7 @@ export const nl = {
   'ouder.uitleg':
     'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',
   'ouder.naar': 'Voor ouders',
-  'ouder.naarOnthouden': 'Bekijk per onderwerp wat je kind onthoudt',
+  'ouder.naarOnthouden': 'Bekijk wat je kind onthoudt en hoe het oefent',
   'ouder.terug': 'Naar Jij',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',

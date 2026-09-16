@@ -1,10 +1,8 @@
-import { useEffect, useState, type CSSProperties } from 'react';
-import type { FlawlessRun, ModeId } from '@/game-core';
+import { useEffect, useState } from 'react';
+import type { ModeId } from '@/game-core';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { t, type TranslationKey } from '@/i18n';
-import { loadAccuracy, loadPlayedRounds } from '@/store/progress';
-import type { Accuracy } from '@/store/progress';
-import { loadRun } from '@/store/streakStore';
+import { loadPlayedRounds } from '@/store/progress';
 import {
   favorieten,
   geplaatst,
@@ -13,7 +11,6 @@ import {
   type Gespeeld,
   type Onderdeel,
 } from '@/features/module/onderdelen';
-import { usePremium } from '@/features/premium/usePremium';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
 import { ReeksBlok } from './ReeksBlok';
@@ -21,8 +18,7 @@ import { ToetsenBlok } from './ToetsenBlok';
 
 /**
  * The child's own column: the tests that are coming, how many days in a row
- * they have practised, how the whole of it is going, and where they keep going
- * back to.
+ * they have practised, and where they keep going back to.
  *
  * It is the same column on every page inside the shell, because it is what the
  * app knows about the child, and that does not change when they walk into
@@ -42,10 +38,9 @@ import { ToetsenBlok } from './ToetsenBlok';
  * "Samen met" belongs at the foot of it. It is three friends, and there are
  * none until ADR-050's backend, so it is absent rather than empty.
  *
- * **Zonder code is de kolom korter** (ADR-124). De reeks en "Goed beantwoord"
- * zijn er dan niet, in plaats van er als twee sloten te staan: dit is de kolom
- * die op élke pagina meegaat, en wat daar staat zegt een kind op elke pagina
- * opnieuw. Wat premium is, staat één keer uitgelegd op de premiumpagina.
+ * **"Goed beantwoord" staat er niet meer** (ADR-148). Het is een getal over hoe
+ * het oefenen gaat, en die staan op Onthouden bij elkaar; in een kolom die op
+ * élke pagina meegaat stond het ook naast diezelfde pagina.
  */
 export function SideColumn({
   onReeks,
@@ -62,7 +57,7 @@ export function SideColumn({
    * cijfer en zijn favorieten.
    *
    * De toetsen blijven staan, en dat is geen uitzondering maar de regel die
-   * eronder ligt: een toetsdatum wordt door de ouder ingevoerd. De andere drie
+   * eronder ligt: een toetsdatum wordt door de ouder ingevoerd. De andere twee
    * gaan over hoe het kind het doet, en die staan op de pagina's van het kind.
    */
   readonly vanOuder?: boolean;
@@ -76,73 +71,10 @@ export function SideColumn({
       {vanOuder ? null : (
         <>
           <ReeksBlok onReeks={onReeks} />
-          <GoedBlok />
           <FavorietenBlok onBegin={onBegin} />
         </>
       )}
     </aside>
-  );
-}
-
-/**
- * Everything answered, ever, as one fraction.
- *
- * Deliberately not a retention figure, and worded so the two cannot be
- * confused. The ring is ink on the sunken tone rather than a material: this is
- * how the work is going, and a material is a reward (ADR-071).
- */
-export function GoedBlok() {
-  const { actief } = usePremium();
-  const [accuracy, setAccuracy] = useState<Accuracy | null>(null);
-  const [run, setRun] = useState<FlawlessRun | null>(null);
-
-  useEffect(() => {
-    void loadAccuracy().then(setAccuracy);
-    void loadRun().then(setRun);
-  }, []);
-
-  // Weg zonder code sinds ADR-124, om de reden die bij de reeks staat: een
-  // tweede slot in dezelfde kolom, op elke pagina, boven een teller van nul.
-  if (!actief) return null;
-
-  // Empty until it is known: a block that says nought and then changes its
-  // mind has told a child something that was not true.
-  if (accuracy === null) return <Blok titel={t('home.accuracyTitle')} bezig />;
-
-  const procent =
-    accuracy.answered === 0 ? 0 : Math.round((accuracy.correct / accuracy.answered) * 100);
-
-  return (
-    <Blok titel={t('home.accuracyTitle')}>
-      {accuracy.answered === 0 ? (
-        <p className="text-tekst-secundair">{t('home.accuracyNone')}</p>
-      ) : (
-        <div className="flex items-center gap-4">
-          {/* Decorative: the figure beside it is the same number in words. */}
-          <span
-            className="tk-donut"
-            style={{ '--vul': `${procent}%` } as CSSProperties}
-            aria-hidden="true"
-          />
-          <div className="min-w-0">
-            <p className="tk-procent">{`${procent}%`}</p>
-            <p className="tk-hulp">
-              {t('home.accuracyOf', { goed: accuracy.correct, totaal: accuracy.answered })}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* The other streak: correct answers in a row. Under the fraction, because
-          it is the one number a single wrong answer takes away (ADR-072). */}
-      {run !== null && run.beste > 0 ? (
-        <p className="flex flex-wrap items-baseline gap-x-3 border-t border-rand-licht pt-3">
-          <span className="tk-label">{t('home.runLabel')}</span>
-          <span className="tk-display text-kaartkop tabular-nums">{run.nu}</span>
-          <span className="tk-hulp">{t('home.runBest', { aantal: run.beste })}</span>
-        </p>
-      ) : null}
-    </Blok>
   );
 }
 

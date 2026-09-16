@@ -242,24 +242,13 @@ function DoelRegel({ reward }: { readonly reward: RoundOutcome | null }) {
  * Told after the numbers, never before them: a streak that leads the screen
  * turns a lesson into a scoreboard. It is also silent when nothing happened —
  * a second round on the same day says nothing, because nothing changed.
- * A rest day spent or earned is said out loud rather than silently: a safety
- * net nobody knows about protects the streak but teaches nothing about coming
- * back.
  */
 function reeksZin(streak: StreakChange | null): string | null {
   if (streak === null || !streak.counted) return null;
 
   const dagen = streak.state.huidigeStreak;
-  const zinnen = [
-    dagen === 1
-      ? streak.broken
-        ? t('result.streakGrewOne')
-        : t('result.streakStarted')
-      : t('result.streakGrew', { aantal: dagen }),
-  ];
-  if (streak.rustdagenGebruikt > 0) zinnen.push(t('result.streakSaved'));
-  if (streak.rustdagVerdiend) zinnen.push(t('result.restDayEarned'));
-  return zinnen.join(' ');
+  if (dagen > 1) return t('result.streakGrew', { aantal: dagen });
+  return streak.broken ? t('result.streakGrewOne') : t('result.streakStarted');
 }
 
 /** Three weeks out: the horizon the product has always forecast to (`home.retention`). */

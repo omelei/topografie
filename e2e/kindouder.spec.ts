@@ -69,6 +69,6 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
 
   // En er is een weg naar het detail, dat hiervoor alleen in het menu van het
   // kind stond.
-  await page.getByRole('button', { name: /Bekijk per onderwerp/ }).click();
+  await page.getByRole('button', { name: /Bekijk wat je kind onthoudt/ }).click();
   await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
 });

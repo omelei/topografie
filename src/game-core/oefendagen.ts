@@ -70,7 +70,7 @@ export function laatsteZevenDagen(geoefend: ReadonlySet<string>, now: Date): Oef
  * Whole weeks, Monday to Sunday, the last of them this one.
  *
  * Monday first because that is how a Dutch school calendar is drawn, and the
- * ISO week a rest day is earned in (`weekKey`) starts there too.
+ * ISO week (`weekKey`) starts there too.
  */
 export function kalenderWeken(
   geoefend: ReadonlySet<string>,
