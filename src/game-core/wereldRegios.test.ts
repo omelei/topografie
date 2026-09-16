@@ -135,14 +135,9 @@ describe('inzoomen maakt de wereldkaart aanwijsbaar', () => {
       .sort();
 
     expect(rest).toEqual(
-      [
-        'burundi',
-        'gambia',
-        'guinee-bissau',
-        'israel',
-        'libanon',
-        'rwanda',
-      ].map((land) => `wl-land-${land}`),
+      ['burundi', 'gambia', 'guinee-bissau', 'israel', 'libanon', 'rwanda'].map(
+        (land) => `wl-land-${land}`,
+      ),
     );
   });
 

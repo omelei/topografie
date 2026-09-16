@@ -141,7 +141,8 @@ export function PracticeScreen({
   const gebiedNaAntwoord = (() => {
     if (state.phase !== 'revealed' || regio === null || !state.geo || !state.question) return regio;
     const puntVan = (id: string | null) => {
-      const vorm = id === null ? undefined : state.geo?.vormen.find((kandidaat) => kandidaat.id === id);
+      const vorm =
+        id === null ? undefined : state.geo?.vormen.find((kandidaat) => kandidaat.id === id);
       return vorm ? (vorm.punt ?? boxCentre(vorm.bbox)) : null;
     };
     const punten = [puntVan(state.question.answerId), puntVan(state.chosenId)].filter(
