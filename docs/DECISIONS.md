@@ -7688,14 +7688,14 @@ dag verdween. Die twee worden nu overgenomen.
 
 **Elk getal staat op één plek.**
 
-| Pagina    | Waarvoor                                    | Wat er weg is                                  |
-| --------- | ------------------------------------------- | ---------------------------------------------- |
-| Onthouden | alles over wat blijft en hoe het oefenen gaat | —                                             |
-| Reeks     | de dagen: langste reeks, dagen, deze maand, kalender, regels | rondes, vragen, rustdagen      |
-| Voor ouders | premium, instellingen, oefenstof, het weekbericht, de weg naar Onthouden | de vier week-tegels |
-| Jij       | wie je bent, wie er oefent, de prijzenkast   | niets; er stond al geen getal                  |
-| Premium   | wat het is en wat het kost, of de stand      | niets; de regel over onthouden noemt nu per vak en week na week |
-| De kolom  | toetsen, reeks, favorieten                   | Goed beantwoord (met foutloos op rij)          |
+| Pagina      | Waarvoor                                                                 | Wat er weg is                                                   |
+| ----------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| Onthouden   | alles over wat blijft en hoe het oefenen gaat                            | —                                                               |
+| Reeks       | de dagen: langste reeks, dagen, deze maand, kalender, regels             | rondes, vragen, rustdagen                                       |
+| Voor ouders | premium, instellingen, oefenstof, het weekbericht, de weg naar Onthouden | de vier week-tegels                                             |
+| Jij         | wie je bent, wie er oefent, de prijzenkast                               | niets; er stond al geen getal                                   |
+| Premium     | wat het is en wat het kost, of de stand                                  | niets; de regel over onthouden noemt nu per vak en week na week |
+| De kolom    | toetsen, reeks, favorieten                                               | Goed beantwoord (met foutloos op rij)                           |
 
 Het weekbericht blijft op Voor ouders: het is de lezing van de week voor de
 volwassene, geen telling. Het premiumblok op Voor ouders is een statusregel met

@@ -60,9 +60,7 @@ export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
               <p className="tk-reeks-getal">
                 <span className="tk-reeks-aantal">{stand.onthouden}</span>
                 <span className="tk-reeks-zin">
-                  {stand.onthouden === 1
-                    ? t('retention.geheugenEen')
-                    : t('retention.geheugenVeel')}
+                  {stand.onthouden === 1 ? t('retention.geheugenEen') : t('retention.geheugenVeel')}
                 </span>
               </p>
               <p className="tk-hulp">{t('retention.geheugenVan', { aantal: totaal })}</p>
@@ -270,7 +268,9 @@ export function WeekNaWeek({
   const tegels = [
     [
       t('retention.cijferGoed'),
-      procentGoed === null ? t('retention.nooit') : t('retention.procent', { procent: procentGoed }),
+      procentGoed === null
+        ? t('retention.nooit')
+        : t('retention.procent', { procent: procentGoed }),
     ],
     [t('retention.cijferOpRij'), String(run.nu)],
     [t('retention.cijferRecord'), String(run.beste)],
@@ -322,7 +322,9 @@ export function WeekNaWeek({
                   </span>
                 </span>
                 <span className="tk-grafiek-naam" aria-hidden="true">
-                  {week.deze ? t('retention.grafiekNu') : t('retention.grafiekWk', { nummer: week.nummer })}
+                  {week.deze
+                    ? t('retention.grafiekNu')
+                    : t('retention.grafiekWk', { nummer: week.nummer })}
                 </span>
                 <span className="tk-sr-only">
                   {t(week.deze ? 'retention.grafiekDezeZin' : 'retention.grafiekZin', {

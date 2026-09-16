@@ -58,9 +58,7 @@ test('Onthouden opent op je geheugen, en zegt het eerlijk als er nog niets is', 
   );
 });
 
-test('na één ronde staan het geheugen, deze week, per vak en week na week er', async ({
-  page,
-}) => {
+test('na één ronde staan het geheugen, deze week, per vak en week na week er', async ({ page }) => {
   await signIn(page, 'Jip');
   await eenProvincieEnStop(page);
   await page.goto('/onthouden');
