@@ -122,7 +122,10 @@ function Importeer({
     if (!bestand) return;
 
     try {
-      const naam = bestand.name.replace(/\.[^.]+$/, '').trim().slice(0, MAX_NAAM);
+      const naam = bestand.name
+        .replace(/\.[^.]+$/, '')
+        .trim()
+        .slice(0, MAX_NAAM);
       const uit = importeer(
         await bestand.text(),
         naam === '' ? t('you.lijstenImport') : naam,

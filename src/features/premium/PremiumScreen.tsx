@@ -276,8 +276,7 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
             {t('premium.kopenKnop')}
           </a>
           <p className="tk-premium-etalage-prijs">
-            <span className="tk-display">{t('premium.prijs')}</span>{' '}
-            {t('premium.perSchooljaar')}
+            <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
           </p>
         </div>
       ) : null}
