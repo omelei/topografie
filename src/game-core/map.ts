@@ -206,16 +206,24 @@ export function reachablePoints<
  * (ADR-086).
  *
  * Keyed by shape id, so a caller looks up rather than recomputes.
+ *
+ * **`ringOnderPx`: vanaf welke maat een vorm een ring krijgt** (ADR-146).
+ * Standaard dezelfde 48 als de ring zelf. Op een landenkaart is dat de helft:
+ * een land van dertig pixels is zelf te raken — WCAG 2.5.8 vraagt 24 — en gaf
+ * het toch een ring, dan kromp de ring van zijn kleine buurman mee. Zo verloor
+ * Luxemburg zijn ring aan België, dat er geen nodig had.
  */
 export function helpTargets<T extends { readonly id: string; readonly bbox: BoundingBox }>(
   shapes: readonly T[],
   fit: ViewFit,
   labelOf: (shape: T) => readonly [number, number] | null | undefined,
   minPx = MIN_TOUCH_PX,
+  ringOnderPx = minPx,
 ): Map<string, HelpTarget> {
   const wanted: HelpTarget[] = [];
   const ids: string[] = [];
   for (const shape of shapes) {
+    if (!needsHelpTarget(shape.bbox, fit, ringOnderPx)) continue;
     const target = helpTargetFor(shape.bbox, fit, labelOf(shape), minPx);
     if (target !== null) {
       wanted.push(target);
@@ -239,4 +247,91 @@ export function helpTargets<T extends { readonly id: string; readonly bbox: Boun
     if (r * 2 >= floor) kept.set(ids[i] as string, { cx: mine.cx, cy: mine.cy, r });
   }
   return kept;
+}
+
+/**
+ * De ringen van een SVG-pad, als lijsten punten.
+ *
+ * De kaarten van dit product schrijven alleen absolute M, L en Z
+ * (`tools/content/simplify.mjs`), dus meer hoeft dit niet te lezen. Een pad met
+ * iets anders erin levert minder punten op en geen fout: dan is een land iets
+ * moeilijker te benaderen, en dat is geen reden voor een kaart die niet laadt.
+ */
+export function padPunten(d: string): (readonly [number, number])[][] {
+  const ringen: (readonly [number, number])[][] = [];
+  let huidig: (readonly [number, number])[] = [];
+  for (const deel of d.matchAll(/([MLZ])\s*(-?[\d.]+)?[\s,]*(-?[\d.]+)?/g)) {
+    const [, opdracht, x, y] = deel;
+    if (opdracht === 'Z') continue;
+    if (opdracht === 'M' && huidig.length > 0) {
+      ringen.push(huidig);
+      huidig = [];
+    }
+    if (x !== undefined && y !== undefined) huidig.push([Number(x), Number(y)]);
+  }
+  if (huidig.length > 0) ringen.push(huidig);
+  return ringen;
+}
+
+/** De afstand van een punt tot een lijnstuk, in view-box-eenheden. */
+function afstandTotLijn(
+  p: readonly [number, number],
+  a: readonly [number, number],
+  b: readonly [number, number],
+): number {
+  const dx = b[0] - a[0];
+  const dy = b[1] - a[1];
+  const lengte = dx * dx + dy * dy;
+  const t =
+    lengte === 0 ? 0 : Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / lengte));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+/** De kortste afstand van een punt tot de kustlijn van een vorm. */
+export function afstandTotVorm(p: readonly [number, number], d: string): number {
+  let kortst = Infinity;
+  for (const ring of padPunten(d)) {
+    for (let i = 0; i < ring.length; i++) {
+      const a = ring[i] as readonly [number, number];
+      const b = ring[(i + 1) % ring.length] as readonly [number, number];
+      kortst = Math.min(kortst, afstandTotLijn(p, a, b));
+    }
+  }
+  return kortst;
+}
+
+/**
+ * Het land dat bedoeld was, bij een tik in zee (ADR-146).
+ *
+ * Een tik die geen land raakt deed niets. Op de wereldkaart is dat de tik die
+ * het vaakst gebeurt: een eiland van drie pixels mis je met je vinger, en je
+ * landt in het water ernaast. Nu telt zo'n tik voor het dichtstbijzijnde land,
+ * zolang dat binnen `maxEenheden` ligt — een halve vingertop.
+ *
+ * **Alleen in zee.** Een tik óp een land blijft dat land, ook als er een klein
+ * land vlakbij ligt: wie op België drukt, bedoelt België. En alleen op een
+ * landenkaart, niet op Nederland: daar is een tik in het IJsselmeer bewust geen
+ * Noord-Holland (ADR-019).
+ *
+ * Eerst op de bounding box gefilterd, zodat een tik niet 167 kustlijnen hoeft af
+ * te lopen om er vier te vinden die in de buurt komen.
+ */
+export function dichtstbijzijndeVorm<
+  T extends { readonly id: string; readonly d: string; readonly bbox: BoundingBox },
+>(p: readonly [number, number], vormen: readonly T[], maxEenheden: number): string | null {
+  let beste: { id: string; afstand: number } | null = null;
+  for (const vorm of vormen) {
+    const [minX, minY, maxX, maxY] = vorm.bbox;
+    const ver =
+      p[0] < minX - maxEenheden ||
+      p[0] > maxX + maxEenheden ||
+      p[1] < minY - maxEenheden ||
+      p[1] > maxY + maxEenheden;
+    if (ver) continue;
+    const afstand = afstandTotVorm(p, vorm.d);
+    if (afstand <= maxEenheden && (beste === null || afstand < beste.afstand)) {
+      beste = { id: vorm.id, afstand };
+    }
+  }
+  return beste?.id ?? null;
 }

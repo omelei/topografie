@@ -7493,6 +7493,96 @@ Die keuze ligt bij de eigenaar, met opties en een advies.
 
 ---
 
+## ADR-146 — Inzoomen op de wereldkaart, en een tik in zee telt voor het land ernaast
+
+**Status:** accepted. **Date:** 2026-09-16. Gekozen door de eigenaar uit zes
+opties na een vergelijking met Seterra, JetPunk, Sporcle, Lizard Point,
+TopoMania, StudyGe en Topografie in de Klas: "A + B". Vult ADR-086 en ADR-087
+aan.
+
+### Context
+
+ADR-087 telde het na: op een telefoon zijn 160 van de 167 landen van de
+wereldkaart niet aan te wijzen, en ook op een laptop negentig. Het antwoord was
+toen om aanwijzen op de wereldkaart achteraan te zetten en meerkeuze voorop.
+Aanwijzen bleef bestaan, maar was op de kleinste schermen een test van je
+vingers in plaats van je topografie. Wie op een eiland van drie pixels mikte en
+in het water ernaast landde, zag niets gebeuren.
+
+Van de concurrenten werkt het vergrootglas van Lizard Point (een knop die een
+gebied uitvergroot) het betrouwbaarst. Vrij knijpen en zoomen, zoals in Seterra
+en StudyGe, is precies waarover hun recensies klagen.
+
+### Decision
+
+**A. Knoppen om in te zoomen, in twee niveaus.** Boven de wereldkaart, alleen
+bij aanwijzen: "Hele wereld" en de zes werelddelen. Kies je een werelddeel met
+delen, dan verschijnt een tweede rij: Heel Europa, West-Europa, Noord-Europa, de
+Balkan, Oost-Europa; Noord-, West-, Midden- en Oost-, en Zuidelijk Afrika;
+Midden-Oosten, Zuid- en Centraal-Azië, Oost-Azië, Zuidoost-Azië; en
+Midden-Amerika en Caraïben.
+
+- **Waarom twee niveaus.** Eén niveau is niet genoeg: een werelddeel vergroot
+  vijf keer, en in Europa blijven op een telefoon dan negentien landen te klein.
+  Een deel vergroot tien tot twintig keer.
+- **Gemeten, niet gegokt.** `wereldRegios.test.ts` rekent met de echte
+  vormen en de regels van de kaart zelf uit welke landen in welk beeld te raken
+  zijn. Op een telefoon is elk land in minstens één beeld te raken, op zes na, en
+  die zes staan bij naam in de test. Het zijn drie paren buren wier middens een
+  paar kaarteenheden uit elkaar liggen: Rwanda en Burundi, Israël en Libanon,
+  Gambia en Guinee-Bissau. Op een tablet en een laptop blijft er geen enkel over.
+- **Wisselen is geen antwoord.** De vraag blijft staan, er telt niets.
+- **Het gebied blijft staan tussen vragen:** wie Europa oefent, hoeft niet elke
+  vraag opnieuw op Europa te drukken.
+- **Na een antwoord gaat de kaart zo nodig mee.** Ligt het goede land of het
+  gekozen land buiten beeld, dan zoomt de kaart naar het kleinste gebied met
+  allebei erin, of naar de hele wereld. Anders stond het vinkje ergens waar je
+  het niet zag.
+- **Wat buiten beeld valt, wordt niet getekend** en is dus ook niet met Tab te
+  bereiken.
+- **Tekens houden hun maat.** Ingezoomd blijven grenzen even dun
+  (`vector-effect: non-scaling-stroke`), en de tekens na een antwoord, het
+  naamlabel en het reispad worden terugverkleind tot hun maat op de hele kaart.
+- **De gebieden zijn vensters in graden**, zoals een atlas zijn bladzijde kiest.
+  De passing van de wereldkaart uit `build-countries.mjs` is in
+  `wereldRegios.ts` nagerekend, en de test controleert haar met dertien landen
+  op hun plek.
+
+**B. Een tik in zee telt voor het dichtstbijzijnde land.** Binnen een halve
+vingertop (24 pixels), gemeten tot de kustlijn en niet tot het midden
+(`dichtstbijzijndeVorm`).
+
+- **Alleen in zee:** een tik óp een land blijft dat land.
+- **Alleen op landenkaarten,** dus de wereld en de werelddelen. Op Nederland is
+  een tik in het IJsselmeer bewust niets (ADR-019).
+
+**En de ring gaat naar wie hem nodig heeft.** Op een landenkaart krijgt een land
+pas een ring als het kleiner is dan 24 pixels (`ringOnderPx`). Een land van
+dertig pixels is zelf te raken — WCAG 2.5.8 vraagt 24 — maar kreeg toch een
+ring, en die liet de ring van zijn kleine buurman krimpen. Zo verloor Luxemburg
+zijn ring aan België. Op de kaart van Nederland verandert niets.
+
+### Consequences
+
+`MapCanvas` krijgt `view` en `landenkaart`. `helpTargets` krijgt een vijfde
+argument, dat standaard gelijk is aan het vierde, zodat bestaande aanroepen
+hetzelfde doen. `game-core` krijgt `wereldRegios.ts` en in `map.ts` drie pure
+functies (`padPunten`, `afstandTotVorm`, `dichtstbijzijndeVorm`), allemaal met
+tests. `e2e/app.spec.ts` test het inzoomen, en `screens.spec.ts` maakt er een
+foto van.
+
+**Niet hier besloten.**
+
+- Of aanwijzen op de wereldkaart weer vooraan moet in stap 2 (ADR-087). Dat is
+  een vraag voor `#diagnose` na een paar weken met deze knoppen.
+- Of de werelddeelkaarten ook knoppen om in te zoomen krijgen. Die gebruiken hun
+  eigen projectie en hebben de tik in zee al. Op een telefoon blijven in Europa
+  en Noord-Amerika nog landen lastig (ADR-087), dus als het nodig blijkt, is dit
+  dezelfde bouwsteen.
+- Verkennen heeft geen knoppen om in te zoomen: daar wordt niets gevraagd.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

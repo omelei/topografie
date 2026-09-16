@@ -319,6 +319,58 @@ test('the countries of the world have an address of their own', async ({ page })
 });
 
 /**
+ * Inzoomen op de wereldkaart (ADR-146). Eerst een werelddeel, dan een deel
+ * ervan, en wat buiten beeld valt is ook niet meer in te drukken. Wisselen is
+ * geen antwoord: de vraag blijft staan.
+ */
+test('on the world map a child zooms in, and zooming answers nothing', async ({ page }) => {
+  await signIn(page, 'Jip');
+  await page.goto('/topografie/wereld');
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await start(page);
+
+  const vraag = page.getByRole('heading', { name: /Waar ligt / });
+  await expect(vraag).toBeVisible();
+  const gevraagd = await vraag.innerText();
+
+  const zoom = page.getByRole('navigation', { name: 'Inzoomen op de kaart' });
+  await expect(zoom.getByRole('button', { name: 'Hele wereld' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await expect(page.locator('svg').getByRole('button', { name: 'Japan' })).toHaveCount(1);
+
+  await zoom.getByRole('button', { name: 'Europa', exact: true }).click();
+  await zoom.getByRole('button', { name: 'West-Europa' }).click();
+  await expect(zoom.getByRole('button', { name: 'West-Europa' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  // In beeld: Luxemburg. Buiten beeld, en dus niet met Tab te bereiken: Japan.
+  await expect(page.locator('svg').getByRole('button', { name: 'Luxemburg' })).toHaveCount(1);
+  await expect(page.locator('svg').getByRole('button', { name: 'Japan' })).toHaveCount(0);
+
+  // En er is niets beantwoord.
+  await expect(vraag).toHaveText(gevraagd);
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toHaveCount(0);
+
+  await zoom.getByRole('button', { name: 'Hele wereld' }).click();
+  await expect(page.locator('svg').getByRole('button', { name: 'Japan' })).toHaveCount(1);
+});
+
+/** Nederland krijgt geen knoppen: inzoomen is voor de wereldkaart (ADR-146). */
+test('the Dutch map has no zoom buttons', async ({ page }) => {
+  await signIn(page, 'Fleur');
+  await startRound(page, PROVINCIES, /Aanwijzen/);
+  await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Inzoomen op de kaart' })).toHaveCount(0);
+});
+
+/**
  * The oefentoets: a round that does not answer back until the end (ADR-085).
  *
  * Two halves, and both matter. **Nothing in between** — no Volgende button, no

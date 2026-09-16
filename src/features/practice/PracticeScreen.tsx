@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { t, type TranslationKey } from '@/i18n';
-import type { Item } from '@/game-core';
+import {
+  boxCentre,
+  kleinsteRegioMet,
+  ligtIn,
+  regioViewBox,
+  type Item,
+  type RegioId,
+} from '@/game-core';
 import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { MapCanvas } from './MapCanvas';
+import { ZoomKiezer } from './ZoomKiezer';
 import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
@@ -115,12 +123,37 @@ export function PracticeScreen({
   );
   const prefs = usePreferences();
   const nextButton = useRef<HTMLButtonElement>(null);
+  // Het gebied van de wereldkaart waarop ingezoomd is, of null voor de hele
+  // kaart (ADR-146). Het blijft staan tussen vragen: wie Europa oefent, hoeft
+  // niet elke vraag opnieuw op Europa te drukken.
+  const [regio, setRegio] = useState<RegioId | null>(null);
 
   // Focus moves to "volgende vraag" the moment an answer lands, so a child on a
   // keyboard does not have to tab back out of twelve provinces to continue.
   useEffect(() => {
     if (state.phase === 'revealed') nextButton.current?.focus();
   }, [state.phase]);
+
+  // Na een antwoord moet het goede land in beeld zijn, en wat je koos ook. Wie
+  // ingezoomd op West-Europa Japan zocht, zag anders een vinkje dat nergens stond
+  // (ADR-146). Dan gaat de kaart naar het kleinste gebied met allebei erin, of
+  // naar de hele wereld.
+  const gebiedNaAntwoord = (() => {
+    if (state.phase !== 'revealed' || regio === null || !state.geo || !state.question) return regio;
+    const puntVan = (id: string | null) => {
+      const vorm =
+        id === null ? undefined : state.geo?.vormen.find((kandidaat) => kandidaat.id === id);
+      return vorm ? (vorm.punt ?? boxCentre(vorm.bbox)) : null;
+    };
+    const punten = [puntVan(state.question.answerId), puntVan(state.chosenId)].filter(
+      (punt): punt is readonly [number, number] => punt !== null,
+    );
+    const view = regioViewBox(regio);
+    return punten.every((punt) => ligtIn(punt, view)) ? regio : kleinsteRegioMet(punten);
+  })();
+  useEffect(() => {
+    if (gebiedNaAntwoord !== regio) setRegio(gebiedNaAntwoord);
+  }, [gebiedNaAntwoord, regio]);
 
   if (state.error !== null) {
     return (
@@ -168,6 +201,12 @@ export function PracticeScreen({
   const vraag = reading ? t(TYPE_LABEL[noemer]) : t('practice.question', { naam });
 
   const chosenName = state.chosenId === null ? '' : (state.namesById.get(state.chosenId) ?? '');
+
+  // Aanwijzen op een kaart van landen (ADR-146). Op de wereldkaart kun je
+  // inzoomen; op elke landenkaart telt een tik in zee naast een land voor dat
+  // land. Nederland niet: daar is een tik in het IJsselmeer bewust niets.
+  const landenkaart = !reading && state.geo.regioSet !== 'nederland';
+  const zoomen = !reading && state.geo.regioSet === 'wereld';
   const nearMiss = state.verdict?.kind === 'near-miss';
 
   // The four answer shapes of step 7 need to know which of them applies. Only
@@ -307,18 +346,23 @@ export function PracticeScreen({
           )}
         </div>
 
-        <div className="tk-round-map">
-          <MapCanvas
-            background={state.geo}
-            answers={state.answers}
-            interaction={reading ? 'show' : 'pick'}
-            namesById={state.namesById}
-            targetId={state.question.answerId}
-            chosenId={state.chosenId}
-            revealed={revealed}
-            verdict={mapVerdict}
-            onPick={pick}
-          />
+        <div className={zoomen ? 'tk-round-map tk-round-map-zoom' : 'tk-round-map'}>
+          {zoomen ? <ZoomKiezer regio={regio} onRegio={setRegio} /> : null}
+          <div className="tk-round-map-kaart">
+            <MapCanvas
+              background={state.geo}
+              answers={state.answers}
+              interaction={reading ? 'show' : 'pick'}
+              namesById={state.namesById}
+              targetId={state.question.answerId}
+              chosenId={state.chosenId}
+              revealed={revealed}
+              verdict={mapVerdict}
+              onPick={pick}
+              view={zoomen && regio !== null ? regioViewBox(regio) : null}
+              landenkaart={landenkaart}
+            />
+          </div>
         </div>
       </div>
     </div>

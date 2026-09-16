@@ -3673,6 +3673,64 @@
     border: var(--stroke-hair) solid var(--rand-licht);
     border-radius: var(--kaart-radius);
   }
+  .tk-round-map-kaart {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* ---- Inzoomen op de wereldkaart (ADR-146) ------------------------------
+   * De knoppen boven de kaart en de kaart eronder, in één kaart. De rijen
+   * scrollen opzij in plaats van te wikkelen: op een telefoon zou een derde
+   * regel knoppen de kaart wegduwen waarvoor ze er staan. Kleiner dan de
+   * gewone chip, want dit zijn hulpknoppen naast de vraag en niet het antwoord;
+   * met 40 hoog nog ruim boven de 24 van WCAG 2.5.8. */
+  .tk-round-map-zoom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-round-map-zoom .tk-round-map-kaart {
+    flex: 1;
+    height: auto;
+  }
+  .tk-zoom {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tk-zoom-rij {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tk-zoomknop {
+    flex: none;
+    min-height: 40px;
+    padding: 0 14px;
+    border: var(--stroke-hair) solid var(--rand-bediening);
+    border-radius: var(--radius-pil);
+    background: var(--kaart);
+    color: var(--inkt);
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .tk-zoomknop:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-zoomknop[aria-pressed='true'] {
+    border-color: var(--inkt);
+    background: var(--inkt);
+    color: var(--kaart);
+  }
+  /* Ingezoomd blijven de lijnen even dik als op de hele kaart: een grens van
+   * anderhalve eenheid wordt twintig keer vergroot anders een balk. */
+  .tk-kaart-ingezoomd :is(path, circle, line) {
+    vector-effect: non-scaling-stroke;
+  }
 
   /* A card, as the question is everywhere in the app: on the card's tone, with
    * its own boundary, so the contrast of the words does not depend on what is

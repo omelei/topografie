@@ -1,10 +1,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import {
+  dichtstbijzijndeVorm,
   fitView,
   helpTargetFor,
   helpTargets,
   keyboardOrder,
   MIN_TOUCH_PX,
+  raakt,
   reachablePoints,
   type HelpTarget,
   type ViewFit,
@@ -74,6 +76,17 @@ export interface MapCanvasProps {
    */
   readonly verdict?: 'correct' | 'near' | 'wrong' | undefined;
   readonly onPick: (id: string) => void;
+  /**
+   * Het deel van de kaart dat getekend wordt, als view box: ingezoomd op een
+   * gebied van de wereld (ADR-146). Weggelaten of null is de hele kaart.
+   */
+  readonly view?: readonly [number, number, number, number] | null;
+  /**
+   * Een kaart van landen, en niet van Nederland (ADR-146). Dan telt een tik in
+   * zee vlak naast een land voor dat land, en krijgt een vorm pas een ring als
+   * hij kleiner is dan de helft van een vingertop.
+   */
+  readonly landenkaart?: boolean;
 }
 
 /** The map's rendered box in CSS pixels, so touch targets can be real. */
@@ -152,11 +165,20 @@ export function MapCanvas({
   revealed,
   verdict,
   onPick,
+  view = null,
+  landenkaart = false,
 }: MapCanvasProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const rendered = useRenderedSize(svgRef);
 
-  const [, , viewWidth, viewHeight] = background.viewBox;
+  const viewBox = view ?? background.viewBox;
+  const [, , viewWidth, viewHeight] = viewBox;
+
+  // Hoeveel kleiner het getekende deel is dan de hele kaart (ADR-146). De
+  // tekens na een antwoord, het naamlabel en het reispad zijn in kaarteenheden
+  // gemaakt; ingezoomd op de Balkan zouden ze twintig keer zo groot worden. Met
+  // deze factor houden ze de maat die ze op de hele kaart hebben.
+  const schaal = viewWidth / background.viewBox[2];
 
   // The height of the *drawing*, which is not the height of the element.
   //
@@ -175,11 +197,18 @@ export function MapCanvas({
   // would recompute the whole layer on every keystroke.
   const fit = useMemo(() => fitView(viewHeight, drawnHeight), [viewHeight, drawnHeight]);
 
-  const answerShapes = useMemo(() => {
+  const alleVormen = useMemo(() => {
     if (answers.kind === 'background') return keyboardOrder(background.vormen as Vorm[]);
     if (answers.kind === 'shapes') return keyboardOrder(answers.set.vormen as Vorm[]);
     return [] as Vorm[];
   }, [answers, background]);
+
+  // Ingezoomd alleen wat in beeld komt: wat erbuiten valt is niet te zien, dus
+  // ook niet met Tab te bereiken, en telt niet mee als buur van een ring.
+  const answerShapes = useMemo(
+    () => (view === null ? alleVormen : alleVormen.filter((vorm) => raakt(vorm.bbox, view))),
+    [alleVormen, view],
+  );
 
   const clickable = interaction !== 'show' && !revealed;
 
@@ -195,10 +224,34 @@ export function MapCanvas({
   const rings = useMemo(
     () =>
       clickable
-        ? helpTargets(answerShapes, fit, (shape) => shape.punt)
+        ? helpTargets(
+            answerShapes,
+            fit,
+            (shape) => shape.punt,
+            MIN_TOUCH_PX,
+            landenkaart ? MIN_TOUCH_PX / 2 : MIN_TOUCH_PX,
+          )
         : new Map<string, HelpTarget>(),
-    [clickable, answerShapes, fit],
+    [clickable, answerShapes, fit, landenkaart],
   );
+
+  /**
+   * Een tik in zee, naast een land (ADR-146). Op de landen zelf en op hun ringen
+   * liggen hun eigen knoppen; wat daar niet op valt komt hier uit, en telt voor
+   * het dichtstbijzijnde land binnen een halve vingertop.
+   */
+  function tikInZee(event: React.MouseEvent<SVGRectElement>) {
+    const svg = svgRef.current;
+    const matrix = svg?.getScreenCTM();
+    if (!svg || !matrix) return;
+    const punt = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const id = dichtstbijzijndeVorm(
+      [punt.x, punt.y],
+      answerShapes,
+      (MIN_TOUCH_PX / 2) * fit.unitsPerPixel,
+    );
+    if (id !== null) onPick(id);
+  }
 
   /**
    * Where the question is, when the question is too small to see.
@@ -228,7 +281,9 @@ export function MapCanvas({
   );
 
   function positionOf(id: string): readonly [number, number] | null {
-    const shape = answerShapes.find((candidate) => candidate.id === id);
+    // Over alle vormen en niet alleen die in beeld: na een antwoord kan wat je
+    // koos buiten het ingezoomde gebied liggen (ADR-146).
+    const shape = alleVormen.find((candidate) => candidate.id === id);
     if (shape) return shape.punt;
     return answerPoints.find((point) => point.id === id)?.punt ?? null;
   }
@@ -251,8 +306,8 @@ export function MapCanvas({
   return (
     <svg
       ref={svgRef}
-      viewBox={background.viewBox.join(' ')}
-      className="block h-full w-full"
+      viewBox={viewBox.join(' ')}
+      className={view === null ? 'block h-full w-full' : 'tk-kaart-ingezoomd block h-full w-full'}
       role="group"
     >
       <defs>
@@ -262,13 +317,27 @@ export function MapCanvas({
           id="tk-hatch"
           width="8"
           height="8"
-          patternTransform="rotate(45)"
+          patternTransform={`rotate(45) scale(${schaal})`}
           patternUnits="userSpaceOnUse"
         >
           <rect width="8" height="8" fill="var(--fout-kaart-grond)" />
           <rect width="3" height="8" fill="var(--fout-kaart-streep)" />
         </pattern>
       </defs>
+
+      {/* De zee, als laatste vangnet voor een tik die geen land raakte (ADR-146).
+          Onder alles, zodat een land en een ring altijd voorgaan. */}
+      {clickable && landenkaart && (
+        <rect
+          x={viewBox[0]}
+          y={viewBox[1]}
+          width={viewWidth}
+          height={viewHeight}
+          fill="transparent"
+          aria-hidden="true"
+          onClick={tikInZee}
+        />
+      )}
 
       {/* The country, always drawn. When it is not the answer it recedes, but it
           is never decoration: it is how a child knows where on the map they are. */}
@@ -323,34 +392,50 @@ export function MapCanvas({
 
       {/* Drawn before the label so the label stays on top of it. */}
       {showTravel && chosenPos !== null && targetPos !== null && (
-        <TravelPath from={chosenPos} to={targetPos} />
+        <TravelPath from={chosenPos} to={targetPos} schaal={schaal} />
       )}
 
       {/* The mark that says which of the four states this is, drawn after the
           shapes so it never ends up underneath one. */}
       {revealed && targetPos !== null && (
-        <StateMark
-          state={stateOf(targetId, targetId, chosenId, revealed, interaction, verdict)}
-          x={targetPos[0]}
-          y={targetPos[1]}
-        />
+        <g transform={schaalRond(targetPos, schaal)}>
+          <StateMark
+            state={stateOf(targetId, targetId, chosenId, revealed, interaction, verdict)}
+            x={targetPos[0]}
+            y={targetPos[1]}
+          />
+        </g>
       )}
       {revealed && chosenPos !== null && chosenId !== targetId && (
-        <StateMark state="wrong" x={chosenPos[0]} y={chosenPos[1]} />
+        <g transform={schaalRond(chosenPos, schaal)}>
+          <StateMark state="wrong" x={chosenPos[0]} y={chosenPos[1]} />
+        </g>
       )}
 
       {revealed && targetPos !== null && (
-        <MapLabel
-          x={targetPos[0]}
-          y={targetPos[1]}
-          text={namesById.get(targetId) ?? ''}
-          /* Below the point, never on it: a name printed over what the child was
-             asked to find hides the very thing they should be looking at. */
-          offsetY={answers.kind === 'points' ? 30 : 26}
-        />
+        <g transform={schaalRond(targetPos, schaal)}>
+          <MapLabel
+            x={targetPos[0]}
+            y={targetPos[1]}
+            text={namesById.get(targetId) ?? ''}
+            /* Below the point, never on it: a name printed over what the child was
+               asked to find hides the very thing they should be looking at. */
+            offsetY={answers.kind === 'points' ? 30 : 26}
+          />
+        </g>
       )}
     </svg>
   );
+}
+
+/**
+ * Een groep op zijn eigen punt verkleinen, zodat een teken ingezoomd dezelfde
+ * maat houdt als op de hele kaart (ADR-146). Op de hele kaart niets.
+ */
+function schaalRond(punt: readonly [number, number], schaal: number): string | undefined {
+  if (schaal === 1) return undefined;
+  const [x, y] = punt;
+  return `translate(${x} ${y}) scale(${schaal}) translate(${-x} ${-y})`;
 }
 
 function shapeClass(state: AnswerState, dimmedWhenOpen: boolean): string {
@@ -588,9 +673,12 @@ function CityMarker({
 function TravelPath({
   from,
   to,
+  schaal = 1,
 }: {
   readonly from: readonly [number, number];
   readonly to: readonly [number, number];
+  /** Ingezoomd kleiner, zodat de stenen en de stip hun maat houden (ADR-146). */
+  readonly schaal?: number;
 }) {
   const dx = to[0] - from[0];
   const dy = to[1] - from[1];
@@ -609,8 +697,8 @@ function TravelPath({
       {/* Two fading stepping stones, so the direction of travel is readable
           even when the animation is switched off. */}
       {[
-        { at: 0.33, r: 5, opacity: 0.18 },
-        { at: 0.66, r: 8, opacity: 0.3 },
+        { at: 0.33, r: 5 * schaal, opacity: 0.18 },
+        { at: 0.66, r: 8 * schaal, opacity: 0.3 },
       ].map((stone) => (
         <circle
           key={stone.at}
@@ -624,7 +712,7 @@ function TravelPath({
       <circle
         cx={to[0]}
         cy={to[1]}
-        r={11}
+        r={11 * schaal}
         fill="var(--inkt)"
         style={
           {
