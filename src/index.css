@@ -82,9 +82,9 @@
     --actie-tekst: #264698; /* oklch(.42 .14 265)            7.28 on actie-tint */
 
     /* ---- The mark, §07 -----------------------------------------------------
-     * The ring between the words, and the beeldmerk on its own, are drawn in
-     * the action colour as the styleguide's app bar draws them; the letters
-     * stay ink. A brand role of its own rather than the accent, because the
+     * "nu" in the wordmark, and the beeldmerk on its own, are drawn in the
+     * action colour, as the designer's positive woordbeeld draws them; "leer"
+     * stays ink. A brand role of its own rather than the accent, because the
      * mark is identical in every module and may never learn about one
      * (accent.test.ts). Reversed out of ink it is simply the light.
      */

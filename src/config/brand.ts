@@ -7,11 +7,11 @@
  * literal, and no component may compose a sentence about the brand: the four
  * fixed lines below are data, and a component that needs one reads it here.
  *
- * The name is always lower case, including at the start of a sentence, and the
- * dot in the middle is the mark rather than punctuation — see Wordmark.tsx,
- * which draws it as the ring with its needle (ADR-113). This string is the name
- * as *text*, for a document title, a screen reader and anywhere the mark itself
- * would be wrong.
+ * The name is always lower case, including at the start of a sentence. The
+ * drawn wordmark leaves the dot out and sets "nu" in the colour of the mark —
+ * see Wordmark.tsx (ADR-147) — but as a domain the name is always leer.nu. This
+ * string is the name as *text*, for a document title, a screen reader and
+ * anywhere the mark itself would be wrong.
  */
 export const brand = {
   name: 'leer.nu',
