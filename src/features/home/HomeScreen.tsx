@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { formatGrade, grade, type ModeId } from '@/game-core';
+import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
+import { groepVanActiefKind } from '@/store/children';
 import type { OpenRound, PlayedRound } from '@/store/progress';
 import {
   geplaatst,
@@ -24,6 +25,7 @@ import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { FavorietenBlok } from './SideColumn';
+import { GroepVraag } from './GroepVraag';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
@@ -91,11 +93,13 @@ export interface HomeScreenProps {
 export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
+  const [groep, setGroep] = useState<Groep | undefined>(undefined);
   const desk = useDesk();
 
   useEffect(() => {
     void loadPlayedRounds().then(setPlayed);
     void loadOpenRounds().then(setOpen);
+    void groepVanActiefKind().then(setGroep);
   }, []);
 
   // Over every set a round can be started on, mixes included: a round of the
@@ -119,7 +123,14 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
 
   // Bovenaan, boven alles: het is het enige blok dat zegt wat er nú te doen is
   // (ADR-126). De rijen eronder zijn geschiedenis.
-  const vandaag = <VandaagBlok gespeeld={gespeeld} onPlan={onPlan} />;
+  //
+  // De sleutel is de groep: wie die op de voordeur kiest, ziet het plan meteen
+  // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151).
+  const vandaag = <VandaagBlok key={groep ?? 'geen'} gespeeld={gespeeld} onPlan={onPlan} />;
+
+  // Eén keer, voor een kind dat er al was vóór de vraag naar de groep: onder
+  // Vandaag, zodat het plan er eerst staat en niemand wacht (ADR-151).
+  const groepVraag = <GroepVraag onGekozen={setGroep} />;
 
   // En waar het naartoe gaat (ADR-141). Onder "Vandaag" en niet erboven: eerst
   // wat er nu te doen is, dan waarvoor. Andersom leest de voordeur als een
@@ -128,7 +139,7 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
 
   const rijen = (
     <>
-      <Populairst populair={populair} onBegin={onBegin} />
+      <Populairst populair={populair} groep={groep} onBegin={onBegin} />
       <Recent gespeeld={gespeeld} onBegin={onBegin} />
       <MaakAf open={open} alles={alles} onVerder={onVerder} />
     </>
@@ -145,6 +156,7 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
           {kop}
           {terug}
           {vandaag}
+          {groepVraag}
           {doel}
           {rijen}
         </div>
@@ -164,6 +176,7 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
       {kop}
       {terug}
       {vandaag}
+      {groepVraag}
       {week}
       {doel}
       {toetsen}
@@ -211,13 +224,16 @@ function GeoefendKaart({
  */
 function Populairst({
   populair,
+  groep,
   onBegin,
 }: {
   readonly populair: readonly Populair[];
+  /** Waarmee een nieuw kind begint, hangt af van zijn groep (ADR-151). */
+  readonly groep: Groep | undefined;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const leeg = populair.length === 0;
-  const lijst = leeg ? starters() : populair;
+  const lijst = leeg ? starters(groep) : populair;
   if (lijst.length === 0) return null;
 
   return (

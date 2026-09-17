@@ -99,3 +99,56 @@ describe('dagplan', () => {
     expect(plan.vragen).toBe(40);
   });
 });
+
+describe('dagplan met voorrang voor de groep (ADR-151)', () => {
+  // Klok past bij deze groep (rang 0), provincies is voor later (rang 2).
+  const rang = (naam: string) => (naam === 'provincies' ? 2 : 0);
+
+  it('is zonder voorrang precies het plan van altijd', () => {
+    const states = new Map([
+      ['p1', stand('p1', 3)],
+      ['p2', stand('p2', 3)],
+      ['k1', stand('k1', 3)],
+    ]);
+    const sets = [set('provincies', ['p1', 'p2']), set('klok', ['k1'])];
+    expect(dagplan(sets, states, NU)).toEqual(dagplan(sets, states, NU, () => 0));
+    expect(dagplan(sets, states, NU).rondes.map((ronde) => ronde.set)).toEqual([
+      'provincies',
+      'klok',
+    ]);
+  });
+
+  it('zet bij gelijk wachten wat bij de groep past eerst', () => {
+    const states = new Map([
+      ['p1', stand('p1', 3)],
+      ['p2', stand('p2', 3)],
+      ['k1', stand('k1', 3)],
+    ]);
+    const sets = [set('provincies', ['p1', 'p2']), set('klok', ['k1'])];
+    const plan = dagplan(sets, states, NU, rang);
+    expect(plan.rondes.map((ronde) => ronde.set)).toEqual(['klok', 'provincies']);
+  });
+
+  it('laat wat langer wacht voorgaan, ook als het niet bij de groep past', () => {
+    // Het onthouden gaat voor het voorstel: een provincie die een week over
+    // tijd is, is dichter bij vergeten dan een klok van vandaag.
+    const states = new Map([
+      ['p1', stand('p1', 7)],
+      ['k1', stand('k1', 0)],
+    ]);
+    const sets = [set('provincies', ['p1']), set('klok', ['k1'])];
+    const plan = dagplan(sets, states, NU, rang);
+    expect(plan.rondes.map((ronde) => ronde.set)).toEqual(['provincies', 'klok']);
+  });
+
+  it('haalt niets weg: wat buiten de groep valt, telt en staat er nog', () => {
+    const states = new Map([
+      ['p1', stand('p1', 1)],
+      ['k1', stand('k1', 1)],
+    ]);
+    const sets = [set('provincies', ['p1']), set('klok', ['k1'])];
+    const plan = dagplan(sets, states, NU, rang);
+    expect(plan.rondes).toHaveLength(2);
+    expect(plan.vragen).toBe(2);
+  });
+});

@@ -1,5 +1,14 @@
-import type { ItemState, ModeId, Schedulable, TaalDeel } from '@/game-core';
+import {
+  kiesVoorGroep,
+  opGroep,
+  type Groep,
+  type ItemState,
+  type ModeId,
+  type Schedulable,
+  type TaalDeel,
+} from '@/game-core';
 import { loadItemSets } from '@/content/loadSets';
+import { groepenVan, indelingVoor } from './groepen';
 import {
   isTaalMix,
   loadTaalSet,
@@ -1368,14 +1377,36 @@ export function meestGeoefend(
  *
  * Returned with a count of zero rather than with a made-up one, so the tile can
  * say "nog niet geoefend" and mean it.
+ *
+ * Met een groep (ADR-151) blijft het één kaart per module, maar niet per se
+ * dezelfde: past de vaste set niet bij de groep, dan komt de set van die
+ * module die wel past (`kiesVoorGroep`). Een kind in groep 3 begint rekenen
+ * met plussommen tot 20 in plaats van met de tafel van 2. Wat daarna nog
+ * steeds niet past — de provincies voor groep 4 — schuift achteraan, maar
+ * blijft in de rij.
  */
-export function starters(): Populair[] {
+export function starters(groep?: Groep): Populair[] {
   const alles = startbareOnderdelen();
 
-  return STARTERS.flatMap(({ setId, mode }) => {
-    const deel = alles.find((kandidaat) => kandidaat.setId === setId);
-    return deel ? [{ deel, mode, keer: 0, at: '' }] : [];
+  const lijst = STARTERS.flatMap(({ setId, mode }) => {
+    const vast = alles.find((kandidaat) => kandidaat.setId === setId);
+    if (!vast) return [];
+
+    const kandidaten = alles.filter(
+      (kandidaat) =>
+        kandidaat.moduleId === vast.moduleId &&
+        !kandidaat.mix &&
+        (kandidaat.moduleId !== 'woorden' || taalDeelVan(kandidaat.setId) !== null),
+    );
+    const deel = kiesVoorGroep(vast, kandidaten, groepenVan, groep);
+    // De vorm hoort bij de module, behalve bij Taal: daar kiest elk deel op
+    // zijn eigen manier, en een werkwoord heeft geen letters om te kiezen.
+    const deelVanTaal = taalDeelVan(deel.setId);
+    const vorm = deel === vast || deelVanTaal === null ? mode : KIES_VORM[deelVanTaal];
+    return [{ deel, mode: vorm, keer: 0, at: '' }];
   });
+
+  return opGroep(lijst, (kaart) => indelingVoor(kaart.deel, groep));
 }
 
 /**

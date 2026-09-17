@@ -1455,6 +1455,30 @@ export const nl = {
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
 
+  // De groep (ADR-151). Na de naam, en altijd over te slaan. Het zegt wat de
+  // groep doet — wat bovenaan staat — en wat hij niet doet: niets gaat op slot.
+  // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
+  'groep.vraag': 'In welke groep zit je?',
+  'groep.uitleg':
+    'Dan zetten we de oefeningen voor jouw groep bovenaan. Je kunt altijd alles kiezen. Je groep blijft op dit apparaat.',
+  'groep.knop': 'Groep {groep}',
+  'groep.weetNiet': 'Weet ik niet',
+  'groep.terug': 'Terug naar je naam',
+  // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
+  'groep.nietNu': 'Niet nu',
+  // Op Voor ouders. De ouder hoort ook wat er op 1 augustus gebeurt, want dat
+  // doet de app zonder te vragen.
+  'groep.ouderTitel': 'Groep van {naam}',
+  'groep.ouderUitleg':
+    'Wat bij deze groep past, staat bovenaan in Vandaag en op elke vakpagina. {naam} kan altijd alles kiezen. Op 1 augustus gaat de groep vanzelf één verder.',
+  'groep.geen': 'Geen groep',
+  'groep.gekozen': '{naam} zit in groep {groep}.',
+  'groep.nietGekozen': 'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
+  // Op een tegel die niet bij de groep past. Hij blijft kiesbaar; dit zegt
+  // alleen waarom hij onderaan staat.
+  'groep.herhaling': 'Nog eens herhalen',
+  'groep.later': 'Voor later',
+
   // Accessible names for things that have no visible label of their own
   'a11y.progress': 'Voortgang in deze ronde',
 } as const;

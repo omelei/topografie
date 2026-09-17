@@ -1,9 +1,18 @@
 import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon } from '@/components/Icon';
-import { countMastered, roundPreview, type ItemState, type ModeId } from '@/game-core';
+import {
+  countMastered,
+  opGroep,
+  roundPreview,
+  type Groep,
+  type Indeling,
+  type ItemState,
+  type ModeId,
+} from '@/game-core';
 import { t } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
+import { groepVanActiefKind } from '@/store/children';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { useTestPlan } from '@/features/home/testPlan';
@@ -21,6 +30,7 @@ import {
   type Onderwerp,
 } from './onderdelen';
 import { eersteRegio, regioLabel, regioVraag, regiosVan } from './regios';
+import { indelingVanOnderwerp } from './groepen';
 import { onderwerpIcon, regioIcon } from './tegelIcons';
 import {
   formsFor,
@@ -113,6 +123,7 @@ export function ModuleScreen({
   readonly aside: ReactNode;
 }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
+  const [groep, setGroep] = useState<Groep | undefined>(undefined);
   const [formId, setFormId] = useState<ModeId | null>(null);
   /** Where on the map, for the module that has a where. Null follows the set. */
   const [regio, setRegio] = useState<string | null>(null);
@@ -135,6 +146,7 @@ export function ModuleScreen({
 
   useEffect(() => {
     void loadItemStates().then(setStates);
+    void groepVanActiefKind().then(setGroep);
   }, []);
 
   const known = states ?? new Map<string, ItemState>();
@@ -155,8 +167,14 @@ export function ModuleScreen({
   const regios = regiosVan(module.id);
   const uitAdres = regios.find((kandidaat) => kandidaat.id === adresRegio)?.id ?? null;
   const hier = regio ?? adresVak?.regio ?? uitAdres ?? eersteRegio(module.id, regios);
-  const onderwerpen =
+  const opKaart =
     regios.length === 0 ? alleOnderwerpen : alleOnderwerpen.filter((vak) => vak.regio === hier);
+  // Wat bij de groep past eerst, dan wat herhaling is, dan wat voor later is
+  // (ADR-151). Alles blijft op de pagina en alles blijft te kiezen; zonder
+  // groep is dit de volgorde van altijd. Welke tafel of welk bereik eronder
+  // staat, blijft in zijn eigen volgorde: een toetsenbord van twaalf tafels
+  // op groep gesorteerd is geen toetsenbord meer.
+  const onderwerpen = opGroep(opKaart, (vak) => indelingVanOnderwerp(vak, groep));
 
   // The subject is the address's, or the one pressed while its set is still to
   // choose — and only while it is on the map the page shows. A set in Europe is
@@ -410,6 +428,7 @@ export function ModuleScreen({
               const open = vak.id === onderwerp?.id;
               const VakIcon = onderwerpIcon(vak.id);
               const premium = isPremiumOnderwerp(vak.id);
+              const buitenGroep = groepLabel(indelingVanOnderwerp(vak, groep));
 
               return (
                 <button
@@ -419,7 +438,9 @@ export function ModuleScreen({
                   // How the subject is going is not on the face of it; it is in
                   // its name, and in the child's own column (ADR-089).
                   aria-label={metPremium(
-                    `${t(vak.naam)}. ${vorderingVan(vak, known, now)}`,
+                    [t(vak.naam), buitenGroep, vorderingVan(vak, known, now)]
+                      .filter((deel) => deel !== null)
+                      .join('. '),
                     premium,
                     actief,
                   )}
@@ -452,7 +473,14 @@ export function ModuleScreen({
                       <VakIcon size={24} />
                     </span>
                   )}
-                  <span className="min-w-0">{t(vak.naam)}</span>
+                  <span className="min-w-0">
+                    {t(vak.naam)}
+                    {buitenGroep !== null ? (
+                      <span className="tk-hulp block" aria-hidden="true">
+                        {buitenGroep}
+                      </span>
+                    ) : null}
+                  </span>
                   {premium ? <PremiumLabel /> : null}
                   {!onderwerpAlsChips && open ? vink : null}
                 </button>
@@ -730,6 +758,16 @@ export function ModuleScreen({
       ) : null}
     </div>
   );
+}
+
+/**
+ * Het woord onder een tegel die niet bij de groep past (ADR-151), of niets. Het
+ * zegt waarom hij onderaan staat, en dat hij er nog is.
+ */
+function groepLabel(indeling: Indeling): string | null {
+  if (indeling === 'herhaling') return t('groep.herhaling');
+  if (indeling === 'later') return t('groep.later');
+  return null;
 }
 
 /** A subject whose sets are a second question: the tables before the table. */

@@ -57,10 +57,18 @@ function verlopenDagen(state: ItemState, now: Date): number {
   return Math.max(0, (now.getTime() - new Date(state.volgendeReview).getTime()) / DAG_MS);
 }
 
+/**
+ * **De groep beslist pas daarna** (ADR-151). `voorrang` geeft een set een rang,
+ * lager is eerder; hij telt alleen tussen rondes die even lang wachten. Wat
+ * een dag langer wacht, gaat dus altijd voor, ook als het bij een andere groep
+ * hoort: het onthouden gaat voor het voorstel. Zonder `voorrang` is het plan
+ * precies wat het was.
+ */
 export function dagplan<T>(
   sets: readonly PlanSet<T>[],
   states: ReadonlyMap<string, ItemState>,
   now: Date,
+  voorrang: (set: T) => number = () => 0,
 ): Dagplan<T> {
   const rondes: PlanRonde<T>[] = [];
   let vragen = 0;
@@ -85,6 +93,11 @@ export function dagplan<T>(
     });
   }
 
-  rondes.sort((een, ander) => ander.wacht - een.wacht || ander.ids.length - een.ids.length);
+  rondes.sort(
+    (een, ander) =>
+      ander.wacht - een.wacht ||
+      voorrang(een.set) - voorrang(ander.set) ||
+      ander.ids.length - een.ids.length,
+  );
   return { rondes: rondes.slice(0, PLAN_RONDES), vragen };
 }

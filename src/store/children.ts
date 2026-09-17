@@ -1,3 +1,4 @@
+import { huidigeGroep, groepsjaarVan, type Groep } from '@/game-core';
 import { getDb, SINGLETON_KEY, type ProfileRecord } from './db';
 import { getSetting, setSetting } from './settings';
 
@@ -60,21 +61,84 @@ export async function switchChild(id: string): Promise<void> {
  * under it — a streak, a level, a set of boxes — belongs to them without being
  * moved. Everyone after that gets a uuid.
  */
-export async function createChild(naam: string): Promise<ProfileRecord> {
+export async function createChild(naam: string, groep?: Groep): Promise<ProfileRecord> {
   const existing = await listChildren();
+  const now = new Date();
 
   const child: ProfileRecord = {
     id: existing.length === 0 ? SINGLETON_KEY : crypto.randomUUID(),
     naam: naam.trim(),
     avatarConfig: {},
     niveau: 1,
-    aangemaaktOp: new Date().toISOString(),
+    ...metGroep(groep, now),
+    aangemaaktOp: now.toISOString(),
   };
 
   const db = await getDb();
   await db.put('profile', child);
   await switchChild(child.id);
   return child;
+}
+
+/** De twee velden van een groep, of geen van beide. */
+function metGroep(
+  groep: Groep | undefined,
+  now: Date,
+): Pick<ProfileRecord, 'groep' | 'groepSchooljaar'> {
+  return groep === undefined ? {} : { groep, groepSchooljaar: groepsjaarVan(now) };
+}
+
+/**
+ * De groep van een kind zetten of weghalen (ADR-151).
+ *
+ * Het schooljaar gaat mee: wie in maart "groep 6" kiest, bedoelt groep 6 van
+ * dit schooljaar, en `huidigeGroep` telt vanaf hier verder. `undefined` haalt
+ * beide velden weg, zodat het kind weer is wat het vóór de vraag was.
+ */
+export async function setGroep(
+  id: string,
+  groep: Groep | undefined,
+  now: Date = new Date(),
+): Promise<ProfileRecord | undefined> {
+  const db = await getDb();
+  const kind = await db.get('profile', id);
+  if (!kind) return undefined;
+
+  const bijgewerkt: ProfileRecord = { ...kind, ...metGroep(groep, now) };
+  if (groep === undefined) {
+    delete bijgewerkt.groep;
+    delete bijgewerkt.groepSchooljaar;
+  }
+  await db.put('profile', bijgewerkt);
+  await setSetting(groepGevraagdSleutel(id), 'ja');
+  return bijgewerkt;
+}
+
+/** De groep van wie er nu oefent, doorgeschoven naar vandaag. */
+export async function groepVanActiefKind(now: Date = new Date()): Promise<Groep | undefined> {
+  const kind = await getActiveChild();
+  return kind ? huidigeGroep(kind, now) : undefined;
+}
+
+/**
+ * Of een kind de vraag naar de groep al zag (ADR-151).
+ *
+ * Een kind dat bestond vóór die vraag, krijgt hem één keer op de voordeur. Een
+ * keuze, en ook "Niet nu", zet deze vlag; daarna gaat het alleen nog via Voor
+ * ouders. Per kind, zoals `doel:<kindId>`, want het tweede kind op dezelfde
+ * iPad is niet gevraagd omdat het eerste antwoord gaf.
+ */
+function groepGevraagdSleutel(kindId: string): string {
+  return `groepGevraagd:${kindId}`;
+}
+
+export async function groepAlGevraagd(kindId: string): Promise<boolean> {
+  return (await getSetting(groepGevraagdSleutel(kindId))) === 'ja';
+}
+
+/** Een keuze, "Weet ik niet" of "Niet nu": dit kind is gevraagd. */
+export async function zetGroepGevraagd(kindId: string): Promise<void> {
+  await setSetting(groepGevraagdSleutel(kindId), 'ja');
 }
 
 /**

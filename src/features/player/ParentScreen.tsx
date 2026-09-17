@@ -23,6 +23,7 @@ import { Weekbericht } from './Weekbericht';
 import { useWeek } from '@/features/week/useWeek';
 import { WeekdoelKiezer } from '@/features/week/Weekkaart';
 import { EigenLijsten } from './EigenLijsten';
+import { GroepInstelling } from './GroepInstelling';
 import type { ReactNode } from 'react';
 
 /**
@@ -135,6 +136,10 @@ export function ParentScreen({
             </li>
           </ul>
         </section>
+
+        {/* Wat je kind oefent begint bij zijn groep (ADR-151): wat de app
+            voorstelt, vóór het weekdoel dat het kind zelf haalt. */}
+        <GroepInstelling />
 
         <Weekdoel />
 

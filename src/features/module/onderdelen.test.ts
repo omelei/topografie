@@ -98,6 +98,48 @@ describe('what a child goes back to most', () => {
 });
 
 /**
+ * Waarmee een nieuw kind begint, met een groep (ADR-151): nog steeds één kaart
+ * per module, maar de set die bij de groep past. Zonder groep precies de lijst
+ * van altijd.
+ */
+describe('the ones to start with, for a group', () => {
+  const sets = (groep?: Parameters<typeof starters>[0]) =>
+    starters(groep).map((entry) => entry.deel.setId);
+
+  it('is the usual list without a group', () => {
+    expect(sets(undefined)).toEqual(sets());
+    expect(sets()).toEqual([
+      'nl-provincies',
+      'tafel-2',
+      'klok-heel',
+      'vlag-europa-bekend',
+      'taal-sp-eiij',
+    ]);
+  });
+
+  it('keeps one card per module for every group', () => {
+    for (const groep of [3, 4, 5, 6, 7, 8] as const) {
+      const modules = starters(groep).map((entry) => entry.deel.moduleId);
+      expect(new Set(modules).size, `groep ${groep}`).toBe(POPULAR_SHOWN);
+    }
+  });
+
+  it('starts groep 3 on sums to twenty, with what is for later behind it', () => {
+    // Voor groep 3 zijn topografie, vlaggen en Taal allemaal voor later. Ze
+    // blijven in de rij, in hun eigen volgorde, achter rekenen en de klok.
+    const lijst = sets(3);
+    expect(lijst.slice(0, 2)).toEqual(['plus-20', 'klok-heel']);
+    expect(lijst.slice(2)).toEqual(['nl-provincies', 'vlag-europa-bekend', 'taal-sp-eiij']);
+  });
+
+  it('asks a verb the way verbs are asked', () => {
+    const taal = starters(8).find((entry) => entry.deel.moduleId === 'woorden');
+    if (taal?.deel.setId.startsWith('taal-ww-')) expect(taal.mode).toBe('taal-vorm-kiezen');
+    else expect(taal?.mode).toBe('taal-letters');
+  });
+});
+
+/**
  * Topography's subjects, after the region row took the place-name off them
  * (ADR-083) and then got two more regions to point at (ADR-086). Six is still
  * the ceiling a section may hold, and one word is the whole point of the

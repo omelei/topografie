@@ -13,6 +13,8 @@ async function signIn(page: Page, naam: string) {
   await page.goto('/');
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
+  // De groep is een tweede stap, altijd over te slaan (ADR-151).
+  await page.getByRole('button', { name: 'Weet ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 

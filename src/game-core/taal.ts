@@ -1,3 +1,4 @@
+import type { Groep } from './groep';
 import type { Schedulable } from './leitner';
 
 /**
@@ -28,8 +29,11 @@ import type { Schedulable } from './leitner';
 /** The parts of the Taal page. Engels is the third, in a step of its own. */
 export type TaalDeel = 'spelling' | 'werkwoorden';
 
-/** The school year an item belongs to. What a first round leans on, nothing else. */
-export type Groep = 5 | 6 | 7 | 8;
+/**
+ * The school year an item belongs to is a `Groep` (`groep.ts`), the same type a
+ * child's group is since ADR-151. Taal's items are groep 5 to 8, and
+ * `taal.content.test.ts` holds them there.
+ */
 
 export interface SpellingItem extends Schedulable {
   /** `taal-sp-eiij-trein`. Stable: a Leitner box is filed under it. */

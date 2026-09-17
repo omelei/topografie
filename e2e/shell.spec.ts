@@ -12,6 +12,8 @@ async function signIn(page: Page, naam: string) {
   await page.goto('/');
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
+  // De groep is een tweede stap, altijd over te slaan (ADR-151).
+  await page.getByRole('button', { name: 'Weet ik niet' }).click();
   // The name is in the app bar now, beside the streak — K1 puts the profile
   // switch top right, so that is where "you are signed in" is visible.
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();

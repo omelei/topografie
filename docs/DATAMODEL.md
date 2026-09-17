@@ -29,6 +29,12 @@ device itself.
   naam: string; // what the player typed; never leaves the device
   avatarConfig: object;
   niveau: 1 | 2 | 3;
+  // since ADR-151, both optional: the school group chosen (3–8) and the school
+  // year it was chosen in (the year it began, from 1 August). The group of today
+  // is worked out from the two. Absent means no group, and the app orders
+  // everything as before. Never sent to a third party.
+  groep?: 3 | 4 | 5 | 6 | 7 | 8;
+  groepSchooljaar?: number;
   aangemaaktOp: string; // ISO
 }
 
@@ -62,6 +68,7 @@ device itself.
 // object store: settings      { key, value } — device preferences, and per child:
 //   weekdoel:<kindId>   the weekkaart's goal, 2–5 days (default 3)
 //   zegels:<kindId>     the weeks that reached it, as week keys; only ever added to
+//   groepGevraagd:<kindId>  'ja' once the child was asked for a group (ADR-151)
 //   bijhouden:<kindId>  per diploma, the seasons it was kept up in
 ```
 
