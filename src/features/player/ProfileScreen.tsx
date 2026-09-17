@@ -154,9 +154,7 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
           <span className="tk-teken">
             <PupilIcon size={24} />
           </span>
-          <p className="tk-kaartrij-tekst text-lopend">
-            {t('you.nameIs', { naam: profile.naam })}
-          </p>
+          <p className="tk-kaartrij-tekst text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>
           <button
             type="button"
             className="tk-button tk-button-secondary"
