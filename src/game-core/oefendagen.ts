@@ -1,19 +1,16 @@
-import { dayKey } from './streak';
+import { dayKey } from './kalender';
 
 /**
  * The days a child practised, laid out as days (ADR-110).
  *
- * The streak keeps one number and the last day it moved, which is all it needs
- * to be fair and not enough to draw a week: "5 dagen op rij" says how many, and
- * a child also wants to see which. Those days are already written down — every
- * finished round carries the moment it ended — so they are read back from the
- * rounds rather than kept a second time on the streak's row, where two records
- * of the same fact could one day disagree.
+ * Those days are already written down — every finished round carries the
+ * moment it ended — so they are read back from the rounds rather than kept a
+ * second time somewhere else, where two records of the same fact could one day
+ * disagree. The weekkaart (ADR-149) reads them from here.
  *
- * Days, not rounds: four rounds on a Tuesday are one Tuesday, for the reason
- * `recordActivity` is idempotent within a day. And the same calendar day as the
- * streak's own, local and YYYY-MM-DD, through the same `dayKey`, so a round at
- * 23:59 cannot be Monday here and Tuesday there.
+ * Days, not rounds: four rounds on a Tuesday are one Tuesday. And one calendar
+ * day, local and YYYY-MM-DD, through `dayKey`, so a round at 23:59 cannot be
+ * Monday here and Tuesday there.
  */
 
 /** One calendar day, as the week row and the calendar draw it. */

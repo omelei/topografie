@@ -97,6 +97,10 @@ export function emptyState(itemId: string): ItemState {
  *
  * A wrong answer counts whenever it comes. Not knowing it an hour after the
  * last round is exactly as much news as not knowing it a week later.
+ *
+ * **Het album gaat mee** (ADR-149). De hoogste doos onthoudt wat een kind ooit
+ * bereikte, ook als een fout het item terug naar doos één zet; en een goed
+ * antwoord in doos vijf dat aan de beurt was, krijgt een stempel.
  */
 export function review(state: ItemState, correct: boolean, now: Date): ItemState {
   if (correct && !isDue(state, now)) {
@@ -108,6 +112,13 @@ export function review(state: ItemState, correct: boolean, now: Date): ItemState
   }
 
   const box = nextBox(state.box, correct);
+  const eerder = state.laatsteReview === null ? 0 : Math.max(state.hoogsteDoos ?? 1, state.box);
+  const hoogsteDoos = Math.max(eerder, box) as LeitnerBox;
+  const stempels =
+    correct && state.laatsteReview !== null && state.box === MAX_BOX
+      ? [...(state.stempels ?? []), now.toISOString()]
+      : state.stempels;
+
   return {
     itemId: state.itemId,
     box,
@@ -115,6 +126,8 @@ export function review(state: ItemState, correct: boolean, now: Date): ItemState
     volgendeReview: scheduleFrom(box, now).toISOString(),
     goedCount: state.goedCount + (correct ? 1 : 0),
     foutCount: state.foutCount + (correct ? 0 : 1),
+    hoogsteDoos,
+    ...(stempels && stempels.length > 0 ? { stempels } : {}),
   };
 }
 

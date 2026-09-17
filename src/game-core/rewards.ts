@@ -1,216 +1,50 @@
 /**
- * Levels and badges.
+ * Diploma's.
  *
  * Spec §4.5 is unusually specific about what this may not be: no lootboxes, no
  * chance mechanics, no real money, nothing that can be bought rather than
- * earned. The audience is ten years old. Since ADR-096 one of those is revised
- * by the owner, knowingly and in one place: which hero is in a chest is chance.
- * Whether there is a chest, and what it costs, is not — see `helden.ts`.
+ * earned. The audience is ten years old. Everything here is deterministic and
+ * explainable: a child who asks "waarom kreeg ik dat?" gets a sentence.
  *
- * Everything in this file is still deterministic and explainable. A child who asks
- * "waarom kreeg ik dat?" gets a sentence, not a shrug — which also happens to be
- * the only way a teacher can defend the numbers to a parent.
- *
- * **There used to be XP and coins here too, and they are gone (ADR-130).** Both
- * were written on every round and read by nothing: XP appeared in no component
- * at all, and coins were saved for an avatar shop that was never built. A
- * currency a child cannot see, spend or be told the point of is not a reward,
- * it is a number going up in a database — and the product already has eleven
- * things that do reward, of which the child can actually see every one.
+ * **Er stonden ook niveaus en badges, en die zijn weg (ADR-149).** Het album
+ * beloont wat een kind onthoudt, plaatje voor plaatje, en een diploma is daar
+ * het moment waarop een hele pagina rijp is. Tien losse badges naast die
+ * pagina's waren een tweede verzameling over dezelfde leerstof, en vier ervan
+ * beloonden iets anders dan onthouden: tempo, volume en een reeks.
  */
 
-/**
- * The ladder runs on correct answers, not on XP (ADR-070).
- *
- * It ran on XP for one release, and the card that showed it had to translate
- * back — "nog 6 goede antwoorden" was a division by ten with a combo bonus
- * quietly making it wrong by one now and then. A level is a promise about work
- * a child can count themselves, so it is counted in the thing they count:
- * questions they got right, over everything they have ever practised.
- *
- * XP and coins are untouched and still earned on every round. They are for the
- * avatar shop that does not exist yet (spec §4.5), and merging them into this
- * would have meant a child who spends coins losing their level.
- *
- * **25, 50, 100, 200, and 200 from there on.** Doubling three times and then
- * settling, which is the shape a child can be told out loud: the first one is a
- * few days, the fourth is a few weeks, and none of them is ever out of reach.
- * Pure doubling would have put level 10 at nearly thirteen thousand answers —
- * three years at ten a day — and a rung nobody can reach is not a rung.
- */
-export const LEVEL_STEPS: readonly number[] = [25, 50, 100, 200];
-/** What every step past the fourth costs. */
-export const LEVEL_STEP = 200;
-
-/** What one step from `level` to the next costs. */
-export function stepToLevel(level: number): number {
-  return LEVEL_STEPS[level - 1] ?? LEVEL_STEP;
-}
-
-/** Correct answers needed in total to stand on `level`. */
-export function correctForLevel(level: number): number {
-  let total = 0;
-  for (let at = 1; at < level; at++) total += stepToLevel(at);
-  return total;
-}
-
-export function levelFor(correct: number): number {
-  let level = 1;
-  while (correctForLevel(level + 1) <= correct) level++;
-  return level;
-}
-
-/**
- * `levelProgress` en `correctToNextLevel` stonden hier, en ze zijn weg.
- *
- * Allebei waren ze geschreven voor "Jouw voortgang" in de zijkolom — "Niveau
- * 34", "nog 143 goede antwoorden tot niveau 35" — en die is met ADR-112
- * verborgen. Sindsdien riep geen enkel scherm ze aan: de enige plek waar ze nog
- * voorkwamen was hun eigen test.
- *
- * Ze terugzetten zou ook niet helpen, want sinds ADR-096 deelt een niveau niets
- * uit. Een balk die vult naar een mijlpaal die niets overhandigt, en een zin die
- * aftelt naar niets, zijn dezelfde fout als de munten en de XP van ADR-130 —
- * alleen dan met de aftelling in beeld, wat erger is dan onzichtbaar.
- *
- * `levelFor` blijft, want `uitLadder` heeft hem nodig om te weten wat een kind
- * op de oude ladder had verdiend. Dat is een migratie en geen beloning.
- */
-
-// ---------------------------------------------------------------------------
-
-export type StampId =
-  | 'provincies-foutloos'
-  | 'hoofdsteden-foutloos'
-  | 'eilanden-foutloos'
-  | 'week-op-rij'
-  | 'set-onthouden'
-  | 'wateren-foutloos'
-  | 'steden-foutloos'
-  | 'tafel-foutloos'
-  | 'bliksem-tien'
-  | 'overleven-vijftien';
-
-/** What the badge rules get to look at. Nothing else is in scope. */
+/** What the diploma rules get to look at. Nothing else is in scope. */
 export interface RewardSnapshot {
   readonly setId: string;
   /** Every answer in the round just finished was right. */
   readonly perfectRound: boolean;
   /** The round covered the whole set, not a session stopped early. */
   readonly completeRound: boolean;
-  readonly streakDays: number;
-  /** Items at box five in the set just practised, and how many there are. */
-  readonly mastered: number;
+  /** How many items the set just practised has. */
   readonly setSize: number;
-  readonly roundsFinished: number;
-  /** Which mode was played. A timed round and a survival round earn their own. */
+  /** Which mode was played. */
   readonly mode: string;
-  /** Correct answers in the round. The endless modes have no "complete" to hit. */
+  /** Correct answers in the round. */
   readonly correct: number;
 }
 
-export interface StampDefinition {
-  readonly id: StampId;
-  /** Stated in one sentence, because a stamp nobody can explain is a mystery. */
-  readonly criterion: (snapshot: RewardSnapshot) => boolean;
-}
-
-/**
- * Every stamp is earned by practising and by nothing else. There is no path
- * here that money, luck or waiting could take.
- *
- * And none of them is earned by taking part. "Op weg", for finishing a first
- * round, was exactly that and is gone (ADR-040): a reward for turning up tells
- * a child the turning up was the achievement, which is the opposite of what
- * this product is for.
- */
-export const STAMPS: readonly StampDefinition[] = [
-  {
-    // Perfect *and* complete: twelve of twelve, not eight of eight after
-    // stopping early. Otherwise the surest route to a badge is to quit while
-    // ahead, which is the opposite of what it should teach.
-    id: 'provincies-foutloos',
-    criterion: (s) => s.setId === 'nl-provincies' && s.perfectRound && s.completeRound,
-  },
-  {
-    id: 'hoofdsteden-foutloos',
-    criterion: (s) => s.setId === 'nl-hoofdsteden' && s.perfectRound && s.completeRound,
-  },
-  {
-    id: 'eilanden-foutloos',
-    criterion: (s) => s.setId === 'nl-waddeneilanden' && s.perfectRound && s.completeRound,
-  },
-  {
-    id: 'wateren-foutloos',
-    criterion: (s) => s.setId === 'nl-wateren' && s.perfectRound && s.completeRound,
-  },
-  {
-    // Eighty cities are never one round, so "complete" cannot mean the set here.
-    // A flawless round of fifteen out of eighty is the hardest thing the app
-    // asks, and it should be worth something.
-    id: 'steden-foutloos',
-    criterion: (s) => s.setId === 'nl-steden' && s.perfectRound && s.completeRound,
-  },
-  {
-    // A whole table, every sum right, in one round. One stamp for the twelve
-    // rather than twelve stamps: a collection with a dozen near-identical
-    // entries in it says the tables are twelve achievements, and they are one
-    // skill met twelve times.
-    id: 'tafel-foutloos',
-    criterion: (s) => s.setId.startsWith('tafel-') && s.perfectRound && s.completeRound,
-  },
-  {
-    // Ten right inside a minute. Reachable on any set, so a child who loves the
-    // islands is not shut out of it by having picked a small set.
-    id: 'bliksem-tien',
-    criterion: (s) => s.mode === 'bliksemronde' && s.correct >= 10,
-  },
-  {
-    // Fifteen right on three lives. Not "never wrong" — two mistakes are
-    // allowed, because a badge you lose to one slip teaches caution, not
-    // knowledge.
-    id: 'overleven-vijftien',
-    criterion: (s) => s.mode === 'overleven' && s.correct >= 15,
-  },
-  {
-    id: 'week-op-rij',
-    criterion: (s) => s.streakDays >= 7,
-  },
-  {
-    // Every item in the set remembered, by the product's one definition
-    // (ADR-114): each of them right three times, each time when it was due,
-    // over at least a week. So it takes coming back rather than one lucky
-    // afternoon. This is the stamp the others are shaped after.
-    id: 'set-onthouden',
-    criterion: (s) => s.setSize > 0 && s.mastered === s.setSize,
-  },
+/** The four ways of sitting a diploma, one per module that has them. */
+export const DIPLOMA_VORMEN: readonly string[] = [
+  'tafeldiploma',
+  'vlag-diploma',
+  'klok-diploma',
+  'topo-diploma',
 ];
 
-/**
- * Stamps newly earned by this round: satisfied now and not already held.
- *
- * Returns only what is new, so the result screen can name a stamp without
- * checking a list of everything a child already had.
- */
-export function newStamps(snapshot: RewardSnapshot, alreadyHeld: ReadonlySet<string>): StampId[] {
-  return STAMPS.filter((stamp) => !alreadyHeld.has(stamp.id) && stamp.criterion(snapshot)).map(
-    (stamp) => stamp.id,
-  );
+export function isDiplomaVorm(mode: string): boolean {
+  return DIPLOMA_VORMEN.includes(mode);
 }
-
-// ---------------------------------------------------------------------------
 
 /**
  * The tafeldiploma: ten sums of one table, all of them right, in one attempt.
  *
- * Not in `STAMPS`, and the reason is the shape of that list rather than of this
- * reward. A stamp is one of ten named things with a criterion each; a diploma
- * is twelve of the same thing, one per table, and writing twelve near-identical
- * entries into a list whose own comment argues against exactly that would be a
- * poor way to keep it honest.
- *
- * It is stored beside the stamps, in the same object store and under an id of
- * the same shape, so nothing about the storage had to move to hold it.
+ * Stored in `kindBadges`, the store the badges shared with it until ADR-149,
+ * under an id of the shape `diploma-…`.
  */
 export function diplomaFor(snapshot: RewardSnapshot): string | null {
   if (snapshot.mode !== 'tafeldiploma') return null;
