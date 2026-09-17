@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { ItemState, ModeId, Niveau } from '@/game-core';
+import type { Groep, ItemState, ModeId, Niveau } from '@/game-core';
 
 /**
  * The local store (DATAMODEL.md, part A). This is the whole database: there is
@@ -60,6 +60,21 @@ export interface ProfileRecord {
   naam: string;
   avatarConfig: Record<string, string>;
   niveau: Niveau;
+  /**
+   * In welke groep het kind zat toen het werd opgegeven, en in welk schooljaar
+   * dat was (ADR-151). `huidigeGroep` rekent daar de groep van nu uit, zodat
+   * een kind op 1 augustus vanzelf een groep verder is.
+   *
+   * Allebei weg bij een kind dat "Weet ik niet" koos, en bij elk kind van vóór
+   * ADR-151. Een rij zonder deze velden leest ze terug als `undefined`, en dat
+   * is precies "geen groep": daarom geen nieuwe `DB_VERSION` en geen migratie.
+   *
+   * Een aanwijzing voor de leeftijd, en daarom net als de naam: het blijft op
+   * dit apparaat, en straks in het ouderaccount (ADR-050). Nooit naar een
+   * derde, en nooit in een verzoek naar premium of de kassa.
+   */
+  groep?: Groep;
+  groepSchooljaar?: number;
   /**
    * `xp` en `munten` stonden hier en zijn weg (ADR-130): ze werden elke ronde
    * geschreven en door niets gelezen. Rijen van vóór die beslissing dragen ze

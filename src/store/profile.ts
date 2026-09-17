@@ -1,3 +1,4 @@
+import type { Groep } from '@/game-core';
 import type { ProfileRecord } from './db';
 import { createChild, getActiveChild } from './children';
 
@@ -20,10 +21,17 @@ export async function getProfile(): Promise<ProfileRecord | undefined> {
   return getActiveChild();
 }
 
-export async function createProfile(naam: string): Promise<ProfileRecord> {
-  return createChild(naam);
+export async function createProfile(naam: string, groep?: Groep): Promise<ProfileRecord> {
+  return createChild(naam, groep);
 }
 
 /** Re-exported so the screens that ask for a setting keep one import. */
 export { getSetting, setSetting } from './settings';
-export { setSticker, renameChild } from './children';
+export {
+  groepAlGevraagd,
+  groepNietNu,
+  groepVanActiefKind,
+  renameChild,
+  setGroep,
+  setSticker,
+} from './children';

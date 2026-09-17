@@ -6,6 +6,7 @@ export * from './distractors';
 export * from './map';
 export * from './retention';
 export * from './dagplan';
+export * from './groep';
 export * from './grade';
 export * from './sums';
 export * from './klok';
