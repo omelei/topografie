@@ -1745,7 +1745,7 @@
   button.tk-kaartje:active {
     background: var(--balk-leeg);
   }
-  button.tk-kaartje .tk-teken {
+  button.tk-kaartje .tk-kaartteken {
     flex: none;
     margin-bottom: 0;
   }
@@ -1753,7 +1753,7 @@
     flex: 1 1 auto;
     min-width: 0;
   }
-  .tk-teken {
+  .tk-kaartteken {
     display: inline-flex;
     flex: none;
     width: 48px;
@@ -1780,7 +1780,7 @@
     align-items: center;
     gap: 12px 16px;
   }
-  .tk-kaartrij > .tk-teken {
+  .tk-kaartrij > .tk-kaartteken {
     margin-bottom: 0;
   }
   .tk-kaartrij-tekst {

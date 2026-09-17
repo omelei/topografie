@@ -58,7 +58,7 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
    titel als `h1.tk-etalage-kop` en de zin eronder als `tk-etalage-tekst`, in
    indigo (ADR-150). Kaarten naast elkaar zijn `tk-kaarten` met een
    `tk-kaartje` per kaart; een kaart met een keuze is `tk-card tk-kaartrij`,
-   met een `tk-teken` ervoor.
+   met een `tk-kaartteken` ervoor.
 5. **Trefmaten.** Een knop is `h-knop` (56 in PO, 44 in VO). Het kleinste dat
    iets indrukbaars mag zijn is `raak`: 44 onder een muis, 48 op een tablet, 56
    onder een duim en altijd 56 in een ronde. Nooit een vaste maat eronder.

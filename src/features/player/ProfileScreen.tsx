@@ -61,7 +61,7 @@ export function ProfileScreen({
         <section className="flex flex-col gap-3" aria-label={t('you.settings')}>
           <h2 className="tk-sectie">{t('you.settings')}</h2>
           <div className="tk-card tk-kaartrij">
-            <span className="tk-teken">
+            <span className="tk-kaartteken">
               <SpeakIcon size={24} />
             </span>
             <p className="tk-kaartrij-tekst text-lopend">{t('you.settingsBijOuder')}</p>
@@ -151,7 +151,7 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
         </form>
       ) : (
         <div className="tk-card tk-kaartrij">
-          <span className="tk-teken">
+          <span className="tk-kaartteken">
             <PupilIcon size={24} />
           </span>
           <p className="tk-kaartrij-tekst text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>

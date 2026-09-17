@@ -7863,7 +7863,7 @@ dus een andere pagina kon ze niet netjes gebruiken.
 
 **Eén set bouwstenen, geen premiumset.** `tk-etalage` (met `-kop`, `-tekst`,
 `-knoppen`), `tk-knop-licht`, `tk-pil`, `tk-kaarten`, `tk-kaartje` (met
-`-kop`) en `tk-teken` zijn de klassen van ADR-145 onder een algemene naam. De
+`-kop`) en `tk-kaartteken` zijn de klassen van ADR-145 onder een algemene naam. De
 premiumpagina gebruikt ze zoals eerst; alleen de prijs, de plannen en de tabel
 houden `tk-premium-…`, want die bestaan alleen daar.
 

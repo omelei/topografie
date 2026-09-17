@@ -189,7 +189,7 @@ function PremiumBlok({ now = new Date() }: { readonly now?: Date }) {
       {/* Een kaart zoals het plan op de premiumpagina (ADR-150): met de groene
           rand zolang het aanstaat. */}
       <div className="tk-card tk-kaartrij" data-premium={actief ? '' : undefined}>
-        <span className="tk-teken">
+        <span className="tk-kaartteken">
           <StarIcon size={24} />
         </span>
         <p className="tk-kaartrij-tekst text-lopend">
@@ -277,7 +277,7 @@ function Weg({
 }) {
   return (
     <button type="button" className="tk-kaartje" onClick={onClick}>
-      <span className="tk-teken">
+      <span className="tk-kaartteken">
         <Teken size={24} />
       </span>
       <span className="tk-kaartje-kop">{label}</span>

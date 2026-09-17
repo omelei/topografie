@@ -217,7 +217,7 @@ function Aanbod() {
         <ul className="tk-kaarten">
           {DOET.map(([Teken, kop, uitleg]) => (
             <li key={kop} className="tk-kaartje">
-              <span className="tk-teken">
+              <span className="tk-kaartteken">
                 <Teken size={24} />
               </span>
               <span className="tk-kaartje-kop">{t(kop)}</span>
