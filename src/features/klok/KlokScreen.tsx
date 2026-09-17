@@ -204,7 +204,11 @@ export function KlokScreen({
                         : t('klok.wrongSub', { gegeven })}
                   </p>
                   {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap stap={state.stap} state={state.states.get(tijd.id)} naam={plaatjeNaam(tijd)}>
+                  <AlbumStap
+                    stap={state.stap}
+                    state={state.states.get(tijd.id)}
+                    naam={plaatjeNaam(tijd)}
+                  >
                     <PlaatjeInhoud item={tijd} />
                   </AlbumStap>
                 </div>

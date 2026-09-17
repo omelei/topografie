@@ -185,7 +185,11 @@ export function SumScreen({
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
                   {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap stap={state.stap} state={state.states.get(sum.id)} naam={plaatjeNaam(sum)}>
+                  <AlbumStap
+                    stap={state.stap}
+                    state={state.states.get(sum.id)}
+                    naam={plaatjeNaam(sum)}
+                  >
                     <PlaatjeInhoud item={sum} />
                   </AlbumStap>
                 </div>

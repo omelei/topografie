@@ -162,7 +162,12 @@ export function RondeKlaar({
 
         {albumDeel ? (
           <section className="tk-card flex flex-col gap-4" aria-label={t('album.paginaTitel')}>
-            <AlbumPagina deel={albumDeel} states={na} now={now} veranderd={new Set(ronde.veranderd)} />
+            <AlbumPagina
+              deel={albumDeel}
+              states={na}
+              now={now}
+              veranderd={new Set(ronde.veranderd)}
+            />
           </section>
         ) : null}
 
@@ -193,7 +198,15 @@ export function RondeKlaar({
                 <span className="tk-uitslag-regelicoon" aria-hidden="true">
                   <TodayIcon size={20} />
                 </span>
-                {vooruitZin(ronde.paginaInKleur, stand.kleur, stand.begonnen, stand.totaal, ids, na, now)}
+                {vooruitZin(
+                  ronde.paginaInKleur,
+                  stand.kleur,
+                  stand.begonnen,
+                  stand.totaal,
+                  ids,
+                  na,
+                  now,
+                )}
               </li>
             ) : null}
           </ul>
@@ -209,7 +222,9 @@ export function RondeKlaar({
             ) : melding ? (
               <p className="text-tekst-secundair">{melding}</p>
             ) : null}
-            {reward?.proef ? <p className="text-tekst-secundair">{t('afzwemmen.proefUitleg')}</p> : null}
+            {reward?.proef ? (
+              <p className="text-tekst-secundair">{t('afzwemmen.proefUitleg')}</p>
+            ) : null}
           </div>
         </section>
 
@@ -233,7 +248,11 @@ export function RondeKlaar({
                 {t('result.klaar')}
               </button>
               {onNieuwePlaatjes ? (
-                <button type="button" className="tk-button tk-button-secondary" onClick={onNieuwePlaatjes}>
+                <button
+                  type="button"
+                  className="tk-button tk-button-secondary"
+                  onClick={onNieuwePlaatjes}
+                >
                   {t('result.nieuwePlaatjes')}
                 </button>
               ) : null}
@@ -266,7 +285,10 @@ export function RondeKlaar({
                 </div>
               </li>
             </ul>
-            <PrintDiploma titel={deel ? naamVan(deel) : diploma} vorm={t(`mode.${mode}` as TranslationKey)} />
+            <PrintDiploma
+              titel={deel ? naamVan(deel) : diploma}
+              vorm={t(`mode.${mode}` as TranslationKey)}
+            />
           </section>
         ) : null}
 
@@ -285,20 +307,28 @@ export function RondeKlaar({
 function veranderdZin(ronde: ReturnType<typeof rondeAlbum>): string {
   const delen: string[] = [];
   if (ronde.verder > 0) {
-    delen.push(ronde.verder === 1 ? t('result.verderEen') : t('result.verder', { aantal: ronde.verder }));
+    delen.push(
+      ronde.verder === 1 ? t('result.verderEen') : t('result.verder', { aantal: ronde.verder }),
+    );
   }
   if (ronde.weerGoed > 0) {
     delen.push(
-      ronde.weerGoed === 1 ? t('result.weerGoedEen') : t('result.weerGoed', { aantal: ronde.weerGoed }),
+      ronde.weerGoed === 1
+        ? t('result.weerGoedEen')
+        : t('result.weerGoed', { aantal: ronde.weerGoed }),
     );
   }
   if (ronde.stempels > 0) {
     delen.push(
-      ronde.stempels === 1 ? t('result.stempelsEen') : t('result.stempels', { aantal: ronde.stempels }),
+      ronde.stempels === 1
+        ? t('result.stempelsEen')
+        : t('result.stempels', { aantal: ronde.stempels }),
     );
   }
   if (ronde.lastig > 0) {
-    delen.push(ronde.lastig === 1 ? t('result.pleisterEen') : t('result.pleister', { aantal: ronde.lastig }));
+    delen.push(
+      ronde.lastig === 1 ? t('result.pleisterEen') : t('result.pleister', { aantal: ronde.lastig }),
+    );
   }
   return delen.length === 0 ? t('result.albumNiets') : `${delen.join('. ')}.`;
 }
@@ -386,7 +416,11 @@ function PrintDiploma({ titel, vorm }: { readonly titel: string; readonly vorm: 
 
   return (
     <>
-      <button type="button" className="tk-button tk-button-secondary self-start" onClick={() => window.print()}>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={() => window.print()}
+      >
         {t('afzwemmen.print')}
       </button>
       <div className="tk-diplomaprint" data-print="ja" aria-hidden="true">

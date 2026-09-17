@@ -67,7 +67,9 @@ export function AlbumOverzicht() {
                     open={gekozen === deel.setId}
                     onKies={() => setGekozen(gekozen === deel.setId ? null : deel.setId)}
                   />
-                  {gekozen === deel.setId ? <AlbumPagina deel={deel} states={states} now={now} /> : null}
+                  {gekozen === deel.setId ? (
+                    <AlbumPagina deel={deel} states={states} now={now} />
+                  ) : null}
                 </li>
               ))}
             </ul>
@@ -97,7 +99,12 @@ function PaginaKnop({
     now,
   );
   return (
-    <button type="button" className="tk-lijstrij tk-albumpagina-knop" aria-expanded={open} onClick={onKies}>
+    <button
+      type="button"
+      className="tk-lijstrij tk-albumpagina-knop"
+      aria-expanded={open}
+      onClick={onKies}
+    >
       <span className="tk-lijstrij-tekst">
         <span className="tk-lijstrij-titel">{naamVan(deel)}</span>
         <StandRegel stand={stand} />

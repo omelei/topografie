@@ -52,8 +52,16 @@ export function weekkaart(geoefend: ReadonlySet<string>, doel: number, now: Date
   const maandag = maandagVan(now);
   const vandaag = dayKey(now);
   const dagen = Array.from({ length: 7 }, (_, index) => {
-    const dag = dayKey(new Date(maandag.getFullYear(), maandag.getMonth(), maandag.getDate() + index));
-    return { dag, index, geoefend: geoefend.has(dag), vandaag: dag === vandaag, later: dag > vandaag };
+    const dag = dayKey(
+      new Date(maandag.getFullYear(), maandag.getMonth(), maandag.getDate() + index),
+    );
+    return {
+      dag,
+      index,
+      geoefend: geoefend.has(dag),
+      vandaag: dag === vandaag,
+      later: dag > vandaag,
+    };
   });
   const aantal = dagen.filter((d) => d.geoefend).length;
   const geldig = weekdoelUit(doel);
@@ -66,7 +74,9 @@ export function weekkaart(geoefend: ReadonlySet<string>, doel: number, now: Date
  */
 export function schooljaarBegin(now: Date): Date {
   const ditJaar = maandagVan(new Date(now.getFullYear(), 8, 1));
-  return now.getTime() >= ditJaar.getTime() ? ditJaar : maandagVan(new Date(now.getFullYear() - 1, 8, 1));
+  return now.getTime() >= ditJaar.getTime()
+    ? ditJaar
+    : maandagVan(new Date(now.getFullYear() - 1, 8, 1));
 }
 
 export interface JaarWeek {

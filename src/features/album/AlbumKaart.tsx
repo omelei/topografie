@@ -64,12 +64,14 @@ export function AlbumKaart({
   }
 
   const { grond, laag } = kaart;
-  const vormen = laag.kind === 'background' ? grond.vormen : laag.kind === 'shapes' ? laag.set.vormen : [];
+  const vormen =
+    laag.kind === 'background' ? grond.vormen : laag.kind === 'shapes' ? laag.set.vormen : [];
   const punten = laag.kind === 'points' ? laag.set.punten : [];
   const [, , breedte, hoogte] = grond.viewBox;
   const straal = Math.max(breedte, hoogte) / 90;
 
-  const merktekens: { id: string; x: number; y: number; stempels: number; teken: string | null }[] = [];
+  const merktekens: { id: string; x: number; y: number; stempels: number; teken: string | null }[] =
+    [];
 
   const staatVan = (id: string) => {
     const item = perRef.get(id);
@@ -94,7 +96,13 @@ export function AlbumKaart({
       aria-label={label}
     >
       <defs>
-        <pattern id={arcering} width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <pattern
+          id={arcering}
+          width="14"
+          height="14"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
           <rect className="tk-albumkaart-arceergrond" width="14" height="14" />
           <line className="tk-albumkaart-arceerlijn" x1="0" y1="0" x2="0" y2="14" />
         </pattern>
@@ -143,7 +151,11 @@ export function AlbumKaart({
       })}
 
       {merktekens.map((merk) => (
-        <g key={`merk-${merk.id}`} className="tk-albumkaart-merk" data-teken={merk.teken ?? undefined}>
+        <g
+          key={`merk-${merk.id}`}
+          className="tk-albumkaart-merk"
+          data-teken={merk.teken ?? undefined}
+        >
           <circle cx={merk.x + straal} cy={merk.y - straal} r={straal * 0.9} />
           {merk.stempels > 0 && merk.teken === null ? (
             <text x={merk.x + straal} y={merk.y - straal} fontSize={straal * 1.1}>

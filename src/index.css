@@ -4000,11 +4000,7 @@
   .tk-plaatje[data-laag='3'] {
     border-style: solid;
     border-color: var(--tekst-secundair);
-    background: repeating-linear-gradient(
-      135deg,
-      var(--module-tint) 0 5px,
-      var(--kaart) 5px 11px
-    );
+    background: repeating-linear-gradient(135deg, var(--module-tint) 0 5px, var(--kaart) 5px 11px);
     color: var(--inkt);
   }
   .tk-plaatje:is([data-laag='4'], [data-laag='5']) {

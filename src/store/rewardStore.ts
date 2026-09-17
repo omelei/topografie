@@ -143,7 +143,9 @@ export async function applyRoundRewards(params: {
   const topoDiplomaId = topoDiplomaFor(params.snapshot);
 
   if (!params.rijp && isDiplomaVorm(params.snapshot.mode)) {
-    const gehaald = [diplomaId, vlagDiplomaId, klokDiplomaId, topoDiplomaId].some((id) => id !== null);
+    const gehaald = [diplomaId, vlagDiplomaId, klokDiplomaId, topoDiplomaId].some(
+      (id) => id !== null,
+    );
     return {
       diploma: null,
       vlagDiploma: null,

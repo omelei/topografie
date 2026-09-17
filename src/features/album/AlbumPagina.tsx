@@ -146,9 +146,11 @@ export function AlbumPagina({
   const ids = deel.items.map((item) => item.id);
   const stand = paginaStand(ids, states, now);
   const naam = naamVan(deel);
-  const kaartSet = deel.moduleId === 'topo' && !deel.mix && heeftKaart(deel.setId) ? deel.setId : null;
+  const kaartSet =
+    deel.moduleId === 'topo' && !deel.mix && heeftKaart(deel.setId) ? deel.setId : null;
   const kies = (id: string) => setGekozen((huidig) => (huidig === id ? null : id));
-  const item = gekozen === null ? null : (deel.items.find((kandidaat) => kandidaat.id === gekozen) ?? null);
+  const item =
+    gekozen === null ? null : (deel.items.find((kandidaat) => kandidaat.id === gekozen) ?? null);
 
   const rooster = (
     <AlbumRooster
@@ -162,7 +164,11 @@ export function AlbumPagina({
   );
 
   return (
-    <section className="tk-album" data-module={deel.moduleId} aria-label={t('album.paginaLabel', { naam })}>
+    <section
+      className="tk-album"
+      data-module={deel.moduleId}
+      aria-label={t('album.paginaLabel', { naam })}
+    >
       {kop ? <StandRegel stand={stand} /> : null}
       {kaartSet !== null ? (
         <>
@@ -183,7 +189,12 @@ export function AlbumPagina({
         rooster
       )}
       {item ? (
-        <Achterkant item={item} state={states.get(item.id)} now={now} onSluit={() => setGekozen(null)} />
+        <Achterkant
+          item={item}
+          state={states.get(item.id)}
+          now={now}
+          onSluit={() => setGekozen(null)}
+        />
       ) : null}
     </section>
   );

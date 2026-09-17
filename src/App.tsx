@@ -635,11 +635,7 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen
-          profile={boot.profile}
-          aside={eigenKolom}
-          onOuder={goOuder}
-        />
+        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
       </Shell>
     );
   }

@@ -60,7 +60,11 @@ export function DiplomaRaster({
             <span className="tk-diploma-titel" aria-hidden="true">
               {vak.titel}
             </span>
-            <span className="tk-diploma-stand" aria-hidden="true" data-rijp={rijp ? 'ja' : undefined}>
+            <span
+              className="tk-diploma-stand"
+              aria-hidden="true"
+              data-rijp={rijp ? 'ja' : undefined}
+            >
               {vak.gehaald ? t('diploma.gehaald') : rijp ? t('diploma.rijp') : t('diploma.nogNiet')}
             </span>
             {seizoenen.length > 0 ? (

@@ -106,10 +106,16 @@ export function Afzwemmen({
             </p>
           ) : null}
           <div className="tk-afzwemmen-kop">
-            <Embleem icon={DiplomaIcon} module={deel.moduleId} gehaald={voorkennis?.alGehaald ?? false} />
+            <Embleem
+              icon={DiplomaIcon}
+              module={deel.moduleId}
+              gehaald={voorkennis?.alGehaald ?? false}
+            />
             <div className="flex flex-col gap-1">
               <h1 className="tk-titel">{t('afzwemmen.titel', { naam })}</h1>
-              <p className="text-lopend text-tekst-secundair">{t(`mode.${mode}` as TranslationKey)}</p>
+              <p className="text-lopend text-tekst-secundair">
+                {t(`mode.${mode}` as TranslationKey)}
+              </p>
             </div>
           </div>
         </header>
@@ -149,7 +155,9 @@ export function Afzwemmen({
                       nodig: voorkennis.nodig,
                     })}
                   </p>
-                  <p className="text-lopend text-tekst-secundair">{t('afzwemmen.nietRijpUitleg')}</p>
+                  <p className="text-lopend text-tekst-secundair">
+                    {t('afzwemmen.nietRijpUitleg')}
+                  </p>
                 </>
               )}
               {voorkennis.alGehaald ? (
@@ -170,10 +178,18 @@ export function Afzwemmen({
                     </button>
                   ) : (
                     <>
-                      <button type="button" className="tk-button" onClick={() => setMeekijken(true)}>
+                      <button
+                        type="button"
+                        className="tk-button"
+                        onClick={() => setMeekijken(true)}
+                      >
                         {t('afzwemmen.metIemand')}
                       </button>
-                      <button type="button" className="tk-button tk-button-secondary" onClick={onBegin}>
+                      <button
+                        type="button"
+                        className="tk-button tk-button-secondary"
+                        onClick={onBegin}
+                      >
                         {t('afzwemmen.zonder')}
                       </button>
                     </>

@@ -125,7 +125,8 @@ export const nl = {
   'week.zegelNiet': 'Week van {datum}',
   'week.zegelNu': 'Deze week',
   'week.regelsTitel': 'Zo werkt je weekkaart',
-  'week.regel1': 'Oefen je op een dag, dan krijgt die dag een stempel. Vier rondes op één dag zijn samen één stempel.',
+  'week.regel1':
+    'Oefen je op een dag, dan krijgt die dag een stempel. Vier rondes op één dag zijn samen één stempel.',
   'week.regel2': 'Haal je je doel, dan krijgt de week een zegel. Een zegel gaat nooit meer weg.',
   'week.regel3': 'Mis je een dag? Er gaat niets weg. Maandag begint een nieuwe kaart.',
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
@@ -155,7 +156,8 @@ export const nl = {
   'afzwemmen.eisVragen': '{vragen} vragen, en je hebt er {drempel} goed nodig.',
   'afzwemmen.eisStil': 'Je hoort pas aan het eind hoe het ging.',
   'afzwemmen.eisOpnieuw': 'Lukt het nog niet? Dan doe je het een andere dag opnieuw.',
-  'afzwemmen.rijpZin': 'Je onthoudt er {onthouden} van de {totaal}. Dat is genoeg voor het diploma.',
+  'afzwemmen.rijpZin':
+    'Je onthoudt er {onthouden} van de {totaal}. Dat is genoeg voor het diploma.',
   'afzwemmen.nietRijpTitel': 'Nog niet klaar om af te zwemmen',
   'afzwemmen.nietRijpZin':
     'Je onthoudt er nu {onthouden} van de {totaal}. Voor het diploma moet je er {nodig} onthouden.',
@@ -173,7 +175,8 @@ export const nl = {
   'afzwemmen.oefen': 'Eerst oefenen',
   'afzwemmen.proef': 'Proefzwemmen',
   'afzwemmen.proefGehaald': 'Proefzwemmen gelukt.',
-  'afzwemmen.proefUitleg': 'Dit was proefzwemmen. Het diploma komt als je pagina klaar is om af te zwemmen.',
+  'afzwemmen.proefUitleg':
+    'Dit was proefzwemmen. Het diploma komt als je pagina klaar is om af te zwemmen.',
   'afzwemmen.print': 'Print je diploma',
   'afzwemmen.printNaam': 'Gehaald door {naam}',
   'afzwemmen.printZonderNaam': 'Gehaald',
@@ -1246,11 +1249,13 @@ export const nl = {
   'result.morgenTerugEen': 'Morgen komt er 1 plaatje terug.',
   'result.morgenTerug': 'Morgen komen er {aantal} plaatjes terug.',
   'result.eerstVolgende': 'Over {dagen} dagen komt er weer een plaatje terug.',
-  'result.paginaInKleur': 'Deze pagina is helemaal in kleur. Over een week kunnen de eerste lijstjes komen.',
+  'result.paginaInKleur':
+    'Deze pagina is helemaal in kleur. Over een week kunnen de eerste lijstjes komen.',
   // Stoppen is ook af: als er vandaag niets meer terug moet komen, is "Klaar" de
   // eerste knop en brengt een extra ronde nieuwe plaatjes.
   'result.vandaagKlaar': 'Klaar voor vandaag',
-  'result.vandaagKlaarUitleg': 'Alles wat vandaag terug moest komen, is gedaan. Stoppen is nu ook goed.',
+  'result.vandaagKlaarUitleg':
+    'Alles wat vandaag terug moest komen, is gedaan. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
   'result.nieuwePlaatjes': 'Nieuwe plaatjes',
 
@@ -1394,7 +1399,8 @@ export const nl = {
   'album.achterkantNu': 'Komt nu terug.',
   'album.achterkantMorgen': 'Komt morgen terug.',
   'album.achterkantTerug': 'Komt over {dagen} dagen terug.',
-  'album.achterkantLastig': 'Dit ging een keer fout. Weet je het weer een paar keer als het terugkomt, dan mag de pleister eraf.',
+  'album.achterkantLastig':
+    'Dit ging een keer fout. Weet je het weer een paar keer als het terugkomt, dan mag de pleister eraf.',
   'album.achterkantStempels': 'Stempels',
   'album.achterkantGeenStempels': 'Stempels komen als je het na een lijstje nog weet.',
   'album.sluit': 'Sluit',

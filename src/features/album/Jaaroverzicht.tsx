@@ -1,11 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  laagVan,
-  schooljaarBegin,
-  schooljaarVan,
-  stempelsVan,
-  type ItemState,
-} from '@/game-core';
+import { laagVan, schooljaarBegin, schooljaarVan, stempelsVan, type ItemState } from '@/game-core';
 import { doelwitten } from '@/features/home/doel';
 import { naamVan, onderdelen } from '@/features/module/onderdelen';
 import { t } from '@/i18n';
@@ -99,7 +93,11 @@ export function Jaaroverzicht() {
           </>
         ) : null}
       </div>
-      <button type="button" className="tk-button tk-button-secondary self-start" onClick={() => window.print()}>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={() => window.print()}
+      >
         {t('jaar.print')}
       </button>
     </section>

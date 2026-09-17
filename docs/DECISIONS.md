@@ -7757,18 +7757,18 @@ verlies.
 som, een woord. Zijn laag volgt de hoogste Leitner-doos die het ooit haalde
 (`hoogsteDoos`), niet de doos van nu, zodat er nooit iets af gaat:
 
-| Laag | Wanneer            | Vorm                                     |
-| ---- | ------------------ | ---------------------------------------- |
-| 0    | nog niet geoefend  | lichte stippelrand                       |
+| Laag | Wanneer            | Vorm                                           |
+| ---- | ------------------ | ---------------------------------------------- |
+| 0    | nog niet geoefend  | lichte stippelrand                             |
 | 1–3  | doos 1–3           | schets: donkere stippel, dichte rand, arcering |
-| 4    | doos 4, onthoud je | vlak in de tint van de module            |
-| 5    | doos 5             | een lijstje: dubbele rand                |
+| 4    | doos 4, onthoud je | vlak in de tint van de module                  |
+| 5    | doos 5             | een lijstje: dubbele rand                      |
 
 Daarbovenop **stempels**: elk goed antwoord in doos 5 dat aan de beurt was,
 met zijn datum (`stempels`). Een laag is altijd een vorm en niet alleen een
-kleur. **Twee tekens**, alleen vanaf kleur, pakken niets af: *lastig* (de doos
+kleur. **Twee tekens**, alleen vanaf kleur, pakken niets af: _lastig_ (de doos
 is na een fout onder de 4; de kleur blijft, het teken gaat weg zodra het item
-weer op 4 staat) en *even opfrissen* (te laat, ADR-114). Leitner zelf verandert
+weer op 4 staat) en _even opfrissen_ (te laat, ADR-114). Leitner zelf verandert
 niet: een fout zet een item nog steeds in doos 1.
 
 De pagina van een set staat op de modulepagina, op "Ronde klaar" met wat er

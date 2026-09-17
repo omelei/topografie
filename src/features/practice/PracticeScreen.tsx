@@ -322,7 +322,6 @@ export function PracticeScreen({
                 </div>
               </div>
 
-
               {/* A lightning round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (

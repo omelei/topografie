@@ -837,7 +837,17 @@ export function useRound(
       },
       rijp: rijpVoorDiploma(setId, statesVoor, new Date()),
     }).then(setReward);
-  }, [phase, correctCount, answeredCount, items, questions.length, setId, states, statesVoor, practiceMode]);
+  }, [
+    phase,
+    correctCount,
+    answeredCount,
+    items,
+    questions.length,
+    setId,
+    states,
+    statesVoor,
+    practiceMode,
+  ]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;

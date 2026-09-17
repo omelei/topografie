@@ -184,7 +184,11 @@ export function VlagScreen({
                     {feedbackSub(state.lastCorrect, state.given, zoeken)}
                   </p>
                   {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap stap={state.stap} state={state.states.get(vlag.id)} naam={plaatjeNaam(vlag)}>
+                  <AlbumStap
+                    stap={state.stap}
+                    state={state.states.get(vlag.id)}
+                    naam={plaatjeNaam(vlag)}
+                  >
                     <PlaatjeInhoud item={vlag} />
                   </AlbumStap>
                 </div>

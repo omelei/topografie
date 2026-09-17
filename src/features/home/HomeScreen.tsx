@@ -88,13 +88,7 @@ export interface HomeScreenProps {
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
 }
 
-export function HomeScreen({
-  naam,
-  onWeek,
-  onBegin,
-  onVerder,
-  onPlan,
-}: HomeScreenProps) {
+export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const desk = useDesk();

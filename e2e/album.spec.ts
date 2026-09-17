@@ -69,9 +69,15 @@ test('het weekdoel is één doel, op de weekkaart en bij de ouder', async ({ pag
 
   await page.goto('/week');
   const doel = page.getByRole('group', { name: 'Je weekdoel' });
-  await expect(doel.getByRole('button', { name: '3 dagen' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(doel.getByRole('button', { name: '3 dagen' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await doel.getByRole('button', { name: '4 dagen' }).click();
-  await expect(doel.getByRole('button', { name: '4 dagen' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(doel.getByRole('button', { name: '4 dagen' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 
   await page.goto('/ouder');
   const bijOuder = page.getByRole('group', { name: 'Je weekdoel' });
