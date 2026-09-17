@@ -19,6 +19,7 @@ import {
   type Onderdeel,
   type Populair,
 } from '@/features/module/onderdelen';
+import { usePremium } from '@/features/premium/usePremium';
 import { WeekBlok } from '@/features/week/WeekBlok';
 import { DoelBlok } from './DoelBlok';
 import { TerugBlok } from './TerugBlok';
@@ -121,12 +122,17 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
   // eerste ronde terug kost (ADR-149). Niets als er niets te zeggen is.
   const terug = <TerugBlok played={played} gespeeld={gespeeld} onVerder={onVerder} />;
 
-  // Bovenaan, boven alles: het is het enige blok dat zegt wat er nú te doen is
-  // (ADR-126). De rijen eronder zijn geschiedenis.
+  // Met premium bovenaan, boven alles: dan is het het enige blok dat zegt wat er
+  // nú te doen is, met een knop per ronde (ADR-126). Zonder premium is het een
+  // getal en een slot, en dat is geen opdracht: wie binnenkomt, ziet dan eerst
+  // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
   //
   // De sleutel is de groep: wie die op de voordeur kiest, ziet het plan meteen
   // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151).
+  const { actief } = usePremium();
   const vandaag = <VandaagBlok key={groep ?? 'geen'} gespeeld={gespeeld} onPlan={onPlan} />;
+  const vandaagBoven = actief ? vandaag : null;
+  const vandaagOnder = actief ? null : vandaag;
 
   // Eén keer, voor een kind dat er al was vóór de vraag naar de groep: onder
   // Vandaag, zodat het plan er eerst staat en niemand wacht (ADR-151).
@@ -155,10 +161,11 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
         <div className="tk-home-main">
           {kop}
           {terug}
-          {vandaag}
+          {vandaagBoven}
           {groepVraag}
           {doel}
           {rijen}
+          {vandaagOnder}
         </div>
 
         <aside className="tk-home-aside">
@@ -175,12 +182,13 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
     <div className="tk-home">
       {kop}
       {terug}
-      {vandaag}
+      {vandaagBoven}
       {groepVraag}
       {week}
       {doel}
       {toetsen}
       {rijen}
+      {vandaagOnder}
     </div>
   );
 }
