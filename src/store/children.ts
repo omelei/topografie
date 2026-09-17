@@ -1,4 +1,4 @@
-import { huidigeGroep, schooljaarVan, type Groep } from '@/game-core';
+import { huidigeGroep, groepsjaarVan, type Groep } from '@/game-core';
 import { getDb, SINGLETON_KEY, type ProfileRecord } from './db';
 import { getSetting, setSetting } from './settings';
 
@@ -85,7 +85,7 @@ function metGroep(
   groep: Groep | undefined,
   now: Date,
 ): Pick<ProfileRecord, 'groep' | 'groepSchooljaar'> {
-  return groep === undefined ? {} : { groep, groepSchooljaar: schooljaarVan(now) };
+  return groep === undefined ? {} : { groep, groepSchooljaar: groepsjaarVan(now) };
 }
 
 /**

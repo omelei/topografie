@@ -8,7 +8,7 @@ import {
   pastBijGroep,
   rangVoorGroep,
   samen,
-  schooljaarVan,
+  groepsjaarVan,
   type Groep,
 } from './groep';
 
@@ -135,10 +135,10 @@ describe('huidigeGroep', () => {
   });
 
   it('begint een schooljaar op 1 augustus', () => {
-    expect(schooljaarVan(new Date(2027, 6, 31, 23, 59))).toBe(2026);
-    expect(schooljaarVan(new Date(2027, 7, 1, 0, 0))).toBe(2027);
-    expect(schooljaarVan(new Date(2026, 8, 17))).toBe(2026);
-    expect(schooljaarVan(new Date(2027, 0, 5))).toBe(2026);
+    expect(groepsjaarVan(new Date(2027, 6, 31, 23, 59))).toBe(2026);
+    expect(groepsjaarVan(new Date(2027, 7, 1, 0, 0))).toBe(2027);
+    expect(groepsjaarVan(new Date(2026, 8, 17))).toBe(2026);
+    expect(groepsjaarVan(new Date(2027, 0, 5))).toBe(2026);
   });
 
   const opgegeven = { groep: 5, groepSchooljaar: 2026 };
