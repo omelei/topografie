@@ -1,8 +1,8 @@
 :root {
-  --leernu-koraal: #FF6A4D;
-  --leernu-koraal-diep: #C8412A;
-  --leernu-cacao: #2A1E17;
-  --leernu-room: #FFF7EF;
+  --leernu-koraal: #ff6a4d;
+  --leernu-koraal-diep: #c8412a;
+  --leernu-cacao: #2a1e17;
+  --leernu-room: #fff7ef;
   /* Denker-sprite */
   --denker-lijf: var(--leernu-koraal);
   --denker-oog: var(--leernu-cacao);
