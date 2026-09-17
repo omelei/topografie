@@ -1,6 +1,6 @@
 import type { Groep } from '@/game-core';
 import type { ProfileRecord } from './db';
-import { createChild, getActiveChild } from './children';
+import { createChild, getActiveChild, zetGroepGevraagd } from './children';
 
 /**
  * Who is practising, and the settings that belong to the device.
@@ -21,15 +21,21 @@ export async function getProfile(): Promise<ProfileRecord | undefined> {
   return getActiveChild();
 }
 
+/**
+ * Het kind van het eerste scherm. Daar is de groep al gevraagd (ADR-151), ook
+ * als het antwoord "Weet ik niet" was, dus de voordeur vraagt het niet nog
+ * eens. Een kind dat later op Jij wordt toegevoegd, krijgt de vraag wel.
+ */
 export async function createProfile(naam: string, groep?: Groep): Promise<ProfileRecord> {
-  return createChild(naam, groep);
+  const kind = await createChild(naam, groep);
+  await zetGroepGevraagd(kind.id);
+  return kind;
 }
 
 /** Re-exported so the screens that ask for a setting keep one import. */
 export { getSetting, setSetting } from './settings';
 export {
   groepAlGevraagd,
-  groepNietNu,
   groepVanActiefKind,
   renameChild,
   setGroep,

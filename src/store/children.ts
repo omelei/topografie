@@ -77,14 +77,14 @@ export async function createChild(naam: string, groep?: Groep): Promise<ProfileR
   const db = await getDb();
   await db.put('profile', child);
   await switchChild(child.id);
-  // Wie bij het begin al antwoord gaf, ook "Weet ik niet", wordt het niet
-  // nog eens gevraagd op de voordeur.
-  await setSetting(groepGevraagdSleutel(child.id), 'ja');
   return child;
 }
 
 /** De twee velden van een groep, of geen van beide. */
-function metGroep(groep: Groep | undefined, now: Date): Partial<ProfileRecord> {
+function metGroep(
+  groep: Groep | undefined,
+  now: Date,
+): Pick<ProfileRecord, 'groep' | 'groepSchooljaar'> {
   return groep === undefined ? {} : { groep, groepSchooljaar: schooljaarVan(now) };
 }
 
@@ -136,7 +136,8 @@ export async function groepAlGevraagd(kindId: string): Promise<boolean> {
   return (await getSetting(groepGevraagdSleutel(kindId))) === 'ja';
 }
 
-export async function groepNietNu(kindId: string): Promise<void> {
+/** Een keuze, "Weet ik niet" of "Niet nu": dit kind is gevraagd. */
+export async function zetGroepGevraagd(kindId: string): Promise<void> {
   await setSetting(groepGevraagdSleutel(kindId), 'ja');
 }
 

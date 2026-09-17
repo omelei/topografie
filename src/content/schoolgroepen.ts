@@ -28,8 +28,8 @@ import leerdoelen from '../../content/leerdoelen.json';
 
 const TABEL: Readonly<Record<string, readonly number[]>> = tabel.sets;
 
-const LEERJAAR = new Map(
-  leerdoelen.leerdoelen.map((doel) => [
+const LEERJAAR = new Map<string, readonly Groep[]>(
+  leerdoelen.leerdoelen.map((doel): [string, readonly Groep[]] => [
     doel.id,
     doel.leerjaar.map((jaar) => Number(/^groep(\d)$/.exec(jaar)?.[1])).filter(isGroep),
   ]),

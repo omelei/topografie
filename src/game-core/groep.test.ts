@@ -3,9 +3,11 @@ import {
   GROEPEN,
   huidigeGroep,
   isGroep,
+  kiesVoorGroep,
   opGroep,
   pastBijGroep,
   rangVoorGroep,
+  samen,
   schooljaarVan,
   type Groep,
 } from './groep';
@@ -81,6 +83,47 @@ describe('rangVoorGroep en opGroep', () => {
   });
 });
 
+describe('kiesVoorGroep', () => {
+  const groepen: Record<string, readonly Groep[] | undefined> = {
+    'tafel-2': [4, 5],
+    'tafel-11': [5, 6],
+    'keer-100': [6],
+    'plus-20': [3, 4],
+    rekenmix: undefined,
+  };
+  const kandidaten = ['tafel-2', 'tafel-11', 'keer-100', 'plus-20', 'rekenmix'];
+  const kies = (groep: Groep | undefined) =>
+    kiesVoorGroep('tafel-2', kandidaten, (id) => groepen[id], groep);
+
+  it('houdt de vaste keuze zonder groep', () => {
+    expect(kies(undefined)).toBe('tafel-2');
+  });
+
+  it('houdt de vaste keuze als die past', () => {
+    expect(kies(4)).toBe('tafel-2');
+    expect(kies(5)).toBe('tafel-2');
+  });
+
+  it('kiest anders wat past en het laatst begint', () => {
+    expect(kies(3)).toBe('plus-20');
+    expect(kies(6)).toBe('keer-100');
+  });
+
+  it('houdt de vaste keuze als er niets past, en kiest nooit iets zonder groep', () => {
+    expect(kies(8)).toBe('tafel-2');
+  });
+});
+
+describe('samen', () => {
+  it('past een onderwerp zoals zijn best passende set', () => {
+    expect(samen(['herhaling', 'nu', 'later'])).toBe('nu');
+    expect(samen(['herhaling', 'neutraal'])).toBe('neutraal');
+    expect(samen(['later', 'herhaling'])).toBe('herhaling');
+    expect(samen(['later'])).toBe('later');
+    expect(samen([])).toBe('neutraal');
+  });
+});
+
 describe('huidigeGroep', () => {
   it('kent alleen groep 3 tot en met 8', () => {
     expect(isGroep(3)).toBe(true);
@@ -121,8 +164,11 @@ describe('huidigeGroep', () => {
   });
 
   it('is er niet voor een profiel van vóór ADR-151', () => {
-    // Het profiel van een kind dat al bestond: geen veld, en dus geen groep.
-    const oud = { id: 'me', naam: 'Sam', avatarConfig: {}, niveau: 1, aangemaaktOp: '' };
+    // Het profiel van een kind dat al bestond, zoals IndexedDB het teruggeeft:
+    // geen veld, en dus geen groep.
+    const oud: object = JSON.parse(
+      '{"id":"me","naam":"Sam","avatarConfig":{},"niveau":1,"aangemaaktOp":"2026-09-01"}',
+    );
     expect(huidigeGroep(oud, new Date(2026, 8, 17))).toBe(undefined);
     expect(huidigeGroep({ groep: 'groep6' }, new Date(2026, 8, 17))).toBe(undefined);
   });

@@ -1,9 +1,18 @@
 import { useEffect, useState } from 'react';
-import { dagplan, type Dagplan, type ItemState, type ModeId, type PlanSet } from '@/game-core';
+import {
+  dagplan,
+  type Dagplan,
+  type Groep,
+  type ItemState,
+  type ModeId,
+  type PlanSet,
+} from '@/game-core';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { formsFor } from '@/features/module/forms';
+import { voorrangVoor } from '@/features/module/groepen';
 import { startbareOnderdelen, type Gespeeld, type Onderdeel } from '@/features/module/onderdelen';
 import { loadItemStates } from '@/store/progress';
+import { groepVanActiefKind } from '@/store/children';
 import { leesDagstand, schrijfDagstand } from '@/store/dagstandStore';
 import { standVoor, voortgangVan, volgendeSet, type Voortgang } from './dagstand';
 
@@ -56,19 +65,29 @@ export function planSets(alles: readonly Onderdeel[]): readonly PlanSet<Onderdee
 }
 
 export function useVandaag(now: Date = new Date()): Vandaag | null {
-  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
+  const [geladen, setGeladen] = useState<{
+    readonly states: ReadonlyMap<string, ItemState>;
+    readonly groep: Groep | undefined;
+  } | null>(null);
   const [vandaag, setVandaag] = useState<Vandaag | null>(null);
 
   useEffect(() => {
-    void loadItemStates().then(setStates);
+    void Promise.all([loadItemStates(), groepVanActiefKind(now)]).then(([states, groep]) =>
+      setGeladen({ states, groep }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (states === null) return;
+    if (geladen === null) return;
+    const { states, groep } = geladen;
 
+    // Wat bij de groep past, gaat voor bij gelijk wachten (ADR-151). Het
+    // onthouden beslist eerst; zonder groep is dit het plan van altijd.
+    const voorrang = voorrangVoor(groep);
     const sets = planSets(startbareOnderdelen());
-    const plan = dagplan(sets, states, now);
-    const morgen = dagplan(sets, states, new Date(now.getTime() + DAG_MS)).vragen;
+    const plan = dagplan(sets, states, now, voorrang);
+    const morgen = dagplan(sets, states, new Date(now.getTime() + DAG_MS), voorrang).vragen;
     const open = plan.rondes.map((ronde) => ronde.set.setId);
 
     void (async () => {
@@ -100,7 +119,7 @@ export function useVandaag(now: Date = new Date()): Vandaag | null {
     })();
     // `now` is per render een nieuw object; de dag erin is wat telt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [states]);
+  }, [geladen]);
 
   return vandaag;
 }
