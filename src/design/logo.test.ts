@@ -46,9 +46,9 @@ describe('the logo is the one in docs/logo', () => {
     for (const page of pages) {
       const html = lees(page).toString('utf8');
       const links = /<link rel="(?:icon|apple-touch-icon|manifest)" href="([^"]+)"/g;
-      const hrefs = [...html.matchAll(links)];
+      const hrefs = [...html.matchAll(links)].map((match) => match[1] ?? '');
       expect(hrefs.length, page).toBeGreaterThan(0);
-      for (const [, href] of hrefs) expect(existsSync(join(ROOT, 'public', href)), href).toBe(true);
+      for (const href of hrefs) expect(existsSync(join(ROOT, 'public', href)), href).toBe(true);
     }
     const manifest = JSON.parse(lees('public', 'site.webmanifest').toString('utf8')) as {
       icons: { src: string }[];
