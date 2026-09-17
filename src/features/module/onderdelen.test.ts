@@ -124,10 +124,12 @@ describe('the ones to start with, for a group', () => {
     }
   });
 
-  it('starts groep 3 on sums to twenty, and puts the provinces last', () => {
+  it('starts groep 3 on sums to twenty, with what is for later behind it', () => {
+    // Voor groep 3 zijn topografie, vlaggen en Taal allemaal voor later. Ze
+    // blijven in de rij, in hun eigen volgorde, achter rekenen en de klok.
     const lijst = sets(3);
-    expect(lijst).toContain('plus-20');
-    expect(lijst.at(-1)).toBe('nl-provincies');
+    expect(lijst.slice(0, 2)).toEqual(['plus-20', 'klok-heel']);
+    expect(lijst.slice(2)).toEqual(['nl-provincies', 'vlag-europa-bekend', 'taal-sp-eiij']);
   });
 
   it('asks a verb the way verbs are asked', () => {
