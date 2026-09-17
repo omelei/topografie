@@ -52,6 +52,8 @@ test('never asks a third party for anything', async ({ page, baseURL }) => {
   await page.goto('/');
   await page.getByPlaceholder('Je naam').fill('Sofie');
   await page.getByRole('button', { name: 'Beginnen' }).click();
+  // De groep is een tweede stap, altijd over te slaan (ADR-151).
+  await page.getByRole('button', { name: 'Weet ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: 'Sofie' })).toBeVisible();
 
   await page.goto('/topografie');
