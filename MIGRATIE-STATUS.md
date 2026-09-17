@@ -49,8 +49,8 @@ rest is gelijkgetrokken:
   `docs/HUISSTIJL.md`.
 - "Jouw voortgang" (helden, kist, sterren, niveau) is verborgen; de stempels
   zijn badges op de pagina Jij.
-- Het logo is uitwerking 3a: Hanken Grotesk met de ring en het naaldje
-  (`docs/logo`).
+- Het logo is Denker, met het woordbeeld in Nunito omgezet naar vormen
+  (`docs/logo`, ADR-154).
 - **Eén grond, overal.** ADR-120 gaf elke vakpagina een zachte versie van zijn
   eigen tint; de styleguide neemt dat terug in §01 — een paginabrede vaktint
   maakt witte kaarten grauw. `--topo-grond` en `--vandaag-grond` bestaan nog,

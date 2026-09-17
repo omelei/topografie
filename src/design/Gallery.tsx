@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { Brandmark } from '@/components/Brandmark';
+import { Brandmark, UITDRUKKINGEN } from '@/components/Brandmark';
 import { Button } from '@/components/Button';
 import { Dot } from '@/components/Dot';
 import {
@@ -99,18 +99,22 @@ export function Gallery() {
 
       <h2 className={HEADING}>Merk</h2>
       <div className={ROW}>
-        <Wordmark height={40} clearSpace={false} />
-        <Wordmark height={28} clearSpace={false} path="topo" />
+        <Wordmark height={40} />
+        <Wordmark height={32} />
       </div>
-      {/* 24 and up the vat, below it the solid mark. */}
+      {/* 24 and up Denker, below it the favicon. */}
       <div className={`${ROW} mt-4`}>
-        {[96, 32, 24, 20, 16].map((size) => (
+        {[96, 32, 24, 16].map((size) => (
           <Brandmark key={size} size={size} />
         ))}
       </div>
+      <div className={`${ROW} mt-4`}>
+        {UITDRUKKINGEN.map((uitdrukking) => (
+          <Brandmark key={uitdrukking} size={72} uitdrukking={uitdrukking} />
+        ))}
+      </div>
       <div className="mt-4 flex items-center gap-4 bg-inkt p-4">
-        <Wordmark height={28} tone="paper" clearSpace={false} />
-        <Brandmark size={32} tone="paper" />
+        <Wordmark height={32} tone="paper" />
       </div>
 
       <h2 className={HEADING}>De punt</h2>
@@ -294,7 +298,7 @@ export function Gallery() {
 
       <h2 className={HEADING}>Kopbalk, rail en tabbalk</h2>
       <div className="tk-appbar">
-        <Wordmark height={26} clearSpace={false} />
+        <Wordmark className="tk-logo" />
       </div>
       <div className="mt-3 flex">
         <div className="tk-rail">

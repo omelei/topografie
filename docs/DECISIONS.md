@@ -8098,6 +8098,63 @@ verschuift.
 
 ---
 
+## ADR-154 — Het logo wordt Denker
+
+**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar, bij de
+levering `leernu-logo-denker` (versie 1.0). Vervangt het beeldmerk van ADR-113
+en het woordbeeld van ADR-147.
+
+### Context
+
+De ontwerper leverde een nieuw logo: Denker, een zachte koraalkleurige vorm met
+twee ogen die omhoog kijken naar een punt, naast het woordbeeld leer.nu in
+Nunito ExtraBold omgezet naar vormen. De levering heeft een eigen opdracht: de
+bestanden in de publieke map, de regels in `<head>` uit de LEESMIJ, het
+liggende logo in de kop op 32 px en vanaf 768 px op 40 px, en `kleuren.css` in
+de globale stijlen zonder het kleurenpalet van de app te wijzigen.
+
+### Decision
+
+**De levering staat ongewijzigd in `docs/logo`, en de app serveert kopieën.**
+`app-icoon/` en `denker-sprite.svg` staan in de hoofdmap van `public`,
+`logo/` in `public/logo`. `logo.test.ts` houdt elke kopie byte voor byte aan
+de levering, en controleert dat `<head>` en het manifest alleen naar bestaande
+bestanden wijzen.
+
+**Het logo is een plaatje, niet meer getekend in code.** ADR-113 en ADR-147
+tekenden het merk in React uit getallen en paden, onder meer omdat de
+geleverde SVG's een C2PA-manifest droegen. Deze SVG's bestaan alleen uit
+vormen en zijn klein, dus volgt de app de LEESMIJ: `Wordmark` is
+`leernu-logo-liggend-kleur.svg` (op een donker vlak de `wit`-versie) met
+`alt="leer.nu"`. `logo.ts`, `woordbeeld.ts` en `tools/logo/maak-logo.py`
+zijn weg. Het pad achter de naam (`leer.nu/topo`) verdwijnt; het werd alleen
+in de galerij gebruikt.
+
+**Het liggende logo staat op elke breedte in de kopbalk.** Tot nu toe stond
+onder 1200 px alleen het beeldmerk (ADR-119). De levering vraagt het logo op
+32 px en vanaf 768 px op 40 px (`.tk-logo`); de balk is 56 en 64 hoog, dus het
+past.
+
+**`Brandmark` is Denker los, uit de sprite.** Met een `uitdrukking`
+(onthouden, goed gedaan, iets nieuws, oefenen, pauze) voor terugkoppeling in
+de app, hooguit één per scherm. Onder 24 px de favicon, zoals de levering
+vraagt. Stil voor een schermlezer: de naam is het werk van het logo.
+
+**`src/design/kleuren.css` komt na `index.css`.** Het zet alleen
+`--leernu-*` en `--denker-*`; de tokens van ADR-109 blijven zoals ze zijn. Een
+koraal merk op het blauwe palet van de app is een bewuste tussenstand: het
+palet is een aparte beslissing.
+
+### Consequences
+
+- De favicon, het app-icoon, het manifest (`theme_color` room) en de
+  deelkaart (`og-image.png`) zijn die van de levering; `public/logo/png` en
+  `public/logo/svg` zijn weg. De kassapagina's gebruiken dezelfde favicon.
+- Vóór publiek gebruik: laat het BOIP beeldmerk en naam toetsen in klasse 9 en
+  41 (LEESMIJ).
+- Nog te controleren in een browser: favicon in het tabblad, geen
+  manifestfouten in DevTools › Application, logo scherp op 1x en 2x.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

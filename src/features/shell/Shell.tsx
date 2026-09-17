@@ -1,7 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
 import { brand } from '@/config/brand';
 import { Wordmark } from '@/components/Wordmark';
-import { Brandmark } from '@/components/Brandmark';
 import { FamilyIcon, FreezerIcon, PupilIcon, TodayIcon, type IconProps } from '@/components/Icon';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
@@ -110,20 +109,15 @@ export function Shell({
   return (
     <div className="flex min-h-screen flex-col bg-kaart">
       <header className="tk-appbar flex-none">
-        {/* The logo, and the way back to the front door. The wordmark where
-            there is room for it; the mark alone below 1200, where the bar is
-            the mark, the streak and the child. */}
+        {/* The logo, and the way back to the front door: Denker and the name,
+            at every width (ADR-154). */}
         <button
           type="button"
           className="tk-brand"
           aria-label={t('nav.home', { merk: brand.name })}
           onClick={() => onNavigate?.('vandaag')}
         >
-          <span className="hidden desk:inline-flex">
-            <Wordmark height={28} clearSpace={false} />
-          </span>
-          <Brandmark size={32} className="hidden md:inline-flex desk:hidden" />
-          <Brandmark size={28} className="inline-flex md:hidden" />
+          <Wordmark className="tk-logo" />
         </button>
 
         {showDestinations ? (
