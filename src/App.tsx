@@ -563,11 +563,12 @@ export default function App() {
 
   // The weekkaart's own page: this week, the goal and the school year's seals
   // (ADR-149). Reached from the week block and by its address, never from the
-  // tab bar.
+  // tab bar. Its column leaves the week block out, because that block is this
+  // page again.
   if (route.name === 'week') {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        <WeekScreen aside={eigenKolom} />
+        <WeekScreen aside={<SideColumn onWeek={goWeek} onBegin={beginRonde} opWeek />} />
       </Shell>
     );
   }

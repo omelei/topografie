@@ -3982,7 +3982,10 @@
   .tk-plaatje-vorm path {
     fill: currentColor;
   }
-  .tk-plaatje[data-laag='0'] .tk-plaatje-beeld {
+  /* Nog niet geoefend: de vorm of de vlag is bleek, het woord niet. De tegel is
+   * een knop, dus zijn woord moet te lezen zijn; op 45% dekking werd de derde
+   * inkt 1,88:1. Dat hij nog leeg is, zegt de gestippelde rand al. */
+  .tk-plaatje[data-laag='0'] .tk-plaatje-beeld :is(svg, img) {
     opacity: 0.45;
   }
   .tk-plaatje:is([data-laag='0'], [data-laag='1'], [data-laag='2'], [data-laag='3']) img {
