@@ -46,6 +46,7 @@ export function SideColumn({
   onWeek,
   onBegin,
   vanOuder = false,
+  opWeek = false,
 }: {
   /** The way to the weekkaart's own page, which is what the week block leads to. */
   readonly onWeek: () => void;
@@ -61,6 +62,13 @@ export function SideColumn({
    * gaan over hoe het kind het doet, en die staan op de pagina's van het kind.
    */
   readonly vanOuder?: boolean;
+  /**
+   * Op de weekkaart zelf (ADR-149). Het weekblok is die pagina in het klein, en
+   * ernaast stond hij dus twee keer: dezelfde vakjes, dezelfde zin en twee koppen
+   * "Jouw week". Het is dezelfde regel als bij "Goed beantwoord" (ADR-148): wat
+   * de pagina al zegt, zegt de kolom ernaast niet nog eens.
+   */
+  readonly opWeek?: boolean;
 }) {
   const desk = useDesk();
   if (!desk) return null;
@@ -70,7 +78,7 @@ export function SideColumn({
       <ToetsenBlok />
       {vanOuder ? null : (
         <>
-          <WeekBlok onWeek={onWeek} />
+          {opWeek ? null : <WeekBlok onWeek={onWeek} />}
           <FavorietenBlok onBegin={onBegin} />
         </>
       )}
