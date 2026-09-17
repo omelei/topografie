@@ -142,7 +142,9 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
 
   // Het werkt zoals voorheen: de voordeur, en de rij om mee te beginnen in de
   // volgorde van altijd.
-  await expect(page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true }),
+  ).toBeVisible();
   const begin = page.getByRole('group', { name: 'Hier begin je mee' });
   await expect(begin.getByRole('button').first()).toContainText('Provincies van Nederland');
 
@@ -153,6 +155,8 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
   await expect(vraag).toHaveCount(0);
 
   await page.reload();
-  await expect(page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true }),
+  ).toBeVisible();
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
