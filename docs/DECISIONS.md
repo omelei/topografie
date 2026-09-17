@@ -8051,14 +8051,14 @@ ADR-151 stonden te veel sets in dezelfde groepen, en dan besliste weer de
 volgorde van de content: tafel 11 voor groep 5, dezelfde drie diploma's voor
 groep 7 en groep 8. Nu:
 
-| Set | Was | Wordt |
-| --- | --- | --- |
-| tafel-1 | 4, 5 | 4 |
-| tafel-6 t/m 9 | 5 | 5, 6 |
-| tafel-11, tafel-12 | 5, 6 | 6 |
-| vlag-europa-alle | 6, 7, 8 | 6, 7, 8 (ongewijzigd) |
-| vlag-{afrika, azie, noord-amerika, zuid-amerika, oceanie, wereld}-alle | 6, 7, 8 | 7, 8 |
-| leerdoelen landen van de werelddelen en van de wereld | groep 7, 8 | groep 8 |
+| Set                                                                    | Was        | Wordt                 |
+| ---------------------------------------------------------------------- | ---------- | --------------------- |
+| tafel-1                                                                | 4, 5       | 4                     |
+| tafel-6 t/m 9                                                          | 5          | 5, 6                  |
+| tafel-11, tafel-12                                                     | 5, 6       | 6                     |
+| vlag-europa-alle                                                       | 6, 7, 8    | 6, 7, 8 (ongewijzigd) |
+| vlag-{afrika, azie, noord-amerika, zuid-amerika, oceanie, wereld}-alle | 6, 7, 8    | 7, 8                  |
+| leerdoelen landen van de werelddelen en van de wereld                  | groep 7, 8 | groep 8               |
 
 Het blijft onze eigen indeling, zonder kerndoel (ADR-011).
 

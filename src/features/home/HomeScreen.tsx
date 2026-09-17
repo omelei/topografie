@@ -154,12 +154,7 @@ export function HomeScreen({
   // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
   // meteen de diploma's die erbij passen (ADR-153).
   const doel = (
-    <DoelBlok
-      key={groep ?? 'geen'}
-      gespeeld={gespeeld}
-      onBegin={onBegin}
-      onDiplomas={onDiplomas}
-    />
+    <DoelBlok key={groep ?? 'geen'} gespeeld={gespeeld} onBegin={onBegin} onDiplomas={onDiplomas} />
   );
 
   const rijen = (

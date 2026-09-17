@@ -222,7 +222,12 @@ export function suggesties(
     (a, b) => dichtbij(a.suggestie, b.suggestie) || begin(a.groepen) - begin(b.groepen),
   );
 
-  return [...spreidOverVakken(passend.map(({ suggestie }) => suggestie), hoeveel)]
+  return [
+    ...spreidOverVakken(
+      passend.map(({ suggestie }) => suggestie),
+      hoeveel,
+    ),
+  ]
     .concat(herhaling.map(({ suggestie }) => suggestie))
     .concat(later.map(({ suggestie }) => suggestie))
     .slice(0, hoeveel);

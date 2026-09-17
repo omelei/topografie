@@ -107,7 +107,11 @@ export function DoelBlok({
     return (
       <Kader onDiplomas={onDiplomas}>
         <p className="text-lopend">{t('doel.gehaald', { naam: naamVan(gekozen.deel) })}</p>
-        <Kiezer vraag={t('doel.nu')} lijst={suggesties(alle, behaald, states, now, SUGGESTIES, groep)} onKies={kies} />
+        <Kiezer
+          vraag={t('doel.nu')}
+          lijst={suggesties(alle, behaald, states, now, SUGGESTIES, groep)}
+          onKies={kies}
+        />
         <button type="button" className="tk-doel-ander" onClick={laatLos}>
           {t('doel.later')}
         </button>
