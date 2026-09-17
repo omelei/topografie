@@ -21,7 +21,7 @@ export const UITDRUKKINGEN = [
 
 export type Uitdrukking = (typeof UITDRUKKINGEN)[number];
 
-/** The smallest Denker is drawn with his dot; below it, the favicon. */
+/** The smallest Denker is drawn with the dot; below it, the favicon. */
 const KLEINSTE_PX = 24;
 
 export function Brandmark({
