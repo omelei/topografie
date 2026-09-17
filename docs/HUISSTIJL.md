@@ -97,7 +97,8 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
   elke grond.
 - `src/design/accent.test.ts` houdt bij waar een accent mag.
 - `src/design/answerStates.test.ts` houdt de vormregels vast.
-- `src/design/logo.test.ts` houdt het logo aan de bestanden in `docs/logo`.
+- `src/design/logo.test.ts` houdt de kopieën in `public` aan de levering in
+  `docs/logo` (ADR-154).
 - `e2e/huisstijl.spec.ts` kijkt in de draaiende app: de grond, Archivo in de
   koppen, en een ronde op dezelfde grond met knoppen van 56.
 - ESLint weigert een hexwaarde in TypeScript.

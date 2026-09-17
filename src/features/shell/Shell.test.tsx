@@ -130,10 +130,8 @@ describe('the shell', () => {
         <p>vandaag</p>
       </Shell>,
     );
-    // Once, although the mark now appears twice: the merkteken at the head of
-    // the rail is the same drawing with no name, so a screen reader hears the
-    // brand a single time on the page.
-    expect(screen.getByText('leer.nu')).toBeInTheDocument();
+    // Once: the logo in the bar is the only picture with the name as its text.
+    expect(screen.getByAltText('leer.nu')).toBeInTheDocument();
   });
 
   it('makes the logo the way back to the front door', () => {

@@ -1,54 +1,45 @@
-import { MERK, MERK_KLEIN, MERK_NAALD_VANAF_PX } from '@/design/logo';
-
 /**
- * The beeldmerk: the logo without the name (ADR-113).
+ * Denker alone: the logo without the name (ADR-154).
  *
- * A ring with a needle pointing down into it (docs/logo/svg/beeldmerk-inkt.svg),
- * in the colour of "nu" in the wordmark (ADR-147). Below
- * 20px the needle goes and the ring is drawn heavier, as the designer's
- * favicon of 16 is: at that size a needle is a smudge, and a ring is still a
- * ring.
+ * Drawn from public/denker-sprite.svg, the designer's sprite, so the colours
+ * follow --denker-lijf, --denker-oog and --denker-punt from design/kleuren.css.
+ * Below 24px the favicon instead: bigger eyes and no dot, as the delivery
+ * asks.
  *
- * Drawn rather than fetched. The delivered SVGs carry a C2PA manifest larger
- * than the drawing inside it, and an `<img>` is one more request and one more
- * thing that renders as a broken box on a school network that blocks it. This
- * is a circle and a triangle.
+ * The expressions are feedback in the app only: never in place of the logo,
+ * and at most one on a screen.
  *
- * Silent, always. It is only used where the wordmark is a step away, and a
- * screen reader that reads the brand name twice on one page is worse than one
- * that reads it once. A mark that needs a name is the wordmark's job.
+ * Silent, always. The name is the logo's job.
  */
+export const UITDRUKKINGEN = [
+  'onthouden',
+  'goed-gedaan',
+  'iets-nieuws',
+  'oefenen',
+  'pauze',
+] as const;
+
+export type Uitdrukking = (typeof UITDRUKKINGEN)[number];
+
+/** The smallest Denker is drawn with the dot; below it, the favicon. */
+const KLEINSTE_PX = 24;
+
 export function Brandmark({
   size = 32,
-  tone = 'ink',
+  uitdrukking = 'onthouden',
   className,
 }: {
   readonly size?: number;
-  /** The mark's own colour on paper, or paper on ink. Never a module accent. */
-  readonly tone?: 'ink' | 'paper';
+  readonly uitdrukking?: Uitdrukking;
   readonly className?: string;
 }) {
-  const klein = size < MERK_NAALD_VANAF_PX;
-  const kleur = tone === 'ink' ? 'var(--merk)' : 'var(--kaart)';
+  if (size < KLEINSTE_PX) {
+    return <img src="/favicon.svg" alt="" width={size} height={size} className={className} />;
+  }
 
   return (
-    <span className={className} aria-hidden="true">
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${MERK.size} ${MERK.size}`}
-        fill="none"
-        focusable="false"
-      >
-        <circle
-          cx={MERK.cx}
-          cy={MERK.cy}
-          r={klein ? MERK_KLEIN.r : MERK.r}
-          stroke={kleur}
-          strokeWidth={klein ? MERK_KLEIN.stroke : MERK.stroke}
-        />
-        {klein ? null : <path d={MERK.naald} fill={kleur} />}
-      </svg>
-    </span>
+    <svg width={size} height={size} className={className} aria-hidden="true" focusable="false">
+      <use href={`/denker-sprite.svg#denker-${uitdrukking}`} />
+    </svg>
   );
 }

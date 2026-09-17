@@ -1,0 +1,10 @@
+:root {
+  --leernu-koraal: #ff6a4d;
+  --leernu-koraal-diep: #c8412a;
+  --leernu-cacao: #2a1e17;
+  --leernu-room: #fff7ef;
+  /* Denker-sprite */
+  --denker-lijf: var(--leernu-koraal);
+  --denker-oog: var(--leernu-cacao);
+  --denker-punt: var(--leernu-cacao);
+}

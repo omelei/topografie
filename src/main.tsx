@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { brand } from './config/brand';
 import './index.css';
+import './design/kleuren.css';
 
 document.title = brand.name;
 

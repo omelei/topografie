@@ -3068,6 +3068,17 @@
   .tk-brand:hover {
     background: var(--vlak-hover);
   }
+  /* The lying logo in the bar: 32 on a phone, 40 from 768 (ADR-154). */
+  .tk-logo {
+    display: block;
+    width: auto;
+    height: 32px;
+  }
+  @media (min-width: 768px) {
+    .tk-logo {
+      height: 40px;
+    }
+  }
 
   /* The destinations, standing in the app bar from 1200. At a reader's 200%
    * text the row can be wider than the bar, and it scrolls inside the bar

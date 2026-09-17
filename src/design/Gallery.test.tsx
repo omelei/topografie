@@ -83,9 +83,7 @@ describe('every component renders every state it claims to have', () => {
 
   it('names the mark once, for a screen reader, however often it is drawn', () => {
     render(<Gallery />);
-    // The wordmark is a drawing of a name, not information, so the mark has one
-    // accessible name and the drawing is hidden.
-    expect(screen.getAllByText('leer.nu').length).toBeGreaterThan(0);
-    expect(screen.getByText('leer.nu/topo')).toBeInTheDocument();
+    // The logo carries the name; Denker on its own is silent.
+    expect(screen.getAllByAltText('leer.nu').length).toBeGreaterThan(0);
   });
 });
