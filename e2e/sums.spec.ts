@@ -257,7 +257,10 @@ test('a finished table says what changed, not only what was scored', async ({ pa
   await expect(page.getByRole('region', { name: 'Jouw albumpagina' })).toBeVisible();
   await expect(page.getByText('10 vragen, 10 goed', { exact: true })).toBeVisible();
   await expect(page.getByText('10 plaatjes verder.', { exact: true })).toBeVisible();
-  await expect(page.getByText('Je bent begonnen aan 10 van de 10 plaatjes.')).toBeVisible();
+  // En de derde regel kijkt vooruit. "Je bent begonnen aan 10 van de 10" stond
+  // hier eerst en zei hetzelfde als de regel erboven; zodra de hele pagina aan
+  // staat, is wat terugkomt het enige wat die regel nog toevoegt.
+  await expect(page.getByText(/plaatje(s)? terug\.$/)).toBeVisible();
 });
 
 /**

@@ -137,9 +137,13 @@ export function HomeScreen({
   // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
   //
   // De sleutel is de groep: wie die op de voordeur kiest, ziet het plan meteen
-  // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151).
+  // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151). Met de naam
+  // van het blok ervoor, want Vandaag en het doel staan naast elkaar in
+  // dezelfde kolom en zouden anders dezelfde sleutel dragen.
   const { actief } = usePremium();
-  const vandaag = <VandaagBlok key={groep ?? 'geen'} gespeeld={gespeeld} onPlan={onPlan} />;
+  const vandaag = (
+    <VandaagBlok key={`vandaag-${groep ?? 'geen'}`} gespeeld={gespeeld} onPlan={onPlan} />
+  );
   const vandaagBoven = actief ? vandaag : null;
   const vandaagOnder = actief ? null : vandaag;
 
@@ -154,7 +158,12 @@ export function HomeScreen({
   // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
   // meteen de diploma's die erbij passen (ADR-153).
   const doel = (
-    <DoelBlok key={groep ?? 'geen'} gespeeld={gespeeld} onBegin={onBegin} onDiplomas={onDiplomas} />
+    <DoelBlok
+      key={`doel-${groep ?? 'geen'}`}
+      gespeeld={gespeeld}
+      onBegin={onBegin}
+      onDiplomas={onDiplomas}
+    />
   );
 
   const rijen = (
