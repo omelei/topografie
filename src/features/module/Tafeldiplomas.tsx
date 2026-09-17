@@ -60,6 +60,7 @@ export function Tafeldiplomas({
         vakken={(alleenBehaald ? TAFELS.filter((tafel) => behaald.has(tafel)) : TAFELS).map(
           (tafel) => ({
             key: String(tafel),
+            diplomaId: `diploma-tafel-${tafel}`,
             titel: t('sums.table', { tafel }),
             label: behaald.has(tafel)
               ? t('rekenen.diplomaHave', { tafel })

@@ -1,9 +1,9 @@
 import {
   diplomaFor,
+  isDiplomaVorm,
   kaartVanDiploma,
   klokDiplomaFor,
   klokVanDiploma,
-  newStamps,
   tableOfDiploma,
   topoDiplomaFor,
   vlagDiplomaFor,
@@ -11,29 +11,23 @@ import {
   type DiplomaWerelddeel,
   type KlokDiplomaSet,
   type RewardSnapshot,
-  type StampId,
   type TopoDiplomaSet,
 } from '@/game-core';
 import { getDb } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
-import { kistenOpenstaand } from './heldenStore';
 
 /**
- * XP, coins, travel stamps, stars and chests, on the device.
+ * Diploma's, on the device.
  *
- * The object store is still called `badges` and its key is still `badgeId`.
- * That is the one thing here that does not follow the rename: the storage holds
- * what children have already earned, and a schema rename to tidy up a word
- * would be a migration risking real rows for no gain a child can see.
+ * The object store is still called `kindBadges` and its key is still `badgeId`.
+ * Badges shared it until ADR-149 took them out; a child who earned one still
+ * has the row, and nothing reads it. A schema rename to tidy up a word would be
+ * a migration risking real rows for no gain a child can see.
  *
- * Nothing here can be bought, granted by waiting, or decided by chance, and
- * every one of these is reachable only by practising. ADR-096 made which hero
- * is in a chest a draw; ADR-097 takes it back out, so there is no random number
- * anywhere in this path — see `game-core/helden.ts`.
+ * Nothing here can be bought, granted by waiting, or decided by chance.
  */
 
 export interface RoundOutcome {
-  readonly stamps: readonly StampId[];
   /** The table this round earned a diploma for, or null. */
   readonly diploma: number | null;
   /** The werelddeel this round earned a vlaggendiploma for, or null (ADR-104). */
@@ -43,68 +37,71 @@ export interface RoundOutcome {
   /** The map this round earned a topodiploma for, or null (ADR-117). */
   readonly topoDiploma: TopoDiplomaSet | null;
   /**
-   * Chests this round paid for that nobody has chosen from yet. Almost always
-   * none; one when the round crossed a fifty.
-   *
-   * A count rather than a list of what came out, because since ADR-097 nothing
-   * comes out until the child picks one of three — and that happens on the
-   * screen this number is handed to, not before it is drawn.
+   * A diploma round on a page that was not ripe yet (ADR-149): proefzwemmen.
+   * `gehaald` when the round itself was good enough, `niet` when it was not,
+   * null for every other round and for a diploma sat on a ripe page.
    */
-  readonly kistenTeGoed: number;
+  readonly proef: 'gehaald' | 'niet' | null;
 }
 
-export async function loadStamps(): Promise<Set<string>> {
+/** A diploma this child holds, and the day it was first earned. */
+export interface DiplomaRij {
+  readonly id: string;
+  readonly behaaldOp: string;
+}
+
+/** Every diploma this child holds, oldest first. Old badge rows are left out. */
+export async function loadDiplomaRijen(): Promise<DiplomaRij[]> {
   await ensureProgressPerChild();
 
   const db = await getDb();
   const kindId = await activeChildId();
   const rows = await db.getAll('kindBadges', IDBKeyRange.bound([kindId], [kindId, []]));
-  return new Set(rows.map((row) => row.badgeId));
+  return rows
+    .filter((row) => row.badgeId.startsWith('diploma-'))
+    .map((row) => ({ id: row.badgeId, behaaldOp: row.behaaldOp }))
+    .sort((a, b) => a.behaaldOp.localeCompare(b.behaaldOp));
 }
 
-/**
- * The tables this child has a diploma for.
- *
- * Read from the same store the stamps are in, filtered by the shape of the id
- * rather than by a second store.
- */
+/** The ids of every diploma this child holds. */
+export async function loadBehaald(): Promise<Set<string>> {
+  return new Set((await loadDiplomaRijen()).map((rij) => rij.id));
+}
+
+/** The tables this child has a diploma for, by the shape of the id. */
 export async function loadDiplomas(): Promise<Set<number>> {
-  const held = await loadStamps();
   const tafels = new Set<number>();
-  for (const id of held) {
+  for (const id of await loadBehaald()) {
     const tafel = tableOfDiploma(id);
     if (tafel !== null) tafels.add(tafel);
   }
   return tafels;
 }
 
-/** The werelddelen this child has a vlaggendiploma for, from the same store. */
+/** The werelddelen this child has a vlaggendiploma for. */
 export async function loadVlagDiplomas(): Promise<Set<DiplomaWerelddeel>> {
-  const held = await loadStamps();
   const delen = new Set<DiplomaWerelddeel>();
-  for (const id of held) {
+  for (const id of await loadBehaald()) {
     const deel = werelddeelVanDiploma(id);
     if (deel !== null) delen.add(deel);
   }
   return delen;
 }
 
-/** The steps of the clock this child has a klokdiploma for, from the same store. */
+/** The steps of the clock this child has a klokdiploma for. */
 export async function loadKlokDiplomas(): Promise<Set<KlokDiplomaSet>> {
-  const held = await loadStamps();
   const stappen = new Set<KlokDiplomaSet>();
-  for (const id of held) {
+  for (const id of await loadBehaald()) {
     const stap = klokVanDiploma(id);
     if (stap !== null) stappen.add(stap);
   }
   return stappen;
 }
 
-/** The maps this child has a topodiploma for, from the same store. */
+/** The maps this child has a topodiploma for. */
 export async function loadTopoDiplomas(): Promise<Set<TopoDiplomaSet>> {
-  const held = await loadStamps();
   const kaarten = new Set<TopoDiplomaSet>();
-  for (const id of held) {
+  for (const id of await loadBehaald()) {
     const kaart = kaartVanDiploma(id);
     if (kaart !== null) kaarten.add(kaart);
   }
@@ -112,58 +109,62 @@ export async function loadTopoDiplomas(): Promise<Set<TopoDiplomaSet>> {
 }
 
 /**
- * Applies a finished round: adds what was earned, awards any stamp the round
- * newly satisfies, and reports all of it — including any chest the round paid
- * for — so the result screen can say so and lay the chest out.
+ * Applies a finished round: writes any diploma it earned and reports it.
+ *
+ * **Only on a ripe page** (ADR-149). A diploma used to be one round, which a
+ * child could cram for in ten minutes and hold for ever. Now the page has to
+ * be ripe when the round starts — nine in ten of it remembered, a table all of
+ * it (ADR-141) — and the round is the afzwemmen on top. A round sat before
+ * that is proefzwemmen: it says how it went and writes nothing.
+ *
+ * **The first day stays** (ADR-149). A child who sits a diploma again and
+ * passes again has passed again, and the result screen says so; but the date
+ * on the diploma is the day it was first earned, which is also the season its
+ * bijhoudstempels count from. Writing the row again overwrote that date.
  */
 export async function applyRoundRewards(params: {
-  readonly correct: number;
   readonly snapshot: RewardSnapshot;
+  /** Whether the page of this round was ripe when the round began. */
+  readonly rijp: boolean;
 }): Promise<RoundOutcome> {
   const db = await getDb();
   const kindId = await activeChildId();
-
-  const held = await loadStamps();
-  const earned = newStamps(params.snapshot, held);
   const behaaldOp = new Date().toISOString();
-  for (const badgeId of earned) {
+
+  const bewaar = async (badgeId: string | null) => {
+    if (badgeId === null) return;
+    if (await db.get('kindBadges', [kindId, badgeId])) return;
     await db.put('kindBadges', { kindId, badgeId, behaaldOp });
-  }
+  };
 
-  // The diploma, if this round was one and it was flawless. Reported even when
-  // the child already had it: a child who sits the test again and passes again
-  // has passed again.
   const diplomaId = diplomaFor(params.snapshot);
-  if (diplomaId !== null) {
-    await db.put('kindBadges', { kindId, badgeId: diplomaId, behaaldOp });
-  }
-  // And the vlaggendiploma, beside it and in the same store (ADR-104).
   const vlagDiplomaId = vlagDiplomaFor(params.snapshot);
-  if (vlagDiplomaId !== null) {
-    await db.put('kindBadges', { kindId, badgeId: vlagDiplomaId, behaaldOp });
-  }
-  // The klokdiploma and the topodiploma, the same way (ADR-117).
   const klokDiplomaId = klokDiplomaFor(params.snapshot);
-  if (klokDiplomaId !== null) {
-    await db.put('kindBadges', { kindId, badgeId: klokDiplomaId, behaaldOp });
-  }
   const topoDiplomaId = topoDiplomaFor(params.snapshot);
-  if (topoDiplomaId !== null) {
-    await db.put('kindBadges', { kindId, badgeId: topoDiplomaId, behaaldOp });
+
+  if (!params.rijp && isDiplomaVorm(params.snapshot.mode)) {
+    const gehaald = [diplomaId, vlagDiplomaId, klokDiplomaId, topoDiplomaId].some(
+      (id) => id !== null,
+    );
+    return {
+      diploma: null,
+      vlagDiploma: null,
+      klokDiploma: null,
+      topoDiploma: null,
+      proef: gehaald ? 'gehaald' : 'niet',
+    };
   }
 
-  // De sterren stonden hier ook, als `erbij` en `inKist`, en ze werden door
-  // geen enkel scherm gelezen — de derde keer dat dit product iets uitrekende
-  // dat nergens terechtkwam, na de munten en de XP van ADR-130. Ze zijn weg.
-  // Wat een ster is en wanneer hij valt, staat nu waar het gebeurt: in de ronde
-  // zelf (`features/round/ster.ts`) en op het uitslagscherm, waar de kist zijn
-  // eigen vooruitzicht rekent uit dezelfde tellerstand.
+  await bewaar(diplomaId);
+  await bewaar(vlagDiplomaId);
+  await bewaar(klokDiplomaId);
+  await bewaar(topoDiplomaId);
+
   return {
-    stamps: earned,
     diploma: diplomaId === null ? null : tableOfDiploma(diplomaId),
     vlagDiploma: vlagDiplomaId === null ? null : werelddeelVanDiploma(vlagDiplomaId),
     klokDiploma: klokDiplomaId === null ? null : klokVanDiploma(klokDiplomaId),
     topoDiploma: topoDiplomaId === null ? null : kaartVanDiploma(topoDiplomaId),
-    kistenTeGoed: await kistenOpenstaand(),
+    proef: null,
   };
 }

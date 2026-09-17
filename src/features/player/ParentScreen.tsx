@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import { t } from '@/i18n';
-import { type IconProps, OogIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
+import { type IconProps, OogIcon, SpeakIcon } from '@/components/Icon';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
@@ -12,6 +12,8 @@ import {
   type Preferences,
 } from './settings';
 import { Weekbericht } from './Weekbericht';
+import { useWeek } from '@/features/week/useWeek';
+import { WeekdoelKiezer } from '@/features/week/Weekkaart';
 import { EigenLijsten } from './EigenLijsten';
 import type { ReactNode } from 'react';
 
@@ -115,15 +117,6 @@ export function ParentScreen({
             </li>
             <li>
               <Switch
-                icon={PupilIcon}
-                on={prefs.maatje}
-                label={t('you.maatje')}
-                why={t('you.maatjeWhy')}
-                onToggle={() => toggle('maatje')}
-              />
-            </li>
-            <li>
-              <Switch
                 icon={OogIcon}
                 on={prefs.rustig}
                 label={t('you.rustig')}
@@ -133,6 +126,8 @@ export function ParentScreen({
             </li>
           </ul>
         </section>
+
+        <Weekdoel />
 
         <EigenLijsten />
 
@@ -256,5 +251,23 @@ function Switch({
         <span className="tk-label">{on ? t('you.on') : t('you.off')}</span>
       </span>
     </button>
+  );
+}
+
+/**
+ * Het weekdoel, ook hier (ADR-149): een kind kiest het samen met een ouder, en
+ * de ouder is vaak degene die deze pagina opent. Dezelfde keuze als op de
+ * weekkaart, dus wat hier gekozen wordt, staat daar ook.
+ */
+function Weekdoel() {
+  const { week, kiesDoel } = useWeek();
+  if (week === null) return null;
+
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('week.doelTitel')}>
+      <h2 className="tk-sectie">{t('week.doelTitel')}</h2>
+      <p className="text-lopend">{t('week.doelOuder')}</p>
+      <WeekdoelKiezer doel={week.kaart.doel} onKies={kiesDoel} />
+    </section>
   );
 }

@@ -1,7 +1,5 @@
 import { t } from '@/i18n';
 import { NextIcon } from '@/components/Icon';
-import { Heldplaat } from '@/components/Heldplaat';
-import { useEigenHeld } from '@/features/reis/useEigenHeld';
 import { useVandaag } from './useVandaag';
 
 /**
@@ -12,16 +10,10 @@ import { useVandaag } from './useVandaag';
  * staat het op het moment zelf, met de knop naar de volgende erbij, zodat de dag
  * doorloopt in plaats van telkens via de voordeur.
  *
- * **En als vandaag af is, staat hier de dag zelf.** Dat was hiervoor niets: de
- * voordeur zei het, hier stond een leeg gat. Bij hoogstens tien minuten per dag
- * is dat het verkeerde gat om leeg te laten — een sessie is niet te verlengen,
- * de ouder bepaalt de lengte, en dan is het laatste wat een kind ziet het enige
- * dat nog over morgen kan gaan.
- *
- * Het is ook geen felicitatie, en dat was het bezwaar van ADR-139. Er staat
- * niet "goed gedaan" — dat zegt dit product nergens — maar wat er is: de dag is
- * af, en morgen staat er dít klaar. Het eerste is een feit en het tweede is een
- * reden.
+ * **Als vandaag af is, zegt de uitslag dat zelf** (ADR-149): "Klaar voor
+ * vandaag", met Klaar als eerste knop. Dit blok stond daar eerst met de held
+ * van het kind; het album heeft geen held, en twee keer "af" onder elkaar is er
+ * één te veel.
  *
  * **Niets zonder plan.** Wie geen dagplan heeft — geen code, of niets aan de
  * beurt — ziet hier niets. Dit blok telt af, het verkoopt niet. Een dag die leeg
@@ -32,8 +24,7 @@ export function VandaagVerder({ onVerder }: { readonly onVerder: () => void }) {
   const vandaag = useVandaag();
   if (vandaag === null) return null;
 
-  if (vandaag.voortgang.klaar) return <DagAf morgen={vandaag.morgen} />;
-  if (vandaag.volgende === null) return null;
+  if (vandaag.voortgang.klaar || vandaag.volgende === null) return null;
 
   const { over } = vandaag.voortgang;
   if (over <= 0) return null;
@@ -50,34 +41,5 @@ export function VandaagVerder({ onVerder }: { readonly onVerder: () => void }) {
         <NextIcon size={20} />
       </span>
     </button>
-  );
-}
-
-/**
- * De dag is af.
- *
- * De held van dit kind, groot, en één zin over morgen. Honderdtwintig pixels:
- * groter dan het maatje in een ronde (achtentachtig) en kleiner dan de kist,
- * want dit gebeurt één keer per dag — ceremonie schaalt met zeldzaamheid.
- *
- * **Morgen alleen als er morgen iets is.** Nul is een waar getal en een slechte
- * zin: "Morgen staan er 0 klaar" is een reden om niet terug te komen. Dan staat
- * er alleen dat vandaag af is, wat ook waar is en wat genoeg is.
- */
-function DagAf({ morgen }: { readonly morgen: number }) {
-  const { held, reeks } = useEigenHeld();
-
-  return (
-    <section className="tk-dagaf" aria-label={t('vandaag.afTitel')}>
-      <Heldplaat sticker={held.id} reeks={reeks} size={120} className="tk-dagaf-held" />
-      <span className="tk-dagaf-tekst">
-        <span className="tk-dagaf-titel">{t('vandaag.af')}</span>
-        {morgen > 0 ? (
-          <span className="tk-lijstrij-regel">
-            {morgen === 1 ? t('vandaag.morgenEen') : t('vandaag.morgen', { aantal: morgen })}
-          </span>
-        ) : null}
-      </span>
-    </section>
   );
 }

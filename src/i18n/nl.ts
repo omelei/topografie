@@ -57,10 +57,6 @@ export const nl = {
   'vandaag.klaarUitleg': 'Je hebt alles herhaald wat vandaag aan de beurt was.',
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
-  'vandaag.afTitel': 'Vandaag is af',
-  'vandaag.af': 'Vandaag is af.',
-  'vandaag.morgen': 'Morgen staan er {aantal} klaar.',
-  'vandaag.morgenEen': 'Morgen staat er 1 klaar.',
   'vandaag.verder': 'Volgende ronde',
   // Waar dit kind zelf voor gaat (ADR-141). Een diploma, want dat is de enige
   // mijlpaal in dit product die een kind van acht zelf zou noemen — en de
@@ -101,43 +97,95 @@ export const nl = {
   'home.favouritesTitle': 'Jouw favorieten',
   'home.favouritesNone': 'Nog geen favorieten. Wat je vaak oefent, komt hier te staan.',
 
-  // De reeks in de rechterkolom en op zijn eigen pagina (ADR-110). Het getal is
-  // dat van de pil in de balk; het rijtje eronder zegt welke dagen erachter
-  // zitten. Nul is een zin en geen nul: "0 dagen op rij" leest als een cijfer
-  // voor een kind dat niets fout heeft gedaan.
-  'reeks.titel': 'Jouw reeks',
-  'reeks.nul': 'Oefen vandaag en begin je reeks.',
-  'reeks.een': 'dag op rij geoefend',
-  'reeks.veel': 'dagen op rij geoefend',
-  'reeks.week': 'De laatste zeven dagen',
-  'reeks.dagWel': '{dag}: geoefend',
-  'reeks.dagNiet': '{dag}: niet geoefend',
-  'reeks.vandaagWel': 'Vandaag: geoefend',
-  'reeks.vandaagNiet': 'Vandaag: nog niet geoefend',
-  'reeks.bekijk': 'Bekijk je reeks',
-  // De pagina. Wat een ronde vandaag doet, zonder te dreigen: wat een gemiste
-  // dag kost, staat in de regels eronder.
-  'reeks.nuTitel': 'Je reeks nu',
-  'reeks.vandaagKlaar': 'Vandaag heb je al geoefend. Deze dag telt mee.',
-  'reeks.vandaagBegin': 'Eén ronde is genoeg om te beginnen.',
-  'reeks.vandaagErbij': 'Doe vandaag een ronde, dan staat je reeks op {aantal} dagen.',
-  // Alleen getallen van dingen die gebeurd zijn. Geen gemiddelde, en geen
-  // vergelijking met een ander kind of met vorige week.
-  'reeks.cijfersTitel': 'In getallen',
-  'reeks.cijferLangste': 'Langste reeks in dagen',
-  'reeks.cijferDagen': 'Dagen geoefend',
-  'reeks.cijferMaand': 'Dagen deze maand',
-  'reeks.kalenderTitel': 'De laatste vijf weken',
-  'reeks.kalGeoefend': 'geoefend',
-  'reeks.kalVandaag': 'vandaag',
-  'reeks.kalVandaagGeoefend': 'vandaag, geoefend',
-  // De twee regels van streak.ts, in woorden. Een reeks die je niet kunt
-  // voorspellen voelt oneerlijk zodra hij iets doet wat je niet verwachtte.
-  'reeks.regelsTitel': 'Zo werkt je reeks',
-  'reeks.regel1':
-    'Elke dag waarop je een ronde afmaakt, telt mee. Vier rondes op één dag zijn één dag.',
-  'reeks.regel2':
-    'Sla je een dag over, ook in het weekend of de vakantie, dan begint je reeks de volgende keer weer bij één.',
+  // De weekkaart (ADR-149), waar de reeks stond. Dagen tellen, reeksen niet:
+  // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
+  'week.titel': 'Jouw week',
+  'week.kaartLabel': 'Je weekkaart',
+  'week.dagWel': '{dag}: stempel',
+  'week.dagNiet': '{dag}: nog geen stempel',
+  'week.vandaagWel': 'Vandaag: stempel',
+  'week.vandaagNiet': 'Vandaag: nog geen stempel',
+  'week.stand': '{aantal} van de {doel} dagen.',
+  'week.nogEen': 'Nog 1 dag tot je doel.',
+  'week.nog': 'Nog {aantal} dagen tot je doel.',
+  'week.gehaald': 'Doel gehaald. Deze week krijgt een zegel.',
+  'week.bekijk': 'Bekijk je week',
+  // Het doel kiest een kind samen met een ouder, twee tot vijf dagen.
+  'week.doelTitel': 'Je weekdoel',
+  'week.doelUitleg':
+    'Kies samen met je vader, moeder of wie voor je zorgt op hoeveel dagen per week je wilt oefenen.',
+  'week.doelOuder':
+    'Kies samen met je kind op hoeveel dagen per week het wil oefenen. Haalt het dat, dan krijgt de week een zegel.',
+  'week.doelKeuze': '{aantal} dagen',
+  'week.strookTitel': 'Je schooljaar',
+  'week.strookNul': 'Nog geen zegels dit schooljaar.',
+  'week.strookEen': '1 zegel dit schooljaar.',
+  'week.strookStand': '{aantal} zegels dit schooljaar.',
+  'week.zegelWel': 'Week van {datum}: zegel',
+  'week.zegelNiet': 'Week van {datum}',
+  'week.zegelNu': 'Deze week',
+  'week.regelsTitel': 'Zo werkt je weekkaart',
+  'week.regel1':
+    'Oefen je op een dag, dan krijgt die dag een stempel. Vier rondes op één dag zijn samen één stempel.',
+  'week.regel2': 'Haal je je doel, dan krijgt de week een zegel. Een zegel gaat nooit meer weg.',
+  'week.regel3': 'Mis je een dag? Er gaat niets weg. Maandag begint een nieuwe kaart.',
+  // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
+  'terug.titel': 'Welkom terug',
+  'terug.zin': 'Je album staat er nog.',
+  'terug.opfrissenEen': '1 plaatje wil even opgefrist worden.',
+  'terug.opfrissen': '{aantal} plaatjes willen even opgefrist worden.',
+  'terug.minuutEen': 'De eerste ronde duurt ongeveer 1 minuut.',
+  'terug.minuten': 'De eerste ronde duurt ongeveer {minuten} minuten.',
+  'terug.knop': 'Opfrissen',
+  // Het jaaroverzicht op Jij, om te laten zien of te printen.
+  'jaar.titel': 'Jouw schooljaar',
+  'jaar.kop': 'Het album van {naam}, schooljaar {van}–{tot}',
+  'jaar.zegels': '{aantal} van de {weken} weken met een zegel',
+  'jaar.kleur': '{aantal} plaatjes in kleur',
+  'jaar.lijst': '{aantal} plaatjes stevig onthouden',
+  'jaar.stempels': '{aantal} stempels dit schooljaar',
+  'jaar.diplomas': 'Diploma’s',
+  'jaar.diplomaBijgehouden': '{naam}, {aantal} keer bijgehouden',
+  'jaar.print': 'Print je schooljaar',
+  // Afzwemmen (ADR-149): vooraf wat er gevraagd wordt, of de pagina rijp is, en
+  // of er iemand meekijkt. Een diploma komt alleen op een rijpe pagina.
+  'afzwemmen.titel': 'Afzwemmen: {naam}',
+  'afzwemmen.eisenTitel': 'Wat je moet doen',
+  'afzwemmen.eisAlles': '{vragen} sommen, en ze moeten allemaal goed.',
+  'afzwemmen.eisEenFout': 'Eén fout, en deze poging is voorbij.',
+  'afzwemmen.eisVragen': '{vragen} vragen, en je hebt er {drempel} goed nodig.',
+  'afzwemmen.eisStil': 'Je hoort pas aan het eind hoe het ging.',
+  'afzwemmen.eisOpnieuw': 'Lukt het nog niet? Dan doe je het een andere dag opnieuw.',
+  'afzwemmen.rijpZin':
+    'Je onthoudt er {onthouden} van de {totaal}. Dat is genoeg voor het diploma.',
+  'afzwemmen.nietRijpTitel': 'Nog niet klaar om af te zwemmen',
+  'afzwemmen.nietRijpZin':
+    'Je onthoudt er nu {onthouden} van de {totaal}. Voor het diploma moet je er {nodig} onthouden.',
+  'afzwemmen.nietRijpUitleg':
+    'Een plaatje krijgt kleur als je het op verschillende dagen goed weet. Proefzwemmen kan al, maar het diploma krijg je dan nog niet.',
+  'afzwemmen.alGehaald': 'Dit diploma heb je al. De datum op je diploma blijft staan.',
+  'afzwemmen.meekijkenVraag': 'Wil je dat iemand meekijkt?',
+  'afzwemmen.meekijkenUitleg':
+    'Haal je vader, moeder of wie voor je zorgt erbij. Dan zien jullie samen hoe het gaat.',
+  'afzwemmen.samen': 'Is er iemand bij je? Begin dan samen.',
+  'afzwemmen.metIemand': 'Ja, ik haal iemand',
+  'afzwemmen.zonder': 'Nee, ik begin',
+  'afzwemmen.begin': 'Begin',
+  'afzwemmen.terug': 'Terug',
+  'afzwemmen.oefen': 'Eerst oefenen',
+  'afzwemmen.proef': 'Proefzwemmen',
+  'afzwemmen.proefGehaald': 'Proefzwemmen gelukt.',
+  'afzwemmen.proefUitleg':
+    'Dit was proefzwemmen. Het diploma komt als je pagina klaar is om af te zwemmen.',
+  'afzwemmen.print': 'Print je diploma',
+  'afzwemmen.printNaam': 'Gehaald door {naam}',
+  'afzwemmen.printZonderNaam': 'Gehaald',
+  'afzwemmen.printDatum': 'op {datum}',
+  // De seizoenen op een diploma, voor de bijhoudstempels.
+  'seizoen.herfst': 'herfst',
+  'seizoen.winter': 'winter',
+  'seizoen.lente': 'lente',
+  'seizoen.zomer': 'zomer',
   // De dagen van de week: kort boven een streepje, voluit voor wie voorleest.
   // Genummerd zoals Date.getDay telt: zondag is 0.
   'dag.kort.0': 'zo',
@@ -154,32 +202,6 @@ export const nl = {
   'dag.lang.4': 'donderdag',
   'dag.lang.5': 'vrijdag',
   'dag.lang.6': 'zaterdag',
-  // De twaalf helden (ADR-098). Een voornaam met dezelfde letter als het dier:
-  // makkelijk voor te lezen in groep 4, en een naam maakt er een karakter van
-  // in plaats van een soort.
-  'held.valerie': 'Valerie Vos',
-  'held.daan': 'Daan Das',
-  'held.olaf': 'Olaf Otter',
-  'held.harm': 'Harm Havik',
-  'held.willem': 'Willem Wolf',
-  'held.esmee': 'Esmee Egel',
-  'held.bart': 'Bart Bever',
-  'held.udo': 'Udo Uil',
-  'held.minou': 'Minou Marter',
-  'held.fem': 'Fem Flamingo',
-  'held.richard': 'Richard Ree',
-  'held.ben': 'Ben Buizerd',
-  // De held op de voordeur (ADR-142): groot, van dit kind, en te wisselen.
-  'held.titel': 'Jouw held',
-  'held.wissel': '{naam}, in {reeks}. Kies een andere held.',
-  'held.klaar': 'Klaar',
-  // Wat die held daar doet, naast de begroeting. Stond er niet, en een kind kon
-  // dus niet weten dat het zijn held is en dat spelen er meer oplevert.
-  'held.uitlegJouw': '{naam} is jouw held.',
-  'held.uitlegVerdien': 'Speel rondes en verdien nieuwe helden.',
-  'held.uitlegSterker': 'Je hebt ze allemaal! Speel verder en maak je helden sterker.',
-  'held.uitlegKlaar': 'Al je helden staan op ultra. Knap gedaan!',
-  'held.uitlegWissel': 'Druk op je held om een andere te kiezen.',
   // De prijzenkast op Jij (ADR-143): eerst wat je hébt, en de gaten pas als je
   // erom vraagt. Op een modulepagina blijft elk gat een uitnodiging, want daar
   // is hij aan te raken; hier was hij dat niet.
@@ -189,8 +211,6 @@ export const nl = {
   'uitklap.tabel': 'Laat de tabel zien',
   'uitklap.tabelDicht': 'Verberg de tabel',
   'uitklap.uitlegDicht': 'Verberg de uitleg',
-  'uitklap.getallen': 'Laat de getallen zien',
-  'uitklap.getallenDicht': 'Verberg de getallen',
   'home.modules': 'Wat je kunt oefenen',
   'home.continueTitle': 'Verder waar je was',
   'home.retention': 'weet je hier over drie weken nog van',
@@ -254,8 +274,6 @@ export const nl = {
   // je onthoudt: dit gaat over antwoorden die je gaf, dat over wat blijft.
   'retention.verloopTitel': 'Week na week',
   'retention.cijferGoed': 'Goed beantwoord',
-  'retention.cijferOpRij': 'Foutloos op rij',
-  'retention.cijferRecord': 'Je record foutloos',
   'retention.cijferRondes': 'Rondes in totaal',
   'retention.cijferVragen': 'Vragen in totaal',
   'retention.grafiek': 'Vragen per week',
@@ -626,9 +644,9 @@ export const nl = {
   'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
   'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
-  'premium.regel.helden': 'Sterren, kisten, helden en badges',
+  'premium.regel.album': 'Het album: zien wat je al onthoudt',
+  'premium.regel.weekkaart': 'De weekkaart, met een weekdoel en zegels',
   'premium.regel.tafeldiploma': 'De twaalf tafeldiploma’s',
-  'premium.regel.reeks': 'Het aantal dagen op rij',
   'premium.regel.diplomas': 'Diploma’s voor vlaggen, klok en topografie',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
   'premium.regel.onthouden': 'Per vak en per onderwerp zien wat je kind onthoudt, week na week',
@@ -638,7 +656,6 @@ export const nl = {
   'premium.regel.bliksem': 'De bliksemronde en overleven',
   'premium.regel.bericht': 'Het weekbericht: hoe de week ging',
   'premium.regel.lijsten': 'Oefenstof van school intypen of importeren',
-  'premium.regel.kalender': 'De reeks week na week, als kalender',
   'premium.regel.gezin': 'Meer kinderen, op maximaal drie apparaten',
 
   // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen, en
@@ -694,7 +711,6 @@ export const nl = {
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
   'premium.wat.toets':
     'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
-  'premium.wat.reeks': 'Houd bij op welke dagen er geoefend is, week na week.',
   'premium.wat.jij':
     'Premium plant het herhalen, laat zien wat je kind onthoudt en werkt voor al je kinderen.',
 
@@ -743,7 +759,6 @@ export const nl = {
   'practice.counterTime': 'tijd',
   'practice.counterLives': 'levens',
   'practice.counterCorrect': 'goed',
-  'practice.counterCombo': 'goed op rij',
   'practice.speak': 'Lees de vraag voor',
   'practice.correct': '{naam} — goed.',
   'practice.wrong': '{naam} ligt hier.',
@@ -1209,20 +1224,40 @@ export const nl = {
 
   'result.title': 'Ronde klaar',
   'result.practiceMore': 'Deze moet je nog oefenen',
-  'result.allCorrect': 'Alles goed. Morgen komen er nieuwe bij.',
   'result.home': 'Terug naar start',
   'result.stoppedEarly': 'Je stopte na {gedaan} van de {totaal} vragen.',
   'result.mapLabel': 'Kaart met wat je nog moet oefenen',
   'result.mapHelp': 'De blauwe plekken moet je nog oefenen.',
-  'result.streakStarted': 'Je bent begonnen. Kom morgen terug!',
-  'result.streakGrew': 'Dat is {aantal} dagen op rij.',
-  'result.streakGrewOne': 'Dat is je eerste dag.',
-  'result.newStamp': 'Nieuwe badge: {naam}',
   // De ronde in getallen, als tegels bovenaan "Ronde klaar" (ADR-112).
   'result.samenvatting': 'Hoe de ronde ging',
-  'result.tegelGoed': 'Goed',
-  'result.tegelGoedWaarde': '{goed} van {totaal}',
-  'result.tegelErbij': 'Erbij onthouden',
+  // Wat de ronde met het album deed (ADR-149): eerst de pagina, dan drie regels.
+  // Wat je deed, wat er veranderde, en wat terugkomen oplevert.
+  'result.gedaan': '{beantwoord} vragen, {goed} goed',
+  'result.gedaanEen': '1 vraag, {goed} goed',
+  'result.verderEen': '1 plaatje verder',
+  'result.verder': '{aantal} plaatjes verder',
+  'result.weerGoedEen': '1 lastige weer goed',
+  'result.weerGoed': '{aantal} lastige weer goed',
+  'result.stempelsEen': '1 stempel erbij',
+  'result.stempels': '{aantal} stempels erbij',
+  'result.pleisterEen': '1 plaatje kreeg een pleister',
+  'result.pleister': '{aantal} plaatjes kregen een pleister',
+  'result.albumNiets': 'Nog geen plaatje verder. Ze tellen als ze terugkomen.',
+  'result.alBegonnen': 'Je bent begonnen aan {begonnen} van de {totaal} plaatjes.',
+  'result.morgenKleurEen': 'Morgen kan er 1 plaatje kleur krijgen.',
+  'result.morgenKleur': 'Morgen kunnen er {aantal} plaatjes kleur krijgen.',
+  'result.morgenTerugEen': 'Morgen komt er 1 plaatje terug.',
+  'result.morgenTerug': 'Morgen komen er {aantal} plaatjes terug.',
+  'result.eerstVolgende': 'Over {dagen} dagen komt er weer een plaatje terug.',
+  'result.paginaInKleur':
+    'Deze pagina is helemaal in kleur. Over een week kunnen de eerste lijstjes komen.',
+  // Stoppen is ook af: als er vandaag niets meer terug moet komen, is "Klaar" de
+  // eerste knop en brengt een extra ronde nieuwe plaatjes.
+  'result.vandaagKlaar': 'Klaar voor vandaag',
+  'result.vandaagKlaarUitleg':
+    'Alles wat vandaag terug moest komen, is gedaan. Stoppen is nu ook goed.',
+  'result.klaar': 'Klaar',
+  'result.nieuwePlaatjes': 'Nieuwe plaatjes',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde
@@ -1230,15 +1265,10 @@ export const nl = {
   'result.markLabel': 'Cijfer',
   'result.markWhy': 'Zonder hulp onderweg, net als op school.',
 
-  // Wat een ronde opleverde: een diploma of een badge (ADR-112). Alleen te zien
-  // als er echt iets bij kwam. Geen "goed gedaan": het product zegt wat er
-  // gebeurd is, niet wat je ervan moet vinden.
+  // Wat een ronde opleverde: een diploma (ADR-112). Alleen te zien als er echt
+  // iets bij kwam. Geen "goed gedaan": het product zegt wat er gebeurd is, niet
+  // wat je ervan moet vinden.
   'result.beloningTitle': 'Wat je verdiende',
-  // Wat er veranderd is, is het product: het enige op "Ronde klaar" dat een
-  // kind niet zelf had kunnen uitrekenen.
-  'result.gainedOne': 'Eén vraag meer die je nu onthoudt.',
-  'result.gainedMany': '{aantal} vragen meer die je nu onthoudt.',
-  'result.gainedNone': 'Nog niets erbij. Deze komen morgen terug.',
   // De voorspelling, gratis en zonder code (ADR-122). Dezelfde woorden als op
   // de voordeur, want het is dezelfde som: wat er over is als je niets doet.
   // Geen knop ernaast naar premium — een kind een slot voorhouden op de pagina
@@ -1273,7 +1303,7 @@ export const nl = {
   // gebeurd is — rondes, en waar ze op uitkwamen.
   'you.week': 'Deze week',
   'you.weekNone': 'Deze week nog niet geoefend.',
-  // Vier tegels, zoals de reekspagina ze heeft (ADR-112). Een streepje waar
+  // Vier tegels (ADR-112). Een streepje waar
   // nog geen cijfer is: nul zou een cijfer zijn.
   'you.tegelRondes': 'Rondes',
   'you.tegelDagen': 'Dagen geoefend',
@@ -1328,38 +1358,52 @@ export const nl = {
   'you.lijstenVol': 'Deze lijst is vol.',
   'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
   // De ouderpagina, losgetrokken van "Jij" (ADR-136).
-  // De trap na een goed antwoord (ADR-137). Geen "doos": dat is het woord van
-  // het algoritme en niet van een kind.
-  // De kist die opengaat (ADR-138). "Reeks" betekent in deze app al de
-  // dagenreeks, dus de trap van een held heet hier bij naam en niet als soort.
-  'held.brons': 'brons',
-  'held.zilver': 'zilver',
-  'held.goud': 'goud',
-  'held.platina': 'platina',
-  'held.ultra': 'ultra',
-  'kist.titel': 'Je hebt een kist verdiend.',
-  'kist.titelMeer': 'Je hebt {aantal} kisten verdiend.',
-  'kist.kies': 'Kies er één.',
-  'kist.nieuw': 'Nieuw voor jou',
-  'kist.hoger': 'Gaat naar {reeks}',
-  'kist.dubbel': 'Nog {aantal} voor de volgende stap',
-  'kist.vol': 'Al helemaal klaar',
-  'kist.gewonnen': '{naam} is van jou.',
-  'kist.gewonnenHoger': '{naam} gaat naar {reeks}.',
-  'kist.gewonnenDubbel': '{naam} komt dichterbij: nog {aantal} te gaan.',
-  'kist.gewonnenVol': '{naam} was al helemaal klaar.',
-  'kist.vooruitTitel': 'De volgende kist',
-  'kist.vooruit': 'Nog {aantal} goede antwoorden tot je kist.',
-  'kist.vooruitEen': 'Nog 1 goed antwoord tot je kist.',
-  'kist.vooruitWie': 'Erin zitten {namen} — je kiest er één.',
-  'kist.vooruitWieEen': 'Erin zit {naam}.',
-  'kist.vooruitEn': 'en',
-  'kist.volgende': 'De volgende kist',
-  'kist.verzameling': 'Je hebt {aantal} van de {totaal} helden.',
-  'ster.onderweg': 'Nog {aantal} tot je kist.',
-  'ster.gehaald': 'Ster {ster} van {totaal}.',
-  'klim.beter': 'Je kent dit steeds beter.',
-  'klim.onthouden': 'Dit onthoud je nu.',
+  // Het album (ADR-149). Elk item is een plaatje dat lagen krijgt: een schets,
+  // kleur, een lijstje, stempels. De laag staat in vorm én in woorden, en het
+  // woord voor doos vier is overal hetzelfde: onthoud je (ADR-030).
+  'album.titel': 'Jouw album',
+  'album.uitleg':
+    'Alles wat je leert, is een plaatje. Het krijgt kleur als je het op verschillende dagen goed weet, en daarna een lijstje en stempels.',
+  'album.laag0': 'nog niet geoefend',
+  'album.laag1': 'begonnen',
+  'album.laag2': 'aan het oefenen',
+  'album.laag3': 'aan het oefenen',
+  'album.laag4': 'onthoud je',
+  'album.laag5': 'stevig onthouden',
+  'album.tekenOpfrissen': 'even opfrissen',
+  'album.tekenLastig': 'lastig',
+  'album.stempelsEen': '1 stempel',
+  'album.stempelsVeel': '{aantal} stempels',
+  'album.stand': '{kleur} van de {totaal} in kleur',
+  'album.standLijst': '{aantal} stevig',
+  'album.standLastig': '{aantal} lastig',
+  'album.standOpfrissen': '{aantal} even opfrissen',
+  'album.paginaTitel': 'Jouw albumpagina',
+  'album.paginaLabel': 'Albumpagina {naam}',
+  'album.kaartLabel': 'Kaart van {naam}: {kleur} van de {totaal} in kleur',
+  'album.allePlaatjes': 'Alle plaatjes van deze pagina',
+  // Na een antwoord: wat het met het plaatje deed. Eén zin, en geen als er
+  // niets veranderde.
+  'album.stapBegonnen': 'Je bent begonnen aan dit plaatje.',
+  'album.stapSchets': 'Het plaatje krijgt een laag erbij.',
+  'album.stapKleur': 'Dit onthoud je nu: het plaatje krijgt kleur.',
+  'album.stapLijst': 'Het plaatje krijgt een lijstje.',
+  'album.stapStempel': 'Een stempel: je weet het nog.',
+  'album.stapLastig': 'Het plaatje krijgt een pleister. De kleur blijft.',
+  'album.stapWeerGoed': 'De pleister mag eraf.',
+  // Goed, maar niet aan de beurt. Zo leert een kind spreiden zonder het woord.
+  'album.stapWachtEen': 'Die ken je al. Morgen telt hij weer.',
+  'album.stapWacht': 'Die ken je al. Over {dagen} dagen telt hij weer.',
+  // De achterkant van een plaatje.
+  'album.achterkantNooit': 'Nog niet geoefend.',
+  'album.achterkantNu': 'Komt nu terug.',
+  'album.achterkantMorgen': 'Komt morgen terug.',
+  'album.achterkantTerug': 'Komt over {dagen} dagen terug.',
+  'album.achterkantLastig':
+    'Dit ging een keer fout. Weet je het weer een paar keer als het terugkomt, dan mag de pleister eraf.',
+  'album.achterkantStempels': 'Stempels',
+  'album.achterkantGeenStempels': 'Stempels komen als je het na een lijstje nog weet.',
+  'album.sluit': 'Sluit',
   'ouder.title': 'Voor ouders',
   'ouder.uitleg':
     'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',
@@ -1369,8 +1413,6 @@ export const nl = {
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
   // Twee schakelaars erbij (ADR-145), allebei voor een kind dat snel afgeleid is.
-  'you.maatje': 'Held na een antwoord',
-  'you.maatjeWhy': 'Na elk antwoord verschijnt de held van je kind even in beeld.',
   'you.rustig': 'Minder beweging',
   'you.rustigWhy':
     'Knoppen, kaarten en beloningen bewegen niet meer. Rustiger voor wie snel afgeleid is.',
@@ -1391,14 +1433,12 @@ export const nl = {
   'you.premiumUit': 'Premium staat nog niet aan op dit apparaat.',
   'you.premiumBekijk': 'Naar premium',
 
-  // Badges: de tien reisstempels, anders getekend en op de pagina Jij (ADR-112).
-  'badges.titel': 'Jouw badges',
-  'badges.stand': '{aantal} van de {totaal} verdiend',
-  'badges.verdiend': 'verdiend',
-  'badges.nogNiet': 'nog niet',
   // Onder een diploma, in woorden: "nog niet" is nooit alleen een tint.
   'diploma.gehaald': 'Gehaald',
   'diploma.nogNiet': 'Nog niet',
+  // Rijp: de pagina is ver genoeg om af te zwemmen (ADR-141, ADR-149).
+  'diploma.rijp': 'Klaar om af te zwemmen',
+  'diploma.bijgehouden': '{aantal} keer bijgehouden dit schooljaar',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet
@@ -1406,26 +1446,6 @@ export const nl = {
   //
   // "Op weg", voor je eerste ronde, bestaat niet meer: een stempel is er voor
   // wat je onthoudt, nooit voor meedoen alleen (ADR-040).
-  'stamp.provincies-foutloos': 'Alle provincies foutloos',
-  'stamp.provincies-foutloos.criterion': 'Een hele ronde provincies zonder fout.',
-  'stamp.hoofdsteden-foutloos': 'Alle hoofdsteden foutloos',
-  'stamp.hoofdsteden-foutloos.criterion': 'Een hele ronde hoofdsteden zonder fout.',
-  'stamp.eilanden-foutloos': 'Alle Waddeneilanden foutloos',
-  'stamp.eilanden-foutloos.criterion': 'Een hele ronde Waddeneilanden zonder fout.',
-  'stamp.wateren-foutloos': 'Alle wateren foutloos',
-  'stamp.wateren-foutloos.criterion': 'Een hele ronde wateren zonder fout.',
-  'stamp.steden-foutloos': 'Alle steden foutloos',
-  'stamp.steden-foutloos.criterion': 'Een hele ronde steden zonder fout.',
-  'stamp.tafel-foutloos': 'Een hele tafel foutloos',
-  'stamp.tafel-foutloos.criterion': 'Een hele tafel in één ronde zonder fout.',
-  'stamp.week-op-rij': 'Zeven dagen op rij',
-  'stamp.week-op-rij.criterion': 'Zeven dagen achter elkaar geoefend.',
-  'stamp.set-onthouden': 'Alles onthouden',
-  'stamp.set-onthouden.criterion': 'Alles van één onderwerp onthouden: na een week nog goed.',
-  'stamp.bliksem-tien': 'Tien in een minuut',
-  'stamp.bliksem-tien.criterion': 'Tien goed binnen één minuut.',
-  'stamp.overleven-vijftien': 'Vijftien levens lang',
-  'stamp.overleven-vijftien.criterion': 'Vijftien goed met drie levens.',
   // Profile
   'profile.title': 'Wie ben jij?',
   'profile.help': 'Typ je naam. Je naam blijft op dit apparaat.',

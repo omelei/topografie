@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { RoundRule } from '@/game-core';
 import { finishSession, saveAnswer, startSession } from '@/store/progress';
+import { applyRoundRewards } from '@/store/rewardStore';
 import { useRoundCore, type RondeOpzet } from './useRoundCore';
 
 /*
@@ -11,18 +12,19 @@ import { useRoundCore, type RondeOpzet } from './useRoundCore';
  */
 vi.mock('@/store/progress', () => ({
   loadItemStates: vi.fn(async () => new Map()),
-  // De ster telt vanaf alle goede antwoorden ooit, dus de kern leest die bij de
-  // start één keer (`ster.ts`). Nul is de stand van een kind dat begint.
-  loadAccuracy: vi.fn(async () => ({ correct: 0, answered: 0 })),
   startSession: vi.fn(async () => 'sessie'),
   saveAnswer: vi.fn(async () => undefined),
   finishSession: vi.fn(async () => undefined),
 }));
-vi.mock('@/store/streakStore', () => ({
-  recordRoundFinished: vi.fn(async () => ({ state: { huidigeStreak: 1 } })),
-}));
 vi.mock('@/store/rewardStore', () => ({
   applyRoundRewards: vi.fn(async () => null),
+}));
+// The album after a round writes the weekkaart and the bijhoudstempels, and
+// whether a page is ripe reads every set there is (ADR-149). Neither is what
+// this file tests.
+vi.mock('@/features/album/naRonde', () => ({
+  naRonde: vi.fn(async () => undefined),
+  rijpVoorDiploma: vi.fn(() => false),
 }));
 // Om dezelfde reden: de voorkeuren komen uit dezelfde store, en of er een toon
 // klinkt is niet wat dit bestand test (ADR-134).
@@ -107,7 +109,28 @@ describe('useRoundCore', () => {
     expect(result.current.kern.phase).toBe('finished');
     expect(vi.mocked(saveAnswer)).toHaveBeenCalledTimes(2);
     expect(vi.mocked(finishSession)).toHaveBeenCalledWith('sessie', 2, 2);
-    await waitFor(() => expect(result.current.kern.streak).not.toBeNull());
+    expect(vi.mocked(applyRoundRewards)).toHaveBeenCalledWith({
+      snapshot: {
+        setId: 'test',
+        perfectRound: true,
+        completeRound: true,
+        setSize: 2,
+        mode: 'meerkeuze',
+        correct: 2,
+      },
+      rijp: false,
+    });
+  });
+
+  it("carries each answer's step on the album, and the boxes before and after", async () => {
+    const { result } = ronde({ ids: ['a', 'b'] });
+    await waitFor(() => expect(result.current.kern.phase).toBe('asking'));
+
+    act(() => result.current.settle(goed));
+    expect(result.current.kern.stap?.van).toBe(0);
+    expect(result.current.kern.stap?.naar).toBeGreaterThan(0);
+    expect(result.current.kern.statesVoor.has('a')).toBe(false);
+    expect(result.current.kern.states.get('a')?.goedCount).toBe(1);
   });
 
   it('keeps a wrong answer for the result screen, and does not ask it again', async () => {

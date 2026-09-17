@@ -13,12 +13,12 @@ import {
 } from '@/features/module/onderdelen';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
-import { ReeksBlok } from './ReeksBlok';
+import { WeekBlok } from '@/features/week/WeekBlok';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
- * The child's own column: the tests that are coming, how many days in a row
- * they have practised, and where they keep going back to.
+ * The child's own column: the tests that are coming, the weekkaart, and where
+ * they keep going back to.
  *
  * It is the same column on every page inside the shell, because it is what the
  * app knows about the child, and that does not change when they walk into
@@ -32,8 +32,8 @@ import { ToetsenBlok } from './ToetsenBlok';
  * one block that is also where a test is planned.
  *
  * "Jouw voortgang" — the hero, the chest and the level — is not here any more
- * (ADR-112). It is hidden while it is thought through again; what a child earns
- * still accrues underneath, so nothing is lost the day it comes back.
+ * (ADR-112), and since ADR-149 none of the three exists: the album took their
+ * place, and it is on Jij.
  *
  * "Samen met" belongs at the foot of it. It is three friends, and there are
  * none until ADR-050's backend, so it is absent rather than empty.
@@ -43,17 +43,17 @@ import { ToetsenBlok } from './ToetsenBlok';
  * élke pagina meegaat stond het ook naast diezelfde pagina.
  */
 export function SideColumn({
-  onReeks,
+  onWeek,
   onBegin,
   vanOuder = false,
 }: {
-  /** The way to the streak's own page, which is what the streak block leads to. */
-  readonly onReeks: () => void;
+  /** The way to the weekkaart's own page, which is what the week block leads to. */
+  readonly onWeek: () => void;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
   /**
    * Op de ouderpagina (ADR-143). Daar stonden alle vier de blokken, elk met een
    * kop die begint met "Jouw" — een ouder die "Voor ouders" opende werd in de
-   * kolom ernaast aangesproken alsof hij het kind was, met zijn reeks, zijn
+   * kolom ernaast aangesproken alsof hij het kind was, met zijn week, zijn
    * cijfer en zijn favorieten.
    *
    * De toetsen blijven staan, en dat is geen uitzondering maar de regel die
@@ -70,7 +70,7 @@ export function SideColumn({
       <ToetsenBlok />
       {vanOuder ? null : (
         <>
-          <ReeksBlok onReeks={onReeks} />
+          <WeekBlok onWeek={onWeek} />
           <FavorietenBlok onBegin={onBegin} />
         </>
       )}

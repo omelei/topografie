@@ -98,7 +98,6 @@ function ratio(foreground: string, background: string): number {
 
 /** The six modules, in the rail order of ADR-029. Spelling is a part of Taal (ADR-118). */
 const MODULES = ['topo', 'tafels', 'klok', 'woorden', 'tijdvakken', 'vlaggen'] as const;
-const REEKSEN = ['brons', 'zilver', 'goud', 'platina', 'ultra'] as const;
 
 describe('contrast', () => {
   it.each([
@@ -189,27 +188,6 @@ describe('the colours outside the styleguide’s table', () => {
     expect(ratio(name, 'kaart')).toBeGreaterThanOrEqual(3);
     expect(ratio(name, 'papier')).toBeGreaterThanOrEqual(3);
     expect(ratio(`${name}-text`, 'papier')).toBeGreaterThanOrEqual(4.5);
-  });
-
-  /**
-   * The collection's five materials (ADR-071). They carry a drawing rather
-   * than text, so the floor is three.
-   */
-  it.each(REEKSEN.map((reeks) => [reeks] as const))('draws %s legibly on a card', (reeks) => {
-    expect(ratio(`reeks-${reeks}`, 'kaart')).toBeGreaterThanOrEqual(3);
-  });
-
-  it.each(REEKSEN.map((reeks) => [reeks] as const))(
-    'names %s legibly in its deep tone, and draws on it in the light',
-    (reeks) => {
-      expect(ratio(`reeks-${reeks}-diep`, 'kaart'), 'deep tone').toBeGreaterThanOrEqual(4.5);
-      expect(ratio('reeks-licht', `reeks-${reeks}`), 'drawing').toBeGreaterThanOrEqual(3);
-    },
-  );
-
-  it('gives every rung of the ladder a colour of its own', () => {
-    const waarden = REEKSEN.map((reeks) => token(`reeks-${reeks}`));
-    expect(new Set(waarden).size).toBe(waarden.length);
   });
 });
 

@@ -62,6 +62,7 @@ export function KlokDiplomas({
 
           return {
             key: set,
+            diplomaId: `diploma-${set}`,
             titel: stap,
             label: gehaald ? t('klok.diplomaHave', { stap }) : t('klok.diplomaWant', { stap }),
             gehaald,

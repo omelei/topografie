@@ -142,6 +142,9 @@ test('wie de hele set onthoudt krijgt de toets aangeboden, en haalt zijn doel', 
   await expect(blok).toContainText('Je kent ze allemaal. Nu de toets.');
 
   await blok.getByRole('button', { name: 'Doe de toets' }).click();
+  // Afzwemmen (ADR-149): de pagina is rijp, dus de vraag is of er iemand meekijkt.
+  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await tienSommen(page);
 
   // Op het moment zelf, naast het diploma.

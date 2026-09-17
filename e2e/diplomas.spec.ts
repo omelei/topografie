@@ -52,6 +52,12 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   );
   await page.locator('.tk-choose-start button').click();
 
+  // Afzwemmen first (ADR-149): what it asks, and that a page nobody practised
+  // is not ripe. Proefzwemmen still says how it went.
+  await expect(page.getByRole('heading', { name: /^Afzwemmen: / })).toBeVisible();
+  await expect(page.getByText('Nog niet klaar om af te zwemmen')).toBeVisible();
+  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
+
   // Five islands, and "ik weet het niet" to each: no answer is shown between.
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const weetNiet = page.getByRole('button', { name: 'Ik weet het niet' });
@@ -65,6 +71,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(
     page.getByText('Nog geen diploma: 0 van de 5 goed. Met 5 goed is hij van jou.'),
   ).toBeVisible();
+  await expect(page.getByText(/^Dit was proefzwemmen\./)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
   // And on the child's own page, as pictures rather than buttons.

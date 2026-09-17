@@ -75,9 +75,9 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   [
     'premium.groep.belonen',
     [
-      { tekst: 'premium.regel.helden', basis: true },
+      { tekst: 'premium.regel.album', basis: true },
+      { tekst: 'premium.regel.weekkaart', basis: true },
       { tekst: 'premium.regel.tafeldiploma', basis: true },
-      { tekst: 'premium.regel.reeks', basis: true },
       { tekst: 'premium.regel.diplomas', basis: false },
     ],
   ],
@@ -102,7 +102,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
     [
       { tekst: 'premium.regel.bericht', basis: false },
       { tekst: 'premium.regel.lijsten', basis: false },
-      { tekst: 'premium.regel.kalender', basis: false },
       { tekst: 'premium.regel.gezin', basis: false },
     ],
   ],

@@ -16,10 +16,9 @@ import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { Klim } from '@/features/round/Klim';
-import { Ster } from '@/features/round/Ster';
-import { DREEF, opDreef } from '@/features/round/dreef';
-import { Maatje } from '@/features/round/Maatje';
+import { PinIcon } from '@/components/Icon';
+import { AlbumStap } from '@/features/album/AlbumStap';
+import { KaartVorm } from '@/features/album/KaartVorm';
 import { ResultScreen } from './ResultScreen';
 import {
   choosesTheAnswer,
@@ -88,6 +87,7 @@ export function PracticeScreen({
   toetsstand = false,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   alleen = null,
   onHerhaal,
@@ -108,6 +108,8 @@ export function PracticeScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   /** Another round of the same thing: K8's one primary button. */
   readonly onAgain: () => void;
   /** "Herhaal je fouten": the ids this round asks and nothing else (ADR-111). */
@@ -174,6 +176,7 @@ export function PracticeScreen({
         onAgain={onAgain}
         onHerhaal={onHerhaal}
         onVandaagVerder={onVandaagVerder}
+        onNieuwePlaatjes={onNieuwePlaatjes}
       />
     );
 
@@ -186,6 +189,14 @@ export function PracticeScreen({
   }
 
   const naam = state.question.item.naam;
+  // De vorm van dit gebied, voor het plaatje in de terugkoppeling. Een stad of
+  // een water is een punt en heeft geen vorm: dan staat er een speld.
+  const vorm =
+    state.answers.kind === 'shapes'
+      ? state.answers.set.vormen.find((kandidaat) => kandidaat.id === state.question?.answerId)
+      : state.answers.kind === 'background'
+        ? state.geo.vormen.find((kandidaat) => kandidaat.id === state.question?.answerId)
+        : undefined;
   const revealed = state.phase === 'revealed';
   const typing = typesTheAnswer(practiceMode);
   const choosing = choosesTheAnswer(practiceMode);
@@ -264,16 +275,6 @@ export function PracticeScreen({
           {state.secondsLeft !== null || state.livesLeft !== null ? (
             <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
           ) : null}
-          {/* In an endless round the dots are gone and there is room, so the
-              combo stands beside the clock or the lives at every size. In a
-              round with dots it waits for a screen wide enough. */}
-          {state.combo >= DREEF ? (
-            <Counter
-              label={t('practice.counterCombo')}
-              value={String(state.combo)}
-              onlyWide={state.rule.kind === 'fixed'}
-            />
-          ) : null}
         </div>
       </header>
 
@@ -310,15 +311,16 @@ export function PracticeScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
-                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
-                  {state.klim ? <Klim klim={state.klim} /> : null}
-                  {/* En de ster die dit antwoord opleverde (ster.ts). */}
-                  {state.ster ? <Ster stand={state.ster} /> : null}
+                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
+                  <AlbumStap
+                    stap={state.stap}
+                    state={state.states.get(state.question.item.id)}
+                    naam={naam}
+                  >
+                    {vorm ? <KaartVorm d={vorm.d} bbox={vorm.bbox} /> : <PinIcon size={24} />}
+                  </AlbumStap>
                 </div>
               </div>
-
-              {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
-              <Maatje goed={state.lastCorrect} opDreef={opDreef(state.combo)} />
 
               {/* A lightning round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}

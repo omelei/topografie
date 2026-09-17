@@ -61,6 +61,7 @@ export function TopoDiplomas({
 
           return {
             key: set,
+            diplomaId: `diploma-topo-${set}`,
             titel: kaart,
             label: gehaald ? t('topo.diplomaHave', { kaart }) : t('topo.diplomaWant', { kaart }),
             gehaald,

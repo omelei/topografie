@@ -41,6 +41,52 @@ async function startTable(page: Page, tafel: number, hoe: RegExp) {
   await start(page);
 }
 
+/** The table of one, ten sums long, every one of them right. */
+async function tienGoed(page: Page) {
+  for (let vraag = 1; vraag <= 10; vraag++) {
+    const som = await page.locator('.tk-sum').innerText();
+    await page.getByPlaceholder('Antwoord').fill((som.split('×')[1] ?? '').trim());
+    await page.getByRole('button', { name: 'Kijk na' }).click();
+    const volgende = page.getByRole('button', { name: 'Volgende vraag' });
+    const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
+    await expect(volgende.or(klaar).first()).toBeVisible();
+    if (await klaar.isVisible()) break;
+    await volgende.click();
+  }
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+}
+
+/**
+ * Everything this child practised in box four: remembered (ADR-114), which is
+ * what makes a page ripe. Four good rounds over a week would do the same.
+ */
+async function alsOnthouden(page: Page) {
+  await page.evaluate(async () => {
+    await new Promise<void>((klaar, mis) => {
+      const open = indexedDB.open('leernu');
+      open.onerror = () => mis(open.error);
+      open.onsuccess = () => {
+        const db = open.result;
+        const tx = db.transaction('progress', 'readwrite');
+        const store = tx.objectStore('progress');
+        store.getAll().onsuccess = (event) => {
+          const rijen = (event.target as IDBRequest).result as Record<string, unknown>[];
+          const nu = new Date().toISOString();
+          const straks = new Date(Date.now() + 14 * 86_400_000).toISOString();
+          for (const rij of rijen) {
+            store.put({ ...rij, box: 4, goedCount: 4, laatsteReview: nu, volgendeReview: straks });
+          }
+        };
+        tx.oncomplete = () => {
+          db.close();
+          klaar();
+        };
+        tx.onerror = () => mis(tx.error);
+      };
+    });
+  });
+}
+
 /** The one way out of K2, whatever was chosen. See e2e/app.spec.ts. */
 async function start(page: Page) {
   await page.locator('.tk-choose-start button').click();
@@ -205,9 +251,11 @@ test('a finished table says what changed, not only what was scored', async ({ pa
   }
 
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
-  // The round in numbers, as a tile (ADR-112).
-  await expect(page.getByText('10 van 10', { exact: true })).toBeVisible();
-  await expect(page.getByText('Alles goed. Morgen komen er nieuwe bij.')).toBeVisible();
+  // The album first, then what the round did to it, in words (ADR-149).
+  await expect(page.getByRole('region', { name: 'Jouw albumpagina' })).toBeVisible();
+  await expect(page.getByText('10 vragen, 10 goed', { exact: true })).toBeVisible();
+  await expect(page.getByText('10 plaatjes verder.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Je bent begonnen aan 10 van de 10 plaatjes.')).toBeVisible();
 });
 
 /**
@@ -372,6 +420,8 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
   ).toHaveCount(0);
 
   await startTable(page, 1, /Tafeldiploma/);
+  // Nothing practised yet, so it is proefzwemmen (ADR-149).
+  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
 
   // A diploma asks the table straight through, so the first sum is 1 x 1.
   await expect(page.locator('.tk-sum')).toContainText('1 × 1');
@@ -388,7 +438,17 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
 
 test('a diploma passed goes on the wall, where the gaps are the point', async ({ page }) => {
   await signIn(page, 'Sanne');
+
+  // A diploma is sat on a ripe page (ADR-149): the table practised, and then
+  // every sum of it remembered, which takes days and is set here directly.
+  await startTable(page, 1, /Zelf typen/);
+  await tienGoed(page);
+  await alsOnthouden(page);
+
   await startTable(page, 1, /Tafeldiploma/);
+  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Ja, ik haal iemand' }).click();
+  await page.getByRole('button', { name: 'Begin' }).click();
 
   // The table of one, so every answer is the multiplier itself and the attempt
   // can be passed honestly rather than by guessing.

@@ -11,8 +11,7 @@ import { isSchoolDay, type HolidayPeriod, type ItemState } from '@/game-core';
  * Drie dingen beantwoorden dat, in die volgorde:
  *
  * - **Is er geoefend?** Tegen schooldagen afgezet en niet tegen zeven dagen: een
- *   weekend is geen dag waarop een kind iets naliet (dezelfde regel als de
- *   reeks, `streak.ts`).
+ *   weekend is geen dag waarop een kind iets naliet (`kalender.ts`).
  * - **Blijft het hangen?** Het enige getal dat dit product kent en de andere
  *   niet.
  * - **Wat wankelt?** Eén set, met een naam, die het langst over tijd is. Een
@@ -113,7 +112,7 @@ export function weekbericht<T>(params: {
   return {
     schooldagen,
     // Ook een zaterdag telt als er geoefend is: werk doen wordt altijd beloond,
-    // het nalaten ervan alleen op een schooldag geteld (`streak.ts`).
+    // het nalaten ervan alleen op een schooldag geteld (`kalender.ts`).
     geoefend: geoefendeDagen.size,
     rondes: binnen.length,
     onthouden,

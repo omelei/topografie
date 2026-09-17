@@ -27,15 +27,19 @@ const GOED: readonly Toon[] = [
 ];
 
 /**
- * Het tiende goede antwoord: dezelfde twee tonen, en er komt er één achteraan.
- *
- * **Geen eigen geluid.** Een ster valt op hetzelfde moment als het antwoord dat
- * hem vol maakte, en twee geluiden binnen vierhonderd milliseconden zijn geen
- * twee gebeurtenissen maar één rommelige. Dus klinkt het antwoord zoals het
- * altijd klinkt en gaat het één trede verder — een octaaf boven de eerste toon,
- * dus het hoort als hetzelfde en toch als meer.
+ * De twee momenten die een eigen geluid krijgen (ADR-149): een pagina van het
+ * album die helemaal in kleur komt, en een diploma. Drie tonen, en niet bij elke
+ * laag: bij tachtig lagen per week zou geluid ruis worden. Een pagina klinkt als
+ * een goed antwoord dat één trede verder gaat; een diploma begint hoog en landt.
  */
-const STER: readonly Toon[] = [...GOED, { hz: 1320, na: 0.19, duur: 0.16 }];
+const MOMENT = {
+  pagina: [...GOED, { hz: 1320, na: 0.19, duur: 0.16 }],
+  diploma: [
+    { hz: 880, na: 0, duur: 0.1 },
+    { hz: 1320, na: 0.09, duur: 0.1 },
+    { hz: 990, na: 0.2, duur: 0.2 },
+  ],
+} as const satisfies Record<string, readonly Toon[]>;
 
 /** Eén lage, zachte toon. Geen tweede, want herhaling maakt er een oordeel van. */
 const FOUT: readonly Toon[] = [{ hz: 200, na: 0, duur: 0.16 }];
@@ -62,15 +66,20 @@ function audio(): AudioContext | null {
 /**
  * Speelt de toon die bij deze uitkomst hoort.
  *
- * `ster` maakt van de twee tonen er drie: het tiende goede antwoord klinkt als
- * de negen ervoor en gaat dan één trede verder. Alleen op een goed antwoord —
- * een ster kan niet uit een misser komen.
- *
  * Doet niets als er geen AudioContext is, als het geluid uitstaat, of als er
  * iets misgaat. Nooit een uitzondering naar buiten: dit hangt aan het nakijken
  * van een antwoord.
  */
-export function speelUitkomst(goed: boolean, aan: boolean, ster = false): void {
+export function speelUitkomst(goed: boolean, aan: boolean): void {
+  speel(goed ? GOED : FOUT, goed ? VOLUME.goed : VOLUME.fout, aan);
+}
+
+/** Speelt het geluid van een pagina in kleur of een diploma. */
+export function speelMoment(moment: keyof typeof MOMENT, aan: boolean): void {
+  speel(MOMENT[moment], VOLUME.goed, aan);
+}
+
+function speel(tonen: readonly Toon[], volume: number, aan: boolean): void {
   if (!aan) return;
 
   const ctx = audio();
@@ -82,9 +91,8 @@ export function speelUitkomst(goed: boolean, aan: boolean, ster = false): void {
     void ctx.resume?.();
 
     const nu = ctx.currentTime;
-    const volume = goed ? VOLUME.goed : VOLUME.fout;
 
-    for (const toon of goed ? (ster ? STER : GOED) : FOUT) {
+    for (const toon of tonen) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';

@@ -35,15 +35,17 @@ import {
 import { ProfileScreen } from '@/features/player/ProfileScreen';
 import { ParentScreen } from '@/features/player/ParentScreen';
 import { loadPreferences, zetRustig } from '@/features/player/settings';
-import { ReeksScreen } from '@/features/reeks/ReeksScreen';
+import { WeekScreen } from '@/features/week/WeekScreen';
+import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
+import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
 import type { Route } from '@/features/shell/routes';
-import { getProfile, setSticker } from '@/store/profile';
-import { dagplan, type ModeId } from '@/game-core';
-import { geplaatst, startbareOnderdelen } from '@/features/module/onderdelen';
+import { getProfile } from '@/store/profile';
+import { dagplan, isDiplomaVorm, type ModeId } from '@/game-core';
+import { geplaatst, onderdelen, startbareOnderdelen } from '@/features/module/onderdelen';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
 import { leesDagstand } from '@/store/dagstandStore';
 import { standVoor, volgendeSet } from '@/features/home/dagstand';
@@ -112,7 +114,8 @@ type Screen =
       toetsstand: boolean;
       alleen: readonly string[] | null;
     }
-  | { name: 'taal-ontdek'; setId: string };
+  | { name: 'taal-ontdek'; setId: string }
+  | { name: 'afzwemmen'; deel: Onderdeel; mode: ModeId };
 type Boot = { status: 'loading' } | { status: 'ready'; profile: ProfileRecord | null };
 
 /**
@@ -190,12 +193,21 @@ export default function App() {
     aantal: number | null = null,
     toetsstand = false,
     alleen: readonly string[] | null = null,
+    naIntro = false,
   ) => {
     // The one place every round starts, so the one place premium is asked
     // (ADR-116): a favourite, a line in the history or an unfinished round in
     // a premium way goes to the code page rather than into the round.
     if (!premium && (toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId))) {
       naarPremium();
+      return;
+    }
+
+    // A diploma is sat, not started (ADR-149): first what it asks, whether the
+    // page is ripe, and whether someone watches. Not for "Herhaal je fouten"
+    // or "Maak af", which are no diploma, and not twice.
+    if (isDiplomaVorm(mode) && alleen === null && !naIntro && doelwitVan(deel) !== null) {
+      setScreen({ name: 'afzwemmen', deel, mode });
       return;
     }
 
@@ -260,19 +272,6 @@ export default function App() {
    * "Maak af" (ADR-115): the round a child left, picked up where it stopped —
    * the same set, the same way, and only the questions it had not asked yet.
    */
-  /**
-   * Wie dit kind wil zijn (ADR-142). De held staat groot op de voordeur en
-   * klein in de balk, dus het profiel wordt hier bijgewerkt en niet in het blok
-   * zelf: dan wisselen allebei op hetzelfde moment. `renameChild` laadt de
-   * pagina opnieuw omdat een naam overal staat; een held staat op twee plekken,
-   * en twee plekken zijn te doen zonder een kind uit zijn app te gooien.
-   */
-  const kiesHeldVoor = (sticker: string) => {
-    void setSticker(sticker).then((profile) => {
-      if (profile) setBoot({ status: 'ready', profile });
-    });
-  };
-
   const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => {
     if (rest.length === 0) return;
     beginRonde(deel, mode, rest.length, false, [...rest]);
@@ -299,6 +298,35 @@ export default function App() {
 
       const gespeeld = geplaatst(await loadPlayedRounds(), startbareOnderdelen());
       maakAf(ronde.set, vormVoor(ronde.set, gespeeld), ronde.ids);
+    })();
+  };
+
+  /**
+   * "Nieuwe plaatjes", vanaf het uitslagscherm als vandaag klaar is (ADR-149).
+   *
+   * Wie na "klaar voor vandaag" toch door wil, krijgt plaatjes die nog leeg zijn
+   * en geen herhaling van wat nog niet aan de beurt is: die telt pas weer als
+   * het terugkomt. Eerst de set van de ronde zelf als daar nog lege plaatjes in
+   * zitten, anders de eerste set van dezelfde module die ze nog heeft. Heeft de
+   * hele module er geen meer, dan terug naar de voordeur.
+   */
+  const nieuwePlaatjes = (setId: string) => {
+    void (async () => {
+      const states = await loadItemStates();
+      const alles = startbareOnderdelen();
+      const huidig = alles.find((deel) => deel.setId === setId) ?? null;
+      const heeftLeeg = (deel: Onderdeel) =>
+        deel.items.some((item) => (states.get(item.id)?.laatsteReview ?? null) === null);
+      const volgende =
+        huidig !== null && !huidig.mix && heeftLeeg(huidig)
+          ? huidig
+          : onderdelen().find((deel) => deel.moduleId === huidig?.moduleId && heeftLeeg(deel));
+      if (!volgende) {
+        goHome();
+        return;
+      }
+      const gespeeld = geplaatst(await loadPlayedRounds(), alles);
+      beginRonde(volgende, vormVoor(volgende, gespeeld));
     })();
   };
 
@@ -402,6 +430,18 @@ export default function App() {
     return <ExploreScreen setId={screen.setId} onHome={goHome} />;
   }
 
+  if (screen.name === 'afzwemmen') {
+    return (
+      <Afzwemmen
+        deel={screen.deel}
+        mode={screen.mode}
+        onBegin={() => beginRonde(screen.deel, screen.mode, null, false, null, true)}
+        // Back to the page it was opened from, which the address still names.
+        onTerug={() => setScreen({ name: 'home' })}
+      />
+    );
+  }
+
   if (screen.name === 'sums') {
     return (
       <SumScreen
@@ -415,6 +455,7 @@ export default function App() {
         alleen={screen.alleen}
         onHerhaal={herhaal}
         onVandaagVerder={vandaagVerder}
+        onNieuwePlaatjes={() => nieuwePlaatjes(screen.setId)}
       />
     );
   }
@@ -432,6 +473,7 @@ export default function App() {
         alleen={screen.alleen}
         onHerhaal={herhaal}
         onVandaagVerder={vandaagVerder}
+        onNieuwePlaatjes={() => nieuwePlaatjes(screen.setId)}
       />
     );
   }
@@ -453,6 +495,7 @@ export default function App() {
         alleen={screen.alleen}
         onHerhaal={herhaal}
         onVandaagVerder={vandaagVerder}
+        onNieuwePlaatjes={() => nieuwePlaatjes(screen.setId)}
       />
     );
   }
@@ -474,6 +517,7 @@ export default function App() {
         alleen={screen.alleen}
         onHerhaal={herhaal}
         onVandaagVerder={vandaagVerder}
+        onNieuwePlaatjes={() => nieuwePlaatjes(screen.setId)}
       />
     );
   }
@@ -491,17 +535,18 @@ export default function App() {
         alleen={screen.alleen}
         onHerhaal={herhaal}
         onVandaagVerder={vandaagVerder}
+        onNieuwePlaatjes={() => nieuwePlaatjes(screen.setId)}
       />
     );
   }
 
-  /** The way to the streak's page, from the block that shows the streak. */
-  const goReeks = () => go({ name: 'reeks' });
+  /** The way to the weekkaart's page, from the block that shows the week. */
+  const goWeek = () => go({ name: 'week' });
   const goOuder = () => go({ name: 'ouder' });
   const goJij = () => go({ name: 'you' });
 
   /** The child's own column, which every screen inside the shell carries. */
-  const eigenKolom = <SideColumn onReeks={goReeks} onBegin={beginRonde} />;
+  const eigenKolom = <SideColumn onWeek={goWeek} onBegin={beginRonde} />;
 
   // What premium is and where the code goes (ADR-116). Reached from every
   // lock and from Jij, by its address, and never from the tab bar.
@@ -516,13 +561,13 @@ export default function App() {
     );
   }
 
-  // The streak's own page: the number, the days behind it and how it works
-  // (ADR-110). Reached from the streak block and by its address, like the
-  // collection below, and never from the tab bar.
-  if (route.name === 'reeks') {
+  // The weekkaart's own page: this week, the goal and the school year's seals
+  // (ADR-149). Reached from the week block and by its address, never from the
+  // tab bar.
+  if (route.name === 'week') {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        <ReeksScreen aside={eigenKolom} />
+        <WeekScreen aside={eigenKolom} />
       </Shell>
     );
   }
@@ -590,12 +635,7 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen
-          profile={boot.profile}
-          aside={eigenKolom}
-          onHeld={kiesHeldVoor}
-          onOuder={goOuder}
-        />
+        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
       </Shell>
     );
   }
@@ -605,7 +645,7 @@ export default function App() {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
         <ParentScreen
-          aside={<SideColumn onReeks={goReeks} onBegin={beginRonde} vanOuder />}
+          aside={<SideColumn onWeek={goWeek} onBegin={beginRonde} vanOuder />}
           onJij={goJij}
           onOnthouden={() => go({ name: 'retention' })}
         />
@@ -625,9 +665,7 @@ export default function App() {
     <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule} grond="vandaag">
       <HomeScreen
         naam={boot.profile.naam}
-        sticker={boot.profile.avatarConfig.sticker}
-        onHeld={kiesHeldVoor}
-        onReeks={goReeks}
+        onWeek={goWeek}
         onBegin={beginRonde}
         onVerder={maakAf}
         onPlan={maakAf}

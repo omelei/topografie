@@ -94,14 +94,15 @@ test('de getallen over het oefenen staan alleen op Onthouden', async ({ page }) 
   await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Deze week' })).toHaveCount(0);
 
-  // De reekspagina telt dagen: geen rondes, geen vragen, en geen rustdagen meer.
+  // Het oude adres van de reeks opent de weekkaart (ADR-149). Die telt dagen met
+  // stempels: geen rondes, geen vragen, geen rustdagen en niets "op rij".
   await page.goto('/reeks');
-  await page.getByRole('button', { name: 'Laat de getallen zien' }).click();
-  await expect(page.getByText('Langste reeks in dagen')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Jouw week' })).toBeVisible();
   for (const weg of ['Rondes gespeeld', 'Vragen beantwoord', 'Rustdagen bewaard']) {
     await expect(page.getByText(weg)).toHaveCount(0);
   }
   await expect(page.getByText(/rustdag/i)).toHaveCount(0);
+  await expect(page.getByText(/op rij/i)).toHaveCount(0);
 
   // En de kolom naast de pagina zegt niet nog eens hoeveel er goed was.
   await page.goto('/');

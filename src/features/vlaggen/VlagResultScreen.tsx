@@ -19,6 +19,7 @@ export function VlagResultScreen({
   setId,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   onHerhaal,
 }: {
@@ -27,6 +28,8 @@ export function VlagResultScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -58,8 +61,8 @@ export function VlagResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      gained={state.gained}
-      streak={state.streak}
+      voor={state.statesVoor}
+      na={state.states}
       reward={reward}
       diploma={diploma}
       melding={melding}
@@ -69,6 +72,7 @@ export function VlagResultScreen({
       onHerhaal={onHerhaal}
       onHome={onHome}
       onVandaagVerder={onVandaagVerder}
+      onNieuwePlaatjes={onNieuwePlaatjes}
     >
       <ul className="tk-lijst">
         {state.missed.map((vlag) => (

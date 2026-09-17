@@ -20,6 +20,7 @@ export function SumResultScreen({
   setId,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   onHerhaal,
 }: {
@@ -28,6 +29,8 @@ export function SumResultScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -49,8 +52,8 @@ export function SumResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      gained={state.gained}
-      streak={state.streak}
+      voor={state.statesVoor}
+      na={state.states}
       reward={state.reward}
       diploma={diploma ? t('sums.diplomaEarned', { tafel: diploma }) : null}
       melding={state.mode === 'tafeldiploma' && !diploma ? t('sums.diplomaMissed') : null}
@@ -60,6 +63,7 @@ export function SumResultScreen({
       onHerhaal={onHerhaal}
       onHome={onHome}
       onVandaagVerder={onVandaagVerder}
+      onNieuwePlaatjes={onNieuwePlaatjes}
     >
       <ul className="tk-lijst">
         {state.missed.map((sum) => (

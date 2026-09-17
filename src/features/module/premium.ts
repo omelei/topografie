@@ -12,13 +12,15 @@ import { t } from '@/i18n';
  *
  * What premium opens is the part that works over weeks rather than inside one
  * round: the Onthouden page, the child's own collected mistakes, the
- * oefentoets, the other three diplomas, the badges, the streak, "Goed
- * beantwoord", more than one child, and the two ways that only mean something
+ * oefentoets, the other three diplomas, "Goed beantwoord", more than one child, and the two ways that only mean something
  * once you already know it — the bliksemronde (a check on speed) and overleven
  * (a check on holding it). Those are gated here and in `App`, where a round
  * starts, so a way into a round from anywhere — a favourite, the history, an
  * unfinished round — meets the same rule; the rest is gated where it is drawn,
  * each with the same slot (`PremiumSlot`).
+ *
+ * The album, the weekkaart and "klaar voor vandaag" are free (ADR-149): what a
+ * child remembers, and when today is done, are the child's to see.
  */
 const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Zoeken: on the map the name is given and the child finds the place.

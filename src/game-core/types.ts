@@ -71,6 +71,18 @@ export interface ItemState {
   readonly volgendeReview: string | null;
   readonly goedCount: number;
   readonly foutCount: number;
+  /**
+   * De hoogste doos die dit item ooit bereikte (ADR-149). Het album tekent die,
+   * niet de huidige: wat een kind verdiende, gaat er bij een fout niet af.
+   * Ontbreekt op rijen van vóór het album; lees hem met `hoogsteDoosVan`.
+   */
+  readonly hoogsteDoos?: LeitnerBox;
+  /**
+   * Elk goed antwoord in doos vijf dat aan de beurt was, als ISO-moment: de
+   * stempels op de achterkant van het plaatje (ADR-149). Hooguit één per
+   * interval, dus niet te verdienen door vaker te oefenen.
+   */
+  readonly stempels?: readonly string[];
 }
 
 /**

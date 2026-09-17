@@ -4,8 +4,8 @@ import { getSetting, setSetting } from './settings';
 /**
  * Waar dit kind voor gaat, per kind (ADR-141).
  *
- * In `settings` onder een sleutel met het kind erin, zoals de dagstand en de
- * heldenstand: een doel hangt aan de diploma's van één kind, niet aan het
+ * In `settings` onder een sleutel met het kind erin, zoals de dagstand en het
+ * weekdoel: een doel hangt aan de diploma's van één kind, niet aan het
  * apparaat.
  *
  * Bewaard wordt alleen de id van het diploma. Niet de naam, niet de voortgang,

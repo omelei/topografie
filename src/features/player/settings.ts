@@ -39,25 +39,18 @@ export interface Preferences {
    * is heeft er dan niets aan. Dit zet dezelfde regel aan, voor deze app alleen.
    */
   readonly rustig: boolean;
-  /**
-   * De held na een antwoord (ADR-142, ADR-145). Aan bij het begin. Uit laat de
-   * ruimte staan, zodat de knop eronder niet verspringt.
-   */
-  readonly maatje: boolean;
 }
 
 export const DEFAULT_PREFERENCES: Preferences = {
   readAloud: true,
   geluid: true,
   rustig: false,
-  maatje: true,
 };
 
 const KEY = {
   readAloud: 'voorlezen',
   geluid: 'geluid',
   rustig: 'rustig',
-  maatje: 'maatje',
 } as const;
 
 /** Stored as strings because that is what the settings store holds. */
@@ -67,17 +60,15 @@ function read(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function loadPreferences(): Promise<Preferences> {
-  const [readAloud, geluid, rustig, maatje] = await Promise.all([
+  const [readAloud, geluid, rustig] = await Promise.all([
     getSetting(KEY.readAloud),
     getSetting(KEY.geluid),
     getSetting(KEY.rustig),
-    getSetting(KEY.maatje),
   ]);
   return {
     readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud),
     geluid: read(geluid, DEFAULT_PREFERENCES.geluid),
     rustig: read(rustig, DEFAULT_PREFERENCES.rustig),
-    maatje: read(maatje, DEFAULT_PREFERENCES.maatje),
   };
 }
 

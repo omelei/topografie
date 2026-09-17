@@ -7,10 +7,8 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { Klim } from '@/features/round/Klim';
-import { Ster } from '@/features/round/Ster';
-import { DREEF, opDreef } from '@/features/round/dreef';
-import { Maatje } from '@/features/round/Maatje';
+import { AlbumStap } from '@/features/album/AlbumStap';
+import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
 import { useSumRound, stopsOnAMistake, typesTheSum, type SumMode } from './useSumRound';
 import { SumResultScreen } from './SumResultScreen';
 
@@ -35,6 +33,7 @@ export function SumScreen({
   toetsstand = false,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   alleen = null,
   onHerhaal,
@@ -55,6 +54,8 @@ export function SumScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   readonly onAgain: () => void;
   /** "Herhaal je fouten": the ids this round asks and nothing else (ADR-111). */
   readonly alleen?: readonly string[] | null;
@@ -92,6 +93,7 @@ export function SumScreen({
         setId={setId}
         onHome={onHome}
         onVandaagVerder={onVandaagVerder}
+        onNieuwePlaatjes={onNieuwePlaatjes}
         onAgain={onAgain}
         onHerhaal={onHerhaal}
       />
@@ -154,13 +156,6 @@ export function SumScreen({
           {state.secondsLeft !== null || state.livesLeft !== null ? (
             <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
           ) : null}
-          {state.combo >= DREEF ? (
-            <Counter
-              label={t('practice.counterCombo')}
-              value={String(state.combo)}
-              onlyWide={state.rule.kind === 'fixed'}
-            />
-          ) : null}
         </div>
       </header>
 
@@ -189,15 +184,17 @@ export function SumScreen({
                         ? t('sums.dontKnowSub')
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
-                  {/* Wat dit antwoord met dit onderdeel deed (ADR-137). */}
-                  {state.klim ? <Klim klim={state.klim} /> : null}
-                  {/* En de ster die dit antwoord opleverde (ster.ts). */}
-                  {state.ster ? <Ster stand={state.ster} /> : null}
+                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
+                  <AlbumStap
+                    stap={state.stap}
+                    state={state.states.get(sum.id)}
+                    naam={plaatjeNaam(sum)}
+                  >
+                    <PlaatjeInhoud item={sum} />
+                  </AlbumStap>
                 </div>
               </div>
 
-              {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
-              <Maatje goed={state.lastCorrect} opDreef={opDreef(state.combo)} />
               {/* A timed round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (

@@ -20,6 +20,7 @@ export function KlokResultScreen({
   mode,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   onHerhaal,
 }: {
@@ -29,6 +30,8 @@ export function KlokResultScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   readonly onAgain: () => void;
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
@@ -63,8 +66,8 @@ export function KlokResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      gained={state.gained}
-      streak={state.streak}
+      voor={state.statesVoor}
+      na={state.states}
       reward={state.reward}
       oefenTitel={t('klok.practiceMore')}
       missed={state.missed}
@@ -72,6 +75,7 @@ export function KlokResultScreen({
       onHerhaal={onHerhaal}
       onHome={onHome}
       onVandaagVerder={onVandaagVerder}
+      onNieuwePlaatjes={onNieuwePlaatjes}
     >
       <ul className="tk-lijst">
         {state.missed.map((tijd) => (

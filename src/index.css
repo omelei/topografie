@@ -143,37 +143,6 @@
     --accent-text: var(--actie-tekst);
     --accent-tint: var(--actie-tint);
 
-    /* ---- The collection's five materials, ADR-071 -------------------------
-     * Outside the styleguide's table and deliberately so: a material is not a
-     * role. It says which reeks of the collection a hero belongs to — bronze,
-     * silver, gold, platinum, ultra — and it is the only place in this product
-     * where a colour is a reward. They carry a drawing rather than text, so
-     * the floor is 3:1 on a card (contrast.test.ts). While the collection is
-     * hidden (ADR-112) they are the plate of the hero in the app bar.
-     */
-    --reeks-brons: #a4602a;
-    --reeks-zilver: #6b7883;
-    --reeks-goud: #8f8213;
-    --reeks-platina: #3f7f8f;
-    --reeks-ultra: #8a4fc9;
-
-    /* The plate a hero stands on (ADR-094): each material as its colour, a
-     * deep tone along the plate's foot and a soft tone round its rim. The deep
-     * tone is also the word for the reeks on a card, so it is measured as text.
-     * The silhouette on the plate is the card's light, and stays that light
-     * wherever the plate stands. */
-    --reeks-brons-diep: #7d4720;
-    --reeks-brons-zacht: #f3e3d5;
-    --reeks-zilver-diep: #4f5a63;
-    --reeks-zilver-zacht: #e4e8eb;
-    --reeks-goud-diep: #6d6410;
-    --reeks-goud-zacht: #efeacd;
-    --reeks-platina-diep: #2f6270;
-    --reeks-platina-zacht: #dceaed;
-    --reeks-ultra-diep: #6b3aa0;
-    --reeks-ultra-zacht: #eadff7;
-    --reeks-licht: #ffffff;
-
     /* ---- The six subjects, §03 ---------------------------------------------
      * One hue each, and equal lightness and chroma across all six, so none of
      * them shouts louder than the rest. Each comes in three strengths: a light
@@ -1001,47 +970,6 @@
     font-weight: 600;
   }
 
-  /* ---- Badges (ADR-112) ------------------------------------------------------
-   * The ten travel stamps, on Jij: the emblem, the name, what earns it, and a
-   * pill that says in a word whether it is earned — filled ink when it is. */
-  .tk-badges {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(18rem, 100%), 1fr));
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-badgekaart {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 16px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-    color: var(--inkt);
-  }
-  .tk-stand-pil {
-    align-self: flex-start;
-    margin-top: 8px;
-    padding: 2px 8px;
-    border: var(--stroke-hair) solid var(--rand-sterk);
-    border-radius: var(--radius-pil);
-    font-family: var(--font-tekst);
-    font-size: var(--type-vlaklabel);
-    line-height: var(--type-vlaklabel-lh);
-    letter-spacing: var(--type-vlaklabel-ls);
-    font-weight: var(--type-vlaklabel-weight);
-    text-transform: uppercase;
-    color: var(--tekst-secundair);
-  }
-  .tk-badgekaart[data-gehaald] .tk-stand-pil {
-    border-color: var(--inkt);
-    background: var(--inkt);
-    color: var(--kaart);
-  }
-
   /* ---- Ronde klaar (ADR-112) -------------------------------------------------
    * The page after a round, in the shape of every other page: a column on the
    * ground, the numbers as tiles on a card, the way on, and the lists. */
@@ -1110,8 +1038,8 @@
     transform: translateX(20px);
   }
 
-  /* The rules, written out in full — the streak's, on its own page. A rule a
-   * child cannot read about is a rule they have no reason to trust. */
+  /* The rules, written out in full — the weekkaart's, on its own page. A rule
+   * a child cannot read about is a rule they have no reason to trust. */
   .tk-regels {
     display: flex;
     flex-direction: column;
@@ -1696,93 +1624,6 @@
     gap: 8px;
   }
 
-  /* ---- De held op de voordeur (ADR-142) ----------------------------------
-   * Zestig tekeningen lagen er, en een kind zag er één van op dertig pixels in
-   * de balk. Hier staat hij op zesennegentig, als eerste ding op het scherm.
-   * De knop is geen knopvorm: het is de tekening met twee regels ernaast, en
-   * de rand komt pas op als je erbij bent — een omlijnde knop om een dier heen
-   * maakt er een bediening van in plaats van een hoofdpersoon.
-   */
-  .tk-heldhoek {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .tk-heldhoek-knop {
-    display: flex;
-    width: 112px;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    padding: 8px 4px;
-    border: var(--stroke-hair) solid transparent;
-    border-radius: var(--kaart-radius);
-    text-align: center;
-    cursor: pointer;
-  }
-  .tk-heldhoek-knop:hover {
-    border-color: var(--rand-licht);
-    background: var(--kaart);
-  }
-  .tk-heldhoek-tekst {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .tk-heldhoek-naam {
-    font-size: var(--type-klein);
-    line-height: var(--type-klein-lh);
-    color: var(--tekst-secundair);
-  }
-  .tk-heldhoek-regel {
-    color: var(--tekst-secundair);
-  }
-  /* De rij met wie je nog meer hebt. Wikkelt, want twaalf helden naast elkaar
-   * is op een telefoon een zijwaartse reis. */
-  .tk-heldhoek-rij {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-heldhoek-kaart {
-    display: flex;
-    width: 88px;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 8px 4px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-    cursor: pointer;
-    text-align: center;
-  }
-  .tk-heldhoek-kaart:hover {
-    border-color: var(--rand-bediening);
-  }
-  /* Wie je nu draagt, met een dikkere rand: de tekening is al kleur, en nog
-   * een vlak eronder zou de held zelf wegdrukken. */
-  .tk-heldhoek-kaart[aria-pressed='true'] {
-    border-color: var(--inkt);
-    border-width: var(--stroke-active);
-  }
-  .tk-heldhoek-kaartnaam {
-    font-size: var(--type-klein);
-    line-height: var(--type-klein-lh);
-  }
-  /* Wat die held daar doet (ADR-145): een regel onder de begroeting, met de
-   * sterren van de volgende kist eronder. Geen kaart: het hoort bij de kop en
-   * niet bij de blokken eronder. */
-  .tk-helduitleg {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
   /* ---- De premiumpagina als etalage (ADR-145) ----------------------------
    * Een kop in de actiekleur, vier kaarten met een teken, twee plannen naast
    * elkaar en een vergelijkingstabel. Binnen de huisstijl: indigo is wat je
@@ -2087,12 +1928,9 @@
     color: var(--tekst-secundair);
   }
 
-  /* ---- The streak ---------------------------------------------------------
-   * Days in a row, and the seven days behind the number (ADR-110). The number
-   * in the heading face beside the streak's own mark, the words after it at a
-   * button's size. The row is seven bars under seven names: ink where a round
-   * was finished, the empty-bar tone where none was. No accent, because
-   * turning up is not about one module.
+  /* ---- One big number ----------------------------------------------------
+   * A count in the heading face with its words after it at a button's size
+   * (ADR-110). It was the streak's; since ADR-149 it is what Onthouden counts.
    */
   .tk-reeks-getal {
     display: flex;
@@ -2112,37 +1950,8 @@
     line-height: var(--type-knop-lh);
     font-weight: 600;
   }
-  .tk-weekrij {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 6px;
-  }
-  .tk-weekdag {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .tk-weekdag-naam {
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    font-weight: 600;
-    color: var(--tekst-secundair);
-  }
-  .tk-weekdag[data-geoefend='ja'] .tk-weekdag-naam {
-    color: var(--inkt);
-  }
-  .tk-weekdag-balk {
-    display: block;
-    width: 100%;
-    height: 6px;
-    background: var(--balk-leeg);
-  }
-  .tk-weekdag[data-geoefend='ja'] .tk-weekdag-balk {
-    background: var(--inkt);
-  }
-  /* The numbers on the streak's page: one tile each, what it counts above and
-   * the count under it, on the ground tone as the chest's box is. */
+  /* Numbers as tiles: one tile each, what it counts above and the count under
+   * it, on the ground tone. */
   .tk-cijfers {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(10rem, 100%), 1fr));
@@ -2171,53 +1980,6 @@
     letter-spacing: var(--type-sectiekop-ls);
     font-weight: var(--type-sectiekop-weight);
     font-variant-numeric: tabular-nums;
-  }
-  /* The calendar: five weeks of seven squares, the date in each. A practised
-   * day is ink with its date in the card's tone, today has a ring outside its
-   * square, and a day still to come is only a hairline. The weekday names are
-   * the label above an area, so the dates are what the eye reads. */
-  .tk-kalender {
-    width: 100%;
-    max-width: 28rem;
-    border-collapse: separate;
-    border-spacing: 6px;
-    table-layout: fixed;
-  }
-  .tk-kalender th {
-    padding-bottom: 2px;
-    font-family: var(--font-tekst);
-    font-size: var(--type-vlaklabel);
-    line-height: var(--type-vlaklabel-lh);
-    letter-spacing: var(--type-vlaklabel-ls);
-    font-weight: var(--type-vlaklabel-weight);
-    text-transform: uppercase;
-    color: var(--tekst-secundair);
-  }
-  .tk-kalender td {
-    padding: 0;
-  }
-  .tk-kal-dag {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 1;
-    border-radius: var(--radius-chip-groot);
-    background: var(--papier);
-    color: var(--tekst-secundair);
-    font-size: var(--type-bijschrift);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-  }
-  .tk-kal-dag[data-geoefend='ja'] {
-    background: var(--inkt);
-    color: var(--kaart);
-  }
-  .tk-kal-dag[data-vandaag='ja'] {
-    outline: var(--stroke-active) solid var(--inkt);
-    outline-offset: 2px;
-  }
-  .tk-kal-dag[data-later='ja'] {
-    border: var(--stroke-hair) solid var(--rand-licht);
-    background: transparent;
   }
 
   /* ---- The plate ---------------------------------------------------------
@@ -2845,104 +2607,6 @@
     color: var(--tekst-secundair);
   }
 
-  /* ---- A hero on its plate ----------------------------------------------
-   * The material of a reeks as three values — the colour, its deep tone and
-   * its soft tone — resolved from `data-reeks` the way an accent is resolved
-   * from `data-module`. The plate stands on the colour, rimmed in the soft tone
-   * with the deep tone along its foot, and the drawing on it is in the light
-   * that is the same in both themes, because a material does not change with
-   * the theme (ADR-071).
-   */
-  [data-reeks='brons'] {
-    --held-kleur: var(--reeks-brons);
-    --held-diep: var(--reeks-brons-diep);
-    --held-zacht: var(--reeks-brons-zacht);
-  }
-  [data-reeks='zilver'] {
-    --held-kleur: var(--reeks-zilver);
-    --held-diep: var(--reeks-zilver-diep);
-    --held-zacht: var(--reeks-zilver-zacht);
-  }
-  [data-reeks='goud'] {
-    --held-kleur: var(--reeks-goud);
-    --held-diep: var(--reeks-goud-diep);
-    --held-zacht: var(--reeks-goud-zacht);
-  }
-  [data-reeks='platina'] {
-    --held-kleur: var(--reeks-platina);
-    --held-diep: var(--reeks-platina-diep);
-    --held-zacht: var(--reeks-platina-zacht);
-  }
-  [data-reeks='ultra'] {
-    --held-kleur: var(--reeks-ultra);
-    --held-diep: var(--reeks-ultra-diep);
-    --held-zacht: var(--reeks-ultra-zacht);
-  }
-  /* The hero itself is an image (ADR-098): 320 square, drawn on paper, the
-   * plate a circle of 124 round the centre and the four ring slots outside it
-   * up to 140. Two ways to show it, split at 64 pixels (Heldplaat.tsx). */
-  .tk-held {
-    position: relative;
-    display: inline-flex;
-    flex: none;
-    width: var(--held, 48px);
-    height: var(--held, 48px);
-  }
-  .tk-held-beeld {
-    display: block;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    user-select: none;
-  }
-  /* The whole drawing, rings and all, clipped at the edge of what is drawn so
-   * the paper it stands on does not show — as a square in the dark theme, or as
-   * a pale ring on a card that stands on the surface. The edge moves out with
-   * every ring: the plate and its shadow reach 129 of 320, the outer ring of
-   * gold 131, of platinum 137 and of ultra 141. */
-  .tk-held-ringen .tk-held-beeld {
-    clip-path: circle(40.3%);
-  }
-  .tk-held-ringen[data-reeks='goud'] .tk-held-beeld {
-    clip-path: circle(41%);
-  }
-  .tk-held-ringen[data-reeks='platina'] .tk-held-beeld {
-    clip-path: circle(43%);
-  }
-  .tk-held-ringen[data-reeks='ultra'] .tk-held-beeld {
-    clip-path: circle(44%);
-  }
-  /* A hero with its rings is a reward, and the one thing in the product with a
-   * shadow: the handoff's, on the wrapper so it follows the clipped drawing. */
-  .tk-held-ringen {
-    filter: drop-shadow(var(--schaduw-beloning));
-  }
-  /* The plate alone, enlarged until it fills the frame: 118 of the drawing's
-   * radius of 160, inside the plate's own edge, so no ring and no paper. */
-  .tk-held-klein {
-    overflow: hidden;
-    border-radius: var(--radius-pil);
-  }
-  .tk-held-klein .tk-held-beeld {
-    transform: scale(1.36);
-  }
-  /* A hero not found yet is a chest the size of a plate: the surface, with a
-   * band across it both ways in the sunken tone. "Something is in here" — and
-   * nothing about what, because that is the chest's to say. */
-  .tk-held-kist {
-    position: absolute;
-    inset: 11%;
-    border-radius: var(--radius-pil);
-    background:
-      linear-gradient(var(--balk-leeg), var(--balk-leeg)) center / 16% 100% no-repeat,
-      linear-gradient(var(--balk-leeg), var(--balk-leeg)) center / 100% 16% no-repeat,
-      var(--papier);
-    border: var(--stroke-hair) solid var(--rand-licht);
-  }
-  .tk-held-klein .tk-held-kist {
-    inset: 0;
-  }
-
   /* ---- A module's own page (ADR-095) --------------------------------------
    * A badge that names the module, the question, and then the chain of
    * numbered steps, each answered by a row of chips, a grid of tiles or a grid
@@ -3419,10 +3083,6 @@
   .tk-profiel:hover {
     background: var(--vlak-hover);
   }
-  .tk-profiel .tk-held {
-    width: 30px;
-    height: 30px;
-  }
   .tk-profiel-naam {
     min-width: 0;
     overflow: hidden;
@@ -3436,10 +3096,6 @@
       padding: 0;
       border: 0;
       background: transparent;
-    }
-    .tk-profiel .tk-held {
-      width: 34px;
-      height: 34px;
     }
     .tk-profiel-naam {
       position: absolute;
@@ -4161,39 +3817,6 @@
     background: var(--kaart);
   }
 
-  /* De dag die af is: de held groot, en één zin over morgen.
-   *
-   * Honderdtwintig pixels — groter dan het maatje in een ronde en kleiner dan
-   * de kist. Dit gebeurt één keer per dag, en ceremonie schaalt met
-   * zeldzaamheid: wat zevenentwintig keer per dag gebeurt mag tweehonderdzestig
-   * milliseconden en acht­enachtig pixels kosten, wat één keer per dag gebeurt
-   * meer.
-   *
-   * Geen band en geen kaart. "Vandaag herhalen" heeft een dikke band omdat er
-   * iets moet; hier hoeft niets meer, en een tweede nadruk op hetzelfde scherm
-   * is geen nadruk. */
-  .tk-dagaf {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .tk-dagaf-tekst {
-    display: flex;
-    min-width: 0;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .tk-dagaf-titel {
-    font-weight: 600;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    /* De held komt op. Dezelfde komst als bij de kist, want dit is dezelfde
-     * soort gebeurtenis: iets dat af is. */
-    .tk-dagaf-held {
-      animation: tk-kist-held var(--beweeg-traag) var(--beweeg-veer);
-    }
-  }
-
   /* "Waar je voor gaat" (ADR-141). Dezelfde kaart als "Vandaag herhalen", maar
    * met een hairline rondom in plaats van de dikke band aan de voorkant: dat
    * blok zegt wat er nú moet, dit zegt waar het naartoe gaat. Twee keer
@@ -4227,218 +3850,6 @@
   }
   .tk-doel-ander:hover {
     color: var(--inkt);
-  }
-
-  /* De kist die opengaat (ADR-138). Een kaart met de drie helden ernaast, in
-   * een rij die wikkelt: op een telefoon staan ze onder elkaar en blijven het
-   * drie even grote keuzes. De kaart draagt geen accent — wat hier opvalt zijn
-   * de helden zelf, en die dragen hun eigen kleur in het beeld. */
-  .tk-kist {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-  }
-  /* Het vooruitzicht: geen kaart maar een regel.
-   *
-   * Een kist die te openen is, is het enige op het uitslagscherm dat ingedrukt
-   * moet worden en staat daarom in een kaart (ADR-138). Dit is alleen te lezen,
-   * en een tweede kaart in dezelfde kolom zou even hard om aandacht vragen als
-   * de kist zelf — terwijl dit juist zegt dat de kist er nog niet is. */
-  .tk-vooruit {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .tk-vooruit-rij {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-  .tk-vooruit-sterren {
-    display: inline-flex;
-    gap: 2px;
-  }
-  /* Leeg is de randkleur, vol is inkt. Geen modulekleur: dit staat op het
-   * uitslagscherm van élke module, en de kist hoort bij geen enkele (ADR-098).
-   * Vol tegen leeg is bovendien ook hier een vorm en niet alleen een kleur. */
-  .tk-vooruit-ster {
-    display: inline-flex;
-    color: var(--rand);
-  }
-  .tk-vooruit-ster[data-vol='ja'] {
-    color: var(--inkt);
-  }
-  .tk-kist-kop {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-weight: 600;
-  }
-  .tk-kist-rij {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .tk-kist-rij > li {
-    flex: 1 1 140px;
-  }
-  .tk-kist-kaart {
-    display: flex;
-    width: 100%;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 12px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--papier);
-    text-align: center;
-  }
-  .tk-kist-kaart:hover:not(:disabled) {
-    border-color: var(--rand-bediening);
-  }
-  .tk-kist-kaart:disabled {
-    opacity: 0.6;
-  }
-  .tk-kist-naam {
-    font-weight: 600;
-  }
-  .tk-kist-doet {
-    color: var(--tekst-secundair);
-  }
-  .tk-kist-gewonnen {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 16px;
-  }
-  .tk-kist-uitkomst {
-    font-weight: 600;
-  }
-  /* De held komt aan. Één keer, en niets dat zijn beeld verandert: wie beweging
-   * heeft uitgezet ziet dezelfde held, even groot. */
-  @media (prefers-reduced-motion: no-preference) {
-    .tk-kist-held {
-      animation: tk-kist-held 420ms cubic-bezier(0.34, 1.4, 0.64, 1);
-    }
-  }
-
-  /* De trap die een goed antwoord oplevert (ADR-137). Vijf treden naast een
-   * zin, klein en op één regel: het is terugkoppeling naast de uitkomst en
-   * niet een blok op zichzelf.
-   *
-   * **Inkt en geen accent**, hoewel dit een voortgangsbalk is en die volgens
-   * §B een accent mag dragen. Drie redenen: er staat een woord naast, dus de
-   * kleur hoeft niets te betekenen; het uitkomstteken ernaast is al groen of
-   * gearceerd, en een derde kleur in dezelfde regel is ruis; en `accent.test.ts`
-   * waarschuwt precies voor de redenering waarmee je hem hier wél zou zetten —
-   * elke stap ziet er op zichzelf uit als een verbetering. Vol tegen leeg is
-   * bovendien ook een vorm, niet alleen een kleur (§A). */
-  .tk-klim {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-  }
-  .tk-klim-trap {
-    display: inline-flex;
-    gap: 3px;
-  }
-  .tk-klim-trede {
-    width: 10px;
-    height: 10px;
-    border: 1px solid var(--rand);
-    border-radius: 2px;
-    background: transparent;
-  }
-  .tk-klim-trede[data-vol='ja'] {
-    border-color: var(--inkt);
-    background: var(--inkt);
-  }
-  .tk-klim-woord {
-    color: var(--tekst-secundair);
-  }
-  .tk-klim[data-onthouden='ja'] .tk-klim-woord {
-    color: var(--tekst);
-    font-weight: 600;
-  }
-  /* Alleen de nieuwe trede beweegt, en alleen als beweging welkom is. Wie hem
-   * uitzet ziet dezelfde trap, even vol. */
-  @media (prefers-reduced-motion: no-preference) {
-    .tk-klim-trede[data-nieuw='ja'] {
-      animation: tk-klim-trede 300ms cubic-bezier(0.34, 1.4, 0.64, 1);
-    }
-  }
-
-  /* ---- De ster (ster.ts) ------------------------------------------------
-   * Tien treden en een ster erachter, in dezelfde vorm als de klim ernaast:
-   * dat zijn twee dingen die allebei zeggen "dit antwoord bracht je verder",
-   * en twee verschillende vormen naast elkaar zouden lezen als twee soorten
-   * beloning terwijl het er één is.
-   *
-   * De treden zijn rond en de klim heeft hoekige: de klim gaat over dít
-   * onderdeel, de ster over alles bij elkaar. Vol tegen leeg is ook hier een
-   * vorm en niet alleen een kleur (§A).
-   *
-   * **De ster staat er altijd**, grijs zolang de rij loopt. Een teken dat pas
-   * verschijnt op het moment dat het verdiend is, verspringt de regel eronder
-   * — en dat is precies de knop waar een vinger net naartoe onderweg was. */
-  .tk-ster {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin: 4px 0 0;
-  }
-  .tk-ster-rij {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-  }
-  .tk-ster-trede {
-    width: 8px;
-    height: 8px;
-    border: 1px solid var(--rand);
-    border-radius: 50%;
-    background: transparent;
-  }
-  .tk-ster-trede[data-vol='ja'] {
-    border-color: var(--inkt);
-    background: var(--inkt);
-  }
-  .tk-ster-teken {
-    display: inline-flex;
-    margin-left: 5px;
-    color: var(--rand);
-  }
-  /* Verdiend: de ster neemt de kleur van de module aan. Dat is de enige plek
-   * waar kleur hier iets betekent, en het is duiding en geen nadruk (§E) —
-   * het woord ernaast zegt al wát er gebeurde. */
-  .tk-ster[data-vol='ja'] .tk-ster-teken {
-    color: var(--module);
-  }
-  .tk-ster-woord {
-    color: var(--tekst-secundair);
-  }
-  .tk-ster[data-vol='ja'] .tk-ster-woord {
-    color: var(--tekst);
-    font-weight: 600;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .tk-ster-trede[data-nieuw='ja'] {
-      animation: tk-klim-trede 300ms cubic-bezier(0.34, 1.4, 0.64, 1);
-    }
-    /* De ster landt: voorbij en terug, zoals het uitkomstteken. Vierhonderd­-
-     * twintig milliseconden, de traagste maat die dit product kent, want dit
-     * gebeurt twee keer per tien minuten en niet tien keer per ronde. */
-    .tk-ster[data-vol='ja'] .tk-ster-teken {
-      animation: tk-ster-aan var(--beweeg-traag) var(--beweeg-veer);
-    }
   }
 
   /* Het teken komt aan in plaats van te verschijnen (ADR-134). Een uitkomst die
@@ -4480,32 +3891,584 @@
     border-width: 0;
   }
 
-  /* ---- Het maatje in een ronde (ADR-142) --------------------------------
-   * De held van dit kind, in de terugkoppelkaart, zodra er nagekeken is. Altijd
-   * even hoog — ook als er niets staat — want een kaart die verspringt tussen
-   * goed en fout verplaatst de knop waar een vinger net naartoe onderweg was.
-   */
-  .tk-maatje {
-    display: flex;
-    min-height: 88px;
-    align-items: center;
-    /* Rechts in de kaart, tegenover het teken links: samen maken ze een regel
-     * van de terugkoppeling in plaats van een stapeltje losse dingen. */
-    justify-content: flex-end;
-    margin: 4px 0 0;
-  }
-  /* Drie goed op rij: een ring om je maatje, in de kleur van de module.
+  /* ---- Het album (ADR-149) ----------------------------------------------
+   * Elk item is een plaatje, en elke laag is een vorm en niet alleen een
+   * kleur: leeg is een lichte stippelrand, begonnen een donkere, daarna een
+   * dichte rand, dan arcering, dan vlak in de tint van de module, en een lijstje
+   * is een dubbele rand. Tot er kleur is, staat een vlag in grijs: kleur is
+   * letterlijk wat een vlag krijgt als je hem onthoudt.
    *
-   * Een pseudo-element en geen `box-shadow` — de huisstijl laat er precies één
-   * toe, op een beloningsplaatje — en absoluut, zodat er niets aan de doos
-   * verandert: de kaart blijft even hoog en de knop eronder blijft staan waar
-   * een vinger net naartoe onderweg was. */
-  .tk-maatje[data-dreef] .tk-maatje-beeld::after {
+   * De modulekleur en niet het accent. Een plaatje in kleur duidt aan wát het
+   * is (§E), het benadrukt niets; en de tekst erop is de tekstkleur van de
+   * module op haar eigen tint, die contrast.test.ts al op 4,5 houdt.
+   */
+  .tk-album {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-album-stand {
+    margin: 0;
+    color: var(--tekst-secundair);
+  }
+  .tk-album-lijst > summary {
+    display: flex;
+    align-items: center;
+    min-height: var(--raak);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tk-album-lijst[open] > summary {
+    margin-bottom: 8px;
+  }
+  .tk-albumrooster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-albumrooster[data-soort='vlag'] {
+    grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  }
+  .tk-albumrooster[data-soort='tekst'] {
+    grid-template-columns: repeat(auto-fill, minmax(min(7.5rem, 100%), 1fr));
+  }
+
+  .tk-plaatje {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 4.5rem;
+    padding: 10px 8px;
+    border: var(--stroke-active) dashed var(--rand-sterk);
+    border-radius: var(--radius-chip-groot);
+    background: var(--kaart);
+    color: var(--tekst-tertiair);
+    font: inherit;
+    text-align: center;
+  }
+  button.tk-plaatje {
+    cursor: pointer;
+  }
+  .tk-plaatje[aria-pressed='true'] {
+    outline: var(--stroke-active) solid var(--inkt);
+    outline-offset: 2px;
+  }
+  .tk-plaatje-beeld {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+  }
+  .tk-plaatje-beeld > :is(svg, img) {
+    width: 100%;
+    max-width: 3.5rem;
+    height: auto;
+  }
+  .tk-plaatje-tekst {
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  /* A place on its own, after an answer: its outline, in the layer's ink. */
+  .tk-plaatje-vorm path {
+    fill: currentColor;
+  }
+  .tk-plaatje[data-laag='0'] .tk-plaatje-beeld {
+    opacity: 0.45;
+  }
+  .tk-plaatje:is([data-laag='0'], [data-laag='1'], [data-laag='2'], [data-laag='3']) img {
+    filter: grayscale(1);
+  }
+  .tk-plaatje[data-laag='1'] {
+    border-color: var(--tekst-secundair);
+    color: var(--tekst-secundair);
+  }
+  .tk-plaatje[data-laag='2'] {
+    border-style: solid;
+    border-color: var(--tekst-secundair);
+    color: var(--inkt);
+  }
+  .tk-plaatje[data-laag='3'] {
+    border-style: solid;
+    border-color: var(--tekst-secundair);
+    background: repeating-linear-gradient(135deg, var(--module-tint) 0 5px, var(--kaart) 5px 11px);
+    color: var(--inkt);
+  }
+  .tk-plaatje:is([data-laag='4'], [data-laag='5']) {
+    border-style: solid;
+    border-color: var(--module);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+  }
+  /* Het lijstje: een dubbele rand, zo breed dat de twee lijnen twee lijnen zijn. */
+  .tk-plaatje[data-laag='5'] {
+    border-width: 6px;
+    border-style: double;
+  }
+  /* Stempels rechtsonder, een teken rechtsboven: twee hoeken, zodat ze elkaar
+   * nooit bedekken, en allebei op de kaart zodat ze op elke laag te lezen zijn. */
+  .tk-plaatje-stempel,
+  .tk-plaatje-teken {
     position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 4px;
+    border: var(--stroke-hair) solid var(--rand-sterk);
+    border-radius: var(--radius-pil);
+    background: var(--kaart);
+    color: var(--inkt);
+    font-size: var(--type-bijschrift);
+    line-height: 1;
+    font-weight: 700;
+  }
+  .tk-plaatje-stempel {
+    right: -6px;
+    bottom: -6px;
+  }
+  .tk-plaatje-teken {
+    top: -6px;
+    right: -6px;
+  }
+  .tk-plaatje-teken[data-teken='lastig'] {
+    border-color: var(--inkt);
+  }
+  .tk-plaatje[data-klein] {
+    flex: none;
+    width: 3.5rem;
+    height: 3.5rem;
+    min-height: 0;
+    padding: 4px;
+  }
+  .tk-plaatje[data-klein] .tk-plaatje-tekst {
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+  }
+
+  /* Na een antwoord: het kleine plaatje en één zin, op één regel. */
+  .tk-albumstap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0;
+  }
+  .tk-albumstap-zin {
+    min-width: 0;
+    font-size: var(--type-lopend);
+    line-height: var(--type-lopend-lh);
+  }
+
+  /* De kaart die inkleurt. Dezelfde lagen als een plaatje, in wat een vorm op
+   * een kaart heeft: de rand en de vulling. Een lijstje kan daar niet, dus is
+   * een plek met een lijstje vol in de modulekleur. */
+  .tk-albumkaart {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 30rem;
+  }
+  .tk-albumkaart-grond {
+    fill: var(--balk-leeg);
+    stroke: var(--kaart);
+    stroke-width: var(--stroke-region);
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-albumvorm,
+  .tk-albumpunt {
+    fill: var(--kaart);
+    stroke: var(--rand-sterk);
+    stroke-width: var(--stroke-region);
+    stroke-dasharray: 4 3;
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-albumvorm[data-laag='1'],
+  .tk-albumpunt[data-laag='1'] {
+    stroke: var(--tekst-secundair);
+  }
+  .tk-albumvorm:is([data-laag='2'], [data-laag='3']),
+  .tk-albumpunt:is([data-laag='2'], [data-laag='3']) {
+    stroke: var(--tekst-secundair);
+    stroke-dasharray: none;
+  }
+  .tk-albumvorm[data-laag='4'],
+  .tk-albumpunt[data-laag='4'] {
+    fill: var(--module-tint);
+    stroke: var(--module);
+    stroke-dasharray: none;
+  }
+  .tk-albumvorm[data-laag='5'],
+  .tk-albumpunt[data-laag='5'] {
+    fill: var(--module);
+    stroke: var(--module-tekst);
+    stroke-dasharray: none;
+  }
+  .tk-albumkaart-arceergrond {
+    fill: var(--kaart);
+  }
+  .tk-albumkaart-arceerlijn {
+    stroke: var(--module-tint);
+    stroke-width: 8;
+  }
+  .tk-albumkaart-merk circle {
+    fill: var(--inkt);
+    stroke: var(--kaart);
+    stroke-width: var(--stroke-active);
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-albumkaart-merk[data-teken] circle {
+    fill: var(--kaart);
+    stroke: var(--inkt);
+  }
+  .tk-albumkaart-merk text {
+    fill: var(--kaart);
+    font-family: var(--font-tekst);
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+
+  /* De achterkant van een plaatje, onder de pagina. */
+  .tk-achterkant {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--radius-chip-groot);
+    background: var(--papier);
+  }
+  .tk-achterkant-kop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+  }
+  .tk-achterkant-naam {
+    margin: 0;
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+  }
+  .tk-achterkant-stempels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-achterkant-stempels > li {
+    padding: 2px 10px;
+    border: var(--stroke-hair) solid var(--module);
+    border-radius: var(--radius-pil);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-weight: 600;
+  }
+
+  /* Het hele album op Jij: een uitklap per module, de pagina's als rijen. */
+  .tk-albummodule {
+    overflow: hidden;
+    padding: 0;
+  }
+  .tk-albummodule-kop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: var(--knop-hoogte);
+    padding: 12px 16px;
+    cursor: pointer;
+  }
+  .tk-albummodule-kop::after {
     content: '';
-    inset: -5px;
-    border: 2px solid var(--module);
-    border-radius: 50%;
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin-left: auto;
+    border-right: var(--stroke-active) solid var(--tekst-secundair);
+    border-bottom: var(--stroke-active) solid var(--tekst-secundair);
+    transform: rotate(-45deg);
+  }
+  .tk-albummodule[open] > .tk-albummodule-kop::after {
+    transform: rotate(45deg);
+  }
+  .tk-albumpaginas {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+    list-style: none;
+  }
+  .tk-albumpaginas > li + li {
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-albumpaginas .tk-album {
+    padding: 0 16px 16px;
+  }
+
+  .tk-jaaroverzicht {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-jaaroverzicht-kop {
+    margin: 0;
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    line-height: var(--type-kaartkop-lh);
+    font-weight: var(--type-kaartkop-weight);
+  }
+
+  /* ---- Ronde klaar met het album (ADR-149) ------------------------------
+   * Drie regels, elk met een pictogram op de tint van de module, zodat een
+   * kind dat nog langzaam leest aan het beeld ziet welke regel wat zegt. */
+  .tk-uitslag-regels {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-uitslag-regels > li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--type-lopend);
+    line-height: var(--type-lopend-lh);
+  }
+  .tk-uitslag-regelicoon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-chip);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+  }
+  .tk-uitslag-klaar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ---- De weekkaart (ADR-149) -------------------------------------------
+   * Zeven vakjes als een papieren stempelkaart. Een dag met een stempel heeft
+   * een dichte inktrand en de stempel erin; een lege dag een stippelrand; een
+   * dag die nog komt een haarlijn. Het doel is een streep onder het vakje waar
+   * het gehaald zou zijn. Inkt en geen accent: op dagen komen is niet van één
+   * module.
+   */
+  .tk-weekkaart {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-weekvak {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 10px;
+  }
+  .tk-weekvak-naam {
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-weight: 600;
+    color: var(--tekst-secundair);
+  }
+  .tk-weekvak-stempel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 3rem;
+    aspect-ratio: 1;
+    border: var(--stroke-active) dashed var(--rand-sterk);
+    border-radius: var(--radius-chip-groot);
+    background: var(--kaart);
+    color: var(--inkt);
+  }
+  .tk-weekvak[data-later] .tk-weekvak-stempel {
+    border: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-weekvak[data-stempel] .tk-weekvak-stempel {
+    border-style: solid;
+    border-color: var(--inkt);
+    background: var(--balk-leeg);
+  }
+  .tk-weekvak[data-vandaag] .tk-weekvak-naam {
+    color: var(--inkt);
+  }
+  .tk-weekvak[data-vandaag] .tk-weekvak-stempel {
+    outline: var(--stroke-active) solid var(--inkt);
+    outline-offset: 2px;
+  }
+  .tk-weekvak[data-doel]::after {
+    content: '';
+    position: absolute;
+    right: 15%;
+    bottom: 0;
+    left: 15%;
+    height: 4px;
+    border-radius: var(--radius-pil);
+    background: var(--inkt);
+  }
+  .tk-week-stand {
+    margin: 0;
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+  }
+  /* De schooljaarstrook: een rondje per week, vol met een zegel. */
+  .tk-strook {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-zegel {
+    width: 18px;
+    height: 18px;
+    border: var(--stroke-hair) solid var(--rand-sterk);
+    border-radius: var(--radius-pil);
+    background: var(--kaart);
+  }
+  .tk-zegel[data-zegel] {
+    border-color: var(--inkt);
+    background: var(--inkt);
+  }
+  .tk-zegel[data-nu] {
+    outline: var(--stroke-active) solid var(--inkt);
+    outline-offset: 2px;
+  }
+
+  /* Terugkomen na weken (ADR-149): één rij op de voordeur, met de weg erin. */
+  .tk-terug {
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+  }
+  .tk-terug > .tk-button {
+    grid-area: pijl;
+  }
+
+  /* De letter van het kind in de balk, waar de held stond. */
+  .tk-profiel-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pil);
+    background: var(--balk-leeg);
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  /* ---- Diploma's: rijp, bijhouden en afzwemmen (ADR-149) -----------------
+   * Rijp staat in inkt, zoals gehaald: het is iets om te doen. De seizoenen
+   * zijn vier vakjes, gestippeld tot er een stempel in staat. */
+  .tk-diploma-stand[data-rijp] {
+    color: var(--inkt);
+    font-weight: 600;
+  }
+  .tk-diploma-seizoenen {
+    display: flex;
+    gap: 4px;
+  }
+  .tk-diploma-seizoen {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: var(--stroke-hair) dashed var(--rand-sterk);
+    border-radius: var(--radius-chip);
+    color: var(--inkt);
+  }
+  .tk-diploma-seizoen[data-stempel] {
+    border-style: solid;
+    border-color: var(--inkt);
+    background: var(--balk-leeg);
+  }
+  .tk-afzwemmen-kop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .tk-afzwemmen-stand[data-rijp] {
+    border-color: var(--module);
+  }
+
+  /* Wat de printer krijgt: een diploma of het jaaroverzicht, en verder niets.
+   * Het diploma op papier staat op het scherm nergens; de knop wel. */
+  .tk-diplomaprint {
+    display: none;
+  }
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    [data-print='ja'],
+    [data-print='ja'] * {
+      visibility: visible;
+    }
+    [data-print='ja'] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+    .tk-diplomaprint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 64px 32px;
+      border: 8px double var(--inkt);
+      color: var(--inkt);
+      text-align: center;
+    }
+    .tk-diplomaprint p {
+      margin: 0;
+      font-size: var(--type-lopend);
+    }
+    .tk-diplomaprint .tk-diplomaprint-soort {
+      font-family: var(--font-kop);
+      font-size: var(--type-sectiekop);
+      font-weight: var(--type-sectiekop-weight);
+    }
+    .tk-diplomaprint .tk-diplomaprint-titel {
+      font-family: var(--font-kop);
+      font-size: var(--type-paginakop);
+      line-height: var(--type-paginakop-lh);
+      font-weight: var(--type-paginakop-weight);
+    }
   }
 
   /* ---- De bewegingslaag (ADR-142) ---------------------------------------
@@ -4536,7 +4499,6 @@
     .tk-module-card,
     .tk-blok-knop,
     .tk-profiel,
-    .tk-kist-kaart,
     .tk-rail-item,
     .tk-vakmenu-optie,
     .tk-doel-ander,
@@ -4555,7 +4517,6 @@
     .tk-lijstrij:hover,
     .tk-tegel:hover:not(:disabled),
     .tk-module-card:hover:not(:disabled),
-    .tk-kist-kaart:hover:not(:disabled),
     .tk-blok-knop:hover {
       transform: translateY(-2px);
     }
@@ -4572,24 +4533,8 @@
     }
     .tk-kaart:active,
     .tk-lijstrij:active,
-    .tk-module-card:active:not(:disabled),
-    .tk-kist-kaart:active:not(:disabled) {
+    .tk-module-card:active:not(:disabled) {
       transform: translateY(0) scale(0.98);
-    }
-
-    /* Het maatje komt binnen: goed veert door en terug, fout komt gewoon aan.
-     * Eén pose per held, dus het verschil zit in hóé hij verschijnt — en een
-     * kind dat het even niet weet heeft geen dansend dier nodig. */
-    .tk-maatje-beeld {
-      animation: tk-verschijn var(--beweeg-rustig) var(--beweeg-uit);
-    }
-    .tk-maatje[data-goed] .tk-maatje-beeld {
-      animation: tk-kist-held var(--beweeg-traag) var(--beweeg-veer);
-    }
-    /* De ring sluit zich, één keer. Alleen schaal, dus de plaat eronder komt
-     * gewoon binnen zoals hij altijd doet. */
-    .tk-maatje[data-dreef] .tk-maatje-beeld::after {
-      animation: tk-dreef-ring 300ms var(--beweeg-uit);
     }
 
     /* Een balk die oploopt loopt ook echt op. Hij stond altijd al op de goede
@@ -4606,6 +4551,22 @@
       transition:
         background-color var(--beweeg-vlot) var(--beweeg-uit),
         transform var(--beweeg-vlot) var(--beweeg-veer);
+    }
+
+    /* Een plaatje dat net een laag kreeg, komt aan (ADR-149): voorbij en terug,
+     * rustig, één keer. Een lijstje of een stempel krijgt dezelfde beweging als
+     * kleur, want herhalen is niet minder waard dan iets nieuws. Op de kaart
+     * beweegt alleen de kleur: een provincie die opveert, verschuift de grens
+     * met haar buren. */
+    .tk-plaatje[data-nieuw] {
+      animation: tk-plaatje-aan var(--beweeg-rustig) var(--beweeg-veer);
+    }
+    .tk-albumvorm[data-nieuw],
+    .tk-albumpunt[data-nieuw] {
+      animation: tk-albumvorm-aan var(--beweeg-traag) var(--beweeg-uit);
+    }
+    .tk-albummodule-kop::after {
+      transition: transform var(--beweeg-vlot) var(--beweeg-uit);
     }
   }
 }
@@ -4633,59 +4594,6 @@
   }
 }
 
-/* Het uitkomstteken, dat aankomt (ADR-134). Iets voorbij honderd procent en dan
- * terug: dat leest als iets dat landt, waar een rechte schaal leest als iets
- * dat groeit. */
-@keyframes tk-kist-held {
-  from {
-    transform: scale(0.4) rotate(-8deg);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) rotate(0);
-    opacity: 1;
-  }
-}
-
-/* De ster die aankomt. Alleen transform en niets dat de doos verandert, dus de
- * regel eronder blijft staan waar hij stond. */
-/* De ring van drie-op-rij die dichtloopt. Van iets te groot naar precies goed,
- * zoals iets dat zich sluit — en niet van klein naar groot, want dat leest als
- * iets dat verschijnt. */
-@keyframes tk-dreef-ring {
-  from {
-    transform: scale(1.35);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes tk-ster-aan {
-  0% {
-    transform: scale(0.2) rotate(-30deg);
-  }
-  60% {
-    transform: scale(1.25) rotate(8deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-@keyframes tk-klim-trede {
-  from {
-    transform: scale(0.2);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 @keyframes tk-teken-goed {
   0% {
     transform: scale(0.3) rotate(-14deg);
@@ -4709,5 +4617,25 @@
   to {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+/* Een plaatje met een nieuwe laag: iets kleiner, voorbij en terug (ADR-149). */
+@keyframes tk-plaatje-aan {
+  from {
+    transform: scale(0.88);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Een plek op de kaart met een nieuwe laag: de kaart eerst, dan haar kleur. */
+@keyframes tk-albumvorm-aan {
+  from {
+    fill: var(--kaart);
   }
 }

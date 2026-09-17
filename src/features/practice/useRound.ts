@@ -3,33 +3,25 @@ import {
   alleenDeze,
   buildOptions,
   composeRound,
-  countMastered,
   emptyState,
   judgeAnswer,
   metFouten,
   review,
+  stapVan,
   TOPODIPLOMA_VRAGEN,
   type AnswerVerdict,
   type Item,
   type RoundRule,
   type ItemState,
-  type StreakChange,
+  type Stap,
 } from '@/game-core';
 import { loadGeoSet, loadPointSet, type Detailniveau, type GeoSet } from '@/content/loadGeo';
 import { loadAllItems, loadItemSets } from '@/content/loadSets';
 import { loadNeighbours } from '@/content/loadNeighbours';
-import {
-  finishSession,
-  loadAccuracy,
-  loadItemStates,
-  saveAnswer,
-  startSession,
-} from '@/store/progress';
-import { recordRoundFinished } from '@/store/streakStore';
+import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { usePreferences } from '@/features/player/settings';
+import { naRonde, rijpVoorDiploma } from '@/features/album/naRonde';
 import { speelUitkomst } from '@/features/round/geluid';
-import { klimVan, type Klim } from '@/features/round/klim';
-import { sterstandVan, type Sterstand } from '@/features/round/ster';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 import type { AnswerLayer } from './MapCanvas';
 
@@ -101,8 +93,8 @@ export type { RoundRule };
  * Sixty seconds and three lives.
  *
  * Both are pressure, and pressure is the point — but neither may punish. A lost
- * life costs no coins, a finished clock is still a finished round for the
- * streak, and nothing here is ranked against another child (spec §10). What
+ * life costs nothing, a finished clock is still a finished round for the
+ * weekkaart, and nothing here is ranked against another child (spec §10). What
  * they add is a reason to answer without hesitating, which is the difference
  * between knowing where Zwolle is and working it out each time.
  */
@@ -425,33 +417,26 @@ export interface RoundState {
   readonly index: number;
   readonly total: number;
   readonly correctCount: number;
-  readonly combo: number;
-  /** De ster die dit antwoord opleverde, of null als het antwoord fout was. */
-  readonly ster: Sterstand | null;
   readonly chosenId: string | null;
   readonly lastCorrect: boolean;
-  /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
-  readonly klim: Klim | null;
+  /** Wat dit antwoord met het plaatje van dit item deed (ADR-149). */
+  readonly stap: Stap | null;
   /** Present after a typed answer: how it was judged (ADR-017). */
   readonly verdict: AnswerVerdict | null;
   /** Items answered wrongly, for the result screen. */
   readonly missed: readonly Item[];
-  /**
-   * How many more items in this set the child now remembers than when the round
-   * started. Never negative: a round can move an item down a box, and telling a
-   * child they finished with less than they began is not what this figure is
-   * for. It reports what was gained, or nothing.
-   */
-  readonly gained: number;
   readonly answeredCount: number;
   /** Bliksemronde only: whole seconds left, or null in every other mode. */
   readonly secondsLeft: number | null;
   /** Overleven only: lives remaining, or null in every other mode. */
   readonly livesLeft: number | null;
-  /** Set once the round ends: the streak after this round, and how it got there. */
-  readonly streak: StreakChange | null;
   /** Set once the round ends: what it earned. */
   readonly reward: RoundOutcome | null;
+  /** Every item of the sets in this round: the album page after it (ADR-149). */
+  readonly items: readonly Item[];
+  /** The boxes as the round found them, and as they are now. */
+  readonly statesVoor: ReadonlyMap<string, ItemState>;
+  readonly states: ReadonlyMap<string, ItemState>;
   /**
    * Whether this round kept its answers to itself until the end (ADR-085).
    *
@@ -505,34 +490,16 @@ export function useRound(
    */
   const [catalogue, setCatalogue] = useState<Item[]>([]);
   const [states, setStates] = useState<Map<string, ItemState>>(new Map());
-  /**
-   * How many items in this set were remembered before the round started.
-   *
-   * K8's whole point: the score is what happened, and what changed is the
-   * product. Without a reading from before, "two more than when you sat down"
-   * cannot be said — and it is the only sentence on that screen a child could
-   * not have worked out for themselves.
-   */
-  const masteredAtStart = useRef(0);
-  /**
-   * Alle goede antwoorden van vóór deze ronde, één keer gelezen.
-   *
-   * Zie `round/useRoundCore.ts` voor het waarom: `loadAccuracy` loopt over elke
-   * poging ooit, en dat tien keer per ronde doen is een ronde die hapert op het
-   * moment dat ze zou moeten belonen.
-   */
-  const goedVoorRonde = useRef(0);
+  const [statesVoor, setStatesVoor] = useState<ReadonlyMap<string, ItemState>>(new Map());
   const [questions, setQuestions] = useState<RoundQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const { geluid: geluidAan } = usePreferences();
   const [phase, setPhase] = useState<RoundPhase>('loading');
   const [chosenId, setChosen] = useState<string | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
-  const [klim, setKlim] = useState<Klim | null>(null);
+  const [stap, setStap] = useState<Stap | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [ster, setSter] = useState<Sterstand | null>(null);
   const [missed, setMissed] = useState<Item[]>([]);
   // Memoised, and that is not a micro-optimisation: `rule` is a dependency of
   // the effect that composes the round, so a fresh object every render would
@@ -544,9 +511,7 @@ export function useRound(
   const [secondsLeft, setSecondsLeft] = useState(rule.kind === 'tijd' ? rule.seconden : 0);
   const [livesLeft, setLivesLeft] = useState(rule.kind === 'levens' ? rule.levens : 0);
   const [verdict, setVerdict] = useState<AnswerVerdict | null>(null);
-  const [streak, setStreak] = useState<StreakChange | null>(null);
   const [reward, setReward] = useState<RoundOutcome | null>(null);
-  /** Correct answers given while five or more were already right in a row. */
   const [error, setError] = useState<string | null>(null);
 
   const sessionId = useRef<string | null>(null);
@@ -575,14 +540,12 @@ export function useRound(
         // what `setsInRound` guarantees, so the first one decides for all.
         const achtergrond = SETS[sets[0]?.id as SetId];
 
-        const [loadedGeo, loadedLayers, loadedStates, totNu] = await Promise.all([
+        const [loadedGeo, loadedLayers, loadedStates] = await Promise.all([
           loadGeoSet(achtergrond.achtergrond, 'region', achtergrond.regio),
           Promise.all(sets.map((set) => loadAnswerLayer(SETS[set.id as SetId]))),
           loadItemStates(),
-          loadAccuracy(),
         ]);
         if (cancelled) return;
-        goedVoorRonde.current = totNu.correct;
 
         const layerBySet = new Map<SetId, AnswerLayer>(
           sets.map((set, at) => [set.id as SetId, loadedLayers[at] as AnswerLayer]),
@@ -653,10 +616,9 @@ export function useRound(
         setItems([...all]);
         setCatalogue(loadAllItems().filter((item) => item.regioSet === sets[0]?.regioSet));
         setStates(loadedStates);
-        masteredAtStart.current = countMastered(
-          loadedStates,
-          all.map((item) => item.id),
-        );
+        // What the round found, so the result can say what changed: K8's whole
+        // point, and since ADR-149 drawn on the album page (`rondeAlbum`).
+        setStatesVoor(new Map(loadedStates));
         setQuestions(round);
         setPhase(round.length > 0 ? 'asking' : 'finished');
         askedAt.current = performance.now();
@@ -705,23 +667,18 @@ export function useRound(
       const { correct } = params;
       const responseMs = Math.round(performance.now() - askedAt.current);
       const previous = states.get(question.item.id) ?? emptyState(question.item.id);
-      const nextState = review(previous, correct, new Date());
+      const now = new Date();
+      const nextState = review(previous, correct, now);
 
       setChosen(params.chosenForMap);
       setVerdict(params.judged);
       setLastCorrect(correct);
-      // De motor, zichtbaar gemaakt (ADR-137). Alleen omhoog — zie `klim.ts`.
-      setKlim(klimVan(previous, nextState, correct));
-      // De ster die dit antwoord vol maakte, of geen. Hier gerekend en niet bij
-      // het tekenen, omdat het geluid hem nodig heeft: een ster klinkt als het
-      // antwoord met één toon erachteraan, op hetzelfde moment.
-      const sterstand = correct ? sterstandVan(goedVoorRonde.current + correctCount + 1) : null;
-      setSter(sterstand);
-      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
-      speelUitkomst(correct, geluidAan, sterstand?.voltooid === true);
+      // Wat dit antwoord met het plaatje deed (ADR-149).
+      setStap(stapVan(previous, nextState, now));
+      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
+      // in een toets: die zegt niets tot het einde, ook niet met een toon.
+      speelUitkomst(correct, geluidAan && !toetsstand);
       setPhase('revealed');
-      const nextCombo = correct ? combo + 1 : 0;
-      setCombo(nextCombo);
       setAnswered(answeredCount + 1);
       if (correct) setCorrectCount(correctCount + 1);
       else setMissed([...missed, question.item]);
@@ -744,8 +701,8 @@ export function useRound(
       phase,
       question,
       states,
-      combo,
       geluidAan,
+      toetsstand,
       correctCount,
       answeredCount,
       missed,
@@ -860,31 +817,37 @@ export function useRound(
     // The clock, the last life and the stop button can all arrive at once.
     if (phase === 'finished') return;
     setPhase('finished');
-    if (sessionId.current) void finishSession(sessionId.current, correctCount, answeredCount);
+    // A round counts for the week even when it was stopped early: the child
+    // turned up and did the work. The album catches up once the round is on
+    // record (ADR-149).
+    const opgeslagen = sessionId.current
+      ? finishSession(sessionId.current, correctCount, answeredCount)
+      : Promise.resolve();
+    void opgeslagen.then(() => naRonde(states));
 
-    // A round counts for the day even when it was stopped early: the child
-    // turned up and did the work, which is the only thing a streak measures.
-    void recordRoundFinished().then((change) => {
-      setStreak(change);
-
-      const ids = items.map((item) => item.id);
-      void applyRoundRewards({
+    void applyRoundRewards({
+      snapshot: {
+        setId,
+        perfectRound: answeredCount > 0 && correctCount === answeredCount,
+        // A diploma asks for the whole round, not a round stopped while ahead.
+        completeRound: answeredCount === questions.length,
+        setSize: items.length,
+        mode: practiceMode,
         correct: correctCount,
-        snapshot: {
-          setId,
-          perfectRound: answeredCount > 0 && correctCount === answeredCount,
-          // The badge asks for the whole set, not a round stopped while ahead.
-          completeRound: answeredCount === questions.length,
-          streakDays: change.state.huidigeStreak,
-          mastered: countMastered(states, ids),
-          setSize: ids.length,
-          roundsFinished: 1,
-          mode: practiceMode,
-          correct: correctCount,
-        },
-      }).then(setReward);
-    });
-  }, [phase, correctCount, answeredCount, items, questions.length, setId, states, practiceMode]);
+      },
+      rijp: rijpVoorDiploma(setId, statesVoor, new Date()),
+    }).then(setReward);
+  }, [
+    phase,
+    correctCount,
+    answeredCount,
+    items,
+    questions.length,
+    setId,
+    states,
+    statesVoor,
+    practiceMode,
+  ]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;
@@ -976,25 +939,18 @@ export function useRound(
     index,
     total: questions.length,
     correctCount,
-    combo,
-    ster,
     chosenId,
     lastCorrect,
-    klim,
+    stap,
     verdict,
     missed,
-    gained: Math.max(
-      0,
-      countMastered(
-        states,
-        items.map((item) => item.id),
-      ) - masteredAtStart.current,
-    ),
     answeredCount,
     secondsLeft: rule.kind === 'tijd' ? secondsLeft : null,
     livesLeft: rule.kind === 'levens' ? livesLeft : null,
-    streak,
     reward,
+    items,
+    statesVoor,
+    states,
     toetsstand,
     error,
   };

@@ -1,25 +1,17 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  countMastered,
   emptyState,
   review,
+  stapVan,
   type ItemState,
   type ModeId,
   type RoundRule,
   type Schedulable,
-  type StreakChange,
+  type Stap,
 } from '@/game-core';
-import {
-  finishSession,
-  loadAccuracy,
-  loadItemStates,
-  saveAnswer,
-  startSession,
-} from '@/store/progress';
-import { recordRoundFinished } from '@/store/streakStore';
-import { klimVan, type Klim } from './klim';
-import { sterstandVan, type Sterstand } from './ster';
+import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { usePreferences } from '@/features/player/settings';
+import { naRonde, rijpVoorDiploma } from '@/features/album/naRonde';
 import { speelUitkomst } from './geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 
@@ -29,7 +21,7 @@ import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
  *
  * ADR-092 wrote this down as owed: the tables and the clock each carried the
  * same hundred lines between composing a round and handing out its rewards —
- * the index, the phase, the counts, the combo, the lives, the clock, the
+ * the index, the phase, the counts, the lives, the clock, the
  * toetsstand, the session record — and a fourth module would have made it four.
  * What a module still owns is the question: which items, in which order, with
  * which options, and how an answer is judged. It hands the core a composed
@@ -105,28 +97,22 @@ export interface RondeKern<S, Q, T, A> {
   readonly total: number;
   readonly correctCount: number;
   readonly answeredCount: number;
-  readonly combo: number;
-  /**
-   * De ster die dit antwoord opleverde, of null als het antwoord fout was.
-   *
-   * Tien goede antwoorden zijn een ster — dat stond in `game-core` en het werd
-   * door geen enkel scherm gelezen. Zie `ster.ts`.
-   */
-  readonly ster: Sterstand | null;
   readonly given: A | null;
   readonly lastCorrect: boolean;
-  /** De trede die dit antwoord opleverde, of null als er niets omhoog ging (ADR-137). */
-  readonly klim: Klim | null;
+  /** Wat dit antwoord met het plaatje van dit item deed (ADR-149). */
+  readonly stap: Stap | null;
   readonly missed: readonly T[];
-  /** How many more of the set the child now remembers. Never negative. */
-  readonly gained: number;
   readonly rule: RoundRule;
   /** Bliksemronde only: whole seconds left. */
   readonly secondsLeft: number | null;
   /** Overleven only: lives remaining. */
   readonly livesLeft: number | null;
-  readonly streak: StreakChange | null;
   readonly reward: RoundOutcome | null;
+  /** The set's own items, which the album page after the round draws. */
+  readonly itemIds: readonly string[];
+  /** The boxes as the round found them, and as they are now (ADR-149). */
+  readonly statesVoor: ReadonlyMap<string, ItemState>;
+  readonly states: ReadonlyMap<string, ItemState>;
   /** Whether this round keeps its answers to itself until the end (ADR-085). */
   readonly toetsstand: boolean;
   readonly error: string | null;
@@ -139,18 +125,16 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [itemIds, setItemIds] = useState<readonly string[]>([]);
   const [questions, setQuestions] = useState<readonly Q[]>([]);
   const [states, setStates] = useState<Map<string, ItemState>>(new Map());
+  const [statesVoor, setStatesVoor] = useState<ReadonlyMap<string, ItemState>>(new Map());
   const { geluid: geluidAan } = usePreferences();
   const [phase, setPhase] = useState<RondeFase>('loading');
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState<A | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
-  const [klim, setKlim] = useState<Klim | null>(null);
+  const [stap, setStap] = useState<Stap | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [ster, setSter] = useState<Sterstand | null>(null);
   const [missed, setMissed] = useState<T[]>([]);
-  const [streak, setStreak] = useState<StreakChange | null>(null);
   const [reward, setReward] = useState<RoundOutcome | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -165,17 +149,6 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
   const sessionId = useRef<string | null>(null);
   const askedAt = useRef(0);
-  const masteredAtStart = useRef(0);
-  /**
-   * Alle goede antwoorden van vóór deze ronde.
-   *
-   * Eén keer gelezen en daarna opgeteld bij wat deze ronde oplevert, in plaats
-   * van bij elk antwoord opnieuw: `loadAccuracy` loopt over élke poging die dit
-   * kind ooit deed, en dat tien keer per ronde doen op een schoollaptop is een
-   * ronde die hapert op het moment dat ze zou moeten belonen. Elk goed antwoord
-   * verhoogt beide tellingen met één, dus de optelling klopt de hele ronde.
-   */
-  const goedVoorRonde = useRef(0);
   /**
    * Wall-clock end of a timed round, set once. Counting down on a tick loses
    * whatever each tick was late by, and over sixty seconds on a school
@@ -196,9 +169,8 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
     async function boot() {
       try {
-        const [loadedStates, tot_nu] = await Promise.all([loadItemStates(), loadAccuracy()]);
+        const loadedStates = await loadItemStates();
         if (cancelled) return;
-        goedVoorRonde.current = tot_nu.correct;
 
         const opzet = await stel.current(loadedStates, rule);
         if (cancelled) return;
@@ -210,11 +182,10 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
         );
         if (cancelled) return;
 
-        masteredAtStart.current = countMastered(loadedStates, opzet.itemIds);
-
         setSet(opzet.set);
         setItemIds(opzet.itemIds);
         setStates(loadedStates);
+        setStatesVoor(new Map(loadedStates));
         setQuestions(opzet.questions);
         setPhase(opzet.questions.length > 0 ? 'asking' : 'finished');
         askedAt.current = performance.now();
@@ -241,24 +212,19 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       const { correct } = antwoord;
       const responseMs = Math.round(performance.now() - askedAt.current);
       const previous = states.get(item.id) ?? emptyState(item.id);
-      const nextState = review(previous, correct, new Date());
+      const now = new Date();
+      const nextState = review(previous, correct, now);
 
       setGiven(antwoord.given);
       setLastCorrect(correct);
-      // De motor, zichtbaar gemaakt (ADR-137): dit onderdeel schuift een trede
-      // op en komt daardoor later terug. Alleen omhoog — zie `klim.ts`.
-      setKlim(klimVan(previous, nextState, correct));
-      // De ster die dit antwoord vol maakte, of geen. Hij wordt hier gerekend
-      // en niet bij het tekenen, omdat het geluid hem nodig heeft: een ster
-      // klinkt als het antwoord met één toon erachteraan, op hetzelfde moment.
-      const sterstand = correct ? sterstandVan(goedVoorRonde.current + correctCount + 1) : null;
-      setSter(sterstand);
-      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134).
-      speelUitkomst(correct, geluidAan, sterstand?.voltooid === true);
+      // Wat dit antwoord met het plaatje deed: een laag, een stempel, een teken,
+      // of "die telt over drie dagen weer" (ADR-149).
+      setStap(stapVan(previous, nextState, now));
+      // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
+      // in een toets: die zegt niets tot het einde, ook niet met een toon.
+      speelUitkomst(correct, geluidAan && !toetsstand);
       setPhase('revealed');
 
-      const nextCombo = correct ? combo + 1 : 0;
-      setCombo(nextCombo);
       setAnswered(answeredCount + 1);
       if (correct) setCorrectCount(correctCount + 1);
       else setMissed([...missed, item]);
@@ -284,8 +250,8 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       question,
       itemVan,
       states,
-      combo,
       geluidAan,
+      toetsstand,
       answeredCount,
       correctCount,
       missed,
@@ -299,29 +265,26 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     // The clock, the last life and the stop button can all arrive at once.
     if (phase === 'finished') return;
     setPhase('finished');
-    if (sessionId.current) void finishSession(sessionId.current, correctCount, answeredCount);
+    // A round counts for the week even when it was stopped early: the child
+    // turned up and did the work. The album catches up once the round is on
+    // record, so today is on the weekkaart when it is read (ADR-149).
+    const opgeslagen = sessionId.current
+      ? finishSession(sessionId.current, correctCount, answeredCount)
+      : Promise.resolve();
+    void opgeslagen.then(() => naRonde(states));
 
-    // A round counts for the day even when it was stopped early: the child
-    // turned up and did the work, which is the only thing a streak measures.
-    void recordRoundFinished().then((change) => {
-      setStreak(change);
-
-      void applyRoundRewards({
+    void applyRoundRewards({
+      snapshot: {
+        setId,
+        perfectRound: answeredCount > 0 && correctCount === answeredCount,
+        completeRound: answeredCount === questions.length,
+        setSize: itemIds.length,
+        mode,
         correct: correctCount,
-        snapshot: {
-          setId,
-          perfectRound: answeredCount > 0 && correctCount === answeredCount,
-          completeRound: answeredCount === questions.length,
-          streakDays: change.state.huidigeStreak,
-          mastered: countMastered(states, itemIds),
-          setSize: itemIds.length,
-          roundsFinished: 1,
-          mode,
-          correct: correctCount,
-        },
-      }).then(setReward);
-    });
-  }, [phase, correctCount, answeredCount, setId, questions, states, itemIds, mode]);
+      },
+      rijp: rijpVoorDiploma(setId, statesVoor, new Date()),
+    }).then(setReward);
+  }, [phase, correctCount, answeredCount, setId, questions, states, statesVoor, itemIds, mode]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;
@@ -396,18 +359,17 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     total: questions.length,
     correctCount,
     answeredCount,
-    combo,
-    ster,
     given,
     lastCorrect,
-    klim,
+    stap,
     missed,
-    gained: Math.max(0, countMastered(states, itemIds) - masteredAtStart.current),
     rule,
     secondsLeft: rule.kind === 'tijd' ? secondsLeft : null,
     livesLeft: rule.kind === 'levens' ? livesLeft : null,
-    streak,
     reward,
+    itemIds,
+    statesVoor,
+    states,
     toetsstand,
     error,
   };

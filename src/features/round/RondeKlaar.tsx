@@ -1,42 +1,49 @@
-import { useEffect, useState, type ReactNode } from 'react';
-import { DiplomaIcon } from '@/components/Icon';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { DiplomaIcon, NextIcon, StampIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
-import { setRetention, type ItemState, type ModeId, type StreakChange } from '@/game-core';
-import { BadgeRijen, isBadge } from '@/features/badges/Badges';
+import {
+  aanDeBeurt,
+  paginaStand,
+  rondeAlbum,
+  setRetention,
+  vooruitblik,
+  type ItemState,
+  type ModeId,
+} from '@/game-core';
+import { AlbumPagina } from '@/features/album/AlbumPagina';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
+import { usePreferences } from '@/features/player/settings';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
-import { loadItemStates } from '@/store/progress';
 import type { RoundOutcome } from '@/store/rewardStore';
 import { behaaldDiploma } from '@/features/home/doel';
+import { getActiveChild } from '@/store/children';
 import { leesDoel } from '@/store/doelStore';
 import { HerhaalFouten } from './HerhaalFouten';
-import { Kist } from '@/features/reis/Kist';
+import { speelMoment } from './geluid';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
+import { useVandaag } from '@/features/home/useVandaag';
 
 /**
  * "Ronde klaar": the page after every round, in every module (K8, ADR-112).
  *
- * It used to be four pages that each did the same thing a little differently —
- * an eyebrow, a heading of 40 about what had changed, a score in running text,
- * a card of stars, and the misses at four different sizes. Now it is one page
- * in the shape of the rest of the app:
+ * Since ADR-149 it opens with the **album**: the page of the set just
+ * practised, with what changed lit up, and three short lines under it — what
+ * the child did, what changed on the page, and what coming back brings. The
+ * picture comes first, so a child of six who reads slowly still sees what
+ * happened; each line carries an icon for the same reason.
  *
- * - **the module's badge and "Ronde klaar"**, as a module page opens, with what
- *   was practised and how under it;
- * - **the round in numbers**, as tiles: how many were right, how many more the
- *   child now remembers, and after an oefentoets the mark — with one sentence
- *   under them saying what changed, which is the one thing a child could not
- *   have counted themselves, and since ADR-122 one saying what is left of this
- *   subject in three weeks, which is the one thing nobody can count at all;
- * - **the way on**, straight after that and before anything that can be long:
- *   another round, "herhaal je fouten", or back to the front door;
- * - **what the round earned**, a diploma or a badge, when it earned one;
- * - **what is still to practise**, as a list — with the map beside it on
- *   topography, the face on the clock and the flag on flags, because those can
- *   be looked at.
+ * Then **the way on**. When nothing is due any more anywhere, the page says
+ * "Klaar voor vandaag" and the first button is Klaar: stopping is also done.
+ * "Nieuwe plaatjes" is the second, for a child who wants more, and it brings
+ * pictures that are still empty rather than another go at what is not due —
+ * which would change nothing on the page. Otherwise another round is first,
+ * as it always was.
+ *
+ * Then **what the round earned**, a diploma, when it earned one; and **what is
+ * still to practise**, drawn the module's own way.
  *
  * It is still outside the frame: a round and its result have no navigation
  * (ADR-041). And it still never says "goed gedaan": the page says what
@@ -50,8 +57,8 @@ export function RondeKlaar({
   goed,
   beantwoord,
   gestopt,
-  gained,
-  streak,
+  voor,
+  na,
   reward,
   diploma = null,
   melding = null,
@@ -62,6 +69,7 @@ export function RondeKlaar({
   onHerhaal,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
 }: {
   readonly moduleId: Module['id'];
   readonly setId: string;
@@ -71,8 +79,9 @@ export function RondeKlaar({
   readonly beantwoord: number;
   /** A fixed round stopped before its end: how far it got, and how far it was going. */
   readonly gestopt: { readonly gedaan: number; readonly totaal: number } | null;
-  readonly gained: number;
-  readonly streak: StreakChange | null;
+  /** The boxes as the round found them, and as it left them (ADR-149). */
+  readonly voor: ReadonlyMap<string, ItemState>;
+  readonly na: ReadonlyMap<string, ItemState>;
   readonly reward: RoundOutcome | null;
   /** A diploma this round earned, in words. */
   readonly diploma?: string | null | undefined;
@@ -88,18 +97,52 @@ export function RondeKlaar({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag. Absent waar er geen dagplan speelt (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met plaatjes die nog leeg zijn (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
 }) {
+  const [now] = useState(() => new Date());
+  const { geluid } = usePreferences();
   const module = MODULES.find((kandidaat) => kandidaat.id === moduleId);
   const ModuleIcon = MODULE_ICON[moduleId];
   const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
   const vorm = toetsstand ? t('choose.testMode') : t(`mode.${mode}` as TranslationKey);
-  // De badges en de streakzin waren premium (ADR-116) en zijn dat niet meer.
-  // Ze werden verdiend, geteld en weggeschreven, en op dit scherm gebeurde er
-  // niets — dezelfde fout als de munten en de XP van ADR-130, met een
-  // prijskaartje eromheen. Wat een kind verdient, ziet een kind; premium
-  // verkoopt het plannen en het bijhouden.
-  const badges = (reward?.stamps ?? []).filter(isBadge);
-  const reeks = reeksZin(streak);
+
+  // A list of mistakes has no page of its own: its pictures belong to the sets
+  // they came from, and a page made of today's misses would change every round.
+  const albumDeel = deel && !setId.endsWith('fouten') && deel.items.length > 0 ? deel : null;
+  const ids = albumDeel ? albumDeel.items.map((item) => item.id) : [];
+  const ronde = rondeAlbum(ids, voor, na, now);
+  const stand = paginaStand(ids, na, now);
+
+  // Vandaag klaar: het plan van vandaag is af (ADR-139), of niets wat dit kind
+  // ooit begon is nu nog aan de beurt. Het tweede is voor wie geen plan ziet:
+  // stoppen is ook zonder code een goed moment (ADR-149). Niet na een ronde die
+  // halverwege stopte: wie na één vraag stopt, heeft vandaag niet afgemaakt.
+  const vandaag = useVandaag();
+  const vandaagKlaar =
+    (vandaag?.voortgang.klaar ?? false) ||
+    (gestopt === null && na.size > 0 && aanDeBeurt([...na.keys()], na, now) === 0);
+
+  // Een pagina die in kleur kwam, en een diploma, klinken (ADR-149). Eén keer:
+  // een geluid dat bij elke render opnieuw klinkt, is ruis. Het diploma komt
+  // pas binnen als de beloning is weggeschreven, dus wordt er gewacht tot het
+  // er is in plaats van alleen bij het openen te luisteren.
+  const paginaKlinkt = ronde.paginaInKleur;
+  const diplomaKlinkt = diploma !== null;
+  const geklonken = useRef(false);
+  useEffect(() => {
+    if (geklonken.current) return;
+    if (diplomaKlinkt) {
+      geklonken.current = true;
+      speelMoment('diploma', geluid);
+    } else if (paginaKlinkt) {
+      geklonken.current = true;
+      speelMoment('pagina', geluid);
+    }
+  }, [diplomaKlinkt, paginaKlinkt, geluid]);
+
+  const gedaan =
+    beantwoord === 1 ? t('result.gedaanEen', { goed }) : t('result.gedaan', { beantwoord, goed });
 
   return (
     <main className="tk-uitslag" data-module={moduleId} data-accent="module">
@@ -117,86 +160,135 @@ export function RondeKlaar({
           </p>
         </header>
 
+        {albumDeel ? (
+          <section className="tk-card flex flex-col gap-4" aria-label={t('album.paginaTitel')}>
+            <AlbumPagina
+              deel={albumDeel}
+              states={na}
+              now={now}
+              veranderd={new Set(ronde.veranderd)}
+            />
+          </section>
+        ) : null}
+
         <section className="tk-card flex flex-col gap-4" aria-label={t('result.samenvatting')}>
-          <dl className="tk-cijfers">
-            <div className="tk-cijfer">
-              <dt className="tk-cijfer-label">{t('result.tegelGoed')}</dt>
-              <dd className="tk-cijfer-getal">
-                {t('result.tegelGoedWaarde', { goed, totaal: beantwoord })}
-              </dd>
-            </div>
-            <div className="tk-cijfer">
-              <dt className="tk-cijfer-label">{t('result.tegelErbij')}</dt>
-              <dd className="tk-cijfer-getal">{gained}</dd>
-            </div>
-            {/* The mark, on the one round that has earned one (ADR-085). */}
-            {toetsstand ? <RoundMark goed={goed} totaal={beantwoord} /> : null}
-          </dl>
+          {toetsstand ? (
+            <dl className="tk-cijfers">
+              <RoundMark goed={goed} totaal={beantwoord} />
+            </dl>
+          ) : null}
+
+          <ul className="tk-uitslag-regels">
+            <li>
+              <span className="tk-uitslag-regelicoon" aria-hidden="true">
+                <NextIcon size={20} />
+              </span>
+              {gedaan}
+            </li>
+            {albumDeel ? (
+              <li>
+                <span className="tk-uitslag-regelicoon" aria-hidden="true">
+                  <StampIcon size={20} />
+                </span>
+                {veranderdZin(ronde)}
+              </li>
+            ) : null}
+            {albumDeel ? (
+              <li>
+                <span className="tk-uitslag-regelicoon" aria-hidden="true">
+                  <TodayIcon size={20} />
+                </span>
+                {vooruitZin(
+                  ronde.paginaInKleur,
+                  stand.kleur,
+                  stand.begonnen,
+                  stand.totaal,
+                  ids,
+                  na,
+                  now,
+                )}
+              </li>
+            ) : null}
+          </ul>
 
           <div className="flex flex-col gap-1">
-            {/* What changed is the product: the one line on this page a child
-                could not have counted themselves. */}
-            <p className="text-lopend">
-              {gained === 0
-                ? t('result.gainedNone')
-                : gained === 1
-                  ? t('result.gainedOne')
-                  : t('result.gainedMany', { aantal: gained })}
-            </p>
-            {missed.length === 0 ? <p className="text-lopend">{t('result.allCorrect')}</p> : null}
-            <OnthoudRegel setId={setId} />
+            <OnthoudRegel ids={ids} states={na} />
             {gestopt ? (
               <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
             ) : null}
             {toetsstand ? <p className="text-tekst-secundair">{t('result.markWhy')}</p> : null}
-            {melding ? <p className="text-tekst-secundair">{melding}</p> : null}
-            {reeks ? <p className="text-tekst-secundair">{reeks}</p> : null}
+            {reward?.proef === 'gehaald' ? (
+              <p className="text-tekst-secundair">{t('afzwemmen.proefGehaald')}</p>
+            ) : melding ? (
+              <p className="text-tekst-secundair">{melding}</p>
+            ) : null}
+            {reward?.proef ? (
+              <p className="text-tekst-secundair">{t('afzwemmen.proefUitleg')}</p>
+            ) : null}
           </div>
         </section>
 
-        {/* Hoeveel er nog van vandaag over is, en de weg erheen (ADR-139).
-            Boven de kist, want dit gaat over doorgaan en de kist over wat je
-            al hebt — en onder de knoppen zou een kind er langs drukken, net als
-            de kist. */}
-        {onVandaagVerder ? <VandaagVerder onVerder={onVandaagVerder} /> : null}
+        {/* Hoeveel er nog van vandaag over is, en de weg erheen (ADR-139). */}
+        {onVandaagVerder && !vandaagKlaar ? <VandaagVerder onVerder={onVandaagVerder} /> : null}
 
-        {/* De kist, vóór de knoppen (ADR-138). Alles op dit scherm is te lézen —
-            de tegels, het diploma, de missers — en dit is het enige dat
-            ingedrukt moet worden. Onder "Nog een ronde" zou een kind er
-            telkens langs drukken, en dan staat de kist volgende ronde weer op
-            dezelfde plek. */}
-        <Kist />
+        {vandaagKlaar ? (
+          <section className="tk-uitslag-klaar" aria-label={t('result.vandaagKlaar')}>
+            <h2 className="tk-sectie">{t('result.vandaagKlaar')}</h2>
+            <p className="text-lopend">{t('result.vandaagKlaarUitleg')}</p>
+          </section>
+        ) : null}
 
-        {/* One primary button, and it is another round rather than the way
-            out: the shortest path back to practising, same as K1. Before the
-            lists, so a round with fifteen misses does not hide it. */}
+        {/* One primary button. Another round, as it always was — unless today is
+            done, and then it is Klaar: the shortest way to stopping, because
+            stopping is also done (ADR-149). */}
         <div className="tk-uitslag-knoppen">
-          <button type="button" className="tk-button" onClick={onAgain}>
-            {t('result.again')}
-          </button>
-          <HerhaalFouten missed={missed} onHerhaal={onHerhaal} />
-          <button type="button" className="tk-button tk-button-secondary" onClick={onHome}>
-            {t('result.home')}
-          </button>
+          {vandaagKlaar ? (
+            <>
+              <button type="button" className="tk-button" onClick={onHome}>
+                {t('result.klaar')}
+              </button>
+              {onNieuwePlaatjes ? (
+                <button
+                  type="button"
+                  className="tk-button tk-button-secondary"
+                  onClick={onNieuwePlaatjes}
+                >
+                  {t('result.nieuwePlaatjes')}
+                </button>
+              ) : null}
+              <HerhaalFouten missed={missed} onHerhaal={onHerhaal} />
+            </>
+          ) : (
+            <>
+              <button type="button" className="tk-button" onClick={onAgain}>
+                {t('result.again')}
+              </button>
+              <HerhaalFouten missed={missed} onHerhaal={onHerhaal} />
+              <button type="button" className="tk-button tk-button-secondary" onClick={onHome}>
+                {t('result.home')}
+              </button>
+            </>
+          )}
         </div>
 
-        {diploma || badges.length > 0 ? (
+        {diploma ? (
           <section className="flex flex-col gap-3" aria-label={t('result.beloningTitle')}>
             <h2 className="tk-sectie">{t('result.beloningTitle')}</h2>
             <ul className="tk-lijst">
-              {diploma ? (
-                <li>
-                  <div className="tk-lijstrij">
-                    <Embleem icon={DiplomaIcon} module={moduleId} gehaald klein />
-                    <span className="tk-lijstrij-tekst">
-                      <span className="tk-lijstrij-titel">{diploma}</span>
-                      <DoelRegel reward={reward} />
-                    </span>
-                  </div>
-                </li>
-              ) : null}
-              <BadgeRijen ids={badges} />
+              <li>
+                <div className="tk-lijstrij">
+                  <Embleem icon={DiplomaIcon} module={moduleId} gehaald klein />
+                  <span className="tk-lijstrij-tekst">
+                    <span className="tk-lijstrij-titel">{diploma}</span>
+                    <DoelRegel reward={reward} />
+                  </span>
+                </div>
+              </li>
             </ul>
+            <PrintDiploma
+              titel={deel ? naamVan(deel) : diploma}
+              vorm={t(`mode.${mode}` as TranslationKey)}
+            />
           </section>
         ) : null}
 
@@ -209,6 +301,70 @@ export function RondeKlaar({
       </div>
     </main>
   );
+}
+
+/** Wat er op de pagina veranderde, in één regel. */
+function veranderdZin(ronde: ReturnType<typeof rondeAlbum>): string {
+  const delen: string[] = [];
+  if (ronde.verder > 0) {
+    delen.push(
+      ronde.verder === 1 ? t('result.verderEen') : t('result.verder', { aantal: ronde.verder }),
+    );
+  }
+  if (ronde.weerGoed > 0) {
+    delen.push(
+      ronde.weerGoed === 1
+        ? t('result.weerGoedEen')
+        : t('result.weerGoed', { aantal: ronde.weerGoed }),
+    );
+  }
+  if (ronde.stempels > 0) {
+    delen.push(
+      ronde.stempels === 1
+        ? t('result.stempelsEen')
+        : t('result.stempels', { aantal: ronde.stempels }),
+    );
+  }
+  if (ronde.lastig > 0) {
+    delen.push(
+      ronde.lastig === 1 ? t('result.pleisterEen') : t('result.pleister', { aantal: ronde.lastig }),
+    );
+  }
+  return delen.length === 0 ? t('result.albumNiets') : `${delen.join('. ')}.`;
+}
+
+/**
+ * Wat terugkomen oplevert (ADR-149).
+ *
+ * Een kind dat nog geen enkel plaatje in kleur heeft, hoort wat het al begon:
+ * wie nog twijfelt, trekt het meest aan wat er al is (Koo & Fishbach). Wie
+ * verder is, hoort wat morgen kan: kleur, of plaatjes die terugkomen, of anders
+ * over hoeveel dagen het eerste terugkomt.
+ */
+function vooruitZin(
+  inKleur: boolean,
+  kleur: number,
+  begonnen: number,
+  totaal: number,
+  ids: readonly string[],
+  states: ReadonlyMap<string, ItemState>,
+  now: Date,
+): string {
+  if (inKleur) return t('result.paginaInKleur');
+  if (kleur === 0) return t('result.alBegonnen', { begonnen, totaal });
+  const blik = vooruitblik(ids, states, now);
+  if (blik.morgenKleur > 0) {
+    return blik.morgenKleur === 1
+      ? t('result.morgenKleurEen')
+      : t('result.morgenKleur', { aantal: blik.morgenKleur });
+  }
+  if (blik.morgenTerug > 0) {
+    return blik.morgenTerug === 1
+      ? t('result.morgenTerugEen')
+      : t('result.morgenTerug', { aantal: blik.morgenTerug });
+  }
+  if (blik.eerstVolgende !== null) return t('result.eerstVolgende', { dagen: blik.eerstVolgende });
+  return t('result.alBegonnen', { begonnen, totaal });
 }
 
 /**
@@ -236,19 +392,45 @@ function DoelRegel({ reward }: { readonly reward: RoundOutcome | null }) {
   return <span className="tk-lijstrij-regel">{t('doel.gehaaldRonde')}</span>;
 }
 
-/**
- * What today did to the streak.
- *
- * Told after the numbers, never before them: a streak that leads the screen
- * turns a lesson into a scoreboard. It is also silent when nothing happened —
- * a second round on the same day says nothing, because nothing changed.
- */
-function reeksZin(streak: StreakChange | null): string | null {
-  if (streak === null || !streak.counted) return null;
+const DATUM = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  const dagen = streak.state.huidigeStreak;
-  if (dagen > 1) return t('result.streakGrew', { aantal: dagen });
-  return streak.broken ? t('result.streakGrewOne') : t('result.streakStarted');
+/**
+ * Het diploma op papier (ADR-149): met de naam van het kind en de datum, om
+ * op te hangen of te laten zien. Op het scherm alleen de knop; wat de printer
+ * krijgt, staat er onzichtbaar naast (`data-print`), zodat de rest van de
+ * uitslag niet mee op papier komt.
+ */
+function PrintDiploma({ titel, vorm }: { readonly titel: string; readonly vorm: string }) {
+  const [naam, setNaam] = useState('');
+  const [datum] = useState(() => DATUM.format(new Date()));
+
+  useEffect(() => {
+    let levend = true;
+    void getActiveChild().then((kind) => {
+      if (levend) setNaam(kind?.naam ?? '');
+    });
+    return () => {
+      levend = false;
+    };
+  }, []);
+
+  return (
+    <>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={() => window.print()}
+      >
+        {t('afzwemmen.print')}
+      </button>
+      <div className="tk-diplomaprint" data-print="ja" aria-hidden="true">
+        <p className="tk-diplomaprint-soort">{vorm}</p>
+        <p className="tk-diplomaprint-titel">{titel}</p>
+        <p>{naam === '' ? t('afzwemmen.printZonderNaam') : t('afzwemmen.printNaam', { naam })}</p>
+        <p>{t('afzwemmen.printDatum', { datum })}</p>
+      </div>
+    </>
+  );
 }
 
 /** Three weeks out: the horizon the product has always forecast to (`home.retention`). */
@@ -260,42 +442,21 @@ const DRIE_WEKEN_MS = 21 * 86_400_000;
  *
  * Free, and on purpose: it is the one sentence in this product that is about
  * what happens if you do nothing, and a forecast a family cannot see is a
- * promise they cannot check. It is also the whole argument for coming back
- * tomorrow, which is not an argument to put behind a code.
+ * promise they cannot check.
  *
  * **The whole set, not the ten questions just asked.** A round's own items were
  * answered a minute ago and would forecast at very nearly a hundred per cent,
- * which is true and useless. The figure that means something is the one the
- * front door already shows for this set, and it is the same function
- * (`setRetention`) reading the same boxes.
- *
- * Nothing at all until the states are loaded and the set has items: a number
- * that appears as nought and then jumps has told a child something false on the
- * way. A list of mistakes has no fixed set of its own, so it has no forecast.
+ * which is true and useless. A list of mistakes has no fixed set of its own, so
+ * it has no forecast.
  */
-function OnthoudRegel({ setId }: { readonly setId: string }) {
-  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
-
-  useEffect(() => {
-    let levend = true;
-    void loadItemStates().then((geladen) => {
-      if (levend) setStates(geladen);
-    });
-    return () => {
-      levend = false;
-    };
-  }, []);
-
-  if (states === null) return null;
-
-  const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
-  if (!deel || deel.items.length === 0 || setId.endsWith('fouten')) return null;
-
-  const procent = setRetention(
-    states,
-    deel.items.map((item) => item.id),
-    new Date(Date.now() + DRIE_WEKEN_MS),
-  );
-
+function OnthoudRegel({
+  ids,
+  states,
+}: {
+  readonly ids: readonly string[];
+  readonly states: ReadonlyMap<string, ItemState>;
+}) {
+  if (ids.length === 0) return null;
+  const procent = setRetention(states, ids, new Date(Date.now() + DRIE_WEKEN_MS));
   return <p className="text-tekst-secundair">{t('result.onthoud', { procent })}</p>;
 }

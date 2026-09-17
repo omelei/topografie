@@ -61,6 +61,7 @@ export function VlagDiplomas({
 
           return {
             key: deel,
+            diplomaId: `diploma-vlag-${deel}`,
             titel: naam,
             label: gehaald
               ? t('vlag.diplomaHave', { deel: naam })

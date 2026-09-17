@@ -138,7 +138,7 @@ test('the module pages have no violations, in each of their four shapes', async 
 });
 
 /**
- * Jij: ten badges and eighteen diplomas, most of them not earned yet (ADR-112).
+ * Jij: the album and the diplomas, most of them not earned yet (ADR-149).
  * It is where the temptation to say "not yet" with a colour alone is
  * strongest, so it is worth a scan of its own — and so is Onthouden, which is
  * a table and a wall of dots.
@@ -147,7 +147,7 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   await signIn(page, 'Lieve');
 
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   // En de andere helft, sinds ADR-136 een pagina op zichzelf.

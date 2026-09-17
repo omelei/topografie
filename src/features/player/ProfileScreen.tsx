@@ -7,17 +7,17 @@ import { Tafeldiplomas } from '@/features/module/Tafeldiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
 import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
-import { BadgeSectie } from '@/features/badges/Badges';
 import { usePremium } from '@/features/premium/usePremium';
-import { HeldHoek } from '@/features/reis/HeldHoek';
-import { HeldUitleg } from '@/features/reis/HeldUitleg';
+import { AlbumOverzicht } from '@/features/album/AlbumOverzicht';
+import { Jaaroverzicht } from '@/features/album/Jaaroverzicht';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
  *
- * In the order of a profile page (ADR-145): **who you are** — the hero, the
- * name and who is practising — then **where the settings are**, then **what
- * you have earned**: the badges and the walls of diplomas.
+ * In the order of a profile page (ADR-145): **who you are** — the name and who
+ * is practising — then **where the settings are**, then **what you have
+ * made**: the album, the diplomas and the year so far (ADR-149). The hero and
+ * the badges stood here until the album replaced them.
  *
  * Most of what the design draws here needs something that does not exist yet.
  * The avatar set, the group, the friend code all belong to the parent account
@@ -32,34 +32,21 @@ import { HeldUitleg } from '@/features/reis/HeldUitleg';
 export function ProfileScreen({
   profile,
   aside,
-  onHeld,
   onOuder,
 }: {
   readonly profile: ProfileRecord;
   readonly aside: ReactNode;
-  /** Een andere held kiezen (ADR-142). Gaat naar App, want de balk toont hem ook. */
-  readonly onHeld: (sticker: string) => void;
   readonly onOuder: () => void;
 }) {
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        {/* Wie je bent, als eerste ding (ADR-143). Deze pagina heet "Jij" en
-            liet tot nu toe geen enkel beeld van dit kind zien — de voordeur wel.
-            Naast de titel en niet erboven, precies zoals daar. */}
-        <div className="tk-home-kop">
-          <HeldHoek sticker={profile.avatarConfig.sticker} onHeld={onHeld} />
-          <div className="tk-home-welkom">
-            <h1 className="tk-titel">{t('you.title')}</h1>
-            <HeldUitleg sticker={profile.avatarConfig.sticker} />
-          </div>
-        </div>
+        <h1 className="tk-titel">{t('you.title')}</h1>
 
         {/* De volgorde van een profielpagina (ADR-145): eerst wie je bent, dan
-            de instellingen, dan wat je verdiend hebt. ADR-143 zette de
+            de instellingen, dan wat je gemaakt hebt. ADR-143 zette de
             prijzenkast bovenaan; de eigenaar vroeg om deze volgorde, op Jij en
-            op Voor ouders hetzelfde, zodat de twee pagina's één patroon delen.
-            De held staat nog steeds als eerste ding, naast de titel. */}
+            op Voor ouders hetzelfde, zodat de twee pagina's één patroon delen. */}
         <Ikben profile={profile} />
 
         <Children active={profile} />
@@ -77,7 +64,11 @@ export function ProfileScreen({
           </div>
         </section>
 
+        <AlbumOverzicht />
+
         <Prijzenkast />
+
+        <Jaaroverzicht />
       </div>
 
       {aside}
@@ -91,12 +82,11 @@ const NAAM_MAX = 24;
 /**
  * Wie er oefent, en hoe die heet (ADR-126).
  *
- * De naam en de held stonden er als een regel tekst onder de titel — "Je oefent
- * als Noor" — en waren geen van beide aan te raken. De held kiest een kind op
- * zijn eigen pagina; de naam kon nergens. Hier staat hij, met één knop ernaast.
+ * De naam stond er als een regel tekst onder de titel — "Je oefent als Noor" —
+ * en was nergens te veranderen. Hier staat hij, met één knop ernaast.
  *
  * Hernoemen raakt alleen de naam: het id blijft, dus elke Leitner-doos, elk
- * diploma en elke dag van de reeks blijft bij dit kind horen.
+ * diploma en elke stempel op de weekkaart blijft bij dit kind horen.
  */
 function Ikben({ profile }: { readonly profile: ProfileRecord }) {
   const [open, setOpen] = useState(false);
@@ -169,20 +159,18 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
 }
 
 /**
- * De prijzenkast: de badges en de vier muren met diploma's, onder één kop.
+ * De vier muren met diploma's, onder één knop (ADR-143).
  *
- * Ze stonden als vijf losse secties boven aan de pagina, samen goed voor
- * drieënveertig vakjes die op dag één allemaal leeg zijn. Dat is niet minder
- * waard geworden — de gaten zijn juist het punt (ADR-064) — maar het is wat een
- * kind ziet nadat het iets gedaan heeft, niet waarmee een pagina over hemzelf
- * hoort te beginnen.
+ * Ze stonden als losse secties boven aan de pagina, samen goed voor drieëndertig
+ * vakjes die op dag één allemaal leeg zijn. Dat is niet minder waard geworden —
+ * de gaten zijn juist het punt (ADR-064) — maar het is wat een kind ziet nadat
+ * het iets gedaan heeft. De badges stonden hier ook, tot ADR-149.
  */
 function Prijzenkast() {
   const [alles, setAlles] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
-      <BadgeSectie alleenBehaald={!alles} />
       <Tafeldiplomas alleenBehaald={!alles} />
       <VlagDiplomas alleenBehaald={!alles} />
       <KlokDiplomas alleenBehaald={!alles} />

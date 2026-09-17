@@ -13,7 +13,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { t } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
-import { loadStamps } from '@/store/rewardStore';
+import { loadBehaald } from '@/store/rewardStore';
 import { leesDoel, schrijfDoel } from '@/store/doelStore';
 import { doelwitMet, doelwitten, standVan, suggesties, type Doelwit, type Suggestie } from './doel';
 import { vormVoor } from './useVandaag';
@@ -57,7 +57,7 @@ export function DoelBlok({
     void (async () => {
       const [standen, stempels, bewaard] = await Promise.all([
         loadItemStates(),
-        loadStamps(),
+        loadBehaald(),
         leesDoel(),
       ]);
       setStates(standen);
