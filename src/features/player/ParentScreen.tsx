@@ -1,6 +1,14 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import { t } from '@/i18n';
-import { type IconProps, OogIcon, SpeakIcon } from '@/components/Icon';
+import {
+  FreezerIcon,
+  type IconProps,
+  NextIcon,
+  OogIcon,
+  PupilIcon,
+  SpeakIcon,
+  StarIcon,
+} from '@/components/Icon';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
@@ -83,10 +91,11 @@ export function ParentScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <div className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('ouder.title')}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('ouder.uitleg')}</p>
-        </div>
+        {/* De kop als de etalage van premium (ADR-150). */}
+        <header className="tk-etalage">
+          <h1 className="tk-etalage-kop">{t('ouder.title')}</h1>
+          <p className="tk-etalage-tekst text-lopend">{t('ouder.uitleg')}</p>
+        </header>
 
         {/* De volgorde van een instellingenpagina (ADR-145): eerst wat je
             geregeld hebt, dan hoe de app zich gedraagt, dan wat je kind
@@ -139,19 +148,14 @@ export function ParentScreen({
 
         {/* De weg naar de cijfers (ADR-143, ADR-148): wat het kind onthoudt,
             per vak en per onderwerp, en hoe het oefenen week na week gaat. */}
-        <p>
-          <button type="button" className="tk-button tk-button-secondary" onClick={onOnthouden}>
-            {t('ouder.naarOnthouden')}
-          </button>
-        </p>
+        <div className="flex flex-col gap-4">
+          <div className="tk-kaarten">
+            <Weg icon={FreezerIcon} label={t('ouder.naarOnthouden')} onClick={onOnthouden} />
+            <Weg icon={PupilIcon} label={t('ouder.terug')} onClick={onJij} />
+          </div>
 
-        <p>
-          <button type="button" className="tk-button tk-button-secondary" onClick={onJij}>
-            {t('ouder.terug')}
-          </button>
-        </p>
-
-        <p className="tk-hulp">{t('you.stays')}</p>
+          <p className="tk-hulp">{t('you.stays')}</p>
+        </div>
       </div>
 
       {aside}
@@ -182,24 +186,27 @@ function PremiumBlok({ now = new Date() }: { readonly now?: Date }) {
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.premium')}>
       <h2 className="tk-sectie">{t('you.premium')}</h2>
-      <p className="text-tekst-secundair">
-        {verlopen && stand
-          ? t('you.premiumVerlopen', { datum: leesbareDatum(stand.geldigTot) })
-          : actief && stand
-            ? afloopZin(stand.geldigTot, bijnaAf, dagen)
-            : t('premium.wat.jij')}
-      </p>
-      <button
-        type="button"
-        className="tk-button tk-button-secondary self-start"
-        onClick={naarPremium}
-      >
-        {verlopen
-          ? t('you.premiumVerleng')
-          : actief
-            ? t('you.premiumBekijk')
-            : t('premium.slotKnop')}
-      </button>
+      {/* Een kaart zoals het plan op de premiumpagina (ADR-150): met de groene
+          rand zolang het aanstaat. */}
+      <div className="tk-card tk-kaartrij" data-premium={actief ? '' : undefined}>
+        <span className="tk-teken">
+          <StarIcon size={24} />
+        </span>
+        <p className="tk-kaartrij-tekst text-lopend">
+          {verlopen && stand
+            ? t('you.premiumVerlopen', { datum: leesbareDatum(stand.geldigTot) })
+            : actief && stand
+              ? afloopZin(stand.geldigTot, bijnaAf, dagen)
+              : t('premium.wat.jij')}
+        </p>
+        <button type="button" className="tk-button tk-button-secondary" onClick={naarPremium}>
+          {verlopen
+            ? t('you.premiumVerleng')
+            : actief
+              ? t('you.premiumBekijk')
+              : t('premium.slotKnop')}
+        </button>
+      </div>
     </section>
   );
 }
@@ -250,6 +257,31 @@ function Switch({
         <span className="tk-schakelaar" aria-hidden="true" />
         <span className="tk-label">{on ? t('you.on') : t('you.off')}</span>
       </span>
+    </button>
+  );
+}
+
+/**
+ * Een weg naar een andere pagina, als een kaart met een teken (ADR-150): de
+ * hele kaart is de knop, zoals de kaarten op de premiumpagina er een teken
+ * dragen.
+ */
+function Weg({
+  icon: Teken,
+  label,
+  onClick,
+}: {
+  readonly icon: ComponentType<Omit<IconProps, 'children'>>;
+  readonly label: string;
+  readonly onClick: () => void;
+}) {
+  return (
+    <button type="button" className="tk-kaartje" onClick={onClick}>
+      <span className="tk-teken">
+        <Teken size={24} />
+      </span>
+      <span className="tk-kaartje-kop">{label}</span>
+      <NextIcon size={20} />
     </button>
   );
 }

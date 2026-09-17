@@ -1624,13 +1624,15 @@
     gap: 8px;
   }
 
-  /* ---- De premiumpagina als etalage (ADR-145) ----------------------------
-   * Een kop in de actiekleur, vier kaarten met een teken, twee plannen naast
-   * elkaar en een vergelijkingstabel. Binnen de huisstijl: indigo is wat je
-   * indrukt en waar je een besluit neemt, groen is premium (de knop in de
-   * balk), en er is geen schaduw — het verschil zit in vlak en rand.
+  /* ---- De etalage: de kop van een pagina (ADR-145, ADR-150) ---------------
+   * Begonnen als de premiumpagina: een kop in de actiekleur, kaarten met een
+   * teken, twee plannen naast elkaar en een vergelijkingstabel. Sinds ADR-150
+   * de vorm van Onthouden, Voor ouders en Jij ook: dezelfde kop, hetzelfde
+   * teken, dezelfde kaart. Binnen de huisstijl: indigo is wat je indrukt en
+   * waar een pagina begint, groen is premium (de knop in de balk), en er is
+   * geen schaduw — het verschil zit in vlak en rand.
    */
-  .tk-premium-etalage {
+  .tk-etalage {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -1641,13 +1643,13 @@
     color: var(--kaart);
   }
   @media (min-width: 768px) {
-    .tk-premium-etalage {
+    .tk-etalage {
       padding: 48px;
     }
   }
-  /* Wit, en expliciet: de kop erft anders de inkt die elke h2 krijgt, en inkt
+  /* Wit, en expliciet: de kop erft anders de inkt die elke kop krijgt, en inkt
    * op indigo haalt 2,6. */
-  .tk-premium-etalage-kop {
+  .tk-etalage-kop {
     max-width: 22ch;
     color: var(--kaart);
     font-family: var(--font-kop);
@@ -1656,11 +1658,11 @@
     letter-spacing: var(--type-paginakop-ls);
     font-weight: var(--type-paginakop-weight);
   }
-  .tk-premium-etalage-tekst {
+  .tk-etalage-tekst {
     max-width: 60ch;
     color: var(--actie-tint);
   }
-  .tk-premium-etalage-koop {
+  .tk-etalage-knoppen {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -1676,19 +1678,19 @@
     color: var(--kaart);
   }
   /* Licht op indigo: indigo op indigo is geen knop. */
-  .tk-premium-knop-licht {
+  .tk-knop-licht {
     background: var(--kaart);
     color: var(--actie-tekst);
   }
-  .tk-premium-knop-licht:hover,
-  .tk-premium-knop-licht:active {
+  .tk-knop-licht:hover,
+  .tk-knop-licht:active {
     background: var(--actie-tint);
   }
-  .tk-premium-etalage :focus-visible {
+  .tk-etalage :focus-visible {
     outline-color: var(--kaart);
   }
   /* Het label van premium: wit op de groene nadruk, zoals de knop in de balk. */
-  .tk-premium-pil {
+  .tk-pil {
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;
@@ -1702,8 +1704,8 @@
     text-transform: uppercase;
   }
 
-  .tk-premium-usps,
-  .tk-premium-waarom {
+  /* Kaarten naast elkaar vanaf een tablet, onder elkaar op een telefoon. */
+  .tk-kaarten {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
@@ -1712,12 +1714,11 @@
     list-style: none;
   }
   @media (min-width: 768px) {
-    .tk-premium-usps,
-    .tk-premium-waarom {
+    .tk-kaarten {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
-  .tk-premium-usp {
+  .tk-kaartje {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -1726,8 +1727,35 @@
     border-radius: var(--kaart-radius);
     background: var(--kaart);
   }
-  .tk-premium-teken {
+  /* Een kaart die een weg is: het teken, de kop en een pijl op één regel, en
+   * de hele kaart is de knop. */
+  button.tk-kaartje {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    color: var(--inkt);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  button.tk-kaartje:hover {
+    background: var(--vlak-hover);
+  }
+  button.tk-kaartje:active {
+    background: var(--balk-leeg);
+  }
+  button.tk-kaartje .tk-teken {
+    flex: none;
+    margin-bottom: 0;
+  }
+  button.tk-kaartje .tk-kaartje-kop {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .tk-teken {
     display: inline-flex;
+    flex: none;
     width: 48px;
     height: 48px;
     align-items: center;
@@ -1737,11 +1765,35 @@
     background: var(--actie-tint);
     color: var(--actie-tekst);
   }
-  .tk-premium-usp-kop {
+  .tk-kaartje-kop {
     font-family: var(--font-kop);
     font-size: var(--type-kaartkop);
     line-height: var(--type-kaartkop-lh);
     font-weight: var(--type-kaartkop-weight);
+  }
+  /* Een kaart met een teken ervoor, de woorden in het midden en een knop aan
+   * het eind: wie je bent op Jij, premium op Voor ouders. Op een telefoon valt
+   * de knop onder de woorden in plaats van ze te knijpen. */
+  .tk-kaartrij {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+  }
+  .tk-kaartrij > .tk-teken {
+    margin-bottom: 0;
+  }
+  .tk-kaartrij-tekst {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 14rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+  /* Wat premium is en aanstaat, met de groene rand van het plan dat de
+   * premiumpagina aanraadt. */
+  .tk-kaartrij[data-premium] {
+    border: var(--stroke-active) solid var(--nadruk);
   }
   .tk-premium-waarom-rij {
     display: flex;

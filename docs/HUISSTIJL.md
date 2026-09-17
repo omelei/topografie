@@ -54,7 +54,11 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
 4. **Bouwstenen.** Een sectie is een `h2.tk-sectie` met eronder de inhoud; een
    lijst is `ul.tk-lijst` met `tk-lijstrij` per rij (plaat, titel, regel, stand,
    pijl); getallen zijn `dl.tk-cijfers` met een `tk-cijfer` per tegel; wat je
-   kunt verdienen draagt een `Embleem`.
+   kunt verdienen draagt een `Embleem`. Een pagina opent met `tk-etalage`: de
+   titel als `h1.tk-etalage-kop` en de zin eronder als `tk-etalage-tekst`, in
+   indigo (ADR-150). Kaarten naast elkaar zijn `tk-kaarten` met een
+   `tk-kaartje` per kaart; een kaart met een keuze is `tk-card tk-kaartrij`,
+   met een `tk-teken` ervoor.
 5. **Trefmaten.** Een knop is `h-knop` (56 in PO, 44 in VO). Het kleinste dat
    iets indrukbaars mag zijn is `raak`: 44 onder een muis, 48 op een tablet, 56
    onder een duim en altijd 56 in een ronde. Nooit een vaste maat eronder.

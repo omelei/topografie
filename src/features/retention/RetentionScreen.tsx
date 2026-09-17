@@ -103,12 +103,13 @@ export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
   return <Onthouden aside={aside} premium={actief} />;
 }
 
-function Kop() {
+/** De kop van de pagina, als de etalage van premium (ADR-150). */
+function Kop({ intro = true }: { readonly intro?: boolean }) {
   return (
-    <div className="flex flex-col gap-2">
-      <h1 className="tk-titel">{t('retention.title')}</h1>
-      <p className="text-lopend text-tekst-secundair">{t('retention.intro')}</p>
-    </div>
+    <header className="tk-etalage">
+      <h1 className="tk-etalage-kop">{t('retention.title')}</h1>
+      {intro ? <p className="tk-etalage-tekst text-lopend">{t('retention.intro')}</p> : null}
+    </header>
   );
 }
 
@@ -151,7 +152,7 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
     return (
       <div className="tk-page" aria-busy="true">
         <div className="tk-page-main">
-          <h1 className="tk-titel">{t('retention.title')}</h1>
+          <Kop intro={false} />
           <p className="text-tekst-secundair">{t('practice.loading')}</p>
         </div>
       </div>
