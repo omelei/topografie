@@ -1,6 +1,4 @@
-import { Heldplaat } from '@/components/Heldplaat';
 import { StarIcon } from '@/components/Icon';
-import { reeksVan, useHelden } from '@/features/reis/useHelden';
 import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { isTeKoop } from '@/store/premium';
 import { t } from '@/i18n';
@@ -22,9 +20,6 @@ export function TopBar({
   readonly profile: ProfileRecord;
   readonly onProfile?: (() => void) | undefined;
 }) {
-  const helden = useHelden();
-  const sticker = profile.avatarConfig.sticker;
-
   return (
     <div className="ml-auto flex min-w-0 items-center gap-3">
       <PremiumKnop />
@@ -33,10 +28,12 @@ export function TopBar({
           the name is said rather than shown — the button keeps it as its
           accessible name, so it is still the child's own button. */}
       <button type="button" className="tk-profiel" onClick={onProfile}>
-        {/* The hero they chose, on its plate — or, until they choose, the
-            first one. A child always has one (ADR-067). At this size there are
-            no rings; the plate's tone carries the reeks. */}
-        <Heldplaat sticker={sticker} reeks={reeksVan(helden, sticker)} size={30} />
+        {/* The first letter of their name. It was the hero they chose until
+            ADR-149 took the heroes out; a letter is what tells two children on
+            one device apart, and it needs nothing to be earned. */}
+        <span className="tk-profiel-letter" aria-hidden="true">
+          {profile.naam.slice(0, 1).toLocaleUpperCase('nl-NL')}
+        </span>
         <span className="tk-profiel-naam">{profile.naam}</span>
       </button>
     </div>

@@ -157,12 +157,11 @@ describe('wat we voorstellen', () => {
 
 describe('welk diploma een ronde opleverde', () => {
   const leeg = {
-    stamps: [],
     diploma: null,
     vlagDiploma: null,
     klokDiploma: null,
     topoDiploma: null,
-    kistenTeGoed: 0,
+    proef: null,
   } as const;
 
   it('rekent alle vier de gevallen terug naar een id', () => {

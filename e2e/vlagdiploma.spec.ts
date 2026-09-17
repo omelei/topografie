@@ -100,9 +100,11 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 
   await page.locator('.tk-choose-start button').click();
+  // Nobody practised these flags, so this is proefzwemmen (ADR-149).
+  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
   await speel(page);
 
-  await expect(page.getByText(/^Vlaggendiploma gehaald|^Nog geen diploma/)).toBeVisible();
+  await expect(page.getByText(/^Proefzwemmen gelukt|^Nog geen diploma/)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
   // And on the child's own page, as pictures rather than buttons (ADR-112) —

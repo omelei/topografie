@@ -90,12 +90,11 @@ test('without a code the premium parts are labelled once, and say what they do',
     'true',
   );
 
-  // Op Jij: de tafeldiploma's staan er gewoon, want die zijn gratis — en de
-  // badges sinds de herziening van ADR-116 ook. Ze werden verdiend en niet
-  // getoond, en dat is geen aanbod maar een gemis met een prijskaartje.
+  // Op Jij: de tafeldiploma's staan er gewoon, want die zijn gratis — en het
+  // album ook (ADR-149): wat een kind onthoudt, ziet een kind zonder code.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw badges' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
@@ -109,15 +108,13 @@ test('without a code the premium parts are labelled once, and say what they do',
 
 /**
  * De kolom die op élke pagina meegaat, vraagt zonder code niets (ADR-124), en
- * sinds de herziening van ADR-116 staat de reeks er wél.
+ * de weekkaart staat er wél (ADR-149).
  *
  * Er stonden twee sloten in — de reeks en "Goed beantwoord" — dus twee keer nee
  * op de voordeur, op elke modulepagina, en zelfs op de premiumpagina zelf. De
- * reeks is geen slot meer maar gewoon aanwezig: hoeveel dagen op rij je hebt
- * geoefend is één regel over dit kind. Wat premium blijft is het bíjhouden
- * ervan — de reekspagina met haar kalender. "Goed beantwoord" staat sinds
- * ADR-148 niet meer in de kolom maar op Onthouden, bij week na week, en ook
- * daar alleen met een code.
+ * weekkaart is geen slot: op welke dagen je oefende, is wat dit kind deed, en
+ * de pagina erachter is ook gratis. "Goed beantwoord" staat sinds ADR-148 niet
+ * meer in de kolom maar op Onthouden, en ook daar alleen met een code.
  */
 test('without a code the column beside every page carries no lock at all', async ({ page }) => {
   await signIn(page, 'Sep');
@@ -127,13 +124,13 @@ test('without a code the column beside every page carries no lock at all', async
     await expect(page.getByText('Goed beantwoord'), pad).toHaveCount(0);
   }
 
-  // De reeks staat er zonder code, maar de weg naar de pagina erachter niet.
-  // Alleen waar de kolom getekend wordt: onder de 1200 is er geen kolom, en de
-  // voordeur toont daar alleen de toetsen (ADR-119).
+  // De weekkaart staat er zonder code, met de weg naar zijn pagina. Alleen waar
+  // de kolom getekend wordt: onder de 1200 is er geen kolom (ADR-119).
   await page.goto('/');
   if (await page.locator('.tk-home-aside').count()) {
-    await expect(page.getByRole('region', { name: 'Jouw reeks' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Bekijk je reeks' })).toHaveCount(0);
+    const week = page.locator('.tk-home-aside').getByRole('region', { name: 'Jouw week' });
+    await expect(week).toBeVisible();
+    await expect(week.getByRole('button', { name: 'Bekijk je week' })).toBeVisible();
   }
 
   // En de voordeur zegt nergens "Dit hoort bij premium".

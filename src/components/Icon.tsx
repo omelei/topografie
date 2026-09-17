@@ -1107,3 +1107,36 @@ export function KlaarIcon(props: Omit<IconProps, 'children'>) {
     </Icon>
   );
 }
+
+/**
+ * Even opfrissen (ADR-149): twee pijlen die in een rechthoek rondgaan.
+ *
+ * Recht en niet rond, want de primitieven zijn recht. Het is het teken op een
+ * plaatje dat te lang niet gezien is, en het zegt "nog een keer", niet "kwijt".
+ */
+export function OpfrissenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M4 11V6h13" />
+      <path d="M14 3l3 3-3 3" strokeLinejoin="round" />
+      <path d="M20 13v5H7" />
+      <path d="M10 21l-3-3 3-3" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/**
+ * Lastig (ADR-149): een pleister, schuin, met het kussentje in het midden.
+ *
+ * Een pleister zegt dat er iets beter moet worden en dat het goed komt. Een
+ * kruis of een uitroepteken zou zeggen dat er iets fout is, en de kleur van het
+ * plaatje blijft juist staan.
+ */
+export function PleisterIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M3.5 15.5l12-12 5 5-12 12z" strokeLinejoin="round" />
+      <path d="M9.5 12l2.5-2.5 2.5 2.5-2.5 2.5z" strokeLinejoin="round" />
+    </Icon>
+  );
+}

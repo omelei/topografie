@@ -33,10 +33,14 @@ test('Jij toont eerst wat je hebt, en de gaten pas als je erom vraagt', async ({
   await expect(page.locator('.tk-diploma')).toHaveCount(0);
 });
 
-test('Jij opent met de held van dit kind', async ({ page }) => {
+test('Jij toont het album en het schooljaar van dit kind', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw held' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw schooljaar' })).toBeVisible();
+  // Geen held meer, en geen badges (ADR-149).
+  await expect(page.getByRole('region', { name: 'Jouw held' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
 });
 
 test('de tabel op Onthouden staat achter een knop', async ({ page }) => {
@@ -55,9 +59,11 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
-  // De reeks, het cijfer en de favorieten van het kind horen op de pagina's van
-  // het kind, en staan hier dus niet.
-  await expect(page.getByRole('region', { name: 'Jouw reeks' })).toHaveCount(0);
+  // De weekkaart, het cijfer en de favorieten van het kind horen op de pagina's
+  // van het kind, en staan hier dus niet. Het weekdoel wel: dat kiest een ouder
+  // mee (ADR-149).
+  await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Je weekdoel' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
   // De toetsdatum blijft wél: die voert de ouder in. Alleen waar de kolom

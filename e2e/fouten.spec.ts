@@ -30,7 +30,8 @@ async function kies(page: Page, pad: string, onderwerp: RegExp, hoe: RegExp) {
 
 /** Says "ik weet het niet" to every question, to the end of the round. */
 async function weetHetNiet(page: Page) {
-  const klaar = page.getByRole('button', { name: 'Terug naar start' });
+  // "Klaar" when nothing is due any more, "Terug naar start" otherwise (ADR-149).
+  const klaar = page.getByRole('button', { name: /^(Klaar|Terug naar start)$/ });
   const weetNiet = page.getByRole('button', { name: 'Ik weet het niet' });
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
 

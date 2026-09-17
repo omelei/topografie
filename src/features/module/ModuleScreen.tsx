@@ -36,6 +36,7 @@ import {
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
 import { PremiumLabel } from './PremiumLabel';
 import { useSmallScreen } from '@/features/shell/useSmallScreen';
+import { AlbumPagina } from '@/features/album/AlbumPagina';
 
 /**
  * A module's own page — leer.nu/topografie, leer.nu/rekenen, leer.nu/klokkijken
@@ -635,6 +636,19 @@ export function ModuleScreen({
             {startKnop}
           </div>
         )}
+
+        {/* The album page of what is chosen, under the way on (ADR-149): what
+            this set looks like now, before and after a round. Only once the
+            boxes are known, so a coloured picture never first shows empty. */}
+        {chosen !== null && states !== null ? (
+          <section className="flex flex-col gap-3" aria-label={t('album.paginaTitel')}>
+            <div className="tk-sectie">
+              <h2>{t('album.paginaTitel')}</h2>
+              <span className="tk-sectie-meta">{naamVan(chosen)}</span>
+            </div>
+            <AlbumPagina deel={chosen} states={states} now={now} />
+          </section>
+        ) : null}
 
         {/* Twelve diplomas, under the tables and nowhere else (ADR-075). Pressing
             a gap answers both steps at once: that table, and the diploma. */}

@@ -4,7 +4,6 @@ import { Dot } from '@/components/Dot';
 import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
 import {
   sumText,
-  type FlawlessRun,
   type Item,
   type ItemState,
   type KlokItem,
@@ -29,7 +28,6 @@ import {
   loadPlayedRounds,
   type PlayedRound,
 } from '@/store/progress';
-import { loadRun } from '@/store/streakStore';
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
 import { DezeWeek, GeheugenKaart, PerVak, WeekNaWeek } from './Overzicht';
 import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
@@ -132,7 +130,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
   const [antwoorden, setAntwoorden] = useState<readonly Antwoord[]>([]);
-  const [run, setRun] = useState<FlawlessRun>({ nu: 0, beste: 0 });
   const [moduleId, setModuleId] = useState<Module['id']>('topo');
   /** Which kind of sum, on rekenen only. Null for the first. */
   const [soortId, setSoortId] = useState<string | null>(null);
@@ -148,7 +145,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
   useEffect(() => {
     if (!premium) return;
     void loadAntwoorden().then(setAntwoorden);
-    void loadRun().then(setRun);
   }, [premium]);
 
   if (states === null || rondes === null) {
@@ -226,7 +222,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
             <WeekNaWeek
               weken={perWeek(antwoorden, now, WEKEN)}
               procentGoed={procentGoedVan(antwoorden)}
-              run={run}
               rondes={rondes.length}
               vragen={antwoorden.length}
             />

@@ -1,7 +1,6 @@
 import type { ItemState, ModeId } from '@/game-core';
 import { getDb, SINGLETON_KEY, type AttemptRecord, type SessionRecord } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
-import { recordAnswerFlawless } from './streakStore';
 
 /**
  * Reading and writing what a child has learned.
@@ -228,39 +227,6 @@ export async function loadOpenRounds(now: Date = new Date()): Promise<OpenRound[
 }
 
 /**
- * Every answer this child has ever given, as one fraction.
- *
- * Counted over attempts rather than over rounds, because that is where an
- * answer is actually recorded and it is the only version that stays true when
- * a round is stopped early.
- *
- * It is not a retention figure and must never be worded as one: this is what
- * has been answered correctly, over everything, ever. It goes up slowly, it
- * never resets, and that is the point — it is the one number on K1 that is
- * about the whole of the work rather than about today.
- */
-export interface Accuracy {
-  readonly correct: number;
-  readonly answered: number;
-}
-
-export async function loadAccuracy(): Promise<Accuracy> {
-  const db = await getDb();
-  const kindId = await activeChildId();
-
-  let correct = 0;
-  let answered = 0;
-
-  for (const attempt of await db.getAll('attempts')) {
-    if ((attempt.kindId ?? SINGLETON_KEY) !== kindId) continue;
-    answered++;
-    if (attempt.correct) correct++;
-  }
-
-  return { correct, answered };
-}
-
-/**
  * Every answer this child gave, as when and whether it was right: what the
  * Onthouden page draws week by week (ADR-148). Nothing else of the attempt —
  * not what was chosen, not how long it took.
@@ -304,8 +270,4 @@ export async function saveAnswer(params: {
     tijdstip: new Date().toISOString(),
   });
   await saveItemState(params.nextState);
-  // Every answer in the product passes through here, which is why the run of
-  // correct answers is counted here and not in the two round hooks (ADR-072).
-  // Counting it in both would be two places to forget the third module.
-  await recordAnswerFlawless(params.correct);
 }

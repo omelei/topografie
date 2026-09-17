@@ -21,10 +21,8 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { Klim } from '@/features/round/Klim';
-import { Ster } from '@/features/round/Ster';
-import { DREEF, opDreef } from '@/features/round/dreef';
-import { Maatje } from '@/features/round/Maatje';
+import { AlbumStap } from '@/features/album/AlbumStap';
+import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
 import { TaalResultScreen } from './TaalResultScreen';
@@ -57,6 +55,7 @@ export function TaalScreen({
   toetsstand = false,
   onHome,
   onVandaagVerder,
+  onNieuwePlaatjes,
   onAgain,
   alleen = null,
   onHerhaal,
@@ -73,6 +72,8 @@ export function TaalScreen({
   readonly onHome: () => void;
   /** Naar de volgende ronde van vandaag (ADR-139). */
   readonly onVandaagVerder?: (() => void) | undefined;
+  /** Een ronde met nieuwe plaatjes, als vandaag klaar is (ADR-149). */
+  readonly onNieuwePlaatjes?: (() => void) | undefined;
   readonly onAgain: () => void;
   /** "Herhaal je fouten": the ids this round asks and nothing else (ADR-111). */
   readonly alleen?: readonly string[] | null;
@@ -109,6 +110,7 @@ export function TaalScreen({
         setId={setId}
         onHome={onHome}
         onVandaagVerder={onVandaagVerder}
+        onNieuwePlaatjes={onNieuwePlaatjes}
         onAgain={onAgain}
         onHerhaal={onHerhaal}
       />
@@ -149,13 +151,6 @@ export function TaalScreen({
               />
               <Counter label={t('practice.counterCorrect')} value={String(state.correctCount)} />
             </>
-          ) : null}
-          {state.combo >= DREEF ? (
-            <Counter
-              label={t('practice.counterCombo')}
-              value={String(state.combo)}
-              onlyWide={state.rule.kind === 'fixed'}
-            />
           ) : null}
         </div>
       </header>
@@ -306,15 +301,19 @@ function Vraag({
                   <p className="tk-display text-sectiekop">{kop}</p>
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
-                  {/* Wat dit antwoord met dit woord deed (ADR-137). */}
-                  {state.klim ? <Klim klim={state.klim} /> : null}
-                  {/* En de ster die dit antwoord opleverde (ster.ts). */}
-                  {state.ster ? <Ster stand={state.ster} /> : null}
+                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
+                  {state.question ? (
+                    <AlbumStap
+                      stap={state.stap}
+                      state={state.states.get(state.question.item.id)}
+                      naam={plaatjeNaam(state.question.item)}
+                    >
+                      <PlaatjeInhoud item={state.question.item} />
+                    </AlbumStap>
+                  ) : null}
                 </div>
               </div>
 
-              {/* Je maatje, op het moment dat er iets gebeurde (ADR-142). */}
-              <Maatje goed={correct} opDreef={opDreef(state.combo)} />
               <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>
                 {t('practice.next')}
               </button>

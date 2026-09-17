@@ -18,10 +18,9 @@ import {
   type Onderdeel,
   type Populair,
 } from '@/features/module/onderdelen';
-import { ReeksBlok } from './ReeksBlok';
-import { HeldHoek } from '@/features/reis/HeldHoek';
-import { HeldUitleg } from '@/features/reis/HeldUitleg';
+import { WeekBlok } from '@/features/week/WeekBlok';
 import { DoelBlok } from './DoelBlok';
+import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { FavorietenBlok } from './SideColumn';
@@ -34,7 +33,7 @@ import { ToetsenBlok } from './ToetsenBlok';
  * First the child's own name, and under it what doing this is. Then the ways
  * in — what this child goes back to most, what they did last and how it went,
  * and what they started and did not finish. Then the child's own column: the
- * tests, the streak, how the whole of it is going, and their favourites.
+ * tests, the weekkaart and their favourites.
  *
  * **Two rows that scroll sideways, and one list.** "Meest geoefend" and "Maak
  * af" are rows of cards at every size, one swipe, press or arrow key from what
@@ -52,9 +51,11 @@ import { ToetsenBlok } from './ToetsenBlok';
  * **The column is beside the rows, or it is the tests alone.** From 1200 it
  * stands beside the rows. Below that only the tests stay, above the rows: they
  * are where a test is planned, and a phone is where a parent often does it. The
- * streak, "Goed beantwoord" and the favourites are not drawn below 1200
- * (ADR-119), which is decided here, in React, rather than hidden in CSS, so a
- * screen reader does not meet them either (see `useDesk`).
+ * favourites are not drawn below 1200 (ADR-119), which is decided here, in
+ * React, rather than hidden in CSS, so a screen reader does not meet them
+ * either (see `useDesk`). The weekkaart is, under "Vandaag": it is what makes
+ * coming back on more days visible, and a phone is where most of those days
+ * happen (ADR-149).
  *
  * Two things it deliberately does not do. **It does not forecast** — "wat
  * onthoud je" is K9's. And **the test block is about the tests**: when they are
@@ -70,12 +71,8 @@ const OPEN_SHOWN = 10;
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
   readonly naam: string;
-  /** Welke held dit kind draagt, groot naast de begroeting (ADR-142). */
-  readonly sticker: string | undefined;
-  /** Een andere held kiezen. Gaat naar App, want de balk toont hem ook. */
-  readonly onHeld: (sticker: string) => void;
-  /** The way to the streak's own page, which their column links to. */
-  readonly onReeks: () => void;
+  /** The way to the weekkaart's own page, which the week block links to. */
+  readonly onWeek: () => void;
   /**
    * One way into a round, whichever module it is in: the same one the child's
    * own column and the module pages use.
@@ -93,9 +90,7 @@ export interface HomeScreenProps {
 
 export function HomeScreen({
   naam,
-  sticker,
-  onHeld,
-  onReeks,
+  onWeek,
   onBegin,
   onVerder,
   onPlan,
@@ -117,19 +112,16 @@ export function HomeScreen({
 
   const kop = (
     <div className="tk-home-kop">
-      {/* De held van dit kind, groot, als eerste ding op het scherm (ADR-142).
-          Naast de begroeting en niet erboven: samen zijn ze één zin — dit is
-          jouw voordeur en dit ben jij. */}
-      <HeldHoek sticker={sticker} onHeld={onHeld} />
       <div className="tk-home-welkom">
         <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
         <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
-        {/* Wat die held is en hoe je er meer krijgt: zonder deze regels stond
-            er een dier naast je naam en verder niets. */}
-        <HeldUitleg sticker={sticker} />
       </div>
     </div>
   );
+
+  // Wie twee weken weg was, hoort eerst dat het album er nog staat, en wat de
+  // eerste ronde terug kost (ADR-149). Niets als er niets te zeggen is.
+  const terug = <TerugBlok played={played} gespeeld={gespeeld} onVerder={onVerder} />;
 
   // Bovenaan, boven alles: het is het enige blok dat zegt wat er nú te doen is
   // (ADR-126). De rijen eronder zijn geschiedenis.
@@ -149,7 +141,7 @@ export function HomeScreen({
   );
 
   const toetsen = <ToetsenBlok />;
-  const reeks = <ReeksBlok onReeks={onReeks} />;
+  const week = <WeekBlok onWeek={onWeek} />;
   const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   if (desk) {
@@ -157,6 +149,7 @@ export function HomeScreen({
       <div className="tk-home">
         <div className="tk-home-main">
           {kop}
+          {terug}
           {vandaag}
           {doel}
           {rijen}
@@ -164,18 +157,20 @@ export function HomeScreen({
 
         <aside className="tk-home-aside">
           {toetsen}
-          {reeks}
+          {week}
           {favorieten}
         </aside>
       </div>
     );
   }
 
-  // Below 1200 the tests alone, above the rows (ADR-119).
+  // Below 1200 the tests and the weekkaart, above the rows (ADR-119, ADR-149).
   return (
     <div className="tk-home">
       {kop}
+      {terug}
       {vandaag}
+      {week}
       {doel}
       {toetsen}
       {rijen}

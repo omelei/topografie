@@ -5,9 +5,9 @@ import type { Dagstand } from '@/features/home/dagstand';
 /**
  * Waar de dag mee begon, per kind (ADR-139).
  *
- * In `settings` onder een sleutel met het kind erin, zoals de heldenstand dat
- * doet: die rijen zijn van het apparaat en dit is van één kind, want het hangt
- * aan zijn Leitner-standen.
+ * In `settings` onder een sleutel met het kind erin, zoals het weekdoel en de
+ * zegels (ADR-149): die rijen zijn van het apparaat en dit is van één kind,
+ * want het hangt aan zijn Leitner-standen.
  *
  * Gelezen zoals alles hier gelezen wordt — alsof een vreemde het schreef. Een
  * halve rij mag de voordeur niet meenemen, en het eerlijke antwoord op onleesbaar

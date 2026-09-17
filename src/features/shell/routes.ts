@@ -246,8 +246,8 @@ export type Route =
   | { readonly name: 'you' }
   /** Wat van de ouder is: de week, het gezin, de lijsten, premium (ADR-136). */
   | { readonly name: 'ouder' }
-  /** The streak: the days in a row, the days behind them, and how it works. */
-  | { readonly name: 'reeks' }
+  /** The weekkaart: this week's stamps, the goal, and the school year's seals. */
+  | { readonly name: 'week' }
   /** A module that exists, opened on one of its sets or on its own first. */
   | {
       readonly name: 'module';
@@ -281,8 +281,10 @@ export const OUDER_SLUG = 'ouder';
  * (ADR-112), so neither word is an address any more and both fall through to
  * the front door, like any other word the router does not know.
  */
-/** The streak's page, reached from the streak block in the child's own column (ADR-110). */
-export const REEKS_SLUG = 'reeks';
+/** The weekkaart's page, reached from the week block (ADR-149). */
+export const WEEK_SLUG = 'week';
+/** Where the streak's page was (ADR-110): an address somebody kept still arrives. */
+const REEKS_SLUG = 'reeks';
 
 /**
  * Vite serves from `/` on a domain of our own and from `/<repo>/` on Pages
@@ -329,7 +331,7 @@ export function routeFor(pathname: string): Route {
   if (slug === RETENTION_SLUG) return { name: 'retention' };
   if (slug === YOU_SLUG) return { name: 'you' };
   if (slug === OUDER_SLUG) return { name: 'ouder' };
-  if (slug === REEKS_SLUG) return { name: 'reeks' };
+  if (slug === WEEK_SLUG || slug === REEKS_SLUG) return { name: 'week' };
   if (slug === PREMIUM_SLUG) return { name: 'premium' };
 
   const [head = '', tail] = slug.split('/');
@@ -358,7 +360,7 @@ function slugFor(route: Route): string {
   if (route.name === 'retention') return RETENTION_SLUG;
   if (route.name === 'you') return YOU_SLUG;
   if (route.name === 'ouder') return OUDER_SLUG;
-  if (route.name === 'reeks') return REEKS_SLUG;
+  if (route.name === 'week') return WEEK_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];

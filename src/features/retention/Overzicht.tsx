@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { NextIcon } from '@/components/Icon';
 import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
-import { dayKey, formatGrade, grade, type FlawlessRun } from '@/game-core';
+import { dayKey, formatGrade, grade } from '@/game-core';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
@@ -246,8 +246,9 @@ export function PerVak({
 }
 
 /**
- * Week na week: vijf getallen over al het oefenen, en de vragen van de laatste
- * weken als staven, goed onderin.
+ * Week na week: drie getallen over al het oefenen, en de vragen van de laatste
+ * weken als staven, goed onderin. "Foutloos op rij" en het record stonden er
+ * ook; een reeks die één fout afpakt, is weg met de andere reeksen (ADR-149).
  *
  * Premium: dit is het bijhouden, en het cijfer over hoe het gaat was dat al in
  * de kolom (ADR-124).
@@ -255,13 +256,11 @@ export function PerVak({
 export function WeekNaWeek({
   weken,
   procentGoed,
-  run,
   rondes,
   vragen,
 }: {
   readonly weken: readonly WeekTelling[];
   readonly procentGoed: number | null;
-  readonly run: FlawlessRun;
   readonly rondes: number;
   readonly vragen: number;
 }) {
@@ -272,8 +271,6 @@ export function WeekNaWeek({
         ? t('retention.nooit')
         : t('retention.procent', { procent: procentGoed }),
     ],
-    [t('retention.cijferOpRij'), String(run.nu)],
-    [t('retention.cijferRecord'), String(run.beste)],
     [t('retention.cijferRondes'), String(rondes)],
     [t('retention.cijferVragen'), String(vragen)],
   ] as const;
