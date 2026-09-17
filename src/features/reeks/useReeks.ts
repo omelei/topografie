@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { currentStreak, dagenGeoefend } from '@/game-core';
 import { loadPlayedRounds } from '@/store/progress';
-import { HOLIDAYS, loadStreak } from '@/store/streakStore';
+import { loadStreak } from '@/store/streakStore';
 
 /** Everything the streak block and the streak page say, read once. */
 export interface Reeks {
@@ -11,11 +11,8 @@ export interface Reeks {
   readonly dagen: number;
   /** The longest there has been, never less than today's. */
   readonly langste: number;
-  readonly rustdagen: number;
   /** The days a round was finished on, YYYY-MM-DD. */
   readonly geoefend: ReadonlySet<string>;
-  readonly rondes: number;
-  readonly vragen: number;
 }
 
 /**
@@ -32,15 +29,12 @@ export function useReeks(): Reeks | null {
 
   useEffect(() => {
     void Promise.all([loadStreak(), loadPlayedRounds()]).then(([streak, rondes]) => {
-      const dagen = currentStreak(streak, vandaag, HOLIDAYS);
+      const dagen = currentStreak(streak, vandaag);
       setReeks({
         vandaag,
         dagen,
         langste: Math.max(streak.langsteStreak, dagen),
-        rustdagen: streak.rustdagen,
         geoefend: dagenGeoefend(rondes.map((ronde) => ronde.at)),
-        rondes: rondes.length,
-        vragen: rondes.reduce((samen, ronde) => samen + ronde.answered, 0),
       });
     });
   }, [vandaag]);

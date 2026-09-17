@@ -21,8 +21,8 @@ const day = (key: string) => {
 
 const KERST: HolidayPeriod[] = [{ naam: 'Kerstvakantie', start: '2026-12-19', eind: '2027-01-03' }];
 
-function after(state: StreakState, key: string, holidays: HolidayPeriod[] = []) {
-  return recordActivity(state, day(key), holidays).state;
+function after(state: StreakState, key: string) {
+  return recordActivity(state, day(key)).state;
 }
 
 describe('dayKey', () => {
@@ -96,69 +96,57 @@ describe('recordActivity', () => {
     expect(state.huidigeStreak).toBe(3);
   });
 
-  // The rule that matters most: a weekend is not a failure.
-  it('survives a weekend without spending anything', () => {
+  // ADR-148: a weekend or a holiday is a day like any other.
+  it('restarts after a weekend without a round', () => {
     const friday = after(emptyStreak(), '2026-09-11');
     const change = recordActivity(friday, day('2026-09-14'));
 
-    expect(change.state.huidigeStreak).toBe(2);
-    expect(change.rustdagenGebruikt).toBe(0);
-    expect(change.broken).toBe(false);
+    expect(change.state.huidigeStreak).toBe(1);
+    expect(change.broken).toBe(true);
   });
 
-  it('survives a two-week holiday without spending anything', () => {
-    const before = after(emptyStreak(), '2026-12-18', KERST);
-    const change = recordActivity(before, day('2027-01-04'), KERST);
-
-    expect(change.state.huidigeStreak).toBe(2);
-    expect(change.rustdagenGebruikt).toBe(0);
+  it('keeps growing through a weekend with a round every day', () => {
+    let state = after(emptyStreak(), '2026-09-11');
+    state = after(state, '2026-09-12');
+    state = after(state, '2026-09-13');
+    expect(after(state, '2026-09-14').huidigeStreak).toBe(4);
   });
 
-  it('rewards practising during a holiday rather than ignoring it', () => {
-    // The asymmetry: holidays never count against you, but they do count for
-    // you. Pausing both ways would make Sunday's work worth nothing.
-    const before = after(emptyStreak(), '2026-12-18', KERST);
-    const change = recordActivity(before, day('2026-12-21'), KERST);
-
-    expect(change.counted).toBe(true);
-    expect(change.state.huidigeStreak).toBe(2);
-  });
-
-  it('spends a rest day for one missed school day', () => {
-    const state = after(emptyStreak(), '2026-09-07');
-    expect(state.rustdagen).toBe(1); // earned in this week
-
-    // Skips Tuesday, comes back Wednesday.
-    const change = recordActivity(state, day('2026-09-09'));
-    expect(change.rustdagenGebruikt).toBe(1);
-    expect(change.state.huidigeStreak).toBe(2);
-    expect(change.broken).toBe(false);
-  });
-
-  it('restarts when there are not enough rest days', () => {
-    const state = after(emptyStreak(), '2026-09-07');
-    // Four school days missed, at most two rest days ever.
-    const change = recordActivity(state, day('2026-09-14'));
+  it('restarts after a holiday without a round', () => {
+    const before = after(emptyStreak(), '2026-12-18');
+    const change = recordActivity(before, day('2027-01-04'));
 
     expect(change.broken).toBe(true);
     expect(change.state.huidigeStreak).toBe(1);
   });
 
-  it('earns one rest day per week and saves no more than two', () => {
-    let state = after(emptyStreak(), '2026-09-07');
-    expect(state.rustdagen).toBe(1);
+  it('counts across a month and a year boundary', () => {
+    const oud = after(emptyStreak(), '2026-12-31');
+    expect(recordActivity(oud, day('2027-01-01')).state.huidigeStreak).toBe(2);
+  });
 
-    // Same week: no second rest day.
-    state = after(state, '2026-09-08');
-    expect(state.rustdagen).toBe(1);
+  // ADR-148: there is no rest day any more. "Op rij" means every school day.
+  it('restarts after one missed school day', () => {
+    const state = after(emptyStreak(), '2026-09-07');
+    // Skips Tuesday, comes back Wednesday.
+    const change = recordActivity(state, day('2026-09-09'));
 
-    // Next week: a second.
-    state = after(state, '2026-09-14');
-    expect(state.rustdagen).toBe(2);
+    expect(change.broken).toBe(true);
+    expect(change.state.huidigeStreak).toBe(1);
+  });
 
-    // The week after that: still two, because two is the ceiling.
-    state = after(state, '2026-09-21');
-    expect(state.rustdagen).toBe(2);
+  it('restarts on a Tuesday after a weekend and a missed Monday', () => {
+    let state = after(emptyStreak(), '2026-09-10');
+    state = after(state, '2026-09-11');
+    const change = recordActivity(state, day('2026-09-15'));
+
+    expect(change.broken).toBe(true);
+    expect(change.state.huidigeStreak).toBe(1);
+    expect(change.state).toEqual({
+      huidigeStreak: 1,
+      langsteStreak: 2,
+      laatsteActieveDag: '2026-09-15',
+    });
   });
 
   it('remembers the longest run even after a break', () => {
@@ -178,9 +166,10 @@ describe('currentStreak', () => {
     expect(currentStreak(emptyStreak(), day('2026-09-07'))).toBe(0);
   });
 
-  it('still stands over a weekend', () => {
+  it('is gone on Sunday after a Friday round and no Saturday', () => {
     const friday = after(emptyStreak(), '2026-09-11');
-    expect(currentStreak(friday, day('2026-09-13'))).toBe(1);
+    expect(currentStreak(friday, day('2026-09-12'))).toBe(1);
+    expect(currentStreak(friday, day('2026-09-13'))).toBe(0);
   });
 
   /**
@@ -188,10 +177,10 @@ describe('currentStreak', () => {
    * streak at all: they open the app on 12, practise, and watch it become 1.
    * This reports what a round today would actually be joining.
    */
-  it('reports zero once the rest days can no longer cover the gap', () => {
+  it('reports zero once a school day has gone by without a round', () => {
     const state = after(emptyStreak(), '2026-09-07');
-    expect(currentStreak(state, day('2026-09-09'))).toBe(1); // one rest day covers it
-    expect(currentStreak(state, day('2026-09-14'))).toBe(0); // four days, one rest day
+    expect(currentStreak(state, day('2026-09-08'))).toBe(1); // today is still open
+    expect(currentStreak(state, day('2026-09-09'))).toBe(0); // Tuesday was missed
   });
 });
 

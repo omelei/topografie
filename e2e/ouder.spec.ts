@@ -40,9 +40,11 @@ test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
-  for (const blok of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium', 'Instellingen']) {
+  for (const blok of ['Hoe gaat het?', 'Eigen woorden', 'Premium', 'Instellingen']) {
     await expect(page.getByRole('region', { name: blok })).toBeVisible();
   }
+  // De tegels van deze week staan op Onthouden (ADR-148): deze pagina telt niets zelf.
+  await expect(page.getByRole('region', { name: 'Deze week' })).toHaveCount(0);
 
   // Wat je geregeld hebt, hoe de app werkt, de oefenstof, en dan de cijfers
   // (ADR-145). Tot nu toe opende de pagina met de cijfers.
@@ -50,7 +52,7 @@ test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page
   await expect(koppen.first()).toHaveText('Premium');
   const teksten = await koppen.allInnerTexts();
   expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
-  expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Deze week'));
+  expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Hoe gaat het?'));
 
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);

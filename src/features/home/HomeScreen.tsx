@@ -24,7 +24,7 @@ import { HeldUitleg } from '@/features/reis/HeldUitleg';
 import { DoelBlok } from './DoelBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
-import { FavorietenBlok, GoedBlok } from './SideColumn';
+import { FavorietenBlok } from './SideColumn';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
@@ -150,7 +150,6 @@ export function HomeScreen({
 
   const toetsen = <ToetsenBlok />;
   const reeks = <ReeksBlok onReeks={onReeks} />;
-  const goed = <GoedBlok />;
   const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   if (desk) {
@@ -166,7 +165,6 @@ export function HomeScreen({
         <aside className="tk-home-aside">
           {toetsen}
           {reeks}
-          {goed}
           {favorieten}
         </aside>
       </div>

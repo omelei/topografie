@@ -71,10 +71,6 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   if ((page.viewportSize()?.width ?? 0) >= 1200) {
     const reeks = page.getByRole('region', { name: 'Jouw reeks' });
     await expect(reeks).not.toHaveAttribute('aria-busy', 'true');
-    await expect(page.getByRole('region', { name: 'Goed beantwoord' })).not.toHaveAttribute(
-      'aria-busy',
-      'true',
-    );
   } else {
     await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Jouw reeks' })).toHaveCount(0);

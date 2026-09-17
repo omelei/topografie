@@ -7633,6 +7633,90 @@ script.
 
 ---
 
+## ADR-148 — De reeks zonder rustdag, en Onthouden wordt de pagina met de getallen
+
+**Status:** accepted. **Date:** 2026-09-16. Op verzoek van de eigenaar: "in jouw
+reeks zie ik 4 dagen op rij geoefend terwijl er maandag niet geoefend is", en
+daarna "sloop de rustdag eruit" en "weekenden en vakantie breken wel de reeks".
+In dezelfde vraag: breng Onthouden naar een
+hoger niveau, met statistieken over gebruik en onthouden, en bepaal wat op
+/ouder, /jij, /premium en /onthouden hoort, zonder dubbelingen. Vervangt de
+rustdag uit ADR-031 en de week-tegels op Voor ouders uit ADR-136.
+
+### Context
+
+**De reeks.** Een gemiste schooldag kostte een rustdag, en er kwam er één bij
+per week waarin geoefend was (ADR-031). Dat hield de reeks staan, en het getal
+bleef doortellen: donderdag, vrijdag, dinsdag en woensdag werden "4 dagen op
+rij", met een lege maandag in het rijtje eronder. Het getal en de week spraken
+elkaar tegen, en een kind kon dat zien.
+
+**De getallen.** Over hoe het oefenen gaat stond op vier plekken iets: de vier
+tegels van deze week op Voor ouders, rondes en vragen op de reekspagina, "Goed
+beantwoord" en "Foutloos op rij" in de kolom naast elke pagina, en de standen
+per onderwerp op Onthouden. Onthouden zelf opende op één onderwerp, zonder
+overzicht over de vakken en zonder iets over de tijd.
+
+### Decision
+
+**De rustdag is weg, en elke dag telt.** Een dag zonder afgemaakte ronde
+beëindigt de reeks, ook in het weekend en in de schoolvakantie; de volgende
+ronde begint weer bij één. De reeks rekent daarom niet meer met de
+vakantiekalender (`HOLIDAYS` is weg uit `streakStore`); het weekbericht telt
+nog wel schooldagen.
+`StreakState` heeft geen `rustdagen` en `rustdagWeek` meer, `StreakChange` geen
+`rustdagenGebruikt` en `rustdagVerdiend`. Oude rijen houden de velden tot de
+volgende keer dat de reeks wordt bewaard; niets leest ze. De reekspagina heeft
+twee regels in plaats van vier, "Ronde klaar" zegt niets meer over rustdagen.
+
+Terloops: `saveStreak` schreef de rij opnieuw zonder `foutloosNu` en
+`foutloosBeste`, zodat het record foutloos op rij bij de eerste ronde van elke
+dag verdween. Die twee worden nu overgenomen.
+
+**Onthouden is de pagina met de getallen.** Van boven naar beneden:
+
+1. **Je geheugen** (gratis). Een ring met wat er over drie weken nog over is
+   van alles wat geoefend is, hoeveel onderdelen je onthoudt en van hoeveel, en
+   één balk met onthouden, even opfrissen en nog aan het oefenen. In inkt: een
+   stand is nooit groen.
+2. **Deze week** (gratis). De vier tegels en "het meest geoefend", van Voor
+   ouders hierheen.
+3. **Per vak** (premium). Elk vak op één regel met een balk in de kleur van het
+   vak; een druk kiest dat vak bij Per onderwerp.
+4. **Week na week** (premium). Goed beantwoord, foutloos op rij, je record,
+   rondes en vragen in totaal, en de vragen van acht weken als staven: goed
+   groen onderin, fout gearceerd rood erboven, zoals antwoorden overal staan.
+5. **Per onderwerp**, **Alles in één blik**, **Per onderdeel** en de regels,
+   zoals ze waren (ADR-114, ADR-124, ADR-143).
+
+**Elk getal staat op één plek.**
+
+| Pagina      | Waarvoor                                                                 | Wat er weg is                                                   |
+| ----------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- |
+| Onthouden   | alles over wat blijft en hoe het oefenen gaat                            | —                                                               |
+| Reeks       | de dagen: langste reeks, dagen, deze maand, kalender, regels             | rondes, vragen, rustdagen                                       |
+| Voor ouders | premium, instellingen, oefenstof, het weekbericht, de weg naar Onthouden | de vier week-tegels                                             |
+| Jij         | wie je bent, wie er oefent, de prijzenkast                               | niets; er stond al geen getal                                   |
+| Premium     | wat het is en wat het kost, of de stand                                  | niets; de regel over onthouden noemt nu per vak en week na week |
+| De kolom    | toetsen, reeks, favorieten                                               | Goed beantwoord (met foutloos op rij)                           |
+
+Het weekbericht blijft op Voor ouders: het is de lezing van de week voor de
+volwassene, geen telling. Het premiumblok op Voor ouders is een statusregel met
+een knop naar de premiumpagina, geen tweede beheerplek.
+
+### Consequences
+
+Een kind dat één dag overslaat, ook een zaterdag, verliest zijn reeks. Dat is
+veel strenger dan ADR-031 bedoelde, en het is wat "op rij" zegt. Wie het terug wil, doet dat met
+een regel die ook in het rijtje te zien is, niet met een getal dat doortelt.
+
+De voordeur heeft rechts een blok minder. Onthouden leest nu ook alle rondes en,
+met premium, elke poging (`loadAntwoorden`); dat is één keer bij het openen.
+Onder 1200 staat de toetsdatum niet meer bij de week op Voor ouders; hij staat
+op Vandaag, waar hij ook wordt ingevoerd.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

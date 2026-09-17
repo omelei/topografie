@@ -1,11 +1,8 @@
 import { useEffect, useState, type ComponentType } from 'react';
 import { t } from '@/i18n';
 import { type IconProps, OogIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
-import { dayKey, grade, formatGrade } from '@/game-core';
-import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { leesbareDatum, useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { dagenGeldig, isVerlopen, verlooptBinnenkort } from '@/store/premium';
-import { useTestPlan, daysUntil } from '@/features/home/testPlan';
 import { loadPlayedRounds, type PlayedRound } from '@/store/progress';
 import {
   DEFAULT_PREFERENCES,
@@ -139,18 +136,14 @@ export function ParentScreen({
 
         <EigenLijsten />
 
-        <Week rondes={rondes} now={now} />
-
-        {/* Boven dit blok staan de feiten, hier staat de lezing ervan — de vraag
-            achter een abonnement is niet "hoeveel rondes" maar "gaat het goed"
-            (ADR-133). De rondes worden één keer gelezen en door beide gebruikt. */}
+        {/* De lezing van de week: is er geoefend, blijft het hangen, wat wacht
+            er (ADR-133). De vier tegels met de feiten erachter stonden hier
+            ook; die staan sinds ADR-148 op Onthouden, bij de rest van de
+            getallen over het oefenen, en deze pagina telt niets meer zelf. */}
         <Weekbericht afgemaakt={afgemaakt} now={now} />
 
-        {/* De weg naar het detail (ADR-143). "Voor ouders" gaf twee zinnen over
-            deze week en verder niets, terwijl de vraag waarmee een ouder deze
-            pagina opent — wat kent hij nu eigenlijk? — één pagina verderop
-            helemaal beantwoord wordt. Die pagina stond alleen in het menu van
-            het kind, en hier stond er geen woord over. */}
+        {/* De weg naar de cijfers (ADR-143, ADR-148): wat het kind onthoudt,
+            per vak en per onderwerp, en hoe het oefenen week na week gaat. */}
         <p>
           <button type="button" className="tk-button tk-button-secondary" onClick={onOnthouden}>
             {t('ouder.naarOnthouden')}
@@ -263,90 +256,5 @@ function Switch({
         <span className="tk-label">{on ? t('you.on') : t('you.off')}</span>
       </span>
     </button>
-  );
-}
-
-/**
- * The week, for the adult in the room.
- *
- * "Jij" is the one screen in this product a parent opens, and what a parent
- * wants is three things: has there been any practice this week, how did it go,
- * and is there a test coming (ADR-079). Four tiles and two sentences.
- *
- * It is deliberately not a report on the child. No forecast, no percentage of
- * anything, no comparison. What it says is what happened: rounds, days,
- * questions, and the mark they came to. Seven days rather than "recently",
- * because a week is the unit a parent thinks in and a school test is set in.
- */
-function Week({
-  rondes,
-  now = new Date(),
-}: {
-  readonly rondes: readonly PlayedRound[] | null;
-  readonly now?: Date;
-}) {
-  const plan = useTestPlan(now);
-
-  if (rondes === null) return null;
-
-  const week = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6);
-  const grens = dayKey(week);
-  const deze = rondes.filter((ronde) => ronde.at.slice(0, 10) >= grens);
-  const gespeeld = geplaatst(deze, startbareOnderdelen());
-
-  const beantwoord = deze.reduce((total, ronde) => total + ronde.answered, 0);
-  const goed = deze.reduce((total, ronde) => total + ronde.correct, 0);
-  const dagen = new Set(deze.map((ronde) => ronde.at.slice(0, 10))).size;
-  const cijfer = grade(goed, beantwoord);
-
-  // What was practised most, which is the sentence a parent repeats back.
-  const perSet = new Map<string, number>();
-  for (const { deel, ronde } of gespeeld) {
-    perSet.set(naamVan(deel), (perSet.get(naamVan(deel)) ?? 0) + ronde.answered);
-  }
-  const meest = [...perSet.entries()].sort((a, b) => b[1] - a[1])[0] ?? null;
-
-  const toets = plan.toetsen[0] ?? null;
-  const dagenTot = toets === null ? null : daysUntil(toets.date, now);
-
-  const tegels = [
-    [t('you.tegelRondes'), String(deze.length)],
-    [t('you.tegelDagen'), String(dagen)],
-    [t('you.tegelVragen'), String(beantwoord)],
-    [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer)],
-  ] as const;
-
-  return (
-    <section className="flex flex-col gap-3" aria-label={t('you.week')}>
-      <h2 className="tk-sectie">{t('you.week')}</h2>
-
-      {deze.length === 0 ? (
-        <p className="text-tekst-secundair">{t('you.weekNone')}</p>
-      ) : (
-        <>
-          <dl className="tk-cijfers">
-            {tegels.map(([label, waarde]) => (
-              <div key={label} className="tk-cijfer">
-                <dt className="tk-cijfer-label">{label}</dt>
-                <dd className="tk-cijfer-getal">{waarde}</dd>
-              </div>
-            ))}
-          </dl>
-          {meest ? (
-            <p className="text-tekst-secundair">{t('you.weekMost', { set: meest[0] })}</p>
-          ) : null}
-        </>
-      )}
-
-      {toets !== null && dagenTot !== null ? (
-        <p className="text-tekst-secundair">
-          {dagenTot === 0
-            ? t('home.testToday')
-            : dagenTot === 1
-              ? t('home.testTomorrow')
-              : t('home.testInDays', { aantal: dagenTot })}
-        </p>
-      ) : null}
-    </section>
   );
 }

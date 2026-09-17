@@ -57,7 +57,13 @@ test('without a code the premium parts are labelled once, and say what they do',
 
   // Het slot zegt wat er achter de deur zit, niet dat er een deur is, en de
   // knop gaat naar de uitleg in plaats van naar een codeveld.
-  await expect(page.getByText('Zie per onderdeel wat je kind onthoudt')).toBeVisible();
+  await expect(page.getByText('Zie per vak en per onderdeel wat je kind onthoudt')).toBeVisible();
+  // De getallen over alles zijn gratis (ADR-148): wat je onthoudt en deze week.
+  // Per vak en week na week zijn het bijhouden, en staan er zonder code niet.
+  await expect(page.getByRole('region', { name: 'Je geheugen' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Deze week' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Per vak' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
@@ -109,8 +115,9 @@ test('without a code the premium parts are labelled once, and say what they do',
  * op de voordeur, op elke modulepagina, en zelfs op de premiumpagina zelf. De
  * reeks is geen slot meer maar gewoon aanwezig: hoeveel dagen op rij je hebt
  * geoefend is één regel over dit kind. Wat premium blijft is het bíjhouden
- * ervan — de reekspagina met haar kalender — en "Goed beantwoord", dat een
- * cijfer over hoe het gaat is en dus rapportage.
+ * ervan — de reekspagina met haar kalender. "Goed beantwoord" staat sinds
+ * ADR-148 niet meer in de kolom maar op Onthouden, bij week na week, en ook
+ * daar alleen met een code.
  */
 test('without a code the column beside every page carries no lock at all', async ({ page }) => {
   await signIn(page, 'Sep');

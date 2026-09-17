@@ -1,24 +1,11 @@
 /**
- * The day streak, and the rules that stop it from being a punishment.
+ * The day streak: days in a row on which a round was finished.
  *
- * Spec §4.3 asks for a streak "met opzet ontworpen om níét te straffen", which
- * is harder than it sounds: the whole force of a streak comes from not wanting
- * to lose it, and every softening trades some of that away. Three rules do the
- * work here, and each buys back more than it costs.
- *
- * **A weekend or a holiday can never break it.** School holidays are not days a
- * child failed to practise; they are days nobody asked them to. A streak that
- * makes a ten-year-old feel guilty on Boxing Day is a complaint from a parent
- * waiting to happen, and it is also simply wrong about what it is measuring.
- *
- * **But practising on those days still counts.** The asymmetry is deliberate:
- * doing the work is always rewarded, not doing it is only ever counted on a
- * school day. Pausing both ways would punish a child for practising on Sunday
- * by making it worth nothing.
- *
- * **A missed school day spends a rest day rather than resetting.** One is earned
- * for every week in which the child practised, two can be saved. One illness,
- * one school trip, one bad week does not erase two months of work.
+ * **Every day counts, and every day missed ends it** (ADR-148). Weekends and
+ * school holidays used to pause the streak, and a missed school day spent a
+ * rest day. Both made the number disagree with the week drawn under it — "4
+ * dagen op rij" above a row with empty days in it — so both are gone. "Op rij"
+ * is what it says: every calendar day since the streak began had a round.
  *
  * All dates here are calendar days in local time, formatted as YYYY-MM-DD. A
  * streak is about days a child lived through, not about hours elapsed, and
@@ -39,20 +26,13 @@ export interface StreakState {
   readonly langsteStreak: number;
   /** YYYY-MM-DD of the last day a round was finished, or null. */
   readonly laatsteActieveDag: string | null;
-  readonly rustdagen: number;
-  /** ISO week key (YYYY-Www) in which the last rest day was earned. */
-  readonly rustdagWeek: string | null;
 }
-
-export const MAX_RUSTDAGEN = 2;
 
 export function emptyStreak(): StreakState {
   return {
     huidigeStreak: 0,
     langsteStreak: 0,
     laatsteActieveDag: null,
-    rustdagen: 0,
-    rustdagWeek: null,
   };
 }
 
@@ -69,7 +49,7 @@ function parseDay(key: string): Date {
   return new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
 }
 
-/** ISO week key, YYYY-Www — the unit a rest day is earned in. */
+/** ISO week key, YYYY-Www: Monday to Sunday, as a school calendar is drawn. */
 export function weekKey(date: Date): string {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   // ISO weeks run Monday to Sunday and belong to the year of their Thursday.
@@ -123,16 +103,18 @@ export function missedSchoolDays(
   return missed;
 }
 
+/** Calendar days strictly between two dates: the days without a round. */
+export function missedDays(from: string, to: string): number {
+  const tussen = Math.round((parseDay(to).getTime() - parseDay(from).getTime()) / 86_400_000);
+  return Math.max(0, tussen - 1);
+}
+
 export interface StreakChange {
   readonly state: StreakState;
   /** True when this round was the first of a new day. */
   readonly counted: boolean;
-  /** Rest days spent to bridge missed school days. */
-  readonly rustdagenGebruikt: number;
-  /** True when the streak restarted because there were not enough rest days. */
+  /** True when the streak restarted because a day was missed. */
   readonly broken: boolean;
-  /** True when this round earned a rest day. */
-  readonly rustdagVerdiend: boolean;
 }
 
 /**
@@ -142,60 +124,24 @@ export interface StreakChange {
  * of one, not four. The number counts days, and saying so plainly is the only
  * way a child can predict it.
  */
-export function recordActivity(
-  state: StreakState,
-  on: Date,
-  holidays: readonly HolidayPeriod[] = [],
-): StreakChange {
+export function recordActivity(state: StreakState, on: Date): StreakChange {
   const today = dayKey(on);
 
   if (state.laatsteActieveDag === today) {
-    return { state, counted: false, rustdagenGebruikt: 0, broken: false, rustdagVerdiend: false };
+    return { state, counted: false, broken: false };
   }
 
-  let streak: number;
-  let rustdagen = state.rustdagen;
-  let rustdagenGebruikt = 0;
-  let broken = false;
-
-  if (state.laatsteActieveDag === null) {
-    streak = 1;
-  } else {
-    const missed = missedSchoolDays(state.laatsteActieveDag, today, holidays);
-    if (missed === 0) {
-      streak = state.huidigeStreak + 1;
-    } else if (missed <= rustdagen) {
-      rustdagen -= missed;
-      rustdagenGebruikt = missed;
-      streak = state.huidigeStreak + 1;
-    } else {
-      streak = 1;
-      broken = true;
-    }
-  }
-
-  // One rest day per week in which the child practised, up to two saved. Earned
-  // after the streak is settled, so a rest day earned today cannot also have
-  // rescued today.
-  const thisWeek = weekKey(on);
-  let rustdagVerdiend = false;
-  if (state.rustdagWeek !== thisWeek && rustdagen < MAX_RUSTDAGEN) {
-    rustdagen += 1;
-    rustdagVerdiend = true;
-  }
+  const broken = state.laatsteActieveDag !== null && missedDays(state.laatsteActieveDag, today) > 0;
+  const streak = state.laatsteActieveDag === null || broken ? 1 : state.huidigeStreak + 1;
 
   return {
     state: {
       huidigeStreak: streak,
       langsteStreak: Math.max(state.langsteStreak, streak),
       laatsteActieveDag: today,
-      rustdagen,
-      rustdagWeek: state.rustdagWeek === thisWeek ? state.rustdagWeek : thisWeek,
     },
     counted: true,
-    rustdagenGebruikt,
     broken,
-    rustdagVerdiend,
   };
 }
 
@@ -206,18 +152,13 @@ export function recordActivity(
  * streak: they open the app, see 12, practise, and watch it become 1. This
  * reports what a round today would actually be joining.
  */
-export function currentStreak(
-  state: StreakState,
-  now: Date,
-  holidays: readonly HolidayPeriod[] = [],
-): number {
+export function currentStreak(state: StreakState, now: Date): number {
   if (state.laatsteActieveDag === null) return 0;
 
   const today = dayKey(now);
   if (state.laatsteActieveDag === today) return state.huidigeStreak;
 
-  const missed = missedSchoolDays(state.laatsteActieveDag, today, holidays);
-  return missed <= state.rustdagen ? state.huidigeStreak : 0;
+  return missedDays(state.laatsteActieveDag, today) === 0 ? state.huidigeStreak : 0;
 }
 
 // ---------------------------------------------------------------------------

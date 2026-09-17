@@ -4,6 +4,7 @@ import { Dot } from '@/components/Dot';
 import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
 import {
   sumText,
+  type FlawlessRun,
   type Item,
   type ItemState,
   type KlokItem,
@@ -22,15 +23,30 @@ import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
-import { loadItemStates } from '@/store/progress';
+import {
+  loadAntwoorden,
+  loadItemStates,
+  loadPlayedRounds,
+  type PlayedRound,
+} from '@/store/progress';
+import { loadRun } from '@/store/streakStore';
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
+import { DezeWeek, GeheugenKaart, PerVak, WeekNaWeek } from './Overzicht';
+import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
 
 /**
  * K9, "Wat je onthoudt": the one screen that answers the question the product
- * is named after (ADR-112, ADR-114).
+ * is named after (ADR-112, ADR-114), and since ADR-148 also the one that says
+ * how the practising goes.
  *
- * It knows every module a child can practise, in the shape of the rest of the
- * app: which subject as chips — the module first, then the set, the chosen one
+ * **It opens on the whole of it** (`Overzicht.tsx`): what you remember over
+ * every subject, with the three-week forecast as a ring; this week in four
+ * tiles; and, with premium, each subject as a bar and the questions of the last
+ * eight weeks as a chart. Every number about practising that stood elsewhere —
+ * the week on Voor ouders, the rounds and questions on the streak page, "Goed
+ * beantwoord" in the column — stands here now and nowhere else.
+ *
+ * **Then one subject**, as before: which subject as chips — the module first, then the set, the chosen one
  * in the module's colour — then **four tiles** that say where the whole set
  * stands, then the dots, then the table, and last the rules.
  *
@@ -70,6 +86,9 @@ import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } fr
 /** The four statuses, in the order a child moves through them. */
 const STATUSSEN: readonly ItemStatus[] = ['new', 'practising', 'remembered', 'refresh'];
 
+/** How many weeks the chart looks back: two months, and this week last. */
+const WEKEN = 8;
+
 /** What remembering means, in the order a child meets it. */
 const REGELS: readonly TranslationKey[] = [
   'retention.regel1',
@@ -77,6 +96,9 @@ const REGELS: readonly TranslationKey[] = [
   'retention.regel3',
   'retention.regel4',
 ];
+
+/** Where a subject row in Per vak takes you. */
+const ONDERWERP_ID = 'onthouden-onderwerp';
 
 export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
   const { actief } = usePremium();
@@ -108,6 +130,9 @@ function Regels() {
 
 function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly premium: boolean }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
+  const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
+  const [antwoorden, setAntwoorden] = useState<readonly Antwoord[]>([]);
+  const [run, setRun] = useState<FlawlessRun>({ nu: 0, beste: 0 });
   const [moduleId, setModuleId] = useState<Module['id']>('topo');
   /** Which kind of sum, on rekenen only. Null for the first. */
   const [soortId, setSoortId] = useState<string | null>(null);
@@ -115,9 +140,18 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
 
   useEffect(() => {
     void loadItemStates().then(setStates);
+    void loadPlayedRounds().then(setRondes);
   }, []);
 
-  if (states === null) {
+  // Alleen met premium gelezen: elk antwoord ooit is de grootste lezing op
+  // deze pagina, en zonder code staat de grafiek er niet.
+  useEffect(() => {
+    if (!premium) return;
+    void loadAntwoorden().then(setAntwoorden);
+    void loadRun().then(setRun);
+  }, [premium]);
+
+  if (states === null || rondes === null) {
     return (
       <div className="tk-page" aria-busy="true">
         <div className="tk-page-main">
@@ -147,6 +181,29 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
   >;
   for (const item of items) telling[statusOf(states.get(item.id), now)] += 1;
 
+  // De sets waar een vak uit bestaat, zonder mix en zonder foutenlijst: dezelfde
+  // twee uitzonderingen als de keuzes hieronder.
+  const vakken = perVak(
+    modules.flatMap((module) =>
+      onderwerpenVan(module.id, states)
+        .flatMap((vak) => vak.sets)
+        .filter((set) => !set.mix && !set.setId.endsWith('fouten')),
+    ),
+    states,
+    now,
+  );
+
+  function kiesVak(id: Module['id']) {
+    setModuleId(id);
+    setSoortId(null);
+    setSetId(null);
+    // Naar de keuzes, en de focus erheen: wie met het toetsenbord drukte, staat
+    // anders nog bovenaan een pagina die net onder hem veranderde.
+    const doel = document.getElementById(ONDERWERP_ID);
+    doel?.scrollIntoView({ block: 'start' });
+    doel?.focus({ preventScroll: true });
+  }
+
   const tegels: readonly (readonly [TranslationKey, number])[] = [
     ['retention.tegelOnthouden', telling.remembered],
     ['retention.tegelOpfrissen', telling.refresh],
@@ -158,6 +215,27 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
     <div className="tk-page">
       <div className="tk-page-main" data-module={moduleId} data-accent="module">
         <Kop />
+
+        <GeheugenKaart stand={geheugen(states, now)} />
+
+        <DezeWeek rondes={rondes} now={now} />
+
+        {premium ? (
+          <>
+            <PerVak vakken={vakken} modules={modules} onKies={kiesVak} />
+            <WeekNaWeek
+              weken={perWeek(antwoorden, now, WEKEN)}
+              procentGoed={procentGoedVan(antwoorden)}
+              run={run}
+              rondes={rondes.length}
+              vragen={antwoorden.length}
+            />
+          </>
+        ) : null}
+
+        <h2 id={ONDERWERP_ID} className="tk-sectie" tabIndex={-1}>
+          {t('retention.onderwerpTitel')}
+        </h2>
 
         {/* Which subject: the module, then the set. Chips rather than a
             select: every option is worth seeing, and a select on a touch

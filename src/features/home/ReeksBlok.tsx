@@ -27,7 +27,7 @@ export function ReeksBlok({ onReeks }: { readonly onReeks: () => void }) {
   // Dit is dezelfde herziening van ADR-116 als bij de badges, en de grens loopt
   // binnen dit blok: hoeveel dagen op rij is één regel over dit kind, en die
   // hoort het te zien. Wat je koopt is het bijhouden ervan — de kalender, de
-  // zes getallen en de week na week, die op de reekspagina staan.
+  // getallen en de week na week, die op de reekspagina staan.
   //
   // ADR-124 haalde dit blok zonder code helemaal weg, om te voorkomen dat er
   // twee sloten onder elkaar in dezelfde kolom stonden. Dat bezwaar vervalt met

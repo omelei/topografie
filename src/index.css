@@ -2521,33 +2521,191 @@
     font-weight: 600;
   }
 
-  /* ---- Answered correctly ------------------------------------------------
-   * A ring and the figure beside it. The ring is ink on the sunken tone, not
-   * a material: this is how the work is going, and a material is a reward
-   * (ADR-071). The figure is the handoff's 40/48, which is not a §C step.
+  /* ---- Onthouden, over alles (ADR-148) -----------------------------------
+   * The card that opens the page: a ring with the three-week forecast, the
+   * count of what is remembered beside it, and one bar under both. All ink:
+   * remembering is a status, and a status is never green (.tk-status). The
+   * ring was the donut of "Goed beantwoord" in the column, grown to lead a page.
    */
-  .tk-donut {
+  .tk-geheugen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tk-geheugen-kop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 24px;
+  }
+  .tk-ring {
+    position: relative;
     display: inline-grid;
     flex: none;
-    place-items: center;
-    width: 64px;
-    height: 64px;
+    place-content: center;
+    justify-items: center;
+    width: 132px;
+    height: 132px;
     border-radius: var(--radius-pil);
     background: conic-gradient(var(--inkt) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%));
   }
-  .tk-donut::after {
+  .tk-ring::before {
     content: '';
-    width: 44px;
-    height: 44px;
+    position: absolute;
+    inset: 14px;
     border-radius: var(--radius-pil);
     background: var(--kaart);
   }
-  .tk-procent {
+  .tk-ring-getal,
+  .tk-ring-label {
+    position: relative;
+  }
+  .tk-ring-getal {
     font-family: var(--font-kop);
-    font-size: var(--type-getal);
-    line-height: var(--type-getal-lh);
-    font-weight: var(--type-getal-weight);
+    font-size: var(--type-sectiekop);
+    line-height: var(--type-sectiekop-lh);
+    letter-spacing: var(--type-sectiekop-ls);
+    font-weight: var(--type-sectiekop-weight);
     font-variant-numeric: tabular-nums;
+  }
+  .tk-ring-label {
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    color: var(--tekst-secundair);
+  }
+  /* Remembered, needs a refresher, still practising: the dot's own order,
+   * darkest first. The words and counts under it carry the same thing. */
+  .tk-standbalk {
+    display: flex;
+    gap: 3px;
+    height: 14px;
+    overflow: hidden;
+    border-radius: var(--radius-pil);
+  }
+  .tk-standbalk-deel {
+    flex-basis: 0;
+    min-width: 6px;
+  }
+  .tk-standbalk-deel[data-status='remembered'] {
+    background: var(--inkt);
+  }
+  .tk-standbalk-deel[data-status='refresh'] {
+    background: var(--tekst-tertiair);
+  }
+  .tk-standbalk-deel[data-status='practising'] {
+    background: var(--rand-sterk);
+  }
+  .tk-standbalk-aantal {
+    font-family: var(--font-kop);
+    font-weight: var(--type-kaartkop-weight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Per vak ----------------------------------------------------------
+   * A row per subject with a bar under its words: remembered in the subject's
+   * own colour, what is on its way in the subject's tint, the rest the empty
+   * track. A subject's colour is allowed in its bar (accent.test.ts). */
+  .tk-vakbalk {
+    display: flex;
+    height: 8px;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: var(--radius-pil);
+    background: var(--balk-leeg);
+  }
+  .tk-vakbalk > span {
+    min-width: 4px;
+  }
+  .tk-vakbalk-onthouden {
+    background: var(--module);
+  }
+  .tk-vakbalk-bezig {
+    background: var(--module-tint);
+  }
+
+  /* ---- Week na week -----------------------------------------------------
+   * The questions of the last eight weeks as bars, right at the foot of each
+   * bar and wrong above it: green and hatched red, the way an answer looks
+   * everywhere in the product (HUISSTIJL §8). This week is the last, and its
+   * name is set in ink. */
+  .tk-grafiek {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+  }
+  .tk-grafiek-weken {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 8px;
+    height: 12rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-grafiek-week {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .tk-grafiek-vak {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+  }
+  .tk-grafiek-staaf {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 100%;
+    max-width: 40px;
+    min-height: 4px;
+    overflow: hidden;
+    border-radius: var(--radius-chip) var(--radius-chip) 0 0;
+  }
+  .tk-grafiek-staaf[data-leeg='ja'] {
+    background: var(--balk-leeg);
+  }
+  .tk-grafiek-goed {
+    flex-basis: 0;
+    background: var(--nadruk);
+  }
+  .tk-grafiek-fout {
+    flex-basis: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--fout-arcering-streep) 0 3px,
+      var(--fout-arcering-grond) 3px 8px
+    );
+  }
+  .tk-grafiek-getal,
+  .tk-grafiek-naam {
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--tekst-secundair);
+    white-space: nowrap;
+  }
+  .tk-grafiek-week[data-deze='ja'] .tk-grafiek-naam {
+    font-weight: 600;
+    color: var(--inkt);
+  }
+  .tk-grafiek-legenda {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    color: var(--tekst-secundair);
+  }
+  .tk-grafiek-teken {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
   }
 
   /* ---- A favourite ---------------------------------------------------------

@@ -5,11 +5,9 @@ import {
   recordActivity,
   recordAnswerRun,
   type FlawlessRun,
-  type HolidayPeriod,
   type StreakChange,
   type StreakState,
 } from '@/game-core';
-import kalender from '../../content/vakanties.json';
 import { getDb } from './db';
 import { activeChildId } from './children';
 
@@ -20,14 +18,7 @@ import { activeChildId } from './children';
  * family iPad meant the eldest kept the youngest's going, which is the one
  * thing a streak may never do: it is a record of turning up, and it has to be
  * true of whoever it is shown to.
- *
- * The holiday calendar is bundled rather than fetched: it is a kilobyte and a
- * half, and a streak that breaks because a JSON file was slow to arrive would
- * be the worst possible failure of a feature whose whole purpose is not
- * punishing anyone.
  */
-
-export const HOLIDAYS: readonly HolidayPeriod[] = kalender.vakanties;
 
 export async function loadStreak(): Promise<StreakState> {
   const db = await getDb();
@@ -38,27 +29,34 @@ export async function loadStreak(): Promise<StreakState> {
     huidigeStreak: row.huidigeStreak,
     langsteStreak: row.langsteStreak,
     laatsteActieveDag: row.laatsteActieveDag,
-    rustdagen: row.rustdagen,
-    rustdagWeek: row.rustdagWeek,
   };
 }
 
 export async function saveStreak(state: StreakState): Promise<void> {
   const db = await getDb();
-  await db.put('streak', { id: await activeChildId(), ...state });
+  const id = await activeChildId();
+  // The run of correct answers lives on this row too (`loadRun`), and a put of
+  // the streak alone wiped its record every morning. It is carried over; the
+  // rest days of before ADR-148 are not.
+  const oud = await db.get('streak', id);
+  const run =
+    oud?.foutloosNu === undefined
+      ? {}
+      : { foutloosNu: oud.foutloosNu, foutloosBeste: oud.foutloosBeste ?? oud.foutloosNu };
+  await db.put('streak', { id, ...state, ...run });
 }
 
 /** Applies a finished round and saves the result. Returns what changed. */
 export async function recordRoundFinished(now = new Date()): Promise<StreakChange> {
   const state = await loadStreak();
-  const change = recordActivity(state, now, HOLIDAYS);
+  const change = recordActivity(state, now);
   if (change.counted) await saveStreak(change.state);
   return change;
 }
 
 /** What the streak is worth today, without recording anything. */
 export async function readStreak(now = new Date()): Promise<number> {
-  return currentStreak(await loadStreak(), now, HOLIDAYS);
+  return currentStreak(await loadStreak(), now);
 }
 
 /**
