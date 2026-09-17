@@ -1282,6 +1282,8 @@ export const nl = {
   // School en woonplaats staan er niet en komen er niet — dat zijn de twee
   // velden die een naam op een apparaat veranderen in een vindbaar kind.
   'you.title': 'Jij',
+  // Onder de titel, in de kop die de etalage van premium is (ADR-150).
+  'you.intro': 'Wie je bent, en wat je gemaakt hebt: je album en je diploma’s.',
   'you.nameIs': 'Je oefent als {naam}.',
   // De persoon bovenaan Jij (ADR-126), met de naam die tot nu toe nergens te
   // veranderen was.

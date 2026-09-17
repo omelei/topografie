@@ -7844,6 +7844,57 @@ die na een hele ronde "Terug naar start" zochten, accepteren ook "Klaar".
 
 ---
 
+## ADR-150 — De etalage van premium op Onthouden, Voor ouders en Jij
+
+**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar: het
+ontwerp van de premiumpagina (ADR-145) doortrekken naar Onthouden, Voor ouders
+en Jij, zonder iets aan wat de pagina's doen te veranderen.
+
+### Context
+
+De premiumpagina kreeg in ADR-145 een eigen vorm: een kop in indigo, kaarten
+met een teken op een indigo tint, en het plan dat aanstaat met een groene rand.
+De drie pagina's eromheen bleven wat ze waren: een zwarte titel met een regel
+eronder, en kaarten met alleen tekst en een knop. Naast elkaar leken ze uit twee
+producten te komen, en de klassen van de premiumpagina heetten `tk-premium-…`,
+dus een andere pagina kon ze niet netjes gebruiken.
+
+### Decision
+
+**Eén set bouwstenen, geen premiumset.** `tk-etalage` (met `-kop`, `-tekst`,
+`-knoppen`), `tk-knop-licht`, `tk-pil`, `tk-kaarten`, `tk-kaartje` (met
+`-kop`) en `tk-kaartteken` zijn de klassen van ADR-145 onder een algemene naam. De
+premiumpagina gebruikt ze zoals eerst; alleen de prijs, de plannen en de tabel
+houden `tk-premium-…`, want die bestaan alleen daar.
+
+**Elke pagina opent met de etalage.** Op Onthouden, Voor ouders en Jij staan
+de titel en de zin eronder in het indigo vlak. Jij kreeg die zin
+(`you.intro`); de andere twee hadden hem al. Het blijft een `h1`, en de
+volgorde van de `h2`'s eronder is dezelfde, zodat de tests van ADR-136 en
+ADR-145 niet hoeven te veranderen.
+
+**Een kaart met een keuze draagt een teken.** `tk-kaartrij` is een kaart met
+een teken, de woorden en een knop: je naam en de instellingen op Jij, premium
+op Voor ouders. Staat premium aan, dan krijgt die kaart de groene rand van het
+plan op de premiumpagina. De twee wegen onderaan Voor ouders — naar Onthouden
+en naar Jij — zijn kaartjes naast elkaar waarvan de hele kaart de knop is, met
+het teken van die pagina uit de navigatie. Dezelfde knoppen, met dezelfde
+naam.
+
+**Niet veranderd.** De ring en de balk op Onthouden blijven inkt op een kaart:
+onthouden is een stand en geen actie (`StatusLabel`), en een indigo vlak
+eromheen zou dat verwarren. De lijsten, de tegels, de tabel en de sloten van
+premium elders in het product blijven zoals ze zijn.
+
+### Consequences
+
+Een pagina die erbij komt, heeft een vorm om mee te beginnen in plaats van een
+voorbeeld om na te maken. Indigo staat nu op vier pagina's bovenaan in plaats
+van één; het vlak zegt "hier begint deze pagina", niet "hier druk je". Wie dat
+te veel vindt, zet de kop terug op één plek en de rest volgt.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

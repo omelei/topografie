@@ -214,13 +214,13 @@ function Aanbod() {
 
       <section className="flex flex-col gap-4" aria-label={t('premium.watTitel')}>
         <h2 className="tk-sectie">{t('premium.watTitel')}</h2>
-        <ul className="tk-premium-usps">
+        <ul className="tk-kaarten">
           {DOET.map(([Teken, kop, uitleg]) => (
-            <li key={kop} className="tk-premium-usp">
-              <span className="tk-premium-teken">
+            <li key={kop} className="tk-kaartje">
+              <span className="tk-kaartteken">
                 <Teken size={24} />
               </span>
-              <span className="tk-premium-usp-kop">{t(kop)}</span>
+              <span className="tk-kaartje-kop">{t(kop)}</span>
               <span className="text-lopend text-tekst-secundair">{t(uitleg)}</span>
             </li>
           ))}
@@ -231,7 +231,7 @@ function Aanbod() {
 
       <section className="flex flex-col gap-4" aria-label={t('premium.waaromTitel')}>
         <h2 className="tk-sectie">{t('premium.waaromTitel')}</h2>
-        <ul className="tk-premium-waarom">
+        <ul className="tk-kaarten">
           {WAAROM.map(([Teken, kop, uitleg]) => (
             <li key={kop} className="tk-premium-waarom-rij">
               <span className="tk-plaat tk-plaat-neutraal">
@@ -263,15 +263,15 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
   const kop = useId();
 
   return (
-    <section className="tk-premium-etalage" aria-labelledby={kop}>
-      <span className="tk-premium-pil">{t('premium.etalageLabel')}</span>
-      <h2 id={kop} className="tk-premium-etalage-kop">
+    <section className="tk-etalage" aria-labelledby={kop}>
+      <span className="tk-pil">{t('premium.etalageLabel')}</span>
+      <h2 id={kop} className="tk-etalage-kop">
         {t('premium.etalageKop')}
       </h2>
-      <p className="tk-premium-etalage-tekst">{t('premium.intro')}</p>
+      <p className="tk-etalage-tekst">{t('premium.intro')}</p>
       {teKoop ? (
-        <div className="tk-premium-etalage-koop">
-          <a className="tk-button tk-premium-knop-licht" href={KASSA_PAD}>
+        <div className="tk-etalage-knoppen">
+          <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
             {t('premium.kopenKnop')}
           </a>
           <p className="tk-premium-etalage-prijs">
@@ -315,7 +315,7 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
         <div className="tk-premium-plan" data-premium="">
           <p className="flex flex-wrap items-center justify-between gap-2">
             <span className="tk-premium-plan-naam">{t('premium.titel')}</span>
-            <span className="tk-premium-pil">{t('premium.aanrader')}</span>
+            <span className="tk-pil">{t('premium.aanrader')}</span>
           </p>
           {teKoop ? (
             <p className="tk-premium-plan-prijs">

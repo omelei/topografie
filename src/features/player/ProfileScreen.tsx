@@ -1,6 +1,6 @@
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
 import { t } from '@/i18n';
-import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon } from '@/components/Icon';
+import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { Tafeldiplomas } from '@/features/module/Tafeldiplomas';
@@ -41,7 +41,11 @@ export function ProfileScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <h1 className="tk-titel">{t('you.title')}</h1>
+        {/* De kop als de etalage van premium (ADR-150). */}
+        <header className="tk-etalage">
+          <h1 className="tk-etalage-kop">{t('you.title')}</h1>
+          <p className="tk-etalage-tekst text-lopend">{t('you.intro')}</p>
+        </header>
 
         {/* De volgorde van een profielpagina (ADR-145): eerst wie je bent, dan
             de instellingen, dan wat je gemaakt hebt. ADR-143 zette de
@@ -56,8 +60,11 @@ export function ProfileScreen({
             plek waar je ze zoekt. */}
         <section className="flex flex-col gap-3" aria-label={t('you.settings')}>
           <h2 className="tk-sectie">{t('you.settings')}</h2>
-          <div className="tk-card flex flex-wrap items-center justify-between gap-3">
-            <p className="text-lopend">{t('you.settingsBijOuder')}</p>
+          <div className="tk-card tk-kaartrij">
+            <span className="tk-kaartteken">
+              <SpeakIcon size={24} />
+            </span>
+            <p className="tk-kaartrij-tekst text-lopend">{t('you.settingsBijOuder')}</p>
             <button type="button" className="tk-button tk-button-secondary" onClick={onOuder}>
               {t('ouder.naar')}
             </button>
@@ -143,8 +150,11 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
           </div>
         </form>
       ) : (
-        <div className="tk-card flex flex-wrap items-center justify-between gap-3">
-          <p className="text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>
+        <div className="tk-card tk-kaartrij">
+          <span className="tk-kaartteken">
+            <PupilIcon size={24} />
+          </span>
+          <p className="tk-kaartrij-tekst text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>
           <button
             type="button"
             className="tk-button tk-button-secondary"
