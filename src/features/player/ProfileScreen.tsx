@@ -41,7 +41,7 @@ export function ProfileScreen({
   readonly onOuder: () => void;
   /** Gekomen via "Bekijk alle diploma's": de prijzenkast open, en ernaartoe. */
   readonly diplomasOpen?: boolean;
-  readonly onDiplomasGezien?: () => void;
+  readonly onDiplomasGezien?: (() => void) | undefined;
 }) {
   return (
     <div className="tk-page">
@@ -186,7 +186,7 @@ function Prijzenkast({
   onGezien,
 }: {
   readonly open: boolean;
-  readonly onGezien?: () => void;
+  readonly onGezien?: (() => void) | undefined;
 }) {
   const [alles, setAlles] = useState(open);
   const id = useId();
