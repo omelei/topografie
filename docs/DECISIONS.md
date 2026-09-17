@@ -8022,6 +8022,80 @@ premiumknop in de balk blijft op elke pagina staan.
 
 ---
 
+## ADR-153 — Waar je voor gaat past bij de groep, met de weg naar alle diploma's
+
+**Status:** accepted. **Date:** 2026-09-18. Op verzoek van de eigenaar. Bouwt
+op ADR-141 (het doel) en ADR-151 (de groep), en verfijnt de koppeltabel van
+ADR-151.
+
+### Context
+
+"Waar je voor gaat" stelt drie diploma's voor, het dichtstbijzijnde bovenaan.
+Voor een kind dat nog niets deed staat alles op nul, en dan besliste de
+volgorde van de modules: de tafels van 1, 2 en 3. Ook voor een kind in groep
+8, dat sinds ADR-151 zijn groep heeft opgegeven. Er was ook geen weg van dit
+blok naar alle diploma's; die staan op Jij, achter een knop.
+
+### Decision
+
+**Met een groep kiest `suggesties` uit wat bij die groep past.** Eerst wat nu
+past (`indelingVoor`), dan herhaling en pas dan wat voor later is. Binnen wat
+past gaat voor wat dichtbij is, zoals zonder groep: een diploma waar je al
+half bent, wint. Daarna de stof die het laatst begint en het laatst ophoudt,
+dus hoe hoger de groep, hoe verder in de stof. Herhaling gaat het zwaarst
+eerst. En één per vak zolang dat kan: een tafel, een klok en een kaart zijn
+drie keuzes, drie tafels zijn er één.
+
+**De koppeltabel en de leerdoelen zijn fijner gemaakt.** Met de indeling van
+ADR-151 stonden te veel sets in dezelfde groepen, en dan besliste weer de
+volgorde van de content: tafel 11 voor groep 5, dezelfde drie diploma's voor
+groep 7 en groep 8. Nu:
+
+| Set                                                                    | Was        | Wordt                 |
+| ---------------------------------------------------------------------- | ---------- | --------------------- |
+| tafel-1                                                                | 4, 5       | 4                     |
+| tafel-6 t/m 9                                                          | 5          | 5, 6                  |
+| tafel-11, tafel-12                                                     | 5, 6       | 6                     |
+| vlag-europa-alle                                                       | 6, 7, 8    | 6, 7, 8 (ongewijzigd) |
+| vlag-{afrika, azie, noord-amerika, zuid-amerika, oceanie, wereld}-alle | 6, 7, 8    | 7, 8                  |
+| leerdoelen landen van de werelddelen en van de wereld                  | groep 7, 8 | groep 8               |
+
+Het blijft onze eigen indeling, zonder kerndoel (ADR-011).
+
+**Wat er nu staat, voor een kind dat nog niets deed.** Met premium:
+
+- groep 3: hele uren, halve uren, tafel 1;
+- groep 4: tafel 2, kwartieren, tafel 5;
+- groep 5: tafel 6, vijf minuten, tafel 7;
+- groep 6: vlaggen van Europa, provincies, tafel 11;
+- groep 7: hoofdsteden, vlaggen van Afrika, Waddeneilanden;
+- groep 8: landen van Europa, vlaggen van Afrika, landen van Afrika.
+
+Zonder code, alleen de tafels:
+
+- groep 3: 1, 2, 5;
+- groep 4: 2, 5, 10;
+- groep 5: 6, 7, 8;
+- groep 6: 11, 12, 6;
+- groep 7 en 8: 12, 11, 9.
+
+`doel.test.ts` houdt dit vast, en ook dat groep 5 en hoger nooit tafel 1 of 2
+krijgt.
+
+**Onder het blok staat "Bekijk alle diploma's".** In elke toestand: bij de
+keuze, bij een gekozen doel en na een gehaald diploma. De knop opent Jij met de
+prijzenkast open, ook wat nog te halen is, en brengt die in beeld. Eén keer:
+wie daarna zelf naar Jij gaat, ziet de kast zoals altijd.
+
+**Niet veranderd.** Zonder groep zijn de voorstellen precies wat ze waren. Het
+gekozen doel, de stand, de toets en premium veranderen niet.
+
+### Consequences
+
+De indeling heeft nu een tweede gebruiker, en daarmee een tweede reden om te
+kloppen. Wie hem aanpast, draait `doel.test.ts` en ziet per groep wat er
+verschuift.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

@@ -94,7 +94,7 @@ describe('de sets die hun groep zelf dragen', () => {
       return set ? groepenVanSet(set.id, set.items) : undefined;
     };
     expect(van('nl-provincies')).toEqual([6, 7]);
-    expect(van('europa-landen')).toEqual([7, 8]);
+    expect(van('europa-landen')).toEqual([8]);
     expect(van('taal-sp-gch')).toEqual([7]);
     expect(van('taal-ww-tt')).toEqual([6]);
   });

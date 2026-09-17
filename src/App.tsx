@@ -139,6 +139,9 @@ export default function App() {
   const [boot, setBoot] = useState<Boot>({ status: 'loading' });
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   const [visit, setVisit] = useState(0);
+  // "Bekijk alle diploma's" op de voordeur opent Jij met de prijzenkast open
+  // (ADR-153). Eén keer: wie daarna zelf naar Jij gaat, ziet hem zoals altijd.
+  const [diplomasOpen, setDiplomasOpen] = useState(false);
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
 
@@ -544,6 +547,10 @@ export default function App() {
   const goWeek = () => go({ name: 'week' });
   const goOuder = () => go({ name: 'ouder' });
   const goJij = () => go({ name: 'you' });
+  const goDiplomas = () => {
+    setDiplomasOpen(true);
+    go({ name: 'you' });
+  };
 
   /** The child's own column, which every screen inside the shell carries. */
   const eigenKolom = <SideColumn onWeek={goWeek} onBegin={beginRonde} />;
@@ -636,7 +643,13 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
+        <ProfileScreen
+          profile={boot.profile}
+          aside={eigenKolom}
+          onOuder={goOuder}
+          diplomasOpen={diplomasOpen}
+          onDiplomasGezien={() => setDiplomasOpen(false)}
+        />
       </Shell>
     );
   }
@@ -670,6 +683,7 @@ export default function App() {
         onBegin={beginRonde}
         onVerder={maakAf}
         onPlan={maakAf}
+        onDiplomas={goDiplomas}
       />
     </Shell>
   );

@@ -89,9 +89,18 @@ export interface HomeScreenProps {
    * een andere reden — daar is de rest van een ronde, hier wat je bijna vergeet.
    */
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
+  /** Naar alle diploma's, op Jij (ADR-153). */
+  readonly onDiplomas: () => void;
 }
 
-export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScreenProps) {
+export function HomeScreen({
+  naam,
+  onWeek,
+  onBegin,
+  onVerder,
+  onPlan,
+  onDiplomas,
+}: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
@@ -141,7 +150,12 @@ export function HomeScreen({ naam, onWeek, onBegin, onVerder, onPlan }: HomeScre
   // En waar het naartoe gaat (ADR-141). Onder "Vandaag" en niet erboven: eerst
   // wat er nu te doen is, dan waarvoor. Andersom leest de voordeur als een
   // doelstelling met huiswerk eronder.
-  const doel = <DoelBlok gespeeld={gespeeld} onBegin={onBegin} />;
+  //
+  // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
+  // meteen de diploma's die erbij passen (ADR-153).
+  const doel = (
+    <DoelBlok key={groep ?? 'geen'} gespeeld={gespeeld} onBegin={onBegin} onDiplomas={onDiplomas} />
+  );
 
   const rijen = (
     <>
