@@ -151,40 +151,21 @@ It logs the rounds just played with the mark each came to — "cijfer 8,4", over
 what was answered and not over what was asked ([ADR-053](docs/DECISIONS.md)).
 And down the right it keeps what is the child's own — beside every screen
 inside the frame from 1200 wide; below that only the tests stay, on the front
-door ([ADR-119](docs/DECISIONS.md)): their progress first, then everything answered
-correctly so far with the run of correct answers under it, then the exercises
-they keep going back to. "Jouw voortgang" is the hero a child wears, the reeks
-it stands in, five stars with as many filled as the next chest has, and one line
-saying what that chest costs, in the only unit that means anything to them: "nog
-6 goede antwoorden" ([ADR-099](docs/DECISIONS.md)). The level stands under it
-as one thin bar and one line, so the nearest reward weighs most and the two do
-not compete ([ADR-070](docs/DECISIONS.md)).
+door ([ADR-119](docs/DECISIONS.md)): the tests, the week, and the exercises
+they keep going back to.
 
-**What a round is worth is counted in one thing, and counted the same
-everywhere: correct answers.** Ten of them are a star, five stars are a chest,
-and a chest holds one of the twelve heroes — one the child does not have yet,
-chosen by them from three that are laid face up
-([ADR-097](docs/DECISIONS.md)). Twelve chests are twelve heroes, six hundred
-correct answers, and the same twelve for every child; the choosing changes when
-a hero arrives, never whether. Three duplicates carry a hero up a reeks, so the
-collection is twelve heroes and sixty plates. Nothing else moves it: not money,
-not chance, not a day of the week.
-
-The whole of it is at **leer.nu/voortgang**: twelve heroes — Valerie Vos to
-Ben Buizerd, each with a ring round the plate for every reeks climbed, brons,
-zilver, goud, platina, ultra ([ADR-080](docs/DECISIONS.md)) — twelve
-tafeldiploma's and ten reisstempels, with what every one of them costs written
-next to it ([ADR-076](docs/DECISIONS.md), [ADR-098](docs/DECISIONS.md)). A hero not found yet is drawn as a
-chest and keeps its name to itself, which is what the three cards are for
-([ADR-081](docs/DECISIONS.md)). A chest is opened at the end of the round
-that earned it — the one moment of movement in this product that is a reward
-rather than a lesson — and it says which hero, which reeks, and which chest
-handed it over ([ADR-084](docs/DECISIONS.md)). A chest earned by a round that
-was closed too early is still owed, and the collection page opens it instead. Nothing on that page can be bought, won by
-chance or reached by waiting, and nothing on it mentions a date. **There is no
-random number anywhere in the reward path**: which hero a chest may hold is
-arithmetic in `game-core`, the order is fixed and the same for every child, and
-the choosing is the child's ([ADR-097](docs/DECISIONS.md)).
+**What practising earns is the album** ([ADR-149](docs/DECISIONS.md)). Every
+province, flag, clock, sum and word is a picture, and its layer follows the
+highest Leitner box it ever reached: a sketch while it is being learnt, colour
+once it is remembered, a frame after that, and a stamp for every review in the
+last box that was due. Nothing is taken away — a mistake puts a small sign on a
+coloured picture and leaves the colour — and nothing is earned by volume: a
+right answer that was not due changes nothing, and says when it will count
+again. Days count, runs do not: the weekkaart stamps each day with a round, the
+child chooses a goal of two to five days, and a week that reaches it gets a seal
+on the school year's strip. A diploma is sat on a page that is ripe, with
+someone watching if the child wants, and kept up season by season. Nothing in
+the reward path is random, nothing can be bought, and nothing counts in a row.
 
 The forecast — "69%, weet je hier over drie weken nog van" — is the number the
 product argues from and it lives on **Onthouden**, one screen along. On the

@@ -35,6 +35,9 @@ device itself.
 // object store: itemStates    keyed by itemId — same shape as part B §4
 {
   (itemId, box, laatsteReview, volgendeReview, goedCount, foutCount);
+  // since ADR-149, both optional: the highest box ever reached (the album's
+  // layer), and the moments of every due right answer in box 5 (its stamps)
+  (hoogsteDoos, stempels);
 }
 
 // object store: sessions      same shape as part B §4, minus organisationId
@@ -48,19 +51,23 @@ device itself.
   (id, sessionId, itemId, mode, correct, responseMs, gekozenAntwoord, tijdstip);
 }
 
-// object store: streak        exactly one record, key 'me'
+// object store: streak        exactly one record, key 'me' — not read since ADR-149
 {
   (id, huidigeStreak, langsteStreak, laatsteActieveDag, foutloosNu, foutloosBeste);
 }
 
-// object store: badges        { badgeId, behaaldOp }
-// object store: stamps        { regioSet, behaaldOp }
-// object store: settings      { key, value } — device preferences, not player data
+// object store: badges        { badgeId, behaaldOp } — diplomas only since ADR-149;
+//                             behaaldOp is the day it was first earned
+// object store: stamps        { regioSet, behaaldOp } — not read since ADR-149
+// object store: settings      { key, value } — device preferences, and per child:
+//   weekdoel:<kindId>   the weekkaart's goal, 2–5 days (default 3)
+//   zegels:<kindId>     the weeks that reached it, as week keys; only ever added to
+//   bijhouden:<kindId>  per diploma, the seasons it was kept up in
 ```
 
-Rest days (`rustdagen`, `rustdagWeek`) are gone since ADR-148: a missed school day
-ends the streak. Rows written before still carry the two fields, and nothing reads
-them; the next save of the streak drops them.
+The streak, the heroes and the badges are gone since ADR-149. Their rows stay
+where they are and nothing reads them: removing a store is a migration that risks
+real rows for nothing a child can see.
 
 Field names are camelCase here and snake_case in Postgres. That single renaming is
 the only translation between part A and part B, and it belongs in one mapping

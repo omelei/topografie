@@ -7717,6 +7717,133 @@ op Vandaag, waar hij ook wordt ingevoerd.
 
 ---
 
+## ADR-149 — Het album: een plaatje is nooit af, de week wel
+
+**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar: een nieuw
+beloningsprogramma dat kinderen van 6 tot 12 jaar op meer dagen laat oefenen,
+zodat ze het blijven kunnen, met de helden en alles eromheen los te laten. De
+eigenaar besliste vooraf: "vaker" is op meer dagen; een fout op een plaatje in
+kleur laat de kleur staan en geeft een teken; geen snelheidslaag bij de tafels;
+en het kind ziet gratis wat het heeft. Vervangt de verzameling en de helden
+(ADR-071, ADR-098, ADR-142, ADR-145), de badges (ADR-040, ADR-112), de klim
+(ADR-137), de kist en de sterren (ADR-138), de reeks (ADR-110, ADR-148) en het
+diploma als één losse ronde (ADR-064, ADR-104, ADR-117).
+
+### Context
+
+Er waren ongeveer vijftien beloningen, en bijna allemaal betaalden ze voor
+volume: sterren per goed antwoord, een kist per tien sterren, een held die
+groeide, drie op rij, foutloos op rij, een dagreeks die brak. Geen van die
+dingen zei iets over wat een kind over drie weken nog weet, en dat is het enige
+wat dit product belooft.
+
+De eerste vorm van het nieuwe idee was een album dat je inkleurt. De eigenaar
+vroeg of dat herhalen niet juist afremt: als een oefening afronden iets in je
+album afrondt, waarom zou je dan terugkomen? Voor de oefening klopt de zorg niet
+— Leitner schuift een item alleen op als het aan de beurt was (ADR-114), dus
+kleur vraagt goede antwoorden op verschillende dagen. Voor het plaatje, de
+pagina en het diploma klopt ze wel: na "ik kan het" zakt de inzet (post-reward
+resetting), en de herhalingen die ná het eerste onthouden komen, zijn precies
+de herhalingen die het blijvend maken (successive relearning). Een album met
+kleur als eindstaat en een diploma van één ronde zeggen allebei "klaar".
+
+### Decision
+
+**De dag en de week kun je afmaken; een plaatje wordt nooit af, alleen
+steviger.** Wat verdiend is, blijft. Herhalen voegt toe en repareert geen
+verlies.
+
+**Het album.** Elk item is een plaatje: een provincie, een vlag, een klok, een
+som, een woord. Zijn laag volgt de hoogste Leitner-doos die het ooit haalde
+(`hoogsteDoos`), niet de doos van nu, zodat er nooit iets af gaat:
+
+| Laag | Wanneer            | Vorm                                     |
+| ---- | ------------------ | ---------------------------------------- |
+| 0    | nog niet geoefend  | lichte stippelrand                       |
+| 1–3  | doos 1–3           | schets: donkere stippel, dichte rand, arcering |
+| 4    | doos 4, onthoud je | vlak in de tint van de module            |
+| 5    | doos 5             | een lijstje: dubbele rand                |
+
+Daarbovenop **stempels**: elk goed antwoord in doos 5 dat aan de beurt was,
+met zijn datum (`stempels`). Een laag is altijd een vorm en niet alleen een
+kleur. **Twee tekens**, alleen vanaf kleur, pakken niets af: *lastig* (de doos
+is na een fout onder de 4; de kleur blijft, het teken gaat weg zodra het item
+weer op 4 staat) en *even opfrissen* (te laat, ADR-114). Leitner zelf verandert
+niet: een fout zet een item nog steeds in doos 1.
+
+De pagina van een set staat op de modulepagina, op "Ronde klaar" met wat er
+veranderde, en per module op Jij. Topografie is de kaart die inkleurt, met de
+plaatjes als lijst eronder; al het andere is een rooster. Een plaatje aantikken
+toont de achterkant: wanneer het terugkomt, het weetje, de stempels.
+
+**Na elk antwoord** staat in de terugkoppeling het kleine plaatje met één zin.
+Goed maar niet aan de beurt zegt eerlijk: "Die ken je al. Over 3 dagen telt hij
+weer." Zo leert een kind spreiden zonder het woord.
+
+**Ronde klaar** opent met de pagina, dan drie regels met een pictogram: wat je
+deed, wat er veranderde, wat terugkomen oplevert. Staat er niets meer aan de
+beurt (of is het dagplan af, ADR-139) en is de ronde niet halverwege gestopt,
+dan zegt de pagina "Klaar voor vandaag" en is **Klaar** de eerste knop. **Nieuwe
+plaatjes** brengt een ronde met plaatjes die nog leeg zijn, geen herhaling van
+wat niet aan de beurt is. Dit is gratis.
+
+**De weekkaart vervangt de reeks.** Zeven vakjes; een dag met een ronde krijgt
+een stempel. Een weekdoel van twee tot vijf dagen (standaard drie), dat een kind
+op de weekkaart of met een ouder op Voor ouders kiest. Gehaald: de week krijgt
+een zegel in de strook van het schooljaar. Niet gehaald: maandag een nieuwe
+kaart, er gaat niets weg, en nergens staat "op rij" of "gemist". Het oude adres
+`/reeks` opent de weekkaart op `/week`. Gratis, pagina en al.
+
+**Terugkomen na twee weken of meer**: op de voordeur "Je album staat er nog",
+hoeveel plaatjes opgefrist willen worden, hoe lang de eerste ronde duurt, en
+een ronde van de negen sterkste uit de set met de meeste.
+
+**Een diploma zwem je af, en je houdt het bij.** Een diploma kan alleen op een
+rijpe pagina: negen op de tien onthoud je, bij een tafel alles (de lat van
+ADR-141), gemeten met de standen van vóór de ronde. Vóór elke diplomaronde staat
+**Afzwemmen**: wat er gevraagd wordt, of de pagina rijp is, en — als hij dat is —
+"Wil je dat iemand meekijkt?". Is hij het niet, dan is de eerste knop "Eerst
+oefenen" en kan een kind **proefzwemmen**: het hoort hoe het ging, er wordt
+niets bewaard. Een gehaald diploma is te printen met naam en datum. De datum
+blijft die van de eerste keer. Daarna krijgt het in elk later seizoen van het
+schooljaar één **bijhoudstempel** als de pagina dan nog rijp is; de muur laat
+vier seizoenvakjes zien, en "klaar om af te zwemmen" bij een diploma dat nog
+niet gehaald is.
+
+**Jij** toont het album per module, de diploma's en het **jaaroverzicht**: weken
+met een zegel, plaatjes in kleur en stevig, stempels, diploma's met hun
+bijhoudstempels. Om te printen.
+
+**Weg:** sterren, kisten, helden en hun afbeeldingen, badges, de klim, het
+maatje en zijn instelling, drie op rij, de foutloze reeks, de dagreeks en de
+kalender, "Vandaag is af" met de held, de tegels op Ronde klaar. In de balk
+staat de beginletter van de naam waar de held stond.
+
+**Opslag.** `ItemState` krijgt twee optionele velden, `hoogsteDoos` en
+`stempels`; geen schemawijziging. Voor een rij zonder `hoogsteDoos` telt de doos
+van nu, dus een kind ziet op dag één al kleur voor wat het al weet. Instellingen
+per kind: `weekdoel:<kind>`, `zegels:<kind>` (bij het eerste lezen afgeleid uit
+de gespeelde rondes van dit schooljaar) en `bijhouden:<kind>`. De oude velden
+en rijen van reeks, helden en badges blijven staan; niets leest ze.
+
+### Consequences
+
+Een kind dat alles al kent, moet voor een diploma een week of meer terugkomen;
+dat is het punt, en proefzwemmen kan meteen. De eerste kleur valt rond dag
+acht, dus de eerste week leunt op schetsen en de weekkaart. Dat kan te zacht
+zijn; het is de zwakste plek van dit besluit, samen met de vraag of een pagina
+met lijstjes voor een kind alsnog "klaar" voelt. Beide zijn alleen door kijken
+met kinderen te beantwoorden.
+
+Sommige kinderen hielden van de helden, de kist of de reeks. Een weekdoel
+trekt minder hard dan een dagreeks die breekt, en die druk laten we bewust
+liggen. De afbeeldingen van de helden zijn uit `public/` weg.
+
+E2e-tests die een diploma halen, zetten eerst de standen op onthouden. Tests
+die na een hele ronde "Terug naar start" zochten, accepteren ook "Klaar".
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)
