@@ -14,7 +14,7 @@ const WEKEN = 5;
 const WEEKDAGEN = [1, 2, 3, 4, 5, 6, 0];
 
 /** The rules of the streak, in the order a child meets them. */
-const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3'] as const;
+const REGELS = ['reeks.regel1', 'reeks.regel2'] as const;
 
 /**
  * The streak's own page: the number, the days behind it, and how it works
@@ -33,9 +33,9 @@ const REGELS = ['reeks.regel1', 'reeks.regel2', 'reeks.regel3'] as const;
  * weekday and hear which dates had a round.
  *
  * **The rules are written out.** A streak a child cannot predict feels unfair
- * the first time it does something they did not expect, so the three rules
- * `streak.ts` works by are here in words: a day counts once, weekends and
- * holidays never break it, and a missed school day does.
+ * the first time it does something they did not expect, so the two rules
+ * `streak.ts` works by are here in words: a day counts once, and a day
+ * without a round ends it, weekend and holiday included.
  *
  * What it does not do is compare. There is no other child here, no average and
  * no "beter dan vorige week" — the only streak on the page is this one.
@@ -86,7 +86,7 @@ function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
           <p className="text-tekst-secundair">{vandaagZin(reeks.dagen, vandaagGeoefend)}</p>
         </section>
 
-        {/* Drie getallen (ADR-148; het waren er zes), een kalender van vijf weken en drie regels uitleg
+        {/* Drie getallen (ADR-148; het waren er zes), een kalender van vijf weken en twee regels uitleg
             (ADR-143). Voor een kind is "Dagen deze maand: 1" geen reeks maar
             een rapportage, en vijfendertig lege vakjes zijn vijfendertig dagen
             waarop het niets deed. Het staat er nog — het is zijn voortgang —
@@ -122,9 +122,8 @@ function ReeksPagina({ aside }: { readonly aside: ReactNode }) {
 }
 
 /**
- * What a round today would do. Said as what happens, never as what is lost: at
- * the weekend not practising costs nothing, and this line must not suggest
- * otherwise.
+ * What a round today would do. Said as what happens, never as what is lost:
+ * the rules below say what a missed day costs, and this line does not threaten.
  */
 function vandaagZin(dagen: number, geoefend: boolean): string {
   if (geoefend) return t('reeks.vandaagKlaar');

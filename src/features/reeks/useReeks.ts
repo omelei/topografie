@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { currentStreak, dagenGeoefend } from '@/game-core';
 import { loadPlayedRounds } from '@/store/progress';
-import { HOLIDAYS, loadStreak } from '@/store/streakStore';
+import { loadStreak } from '@/store/streakStore';
 
 /** Everything the streak block and the streak page say, read once. */
 export interface Reeks {
@@ -29,7 +29,7 @@ export function useReeks(): Reeks | null {
 
   useEffect(() => {
     void Promise.all([loadStreak(), loadPlayedRounds()]).then(([streak, rondes]) => {
-      const dagen = currentStreak(streak, vandaag, HOLIDAYS);
+      const dagen = currentStreak(streak, vandaag);
       setReeks({
         vandaag,
         dagen,

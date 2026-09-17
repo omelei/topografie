@@ -7637,7 +7637,8 @@ script.
 
 **Status:** accepted. **Date:** 2026-09-16. Op verzoek van de eigenaar: "in jouw
 reeks zie ik 4 dagen op rij geoefend terwijl er maandag niet geoefend is", en
-daarna "sloop de rustdag eruit". In dezelfde vraag: breng Onthouden naar een
+daarna "sloop de rustdag eruit" en "weekenden en vakantie breken wel de reeks".
+In dezelfde vraag: breng Onthouden naar een
 hoger niveau, met statistieken over gebruik en onthouden, en bepaal wat op
 /ouder, /jij, /premium en /onthouden hoort, zonder dubbelingen. Vervangt de
 rustdag uit ADR-031 en de week-tegels op Voor ouders uit ADR-136.
@@ -7658,13 +7659,15 @@ overzicht over de vakken en zonder iets over de tijd.
 
 ### Decision
 
-**De rustdag is weg.** Een schooldag zonder afgemaakte ronde beëindigt de
-reeks; de volgende ronde begint weer bij één. Weekend en schoolvakantie breken
-hem nog steeds niet, en oefenen op die dagen telt nog steeds mee.
+**De rustdag is weg, en elke dag telt.** Een dag zonder afgemaakte ronde
+beëindigt de reeks, ook in het weekend en in de schoolvakantie; de volgende
+ronde begint weer bij één. De reeks rekent daarom niet meer met de
+vakantiekalender (`HOLIDAYS` is weg uit `streakStore`); het weekbericht telt
+nog wel schooldagen.
 `StreakState` heeft geen `rustdagen` en `rustdagWeek` meer, `StreakChange` geen
 `rustdagenGebruikt` en `rustdagVerdiend`. Oude rijen houden de velden tot de
 volgende keer dat de reeks wordt bewaard; niets leest ze. De reekspagina heeft
-drie regels in plaats van vier, "Ronde klaar" zegt niets meer over rustdagen.
+twee regels in plaats van vier, "Ronde klaar" zegt niets meer over rustdagen.
 
 Terloops: `saveStreak` schreef de rij opnieuw zonder `foutloosNu` en
 `foutloosBeste`, zodat het record foutloos op rij bij de eerste ronde van elke
@@ -7703,8 +7706,8 @@ een knop naar de premiumpagina, geen tweede beheerplek.
 
 ### Consequences
 
-Een kind dat één schooldag overslaat, verliest zijn reeks. Dat is strenger dan
-ADR-031 bedoelde, en het is wat "op rij" zegt. Wie het terug wil, doet dat met
+Een kind dat één dag overslaat, ook een zaterdag, verliest zijn reeks. Dat is
+veel strenger dan ADR-031 bedoelde, en het is wat "op rij" zegt. Wie het terug wil, doet dat met
 een regel die ook in het rijtje te zien is, niet met een getal dat doortelt.
 
 De voordeur heeft rechts een blok minder. Onthouden leest nu ook alle rondes en,

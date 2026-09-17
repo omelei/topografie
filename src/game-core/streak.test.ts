@@ -21,8 +21,8 @@ const day = (key: string) => {
 
 const KERST: HolidayPeriod[] = [{ naam: 'Kerstvakantie', start: '2026-12-19', eind: '2027-01-03' }];
 
-function after(state: StreakState, key: string, holidays: HolidayPeriod[] = []) {
-  return recordActivity(state, day(key), holidays).state;
+function after(state: StreakState, key: string) {
+  return recordActivity(state, day(key)).state;
 }
 
 describe('dayKey', () => {
@@ -96,31 +96,33 @@ describe('recordActivity', () => {
     expect(state.huidigeStreak).toBe(3);
   });
 
-  // The rule that matters most: a weekend is not a failure.
-  it('survives a weekend', () => {
+  // ADR-148: a weekend or a holiday is a day like any other.
+  it('restarts after a weekend without a round', () => {
     const friday = after(emptyStreak(), '2026-09-11');
     const change = recordActivity(friday, day('2026-09-14'));
 
-    expect(change.state.huidigeStreak).toBe(2);
-    expect(change.broken).toBe(false);
+    expect(change.state.huidigeStreak).toBe(1);
+    expect(change.broken).toBe(true);
   });
 
-  it('survives a two-week holiday', () => {
-    const before = after(emptyStreak(), '2026-12-18', KERST);
-    const change = recordActivity(before, day('2027-01-04'), KERST);
-
-    expect(change.state.huidigeStreak).toBe(2);
-    expect(change.broken).toBe(false);
+  it('keeps growing through a weekend with a round every day', () => {
+    let state = after(emptyStreak(), '2026-09-11');
+    state = after(state, '2026-09-12');
+    state = after(state, '2026-09-13');
+    expect(after(state, '2026-09-14').huidigeStreak).toBe(4);
   });
 
-  it('rewards practising during a holiday rather than ignoring it', () => {
-    // The asymmetry: holidays never count against you, but they do count for
-    // you. Pausing both ways would make Sunday's work worth nothing.
-    const before = after(emptyStreak(), '2026-12-18', KERST);
-    const change = recordActivity(before, day('2026-12-21'), KERST);
+  it('restarts after a holiday without a round', () => {
+    const before = after(emptyStreak(), '2026-12-18');
+    const change = recordActivity(before, day('2027-01-04'));
 
-    expect(change.counted).toBe(true);
-    expect(change.state.huidigeStreak).toBe(2);
+    expect(change.broken).toBe(true);
+    expect(change.state.huidigeStreak).toBe(1);
+  });
+
+  it('counts across a month and a year boundary', () => {
+    const oud = after(emptyStreak(), '2026-12-31');
+    expect(recordActivity(oud, day('2027-01-01')).state.huidigeStreak).toBe(2);
   });
 
   // ADR-148: there is no rest day any more. "Op rij" means every school day.
@@ -164,9 +166,10 @@ describe('currentStreak', () => {
     expect(currentStreak(emptyStreak(), day('2026-09-07'))).toBe(0);
   });
 
-  it('still stands over a weekend', () => {
+  it('is gone on Sunday after a Friday round and no Saturday', () => {
     const friday = after(emptyStreak(), '2026-09-11');
-    expect(currentStreak(friday, day('2026-09-13'))).toBe(1);
+    expect(currentStreak(friday, day('2026-09-12'))).toBe(1);
+    expect(currentStreak(friday, day('2026-09-13'))).toBe(0);
   });
 
   /**

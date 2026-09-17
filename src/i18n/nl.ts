@@ -115,8 +115,8 @@ export const nl = {
   'reeks.vandaagWel': 'Vandaag: geoefend',
   'reeks.vandaagNiet': 'Vandaag: nog niet geoefend',
   'reeks.bekijk': 'Bekijk je reeks',
-  // De pagina. Wat een ronde vandaag doet, zonder te dreigen: in het weekend
-  // kost niet oefenen niets, en deze zin mag niet anders klinken.
+  // De pagina. Wat een ronde vandaag doet, zonder te dreigen: wat een gemiste
+  // dag kost, staat in de regels eronder.
   'reeks.nuTitel': 'Je reeks nu',
   'reeks.vandaagKlaar': 'Vandaag heb je al geoefend. Deze dag telt mee.',
   'reeks.vandaagBegin': 'Eén ronde is genoeg om te beginnen.',
@@ -131,14 +131,13 @@ export const nl = {
   'reeks.kalGeoefend': 'geoefend',
   'reeks.kalVandaag': 'vandaag',
   'reeks.kalVandaagGeoefend': 'vandaag, geoefend',
-  // De drie regels van streak.ts, in woorden. Een reeks die je niet kunt
+  // De twee regels van streak.ts, in woorden. Een reeks die je niet kunt
   // voorspellen voelt oneerlijk zodra hij iets doet wat je niet verwachtte.
   'reeks.regelsTitel': 'Zo werkt je reeks',
   'reeks.regel1':
     'Elke dag waarop je een ronde afmaakt, telt mee. Vier rondes op één dag zijn één dag.',
   'reeks.regel2':
-    'In het weekend en in de schoolvakantie gaat je reeks nooit kapot. Oefen je dan toch, dan telt het wel.',
-  'reeks.regel3': 'Mis je een schooldag, dan begint je reeks de volgende keer weer bij één.',
+    'Sla je een dag over, ook in het weekend of de vakantie, dan begint je reeks de volgende keer weer bij één.',
   // De dagen van de week: kort boven een streepje, voluit voor wie voorleest.
   // Genummerd zoals Date.getDay telt: zondag is 0.
   'dag.kort.0': 'zo',

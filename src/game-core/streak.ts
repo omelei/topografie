@@ -1,27 +1,11 @@
 /**
- * The day streak, and the rules that stop it from being a punishment.
+ * The day streak: days in a row on which a round was finished.
  *
- * Spec §4.3 asks for a streak "met opzet ontworpen om níét te straffen", which
- * is harder than it sounds: the whole force of a streak comes from not wanting
- * to lose it, and every softening trades some of that away. Two rules do the
- * work here, and each buys back more than it costs.
- *
- * **A weekend or a holiday can never break it.** School holidays are not days a
- * child failed to practise; they are days nobody asked them to. A streak that
- * makes a ten-year-old feel guilty on Boxing Day is a complaint from a parent
- * waiting to happen, and it is also simply wrong about what it is measuring.
- *
- * **But practising on those days still counts.** The asymmetry is deliberate:
- * doing the work is always rewarded, not doing it is only ever counted on a
- * school day. Pausing both ways would punish a child for practising on Sunday
- * by making it worth nothing.
- *
- * **A missed school day ends it** (ADR-148). Until then a missed school day
- * spent a rest day, earned one a week, and the streak stood. That kept a child
- * from losing two months over one illness, and it also put "4 dagen op rij
- * geoefend" above a week with an empty Monday in it — a number the row under
- * it contradicted. "Op rij" is now what it says: every school day since the
- * streak began had a round.
+ * **Every day counts, and every day missed ends it** (ADR-148). Weekends and
+ * school holidays used to pause the streak, and a missed school day spent a
+ * rest day. Both made the number disagree with the week drawn under it — "4
+ * dagen op rij" above a row with empty days in it — so both are gone. "Op rij"
+ * is what it says: every calendar day since the streak began had a round.
  *
  * All dates here are calendar days in local time, formatted as YYYY-MM-DD. A
  * streak is about days a child lived through, not about hours elapsed, and
@@ -119,11 +103,17 @@ export function missedSchoolDays(
   return missed;
 }
 
+/** Calendar days strictly between two dates: the days without a round. */
+export function missedDays(from: string, to: string): number {
+  const tussen = Math.round((parseDay(to).getTime() - parseDay(from).getTime()) / 86_400_000);
+  return Math.max(0, tussen - 1);
+}
+
 export interface StreakChange {
   readonly state: StreakState;
   /** True when this round was the first of a new day. */
   readonly counted: boolean;
-  /** True when the streak restarted because a school day was missed. */
+  /** True when the streak restarted because a day was missed. */
   readonly broken: boolean;
 }
 
@@ -134,20 +124,14 @@ export interface StreakChange {
  * of one, not four. The number counts days, and saying so plainly is the only
  * way a child can predict it.
  */
-export function recordActivity(
-  state: StreakState,
-  on: Date,
-  holidays: readonly HolidayPeriod[] = [],
-): StreakChange {
+export function recordActivity(state: StreakState, on: Date): StreakChange {
   const today = dayKey(on);
 
   if (state.laatsteActieveDag === today) {
     return { state, counted: false, broken: false };
   }
 
-  const broken =
-    state.laatsteActieveDag !== null &&
-    missedSchoolDays(state.laatsteActieveDag, today, holidays) > 0;
+  const broken = state.laatsteActieveDag !== null && missedDays(state.laatsteActieveDag, today) > 0;
   const streak = state.laatsteActieveDag === null || broken ? 1 : state.huidigeStreak + 1;
 
   return {
@@ -168,18 +152,13 @@ export function recordActivity(
  * streak: they open the app, see 12, practise, and watch it become 1. This
  * reports what a round today would actually be joining.
  */
-export function currentStreak(
-  state: StreakState,
-  now: Date,
-  holidays: readonly HolidayPeriod[] = [],
-): number {
+export function currentStreak(state: StreakState, now: Date): number {
   if (state.laatsteActieveDag === null) return 0;
 
   const today = dayKey(now);
   if (state.laatsteActieveDag === today) return state.huidigeStreak;
 
-  const missed = missedSchoolDays(state.laatsteActieveDag, today, holidays);
-  return missed === 0 ? state.huidigeStreak : 0;
+  return missedDays(state.laatsteActieveDag, today) === 0 ? state.huidigeStreak : 0;
 }
 
 // ---------------------------------------------------------------------------
