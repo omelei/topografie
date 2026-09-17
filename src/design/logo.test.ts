@@ -37,8 +37,12 @@ describe('the logo is the one in docs/logo', () => {
   });
 
   it('keeps the colours of the delivery', () => {
-    const kleuren = lees('src', 'design', 'kleuren.css').toString('utf8');
-    expect(kleuren).toBe(lees('docs', 'logo', 'code', 'kleuren.css').toString('utf8'));
+    // Prettier writes the hexes in lower case; the delivery has them in upper.
+    const css = (...pad: string[]) =>
+      lees(...pad)
+        .toString('utf8')
+        .toLowerCase();
+    expect(css('src', 'design', 'kleuren.css')).toBe(css('docs', 'logo', 'code', 'kleuren.css'));
   });
 
   it('points the page head only at files that exist', () => {
