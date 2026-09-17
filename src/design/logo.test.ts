@@ -38,7 +38,10 @@ describe('the logo is the one in docs/logo', () => {
 
   it('keeps the colours of the delivery', () => {
     // Prettier writes the hexes in lower case; the delivery has them in upper.
-    const css = (...pad: string[]) => lees(...pad).toString('utf8').toLowerCase();
+    const css = (...pad: string[]) =>
+      lees(...pad)
+        .toString('utf8')
+        .toLowerCase();
     expect(css('src', 'design', 'kleuren.css')).toBe(css('docs', 'logo', 'code', 'kleuren.css'));
   });
 
