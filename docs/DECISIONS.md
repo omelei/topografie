@@ -2012,7 +2012,9 @@ Supabase.
 Child: a first name, a level, and rows of progress. Nothing else — ADR-008's
 refusal stands, a child never authenticates and never has an e-mail, and the
 two fields that would turn a name into a findable child, school and place of
-residence, are not in the schema and are not to be added to it.
+residence, are not in the schema and are not to be added to it. Since
+ADR-151 a child also has a school group (groep 3 to 8), optional, because a
+first round that suits a child needs it; that is the whole list.
 
 **The region is the EU.** A project holding the first names and study records
 of Dutch primary school children is not going to sit in another jurisdiction
@@ -7892,6 +7894,94 @@ Een pagina die erbij komt, heeft een vorm om mee te beginnen in plaats van een
 voorbeeld om na te maken. Indigo staat nu op vier pagina's bovenaan in plaats
 van één; het vlak zegt "hier begint deze pagina", niet "hier druk je". Wie dat
 te veel vindt, zet de kop terug op één plek en de rest volgt.
+
+---
+
+## ADR-151 — De groep van een kind: gevraagd, altijd over te slaan, en alleen een voorstel
+
+**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar. Draait
+de keuze in `ProfileGate` terug om niets dan een naam te vragen, en breidt de
+lijst van ADR-050 uit met één veld.
+
+### Context
+
+leer.nu wist niet in welke groep een kind zit. Een kind uit groep 4 kreeg
+dezelfde voordeur als een kind uit groep 8: de provincies bovenaan, de tafel
+van 2 als eerste som, en in Vandaag bij gelijk wachten de grootste ronde, of
+die nu over plussommen tot 20 ging of over de landen van Europa.
+
+Het eerste scherm vroeg met opzet "no class, no age". Wat je niet vraagt, hoef
+je niet te bewaren, en een groep is een aanwijzing voor de leeftijd: groep 5 is
+acht of negen. Die keuze was goed zolang de app niets met een groep kon doen.
+Nu kan dat wel, en de vraag is of het voorstel dat oplevert opweegt tegen één
+veld meer over een kind.
+
+### Decision
+
+**De groep wordt gevraagd, na de naam, en kan altijd worden overgeslagen.**
+`ProfileGate` heeft een tweede stap: "In welke groep zit je?", met groep 3 tot
+en met 8 en "Weet ik niet". Groep 1 en 2 staan er niet bij: er is geen stof
+voor, en een knop die niets doet is een belofte die niet klopt. Er wordt nooit
+een leeftijd of geboortedatum gevraagd. Een kind dat er al was, krijgt de vraag
+één keer op de voordeur, onder Vandaag, met "Niet nu"; daarna niet meer.
+
+**De groep hoort bij het kind en blijft op het apparaat.** Twee optionele
+velden op `ProfileRecord`: `groep` en `groepSchooljaar`. Een rij zonder die
+velden is een kind zonder groep, dus er is geen nieuwe `DB_VERSION` en geen
+migratie. Voor de sync van ADR-046, als die er komt, **wijzigt dit ADR-050**:
+een kind is een voornaam, een niveau, een groep en rijen voortgang. School en
+woonplaats blijven erbuiten.
+
+**De groep gaat nooit naar een derde.** Er is geen analytics (ADR-128), en de
+groep staat in geen enkel verzoek naar buiten: niet naar premium, niet naar de
+kassa. `e2e/network.spec.ts` houdt dat al vast voor alles wat de app verstuurt.
+
+**Op 1 augustus schuift de groep vanzelf door.** Met de groep wordt het
+schooljaar bewaard waarin hij werd gekozen; `huidigeGroep` telt de schooljaren
+erbij. Na groep 8 valt hij weg. Een ouder die dat niet klopt, zet het op Voor
+ouders recht.
+
+**Wijzigen gebeurt op Voor ouders, zonder slot.** "Groep van {naam}" staat na
+de instellingen en vóór het weekdoel: eerst hoe de app zich gedraagt, dan wat
+het kind oefent (ADR-145). Er komt geen slot voor, om dezelfde reden als in
+ADR-136.
+
+**Eén functie beslist wat past.** `pastBijGroep` in `game-core/groep.ts`
+geeft voor een set en een groep `nu`, `herhaling`, `later` of `neutraal`.
+Waar de groepen van een set staan, weet alleen `content/schoolgroepen.ts`:
+topografie via de `leerjaar` van de leerdoelen, Taal via `groep` per item, en
+rekenen, klokkijken en vlaggen via `content/schoolgroepen.json`. Die tabel is
+onze eigen indeling en zegt dat erbij: geen kerndoel, geen leerlijn en geen
+aansluiting (ADR-011). Een contenttest faalt als een set nergens bij hoort.
+
+**Een voorstel, geen slot.** Alles blijft te kiezen. De groep bepaalt drie
+volgordes:
+
+1. In Vandaag geeft hij voorrang, maar alleen tussen rondes die even lang
+   wachten. Wat langer wacht, gaat voor: het onthouden gaat voor het voorstel.
+2. In "Hier begin je mee" blijft het één kaart per module, met de set die bij
+   de groep past (`kiesVoorGroep`). Wat daarna nog niet past, schuift achteraan.
+3. Op een vakpagina staan de tegels die passen eerst. Een tegel die herhaling
+   is of voor later, staat onderaan met "Nog eens herhalen" of "Voor later"
+   eronder. De twaalf tafels en de bereiken onder een onderwerp houden hun
+   eigen volgorde.
+
+Een mix, een foutenlijst en een eigen lijst van een ouder hebben geen groep en
+zijn `neutraal`, en neutraal sorteert als "past nu".
+
+**Niet veranderd.** Zonder groep is elke volgorde precies die van vóór dit
+besluit. De moeilijkheid binnen een oefening, de content en premium veranderen
+niet.
+
+### Consequences
+
+Er staat één veld meer over een kind op het apparaat, en straks in het
+ouderaccount. Dat is de prijs, en hij staat hier opgeschreven zodat hij niet
+ongemerkt groeit: een leeftijd, een school of een klas komen er niet bij.
+
+De koppeltabel is een oordeel van ons, en hij kan fout zijn. Omdat hij alleen
+een volgorde bepaalt, kost een fout een kind hooguit een tegel lager, geen
+oefening. Wie hem aanpast, doet dat in één JSON-bestand.
 
 ---
 
