@@ -155,6 +155,70 @@ describe('wat we voorstellen', () => {
   });
 });
 
+/**
+ * Waar je voor gaat, met een groep (ADR-153). Zonder groep kreeg elk kind dat
+ * nog niets deed de tafels van 1, 2 en 3 — ook in groep 8. De sets hier zijn
+ * de echte diploma-sets, met de groepen uit de koppeltabel en de leerdoelen.
+ */
+describe('welke doelen bij een groep passen', () => {
+  const topo = (setId: string, leerdoel: string): Onderdeel => ({
+    ...deel(setId, 'topo', 12),
+    items: Array.from({ length: 12 }, (_, i) => ({ id: `${setId}-${i}`, leerdoelen: [leerdoel] })),
+  });
+  const onderdelen: readonly Onderdeel[] = [
+    topo('nl-provincies', 'ak-nl-provincies-aanwijzen'),
+    topo('nl-hoofdsteden', 'ak-nl-hoofdsteden-aanwijzen'),
+    topo('europa-landen', 'ak-werelddelen-landen-aanwijzen'),
+    ...Array.from({ length: 12 }, (_, i) => deel(`tafel-${i + 1}`, 'tafels', 10)),
+    deel('klok-heel', 'klok', 12),
+    deel('klok-half', 'klok', 12),
+    deel('klok-kwart', 'klok', 24),
+    deel('klok-vijf', 'klok', 96),
+    deel('vlag-europa-alle', 'vlaggen', 46),
+    deel('vlag-afrika-alle', 'vlaggen', 54),
+  ];
+  const met = doelwitten(onderdelen, true);
+  const zonder = doelwitten(onderdelen, false);
+  const voor = (alle: typeof met, groep?: 3 | 4 | 5 | 6 | 7 | 8) =>
+    suggesties(alle, new Set(), new Map(), NU, 3, groep).map((s) => s.doelwit.deel.setId);
+
+  it('is zonder groep precies wat het was', () => {
+    expect(voor(zonder)).toEqual(['tafel-1', 'tafel-2', 'tafel-3']);
+    expect(voor(met)).toEqual(voor(met, undefined));
+  });
+
+  it.each([
+    [3, ['klok-heel', 'klok-half', 'tafel-1']],
+    [4, ['tafel-2', 'klok-kwart', 'tafel-5']],
+    [5, ['tafel-6', 'klok-vijf', 'tafel-7']],
+    [6, ['vlag-europa-alle', 'nl-provincies', 'tafel-11']],
+    [7, ['nl-hoofdsteden', 'vlag-afrika-alle', 'vlag-europa-alle']],
+    [8, ['europa-landen', 'vlag-afrika-alle', 'nl-hoofdsteden']],
+  ] as const)('stelt voor groep %s voor wat bij die groep past', (groep, verwacht) => {
+    expect(voor(met, groep)).toEqual(verwacht);
+  });
+
+  it('stelt nooit de tafels van 1, 2 en 3 voor aan groep 5 of hoger', () => {
+    for (const groep of [5, 6, 7, 8] as const) {
+      for (const alle of [met, zonder]) {
+        const lijst = voor(alle, groep);
+        expect(lijst, `groep ${groep}`).not.toContain('tafel-1');
+        expect(lijst, `groep ${groep}`).not.toContain('tafel-2');
+      }
+    }
+  });
+
+  it('herhaalt zonder code in de hoogste groepen de zwaarste tafels', () => {
+    expect(voor(zonder, 8)).toEqual(['tafel-12', 'tafel-11', 'tafel-9']);
+  });
+
+  it('laat een diploma waar je al half bent voorgaan, ook met een groep', () => {
+    const states = standen(['tafel-3-0', 'tafel-3-1', 'tafel-3-2', 'tafel-3-3', 'tafel-3-4'], 4);
+    const lijst = suggesties(zonder, new Set(), states, NU, 3, 5).map((s) => s.doelwit.deel.setId);
+    expect(lijst[0]).toBe('tafel-3');
+  });
+});
+
 describe('welk diploma een ronde opleverde', () => {
   const leeg = {
     diploma: null,

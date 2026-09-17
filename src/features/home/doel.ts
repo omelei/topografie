@@ -5,10 +5,13 @@ import {
   diplomaWerelddeelVanSet,
   KLOK_DIPLOMA_SETS,
   tableOfDiploma,
+  type Groep,
+  type Indeling,
   type ItemState,
   type ModeId,
 } from '@/game-core';
 import { isPremiumVorm } from '@/features/module/premium';
+import { groepenVan, indelingVoor } from '@/features/module/groepen';
 import type { Onderdeel } from '@/features/module/onderdelen';
 import type { RoundOutcome } from '@/store/rewardStore';
 
@@ -153,6 +156,23 @@ export interface Suggestie {
  * modules zelf (`sort` is stabiel).
  *
  * Behaalde diploma's vallen af: een doel dat je al hebt is geen doel.
+ *
+ * **Met een groep kiezen we uit wat bij die groep past** (ADR-153). Zonder
+ * groep stond er voor elk kind dat nog niets deed "tafel 1, 2 en 3", ook voor
+ * een kind in groep 8. Nu:
+ *
+ * 1. Alleen diploma's die nu bij de groep passen (`indelingVoor`). Past er
+ *    niets of te weinig, dan vult herhaling aan — de zwaarste eerst — en pas
+ *    daarna wat voor later is, het eerstvolgende eerst.
+ * 2. Binnen wat past: eerst wat dichtbij is, zoals zonder groep. Bij gelijke
+ *    stand de stof die het laatst begint en het laatst ophoudt: hoe hoger de
+ *    groep, hoe verder in de stof.
+ * 3. Eén per vak zolang dat kan. Drie tafels onder elkaar is één keuze
+ *    driemaal; een tafel, een klok en een kaart zijn er drie.
+ *
+ * Zonder groep blijft alles zoals het was. Wat al in een Leitner-doos zit, telt
+ * ook met een groep het zwaarst: een diploma waar je al half bent, wint van
+ * een nieuw.
  */
 export function suggesties(
   alle: readonly Doelwit[],
@@ -160,13 +180,72 @@ export function suggesties(
   states: ReadonlyMap<string, ItemState>,
   now: Date,
   hoeveel: number = SUGGESTIES,
+  groep?: Groep,
 ): readonly Suggestie[] {
-  return alle
+  const open = alle
     .filter((doelwit) => !behaald.has(doelwit.id))
     .map((doelwit) => ({ doelwit, stand: standVan(doelwit, states, now) }))
-    .filter(({ stand }) => stand.totaal > 0)
-    .sort((a, b) => deelVan(b.stand) - deelVan(a.stand) || b.stand.onthouden - a.stand.onthouden)
+    .filter(({ stand }) => stand.totaal > 0);
+
+  const dichtbij = (a: Suggestie, b: Suggestie) =>
+    deelVan(b.stand) - deelVan(a.stand) || b.stand.onthouden - a.stand.onthouden;
+
+  if (groep === undefined) return [...open].sort(dichtbij).slice(0, hoeveel);
+
+  const metGroep = open.map((suggestie, plek) => ({
+    suggestie,
+    plek,
+    indeling: indelingVoor(suggestie.doelwit.deel, groep),
+    groepen: groepenVan(suggestie.doelwit.deel) ?? [],
+  }));
+  const begin = (groepen: readonly Groep[]) => (groepen.length ? Math.min(...groepen) : 0);
+  const eind = (groepen: readonly Groep[]) => (groepen.length ? Math.max(...groepen) : 0);
+  const van = (...soorten: readonly Indeling[]) =>
+    metGroep.filter(({ indeling }) => soorten.includes(indeling));
+
+  const passend = van('nu', 'neutraal').sort(
+    (a, b) =>
+      dichtbij(a.suggestie, b.suggestie) ||
+      begin(b.groepen) - begin(a.groepen) ||
+      eind(b.groepen) - eind(a.groepen),
+  );
+  // Herhaling het zwaarst eerst: wie in groep 8 de tafels herhaalt, begint bij
+  // 12 en niet bij 6. Bij gelijke groepen is later in de lijst verder in de stof.
+  const herhaling = van('herhaling').sort(
+    (a, b) =>
+      dichtbij(a.suggestie, b.suggestie) ||
+      eind(b.groepen) - eind(a.groepen) ||
+      begin(b.groepen) - begin(a.groepen) ||
+      b.plek - a.plek,
+  );
+  const later = van('later').sort(
+    (a, b) => dichtbij(a.suggestie, b.suggestie) || begin(a.groepen) - begin(b.groepen),
+  );
+
+  return [...spreidOverVakken(passend.map(({ suggestie }) => suggestie), hoeveel)]
+    .concat(herhaling.map(({ suggestie }) => suggestie))
+    .concat(later.map(({ suggestie }) => suggestie))
     .slice(0, hoeveel);
+}
+
+/**
+ * De eerste van elk vak, in de volgorde van de lijst; daarna de rest, ook in
+ * die volgorde. Zo komt de beste tafel boven de beste klok als hij beter is,
+ * maar staat er geen tweede tafel voordat de klok aan de beurt was.
+ */
+function spreidOverVakken(lijst: readonly Suggestie[], hoeveel: number): readonly Suggestie[] {
+  const eerst: Suggestie[] = [];
+  const daarna: Suggestie[] = [];
+  const gezien = new Set<string>();
+  for (const suggestie of lijst) {
+    const vak = suggestie.doelwit.deel.moduleId;
+    if (gezien.has(vak)) daarna.push(suggestie);
+    else {
+      gezien.add(vak);
+      eerst.push(suggestie);
+    }
+  }
+  return [...eerst, ...daarna].slice(0, hoeveel);
 }
 
 function deelVan(stand: Stand): number {
