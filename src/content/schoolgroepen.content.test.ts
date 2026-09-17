@@ -64,7 +64,10 @@ describe('de koppeltabel', () => {
     for (const [id, groepen] of Object.entries(tabel.sets)) {
       expect(groepen.length, id).toBeGreaterThan(0);
       for (const groep of groepen) expect(isGroep(groep), `${id}: ${groep}`).toBe(true);
-      expect([...new Set(groepen)].sort((a, b) => a - b), id).toEqual(groepen);
+      expect(
+        [...new Set(groepen)].sort((a, b) => a - b),
+        id,
+      ).toEqual(groepen);
     }
   });
 });

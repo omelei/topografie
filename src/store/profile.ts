@@ -34,10 +34,4 @@ export async function createProfile(naam: string, groep?: Groep): Promise<Profil
 
 /** Re-exported so the screens that ask for a setting keep one import. */
 export { getSetting, setSetting } from './settings';
-export {
-  groepAlGevraagd,
-  groepVanActiefKind,
-  renameChild,
-  setGroep,
-  setSticker,
-} from './children';
+export { groepAlGevraagd, groepVanActiefKind, renameChild, setGroep, setSticker } from './children';

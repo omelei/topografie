@@ -23,7 +23,15 @@ function deel(setId: string, items: readonly object[] = [], mix = false): Onderd
 }
 
 function vak(id: string, sets: readonly Onderdeel[]): Onderwerp {
-  return { moduleId: 'tafels', id, naam: 'onderwerp.keer', uitleg: null, keuze: null, regio: null, sets };
+  return {
+    moduleId: 'tafels',
+    id,
+    naam: 'onderwerp.keer',
+    uitleg: null,
+    keuze: null,
+    regio: null,
+    sets,
+  };
 }
 
 describe('indelingVoor', () => {
@@ -34,13 +42,18 @@ describe('indelingVoor', () => {
   });
 
   it('leest een set van Taal uit de groep van zijn woorden', () => {
-    const gch = deel('taal-sp-gch', [{ id: 'a', groep: 7 }, { id: 'b', groep: 7 }]);
+    const gch = deel('taal-sp-gch', [
+      { id: 'a', groep: 7 },
+      { id: 'b', groep: 7 },
+    ]);
     expect(indelingVoor(gch, 7)).toBe('nu');
     expect(indelingVoor(gch, 5)).toBe('later');
   });
 
   it('leest een set van topografie uit de leerdoelen van zijn plaatsen', () => {
-    const provincies = deel('nl-provincies', [{ id: 'a', leerdoelen: ['ak-nl-provincies-aanwijzen'] }]);
+    const provincies = deel('nl-provincies', [
+      { id: 'a', leerdoelen: ['ak-nl-provincies-aanwijzen'] },
+    ]);
     expect(indelingVoor(provincies, 6)).toBe('nu');
     expect(indelingVoor(provincies, 4)).toBe('later');
     expect(indelingVoor(provincies, 8)).toBe('herhaling');
