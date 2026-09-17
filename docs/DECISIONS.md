@@ -7985,6 +7985,43 @@ oefening. Wie hem aanpast, doet dat in één JSON-bestand.
 
 ---
 
+## ADR-152 — Zonder premium begint de voordeur met oefenen, niet met een slot
+
+**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar. Past de
+plaats van "Vandaag herhalen" uit ADR-126 aan; wat premium is, verandert niet.
+
+### Context
+
+"Vandaag herhalen" staat bovenaan de voordeur omdat het met premium het enige
+blok is dat zegt wat er nú te doen is (ADR-126). Zonder premium is het iets
+anders: een zin dat er twaalf vragen zijn die je bijna vergeet, een uitleg voor
+een ouder, en een knop naar de premiumpagina. Geen enkele knop begint een ronde.
+
+Voor een kind dat de app opent, is dat het eerste wat het leest: dat het dingen
+vergeet, en dat de oplossing op slot zit. Dat nodigt niet uit om te oefenen, en
+het is een verkoopgesprek op de plek waar een kind wil beginnen.
+
+### Decision
+
+**Zonder premium staat het blok onder de rijen.** Bovenaan staan dan de naam,
+een eventuele terugkomst, het doel en "Hier begin je mee" of "Meest geoefend":
+dingen die met één tik een ronde starten. Het blok zelf blijft ongewijzigd — het
+getal is waar en van het kind, en een ouder die verder kijkt, vindt het nog.
+
+**Met premium verandert niets.** Dan is het een lijst rondes met knoppen, en
+hoort het bovenaan.
+
+`HomeScreen` beslist dit, niet `VandaagBlok`: het gaat over de volgorde van de
+voordeur, en die staat daar.
+
+### Consequences
+
+Wie geen premium heeft, ziet het slot minder snel, en er zal dus minder op
+"Bekijk premium" gedrukt worden vanaf de voordeur. Dat is de prijs. De
+premiumknop in de balk blijft op elke pagina staan.
+
+---
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

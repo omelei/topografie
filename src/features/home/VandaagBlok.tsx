@@ -15,10 +15,11 @@ import { useVandaag, vormVoor } from './useVandaag';
  * wát een ronde vroeg, maar nooit wélke ronde je vandaag moest doen. Een kind
  * dat de voordeur opende kreeg drie rijen geschiedenis en geen opdracht.
  *
- * Dit blok is dat antwoord, en het staat bovenaan omdat het de enige plek in de
- * app is die zegt wat er nú te doen is. Elke regel is één druk op de knop: die
- * set, de manier waarop dit kind hem het laatst deed, en alleen de onderdelen
- * die aan de beurt zijn.
+ * Dit blok is dat antwoord, en met premium staat het bovenaan omdat het de enige
+ * plek in de app is die zegt wat er nú te doen is. Elke regel is één druk op de
+ * knop: die set, de manier waarop dit kind hem het laatst deed, en alleen de
+ * onderdelen die aan de beurt zijn. Zonder premium zet `HomeScreen` het onder
+ * de rijen: een slot is geen eerste opdracht (ADR-152).
  *
  * **Zonder code staat er hoeveel, niet wat** (ADR-124's regel). Het getal is
  * waar en het is van het kind zelf — dat mag je niet achterhouden — maar het

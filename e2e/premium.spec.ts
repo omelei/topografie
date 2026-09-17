@@ -318,6 +318,12 @@ test('the day plan says how much without a code, and is the plan with one', asyn
   await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
   await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
 
+  // En het staat onder de rijen, niet bovenaan: wie binnenkomt, ziet eerst waar
+  // hij kan oefenen en dan pas een slot (ADR-152).
+  const recent = await page.getByRole('region', { name: 'Recent geoefend' }).boundingBox();
+  const slot = await vandaag.boundingBox();
+  expect(slot?.y ?? -1).toBeGreaterThan(recent?.y ?? Infinity);
+
   // En de premiumknop staat in de balk, op elke pagina, zolang er geen code is.
   // Exact, want "Bekijk premium" in het blok hierboven bevat hetzelfde woord.
   const inDeBalk = page.getByRole('banner').getByRole('button', { name: 'Premium', exact: true });
