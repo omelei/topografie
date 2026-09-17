@@ -160,3 +160,41 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
+
+/**
+ * Waar je voor gaat, met een groep (ADR-153): groep 8 krijgt geen tafel van 1
+ * meer voorgesteld, groep 3 geen landen van Europa. En de weg naar alle
+ * diploma's staat eronder.
+ */
+test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s', async ({
+  page,
+}, testInfo) => {
+  const project = testInfo.project.name;
+
+  await page.goto('/');
+  await page.getByPlaceholder('Je naam').fill('Fenna');
+  await page.getByRole('button', { name: 'Beginnen' }).click();
+  await page.getByRole('button', { name: 'Groep 8', exact: true }).click();
+
+  const blok = page.getByRole('region', { name: 'Waar je voor gaat' });
+  await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toBeVisible();
+  await expect(blok.getByRole('button', { name: /Tafel van 1\b/ })).toHaveCount(0);
+  await expect(blok.getByRole('button', { name: /Tafel van 2\b/ })).toHaveCount(0);
+  await blok.scrollIntoViewIfNeeded();
+  await foto(page, project, 'doel-groep-8');
+
+  // Groep 3 op Voor ouders: nu de klok, en geen landen meer.
+  await page.goto('/ouder');
+  await page
+    .getByRole('region', { name: 'Groep van Fenna' })
+    .getByRole('button', { name: 'Groep 3', exact: true })
+    .click();
+  await page.goto('/');
+  await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
+  await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
+
+  // De knop eronder: naar Jij, met de prijzenkast open.
+  await blok.getByRole('button', { name: 'Bekijk alle diploma’s' }).click();
+  await expect(page).toHaveURL(/\/jij$/);
+  await expect(page.getByRole('button', { name: 'Laat alleen zien wat ik heb' })).toBeVisible();
+});

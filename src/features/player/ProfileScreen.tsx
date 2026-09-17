@@ -33,10 +33,15 @@ export function ProfileScreen({
   profile,
   aside,
   onOuder,
+  diplomasOpen = false,
+  onDiplomasGezien,
 }: {
   readonly profile: ProfileRecord;
   readonly aside: ReactNode;
   readonly onOuder: () => void;
+  /** Gekomen via "Bekijk alle diploma's": de prijzenkast open, en ernaartoe. */
+  readonly diplomasOpen?: boolean;
+  readonly onDiplomasGezien?: () => void;
 }) {
   return (
     <div className="tk-page">
@@ -73,7 +78,7 @@ export function ProfileScreen({
 
         <AlbumOverzicht />
 
-        <Prijzenkast />
+        <Prijzenkast open={diplomasOpen} onGezien={onDiplomasGezien} />
 
         <Jaaroverzicht />
       </div>
@@ -176,11 +181,28 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
  * de gaten zijn juist het punt (ADR-064) — maar het is wat een kind ziet nadat
  * het iets gedaan heeft. De badges stonden hier ook, tot ADR-149.
  */
-function Prijzenkast() {
-  const [alles, setAlles] = useState(false);
+function Prijzenkast({
+  open,
+  onGezien,
+}: {
+  readonly open: boolean;
+  readonly onGezien?: () => void;
+}) {
+  const [alles, setAlles] = useState(open);
+  const id = useId();
+
+  // Wie op de voordeur "Bekijk alle diploma's" koos, komt hier binnen: alles
+  // open, en de kast in beeld in plaats van de kop van Jij (ADR-153).
+  useEffect(() => {
+    if (!open) return;
+    document.getElementById(id)?.scrollIntoView({ block: 'start' });
+    onGezien?.();
+    // Eén keer, bij binnenkomst.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div id={id} className="flex flex-col gap-6">
       <Tafeldiplomas alleenBehaald={!alles} />
       <VlagDiplomas alleenBehaald={!alles} />
       <KlokDiplomas alleenBehaald={!alles} />

@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Button } from '@/components/Button';
 import { ProgressBar } from '@/components/ProgressBar';
 import { NextIcon } from '@/components/Icon';
-import type { ItemState, ModeId } from '@/game-core';
+import type { Groep, ItemState, ModeId } from '@/game-core';
 import {
   naamVan,
   startbareOnderdelen,
@@ -15,7 +15,16 @@ import { t } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import { loadBehaald } from '@/store/rewardStore';
 import { leesDoel, schrijfDoel } from '@/store/doelStore';
-import { doelwitMet, doelwitten, standVan, suggesties, type Doelwit, type Suggestie } from './doel';
+import { groepVanActiefKind } from '@/store/children';
+import {
+  doelwitMet,
+  doelwitten,
+  standVan,
+  suggesties,
+  SUGGESTIES,
+  type Doelwit,
+  type Suggestie,
+} from './doel';
 import { vormVoor } from './useVandaag';
 
 /**
@@ -43,26 +52,34 @@ import { vormVoor } from './useVandaag';
 export function DoelBlok({
   gespeeld,
   onBegin,
+  onDiplomas,
 }: {
   readonly gespeeld: readonly Gespeeld[];
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+  /** Naar alle diploma's op Jij, ook die nog te halen zijn. */
+  readonly onDiplomas: () => void;
 }) {
   const { actief } = usePremium();
   const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
   const [doel, setDoel] = useState<string | null>(null);
+  const [groep, setGroep] = useState<Groep | undefined>(undefined);
   const [geladen, setGeladen] = useState(false);
 
   useEffect(() => {
     void (async () => {
-      const [standen, stempels, bewaard] = await Promise.all([
+      // De groep hoort bij de eerste keer laden en niet erna: anders staan er
+      // even de tafels van 1, 2 en 3, en dan iets anders (ADR-153).
+      const [standen, stempels, bewaard, vanKind] = await Promise.all([
         loadItemStates(),
         loadBehaald(),
         leesDoel(),
+        groepVanActiefKind(),
       ]);
       setStates(standen);
       setBehaald(stempels);
       setDoel(bewaard);
+      setGroep(vanKind);
       setGeladen(true);
     })();
   }, []);
@@ -88,9 +105,9 @@ export function DoelBlok({
   // voor de voordeur en niet voor het eind van een ronde.
   if (gekozen !== null && behaald.has(gekozen.id)) {
     return (
-      <Kader>
+      <Kader onDiplomas={onDiplomas}>
         <p className="text-lopend">{t('doel.gehaald', { naam: naamVan(gekozen.deel) })}</p>
-        <Kiezer vraag={t('doel.nu')} lijst={suggesties(alle, behaald, states, now)} onKies={kies} />
+        <Kiezer vraag={t('doel.nu')} lijst={suggesties(alle, behaald, states, now, SUGGESTIES, groep)} onKies={kies} />
         <button type="button" className="tk-doel-ander" onClick={laatLos}>
           {t('doel.later')}
         </button>
@@ -103,7 +120,7 @@ export function DoelBlok({
     const mode = stand.rijp ? gekozen.mode : vormVoor(gekozen.deel, gespeeld);
 
     return (
-      <Kader>
+      <Kader onDiplomas={onDiplomas}>
         <div className="flex flex-col gap-2">
           <p className="text-lopend">{t('doel.diplomaVan', { naam: naamVan(gekozen.deel) })}</p>
           <ProgressBar
@@ -129,32 +146,49 @@ export function DoelBlok({
     );
   }
 
-  const lijst = suggesties(alle, behaald, states, now);
+  const lijst = suggesties(alle, behaald, states, now, SUGGESTIES, groep);
 
   // Alles binnen. Dat is een zeldzaam scherm en het verdient een zin in plaats
   // van een leeg blok — en zonder code is het er een die klopt: de twaalf
   // tafels zijn dan echt alles wat er te halen viel.
   if (lijst.length === 0) {
     return (
-      <Kader>
+      <Kader onDiplomas={onDiplomas}>
         <p className="text-lopend">{t('doel.alles')}</p>
       </Kader>
     );
   }
 
   return (
-    <Kader>
+    <Kader onDiplomas={onDiplomas}>
       <Kiezer vraag={t('doel.vraag')} lijst={lijst} onKies={kies} />
     </Kader>
   );
 }
 
-/** Het blok zelf: dezelfde vorm als "Vandaag herhalen", een stap lager in toon. */
-function Kader({ children }: { readonly children: ReactNode }) {
+/**
+ * Het blok zelf: dezelfde vorm als "Vandaag herhalen", een stap lager in toon.
+ *
+ * Onderaan, in elke toestand, de weg naar alle diploma's (ADR-153). Drie
+ * voorstellen zijn een keuze en geen overzicht; wie wil zien wat er nog meer te
+ * halen is, hoort dat niet te hoeven zoeken.
+ */
+function Kader({
+  children,
+  onDiplomas,
+}: {
+  readonly children: ReactNode;
+  readonly onDiplomas: () => void;
+}) {
   return (
     <section className="tk-doel" aria-label={t('doel.titel')}>
       <h2 className="tk-sectie">{t('doel.titel')}</h2>
       {children}
+      <p>
+        <button type="button" className="tk-doel-ander" onClick={onDiplomas}>
+          {t('doel.alleDiplomas')}
+        </button>
+      </p>
     </section>
   );
 }

@@ -76,6 +76,9 @@ export const nl = {
   'doel.gehaald': 'Gehaald! Je hebt het diploma {naam}.',
   'doel.later': 'Even geen doel',
   'doel.alles': 'Je hebt alle diploma\u2019s die je kunt halen.',
+  // Onder de voorstellen: naar de prijzenkast op Jij, met ook wat nog te halen
+  // is open (ADR-153).
+  'doel.alleDiplomas': 'Bekijk alle diploma’s',
   'doel.gehaaldRonde': 'Dit was waar je voor ging.',
   // Het einde van een ronde, aangekondigd (ADR-140).
   'practice.laatsteVraag': 'Laatste vraag',
