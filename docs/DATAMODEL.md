@@ -1,26 +1,32 @@
 # Data model — Leernu
 
-Status: draft, phase 0. Last updated 2026-09-05.
+Status: draft. Last updated 2026-09-18.
 
-Revised after ADR-014 and ADR-015. The document has two parts:
+Revised after ADR-014 and ADR-015, and again after ADR-155. The document has
+three parts:
 
-- **Part A — what v1 actually stores**, in IndexedDB on the device. This is what
-  gets built now.
+- **Part A — what the app actually stores**, in IndexedDB on the device. This is
+  the part that is built.
 - **Part B — the deferred school model**, kept in full because it is the target
   shape that part A must be able to grow into without a rewrite.
+- **Part C — the family model** (ADR-155): a parent, their children, and what a
+  child signs in with. Not built yet either, and not a subset of part B.
 
-The rule that binds them: **part A uses the same row shapes as part B.** Adding
-accounts later is an upload of existing rows, not a transformation. Where a
-column exists in B but has no meaning yet in A, it is simply absent — never
-renamed or restructured.
+The rule that binds them: **part A uses the same row shapes as parts B and C.**
+Adding accounts is an upload of existing rows, not a transformation. Where a
+column exists on the server but has no meaning yet in A, it is simply absent —
+never renamed or restructured. Field names are camelCase in A and snake_case in
+Postgres, and that renaming is the only translation.
 
 ---
 
 # Part A — the local store (v1)
 
-Everything lives in IndexedDB. Nothing is transmitted. There is no server, so
-there is no personal data outside the browser and nothing to secure beyond the
-device itself.
+Everything lives in IndexedDB, and the device stays the record during a round:
+every answer is written and scheduled here, and syncing is a separate moment
+(ADR-050). Until ADR-155 is built, nothing in here is transmitted at all. What
+leaves afterwards is only what part C holds, and only when somebody has signed
+in — a child who never does loses none of this and notices none of it.
 
 ```ts
 // object store: profile  (exactly one record)
@@ -38,9 +44,12 @@ device itself.
   aangemaaktOp: string; // ISO
 }
 
-// object store: itemStates    keyed by itemId — same shape as part B §4
+// object store: progress     keyed by [kindId, itemId] — same shape as part B §4
+//   Since DB_VERSION 4 (ADR-046/050). The old `itemStates`, keyed by itemId
+//   alone, is still there and is read exactly once, to copy it across: two
+//   children on one iPad shared one set of boxes, and that was the bug.
 {
-  (itemId, box, laatsteReview, volgendeReview, goedCount, foutCount);
+  (kindId, itemId, box, laatsteReview, volgendeReview, goedCount, foutCount);
   // since ADR-149, both optional: the highest box ever reached (the album's
   // layer), and the moments of every due right answer in box 5 (its stamps)
   (hoogsteDoos, stempels);
@@ -48,13 +57,15 @@ device itself.
 
 // object store: sessions      same shape as part B §4, minus organisationId
 {
-  (id, mode, itemSet, score, gestart, geeindigd);
+  (id, kindId, mode, setId, itemSet, score, beantwoord, gestart, geeindigd);
 }
 
-// object store: attempts      append-only, autoIncrement key
+// object store: attempts      append-only; the key becomes a uuid with the sync
+//   of ADR-155 — an autoIncrement number is per device, so two devices mint the
+//   same number for different answers
 //   indexed by sessionId (what happened in one round) and itemId (one item over time)
 {
-  (id, sessionId, itemId, mode, correct, responseMs, gekozenAntwoord, tijdstip);
+  (id, sessionId, kindId, itemId, mode, correct, responseMs, gekozenAntwoord, tijdstip);
 }
 
 // object store: streak        exactly one record, key 'me' — not read since ADR-149
@@ -62,14 +73,21 @@ device itself.
   (id, huidigeStreak, langsteStreak, laatsteActieveDag, foutloosNu, foutloosBeste);
 }
 
-// object store: badges        { badgeId, behaaldOp } — diplomas only since ADR-149;
-//                             behaaldOp is the day it was first earned
+// object store: kindBadges    keyed by [kindId, badgeId] — { kindId, badgeId, behaaldOp };
+//                             diplomas only since ADR-149, and behaaldOp is the day
+//                             it was first earned, which a later round never moves
+// object store: badges        { badgeId, behaaldOp } — the pre-ADR-046 version of the
+//                             above, read once to copy it across and then left alone
 // object store: stamps        { regioSet, behaaldOp } — not read since ADR-149
 // object store: settings      { key, value } — device preferences, and per child:
 //   weekdoel:<kindId>   the weekkaart's goal, 2–5 days (default 3)
 //   zegels:<kindId>     the weeks that reached it, as week keys; only ever added to
 //   groepGevraagd:<kindId>  'ja' once the child was asked for a group (ADR-151)
 //   bijhouden:<kindId>  per diploma, the seasons it was kept up in
+//   doel:<kindId>       the one diploma this child is working towards (ADR-141)
+//   dagstand:<kindId>   what today's plan started with, on this device only
+//   A setting gains the moment it was written with the sync of ADR-155: without
+//   it, two devices cannot tell which of two values is the newer one.
 ```
 
 The streak, the heroes and the badges are gone since ADR-149. Their rows stay
@@ -523,4 +541,192 @@ inside the school.
   A stored figure drifts, and the teacher report is exactly where drift is
   least forgivable.
 - No `parent` or `guardian` table in v1. The free consumer tier in spec §7 would
-  need one, and it brings a different legal regime with it (ADR-008).
+  need one, and it brings a different legal regime with it (ADR-008). Part C
+  is where that regime is accepted and written down, for a family rather than
+  a school.
+
+---
+
+# Part C — the family model (ADR-155)
+
+Part B is a school: an organisation, classes, teachers, pupils. This is the
+other product, and it is not a subset of that one — a family has a parent
+instead of a teacher, no organisation, and a child who signs in for themselves.
+Mixing the two into one set of tables would make every policy read "or".
+
+None of it is built yet either, and the same rule applies as in part B:
+migrations live in `supabase/migrations/`, numbered, and are never edited after
+they have run anywhere.
+
+Two rules govern this part, and they are part B's two rules with one changed:
+
+1. **Every row belonging to a child carries `ouder_id`**, denormalised, where
+   part B would carry `organisation_id`. Same reason: a policy that needs a
+   join is a policy nobody reviews. The pair cannot drift, because the database
+   holds it — see the composite foreign key below.
+2. **A child's row holds as little as the product can run on**, and there is no
+   free-text column anywhere a child can type. `avatar_config` is a whitelist,
+   exactly as in part B.
+
+## C1. People
+
+```sql
+create table ouders (
+  id          uuid primary key references auth.users(id) on delete cascade,
+  email       citext not null unique,
+  created_at  timestamptz not null default now()
+);
+```
+
+The parent is an ordinary Supabase Auth user. `wachtwoord_hash` lives in
+`auth.users` and is deliberately not duplicated here, the same rule part B §2
+applies to teachers. There is no name: nothing in this product ever says the
+parent's name back to anyone, so asking for it would be collecting for the
+filing cabinet.
+
+```sql
+create table kinderen (
+  id                uuid primary key references auth.users(id) on delete cascade,
+  ouder_id          uuid not null references ouders(id) on delete cascade,
+  voornaam          text not null,
+  inlogcode         text not null unique,        -- 8 chars, no 0/O/1/I/L
+  niveau            smallint not null default 1 check (niveau between 1 and 3),
+  groep             smallint check (groep between 3 and 8),
+  groep_schooljaar  smallint,
+  created_at        timestamptz not null default now(),
+  unique (id, ouder_id)
+);
+```
+
+That is the complete child record. No e-mail, no date of birth, no address, no
+photo, no school, no place of residence, no free text — part B §9's list, and
+ADR-050's, held to.
+
+The child is also a real Supabase Auth user, whose address is
+`<id>@kind.invalid`. `.invalid` is reserved by RFC 2606 and never resolves, so
+the address cannot receive mail by construction rather than by policy: that is
+what makes "a child has no e-mail address" checkable. It is derived from the
+uuid and not from `inlogcode`, so knowing a code is not enough to aim at the
+auth endpoint directly; the only door is the edge function, and the rate limiter
+is in it.
+
+`inlogcode` is stored as it is read out, not hashed. The premium code of
+ADR-116 is hashed because it was printed once and never read back; this one a
+parent has to read aloud again and again. It is a user name, not a secret: a
+code on its own reaches nothing, because there is no path to a child without the
+password and no endpoint that says whether a code exists.
+
+`unique (id, ouder_id)` exists only so that every table below can point a
+composite foreign key at it. It is redundant as a constraint and load-bearing as
+a target.
+
+## C2. Learning state
+
+Every table here repeats the same two columns and the same composite key back to
+`kinderen`; only `voortgang` is spelled out.
+
+```sql
+create table voortgang (
+  kind_id           uuid not null,
+  ouder_id          uuid not null,
+  item_id           text not null,
+  box               smallint not null check (box between 1 and 5),
+  laatste_review    timestamptz,
+  volgende_review   timestamptz,
+  goed_count        integer not null default 0,
+  fout_count        integer not null default 0,
+  hoogste_doos      smallint check (hoogste_doos between 1 and 5),
+  stempels          timestamptz[] not null default '{}',
+  primary key (kind_id, item_id),
+  foreign key (kind_id, ouder_id) references kinderen (id, ouder_id) on delete cascade
+);
+```
+
+The same shape as part A's `progress` and part B's `item_states`, in snake_case.
+That renaming is still the only translation between the local store and the
+server (part A).
+
+- `sessies` — `(id uuid primary key, kind_id, ouder_id, mode, set_id, item_set,
+  score, beantwoord, gestart, geeindigd)`. A session with `geeindigd` null is
+  not uploaded: it belongs to the device it is open on.
+- `pogingen` — `(id uuid primary key, sessie_id, kind_id, ouder_id, item_id,
+  mode, correct, response_ms, gekozen_antwoord, tijdstip)`. Append-only, never
+  updated. The uuid is the reason part A's key has to change: an autoIncrement
+  number is per device.
+- `kind_diplomas` — `(kind_id, ouder_id, badge_id, behaald_op)`, primary key
+  `(kind_id, badge_id)`. On a conflict the earlier `behaald_op` wins.
+- `instellingen` — `(kind_id, ouder_id, sleutel, waarde, gewijzigd_op)`, primary
+  key `(kind_id, sleutel)`. The per-child settings of part A. `dagstand:` is not
+  uploaded; it is what this device is doing today.
+
+`pogingen` grows without bound, exactly as part A's `attempts` does. It is the
+raw material for everything derived — including a doelstelling's count — so
+nothing is pruned before there is a rule for what may be lost, and there is not
+one yet.
+
+## C3. Doelstellingen
+
+```sql
+create table doelstellingen (
+  id          uuid primary key default gen_random_uuid(),
+  kind_id     uuid not null,
+  ouder_id    uuid not null,
+  set_id      text not null,
+  aantal      integer not null check (aantal > 0),
+  deadline    date not null,
+  gezet_op    timestamptz not null default now(),
+  gezet_door  uuid not null references ouders(id),
+  foreign key (kind_id, ouder_id) references kinderen (id, ouder_id) on delete cascade
+);
+```
+
+A number of right answers on one set, before one day. `set_id` is the id from
+`src/features/module/onderdelen.ts` — `tafel-6`, `nl-provincies` — and it is
+deliberately not a foreign key: the sets live in content, not in the database,
+and a set that is renamed should leave a doelstelling that quietly stops
+counting rather than a migration that has to run.
+
+**There is no column for how far along it is.** The count is derived from
+`pogingen` joined to `sessies` at read time: right, after `gezet_op`, in a round
+on that `set_id`. A stored figure drifts, and part B §9 already refuses one for
+the same reason.
+
+## C4. RLS, in one table
+
+Every table has RLS enabled and no permissive default. One policy per table, and
+each one is the same line:
+
+```sql
+using (kind_id = auth.uid() or ouder_id = auth.uid())
+```
+
+| Table                                                          | Child      | Parent                |
+| -------------------------------------------------------------- | ---------- | --------------------- |
+| `ouders`                                                       | none       | own row               |
+| `kinderen`                                                     | own row    | own children          |
+| `voortgang`, `sessies`, `pogingen`, `kind_diplomas`, `instellingen` | own rows   | own children's rows   |
+| `doelstellingen`                                               | own, read  | own children's, write |
+
+The parent's write access on a child's rows is not an oversight: it is what
+makes "Inloggen als kind" need no second kind of session, and ADR-155 names what
+that costs.
+
+`inlogcode` is readable by the child it belongs to and by their parent, and by
+nobody else. There is no view, no search and no function anywhere that takes a
+code and answers whether it exists — the only thing that accepts a code is the
+edge function that also demands the password.
+
+## C5. What is deliberately not here
+
+- No `school`, `woonplaats`, `geboortedatum`, `achternaam`, `foto`, or any free
+  text a child can type. ADR-050's list, unchanged but for the login code.
+- No `wachtwoord_hash` column: it is in `auth.users` and duplicating it would
+  make two places to get wrong.
+- No history of old login codes. A reissued code is overwritten; one that half
+  works is not recovery.
+- No stored progress figure for a doelstelling, and no stored mastery
+  percentage (C3, part B §9).
+- No `organisation_id`, no class, no teacher. That is part B, and a family is
+  not a school with one pupil.
+- No table that lets one child see another, not even a sibling. The friend layer
+  ADR-046 left open is still open, and still its own decision.
