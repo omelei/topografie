@@ -17,8 +17,8 @@
 
 import { useId, useState, type FormEvent } from 'react';
 import { t, type TranslationKey } from '@/i18n';
-import type { AccountFout, AccountUitkomst } from '@/store/account';
-import { useAccount } from './useAccount';
+import type { AccountFout } from '@/store/account';
+import { useAccount, type Aanmeldpoging, type Uitloggen } from './useAccount';
 
 const FOUT: Record<AccountFout, TranslationKey> = {
   leeg: 'account.fout.leeg',
@@ -56,7 +56,7 @@ function Ingelogd({
   onUitloggen,
 }: {
   readonly email: string;
-  readonly onUitloggen: () => Promise<void>;
+  readonly onUitloggen: Uitloggen;
 }) {
   const [bezig, setBezig] = useState(false);
 
@@ -86,8 +86,8 @@ function Formulier({
   onInloggen,
   onAanmelden,
 }: {
-  readonly onInloggen: (email: string, wachtwoord: string) => Promise<AccountUitkomst>;
-  readonly onAanmelden: (email: string, wachtwoord: string) => Promise<AccountUitkomst>;
+  readonly onInloggen: Aanmeldpoging;
+  readonly onAanmelden: Aanmeldpoging;
 }) {
   const [modus, setModus] = useState<Modus>('inloggen');
   const [email, setEmail] = useState('');
