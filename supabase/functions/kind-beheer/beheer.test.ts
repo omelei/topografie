@@ -145,12 +145,24 @@ describe('herstel', () => {
     expect(gedaan).toEqual(['zetWachtwoord:kind-1', 'trekSessiesIn:kind-1']);
   });
 
+  /**
+   * Tegen de naam uit de rij van dát kind, en niet tegen wat er toevallig in het
+   * verzoek staat: een ouder die een wachtwoord zet, typt geen naam mee.
+   */
   it('weegt het nieuwe wachtwoord tegen de naam van dát kind', async () => {
-    const { diensten, gedaan } = nepDiensten();
+    const { diensten, gedaan } = nepDiensten({
+      kind: async () => ({ ouderId: 'ouder-1', voornaam: 'Annelies' }),
+    });
     expect(
       await reden(
         behandel(
-          { ...BASIS, actie: 'wachtwoord', kindId: 'kind-1', wachtwoord: 'Sofie' },
+          {
+            ...BASIS,
+            actie: 'wachtwoord',
+            kindId: 'kind-1',
+            voornaam: 'Joep',
+            wachtwoord: 'annelies',
+          },
           diensten,
         ),
       ),
