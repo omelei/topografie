@@ -647,10 +647,10 @@ That renaming is still the only translation between the local store and the
 server (part A).
 
 - `sessies` — `(id uuid primary key, kind_id, ouder_id, mode, set_id, item_set,
-  score, beantwoord, gestart, geeindigd)`. A session with `geeindigd` null is
+score, beantwoord, gestart, geeindigd)`. A session with `geeindigd` null is
   not uploaded: it belongs to the device it is open on.
 - `pogingen` — `(id uuid primary key, sessie_id, kind_id, ouder_id, item_id,
-  mode, correct, response_ms, gekozen_antwoord, tijdstip)`. Append-only, never
+mode, correct, response_ms, gekozen_antwoord, tijdstip)`. Append-only, never
   updated. The uuid is the reason part A's key has to change: an autoIncrement
   number is per device.
 - `kind_diplomas` — `(kind_id, ouder_id, badge_id, behaald_op)`, primary key
@@ -700,12 +700,12 @@ each one is the same line:
 using (kind_id = auth.uid() or ouder_id = auth.uid())
 ```
 
-| Table                                                          | Child      | Parent                |
-| -------------------------------------------------------------- | ---------- | --------------------- |
-| `ouders`                                                       | none       | own row               |
-| `kinderen`                                                     | own row    | own children          |
-| `voortgang`, `sessies`, `pogingen`, `kind_diplomas`, `instellingen` | own rows   | own children's rows   |
-| `doelstellingen`                                               | own, read  | own children's, write |
+| Table                                                               | Child     | Parent                |
+| ------------------------------------------------------------------- | --------- | --------------------- |
+| `ouders`                                                            | none      | own row               |
+| `kinderen`                                                          | own row   | own children          |
+| `voortgang`, `sessies`, `pogingen`, `kind_diplomas`, `instellingen` | own rows  | own children's rows   |
+| `doelstellingen`                                                    | own, read | own children's, write |
 
 The parent's write access on a child's rows is not an oversight: it is what
 makes "Inloggen als kind" need no second kind of session, and ADR-155 names what
