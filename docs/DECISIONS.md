@@ -8155,6 +8155,287 @@ palet is een aparte beslissing.
 - Nog te controleren in een browser: favicon in het tabblad, geen
   manifestfouten in DevTools › Application, logo scherp op 1x en 2x.
 
+---
+
+## ADR-155 — Accounts: de ouder met een e-mailadres, het kind met een inlogcode, en een doelstelling om voor te gaan
+
+**Status:** accepted. **Date:** 2026-09-18. Op verzoek van de eigenaar.
+**Keert de weigering van ADR-008 om, vervangt de afweging van ADR-002, en
+wijzigt de opsomming van ADR-050. Nog niet gebouwd.**
+
+### Context
+
+ADR-046 besloot dát de voortgang van een kind naar een account gaat, om een
+reden die nog steeds klopt: Safari gooit alles wat een script bewaart na zeven
+dagen zonder gebruik weg, en de langste Leitner-tussenpoos in dit product is
+eenentwintig dagen. Het kind waar de planning het bést voor werkt, is precies
+het kind dat alles kwijtraakt. ADR-050 koos daar Supabase bij. Allebei staan ze
+sinds september op "not yet built".
+
+Allebei gingen ze ook uit van één vorm: het kind tikt een tegel aan binnen het
+account van de ouder en heeft zelf geen inloggegevens. Dat was Squla's vorm, om
+Squla's redenen, en het hield de scherpste rand weg — we hielden dan nooit een
+inloggegeven van een tienjarige vast.
+
+De eigenaar draait die vorm nu om. Een kind logt in met een eigen inlogcode en
+een eigen wachtwoord, en ziet daarna alleen zijn eigen omgeving. De ouder logt
+in met een e-mailadres, ziet zijn kinderen, en kan van daaruit als een van hen
+inloggen. En de ouder kan een doelstelling zetten met een deadline.
+
+Dit record legt dat vast, inclusief de vier dingen die eraan vastzitten en die
+niemand eerder heeft opgeschreven: hoe een code een identiteit wordt waar RLS op
+kan staan, hoe twee apparaten van hetzelfde kind samenkomen, wat een
+doelstelling precies is, en hoe herstel loopt voor iemand zonder e-mailadres.
+
+### Decision
+
+**Een kind logt wél in, en dat is een omkering en geen detail.** ADR-008
+weigerde een self-service account voor een minderjarige, omdat het ons
+verwerkingsverantwoordelijke maakt voor de gegevens van een kind onder een ander
+juridisch regime. ADR-046 hield die weigering overeind met één zin — "the child
+never authenticates" — en die zin gaat hier weg. Wat ervoor terugkomt: we houden
+vanaf nu een inloggegeven van een achtjarige vast, en de ouder is degene die
+daarvoor toestemming geeft (artikel 8 AVG). Dat is de prijs, en hij staat hier
+zodat niemand hem later hoeft te ontdekken.
+
+**Identiteit: Supabase Auth, met een adres dat nooit kan bestaan.** ADR-002 koos
+een eigen JWT uit een Edge Function, juist om een kind geen auth-rij te hoeven
+geven. Dat wordt hier niet gevolgd. Een eigen JWT betekent dat wij het
+wachtwoord hashen, de sessie verversen, het intrekken regelen en de
+snelheidsbegrenzer schrijven — vier dingen die met de hand stuk gaan, en waar
+stuk gaan hier geen bug is maar een lek.
+
+Dus: een kind is een gewone Supabase-gebruiker, met `<kind-uuid>@kind.invalid`
+als adres. `.invalid` is bij RFC 2606 gereserveerd en lost nooit op, dus dat
+adres kan bij constructie geen post ontvangen. "Een kind heeft geen e-mailadres"
+wordt daarmee iets wat te controleren is in plaats van iets wat wij beloven, en
+dat is in dit hele product het verschil dat telt.
+
+Het adres komt uit de **uuid** en niet uit de inlogcode. Wie een code weet, kan
+daarmee dus niet rechtstreeks bij Supabase aankloppen om wachtwoorden te
+proberen: de enige deur is onze eigen Edge Function, en daar zit de begrenzer.
+Publieke registratie staat uit; kinderen worden alleen met de service-sleutel
+aangemaakt, door hun ouder, en meteen als bevestigd.
+
+**De policy is één regel en er staat geen join in.** Elke rij van een kind
+draagt naast `kind_id` ook `ouder_id`, gedenormaliseerd. Dat is dezelfde regel
+die deel B van het datamodel al stelt voor `organisation_id`, om dezelfde reden:
+een policy die één `LEFT JOIN` van een lek af staat, is geen policy die iemand
+kan nakijken.
+
+```sql
+create policy "kind of ouder" on public.voortgang
+  for all to authenticated
+  using (kind_id = auth.uid() or ouder_id = auth.uid())
+  with check (kind_id = auth.uid() or ouder_id = auth.uid());
+```
+
+Dat die `ouder_id` klopt, bewaakt de database en niet de policy. `kinderen`
+krijgt `unique (id, ouder_id)`, en elke tabel met rijen van een kind krijgt
+`foreign key (kind_id, ouder_id) references kinderen (id, ouder_id)`. Een kind
+kan zijn eigen rijen dus niet aan een vreemde ouder hangen, en dat hoeft niet in
+de policy te staan om waar te zijn.
+
+**De code: acht tekens, hetzelfde alfabet als de premiumcode.**
+`ABCDEFGHJKMNPQRSTUVWXYZ23456789` — eenendertig tekens, zonder 0, O, 1, I en L.
+Acht daarvan is ongeveer 850 miljard, dezelfde som als ADR-116 maakte, en om
+dezelfde reden gekozen: deze code wordt voorgelezen en overgetikt, en O tegen 0
+kost een ouder elke keer opnieuw vijf minuten. Geschreven als `KIND-XXXX-XXXX`.
+Uniciteit wordt afgedwongen door `unique` op de kolom met herproberen in de
+functie die hem uitgeeft — nooit door de client, die daar niet over gaat.
+
+De code staat leesbaar in de tabel en niet als hash. De premiumcode staat er wél
+als hash, en het verschil is de reden: die was net afgedrukt en hoefde nooit
+teruggelezen te worden. Deze moet een ouder keer op keer kunnen voorlezen. Dat
+mag, omdat deze code geen geheim is maar een gebruikersnaam — zie hieronder.
+
+**De code alleen brengt niemand ergens.** Er is geen pad waarlangs een code
+zonder wachtwoord bij een kind komt: geen "de eerste keer zet je zelf een
+wachtwoord", geen lege wachtwoordhash die alles accepteert. Deel B van het
+datamodel liet dat laatste open voor de klascode, en hier is het dichtgezet —
+ook omdat er buiten een klaslokaal niemand is die meekijkt wie er zit te tikken.
+En er is geen enkel eindpunt dat vertelt óf een code bestaat: het antwoord op
+een onbekende code en dat op een fout wachtwoord zijn hetzelfde antwoord.
+
+**Het wachtwoord van een kind van acht: minstens zes tekens, en verder niets.**
+Geen hoofdletter, geen cijfer, geen leesteken. Wel geweigerd: de eigen voornaam
+en een korte lijst van het voor de hand liggende. Een eis die een kind van acht
+niet haalt, is een eis die de ouder omzeilt, en dan staat het wachtwoord met
+stift op de iPad — dat is slechter dan zes tekens. De sterkte hoort hier ook
+niet in het wachtwoord te zitten: die zit in de begrenzer, en in het feit dat de
+code er óók bij moet.
+
+**Eén Edge Function is de hele deur.** `kind-inloggen` krijgt een code en een
+wachtwoord, zoekt het kind op, logt serverzijdig in en geeft de sessie terug.
+Tien mislukte pogingen per uur, hetzelfde getal als ADR-116 — maar geteld per
+code en per IP in plaats van per apparaat. Een apparaatnummer dat de client zelf
+verzint, is bij het premiumslot goed genoeg en bij inloggen het verkeerde ding
+om op te tellen: wie codes wil aflopen, verzint elke keer een nieuw nummer.
+Wat het kind ziet:
+
+- Verkeerd wachtwoord of onbekende code: één en hetzelfde, "Deze code en dit
+  wachtwoord horen niet bij elkaar." Twee verschillende antwoorden zouden een
+  lijst codes doorzoekbaar maken.
+- Te vaak geprobeerd: "Probeer het over een uur nog eens, of vraag je vader of
+  moeder." Dat verschil is wél te zien, maar pas nadat er evenveel tijd
+  verstreken is als een gewoon antwoord kost — anders is de tijd zelf het
+  antwoord op de vraag of een code bestaat.
+- Geen verbinding: dat het aan de verbinding ligt, met de knop om zonder
+  inloggen verder te spelen. Inloggen is een aanbod en geen poort (ADR-152).
+
+**Er komt geen migratie, en dat is een keuze.** Er spelen nog geen kinderen, dus
+er is geen voortgang die naar een account getild hoeft te worden. Geen import,
+geen samenvoegen met wat er lokaal stond, geen "claim deze voortgang". Dit staat
+hier opgeschreven zodat de volgende lezer ziet dat het weloverwogen ontbreekt en
+niet dat het vergeten is.
+
+**Eén kind op twee apparaten, per winkel.** Dit is wat er wél moet, en het is
+niet voor elke winkel hetzelfde antwoord.
+
+- **`attempts`** — er wordt alleen aan toegevoegd, dus de vereniging van beide
+  kanten. Dat vraagt wel een stabiele sleutel: vandaag is het een oplopend
+  nummer per apparaat, en twee apparaten maken dan hetzelfde nummer voor een
+  ander antwoord. Het wordt een uuid, en dat is een lokale migratie die vóór het
+  netwerk gaat.
+- **`sessions`** — de vereniging. Een ronde die nog loopt (`geeindigd` is leeg)
+  gaat niet mee: die hoort bij het apparaat waar hij openstaat.
+- **`progress`, de Leitner-dozen** — per item wint de jongste `laatsteReview`,
+  met de hele rij. `goedCount`, `foutCount` en `hoogsteDoos` lopen alleen omhoog
+  en worden het maximum van de twee; `stempels` is de vereniging, ontdubbeld.
+  Bij een gelijke `laatsteReview` wint de **lágere** doos.
+- **`kindBadges`** — de vereniging, en de **vroegste** `behaaldOp` wint. Dat is
+  de regel die lokaal al geldt: een diploma houdt de dag waarop het voor het
+  eerst gehaald werd.
+- **`settings`** — per sleutel, want het is niet allemaal hetzelfde soort ding.
+  `zegels:` is de vereniging (die lijst wordt toch al alleen aangevuld).
+  `weekdoel:`, `doel:` en `bijhouden:` zijn de jongste schrijver, wat betekent
+  dat een instelling moet gaan bijhouden wanneer hij geschreven is. `dagstand:`
+  en `actiefKind` gaan **niet** mee: dat is wat dít apparaat vandaag doet.
+
+Een doos overschrijf je niet zomaar, dus wat "de jongste wint" in het slechtste
+geval kost, hoort erbij. Oefent een kind op de iPad, daarna offline op de
+laptop, en synchroniseren ze in die volgorde, dan verliest de rij met de oudere
+`laatsteReview`. Eén item zakt dan een doos terug en komt eerder weer langs. Dat
+is met opzet de goedkope kant: een item te vaak vragen kost een minuut, een item
+ten onrechte "geleerd" noemen kost eenentwintig dagen stilte. Daarom wint bij
+een gelijke tijd ook de lagere doos.
+
+**Inloggen als kind is de ouder in de omgeving van het kind, en niets nieuws
+eronder.** Er wordt geen sessie nagebootst en er komt geen tweede soort token.
+De policy hierboven geeft de ouder al volledig lezen én schrijven op de rijen
+van zijn kinderen, dus "Inloggen als kind" is niet meer dan omzetten wie het
+actieve kind is. Geen meekijkstand, geen aparte leesrechten. Wat er wél bij komt
+te staan: op elk scherm is te zien wie er is ingelogd, en één handeling gaat
+terug naar de ouderomgeving.
+
+De prijs is echt en is aanvaard: een ouder die als zijn kind oefent, schrijft in
+de Leitner-dozen van dat kind en beïnvloedt daarmee precies de cijfers waar hij
+zelf naar kijkt. Dat is niet over het hoofd gezien; het is wat één soort sessie
+kost in plaats van twee. Eén bijvangst werkt de andere kant op: in de database
+is aan de uid te zien dat die rijen door de ouder geschreven zijn.
+
+**Het woord is "doelstelling".** Dat is wat de ouder zet. "Doel" blijft van het
+kind (ADR-141, "Waar je voor gaat") en "weekdoel" van de weekkaart. Er komt geen
+enkel nieuw symbool dat `doel` heet: het worden `doelstelling.*` in `nl.ts`,
+`DoelstellingBlok`, `doelstellingStore`, `game-core/doelstelling.ts` en
+`.tk-doelstelling`. De ene zin in `HomeScreen` die het woord nu losjes gebruikt,
+wordt bij het bouwen herschreven — zodra het een begrip is, kan het er niet
+daarnaast nog los staan.
+
+**Een doelstelling is een aantal goede antwoorden op één oefening, vóór een
+dag.** Een geheel getal, één `setId` uit `onderdelen()` — `tafel-6`,
+`nl-provincies` — en een kalenderdag. Geen minuten, geen tijd, geen tweede
+soort; er is ook geen minutenteller in dit product en die komt hier niet bij.
+Wat er vastligt is `{ id, kindId, setId, aantal, deadline, gezetOp, gezetDoor }`.
+
+**De stand wordt geteld, niet bijgehouden.** Er komt geen tweede administratie
+naast de antwoorden die er al liggen. Een antwoord telt mee als het goed was,
+als het ná `gezetOp` gegeven is, en als het in een ronde over díe set viel. Dat
+laatste staat niet op het antwoord zelf maar op de sessie waar het bij hoort, en
+daar wordt het dus vandaan gehaald. Herhalingen tellen mee: "25 goede
+antwoorden" is vijfentwintig antwoorden en geen vijfentwintig verschillende
+sommen — dat is wat een ouder bedoelt, en het is ook wat oefenen is. Het rekenen
+staat in `src/game-core/doelstelling.ts`, met tests, en dus zonder browser.
+
+**Eén doelstelling tegelijk, op de plek van "Waar je voor gaat".** Drie blokken
+die een kind vertellen wat het moet doen, is er één te veel. Dus: zolang er een
+doelstelling openstaat, neemt die het blok van ADR-141 over; staat er geen, dan
+staat het zelfgekozen diploma er weer. Eén blok, één knop, en de weg naar de
+oefening is die van `DoelBlok` — één druk. De volgorde van de voordeur blijft
+van `HomeScreen` (ADR-152); de doelstelling erft alleen de plaats van het blok
+dat hij vervangt.
+
+Dat het zelfgekozen diploma zolang niet te zien is, is de prijs, en die is te
+verdedigen: het kind koos dat doel zelf, de ouder zette deze doelstelling er
+bewust voor in de plaats, en het komt vanzelf terug.
+
+**Op de deadline gebeurt er niets ergs.** Gehaald zegt dat één keer — op het
+uitslagscherm waar het gebeurde, zoals ADR-141 het al doet — en gaat daarna naar
+een stille stand. Het blijft niet knipperen. Niet gehaald verdwijnt de dag erna
+gewoon van de voordeur, zonder één woord erover tegen het kind. Dit is een
+product voor kinderen: een gemiste deadline wordt hier nooit een strafscherm.
+Wat ervan terechtkwam, ziet de ouder bij Voor ouders.
+
+**Herstel loopt langs de ouder, want het kind heeft geen e-mailadres.** De ouder
+heeft er wel een, en daarmee het gewone herstelpad. Voor het kind is de ouder
+het herstelpad: in zijn eigen omgeving geeft hij een nieuwe inlogcode uit en zet
+hij het wachtwoord opnieuw. De oude code werkt daarna niet meer — hij wordt
+overschreven en niet bewaard, want een code die nog half werkt is geen herstel.
+Wat het kind ervan merkt: alle sessies worden ingetrokken, het wordt overal
+uitgelogd, en het logt opnieuw in met de nieuwe code. De voortgang blijft staan,
+want die hangt aan de uuid en niet aan de code.
+
+**Wat de server mag weten, bijgewerkt.** De opsomming van ADR-050 was: van de
+ouder een e-mail en een auth-rij, van het kind een voornaam, een niveau, een
+groep (ADR-151) en rijen voortgang. Daar komt precies twee bij. De **inlogcode**,
+want zonder identiteit geen RLS. En de **auth-rij met de wachtwoordhash**, die
+in `auth.users` staat en hier niet gedupliceerd wordt — dezelfde regel die het
+datamodel voor leraren al stelt. Verder niets: geen school, geen woonplaats,
+geen geboortedatum, geen vrij tekstveld waar een kind in kan typen. Een
+doelstelling voegt een aantal, een `set_id` en een datum toe, en dat gaat over
+stof en een dag, niet over een kind.
+
+### Consequences
+
+**De belofte in de LEESMIJ wordt versmald, en dat had al gemoeten.** "No network
+traffic beyond the map files in `public/`" en "no backend at all" waren al niet
+meer waar sinds ADR-116 en ADR-123; ADR-050 schreef de correctie voor en niemand
+voerde hem uit. Wat ervoor in de plaats komt is de smallere zin die wél waar is:
+geen advertenties, geen tracking, geen derde partij op een pagina waar een kind
+naar kijkt, en geen enkel verzoek tijdens een ronde. `docs/ARCHITECTURE.md` §1
+en §2 dragen dezelfde onwaarheid en gaan mee.
+
+**`e2e/network.spec.ts` versmalt opnieuw in plaats van te verdwijnen.** Tijdens
+een ronde gaat er nog steeds niets de deur uit, en dat blijft de test die dat
+vasthoudt. Syncen is een apart moment en krijgt een eigen test, zoals de kassa
+er een heeft.
+
+**Er moet een privacyverklaring komen, en dat is geen code.** `docs/legal/`
+bestaat nog niet. De verklaring noemt Supabase (Frankfurt) als verwerker, naast
+Mollie en Resend die er sinds ADR-123 al zijn, en er hoort een
+verwerkersovereenkomst bij. Een account verwijderen en de gegevens van een kind
+kunnen meenemen horen erbij en niet erachteraan.
+
+**Het transport is kale `fetch`, zoals `store/premium.ts` het al doet.** Geen
+`@supabase/supabase-js` erbij, en dus geen nieuwe runtime-dependency. Dat is
+niet alleen netjes maar nodig om te kúnnen zeggen dat de shell van 300 kB niet
+groeit voor een kind dat nooit inlogt: `tools/report-bundle-size.mjs` telt elk
+`.js`- en `.css`-bestand in `dist/assets` bij elkaar op, dus een lui geladen
+brok telt daar gewoon in mee. Zonder bibliotheek is er niets te meten en is die
+eis waar in plaats van beredeneerd.
+
+**De lokale migratie gaat vóór het netwerk**, net zoals ADR-050 dat voor
+`progress` eiste: `attempts` krijgt een uuid als sleutel en een instelling gaat
+bijhouden wanneer hij geschreven is. Dat kan op zichzelf, zonder dat er iemand
+inlogt.
+
+**Niets hiervan is hier te verifiëren.** Er is geen Supabase-project, er zijn
+geen sleutels in CI, en er staat nog geen regel code. Dat `.invalid` door
+Supabase geaccepteerd wordt als adres, en dat publieke registratie uit te zetten
+is, staat hier als ontwerp en niet als feit — het is pas bekend tegen een echt
+project, en tot die tijd hoort het zo opgeschreven te worden en niet als af
+gemeld.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
@@ -8162,8 +8443,8 @@ none of them is built in this phase.
 
 | ADR     | Decision                                                                                                                       | Why deferred                                                             |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
-| ADR-002 | Pupils authenticate through a custom JWT, not Supabase Auth, because the spec forbids pupil e-mail while RLS needs an identity | No sign-in exists                                                        |
+| ADR-002 | Pupils authenticate through a custom JWT, not Supabase Auth, because the spec forbids pupil e-mail while RLS needs an identity | Replaced by ADR-155: Supabase Auth on an address that cannot exist       |
 | ADR-003 | Rounds are authored and scored on the server, because a client-written score is forgeable                                      | No leaderboard to forge; `game-core` stays pure so this stays affordable |
-| ADR-008 | No free consumer tier, because a self-service account for a minor makes us the controller under a different legal regime       | Moot: everyone plays free, and no account exists                         |
+| ADR-008 | No free consumer tier, because a self-service account for a minor makes us the controller under a different legal regime       | Reversed by ADR-155: a child signs in, and the parent consents           |
 | ADR-012 | Retention hangs on class archival, and deletion is announced before it runs                                                    | No stored pupil data                                                     |
 | ADR-013 | Payments behind a `PaymentProvider` interface; schools pay on invoice with SEPA                                                | No commercial model                                                      |
