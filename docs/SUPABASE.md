@@ -104,10 +104,10 @@ app die op het apparaat van een kind draait.
 Zet ze in GitHub bij **Settings → Secrets and variables → Actions → Variables**
 (bij Variables en niet bij Secrets, want ze komen toch in de app terecht):
 
-| Variabele   | Wat                              |
-| ----------- | -------------------------------- |
-| `GEZIN_URL` | de Project URL                   |
-| `GEZIN_KEY` | de publishable key               |
+| Variabele   | Wat                |
+| ----------- | ------------------ |
+| `GEZIN_URL` | de Project URL     |
+| `GEZIN_KEY` | de publishable key |
 
 De build gebruikt ze pas vanaf F2, wanneer de app zelf kan inloggen; tot dan
 staan ze klaar en verandert er niets. `ci.yml` geeft ze mee zodra die code er
@@ -116,13 +116,13 @@ configuratie.
 
 ## Wat waar staat
 
-| Wat                              | Waar                                                  |
-| -------------------------------- | ----------------------------------------------------- |
-| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql`                  |
-| Inloggen als kind                 | `supabase/functions/kind-inloggen/`                   |
-| Wat een ouder met een kind doet   | `supabase/functions/kind-beheer/`                     |
-| De code en het wachtwoord, puur   | `supabase/functions/_gezin/code.ts`                   |
-| De premiumcodes (ander project)   | `tools/premium/README.md`                             |
+| Wat                                | Waar                                 |
+| ---------------------------------- | ------------------------------------ |
+| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql` |
+| Inloggen als kind                  | `supabase/functions/kind-inloggen/`  |
+| Wat een ouder met een kind doet    | `supabase/functions/kind-beheer/`    |
+| De code en het wachtwoord, puur    | `supabase/functions/_gezin/code.ts`  |
+| De premiumcodes (ander project)    | `tools/premium/README.md`            |
 
 De beslissingen staan in ADR-155 in [`DECISIONS.md`](DECISIONS.md); de tabellen
 staan als deel C in [`DATAMODEL.md`](DATAMODEL.md).

@@ -79,7 +79,8 @@ function tekst(waarde: unknown): string {
 function leesGroep(waarde: unknown): number | null {
   if (waarde === null || waarde === undefined || waarde === '') return null;
   const groep = typeof waarde === 'number' ? waarde : Number(waarde);
-  if (!Number.isInteger(groep) || groep < 3 || groep > 8) throw new BeheerProbleem('groep-onbekend');
+  if (!Number.isInteger(groep) || groep < 3 || groep > 8)
+    throw new BeheerProbleem('groep-onbekend');
   return groep;
 }
 
@@ -174,9 +175,7 @@ export async function verwijderKind(
 }
 
 export type Antwoord =
-  | { readonly kind: NieuwKind }
-  | { readonly inlogcode: string }
-  | { readonly ok: true };
+  { readonly kind: NieuwKind } | { readonly inlogcode: string } | { readonly ok: true };
 
 export async function behandel(verzoek: Verzoek, diensten: Diensten): Promise<Antwoord> {
   const ouderId = await diensten.ouderVoorToken(verzoek.token);

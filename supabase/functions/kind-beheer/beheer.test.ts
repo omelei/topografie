@@ -127,10 +127,7 @@ describe('een kind aanmaken', () => {
 describe('herstel', () => {
   it('geeft een nieuwe code uit voor het eigen kind', async () => {
     const { diensten, gedaan } = nepDiensten();
-    const antwoord = await behandel(
-      { ...BASIS, actie: 'nieuwe-code', kindId: 'kind-1' },
-      diensten,
-    );
+    const antwoord = await behandel({ ...BASIS, actie: 'nieuwe-code', kindId: 'kind-1' }, diensten);
     expect(antwoord).toEqual({ inlogcode: 'ABCD2345' });
     expect(gedaan).toEqual(['codeUitgeven:kind-1']);
   });
@@ -152,7 +149,10 @@ describe('herstel', () => {
     const { diensten, gedaan } = nepDiensten();
     expect(
       await reden(
-        behandel({ ...BASIS, actie: 'wachtwoord', kindId: 'kind-1', wachtwoord: 'Sofie' }, diensten),
+        behandel(
+          { ...BASIS, actie: 'wachtwoord', kindId: 'kind-1', wachtwoord: 'Sofie' },
+          diensten,
+        ),
       ),
     ).toBe('eigen-naam');
     expect(gedaan).toEqual([]);

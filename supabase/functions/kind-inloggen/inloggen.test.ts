@@ -225,7 +225,10 @@ describe('inloggen', () => {
       ok: false,
       reden: 'leeg',
     });
-    expect(await inloggen({ ...GOED, code: '   ' }, diensten)).toEqual({ ok: false, reden: 'leeg' });
+    expect(await inloggen({ ...GOED, code: '   ' }, diensten)).toEqual({
+      ok: false,
+      reden: 'leeg',
+    });
     expect(magInloggen).not.toHaveBeenCalled();
   });
 
