@@ -18,6 +18,23 @@ async function foto(page: Page, project: string, naam: string) {
   await page.screenshot({ path: `screenshots/${project}-${naam}.png`, fullPage: false });
 }
 
+/**
+ * De groep wisselen op Voor ouders, en wachten tot hij weg staat.
+ *
+ * `GroepInstelling` schrijft in een promise waar de klik zelf niet op wacht, dus
+ * een `goto` er meteen achteraan haalt die schrijfactie in: de voordeur leest
+ * dan nog de oude groep en stelt het oude voor. De knop draagt `aria-pressed`
+ * pas nadat `setGroep` terug is, dus dat is het teken dat de wissel rond is —
+ * en het is hetzelfde teken dat de ouder op het scherm ziet.
+ */
+async function wisselGroep(page: Page, naam: string, knop: string) {
+  const knoppen = page
+    .getByRole('region', { name: `Groep van ${naam}` })
+    .getByRole('button', { name: knop, exact: true });
+  await knoppen.click();
+  await expect(knoppen).toHaveAttribute('aria-pressed', 'true');
+}
+
 /** Vier onderdelen die een week geleden aan de beurt kwamen, en een lege dag. */
 async function zaaiGelijkWachten(page: Page) {
   await page.evaluate(async () => {
@@ -92,7 +109,7 @@ test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', 
     'aria-pressed',
     'true',
   );
-  await instelling.getByRole('button', { name: 'Groep 6', exact: true }).click();
+  await wisselGroep(page, 'Mees', 'Groep 6');
   await expect(instelling.getByRole('status')).toHaveText('Mees zit in groep 6.');
   await instelling.scrollIntoViewIfNeeded();
   await foto(page, project, 'groep-ouder');
@@ -102,10 +119,7 @@ test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', 
 
   // En terug naar geen groep: dan beslist weer alleen de grootte, zoals altijd.
   await page.goto('/ouder');
-  await page
-    .getByRole('region', { name: 'Groep van Mees' })
-    .getByRole('button', { name: 'Geen groep' })
-    .click();
+  await wisselGroep(page, 'Mees', 'Geen groep');
   await page.goto('/');
   expect(await provinciesEerst(page)).toBe(true);
 });
@@ -185,10 +199,7 @@ test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s
 
   // Groep 3 op Voor ouders: nu de klok, en geen landen meer.
   await page.goto('/ouder');
-  await page
-    .getByRole('region', { name: 'Groep van Fenna' })
-    .getByRole('button', { name: 'Groep 3', exact: true })
-    .click();
+  await wisselGroep(page, 'Fenna', 'Groep 3');
   await page.goto('/');
   await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
   await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
