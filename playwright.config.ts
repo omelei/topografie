@@ -123,6 +123,11 @@ export default defineConfig({
       // de tests open staan en `network.spec.ts` kan nakijken dat ze met dit
       // ene adres praten en met niets anders.
       KASSA_URL: 'https://kassa.leer.test/kassa',
+      // En een gezinsproject dat er ook niet is (ADR-155), zodat het inlogblok
+      // op Voor ouders open staat en `account.spec.ts` voor de server kan
+      // antwoorden. Zonder deze twee zegt het blok dat inloggen nog niet kan.
+      VITE_GEZIN_URL: 'https://gezin.leer.test',
+      VITE_GEZIN_KEY: 'e2e-sleutel',
     },
   },
 });

@@ -1423,6 +1423,40 @@ export const nl = {
   'ouder.naar': 'Voor ouders',
   'ouder.naarOnthouden': 'Bekijk wat je kind onthoudt en hoe het oefent',
   'ouder.terug': 'Naar Jij',
+
+  // Het account van de ouder (ADR-155). Alleen van de ouder: een kind heeft geen
+  // e-mailadres en krijgt er nooit een, en logt vanaf F3 in met een eigen code.
+  //
+  // De toon is die van een ouder onder elkaar, niet die van een bank. Wat er
+  // gebeurt als je niets doet, staat er ook bij: zonder account werkt alles
+  // zoals het werkte.
+  'account.titel': 'Account',
+  'account.uitleg':
+    'Met een account staat de voortgang van je kinderen niet alleen op dit apparaat, maar ook op de iPad en de laptop. Zonder account werkt alles gewoon zoals je gewend bent.',
+  'account.email': 'E-mailadres',
+  'account.wachtwoord': 'Wachtwoord',
+  'account.wachtwoordHint': 'Minstens acht tekens.',
+  'account.inloggen': 'Inloggen',
+  'account.aanmelden': 'Account maken',
+  'account.naarAanmelden': 'Ik heb nog geen account',
+  'account.naarInloggen': 'Ik heb al een account',
+  'account.bezig': 'Even kijken…',
+  'account.ingelogd': 'Je bent ingelogd als {email}.',
+  'account.uitloggen': 'Uitloggen',
+  'account.uitloggenUitleg':
+    'Wat je kinderen op dit apparaat hebben geoefend, blijft gewoon staan.',
+  'account.gemaild':
+    'Er staat een mail voor je klaar. Klik op de link erin, dan kun je inloggen.',
+  'account.fout.leeg': 'Vul allebei de velden in.',
+  'account.fout.geen-email': 'Dit lijkt geen e-mailadres. Kijk of er een typefout in zit.',
+  'account.fout.te-kort': 'Kies een wachtwoord van minstens acht tekens.',
+  'account.fout.onjuist': 'Dit e-mailadres en dit wachtwoord horen niet bij elkaar.',
+  'account.fout.bestaat-al': 'Er is al een account met dit e-mailadres. Log in.',
+  'account.fout.bevestig-email':
+    'Klik eerst op de link in de mail die we je gestuurd hebben.',
+  'account.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
+  'account.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
+  'account.fout.niet-ingesteld': 'Inloggen is nog niet beschikbaar.',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
   // Twee schakelaars erbij (ADR-145), allebei voor een kind dat snel afgeleid is.

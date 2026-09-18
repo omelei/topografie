@@ -22,6 +22,7 @@ import {
 import { Weekbericht } from './Weekbericht';
 import { useWeek } from '@/features/week/useWeek';
 import { WeekdoelKiezer } from '@/features/week/Weekkaart';
+import { AccountBlok } from '@/features/account/AccountBlok';
 import { EigenLijsten } from './EigenLijsten';
 import { GroepInstelling } from './GroepInstelling';
 import type { ReactNode } from 'react';
@@ -103,6 +104,12 @@ export function ParentScreen({
             oefent, en pas daarna de cijfers. Tot nu toe opende de pagina met
             de cijfers en stonden de schakelaars onderaan, onder de rekening. */}
         <PremiumBlok now={now} />
+
+        {/* Het account, na premium en vóór de instellingen (ADR-155, ADR-157).
+            Het is van dezelfde soort als het blok erboven — iets dat je als
+            ouder geregeld hebt — en het staat er niet vóór, omdat premium het
+            eerste is waar een ouder voor terugkomt. */}
+        <AccountBlok />
 
         <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
           <h2 className="tk-sectie">{t('you.settings')}</h2>
