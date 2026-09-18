@@ -90,14 +90,22 @@ export function DoelBlok({
   const alle = doelwitten(startbareOnderdelen(), actief);
   const gekozen = doelwitMet(alle, doel);
 
-  function kies(id: string) {
+  // Eerst wegschrijven, dan tonen — zoals `GroepInstelling` het al deed. Een
+  // keuze die alleen in het geheugen staat en nog aan het wegschrijven is,
+  // verdwijnt als de pagina in dezelfde tel opnieuw laadt; wat op het scherm
+  // staat, staat zo ook in de opslag. Het is één schrijfactie, dus er valt
+  // niets te wachten wat een kind zou merken.
+  async function bewaar(id: string | null) {
+    await schrijfDoel(id);
     setDoel(id);
-    void schrijfDoel(id);
+  }
+
+  function kies(id: string) {
+    void bewaar(id);
   }
 
   function laatLos() {
-    setDoel(null);
-    void schrijfDoel(null);
+    void bewaar(null);
   }
 
   // Gehaald. Het uitslagscherm heeft het al gevierd op het moment zelf; hier
