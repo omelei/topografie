@@ -63,11 +63,11 @@ order by c.relname;
 
 Er horen negen rijen te staan, `rls_aan` overal `true`, en het aantal policies:
 
-| Tabel                                                            | Policies |
-| ---------------------------------------------------------------- | -------- |
-| `doelstellingen`, `kinderen`                                     | 2        |
-| `instellingen`, `kind_diplomas`, `ouders`, `pogingen`, `sessies`, `voortgang` | 1 |
-| `inlog_pogingen`                                                 | 0        |
+| Tabel                                                                         | Policies |
+| ----------------------------------------------------------------------------- | -------- |
+| `doelstellingen`, `kinderen`                                                  | 2        |
+| `instellingen`, `kind_diplomas`, `ouders`, `pogingen`, `sessies`, `voortgang` | 1        |
+| `inlog_pogingen`                                                              | 0        |
 
 `inlog_pogingen` hoort er nul te hebben: RLS staat aan en er is met opzet geen
 policy, zodat alleen de edge function er via `service_role` bij kan. Een tabel
