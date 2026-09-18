@@ -178,8 +178,12 @@ export const nl = {
   'afzwemmen.oefen': 'Eerst oefenen',
   'afzwemmen.proef': 'Proefzwemmen',
   'afzwemmen.proefGehaald': 'Proefzwemmen gelukt.',
+  // Niet nog een keer "dit was proefzwemmen": dat staat er met
+  // `afzwemmen.proefGehaald` al boven. Wel wat het voor vandaag betekent, want
+  // de regel erboven kan "met 5 goed is hij van jou" zijn en dat gaat over een
+  // andere dag dan deze.
   'afzwemmen.proefUitleg':
-    'Dit was proefzwemmen. Het diploma komt als je pagina klaar is om af te zwemmen.',
+    'Bij proefzwemmen krijg je nog geen diploma. Dat komt als je albumpagina klaar is om af te zwemmen.',
   'afzwemmen.print': 'Print je diploma',
   'afzwemmen.printNaam': 'Gehaald door {naam}',
   'afzwemmen.printZonderNaam': 'Gehaald',
@@ -676,7 +680,7 @@ export const nl = {
     'Je betaalt één keer. De code verloopt na een schooljaar vanzelf, en er wordt nooit iets afgeschreven.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
-    'Tien goede antwoorden leveren altijd een ster op, en uit elke kist kiest je kind zelf een held.',
+    'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed weet. Niets hangt van geluk af, en er valt niets te kopen.',
 
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
@@ -1251,14 +1255,19 @@ export const nl = {
   'result.morgenKleur': 'Morgen kunnen er {aantal} plaatjes kleur krijgen.',
   'result.morgenTerugEen': 'Morgen komt er 1 plaatje terug.',
   'result.morgenTerug': 'Morgen komen er {aantal} plaatjes terug.',
-  'result.eerstVolgende': 'Over {dagen} dagen komt er weer een plaatje terug.',
+  // Zonder "weer": deze regel staat nu ook onder een allereerste ronde, en dan
+  // is er nog niets teruggekomen om weer te komen.
+  'result.eerstVolgende': 'Over {dagen} dagen komt het eerste plaatje terug.',
   'result.paginaInKleur':
     'Deze pagina is helemaal in kleur. Over een week kunnen de eerste lijstjes komen.',
   // Stoppen is ook af: als er vandaag niets meer terug moet komen, is "Klaar" de
   // eerste knop en brengt een extra ronde nieuwe plaatjes.
   'result.vandaagKlaar': 'Klaar voor vandaag',
+  // Waar geldt voor een eerste ronde ooit én voor een kind dat vandaag alles
+  // afwerkte wat terugkwam: in het eerste geval hoefde er nog niets terug te
+  // komen, en "alles is gedaan" zou dan over niets gaan.
   'result.vandaagKlaarUitleg':
-    'Alles wat vandaag terug moest komen, is gedaan. Stoppen is nu ook goed.',
+    'Er hoeft vandaag niets meer terug te komen. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
   'result.nieuwePlaatjes': 'Nieuwe plaatjes',
 
@@ -1317,8 +1326,7 @@ export const nl = {
   'you.geenCijfer': '–',
   'you.weekMost': 'Het meest geoefend: {set}.',
   'you.settings': 'Instellingen',
-  'you.settingsBijOuder':
-    'Voorlezen, geluid, beweging en je held na een antwoord stel je in bij Voor ouders.',
+  'you.settingsBijOuder': 'Voorlezen, geluid en minder beweging stel je in bij Voor ouders.',
   'you.readAloud': 'Vragen voorlezen',
   'you.readAloudWhy': 'Je kunt elke vraag laten voorlezen.',
   'you.on': 'aan',

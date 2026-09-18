@@ -162,6 +162,10 @@ export function RondeKlaar({
 
         {albumDeel ? (
           <section className="tk-card flex flex-col gap-4" aria-label={t('album.paginaTitel')}>
+            {/* Dezelfde kop als op de modulepagina: zonder hem opent de uitslag
+                met een kaart en een getal, en staat er nergens dat dit het
+                album is. */}
+            <h2 className="tk-sectie">{t('album.paginaTitel')}</h2>
             <AlbumPagina
               deel={albumDeel}
               states={na}
@@ -351,7 +355,12 @@ function vooruitZin(
   now: Date,
 ): string {
   if (inKleur) return t('result.paginaInKleur');
-  if (kleur === 0) return t('result.alBegonnen', { begonnen, totaal });
+  // "Je bent begonnen aan 9 van de 12 plaatjes" is wat het zegt: er staat al
+  // iets, en er is nog iets te beginnen. Staat de hele pagina aan, dan telt die
+  // regel hetzelfde op als de regel erboven ("12 plaatjes verder") en zegt hij
+  // niets over terugkomen, wat deze regel nu juist moet doen. Dan kijkt hij
+  // vooruit, net als bij een kind dat al kleur heeft.
+  if (kleur === 0 && begonnen < totaal) return t('result.alBegonnen', { begonnen, totaal });
   const blik = vooruitblik(ids, states, now);
   if (blik.morgenKleur > 0) {
     return blik.morgenKleur === 1

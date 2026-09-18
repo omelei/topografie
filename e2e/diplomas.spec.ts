@@ -73,7 +73,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(
     page.getByText('Nog geen diploma: 0 van de 5 goed. Met 5 goed is hij van jou.'),
   ).toBeVisible();
-  await expect(page.getByText(/^Dit was proefzwemmen\./)).toBeVisible();
+  await expect(page.getByText(/^Bij proefzwemmen krijg je nog geen diploma\./)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
   // And on the child's own page, as pictures rather than buttons.
