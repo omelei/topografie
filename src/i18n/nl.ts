@@ -1445,15 +1445,13 @@ export const nl = {
   'account.uitloggen': 'Uitloggen',
   'account.uitloggenUitleg':
     'Wat je kinderen op dit apparaat hebben geoefend, blijft gewoon staan.',
-  'account.gemaild':
-    'Er staat een mail voor je klaar. Klik op de link erin, dan kun je inloggen.',
+  'account.gemaild': 'Er staat een mail voor je klaar. Klik op de link erin, dan kun je inloggen.',
   'account.fout.leeg': 'Vul allebei de velden in.',
   'account.fout.geen-email': 'Dit lijkt geen e-mailadres. Kijk of er een typefout in zit.',
   'account.fout.te-kort': 'Kies een wachtwoord van minstens acht tekens.',
   'account.fout.onjuist': 'Dit e-mailadres en dit wachtwoord horen niet bij elkaar.',
   'account.fout.bestaat-al': 'Er is al een account met dit e-mailadres. Log in.',
-  'account.fout.bevestig-email':
-    'Klik eerst op de link in de mail die we je gestuurd hebben.',
+  'account.fout.bevestig-email': 'Klik eerst op de link in de mail die we je gestuurd hebben.',
   'account.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
   'account.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'account.fout.niet-ingesteld': 'Inloggen is nog niet beschikbaar.',

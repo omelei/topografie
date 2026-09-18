@@ -11,7 +11,13 @@
  * Het gaat niet mee in de app: alleen tests importeren dit.
  */
 
-import { invoerFout, moetVernieuwen, normaliseerEmail, verlooptOp, wachtwoordKort } from './oordeel';
+import {
+  invoerFout,
+  moetVernieuwen,
+  normaliseerEmail,
+  verlooptOp,
+  wachtwoordKort,
+} from './oordeel';
 import type { Account, AccountUitkomst, Sessie } from './types';
 
 export interface NepOpties {

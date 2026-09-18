@@ -91,7 +91,9 @@ describe('verlopen en verversen', () => {
 describe('wat Supabase zei, in één woord', () => {
   it('houdt "bevestig eerst je mail" uit elkaar van "dit klopt niet"', () => {
     expect(foutVanAntwoord(400, 'email_not_confirmed', '')).toBe('bevestig-email');
-    expect(foutVanAntwoord(400, 'invalid_credentials', 'Invalid login credentials')).toBe('onjuist');
+    expect(foutVanAntwoord(400, 'invalid_credentials', 'Invalid login credentials')).toBe(
+      'onjuist',
+    );
   });
 
   it('herkent een adres dat er al is', () => {

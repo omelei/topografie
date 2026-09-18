@@ -17,7 +17,13 @@
  */
 
 import { leesSessie, schrijfSessie } from './bewaren';
-import { foutVanAntwoord, invoerFout, moetVernieuwen, normaliseerEmail, verlooptOp } from './oordeel';
+import {
+  foutVanAntwoord,
+  invoerFout,
+  moetVernieuwen,
+  normaliseerEmail,
+  verlooptOp,
+} from './oordeel';
 import { isIngesteld, server } from './omgeving';
 import type { Account, AccountUitkomst, Sessie } from './types';
 
