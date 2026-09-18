@@ -8436,6 +8436,138 @@ is, staat hier als ontwerp en niet als feit — het is pas bekend tegen een echt
 project, en tot die tijd hoort het zo opgeschreven te worden en niet als af
 gemeld.
 
+---
+
+## ADR-156 — Het schema van het gezin: een eigen project, en de policy blijft één regel
+
+**Status:** accepted. **Date:** 2026-09-18. Bouwt ADR-155 uit tot iets dat
+gedraaid kan worden. Nog niet tegen een echt project bewezen.
+
+### Context
+
+ADR-155 koos de vorm: de ouder met een e-mailadres, het kind met een inlogcode,
+en één policyregel zonder join. Wat het niet deed, is dat opschrijven als iets
+dat je in een SQL-venster kunt plakken. Daarbij komen een stuk of tien vragen
+naar boven die het record openliet en die stuk voor stuk fout te beantwoorden
+zijn — en dit is de laag waar een fout een lek is en geen bug.
+
+### Decision
+
+**Een eigen project, naast dat van premium.** ADR-116 zegt over de
+premiumdatabase dat er "nothing about a child in it" staat. Die zin blijft
+alleen waar als er geen kindertabel naast komt te staan, en een zin die door
+oplettendheid waar moet blijven, is over een jaar niet waar. Twee projecten op
+het gratis plan kosten niets en houden het uit elkaar zonder dat iemand erop
+hoeft te letten. Het kost een tweede adres en een tweede sleutel in de build; dat
+is de hele prijs.
+
+**De migratie is genummerd en tegelijk opnieuw te draaien.** `0001_gezin.sql`,
+en na hem 0002 enzovoort; een eenmaal gedraaide migratie wordt niet meer
+bewerkt. Dat is niet hetzelfde als eenmalig: elke regel is `create ... if not
+exists` of `create or replace`, want tot het project echt staat draait dit een
+paar keer achter elkaar. De twee eisen botsen niet — "nooit bewerken" gaat over
+de geschiedenis, "opnieuw kunnen draaien" over de volgende tien minuten.
+
+**Welke rijen zegt de policy, welke kolommen zegt het recht.** Dit is de
+beslissing die ADR-155's belofte van één regel redt. Een kind mag zijn eigen
+groep zetten — dat is gevraagd — en zijn naam, en verder niets: niet zijn
+inlogcode, en niet bij wie het hoort. Dat als policy schrijven zou er meteen een
+`case` in brengen en de regel onleesbaar maken. Dus:
+
+```sql
+grant update (voornaam, niveau, groep, groep_schooljaar) on public.kinderen to authenticated;
+```
+
+en de policy blijft `using (id = auth.uid() or ouder_id = auth.uid())`. Postgres
+had hier al een antwoord op en het is niet RLS.
+
+Hetzelfde gereedschap maakt "append-only" waar in plaats van waar bedoeld:
+`pogingen` krijgt `select` en `insert` en verder niets. Een gegeven antwoord is
+niet te veranderen en niet weg te halen, ook niet door het kind zelf.
+
+**Het paar (kind, ouder) bewaakt de database.** `ouder_id` staat op elke rij
+omdat de policy anders een join nodig heeft. Maar gedenormaliseerd betekent ook:
+te vervalsen, want `with check` laat een kind zijn eigen rij met een willekeurige
+`ouder_id` wegschrijven — en daarmee zou het zijn eigen voortgang aan een vreemde
+kunnen geven. Dat wordt niet in de policy gerepareerd maar in het schema:
+
+```sql
+foreign key (kind_id, ouder_id) references public.kinderen (id, ouder_id)
+```
+
+Daarvoor staat er op `kinderen` een `unique (id, ouder_id)` die als constraint
+overbodig is en als doelwit dragend. Wie de policy leest, hoeft de rest van het
+bestand niet te geloven.
+
+**De code wordt in de database gemaakt en niet erbuiten.** `gezin_nieuwe_code()`
+trekt acht tekens uit hetzelfde alfabet als ADR-116, en gooit bytes vanaf 248 weg
+omdat 256 geen veelvoud van 31 is — anders zijn de eerste acht letters
+waarschijnlijker dan de rest. `gezin_code_uitgeven()` probeert het gewoon opnieuw
+als het botst. Zo is `unique` op de kolom de waarheid over uniciteit, en niet de
+aanroeper: ADR-155 vroeg dat met zoveel woorden, en het is de enige plek waar het
+ook echt zo kan zijn.
+
+**In de begrenzer staat geen code en geen IP-adres.** Alleen een digest die de
+edge function maakt met een peper die alleen zij kent. Een kale hash van een
+IPv4-adres is in seconden terug te rekenen — dan bewaar je een persoonsgegeven en
+doe je alsof van niet, precies het bezwaar dat het datamodel al maakt — en een
+kale hash van een code zou van die tabel een lijst maken om codes mee te raden.
+Er wordt geteld per code én per IP: per code zodat één kind niet te raden is, per
+IP zodat een lijst codes niet af te lopen is.
+
+**Twee edge functions, want de service-sleutel hoort nergens anders.** Een kind
+aanmaken is een gebruiker aanmaken en een wachtwoord zetten is aan `auth.users`
+komen; dat kan niet met een sleutel die in een browser staat. Dus:
+`kind-inloggen` (voor iedereen, met de begrenzer erin) en `kind-beheer` (alleen
+met het token van een ouder). Die laatste doet met de hand wat RLS anders gedaan
+had — is de beller een ouder, en is dit kind van hém — en dat staat er als de
+enige twee regels die het doet, zodat het na te lezen is.
+
+Op beide functies is "bestaat dit niet" en "is dit niet van jou" hetzelfde
+antwoord. Anders is er een ingang die vertelt welke kind-ids bestaan.
+
+**Een gebruiker aanmaken gaat in twee stappen.** Het adres van een kind komt uit
+zijn id, en die id bestaat pas nadat de gebruiker is aangemaakt. Dus eerst een
+tijdelijk adres, dan het echte. Allebei staan ze op `.invalid`, dus ook tussen de
+twee stappen in kan er geen post heen — dat is het enige wat hier misgaat als
+iemand de tweede stap vergeet, en het is precies de fout die je wilt hebben.
+
+**`instellingen.sleutel` is een lijstje en geen vrije tekst.** Vijf toegestane
+sleutels, en `waarde` heeft een lengte. Anders is die tabel het vrije tekstveld
+dat ADR-050 niet wil: een kind met de ontwikkelaarsgereedschappen kan er
+schrijven wat het wil, en dan staat er vroeg of laat iets in wat er niet hoort.
+`dagstand:` staat er met opzet niet bij, want dat hoort dit apparaat te blijven.
+
+**Een ouder aanmaken doet een trigger, geen client.** Wie zich aanmeldt met een
+echt adres krijgt een rij in `ouders`. Wie zich aanmeldt met een
+`@kind.invalid`-adres krijgt die niet, en bezit dus geen enkele rij en kan
+nergens bij. Dat is goedkoper dan die adressen proberen te blokkeren, en het
+faalt de goede kant op.
+
+### Consequences
+
+- `docs/SUPABASE.md` zegt wat er in het dashboard geklikt moet worden. De regio
+  staat er als eerste stap en met een waarschuwing erbij: die is achteraf niet
+  te veranderen, en een project buiten de EU is een nieuw project en niet een
+  instelling.
+- Het echte adres en de sleutel staan niet in deze repository, net zomin als die
+  van premium. Ze worden `GEZIN_URL` en `GEZIN_KEY` bij de repository-variabelen.
+  `ci.yml` geeft ze pas mee vanaf F2, wanneer er code is die ze leest: een
+  variabele doorgeven die nergens gelezen wordt, is dode configuratie.
+- `anon` kan in dit schema niets. Geen tabel, geen functie. Wie niet is ingelogd,
+  praat alleen met de twee edge functions — en dat is een smallere deur dan de
+  drie functies die de premiumdatabase aan `anon` geeft.
+- Wat wél getest wordt, is alles wat een beslissing is: `inloggen.test.ts` en
+  `beheer.test.ts` spelen elke uitkomst na zonder netwerk, inclusief dat een
+  onbekende code en een fout wachtwoord van buiten niet te onderscheiden zijn —
+  ook niet in tijd. Eén test houdt het alfabet van de code op drie plekken
+  gelijk: hier, in de migratie, en bij de premiumcode waar het vandaan komt.
+- **Wat niet te bewijzen is in CI.** De SQL zelf, de policies en het gedrag van
+  Supabase Auth. Twee dingen zullen daar het eerst blijken en staan hier als
+  ontwerp en niet als feit: dat Supabase een adres op `.invalid` accepteert, en
+  dat het aanmaken in twee stappen werkt zoals bedoeld. Gaat een van die twee
+  niet op, dan is dat een volgende ADR en geen stille reparatie.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
