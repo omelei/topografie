@@ -38,9 +38,52 @@ zodra ze ergens gedraaid hebben — een verandering is een volgend genummerd
 bestand. Deze is wel zo geschreven dat opnieuw draaien niets kapotmaakt, want
 tot het project echt staat draai je hem een paar keer achter elkaar.
 
-Controleer daarna onder **Database → Tables** dat bij alle negen tabellen
-**RLS enabled** staat. Staat het ergens uit, dan is het schema niet helemaal
-gedraaid; draai het opnieuw en lees de foutmelding.
+Er hoort **Success. No rows returned** te komen. Twee dingen die hier mis
+kunnen gaan en waar de foutmelding niet meteen over uitweidt:
+
+- `permission denied for schema auth` bij de trigger. Draai het script dan in
+  de **SQL Editor van het dashboard** en niet via een andere verbinding: daar
+  draai je als `postgres`, en die mag het.
+- `extension "citext" is not available`. Zet hem dan eerst aan onder
+  **Database → Extensions**, en draai het script opnieuw.
+
+Controleer daarna dat het er echt staat, met deze query in dezelfde editor:
+
+```sql
+select c.relname as tabel,
+       c.relrowsecurity as rls_aan,
+       count(p.polname) as policies
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+left join pg_policy p on p.polrelid = c.oid
+where n.nspname = 'public' and c.relkind = 'r'
+group by c.relname, c.relrowsecurity
+order by c.relname;
+```
+
+Er horen negen rijen te staan, `rls_aan` overal `true`, en het aantal policies:
+
+| Tabel                                                            | Policies |
+| ---------------------------------------------------------------- | -------- |
+| `doelstellingen`, `kinderen`                                     | 2        |
+| `instellingen`, `kind_diplomas`, `ouders`, `pogingen`, `sessies`, `voortgang` | 1 |
+| `inlog_pogingen`                                                 | 0        |
+
+`inlog_pogingen` hoort er nul te hebben: RLS staat aan en er is met opzet geen
+policy, zodat alleen de edge function er via `service_role` bij kan. Een tabel
+met `rls_aan = false` is het ene antwoord dat niet mag voorkomen — dan is die
+tabel voor iedereen met de publieke sleutel te lezen.
+
+En de zes functies:
+
+```sql
+select proname from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public' and proname like 'gezin\_%' order by 1;
+```
+
+`gezin_code_uitgeven`, `gezin_inlog_mag`, `gezin_inlog_mislukt`,
+`gezin_kind_voor_code`, `gezin_nieuwe_code`, `gezin_nieuwe_gebruiker`.
 
 ### 3. De twee edge functions
 
