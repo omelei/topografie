@@ -691,7 +691,27 @@ counting rather than a migration that has to run.
 on that `set_id`. A stored figure drifts, and part B §9 already refuses one for
 the same reason.
 
-## C4. RLS, in one table
+## C4. The rate limiter
+
+```sql
+create table inlog_pogingen (
+  code_hash text not null,
+  ip_hash   text not null,
+  tijdstip  timestamptz not null default now()
+);
+```
+
+Ten failures an hour, per code and per IP (ADR-156). Neither the code nor the
+address is in here: both are a digest the edge function makes with a pepper it
+holds. A plain hash of an IPv4 address is brute-forced back in seconds — that
+would store personal data while pretending not to, the objection §7 already
+makes — and a plain hash of a code would turn this table into a list for
+guessing codes with.
+
+RLS is on and there is no policy: only the edge function reaches it, through
+`security definer` functions granted to `service_role`.
+
+## C5. RLS, in one table
 
 Every table has RLS enabled and no permissive default. One policy per table, and
 each one is the same line:
@@ -711,12 +731,19 @@ The parent's write access on a child's rows is not an oversight: it is what
 makes "Inloggen als kind" need no second kind of session, and ADR-155 names what
 that costs.
 
+**Which rows is the policy; which columns is the grant.** A child may set its
+own group — that was asked for — and its own name, and nothing else: not its
+login code, not whose child it is. That is a column grant on `kinderen`, not a
+second policy, which is how the policy stays one line (ADR-156). `pogingen` has
+no update and no delete grant at all, so "append-only" is enforced rather than
+described.
+
 `inlogcode` is readable by the child it belongs to and by their parent, and by
 nobody else. There is no view, no search and no function anywhere that takes a
 code and answers whether it exists — the only thing that accepts a code is the
 edge function that also demands the password.
 
-## C5. What is deliberately not here
+## C6. What is deliberately not here
 
 - No `school`, `woonplaats`, `geboortedatum`, `achternaam`, `foto`, or any free
   text a child can type. ADR-050's list, unchanged but for the login code.
