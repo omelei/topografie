@@ -21,10 +21,10 @@ import { t } from '@/i18n';
 export function BehaaldeDiplomas() {
   return (
     <div className="flex flex-col gap-6">
-      <Tafeldiplomas alleenBehaald />
-      <VlagDiplomas alleenBehaald />
-      <KlokDiplomas alleenBehaald />
-      <TopoDiplomas alleenBehaald />
+      <Tafeldiplomas alleenBehaald stilAlsLeeg />
+      <VlagDiplomas alleenBehaald stilAlsLeeg />
+      <KlokDiplomas alleenBehaald stilAlsLeeg />
+      <TopoDiplomas alleenBehaald stilAlsLeeg />
     </div>
   );
 }

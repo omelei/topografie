@@ -76,10 +76,10 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(page.getByText(/^Bij proefzwemmen krijg je nog geen diploma\./)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
-  // And on the child's own page, as pictures rather than buttons.
-  await page.goto('/jij');
-  // De muur staat sinds ADR-143 achter een knop: de pagina opent met wat je
-  // hebt, en dit is de test over de hele muur.
+  // En op Voor ouders, als plaatjes in plaats van knoppen. De muur staat achter
+  // een knop (ADR-143) en sinds ADR-158 op de pagina van de ouder: daar zijn de
+  // lege vakjes iets om iets mee te doen.
+  await page.goto('/ouder');
   await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
   const verzameling = page.getByRole('region', { name: 'Jouw topodiploma’s' });
   await expect(verzameling.getByRole('img')).toHaveCount(11);

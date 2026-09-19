@@ -92,14 +92,19 @@ test('without a code the premium parts are labelled once, and say what they do',
     'true',
   );
 
-  // Op Jij: de tafeldiploma's staan er gewoon, want die zijn gratis — en het
-  // album ook (ADR-149): wat een kind onthoudt, ziet een kind zonder code.
+  // Op Jij: de toren staat er gewoon, want die is gratis (ADR-158) — wat een
+  // kind bouwt, ziet een kind zonder code. Nog niets gehaald, dus nog geen
+  // diplomawand: die zwijgt tot er iets staat.
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
+
+  // En op Voor ouders staan de tafeldiploma's zonder code, want die zijn
+  // gratis; de vlaggen zijn dat niet en staan er dus niet.
+  await page.goto('/ouder');
+  await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
 
   // En op de ouderpagina: één premiumblok in plaats van vijf (ADR-124, ADR-136).
   await page.goto('/ouder');

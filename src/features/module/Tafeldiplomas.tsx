@@ -30,11 +30,14 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 export function Tafeldiplomas({
   onKies,
   alleenBehaald = false,
+  stilAlsLeeg = false,
 }: {
   /** Where pressing a diploma chooses its table. Absent where the wall is only shown. */
   readonly onKies?: ((setId: string) => void) | undefined;
   /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
   readonly alleenBehaald?: boolean;
+  /** Niets tonen zolang er niets gehaald is (ADR-158). */
+  readonly stilAlsLeeg?: boolean;
 }) {
   const [behaald, setBehaald] = useState<ReadonlySet<number> | null>(null);
 
@@ -45,9 +48,10 @@ export function Tafeldiplomas({
   // Nothing until it is known: a wall that shows twelve gaps and then fills
   // four of them has told a child they had none.
   if (behaald === null) return null;
-  // Op Jij staat alleen wat gehaald is (ADR-158): een lege wand met een kop
-  // erboven zegt een kind dat het niets heeft, en dat is niet de boodschap.
-  if (alleenBehaald && behaald.size === 0) return null;
+  // Op Jij zwijgt een lege wand (ADR-158): een kop met "0 van de 12" erboven
+  // zegt een kind op dag een dat het niets heeft. Op Voor ouders staat hij wel,
+  // want daar is een gat iets om iets mee te doen.
+  if (stilAlsLeeg && behaald.size === 0) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('rekenen.diplomasTitle')}>
