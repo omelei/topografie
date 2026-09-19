@@ -255,12 +255,15 @@ test('a finished table says what changed, not only what was scored', async ({ pa
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   // Eerst de toren, dan wat de ronde ermee deed (ADR-158).
   await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
-  await expect(page.getByText('10 vragen, 10 goed', { exact: true })).toBeVisible();
+  // Binnen de samenvatting, want "Iets nieuws leren" legt er verderop hetzelfde
+  // in andere woorden uit, en dat is geen toeval: het is dezelfde regel.
+  const uitslag = page.getByRole('region', { name: 'Hoe de ronde ging' });
+  await expect(uitslag.getByText('10 vragen, 10 goed', { exact: true })).toBeVisible();
   // Tien sommen die dit kind voor het eerst zag: nul stenen. Dat is de regel op
   // zijn strengst, en het is precies wat een eerste ronde hoort op te leveren.
-  await expect(page.getByText('Nog geen stenen', { exact: false })).toBeVisible();
+  await expect(uitslag.getByText('Nog geen stenen', { exact: false })).toBeVisible();
   // En de derde regel kijkt vooruit, naar wat terugkomt.
-  await expect(page.getByText(/Morgen kom(t|en) er/)).toBeVisible();
+  await expect(uitslag.getByText(/Morgen kom(t|en) er/)).toBeVisible();
 });
 
 /**
