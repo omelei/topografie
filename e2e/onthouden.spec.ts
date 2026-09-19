@@ -100,7 +100,7 @@ test('de getallen over het oefenen staan alleen op Onthouden', async ({ page }) 
   // van de oude reeks komen op de voordeur uit in plaats van op een leeg
   // scherm.
   await page.goto('/reeks');
-  await expect(page.getByRole('heading', { name: 'Vandaag' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Welkom Ties!' })).toBeVisible();
 
   // En de kolom naast de pagina zegt niet nog eens hoeveel er goed was.
   await page.goto('/');
