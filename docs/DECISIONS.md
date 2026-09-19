@@ -8924,6 +8924,126 @@ waarom.
 
 ---
 
+## ADR-160 — Onthouden duurt een dag, de uitleg staat bovenaan, en de pagina krijgt de kleur van het vak
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-114 (wat onthouden
+is) en de pagina van ADR-148.
+
+### Context
+
+Drie dingen aan de Onthouden-pagina, die los van elkaar gemeld zijn en samen
+één pagina maken.
+
+**Een week is lang.** ADR-114 legde vast wat onthouden betekent: drie keer
+goed, elke keer op een moment dat het aan de beurt was, met minstens een week
+tussen de eerste en de laatste keer. Dat is een eerlijke definitie en het is de
+reden dat het cijfer iets waard is. Maar het schema erachter — één dag, twee
+dagen, vijf dagen — betekent dat een kind dat maandag met de provincies begint
+pas de maandag erna iets ziet veranderen aan het woord dat boven alles staat.
+Zeven dagen niets. Voor een product dat een kind elke dag wil zien oefenen is
+dat de verkeerde eerste week.
+
+**De uitleg stond onderaan, dichtgevouwen.** Elk getal op deze pagina telt één
+woord, en wie dat woord niet kent leest getallen zonder eenheid. De vier regels
+stonden helemaal onderaan achter een uitklap, achter de tabel — de plek voor
+iets dat je erbij kunt zoeken, niet voor de definitie die de pagina leesbaar
+maakt.
+
+**Het beeld was grijs.** Alles in één blik en Per onderdeel waren zwart-wit:
+vier grijze tegels met getallen, daaronder een kaart met stippen in inkt, en
+daaronder een legenda die dezelfde vier woorden nog een keer zei. De pagina die
+het product ís, was de enige pagina in de app zonder kleur, terwijl het vak
+waar je naar kijkt overal elders zijn eigen kleur draagt — op de voordeur, in de
+rail, in de balk van Per vak.
+
+### Decision
+
+**Onthouden is drie keer goed op drie dagen.** De regel wordt: drie keer goed
+op verschillende dagen, met minstens een dag tussen de eerste en de laatste
+keer. Het aantal blijft drie en de eis dat elk antwoord op een moment valt dat
+het item aan de beurt was blijft staan — dat is wat ADR-114 kocht en het wordt
+niet teruggegeven. Alleen de wachttijd ertussen wordt de kortste die drie
+verschillende dagen toelaten.
+
+`INTERVAL_DAYS` gaat daarvoor van `{1, 2, 5, 8, 21}` naar `{1, 1, 1, 8, 21}`.
+De snelste weg naar doos vier is dan dag 0, dag 1, dag 2: drie antwoorden op
+drie dagen, met één hele dag tussen de eerste en de laatste. De zin op de
+pagina en het schema zeggen daarmee precies hetzelfde, zoals ze dat bij een
+week ook deden.
+
+**De vergeetcurve blijft op de oude ladder staan.** `retention.ts` rekende met
+`INTERVAL_DAYS` omdat het schema en de curve toevallig hetzelfde getal
+gebruikten. Dat is nu niet meer waar: als de voorspelling de nieuwe tabel zou
+lezen, zou een kind dat maandag, dinsdag en woensdag oefent volgens ons zes keer
+sneller vergeten dan een kind dat vorige maand hetzelfde deed. Dat is een
+uitspraak over ons schema en niet over hun hoofd. De curve krijgt daarom een
+eigen tabel, `GEHEUGEN_DAGEN`, met de waarden waarop hij gemeten is. De ring
+"over 3 weken" verandert dus niet mee.
+
+**De uitleg gaat naar boven en gaat open.** Vier genummerde regels in een kaart
+direct onder de kop, boven de ring. Vier zinnen zijn kort genoeg om niet op te
+vouwen; de uitklap blijft voor de tabel, die lang is.
+
+**Per onderwerp krijgt de kleur van het vak.** Eén tint en vier sterktes, niet
+vier kleuren:
+
+- De vier tegels zijn nu ook de legenda. Ze telden vier standen en de legenda
+  onder de stippen zei dezelfde vier woorden nog eens; dat is één ding op twee
+  plekken. Elke tegel draagt zijn stip, zijn woord en zijn getal, op een vlak
+  in de kleur van het vak — sterk voor onthouden, zachter per stap naar nog
+  niet geoefend.
+- De muur van stippen staat op volle sterkte in de kleur van het vak, met
+  dezelfde vulling als altijd. Eén tint en vier vulniveaus, want tweehonderd
+  stippen in vier kleuren zijn een patroon om te ontcijferen.
+- De tabel krijgt de kop op de tint van het vak en om de regel een streepje van
+  die tint.
+
+De woorden blijven inkt, overal. De kleur zegt welk vak, de vulling van de stip
+en het woord ernaast zeggen welke stand — anders zou "dit onthoud je nu" bij de
+tafels in het groen staan, en groen is een antwoord en nooit een stand.
+
+De kleur zegt welk vak je voor je hebt; de vulling van de stip en het woord
+ernaast zeggen welke stand het is. Geen kleur draagt hier iets alleen (§A). De
+balk op Per vak deed dit al — onthouden in de kleur van het vak, bezig in de
+tint — en dit is diezelfde taal, doorgetrokken naar de rest van de pagina.
+Groen blijft wat het is: een antwoordstaat, en nooit een stand.
+
+**En de balk bovenaan de app wordt uitgelijnd.** Het logo stond vier pixels
+naar binnen ten opzichte van alles eronder, omdat de knop eromheen padding had
+die nergens werd teruggenomen; die padding wordt nu links weggehaald met een
+negatieve marge, zodat het merk op de lijn staat van de vakknop, de rail en de
+kolom van de pagina. De bestemmingen in de balk krijgen een streep op de rand
+van de balk waar je bent — dezelfde streep die de tabbalk onderaan een telefoon
+boven de woorden zet. Eén manier om "hier ben je" te zeggen op beide maten, met
+het vlak en het zwaardere gewicht die er al waren ernaast.
+
+### Consequences
+
+- Een kind dat vandaag begint, kan overmorgen "dit onthoud je nu" zien staan.
+  Dat is het hele doel en tegelijk de prijs: het woord is goedkoper geworden.
+  Het blijft duurder dan "goed beantwoord", want er moeten nog steeds drie
+  antwoorden op drie verschillende dagen onder liggen, en één fout antwoord zet
+  het item terug naar doos één.
+- `leitner.test.ts` legt de nieuwe tabel vast en meet de snelste weg naar
+  onthouden op precies twee dagen: dag 0 tot dag 2, met een hele dag ertussen.
+- `retention.test.ts` is niet veranderd, wat het bewijs is dat de curve niet
+  bewogen heeft.
+- De doorlooptijd van doos vier en vijf — 8 en 21 dagen — is niet aangeraakt,
+  en dus ook niet wanneer iets "even opfrissen" wordt.
+- **De toren groeit sneller.** Een steen is een goed antwoord op iets dat aan de
+  beurt was en al eens eerder beantwoord is (ADR-158), en in de eerste drie
+  dozen is dat nu elke dag in plaats van na twee en vijf dagen. De regel van de
+  steen verandert niet en er gaat nog steeds nooit iets af; er zijn alleen meer
+  momenten waarop iets terugkomt. De kadanstabel in `docs/beloning-toren.md` is
+  daarmee die van vóór dit blad, en zegt dat nu ook.
+- De vier sleutels `retention.tegel*` blijven de woorden op de tegels; de
+  legenda is weg omdat de tegels haar zijn.
+- **Nog niet in een browser gezien.** De kleuren komen uit de bestaande tokens
+  en de verhoudingen zijn die van `contrast.test.ts`, maar of vier sterktes van
+  één vakkleur naast elkaar rustig ogen is iets om te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

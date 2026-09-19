@@ -2451,6 +2451,129 @@
     background: var(--module-tint);
   }
 
+  /* ---- De regels, bovenaan en open (ADR-160) -----------------------------
+   * Vier zinnen die zeggen wat elk getal op deze pagina telt. Ze stonden
+   * onderaan achter een uitklap; een eenheid hoort vóór de getallen.
+   */
+  .tk-regelkaart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-regelkaart-lijst {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-regelrij {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  /* Het nummer in de kleur van het vak: een cijfer van één teken op een zachte
+   * schijf, zoals de plaat een pictogram draagt. */
+  .tk-regelnummer {
+    display: inline-grid;
+    flex: none;
+    place-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-pil);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+    font-family: var(--font-kop);
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-weight: var(--type-kaartkop-weight);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- Per onderwerp, in de kleur van het vak (ADR-160) ------------------
+   * Alles in één blik en Per onderdeel stonden in zwart-wit, met vier grijze
+   * tegels erboven en een legenda eronder die dezelfde vier woorden nog eens
+   * zei. Hier is het één kaart in één kleur: die van het vak dat je gekozen
+   * hebt, dezelfde die de balk op Per vak al draagt.
+   *
+   * Één tint en vier sterktes, niet vier kleuren. De vier standen zijn een
+   * schaal — vol, driekwart, half, leeg — en een schaal is één kleur die
+   * op- of afloopt. De stip zegt het nog een keer in vorm en het woord in
+   * letters, dus de kleur draagt hier niets alleen (§A).
+   */
+  .tk-standtegels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(11rem, 100%), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-standtegel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    border-left: 4px solid var(--rand-sterk);
+    border-radius: var(--radius-chip-groot);
+    background: var(--papier);
+  }
+  .tk-standtegel[data-status='remembered'] {
+    border-left-color: var(--module);
+    background: color-mix(in srgb, var(--module) 16%, var(--kaart));
+  }
+  .tk-standtegel[data-status='refresh'] {
+    border-left-color: color-mix(in srgb, var(--module) 62%, var(--kaart));
+    background: color-mix(in srgb, var(--module) 11%, var(--kaart));
+  }
+  .tk-standtegel[data-status='practising'] {
+    border-left-color: color-mix(in srgb, var(--module) 34%, var(--kaart));
+    background: color-mix(in srgb, var(--module) 6%, var(--kaart));
+  }
+  .tk-standtegel-getal {
+    font-family: var(--font-kop);
+    font-size: var(--type-sectiekop);
+    line-height: var(--type-sectiekop-lh);
+    letter-spacing: var(--type-sectiekop-ls);
+    font-weight: var(--type-sectiekop-weight);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Het woord blijft inkt. De kleur op deze kaart zegt welk vak je voor je
+   * hebt, en een stand mag geen hue dragen — anders zou "dit onthoud je nu" bij
+   * de tafels in het groen staan, en groen is een antwoord (StatusLabel). */
+  .tk-standtegel-woord {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    font-weight: 600;
+  }
+  /* De muur van stippen, op volle sterkte: de vulling zegt wat hij altijd zei,
+   * de kleur zegt welk vak je voor je hebt. */
+  .tk-stippen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: var(--module);
+  }
+  .tk-stip {
+    display: inline-flex;
+    color: var(--module);
+  }
+  /* En de tabel eronder in dezelfde kleur: de kop op de tint van het vak en om
+   * de regel een streepje van die tint. De woorden in de kolom "Hoe het gaat"
+   * blijven inkt, om de reden hierboven. */
+  .tk-vakkleur .tk-table th {
+    background: var(--module-tint);
+    color: var(--module-tekst);
+    border-bottom-color: color-mix(in srgb, var(--module) 45%, var(--kaart));
+  }
+  .tk-vakkleur .tk-table tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--module) 5%, var(--kaart));
+  }
+
   /* ---- Week na week -----------------------------------------------------
    * The questions of the last eight weeks as bars, right at the foot of each
    * bar and wrong above it: green and hatched red, the way an answer looks
@@ -3067,13 +3190,22 @@
 
   /* The logo, which is the way back to the front door. A button that looks
    * like nothing: the mark is the affordance, and a border around it would be a
-   * second one competing with it. */
+   * second one competing with it.
+   *
+   * Uitgelijnd op de gutter (ADR-160). De knop heeft lucht om zich heen — hij
+   * is aan te wijzen en hij licht op onder de muis — en links wordt die lucht
+   * met een negatieve marge weer weggenomen, zodat het merk zelf op de lijn
+   * staat waar alles eronder op staat: de vakknop, de rail, de kolom van de
+   * pagina. Een knop die zijn eigen padding niet terugneemt, zet het logo een
+   * paar pixels naar binnen en niets anders op de pagina.
+   */
   .tk-brand {
     display: inline-flex;
     align-items: center;
     flex: none;
     min-height: var(--raak);
-    padding: 0 4px;
+    padding: 4px 8px;
+    margin-inline-start: -8px;
     border: 0;
     border-radius: var(--radius-kaart);
     background: transparent;
@@ -3096,9 +3228,19 @@
 
   /* The destinations, standing in the app bar from 1200. At a reader's 200%
    * text the row can be wider than the bar, and it scrolls inside the bar
-   * rather than pushing the page sideways. */
+   * rather than pushing the page sideways.
+   *
+   * De rij loopt van boven naar beneden door de balk (ADR-160), zodat de plek
+   * waar je bent een streep onder zich krijgt op de rand van de balk —
+   * dezelfde streep als in de tabbalk onderaan een telefoon, daar boven de
+   * woorden. Eén manier om "hier ben je" te zeggen op beide maten, en een
+   * streep is wat een navigatie daarvoor gebruikt sinds er navigaties zijn.
+   * Het vlak eronder blijft: een lichtheid en een gewicht, zodat geen kleur
+   * het alleen draagt (§A).
+   */
   .tk-navbar {
-    align-items: center;
+    align-self: stretch;
+    align-items: stretch;
     gap: 4px;
     min-width: 0;
     overflow-x: auto;
@@ -3113,7 +3255,10 @@
     min-height: var(--raak);
     padding: 0 16px;
     border: 0;
-    border-radius: var(--radius-kaart);
+    /* Even dik als de streep van de tabbalk, en altijd aanwezig: een rand die
+     * pas verschijnt als je ergens bent, verschuift de woorden eromheen. */
+    border-bottom: var(--stroke-active) solid transparent;
+    border-radius: var(--radius-kaart) var(--radius-kaart) 0 0;
     background: transparent;
     color: var(--tekst-secundair);
     font-size: var(--type-knop);
@@ -3126,9 +3271,11 @@
     background: var(--vlak-hover);
     color: var(--inkt);
   }
-  /* Where you are: a surface under the word and the word in ink at a heavier
-   * weight. A lightness and a weight, so no hue carries it (§A). */
+  /* Where you are: a rule along the bar's edge, a surface under the word and
+   * the word in ink at a heavier weight. A lightness, a weight and a line, so
+   * no hue carries it (§A). */
   .tk-navbar-item[aria-current='page'] {
+    border-bottom-color: var(--inkt);
     background: var(--papier);
     color: var(--inkt);
     font-weight: 700;

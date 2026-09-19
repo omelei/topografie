@@ -71,18 +71,19 @@ describe('nextBox', () => {
 });
 
 describe('scheduleFrom', () => {
-  it('uses the intervals from the spec, with box three at five days (ADR-114)', () => {
-    expect(INTERVAL_DAYS).toEqual({ 1: 1, 2: 2, 3: 5, 4: 8, 5: 21 });
+  it('brings the first three boxes back the next day (ADR-160)', () => {
+    expect(INTERVAL_DAYS).toEqual({ 1: 1, 2: 1, 3: 1, 4: 8, 5: 21 });
   });
 
   it('schedules the interval for the box it is given', () => {
-    expect(scheduleFrom(3, NOW).getTime()).toBe(NOW.getTime() + 5 * DAY);
+    expect(scheduleFrom(4, NOW).getTime()).toBe(NOW.getTime() + 8 * DAY);
   });
 });
 
 /**
- * What "onthouden" means (ADR-114): right three times, each time when it was
- * due, over at least a week. These are the three halves of that sentence.
+ * What "onthouden" means (ADR-114, ADR-160): right three times, each time when
+ * it was due, on three different days. These are the three halves of that
+ * sentence.
  */
 describe('remembering', () => {
   it('does not move an item up for a correct answer given before it was due', () => {
@@ -102,7 +103,7 @@ describe('remembering', () => {
     expect(fout.box).toBe(1);
   });
 
-  it('takes at least a week from first meeting to remembered', () => {
+  it('takes three days from first meeting to remembered, and a day between the ends', () => {
     // An afternoon of rounds: however many, it is one answer's worth.
     let state = emptyState('nl-zeeland');
     for (let ronde = 0; ronde < 6; ronde++) {
@@ -119,7 +120,9 @@ describe('remembering', () => {
     }
     const eerste = NOW.getTime();
     const laatste = new Date(snel.laatsteReview ?? NOW.toISOString()).getTime();
-    expect((laatste - eerste) / DAY).toBeGreaterThanOrEqual(7);
+    // Day 0, day 1, day 2: the copy promises a day between the first answer
+    // and the last, and the quickest road there leaves two.
+    expect((laatste - eerste) / DAY).toBe(2);
     expect(snel.box).toBe(ONTHOUDEN_BOX);
   });
 
@@ -140,7 +143,7 @@ describe('review', () => {
     expect(after.box).toBe(2);
     expect(after.goedCount).toBe(1);
     expect(after.foutCount).toBe(0);
-    expect(after.volgendeReview).toBe(new Date(NOW.getTime() + 2 * DAY).toISOString());
+    expect(after.volgendeReview).toBe(new Date(NOW.getTime() + 1 * DAY).toISOString());
   });
 
   it('demotes to box one and reschedules for tomorrow on a wrong answer', () => {
@@ -190,8 +193,11 @@ describe('isStale', () => {
   });
 
   it('is true once overdue by more than the interval again', () => {
-    // Box 2 has a 2-day interval, so 3 days overdue is stale.
-    expect(isStale(dueState('x', 2, 3), NOW)).toBe(true);
+    // Box 4 has an 8-day interval, so 9 days overdue is stale — and box four
+    // is where this is ever asked, because it is what turns "onthoud je" into
+    // "even opfrissen".
+    expect(isStale(dueState('x', 4, 9), NOW)).toBe(true);
+    expect(isStale(dueState('x', 4, 7), NOW)).toBe(false);
   });
 });
 

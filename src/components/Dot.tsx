@@ -21,10 +21,17 @@
  *   in negative      the ring is 10% heavier, against reading optically thinner
  *
  * That is the only simplification allowed. Nothing else about the shape changes
- * with size, and it never takes a module accent — the dot is ink on paper or
+ * with size, and the component itself knows of no colour but ink on paper and
  * paper on ink, identical in every module. What distinguishes a module is the
  * accent on the highlight, the progress bar and the module entrance, plus the
  * path behind the name.
+ *
+ * `tone="inherit"` is how a dot follows the text it stands in, and since
+ * ADR-160 it is also how the Onthouden page draws a whole wall of them in the
+ * colour of the subject you are looking at. That is the subject denoting
+ * itself, on a page about one subject, and not a state: the fill still says
+ * everything the fill ever said. The component learns nothing about it — the
+ * colour comes from the box around it, which is the point of `inherit`.
  */
 
 import { useId } from 'react';

@@ -10,19 +10,25 @@ import { mixVoor, TEMPO_MIX, type RoundMix } from './tempo';
  */
 
 /**
- * Days until an item in each box comes back. Spec section 4.2, with box three
- * at five days rather than four since ADR-114.
+ * Days until an item in each box comes back. Spec section 4.2, with the first
+ * three boxes at a day each since ADR-160.
  *
- * The one day is what makes "onthouden" mean a week: an item reaches box four
- * on its third correct answer at a moment it was due, and with these intervals
- * the earliest that can be is day 0, day 2 and day 7 — a week after it was
- * first met. At four days it was day 6, and "na een week nog goed" would have
- * been a day short of true.
+ * Those three days are what makes "onthouden" mean a day: an item reaches box
+ * four on its third correct answer at a moment it was due, and with these
+ * intervals the earliest that can be is day 0, day 1 and day 2 — three
+ * answers on three days, with a whole day between the first and the last. At
+ * two and five days the earliest was day 7, and a week is a long time for a
+ * page named after remembering to have nothing to say about a set a child
+ * started on Monday.
+ *
+ * These are the schedule, and since ADR-160 they are not also the forgetting
+ * curve: `retention.ts` keeps that on a ladder of its own, because how fast a
+ * child forgets is not something we change by asking sooner.
  */
 export const INTERVAL_DAYS: Readonly<Record<LeitnerBox, number>> = {
   1: 1,
-  2: 2,
-  3: 5,
+  2: 1,
+  3: 1,
   4: 8,
   5: 21,
 };
@@ -30,8 +36,9 @@ export const INTERVAL_DAYS: Readonly<Record<LeitnerBox, number>> = {
 export const MAX_BOX: LeitnerBox = 5;
 
 /**
- * The box from which an item counts as remembered (ADR-114): three correct
- * answers, each given when the item was due, over at least a week.
+ * The box from which an item counts as remembered (ADR-114, ADR-160): three
+ * correct answers, each given when the item was due, on three different days
+ * — at least a day between the first and the last.
  *
  * One line for the whole product. The front door used to count box five and
  * the Onthouden page box four and five, so "8 van de 12 onthoud je" and the

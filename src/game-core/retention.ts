@@ -1,5 +1,5 @@
-import { INTERVAL_DAYS, isOnthouden } from './leitner';
-import type { ItemState } from './types';
+import { isOnthouden } from './leitner';
+import type { ItemState, LeitnerBox } from './types';
 
 /**
  * How much of a set a child will still know on a given day.
@@ -18,8 +18,32 @@ import type { ItemState } from './types';
  * otherwise.
  */
 
-/** Retention still standing one interval after a review. */
+/** Retention still standing one step after a review. */
 const RETENTION_AT_INTERVAL = 0.9;
+
+/**
+ * How long one step is, per box: the days a child in that box holds on to
+ * roughly nine tenths of it.
+ *
+ * Until ADR-160 this was `INTERVAL_DAYS`, the scheduler's own table, and the
+ * two were one number because they happened to agree. They do not any more:
+ * ADR-160 brings the first three boxes back the next day, so that three
+ * answers on three days are enough to call something remembered. Reading the
+ * forecast off that table would have said a child who practises on Monday,
+ * Tuesday and Wednesday forgets six times faster than one who did the same
+ * work last month — which is a statement about our scheduling, not about
+ * their memory.
+ *
+ * So the curve keeps the ladder it was measured on. It is the schedule that
+ * changed its mind, not the child.
+ */
+const GEHEUGEN_DAGEN: Readonly<Record<LeitnerBox, number>> = {
+  1: 1,
+  2: 2,
+  3: 5,
+  4: 8,
+  5: 21,
+};
 
 const DAY_MS = 86_400_000;
 
@@ -41,7 +65,7 @@ export function itemRetention(state: ItemState | undefined, on: Date): number {
   const elapsed = daysBetween(new Date(state.laatsteReview), on);
   if (elapsed <= 0) return 1;
 
-  const interval = INTERVAL_DAYS[state.box];
+  const interval = GEHEUGEN_DAGEN[state.box];
   return Math.pow(RETENTION_AT_INTERVAL, elapsed / interval);
 }
 

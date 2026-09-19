@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Uitklap } from '@/components/Uitklap';
 import { Dot } from '@/components/Dot';
-import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
+import { StatusLabel, STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
 import {
   sumText,
   type Item,
@@ -45,9 +45,13 @@ import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './stat
  * the week on Voor ouders, the rounds and questions on the streak page, "Goed
  * beantwoord" in the column — stands here now and nowhere else.
  *
+ * **De uitleg staat bovenaan en open** (ADR-160). Alles op deze pagina telt
+ * één woord, en wie dat woord niet kent leest getallen zonder eenheid.
+ *
  * **Then one subject**, as before: which subject as chips — the module first, then the set, the chosen one
- * in the module's colour — then **four tiles** that say where the whole set
- * stands, then the dots, then the table, and last the rules.
+ * in the module's colour — then one card that is the whole set at a glance:
+ * **four tiles** that say where it stands, the map where there is one, and the
+ * dots. Then the table.
  *
  * **The four tiles are the four statuses**, and they add up to the set:
  * onthoud je, even opfrissen, nog aan het oefenen, nog niet geoefend. "Vandaag
@@ -55,14 +59,18 @@ import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './stat
  * for what is due, which is a fact about the schedule and not about what a
  * child remembers, and it is what the next round asks anyway.
  *
+ * Sinds ADR-160 zijn die tegels ook de legenda onder de stippen, in vier
+ * sterktes van de kleur van het vak. Ze zeiden met de legenda samen twee keer
+ * dezelfde vier woorden, in zwart-wit, boven en onder één kaart.
+ *
  * **The table is how the practising has gone**, not when it comes back: how
  * many times each one was answered, the share of those that was right, and
  * how many days ago it was last answered. "Weer op" — a date the scheduler
  * chose — made a child plan around the algorithm.
  *
  * **The rules are written out**, as the streak's are (ADR-110). What counts as
- * remembering changed in ADR-114, and a definition nobody can read is one
- * nobody can trust.
+ * remembering changed in ADR-114 and again in ADR-160 — drie keer goed op
+ * drie dagen — and a definition nobody can read is one nobody can trust.
  *
  * Premium since ADR-116, en sinds ADR-124 met een gratis voorproef, want dit is
  * de pagina die de hele propositie ís en hij liet er niets van zien. Er stond
@@ -82,8 +90,19 @@ import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './stat
  * Het is de eigen voortgang van dat kind, in het klein.
  */
 
-/** The four statuses, in the order a child moves through them. */
-const STATUSSEN: readonly ItemStatus[] = ['new', 'practising', 'remembered', 'refresh'];
+/**
+ * The four statuses, strongest first: it is the order of the dot's own fill,
+ * and the first tile is the one the page is named after.
+ */
+const STATUSSEN: readonly ItemStatus[] = ['remembered', 'refresh', 'practising', 'new'];
+
+/** What each tile counts, in the words the page has always used for them. */
+const TEGEL_WOORD: Record<ItemStatus, TranslationKey> = {
+  remembered: 'retention.tegelOnthouden',
+  refresh: 'retention.tegelOpfrissen',
+  practising: 'retention.tegelOefenen',
+  new: 'retention.tegelNieuw',
+};
 
 /** How many weeks the chart looks back: two months, and this week last. */
 const WEKEN = 8;
@@ -114,16 +133,31 @@ function Kop({ intro = true }: { readonly intro?: boolean }) {
   );
 }
 
+/**
+ * Wat onthouden betekent, bovenaan de pagina en open (ADR-160).
+ *
+ * Het stond onderaan, achter een uitklap, en dat is de verkeerde volgorde voor
+ * de ene zin die deze pagina leesbaar maakt: alles erboven — de ring, de
+ * tegels, de stippen — telt één woord, en wie dat woord niet kent leest
+ * getallen zonder eenheid. Vier regels zijn ook kort genoeg om niet op te
+ * vouwen; een uitklap is voor de tabel, die lang is.
+ */
 function Regels() {
   return (
-    <section className="flex flex-col gap-3" aria-label={t('retention.regelsTitel')}>
-      <Uitklap open={t('retention.regelsTitel')} titel={t('uitklap.uitlegDicht')}>
-        <ul className="flex list-disc flex-col gap-2 pl-6 text-lopend">
-          {REGELS.map((regel) => (
-            <li key={regel}>{t(regel)}</li>
-          ))}
-        </ul>
-      </Uitklap>
+    <section className="tk-card tk-regelkaart" aria-label={t('retention.regelsTitel')}>
+      <h2 className="tk-label">{t('retention.regelsTitel')}</h2>
+      <ol className="tk-regelkaart-lijst">
+        {REGELS.map((regel, nummer) => (
+          <li key={regel} className="tk-regelrij">
+            {/* Het nummer is de volgorde die de tekst al heeft; een schermlezer
+                telt de lijst zelf. */}
+            <span className="tk-regelnummer" aria-hidden="true">
+              {nummer + 1}
+            </span>
+            <span className="text-lopend">{t(regel)}</span>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }
@@ -202,17 +236,12 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
     doel?.focus({ preventScroll: true });
   }
 
-  const tegels: readonly (readonly [TranslationKey, number])[] = [
-    ['retention.tegelOnthouden', telling.remembered],
-    ['retention.tegelOpfrissen', telling.refresh],
-    ['retention.tegelOefenen', telling.practising],
-    ['retention.tegelNieuw', telling.new],
-  ];
-
   return (
     <div className="tk-page">
       <div className="tk-page-main" data-module={moduleId} data-accent="module">
         <Kop />
+
+        <Regels />
 
         <GeheugenKaart stand={geheugen(states, now)} />
 
@@ -330,18 +359,31 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
           </div>
         ) : null}
 
-        <dl className="tk-cijfers">
-          {tegels.map(([label, waarde]) => (
-            <div key={label} className="tk-cijfer">
-              <dt className="tk-cijfer-label">{t(label)}</dt>
-              <dd className="tk-cijfer-getal">{waarde}</dd>
-            </div>
-          ))}
-        </dl>
-
+        {/* Alles in één blik, in één kaart en in de kleur van het vak
+            (ADR-160). De vier getallen stonden als grijze tegels boven deze
+            kaart en de legenda eronder zei dezelfde vier woorden nog een keer;
+            nu zijn het vier tegels die tellen én de legenda zijn, in vier
+            sterktes van de kleur die dit vak overal draagt — dezelfde taal als
+            de balk op Per vak. De stip erop is de stip van de tabel en van de
+            muur eronder, dus de kleur zegt niets wat de vorm niet ook zegt. */}
         <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
           <h2 className="tk-sectie">{t('retention.glance')}</h2>
-          <div className="tk-card flex flex-col gap-4">
+          <div className="tk-card tk-vakkleur flex flex-col gap-4">
+            <ul className="tk-standtegels">
+              {STATUSSEN.map((status) => (
+                <li key={status} className="tk-standtegel" data-status={status}>
+                  <span className="tk-standtegel-getal">{telling[status]}</span>
+                  <span className="tk-standtegel-woord">
+                    {/* Decoratief: het woord ernaast zegt hetzelfde. De stip in
+                        de kleur van het vak, zoals de muur eronder. */}
+                    <span className="tk-stip">
+                      <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
+                    </span>
+                    {t(TEGEL_WOORD[status])}
+                  </span>
+                </li>
+              ))}
+            </ul>
             {/* De kaart van topografie hoort hier, en niet meer bij een
                 beloning (ADR-158): dezelfde vier statussen als de stippen en
                 de tabel, op de plek waar de dingen liggen. */}
@@ -355,15 +397,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
               />
             ) : null}
             <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
-            {/* The legend is the table's own four labels: one language for
-                both views. */}
-            <ul className="flex flex-wrap gap-x-6 gap-y-2 border-t border-rand-licht pt-3">
-              {STATUSSEN.map((status) => (
-                <li key={status}>
-                  <StatusLabel status={status} />
-                </li>
-              ))}
-            </ul>
           </div>
         </section>
 
@@ -382,7 +415,7 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
           {premium ? (
             <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
               <div
-                className="tk-tabelkaart"
+                className="tk-tabelkaart tk-vakkleur"
                 role="group"
                 aria-label={t('retention.detail')}
                 tabIndex={0}
@@ -392,8 +425,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
             </Uitklap>
           ) : null}
         </section>
-
-        <Regels />
       </div>
 
       {aside}
@@ -467,6 +498,12 @@ function itemNaam(moduleId: Module['id'], item: Schedulable): string {
  * No labels on the dots: they are read as a group rather than one by one, and
  * the table underneath is where a name belongs. Each still carries its own
  * accessible name, so the group is not a wall of silence to a screen reader.
+ *
+ * In the subject's own colour since ADR-160, at full strength, with the fill
+ * saying everything it said before. One hue and four levels rather than four
+ * hues: a wall of two hundred dots in four colours is a pattern to decode,
+ * and a wall of one colour filling up is a picture you can read from the
+ * doorway.
  */
 function Heatmap({
   moduleId,
@@ -480,7 +517,7 @@ function Heatmap({
   readonly now: Date;
 }) {
   return (
-    <div className="flex flex-wrap gap-2" role="list" aria-label={t('retention.glance')}>
+    <div className="tk-stippen" role="list" aria-label={t('retention.glance')}>
       {items.map((item) => {
         const state = states.get(item.id);
         const status = t(`status.${statusOf(state, now)}` as TranslationKey);
@@ -489,6 +526,7 @@ function Heatmap({
           <span key={item.id} role="listitem">
             <Dot
               size={24}
+              tone="inherit"
               fill={retentionOf(state)}
               label={`${itemNaam(moduleId, item)}: ${status}`}
             />
@@ -544,7 +582,9 @@ function RetentionTable({
             <tr key={item.id}>
               <td>
                 <span className="flex items-center gap-2">
-                  <Dot size={24} fill={retentionOf(state)} />
+                  <span className="tk-stip">
+                    <Dot size={24} tone="inherit" fill={retentionOf(state)} />
+                  </span>
                   {itemNaam(moduleId, item)}
                 </span>
               </td>
