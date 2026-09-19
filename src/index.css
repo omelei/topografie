@@ -4579,8 +4579,8 @@
     display: block;
     width: 100%;
     max-width: 320px;
-    aspect-ratio: 320 / 360;
-    overflow: hidden;
+    /* De verhouding komt van de tekening zelf mee: een lage toren krijgt een
+       laag kader in plaats van driehonderd pixels lege lucht. */
   }
 
   .tk-steen {
@@ -4612,7 +4612,10 @@
   .tk-steen[data-wacht] {
     fill: none;
     stroke: var(--rand-sterk);
-    stroke-dasharray: 3 3;
+    /* Dikker dan een voeg: dit is op de lege eerste dagen het enige wat er
+       staat, en dan moet het te zien zijn. */
+    stroke-width: 2;
+    stroke-dasharray: 3 2;
   }
 
   .tk-toren-fundamentblok {
@@ -4623,7 +4626,6 @@
   }
   .tk-toren-fundamentgetal {
     fill: var(--tekst-secundair);
-    font-size: 20px;
     font-weight: 600;
   }
 
@@ -4634,6 +4636,7 @@
     gap: 4px 12px;
   }
   .tk-torenstand-getal {
+    flex-basis: 100%;
     font-size: var(--type-getal-groot);
     line-height: var(--type-getal-groot-lh);
     font-weight: 600;

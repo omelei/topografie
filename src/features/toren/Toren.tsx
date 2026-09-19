@@ -66,8 +66,11 @@ export function Toren({
     <div className="tk-toren">
       <svg
         className="tk-toren-beeld"
-        viewBox={`0 0 ${TONEEL.breed} ${TONEEL.hoog}`}
+        // Van onderen gesneden: de toren staat onderin het toneel, dus wat
+        // eraf gaat is lucht die niemand mist.
+        viewBox={`0 ${TONEEL.hoog - maat.zichtbaar} ${TONEEL.breed} ${maat.zichtbaar}`}
         preserveAspectRatio="xMidYMid meet"
+        style={{ aspectRatio: `${TONEEL.breed} / ${maat.zichtbaar}` }}
         role="img"
         aria-label={label}
       >
@@ -86,10 +89,13 @@ export function Toren({
                   width={SCHACHT}
                   height={FUNDAMENT_HOOG}
                 />
+                {/* Tegen de schaal in: het getal staat binnen de geschaalde
+                    groep, en zonder dit is het op een hoge toren tien pixels. */}
                 <text
                   className="tk-toren-fundamentgetal"
                   x={0}
                   y={-FUNDAMENT_HOOG / 2}
+                  fontSize={20 / maat.schaal}
                   textAnchor="middle"
                   dominantBaseline="central"
                 >

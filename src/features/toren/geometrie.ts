@@ -77,9 +77,23 @@ export interface Maatvoering {
   readonly inFundament: number;
   /** De hoogte van het fundamentblok, nul als er geen is. */
   readonly fundamentHoog: number;
-  /** De hoogte die de tekening in eenheden vraagt. */
+  /** De hoogte die de tekening in eenheden vraagt, met de bodem meegerekend. */
   readonly inhoudHoog: number;
+  /**
+   * Hoeveel van het toneel er te zien is, in eenheden.
+   *
+   * Zonder dit staat een toren van één verdieping onderin een kader van 360 met
+   * driehonderd eenheden lege lucht erboven — en dat is precies het beeld dat
+   * elk kind de eerste twee dagen ziet. Het kader groeit dus met de toren mee
+   * tot het vol is, en daarna niet meer: vanaf tien verdiepingen heeft elke
+   * toren hetzelfde kader en zijn twee torens niet meer met het oog te
+   * vergelijken.
+   */
+  readonly zichtbaar: number;
 }
+
+/** Zoveel is er altijd te zien, ook bij een toren die nog niet bestaat. */
+export const MIN_ZICHTBAAR = 150;
 
 export function maatvoering(verdiepingen: number, max: number = MAX_GETEKEND): Maatvoering {
   const heel = Math.max(0, Math.floor(verdiepingen));
@@ -88,17 +102,17 @@ export function maatvoering(verdiepingen: number, max: number = MAX_GETEKEND): M
   const fundamentHoog = inFundament > 0 ? FUNDAMENT_HOOG : 0;
 
   // De verdieping in aanbouw staat in de lucht erboven, dus die telt niet apart.
-  const inhoudHoog = Math.max(
-    MIN_INHOUD_HOOG,
-    BEGRAVEN + fundamentHoog + getekend * VERDIEPING_HOOG + LUCHT,
-  );
+  const gemetseld = BEGRAVEN + fundamentHoog + getekend * VERDIEPING_HOOG + LUCHT;
+  const inhoudHoog = Math.max(MIN_INHOUD_HOOG, gemetseld);
+  const schaal = Math.min(TONEEL.breed / INHOUD_BREED, TONEEL.hoog / inhoudHoog);
 
   return {
-    schaal: Math.min(TONEEL.breed / INHOUD_BREED, TONEEL.hoog / inhoudHoog),
+    schaal,
     getekend,
     inFundament,
     fundamentHoog,
     inhoudHoog,
+    zichtbaar: Math.min(TONEEL.hoog, Math.max(MIN_ZICHTBAAR, gemetseld * schaal)),
   };
 }
 
