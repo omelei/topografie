@@ -102,7 +102,9 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // Een modulepagina met een set gekozen zegt één ding over de toren: wat er
   // hier vandaag terugkomt, want alleen dat kan een steen opleveren (ADR-158).
   await page.goto('/topografie/provincies');
-  const terug = page.getByText(/komt hier vandaag terug|komen hier vandaag terug|voorlopig niets terug|Morgen \d+/);
+  const terug = page.getByText(
+    /komt hier vandaag terug|komen hier vandaag terug|voorlopig niets terug|Morgen \d+/,
+  );
   await expect(terug.first()).toBeVisible(READY);
   await terug.first().scrollIntoViewIfNeeded();
   await shoot(page, size, '17-moduleterug');
