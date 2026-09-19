@@ -153,6 +153,7 @@ export function useKlokRound(
 ) {
   const { kern, settle, next, stop } = useRoundCore<KlokSet, KlokQuestion, KlokItem, KlokAntwoord>({
     setId,
+    moduleId: 'klok',
     mode,
     basisRegel: KLOK_ROUND_RULE[mode],
     aantal: isDiploma(mode) ? null : aantal,

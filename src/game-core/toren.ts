@@ -1,3 +1,4 @@
+import { dagenTot } from './album';
 import { isDue } from './leitner';
 import type { ItemState } from './types';
 
@@ -149,4 +150,40 @@ export function standVan(toren: TorenOpslag): TorenStand {
     inAanbouw: verdiepingen + 1,
     rest: STENEN_PER_VERDIEPING - toren.aanbouw.length,
   };
+}
+
+/**
+ * Wat één antwoord opleverde, voor de terugkoppeling in de ronde.
+ *
+ * Vier gevallen en niet meer. `fout` zegt met opzet niets over stenen: een kind
+ * dat het niet wist, hoeft niet ook nog te horen wat het daardoor niet kreeg.
+ */
+export type SteenUitkomst = 'steen' | 'alGekend' | 'nieuw' | 'fout';
+
+export interface SteenStap {
+  readonly uitkomst: SteenUitkomst;
+  /** Het vak, voor de kleur van het blokje. */
+  readonly vak: Vak;
+  /** Over hoeveel dagen dit item terugkomt. Null bij een fout. */
+  readonly dagen: number | null;
+}
+
+/**
+ * Wat er van één antwoord te zeggen valt.
+ *
+ * `vorige` is de stand van vóór `review`, want daarna is "was het aan de beurt"
+ * niet meer te beantwoorden.
+ */
+export function steenStapVan(
+  vorige: ItemState,
+  volgende: ItemState,
+  correct: boolean,
+  now: Date,
+  vak: Vak,
+): SteenStap {
+  if (!correct) return { uitkomst: 'fout', vak, dagen: null };
+
+  const dagen = volgende.volgendeReview === null ? null : dagenTot(volgende.volgendeReview, now);
+  if (vorige.laatsteReview === null) return { uitkomst: 'nieuw', vak, dagen };
+  return { uitkomst: levertSteen(vorige, correct, now) ? 'steen' : 'alGekend', vak, dagen };
 }

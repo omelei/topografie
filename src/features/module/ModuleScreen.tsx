@@ -2,9 +2,11 @@ import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon } from '@/components/Icon';
 import {
+  aanDeBeurt,
   countMastered,
   opGroep,
   roundPreview,
+  vooruitblik,
   type Groep,
   type Indeling,
   type ItemState,
@@ -46,7 +48,6 @@ import {
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
 import { PremiumLabel } from './PremiumLabel';
 import { useSmallScreen } from '@/features/shell/useSmallScreen';
-import { AlbumPagina } from '@/features/album/AlbumPagina';
 
 /**
  * A module's own page — leer.nu/topografie, leer.nu/rekenen, leer.nu/klokkijken
@@ -665,17 +666,10 @@ export function ModuleScreen({
           </div>
         )}
 
-        {/* The album page of what is chosen, under the way on (ADR-149): what
-            this set looks like now, before and after a round. Only once the
-            boxes are known, so a coloured picture never first shows empty. */}
+        {/* Eén zin, en geen tweede toren (ADR-158): wat hier vandaag terugkomt,
+            want dat is het enige wat een steen kan opleveren. */}
         {chosen !== null && states !== null ? (
-          <section className="flex flex-col gap-3" aria-label={t('album.paginaTitel')}>
-            <div className="tk-sectie">
-              <h2>{t('album.paginaTitel')}</h2>
-              <span className="tk-sectie-meta">{naamVan(chosen)}</span>
-            </div>
-            <AlbumPagina deel={chosen} states={states} now={now} />
-          </section>
+          <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
         ) : null}
 
         {/* Twelve diplomas, under the tables and nowhere else (ADR-075). Pressing
@@ -854,4 +848,27 @@ function Stap({ nummer, label }: { readonly nummer: number; readonly label: stri
       <span className="tk-stap-nummer">{nummer}</span> · {label}
     </h2>
   );
+}
+
+/**
+ * Wat er van deze set vandaag terugkomt (ADR-158).
+ *
+ * De enige zin op deze pagina die over de toren gaat, en hij gaat over de
+ * voorwaarde en niet over de beloning: alleen wat terugkomt kan een steen
+ * opleveren. Komt er vandaag niets, dan staat er wanneer wel — anders leest een
+ * kind "nul" als "je hebt iets verkeerd gedaan".
+ */
+function terugZin(
+  items: readonly { readonly id: string }[],
+  states: ReadonlyMap<string, ItemState>,
+  now: Date,
+): string {
+  const ids = items.map((item) => item.id);
+  const vandaag = aanDeBeurt(ids, states, now);
+  if (vandaag === 1) return t('module.terugVandaagEen');
+  if (vandaag > 1) return t('module.terugVandaag', { aantal: vandaag });
+
+  const blik = vooruitblik(ids, states, now);
+  if (blik.morgenTerug > 0) return t('module.terugMorgen', { aantal: blik.morgenTerug });
+  return t('module.terugNiets');
 }

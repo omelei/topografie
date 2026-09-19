@@ -8,7 +8,7 @@ import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
 import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { usePremium } from '@/features/premium/usePremium';
-import { AlbumOverzicht } from '@/features/album/AlbumOverzicht';
+import { TorenPagina } from '@/features/toren/TorenPagina';
 import { Jaaroverzicht } from '@/features/album/Jaaroverzicht';
 
 /**
@@ -76,7 +76,7 @@ export function ProfileScreen({
           </div>
         </section>
 
-        <AlbumOverzicht />
+        <TorenPagina />
 
         <Prijzenkast open={diplomasOpen} onGezien={onDiplomasGezien} />
 

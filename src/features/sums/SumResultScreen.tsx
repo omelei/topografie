@@ -54,6 +54,8 @@ export function SumResultScreen({
       }
       voor={state.statesVoor}
       na={state.states}
+      stenen={state.stenen}
+      groei={state.groei}
       reward={state.reward}
       diploma={diploma ? t('sums.diplomaEarned', { tafel: diploma }) : null}
       melding={state.mode === 'tafeldiploma' && !diploma ? t('sums.diplomaMissed') : null}

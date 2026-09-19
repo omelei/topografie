@@ -134,7 +134,8 @@ export const nl = {
   'week.regel3': 'Mis je een dag? Er gaat niets weg. Maandag begint een nieuwe kaart.',
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   'terug.titel': 'Welkom terug',
-  'terug.zin': 'Je album staat er nog.',
+  'terug.zin': 'Je toren staat er nog.',
+  'terug.klaar': '{aantal} stenen liggen klaar.',
   'terug.opfrissenEen': '1 plaatje wil even opgefrist worden.',
   'terug.opfrissen': '{aantal} plaatjes willen even opgefrist worden.',
   'terug.minuutEen': 'De eerste ronde duurt ongeveer 1 minuut.',
@@ -1249,12 +1250,16 @@ export const nl = {
   'result.stempels': '{aantal} stempels erbij',
   'result.pleisterEen': '1 plaatje kreeg een pleister',
   'result.pleister': '{aantal} plaatjes kregen een pleister',
+  'result.stenen': '{aantal} stenen erbij.',
+  'result.stenenEen': '1 steen erbij.',
+  'result.stenenGeen': 'Nog geen stenen — deze zag je voor het eerst.',
+  'result.morgenNiets': 'Morgen komt er niets terug. Over {dagen} dagen weer.',
   'result.albumNiets': 'Nog geen plaatje verder. Ze tellen als ze terugkomen.',
   'result.alBegonnen': 'Je bent begonnen aan {begonnen} van de {totaal} plaatjes.',
   'result.morgenKleurEen': 'Morgen kan er 1 plaatje kleur krijgen.',
   'result.morgenKleur': 'Morgen kunnen er {aantal} plaatjes kleur krijgen.',
-  'result.morgenTerugEen': 'Morgen komt er 1 plaatje terug.',
-  'result.morgenTerug': 'Morgen komen er {aantal} plaatjes terug.',
+  'result.morgenTerugEen': 'Morgen komt er 1 terug.',
+  'result.morgenTerug': 'Morgen komen er {aantal} terug.',
   // Zonder "weer": deze regel staat nu ook onder een allereerste ronde, en dan
   // is er nog niets teruggekomen om weer te komen.
   'result.eerstVolgende': 'Over {dagen} dagen komt het eerste plaatje terug.',
@@ -1269,7 +1274,8 @@ export const nl = {
   'result.vandaagKlaarUitleg':
     'Er hoeft vandaag niets meer terug te komen. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
-  'result.nieuwePlaatjes': 'Nieuwe plaatjes',
+  'result.nieuwePlaatjes': 'Iets nieuws leren',
+  'result.nieuwePlaatjesUitleg': 'Dit levert vandaag nog geen stenen op. Ze tellen als ze terugkomen.',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde
@@ -1417,6 +1423,57 @@ export const nl = {
   'album.achterkantStempels': 'Stempels',
   'album.achterkantGeenStempels': 'Stempels komen als je het na een lijstje nog weet.',
   'album.sluit': 'Sluit',
+
+  // De toren (ADR-158). Een steen is een goed antwoord op iets dat aan de beurt
+  // was en dat je eerder al eens had. Tien stenen is een verdieping, en er gaat
+  // nooit iets af — dus er staat nergens wat iets kost.
+  'toren.naam': 'Je toren',
+  'toren.uitleg':
+    'Alles wat je oefent komt een keer terug. Weet je het dan nog, dan krijg je een steen. Tien stenen is een verdieping, en die blijft staan.',
+  'toren.totaal': '{aantal} stenen',
+  'toren.totaalEen': '1 steen',
+  'toren.verdiepingen': '{aantal} verdiepingen',
+  'toren.verdiepingEen': '1 verdieping',
+  'toren.verdieping': 'Verdieping {n}',
+  'toren.verdiepingVol': 'Verdieping {n} is af.',
+  'toren.verdiepingDatum': 'Verdieping {n}, {datum}',
+  'toren.rest': 'Nog {aantal} tot verdieping {n} af is.',
+  'toren.restEen': 'Nog 1 tot verdieping {n} af is.',
+  'toren.hoogte': '{meter} meter hoog',
+  'toren.hoger': 'Hoger dan {ding}.',
+  'toren.naarHoger': 'Nog {aantal} verdiepingen tot {ding}.',
+  'toren.leeg': 'Je toren begint morgen. Dan liggen er {aantal} stenen klaar.',
+  'toren.leegNul':
+    'Je toren begint zodra iets terugkomt. Wat je vandaag leert, telt als het terugkomt.',
+  'toren.fundament': 'Wat je al had',
+  'toren.fundamentUitleg': 'Je toren begint met alles wat je tot nu toe goed had.',
+  'toren.samenvatting': 'De toren: {stenen} stenen, {verdiepingen} verdiepingen, {meter} meter hoog.',
+
+  // De vier dingen die in een ronde gezegd worden. Bij een fout staat er niets:
+  // het foutteken heeft dat al gezegd.
+  'toren.steenGoed': 'Je wist hem nog. Eén steen.',
+  'toren.steenAl': 'Die ken je al. Over {dagen} dagen telt hij weer.',
+  'toren.steenMorgen': 'Die ken je al. Morgen telt hij.',
+  'toren.steenNieuw': 'Nieuw. Over {dagen} dagen komt hij terug.',
+
+  // De ijkpunten (ADR-158): inhoud, geen regel.
+  'ijkpunt.giraf': 'een giraf',
+  'ijkpunt.huis': 'een huis',
+  'ijkpunt.boom': 'de hoogste boom',
+  'ijkpunt.windmolen': 'een windmolen',
+  'ijkpunt.kerktoren': 'een kerktoren',
+  'ijkpunt.reuzenrad': 'een reuzenrad',
+  'ijkpunt.domtoren': 'de Domtoren',
+  'ijkpunt.euromast': 'de Euromast',
+  'ijkpunt.eiffeltoren': 'de Eiffeltoren',
+  'ijkpunt.wolken': 'de wolken',
+  'ijkpunt.burjkhalifa': 'de Burj Khalifa',
+  'ijkpunt.kilometer': 'een kilometer',
+  'ijkpunt.tienkilometer': 'tien kilometer, waar vliegtuigen vliegen',
+  'module.terugVandaag': '{aantal} komen hier vandaag terug.',
+  'module.terugVandaagEen': '1 komt hier vandaag terug.',
+  'module.terugMorgen': 'Hier komt vandaag niets terug. Morgen {aantal}.',
+  'module.terugNiets': 'Hier komt voorlopig niets terug.',
   'ouder.title': 'Voor ouders',
   'ouder.uitleg':
     'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',

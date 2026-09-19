@@ -45,6 +45,8 @@ export function TaalResultScreen({
       }
       voor={state.statesVoor}
       na={state.states}
+      stenen={state.stenen}
+      groei={state.groei}
       reward={state.reward}
       oefenTitel={t(werkwoorden ? 'taal.practiceMoreVormen' : 'taal.practiceMore')}
       missed={state.missed}

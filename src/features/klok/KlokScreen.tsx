@@ -7,8 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { AlbumStap } from '@/features/album/AlbumStap';
-import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
+import { SteenRegel } from '@/features/toren/SteenRegel';
 import { KlokFace } from './KlokFace';
 import { klokVoluit, klokWoorden } from './klokTaal';
 import { useKlokRound, typesTheKlok, wijstDeKlokAan, type KlokMode } from './useKlokRound';
@@ -203,14 +202,8 @@ export function KlokScreen({
                         ? t('klok.dontKnowSub')
                         : t('klok.wrongSub', { gegeven })}
                   </p>
-                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap
-                    stap={state.stap}
-                    state={state.states.get(tijd.id)}
-                    naam={plaatjeNaam(tijd)}
-                  >
-                    <PlaatjeInhoud item={tijd} />
-                  </AlbumStap>
+                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
+                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

@@ -19,17 +19,19 @@ vi.mock('@/store/progress', () => ({
 vi.mock('@/store/rewardStore', () => ({
   applyRoundRewards: vi.fn(async () => null),
 }));
-// The album after a round writes the weekkaart and the bijhoudstempels, and
-// whether a page is ripe reads every set there is (ADR-149). Neither is what
-// this file tests.
-vi.mock('@/features/album/naRonde', () => ({
-  naRonde: vi.fn(async () => undefined),
+// De toren schrijft na een ronde zijn stenen weg, en of een pagina rijp is
+// leest elke set die er is (ADR-158). Geen van beide is wat dit bestand test.
+vi.mock('@/store/torenStore', () => ({
+  voegStenenToe: vi.fn(async () => null),
+}));
+vi.mock('@/features/badges/rijp', () => ({
   rijpVoorDiploma: vi.fn(() => false),
 }));
 // Om dezelfde reden: de voorkeuren komen uit dezelfde store, en of er een toon
 // klinkt is niet wat dit bestand test (ADR-134).
 vi.mock('@/features/player/settings', () => ({
   usePreferences: () => ({ readAloud: true, geluid: false }),
+  leesRustig: () => true,
 }));
 
 interface Vraag {
@@ -63,6 +65,7 @@ function ronde(
   const hook = renderHook(() =>
     useRoundCore<string, Vraag, { readonly id: string }, string>({
       setId: 'test',
+      moduleId: 'topo',
       mode: 'meerkeuze',
       basisRegel: options.basisRegel ?? TIEN,
       aantal: options.aantal ?? null,

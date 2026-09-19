@@ -1,17 +1,20 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   emptyState,
+  levertSteen,
   review,
-  stapVan,
+  steenStapVan,
   type ItemState,
   type ModeId,
   type RoundRule,
   type Schedulable,
-  type Stap,
+  type SteenStap,
+  type Vak,
 } from '@/game-core';
 import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { usePreferences } from '@/features/player/settings';
-import { naRonde, rijpVoorDiploma } from '@/features/album/naRonde';
+import { rijpVoorDiploma } from '@/features/badges/rijp';
+import { voegStenenToe, type TorenGroei } from '@/store/torenStore';
 import { speelUitkomst } from './geluid';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 
@@ -51,6 +54,8 @@ export interface RondeOpzet<S, Q> {
 
 export interface RondeKernOpties<S, Q, T extends Schedulable> {
   readonly setId: string;
+  /** Het vak, want een steen draagt de kleur van zijn vak (ADR-158). */
+  readonly moduleId: string;
   readonly mode: ModeId;
   /**
    * How a round of this way ends when nobody chooses a length. Must be a stable
@@ -99,8 +104,12 @@ export interface RondeKern<S, Q, T, A> {
   readonly answeredCount: number;
   readonly given: A | null;
   readonly lastCorrect: boolean;
-  /** Wat dit antwoord met het plaatje van dit item deed (ADR-149). */
-  readonly stap: Stap | null;
+  /** Wat dit antwoord opleverde: een steen, of niet (ADR-158). */
+  readonly steen: SteenStap | null;
+  /** De stenen die deze ronde tot nu toe opleverde, op volgorde. */
+  readonly stenen: readonly Vak[];
+  /** Wat de ronde met de toren deed. Pas gevuld als de ronde klaar is. */
+  readonly groei: TorenGroei | null;
   readonly missed: readonly T[];
   readonly rule: RoundRule;
   /** Bliksemronde only: whole seconds left. */
@@ -108,9 +117,8 @@ export interface RondeKern<S, Q, T, A> {
   /** Overleven only: lives remaining. */
   readonly livesLeft: number | null;
   readonly reward: RoundOutcome | null;
-  /** The set's own items, which the album page after the round draws. */
   readonly itemIds: readonly string[];
-  /** The boxes as the round found them, and as they are now (ADR-149). */
+  /** The boxes as the round found them, and as they are now. */
   readonly statesVoor: ReadonlyMap<string, ItemState>;
   readonly states: ReadonlyMap<string, ItemState>;
   /** Whether this round keeps its answers to itself until the end (ADR-085). */
@@ -119,7 +127,8 @@ export interface RondeKern<S, Q, T, A> {
 }
 
 export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOpties<S, Q, T>) {
-  const { setId, mode, basisRegel, aantal, toetsstand, itemVan, stoptBijFout = false } = opties;
+  const { setId, moduleId, mode, basisRegel, aantal, toetsstand, itemVan, stoptBijFout = false } =
+    opties;
 
   const [set, setSet] = useState<S | null>(null);
   const [itemIds, setItemIds] = useState<readonly string[]>([]);
@@ -131,7 +140,9 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
   const [index, setIndex] = useState(0);
   const [given, setGiven] = useState<A | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
-  const [stap, setStap] = useState<Stap | null>(null);
+  const [steen, setSteen] = useState<SteenStap | null>(null);
+  const [stenen, setStenen] = useState<readonly Vak[]>([]);
+  const [groei, setGroei] = useState<TorenGroei | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [missed, setMissed] = useState<T[]>([]);
@@ -217,9 +228,12 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
 
       setGiven(antwoord.given);
       setLastCorrect(correct);
-      // Wat dit antwoord met het plaatje deed: een laag, een stempel, een teken,
-      // of "die telt over drie dagen weer" (ADR-149).
-      setStap(stapVan(previous, nextState, now));
+      // Wat dit antwoord opleverde (ADR-158). De steen wordt hier geteld en niet
+      // achteraf uit het verschil afgeleid: een item dat eerst fout was en drie
+      // vragen later goed, ziet er in dat verschil uit als een steen terwijl het
+      // er geen is — na de fout was het niet meer aan de beurt.
+      setSteen(steenStapVan(previous, nextState, correct, now, moduleId));
+      if (levertSteen(previous, correct, now)) setStenen([...stenen, moduleId]);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
       // in een toets: die zegt niets tot het einde, ook niet met een toon.
       speelUitkomst(correct, geluidAan && !toetsstand);
@@ -265,13 +279,15 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     // The clock, the last life and the stop button can all arrive at once.
     if (phase === 'finished') return;
     setPhase('finished');
-    // A round counts for the week even when it was stopped early: the child
-    // turned up and did the work. The album catches up once the round is on
-    // record, so today is on the weekkaart when it is read (ADR-149).
+    // A round counts even when it was stopped early: the child turned up and
+    // did the work. De reeks leest de rondes terug, dus de sessie gaat eerst op
+    // papier en pas daarna groeit de toren (ADR-158).
     const opgeslagen = sessionId.current
       ? finishSession(sessionId.current, correctCount, answeredCount)
       : Promise.resolve();
-    void opgeslagen.then(() => naRonde(states));
+    // De stenen van deze ronde erbij. Dit mag een ronde nooit laten haperen,
+    // dus het faalt stil: de toren is de volgende keer weer bij.
+    void opgeslagen.then(() => voegStenenToe(stenen)).then(setGroei, () => {});
 
     void applyRoundRewards({
       snapshot: {
@@ -284,7 +300,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       },
       rijp: rijpVoorDiploma(setId, statesVoor, new Date()),
     }).then(setReward);
-  }, [phase, correctCount, answeredCount, setId, questions, states, statesVoor, itemIds, mode]);
+  }, [phase, correctCount, answeredCount, setId, questions, stenen, statesVoor, itemIds, mode]);
 
   const next = useCallback(() => {
     if (phase !== 'revealed') return;
@@ -361,7 +377,9 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     answeredCount,
     given,
     lastCorrect,
-    stap,
+    steen,
+    stenen,
+    groei,
     missed,
     rule,
     secondsLeft: rule.kind === 'tijd' ? secondsLeft : null,

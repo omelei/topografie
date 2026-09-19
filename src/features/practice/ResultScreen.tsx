@@ -79,6 +79,8 @@ export function ResultScreen({
       }
       voor={state.statesVoor}
       na={state.states}
+      stenen={state.stenen}
+      groei={state.groei}
       reward={state.reward}
       oefenTitel={t('result.practiceMore')}
       missed={state.missed}
