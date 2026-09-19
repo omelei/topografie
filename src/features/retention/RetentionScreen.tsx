@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ReactNode } from 'react';
 import { Uitklap } from '@/components/Uitklap';
 import { Dot } from '@/components/Dot';
 import { StatusLabel, STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
@@ -19,7 +19,7 @@ import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onder
 import { regiosVan } from '@/features/module/regios';
 import { heeftKaart, StandKaart } from './StandKaart';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
-import { usePremium } from '@/features/premium/usePremium';
+import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -32,6 +32,7 @@ import {
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
 import { DezeWeek, GeheugenKaart, PerVak, WeekNaWeek } from './Overzicht';
 import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
+import { voorbeeldStanden } from './voorbeeld';
 
 /**
  * K9, "Wat je onthoudt": the one screen that answers the question the product
@@ -368,36 +369,20 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
             muur eronder, dus de kleur zegt niets wat de vorm niet ook zegt. */}
         <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
           <h2 className="tk-sectie">{t('retention.glance')}</h2>
-          <div className="tk-card tk-vakkleur flex flex-col gap-4">
-            <ul className="tk-standtegels">
-              {STATUSSEN.map((status) => (
-                <li key={status} className="tk-standtegel" data-status={status}>
-                  <span className="tk-standtegel-getal">{telling[status]}</span>
-                  <span className="tk-standtegel-woord">
-                    {/* Decoratief: het woord ernaast zegt hetzelfde. De stip in
-                        de kleur van het vak, zoals de muur eronder. */}
-                    <span className="tk-stip">
-                      <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
-                    </span>
-                    {t(TEGEL_WOORD[status])}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            {/* De kaart van topografie hoort hier, en niet meer bij een
-                beloning (ADR-158): dezelfde vier statussen als de stippen en
-                de tabel, op de plek waar de dingen liggen. */}
-            {deel && !deel.mix && heeftKaart(deel.setId) ? (
-              <StandKaart
-                setId={deel.setId}
-                items={items}
-                states={states}
-                now={now}
-                label={t('retention.kaartLabel', { wat: naamVan(deel) })}
-              />
-            ) : null}
-            <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
-          </div>
+          <Blik
+            moduleId={moduleId}
+            deel={deel}
+            items={items}
+            states={states}
+            telling={telling}
+            now={now}
+          />
+
+          {/* En zonder code een tweede kaart eronder: hoe het eruitziet bij een
+              kind dat een paar weken oefent (ADR-165). Eronder en nooit
+              ervoor, en gemerkt in woorden — een voorbeeld dat voor de echte
+              cijfers van een kind langs gaat staan, is een leugen. */}
+          {!premium ? <Voorbeeld moduleId={moduleId} deel={deel} items={items} now={now} /> : null}
         </section>
 
         {/* De tabel staat er nog, maar niet vooraan (ADR-143). Zes kolommen
@@ -429,6 +414,130 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
 
       {aside}
     </div>
+  );
+}
+
+/**
+ * "Alles in één blik": vier tegels, de kaart waar er een is, en de stippen.
+ *
+ * Eén component sinds ADR-165, omdat hij twee keer getekend wordt: één keer met
+ * de standen van dit kind, en zonder code nog een keer met die van een
+ * verzonnen kind. Twee kopieën van deze kaart zouden op de dag van de eerste
+ * wijziging uit elkaar lopen, en dan laat het voorbeeld iets anders zien dan
+ * het ding waar het een voorbeeld van is.
+ */
+function Blik({
+  moduleId,
+  deel,
+  items,
+  states,
+  telling,
+  now,
+}: {
+  readonly moduleId: Module['id'];
+  readonly deel: Onderdeel | null;
+  readonly items: readonly Schedulable[];
+  readonly states: ReadonlyMap<string, ItemState>;
+  readonly telling: Record<ItemStatus, number>;
+  readonly now: Date;
+}) {
+  return (
+    <div className="tk-card tk-vakkleur flex flex-col gap-4">
+      <ul className="tk-standtegels">
+        {STATUSSEN.map((status) => (
+          <li key={status} className="tk-standtegel" data-status={status}>
+            <span className="tk-standtegel-getal">{telling[status]}</span>
+            <span className="tk-standtegel-woord">
+              {/* Decoratief: het woord ernaast zegt hetzelfde. De stip in de
+                  kleur van het vak, zoals de muur eronder. */}
+              <span className="tk-stip">
+                <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
+              </span>
+              {t(TEGEL_WOORD[status])}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {/* De kaart van topografie hoort hier, en niet meer bij een beloning
+          (ADR-158): dezelfde vier statussen als de stippen en de tabel, op de
+          plek waar de dingen liggen. */}
+      {deel && !deel.mix && heeftKaart(deel.setId) ? (
+        <StandKaart
+          setId={deel.setId}
+          items={items}
+          states={states}
+          now={now}
+          label={t('retention.kaartLabel', { wat: naamVan(deel) })}
+        />
+      ) : null}
+      <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
+    </div>
+  );
+}
+
+/**
+ * Dezelfde kaart, met de stand van een kind dat er al een paar weken mee bezig
+ * is (ADR-165), en daaronder wat premium ermee doet.
+ *
+ * **Waarom hij er staat.** Wie deze pagina voor het eerst opent, heeft nog
+ * niets geoefend: dan zijn de vier getallen vier nullen en is de muur een muur
+ * van lege stippen. Dat is eerlijk, en het laat precies niets zien van waar dit
+ * product over gaat. Hier staat wat het wordt.
+ *
+ * **En de knop eronder zegt het hardop.** Er stond een `PremiumSlot` bij de
+ * tabel, halverwege de pagina, met dezelfde toon als elk ander slot in de app.
+ * Dit is de pagina die de hele propositie ís — als er ergens één zin mag staan
+ * die het vraagt, is het hier.
+ */
+function Voorbeeld({
+  moduleId,
+  deel,
+  items,
+  now,
+}: {
+  readonly moduleId: Module['id'];
+  readonly deel: Onderdeel | null;
+  readonly items: readonly Schedulable[];
+  readonly now: Date;
+}) {
+  const naarPremium = useNaarPremium();
+  const kop = useId();
+  const states = voorbeeldStanden(items, now);
+
+  const telling = { new: 0, practising: 0, remembered: 0, refresh: 0 } satisfies Record<
+    ItemStatus,
+    number
+  >;
+  for (const item of items) telling[statusOf(states.get(item.id), now)] += 1;
+
+  return (
+    <section className="flex flex-col gap-3" aria-labelledby={kop}>
+      <p className="flex flex-wrap items-center gap-3">
+        <span className="tk-pil">{t('retention.voorbeeldLabel')}</span>
+        <span id={kop} className="text-tekst-secundair">
+          {t('retention.voorbeeldUitleg')}
+        </span>
+      </p>
+
+      <Blik
+        moduleId={moduleId}
+        deel={deel}
+        items={items}
+        states={states}
+        telling={telling}
+        now={now}
+      />
+
+      <div className="tk-etalage">
+        <h3 className="tk-etalage-kop">{t('retention.verkoopKop')}</h3>
+        <p className="tk-etalage-tekst">{t('retention.verkoopTekst')}</p>
+        <div className="tk-etalage-knoppen">
+          <button type="button" className="tk-button tk-knop-licht" onClick={naarPremium}>
+            {t('retention.verkoopKnop')}
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
 

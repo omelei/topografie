@@ -294,6 +294,18 @@ export const nl = {
   // want zonder de chips kan een kind niet zien dat er meer is.
   'retention.voorproef':
     'Je ziet hier {onderwerp}. Met premium kies je elk vak en elk onderwerp, en zie je het per onderdeel.',
+  // Het voorbeeldkind (ADR-165). Het woord "voorbeeld" staat er twee keer — in
+  // de pil en in de zin — omdat dit het enige op deze pagina is wat niet over
+  // dit kind gaat, en één merkje is er dan één te weinig.
+  'retention.voorbeeldLabel': 'Voorbeeld',
+  'retention.voorbeeldUitleg':
+    'Dit zijn niet jouw cijfers. Zo ziet het eruit bij een kind dat hier een paar weken mee oefent.',
+  // De vraag zelf, op de pagina die de hele belofte ís, en dus in woorden die
+  // zeggen wat je erbij krijgt in plaats van dat er iets op slot zit.
+  'retention.verkoopKop': 'Dit wil je over je eigen kind zien',
+  'retention.verkoopTekst':
+    'Met premium staat hier je eigen kind: elk vak, elk onderwerp en elke som, week na week, met hoeveel het er over drie weken nog van weet. En leer.nu zet elke dag klaar wat het bijna vergeet.',
+  'retention.verkoopKnop': 'Bekijk premium',
   'retention.regelsTitel': 'Wanneer onthoud je iets?',
   'retention.regel1':
     'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
@@ -559,9 +571,15 @@ export const nl = {
   'premium.usp.plan': 'Het herhalen wordt voor je gepland',
   'premium.usp.planUit':
     'Je kind hoeft niet te bedenken waar het moet beginnen. Leer.nu zet elke dag klaar wat aan de beurt is, net voordat het vergeten wordt.',
-  'premium.usp.zicht': 'Je ziet wat blijft hangen',
+  // De statistieken als eigen belofte (ADR-164). "Je ziet wat blijft hangen"
+  // stond hier, en dat is waar maar bescheiden: wat premium werkelijk geeft is
+  // de hele boekhouding van het oefenen, tot per som. Elke regel hieronder is
+  // een ding dat op de Onthouden-pagina echt staat, want een belofte die
+  // nergens uitkomt is de snelste manier om een ouder kwijt te raken die net
+  // betaald heeft.
+  'premium.usp.zicht': 'Uitgebreide statistieken over je kind',
   'premium.usp.zichtUit':
-    'Per onderwerp zie je wat je kind al kent, wat opgefrist moet worden en hoeveel het er over drie weken nog van weet.',
+    'Per vak, per onderwerp en per som: wat je kind al kent, wat opgefrist moet worden, hoe het oefenen week na week gaat, en hoeveel het er over drie weken nog van weet.',
   'premium.usp.zelf': 'Je kind overhoort zichzelf',
   'premium.usp.zelfUit':
     'Met de oefentoets test je kind zelf of het de stof kent: zonder hulp, met een cijfer aan het eind. Jij hoeft niet meer te overhoren.',
@@ -615,9 +633,12 @@ export const nl = {
   'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
   'premium.waarom.apparaatUit':
     'Wat je kind oefent, gaat nergens heen. Alleen de code gaat naar onze server, om te controleren of hij klopt.',
-  'premium.waarom.abonnement': 'Geen abonnement',
-  'premium.waarom.abonnementUit':
-    'Je betaalt één keer. De code verloopt na een schooljaar vanzelf, en er wordt nooit iets afgeschreven.',
+  // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
+  // waar "€ 5 per maand" op staat (ADR-164), en de plek gaat naar de belofte
+  // die dit product wél onderscheidt en die nergens anders stond.
+  'premium.waarom.geenNamen': 'We slaan geen namen van kinderen op',
+  'premium.waarom.geenNamenUit':
+    'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
     'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed weet. Niets hangt van geluk af, en er valt niets te kopen.',
@@ -629,6 +650,16 @@ export const nl = {
   'premium.kopenUitleg':
     'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
+  // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
+  // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
+  // Daarom ook per maand, en dan zonder een jaar eraan vast te zitten.
+  'premium.maandPrijs': '€ 5',
+  'premium.perMaand': 'per maand',
+  'premium.perSchooljaarKort': 'per schooljaar',
+  'premium.maandKnop': 'Per maand',
+  'premium.maandUitleg': 'Maandelijks opzegbaar. Je zit nergens aan vast.',
+  'premium.jaarVoordeel': 'Een heel schooljaar kost minder dan vijf maanden.',
+  'premium.ofPerMaand': 'Of {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',

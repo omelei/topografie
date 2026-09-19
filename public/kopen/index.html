@@ -40,8 +40,29 @@
         </ul>
         <p class="prijs">€ 24,95</p>
         <p class="hulp">
-          Eén code, een heel schooljaar, voor alle kinderen thuis en op maximaal drie apparaten.
-          Geen abonnement: hij loopt vanzelf af en er wordt niets afgeschreven.
+          Eén code, een heel schooljaar, voor alle kinderen thuis en op maximaal drie apparaten. Hij
+          loopt vanzelf af en er wordt daarna niets afgeschreven.
+        </p>
+      </section>
+
+      <!--
+        Per maand (ADR-164). De premiumpagina biedt twee plannen aan en linkt
+        hierheen met ?plan=maand; dit blok is wat er dan staat.
+
+        Automatische incasso is er nog niet: dat is een mandaat bij Mollie, een
+        abonnement, een webhook per termijn en een opzegging, en daarvan staat
+        niets in `supabase/functions/kassa`. Een knop "Betalen met iDEAL" die
+        € 24,95 afschrijft onder een kop die € 5 per maand belooft, is het enige
+        wat hier echt niet mag. Dus zegt deze pagina wat er is en wat er niet
+        is, en wijst naar de weg die vandaag wél werkt.
+      -->
+      <section class="kaart" id="maand" hidden>
+        <h2>Per maand</h2>
+        <p class="prijs">€ 5 <span class="hulp">per maand</span></p>
+        <p class="hulp">
+          Maandelijks opzegbaar. Automatisch betalen per maand zetten we op dit moment op; tot die
+          tijd kun je met de code voor een heel schooljaar meteen beginnen — die kost minder dan
+          vijf maanden.
         </p>
       </section>
 
@@ -73,6 +94,13 @@
       // Geen build en geen framework: één formulier dat één ding doet.
       (function () {
         var kassa = document.querySelector('meta[name="kassa"]').content;
+
+        // ?plan=maand: dan staat het maandblok erbij, boven het formulier dat
+        // het schooljaar verkoopt. Wat het formulier doet verandert niet, want
+        // er is maar één ding te koop (ADR-164).
+        if (new URLSearchParams(window.location.search).get('plan') === 'maand') {
+          document.getElementById('maand').hidden = false;
+        }
         var form = document.getElementById('bestelling');
         var veld = document.getElementById('email');
         var knop = document.getElementById('knop');

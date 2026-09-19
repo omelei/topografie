@@ -18,8 +18,12 @@ import { leesbareDatum, usePremium } from './usePremium';
 /**
  * De kassa, als adres. Geen route van de app maar een echte pagina onder
  * `public/kopen`, dus een gewone link die de app verlaat (ADR-123).
+ *
+ * Sinds ADR-164 draagt hij welk plan je koos. De kassa leest dat en zegt wat
+ * je koopt; de app hoeft daarmee nog steeds niets van betalen te weten.
  */
 const KASSA_PAD = '/kopen/';
+const KASSA_MAAND = '/kopen/?plan=maand';
 
 type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
 
@@ -38,7 +42,7 @@ const DOET: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = 
 const WAAROM: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = [
   [ShieldIcon, 'premium.waarom.reclame', 'premium.waarom.reclameUit'],
   [PupilIcon, 'premium.waarom.apparaat', 'premium.waarom.apparaatUit'],
-  [CorrectIcon, 'premium.waarom.abonnement', 'premium.waarom.abonnementUit'],
+  [FamilyIcon, 'premium.waarom.geenNamen', 'premium.waarom.geenNamenUit'],
   [StarIcon, 'premium.waarom.gok', 'premium.waarom.gokUit'],
 ];
 
@@ -254,14 +258,22 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
       </h2>
       <p className="tk-etalage-tekst">{t('premium.intro')}</p>
       {teKoop ? (
-        <div className="tk-etalage-knoppen">
-          <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
-            {t('premium.kopenKnop')}
-          </a>
-          <p className="tk-premium-etalage-prijs">
-            <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
+        <>
+          <div className="tk-etalage-knoppen">
+            <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
+              {t('premium.kopenKnop')}
+            </a>
+            <p className="tk-premium-etalage-prijs">
+              <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
+            </p>
+          </div>
+          {/* De maandprijs als regel en niet als tweede knop ernaast (ADR-164).
+              Twee even zware knoppen is geen aanbod maar een vraag, en de
+              vergelijking eronder zet beide plannen wél naast elkaar. */}
+          <p className="tk-etalage-tekst">
+            {t('premium.ofPerMaand', { prijs: t('premium.maandPrijs') })}
           </p>
-        </div>
+        </>
       ) : null}
     </section>
   );
@@ -301,19 +313,39 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
             <span className="tk-premium-plan-naam">{t('premium.titel')}</span>
             <span className="tk-pil">{t('premium.aanrader')}</span>
           </p>
+          {/* Twee manieren om hetzelfde te krijgen, naast elkaar (ADR-164). Ze
+              staan in één kaart en niet in twee, want het is één product: wat
+              verschilt is wanneer je betaalt, niet wat je koopt. Het jaar
+              voorop, met de reden erbij dat het goedkoper is — een aanrader
+              zonder rekensom is een duwtje, met de rekensom is het een
+              argument. */}
           {teKoop ? (
-            <p className="tk-premium-plan-prijs">
-              <span className="tk-display">{t('premium.prijs')}</span>{' '}
-              <span className="text-tekst-secundair">{t('premium.perSchooljaar')}</span>
-            </p>
+            <div className="tk-premium-prijzen">
+              <p className="tk-premium-plan-prijs">
+                <span className="tk-display">{t('premium.prijs')}</span>{' '}
+                <span className="text-tekst-secundair">{t('premium.perSchooljaarKort')}</span>
+              </p>
+              <p className="tk-premium-plan-prijs">
+                <span className="tk-display">{t('premium.maandPrijs')}</span>{' '}
+                <span className="text-tekst-secundair">{t('premium.perMaand')}</span>
+              </p>
+            </div>
           ) : null}
           <p className="text-tekst-secundair">{t('premium.premiumVoor')}</p>
           {teKoop ? (
             <>
-              <a className="tk-button self-start" href={KASSA_PAD}>
-                {t('premium.kopenKnop')}
-              </a>
+              <div className="tk-premium-plan-knoppen">
+                <a className="tk-button" href={KASSA_PAD}>
+                  {t('premium.kopenKnop')}
+                </a>
+                <a className="tk-button tk-button-secondary" href={KASSA_MAAND}>
+                  {t('premium.maandKnop')}
+                </a>
+              </div>
               <p className="tk-hulp">{t('premium.kopenUitleg')}</p>
+              <p className="tk-hulp">
+                {t('premium.maandUitleg')} {t('premium.jaarVoordeel')}
+              </p>
             </>
           ) : null}
         </div>

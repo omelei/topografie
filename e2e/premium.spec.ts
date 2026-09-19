@@ -66,6 +66,12 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page.getByRole('region', { name: 'Deze week' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Per vak' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
+
+  // En onder de eigen kaart het voorbeeldkind (ADR-165), gemerkt in woorden,
+  // met de vraag eronder in plaats van een kaal slot.
+  await expect(page.getByText('Dit zijn niet jouw cijfers.')).toBeVisible();
+  await expect(page.getByText('Dit wil je over je eigen kind zien')).toBeVisible();
+
   await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
@@ -241,6 +247,19 @@ test('without a code the premium page points at the kassa, and with one it does 
     'Heb je al een code?',
   ]);
   await expect(page.getByText('€ 24,95').first()).toBeVisible();
+
+  // Twee manieren van betalen (ADR-164): het jaar als aanrader, de maand
+  // ernaast, met een knop die de kassa zegt welk plan gekozen is.
+  await expect(page.getByText('€ 5').first()).toBeVisible();
+  await expect(page.getByText('Maandelijks opzegbaar.').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Per maand' })).toHaveAttribute(
+    'href',
+    '/kopen/?plan=maand',
+  );
+
+  // En de belofte over namen staat erbij (ADR-164).
+  await expect(page.getByText('We slaan geen namen van kinderen op')).toBeVisible();
+  await expect(page.getByText('Uitgebreide statistieken over je kind')).toBeVisible();
 
   // En de vergelijking zegt per regel wat erin zit: de bliksemronde niet in
   // basis, alle vakken wel (ADR-122, ADR-145).

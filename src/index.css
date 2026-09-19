@@ -1839,6 +1839,29 @@
     line-height: var(--type-getal-lh);
     font-weight: var(--type-getal-weight);
   }
+  /* De twee prijzen naast elkaar (ADR-164), en onder elkaar zodra ze niet
+   * passen: "€ 24,95 per schooljaar" en "€ 5 per maand" zijn samen breder dan
+   * een kolom op een telefoon. De tweede krijgt een streep ervoor waar ze naast
+   * elkaar staan, zodat het één regel blijft lezen en geen twee aanbiedingen. */
+  .tk-premium-prijzen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 20px;
+  }
+  @media (min-width: 480px) {
+    .tk-premium-prijzen > * + * {
+      padding-left: 20px;
+      border-left: var(--stroke-hair) solid var(--rand-licht);
+    }
+  }
+  /* De twee knoppen. Het jaar is de primaire en de maand de secundaire: de
+   * pagina raadt er één aan, en twee even zware knoppen raden niets aan. */
+  .tk-premium-plan-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 
   /* De tabel scrolt in zijn eigen doos als hij niet past, nooit de pagina. */
   .tk-premium-tabel-rol {

@@ -9284,6 +9284,149 @@ focusval en Escape. Met de hand nagebouwd blijft daar altijd de helft van staan.
 
 ---
 
+## ADR-164 — De premiumpagina: statistieken, geen namen, en een maand
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-124 en ADR-145 (de
+premiumpagina) en ADR-123 (de kassa).
+
+### Context
+
+Drie dingen aan de premiumpagina, alle drie gemeld na het lezen ervan.
+
+**De sterkste belofte stond er bescheiden op.** "Je ziet wat blijft hangen", met
+eronder één zin over wat je kind al kent. Dat is waar, en het is een fractie van
+wat er werkelijk staat zodra je een code hebt: per vak, per onderwerp en per
+som, hoe het oefenen week na week gaat, en de voorspelling over drie weken. Dat
+is de enige boekhouding van zijn soort in dit product, en de pagina die hem moet
+verkopen noemde hem in het voorbijgaan.
+
+**Wat er níét bewaard wordt, stond nergens.** De vier redenen om ons te
+vertrouwen waren: geen advertenties, alles op je eigen apparaat, geen abonnement,
+en belonen zonder gokken. Alle vier waar. Maar de vraag die een ouder over een
+app voor zijn kind als eerste stelt — wat weten jullie van mijn kind? — werd
+alleen zijdelings beantwoord, via "alles blijft op je apparaat".
+
+**En een schooljaar vooruit betalen is een grote eerste stap.** € 24,95 eenmalig
+is een goede prijs voor wie weet dat dit product past, en dat weet je pas nadat
+je het gebruikt hebt.
+
+### Decision
+
+**"Je ziet wat blijft hangen" wordt "Uitgebreide statistieken over je kind".**
+Met eronder wat er precies staat: per vak, per onderwerp en per som, week na
+week, en hoeveel er over drie weken nog van over is. Elke term in die zin is een
+ding dat op de Onthouden-pagina echt staat — een belofte die nergens uitkomt is
+de snelste manier om een ouder kwijt te raken die net betaald heeft.
+
+**"Geen abonnement" maakt plaats voor "We slaan geen namen van kinderen op".**
+Die eerste kan niet blijven staan naast een knop met "€ 5 per maand" erop, en de
+plek gaat naar de belofte die dit product wél onderscheidt. De zin eronder zegt
+wat er waar is en niets erbij: de voornaam die een kind invult staat op het
+apparaat en gaat nergens heen, en achternaam, school, woonplaats en
+geboortedatum worden nergens gevraagd.
+
+**En er komt een tweede manier van betalen bij: € 5 per maand, maandelijks
+opzegbaar.** Het jaar blijft de aanrader, met de rekensom erbij — een heel
+schooljaar kost minder dan vijf maanden. In de etalage staat de maand als regel
+onder de knop en niet als tweede knop ernaast: twee even zware knoppen zijn geen
+aanbod maar een vraag. In de vergelijking staan beide prijzen wél naast elkaar,
+binnen één kaart, want het is één product en wat verschilt is wanneer je betaalt.
+
+### Wat hier bewust niet in zit
+
+**De incasso is niet gebouwd.** Een maandabonnement is bij Mollie een mandaat,
+een abonnement, een webhook per termijn en een opzegging, en daarvan staat niets
+in `supabase/functions/kassa` — die kent één eenmalige betaling die één code van
+365 dagen oplevert.
+
+Wat er wél is, is de naad: de premiumpagina linkt naar `/kopen/?plan=maand`, en
+de kassa leest dat en toont het maandblok. Wat dat blok zegt, is wat er is: de
+prijs, "maandelijks opzegbaar", en dat automatisch betalen per maand nog wordt
+opgezet — met de code voor een heel schooljaar als de weg die vandaag werkt. Een
+knop "Betalen met iDEAL" die € 24,95 afschrijft onder een kop die € 5 per maand
+belooft, is het enige wat hier echt niet mag, en daarom staat hij er niet.
+
+### Consequences
+
+- De premiumpagina noemt twee bedragen. `kassa.test.ts` bewaakt dat het
+  jaarbedrag gelijk is aan `PRIJS_CENTEN`; het maandbedrag heeft nog geen
+  tegenhanger in de kassa en heeft die pas nodig als de incasso er is.
+- **De belofte over namen heeft een houdbaarheidsdatum.** Hij is waar zolang een
+  kind alleen op dit apparaat bestaat. In F3 van de accountfasering (ADR-155)
+  krijgt een kind een rij in `public.kinderen`, met een voornaam erin. Die ADR
+  moet deze zin herschrijven — naar wat er dan waar is, en niet andersom.
+- `premium.waarom.abonnement` verdwijnt uit de teksten. Hij stond in de kassa
+  ook, in andere woorden, en die zin is daar aangepast: de code loopt vanzelf af
+  en er wordt daarna niets afgeschreven, wat waar blijft.
+
+---
+
+## ADR-165 — Onthouden laat zien waar het over gaat
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-124 (de gratis
+voorproef).
+
+### Context
+
+ADR-124 gaf de Onthouden-pagina een gratis voorproef, en de redenering klopte:
+dit is de pagina die de hele propositie ís, en er stond een kaal slot waar het
+product hoort. Dus toont hij sindsdien zonder code de vier tegels en de stippen
+voor het onderwerp waar hij op opent — de eigen stand van het kind. Het inzicht
+is gratis, het bijhouden is betaald.
+
+Wat die redenering oversloeg, is wie er op dat moment kijkt. **Iemand zonder
+code heeft meestal ook nog niets geoefend.** Dan zijn de vier getallen vier
+nullen en is de muur een muur van lege stippen. Dat is een eerlijke pagina, en
+het laat precies niets zien van waar dit product over gaat: het verschil tussen
+"nog aan het oefenen" en "dit onthoud je nu", en hoe dat er na drie weken
+uitziet.
+
+En de vraag zelf stond halverwege, bij de tabel, als een `PremiumSlot` met
+dezelfde toon als elk ander slot in de app — terwijl dit de ene pagina is waar
+die vraag thuishoort.
+
+### Decision
+
+**Zonder code staat er een tweede kaart onder de eigen kaart: dezelfde kaart,
+met de stand van een verzonnen kind dat er een paar weken mee bezig is.** Zes
+onthouden, één even opfrissen, twee nog aan het oefenen, één nog niet geoefend —
+inclusief de kaart van Nederland waar die er is, dus met de provincies in vier
+sterktes.
+
+Drie regels eromheen, en ze zijn alle drie het punt:
+
+- **Eronder, nooit ervoor.** De eigen cijfers van het kind gaan voor, hoe leeg
+  ze ook zijn. Een voorbeeld dat voor de werkelijkheid langs gaat staan, is een
+  leugen over die werkelijkheid.
+- **Gemerkt in woorden**, niet alleen in kleur: een pil met "Voorbeeld" én de
+  zin "Dit zijn niet jouw cijfers."
+- **Vast en puur.** Dezelfde onderdelen geven altijd dezelfde standen, dus de
+  kaart springt niet en er komt nooit iets van in `progress` terecht.
+
+**En de vraag eronder is een etalage in plaats van een slot.** "Dit wil je over
+je eigen kind zien", met wat er dan staat, en één knop. Dezelfde vorm die de
+premiumpagina en de kop van deze pagina al dragen (ADR-150), op de plek waar het
+voorbeeld net heeft laten zien waar het over gaat.
+
+De kaart zelf is één component geworden (`Blik`), omdat hij nu twee keer
+getekend wordt. Twee kopieën zouden uit elkaar lopen op de dag van de eerste
+wijziging, en dan laat het voorbeeld iets anders zien dan het ding waarvan het
+een voorbeeld is.
+
+### Consequences
+
+- Wie wél geoefend heeft en geen code heeft, ziet zijn eigen stand én het
+  voorbeeld. Dat is één kaart meer dan nodig voor dat ene geval. De regel "de
+  eigen cijfers gaan voor" is het waard: de andere volgorde zou van het
+  voorbeeld de hoofdzaak maken voor iedereen zonder code.
+- Het `PremiumSlot` bij de detailtabel blijft staan. Dat gaat over de tabel, en
+  die is een ander ding dan het beeld erboven.
+- **Nog niet in een browser gezien.** Twee kaarten met dezelfde vorm onder
+  elkaar, waarvan de onderste een merkje draagt: of dat leest als "voorbeeld" en
+  niet als "nog een keer", is precies wat er bekeken moet worden.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
