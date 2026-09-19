@@ -125,18 +125,21 @@ export function Toren({
       </svg>
 
       {/* De datums worden niet getekend, maar ze zijn er wel: voor wie luistert
-          is de log het interessantste deel van de toren. */}
-      <ol className="tk-sr-only">
-        {[...stand.volle].reverse().map((verdieping) => (
-          <li key={verdieping.nummer}>
-            {t('toren.verdiepingDatum', {
-              n: verdieping.nummer,
-              datum: DATUM.format(new Date(verdieping.datum)),
-            })}
-          </li>
-        ))}
-        {stand.fundament > 0 ? <li>{t('toren.fundamentUitleg')}</li> : null}
-      </ol>
+          is de log het interessantste deel van de toren. Een kind zonder
+          verdiepingen krijgt geen lege lijst. */}
+      {stand.verdiepingen > 0 ? (
+        <ol className="tk-sr-only">
+          {[...stand.volle].reverse().map((verdieping) => (
+            <li key={verdieping.nummer}>
+              {t('toren.verdiepingDatum', {
+                n: verdieping.nummer,
+                datum: DATUM.format(new Date(verdieping.datum)),
+              })}
+            </li>
+          ))}
+          {stand.fundament > 0 ? <li>{t('toren.fundamentUitleg')}</li> : null}
+        </ol>
+      ) : null}
     </div>
   );
 }

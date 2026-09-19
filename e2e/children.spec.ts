@@ -48,11 +48,10 @@ async function answerOne(page: Page) {
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
-  // The streak is written after the round ends and the result screen does not
-  // wait for it, so leaving now would race the write. This line is the screen
-  // saying it landed — either wording, because which of the two appears turns
-  // on whether a streak was broken and that is not what is being tested here.
-  await expect(page.getByText(/Je bent begonnen|Dat is je eerste dag/)).toBeVisible();
+  // De stenen worden na de ronde weggeschreven en het uitslagscherm wacht daar
+  // niet op, dus nu weglopen zou met die schrijfactie racen. De toren verschijnt
+  // pas als hij er staat, dus dit is het scherm dat zegt dat het geland is.
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
 }
 
 async function addChild(page: Page, naam: string) {

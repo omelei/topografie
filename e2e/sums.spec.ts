@@ -253,14 +253,14 @@ test('a finished table says what changed, not only what was scored', async ({ pa
   }
 
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
-  // The album first, then what the round did to it, in words (ADR-149).
-  await expect(page.getByRole('region', { name: 'Jouw albumpagina' })).toBeVisible();
+  // Eerst de toren, dan wat de ronde ermee deed (ADR-158).
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByText('10 vragen, 10 goed', { exact: true })).toBeVisible();
-  await expect(page.getByText('10 plaatjes verder.', { exact: true })).toBeVisible();
-  // En de derde regel kijkt vooruit. "Je bent begonnen aan 10 van de 10" stond
-  // hier eerst en zei hetzelfde als de regel erboven; zodra de hele pagina aan
-  // staat, is wat terugkomt het enige wat die regel nog toevoegt.
-  await expect(page.getByText(/plaatje(s)? terug\.$/)).toBeVisible();
+  // Tien sommen die dit kind voor het eerst zag: nul stenen. Dat is de regel op
+  // zijn strengst, en het is precies wat een eerste ronde hoort op te leveren.
+  await expect(page.getByText('Nog geen stenen', { exact: false })).toBeVisible();
+  // En de derde regel kijkt vooruit, naar wat terugkomt.
+  await expect(page.getByText(/Morgen kom(t|en) er/)).toBeVisible();
 });
 
 /**
