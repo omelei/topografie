@@ -103,8 +103,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   ],
 ];
 
-
-
 /**
  * De premiumpagina: wat het is, wat het kost, en pas daarna het veld (ADR-116,
  * ADR-124, ADR-145).

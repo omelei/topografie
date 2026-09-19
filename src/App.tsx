@@ -145,8 +145,6 @@ export default function App() {
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
 
-
-
   // The tab bar's four destinations, two of which exist. Mapping them here
   // rather than inside the Shell keeps the frame ignorant of what a screen is.
   const goHome = () => {

@@ -76,11 +76,7 @@ describe('hoe ver een doel is', () => {
     aantal: 1,
     diplomaId: 'diploma-tafel-7',
   };
-  const rondes = [
-    op('2026-09-14T08:00:00'),
-    op('2026-09-15T08:00:00'),
-    op('2026-09-15T09:00:00'),
-  ];
+  const rondes = [op('2026-09-14T08:00:00'), op('2026-09-15T08:00:00'), op('2026-09-15T09:00:00')];
 
   it('rekent rondes en dagen apart', () => {
     const uit = standen([rondesDoel, dagenDoel], rondes, new Set(), donderdag);
