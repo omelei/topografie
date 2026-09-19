@@ -21,8 +21,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { AlbumStap } from '@/features/album/AlbumStap';
-import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
+import { SteenRegel } from '@/features/toren/SteenRegel';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
 import { TaalResultScreen } from './TaalResultScreen';
@@ -301,16 +300,8 @@ function Vraag({
                   <p className="tk-display text-sectiekop">{kop}</p>
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
-                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  {state.question ? (
-                    <AlbumStap
-                      stap={state.stap}
-                      state={state.states.get(state.question.item.id)}
-                      naam={plaatjeNaam(state.question.item)}
-                    >
-                      <PlaatjeInhoud item={state.question.item} />
-                    </AlbumStap>
-                  ) : null}
+                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
+                  {state.question ? <SteenRegel steen={state.steen} /> : null}
                 </div>
               </div>
 

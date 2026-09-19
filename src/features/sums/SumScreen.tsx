@@ -7,8 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { AlbumStap } from '@/features/album/AlbumStap';
-import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
+import { SteenRegel } from '@/features/toren/SteenRegel';
 import { useSumRound, stopsOnAMistake, typesTheSum, type SumMode } from './useSumRound';
 import { SumResultScreen } from './SumResultScreen';
 
@@ -184,14 +183,8 @@ export function SumScreen({
                         ? t('sums.dontKnowSub')
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
-                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap
-                    stap={state.stap}
-                    state={state.states.get(sum.id)}
-                    naam={plaatjeNaam(sum)}
-                  >
-                    <PlaatjeInhoud item={sum} />
-                  </AlbumStap>
+                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
+                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

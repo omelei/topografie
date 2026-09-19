@@ -16,9 +16,7 @@ import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { PinIcon } from '@/components/Icon';
-import { AlbumStap } from '@/features/album/AlbumStap';
-import { KaartVorm } from '@/features/album/KaartVorm';
+import { SteenRegel } from '@/features/toren/SteenRegel';
 import { ResultScreen } from './ResultScreen';
 import {
   choosesTheAnswer,
@@ -189,14 +187,6 @@ export function PracticeScreen({
   }
 
   const naam = state.question.item.naam;
-  // De vorm van dit gebied, voor het plaatje in de terugkoppeling. Een stad of
-  // een water is een punt en heeft geen vorm: dan staat er een speld.
-  const vorm =
-    state.answers.kind === 'shapes'
-      ? state.answers.set.vormen.find((kandidaat) => kandidaat.id === state.question?.answerId)
-      : state.answers.kind === 'background'
-        ? state.geo.vormen.find((kandidaat) => kandidaat.id === state.question?.answerId)
-        : undefined;
   const revealed = state.phase === 'revealed';
   const typing = typesTheAnswer(practiceMode);
   const choosing = choosesTheAnswer(practiceMode);
@@ -311,14 +301,8 @@ export function PracticeScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
-                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap
-                    stap={state.stap}
-                    state={state.states.get(state.question.item.id)}
-                    naam={naam}
-                  >
-                    {vorm ? <KaartVorm d={vorm.d} bbox={vorm.bbox} /> : <PinIcon size={24} />}
-                  </AlbumStap>
+                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
+                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

@@ -16,5 +16,8 @@ export * from './kalender';
 export * from './oefendagen';
 export * from './rewards';
 export * from './album';
+export * from './toren';
+export * from './ijkpunten';
+export * from './reeks';
 export * from './weekkaart';
 export * from './wereldRegios';

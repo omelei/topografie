@@ -4551,6 +4551,169 @@
     }
   }
 
+  /* ---- De toren (ADR-158) -----------------------------------------------
+   * Het beloningsprogramma, en het enige beeld ervan. Een steen is gevuld als
+   * hij verdiend is en een gestippelde omtrek als hij klaarligt: het verschil
+   * is een vorm en niet een kleur, dezelfde taal als de gestippelde ring van
+   * een embleem dat nog niet gehaald is.
+   *
+   * **`data-vak` en niet `data-module`.** Het blok hierboven zet `--module` op
+   * `--actie` zodra er `data-module="topo"` staat, en verzet daarmee de hele
+   * `--module-*`-familie in de subtree. Een steen wil één kleur en geen nieuwe
+   * context, dus hij heeft een eigen attribuut. Een achtste vak is hier één
+   * regel, net als daar.
+   */
+  .tk-toren {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  /* De camera. Een verdieping zakken is één transform op één groep, en nooit
+     een viewBox die verandert: zo blijft het op de compositor. De toren staat
+     een verdieping ín de grond, dus zakken legt nooit een rand bloot. */
+  .tk-toren-camera {
+    transform: translateY(calc(var(--tk-pan, 0) * var(--tk-verdieping, 0) * 1px));
+  }
+  .tk-toren-beeld {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    /* De verhouding komt van de tekening zelf mee: een lage toren krijgt een
+       laag kader in plaats van driehonderd pixels lege lucht. */
+  }
+
+  .tk-steen {
+    fill: var(--rand-sterk);
+    stroke: var(--kaart);
+    stroke-width: 1.5;
+    /* Zonder dit is de voeg op een hoge toren een halve pixel en lopen vijf
+       stenen in elkaar over: dan is tien niet meer na te tellen. */
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-steen[data-vak='topo'] {
+    fill: var(--topo);
+  }
+  .tk-steen[data-vak='tafels'] {
+    fill: var(--tafels);
+  }
+  .tk-steen[data-vak='klok'] {
+    fill: var(--klok);
+  }
+  .tk-steen[data-vak='woorden'] {
+    fill: var(--woorden);
+  }
+  .tk-steen[data-vak='tijdvakken'] {
+    fill: var(--tijdvakken);
+  }
+  .tk-steen[data-vak='vlaggen'] {
+    fill: var(--vlaggen);
+  }
+  .tk-steen[data-wacht] {
+    fill: none;
+    stroke: var(--rand-sterk);
+    /* Dikker dan een voeg: dit is op de lege eerste dagen het enige wat er
+       staat, en dan moet het te zien zijn. */
+    stroke-width: 2;
+    stroke-dasharray: 3 2;
+  }
+
+  .tk-toren-fundamentblok {
+    fill: var(--rand-licht);
+    stroke: var(--rand-sterk);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-toren-fundamentgetal {
+    fill: var(--tekst-secundair);
+    font-weight: 600;
+  }
+
+  .tk-torenstand {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+  }
+  .tk-torenstand-getal {
+    flex-basis: 100%;
+    font-size: var(--type-getal-groot);
+    line-height: var(--type-getal-groot-lh);
+    font-weight: 600;
+    color: var(--inkt);
+  }
+  .tk-torenstand-deel {
+    color: var(--tekst-secundair);
+  }
+
+  /* Het toneel: de scène na een ronde. De tik om over te slaan zit hierop en
+     niet op de pagina, zodat een knopdruk eronder niets verliest. */
+  .tk-toneel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-toneel-beeld {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+  }
+  .tk-toneel-denker {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-left: 72px;
+    line-height: 0;
+  }
+  .tk-toneel-mijlpaal,
+  .tk-toneel-morgen {
+    text-align: center;
+    color: var(--tekst-secundair);
+  }
+
+  /* Eén steen in de ronde: gevuld is verdiend, gestippeld ligt klaar. */
+  .tk-steenregel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-steenregel-steen {
+    flex: none;
+    width: 20px;
+    height: 13px;
+    border-radius: 2px;
+    border: var(--stroke-active) dashed var(--rand-sterk);
+  }
+  .tk-steenregel-steen[data-verdiend] {
+    border-style: solid;
+    border-color: transparent;
+    background: var(--rand-sterk);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='topo'] {
+    background: var(--topo);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='tafels'] {
+    background: var(--tafels);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='klok'] {
+    background: var(--klok);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='woorden'] {
+    background: var(--woorden);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='tijdvakken'] {
+    background: var(--tijdvakken);
+  }
+  .tk-steenregel-steen[data-verdiend][data-vak='vlaggen'] {
+    background: var(--vlaggen);
+  }
+  .tk-steenregel-zin {
+    color: var(--tekst-secundair);
+  }
+
   /* ---- De bewegingslaag (ADR-142) ---------------------------------------
    * Drieduizend regels stijl en precies één transition: niets in dit product
    * reageerde op een aanraking. Een knop sprong een pixel en verder stond
@@ -4570,6 +4733,36 @@
    * stilstaat.
    */
   @media (prefers-reduced-motion: no-preference) {
+    /* De toren (ADR-158). Elke animatie hier is een binnenkomst waarvan het
+       eind de gewone ruststand is: geen enkele houdt met `forwards` iets vast
+       dat niet al hierboven staat. Daardoor is overslaan altijd goed, en landt
+       de squash van data-beweging='rustig' vanzelf op de eindstand. */
+    .tk-toren-camera {
+      transition: transform var(--beweeg-traag) var(--beweeg-uit);
+    }
+    [data-fase='stenen'] .tk-steen[data-nieuw],
+    [data-fase='verdieping'] .tk-steen[data-nieuw],
+    [data-fase='mijlpaal'] .tk-steen[data-nieuw],
+    [data-fase='reeks'] .tk-steen[data-nieuw] {
+      animation: tk-steen-aan 180ms var(--beweeg-uit)
+        calc(var(--tk-i, 0) * var(--tk-steenvertraging, 0ms)) both;
+    }
+    [data-fase='verdieping'] .tk-toren-beeld {
+      animation: tk-verdieping-zet var(--beweeg-rustig) var(--beweeg-veer) both;
+    }
+    [data-fase='morgen'] .tk-steen[data-wacht] {
+      animation: tk-wacht-pols var(--beweeg-rustig) var(--beweeg-uit) both;
+    }
+    .tk-toneel-denker {
+      animation: tk-denker-adem 2s ease-in-out infinite;
+    }
+    [data-fase='mijlpaal'] .tk-toneel-denker {
+      animation: tk-denker-sprong var(--beweeg-rustig) var(--beweeg-veer) both;
+    }
+    .tk-toneel-mijlpaal {
+      animation: tk-mijlpaal-in var(--beweeg-traag) var(--beweeg-uit) both;
+    }
+
     .tk-button,
     .tk-kaart,
     .tk-lijstrij,
@@ -4717,5 +4910,65 @@
 @keyframes tk-albumvorm-aan {
   from {
     fill: var(--kaart);
+  }
+
+  /* De toren (ADR-158). Elke reeks eindigt op de ruststand: translate nul,
+     schaal één, opacity één. Dat is wat overslaan en rustig allebei goed
+     maakt. De ademhaling van Denker begint én eindigt op nul, zodat één
+     doorloop van 0,01ms — wat de squash ervan maakt — op rust landt. */
+  @keyframes tk-steen-aan {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes tk-verdieping-zet {
+    from {
+      transform: translateY(-3px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes tk-wacht-pols {
+    from {
+      opacity: 0.3;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes tk-denker-adem {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+  @keyframes tk-denker-sprong {
+    from {
+      transform: translateY(-10px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes tk-mijlpaal-in {
+    from {
+      transform: translateY(6px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 }

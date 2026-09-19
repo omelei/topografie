@@ -1,16 +1,17 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { DiplomaIcon, NextIcon, StampIcon, TodayIcon } from '@/components/Icon';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { DiplomaIcon, NextIcon, TodayIcon, TorenIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import {
   aanDeBeurt,
-  paginaStand,
-  rondeAlbum,
+  gepasseerd,
   setRetention,
   vooruitblik,
   type ItemState,
   type ModeId,
+  type Vak,
 } from '@/game-core';
-import { AlbumPagina } from '@/features/album/AlbumPagina';
+import type { TorenGroei } from '@/store/torenStore';
+import { Scene } from '@/features/toren/Scene';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { usePreferences } from '@/features/player/settings';
@@ -57,8 +58,9 @@ export function RondeKlaar({
   goed,
   beantwoord,
   gestopt,
-  voor,
   na,
+  stenen,
+  groei,
   reward,
   diploma = null,
   melding = null,
@@ -79,9 +81,12 @@ export function RondeKlaar({
   readonly beantwoord: number;
   /** A fixed round stopped before its end: how far it got, and how far it was going. */
   readonly gestopt: { readonly gedaan: number; readonly totaal: number } | null;
-  /** The boxes as the round found them, and as it left them (ADR-149). */
-  readonly voor: ReadonlyMap<string, ItemState>;
+  /** De dozen zoals de ronde ze achterliet: wat er morgen terugkomt. */
   readonly na: ReadonlyMap<string, ItemState>;
+  /** De stenen die deze ronde opleverde, op volgorde (ADR-158). */
+  readonly stenen: readonly Vak[];
+  /** Wat de ronde met de toren deed, zodra het weggeschreven is. */
+  readonly groei: TorenGroei | null;
   readonly reward: RoundOutcome | null;
   /** A diploma this round earned, in words. */
   readonly diploma?: string | null | undefined;
@@ -109,10 +114,15 @@ export function RondeKlaar({
 
   // A list of mistakes has no page of its own: its pictures belong to the sets
   // they came from, and a page made of today's misses would change every round.
-  const albumDeel = deel && !setId.endsWith('fouten') && deel.items.length > 0 ? deel : null;
-  const ids = albumDeel ? albumDeel.items.map((item) => item.id) : [];
-  const ronde = rondeAlbum(ids, voor, na, now);
-  const stand = paginaStand(ids, na, now);
+  const eigenDeel = deel && !setId.endsWith('fouten') && deel.items.length > 0 ? deel : null;
+  const ids = eigenDeel ? eigenDeel.items.map((item) => item.id) : [];
+  const blik = vooruitblik(ids, na, now);
+
+  // Een verdieping die volliep, en het ijkpunt dat daarbij gepasseerd werd. Het
+  // register is hier nog het beeldregister; de groep kiest het in fase twee.
+  const verdiepingKlaar = groei !== null && groei.na.verdiepingen > groei.voor.verdiepingen;
+  const mijlpaal =
+    groei === null ? null : gepasseerd(groei.voor.verdiepingen, groei.na.verdiepingen, 'beeld');
 
   // Vandaag klaar: het plan van vandaag is af (ADR-139), of niets wat dit kind
   // ooit begon is nu nog aan de beurt. Het tweede is voor wie geen plan ziet:
@@ -123,23 +133,39 @@ export function RondeKlaar({
     (vandaag?.voortgang.klaar ?? false) ||
     (gestopt === null && na.size > 0 && aanDeBeurt([...na.keys()], na, now) === 0);
 
-  // Een pagina die in kleur kwam, en een diploma, klinken (ADR-149). Eén keer:
-  // een geluid dat bij elke render opnieuw klinkt, is ruis. Het diploma komt
-  // pas binnen als de beloning is weggeschreven, dus wordt er gewacht tot het
-  // er is in plaats van alleen bij het openen te luisteren.
-  const paginaKlinkt = ronde.paginaInKleur;
+  // Het diploma klinkt hier, één keer: het komt pas binnen als de beloning is
+  // weggeschreven, dus wordt er gewacht tot het er is in plaats van alleen bij
+  // het openen te luisteren. De verdieping klinkt in de scène zelf, op het
+  // moment dat hij dichtgaat, en het draaiboek zwijgt dan hier (ADR-158).
   const diplomaKlinkt = diploma !== null;
   const geklonken = useRef(false);
   useEffect(() => {
-    if (geklonken.current) return;
-    if (diplomaKlinkt) {
-      geklonken.current = true;
-      speelMoment('diploma', geluid);
-    } else if (paginaKlinkt) {
-      geklonken.current = true;
-      speelMoment('pagina', geluid);
-    }
-  }, [diplomaKlinkt, paginaKlinkt, geluid]);
+    if (geklonken.current || !diplomaKlinkt) return;
+    geklonken.current = true;
+    speelMoment('diploma', geluid);
+  }, [diplomaKlinkt, geluid]);
+
+  // Stabiel houden: de scène wapent per beat een timer, en een nieuw object bij
+  // elke render zou die timer telkens opnieuw zetten. `useVandaag` en het
+  // diploma komen allebei ná de eerste render binnen, dus dat gebeurt echt.
+  const mijlpaalId = mijlpaal?.id ?? null;
+  const heeftDiploma = diploma !== null;
+  const morgen = blik.morgenTerug;
+  const sceneInvoer = useMemo(
+    () => ({
+      stenen,
+      verdiepingKlaar,
+      mijlpaal: mijlpaalId,
+      diploma: heeftDiploma,
+      vandaagKlaar,
+      morgen,
+    }),
+    [stenen, verdiepingKlaar, mijlpaalId, heeftDiploma, vandaagKlaar, morgen],
+  );
+  const mijlpaalZin =
+    mijlpaalId === null
+      ? null
+      : t('toren.hoger', { ding: t(`ijkpunt.${mijlpaalId}` as TranslationKey) });
 
   const gedaan =
     beantwoord === 1 ? t('result.gedaanEen', { goed }) : t('result.gedaan', { beantwoord, goed });
@@ -160,17 +186,16 @@ export function RondeKlaar({
           </p>
         </header>
 
-        {albumDeel ? (
-          <section className="tk-card flex flex-col gap-4" aria-label={t('album.paginaTitel')}>
-            {/* Dezelfde kop als op de modulepagina: zonder hem opent de uitslag
-                met een kaart en een getal, en staat er nergens dat dit het
-                album is. */}
-            <h2 className="tk-sectie">{t('album.paginaTitel')}</h2>
-            <AlbumPagina
-              deel={albumDeel}
-              states={na}
-              now={now}
-              veranderd={new Set(ronde.veranderd)}
+        {/* De toren, en wat deze ronde ermee deed (ADR-158). Pas als de stenen
+            zijn weggeschreven: eerder is er geen stand om te tekenen. */}
+        {groei !== null ? (
+          <section className="tk-card flex flex-col gap-4" aria-label={t('toren.naam')}>
+            <h2 className="tk-sectie">{t('toren.naam')}</h2>
+            <Scene
+              stand={groei.na}
+              geluid={geluid}
+              mijlpaalZin={mijlpaalZin}
+              invoer={sceneInvoer}
             />
           </section>
         ) : null}
@@ -189,28 +214,18 @@ export function RondeKlaar({
               </span>
               {gedaan}
             </li>
-            {albumDeel ? (
-              <li>
-                <span className="tk-uitslag-regelicoon" aria-hidden="true">
-                  <StampIcon size={20} />
-                </span>
-                {veranderdZin(ronde)}
-              </li>
-            ) : null}
-            {albumDeel ? (
+            <li>
+              <span className="tk-uitslag-regelicoon" aria-hidden="true">
+                <TorenIcon size={20} />
+              </span>
+              {stenenZin(stenen.length)}
+            </li>
+            {eigenDeel ? (
               <li>
                 <span className="tk-uitslag-regelicoon" aria-hidden="true">
                   <TodayIcon size={20} />
                 </span>
-                {vooruitZin(
-                  ronde.paginaInKleur,
-                  stand.kleur,
-                  stand.begonnen,
-                  stand.totaal,
-                  ids,
-                  na,
-                  now,
-                )}
+                {morgenZin(blik)}
               </li>
             ) : null}
           </ul>
@@ -251,14 +266,20 @@ export function RondeKlaar({
               <button type="button" className="tk-button" onClick={onHome}>
                 {t('result.klaar')}
               </button>
+              {/* "Iets nieuws leren" zegt erbij wat het vandaag oplevert:
+                  niets. Dat is eerlijker dan een knop die stenen belooft die
+                  pas over twee dagen bestaan (ADR-158). */}
               {onNieuwePlaatjes ? (
-                <button
-                  type="button"
-                  className="tk-button tk-button-secondary"
-                  onClick={onNieuwePlaatjes}
-                >
-                  {t('result.nieuwePlaatjes')}
-                </button>
+                <div className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    className="tk-button tk-button-secondary"
+                    onClick={onNieuwePlaatjes}
+                  >
+                    {t('result.nieuwePlaatjes')}
+                  </button>
+                  <span className="tk-hulp">{t('result.nieuwePlaatjesUitleg')}</span>
+                </div>
               ) : null}
               <HerhaalFouten missed={missed} onHerhaal={onHerhaal} />
             </>
@@ -307,73 +328,34 @@ export function RondeKlaar({
   );
 }
 
-/** Wat er op de pagina veranderde, in één regel. */
-function veranderdZin(ronde: ReturnType<typeof rondeAlbum>): string {
-  const delen: string[] = [];
-  if (ronde.verder > 0) {
-    delen.push(
-      ronde.verder === 1 ? t('result.verderEen') : t('result.verder', { aantal: ronde.verder }),
-    );
-  }
-  if (ronde.weerGoed > 0) {
-    delen.push(
-      ronde.weerGoed === 1
-        ? t('result.weerGoedEen')
-        : t('result.weerGoed', { aantal: ronde.weerGoed }),
-    );
-  }
-  if (ronde.stempels > 0) {
-    delen.push(
-      ronde.stempels === 1
-        ? t('result.stempelsEen')
-        : t('result.stempels', { aantal: ronde.stempels }),
-    );
-  }
-  if (ronde.lastig > 0) {
-    delen.push(
-      ronde.lastig === 1 ? t('result.pleisterEen') : t('result.pleister', { aantal: ronde.lastig }),
-    );
-  }
-  return delen.length === 0 ? t('result.albumNiets') : `${delen.join('. ')}.`;
+/**
+ * Wat deze ronde opleverde, in één regel (ADR-158).
+ *
+ * Nul stenen is geen mislukking en wordt ook niet zo gezegd: wie iets voor het
+ * eerst ziet, kan het nog niet teruggeweten hebben. Die zin is de enige plek
+ * waar de regel wordt uitgelegd op het moment dat hij bijt.
+ */
+function stenenZin(aantal: number): string {
+  if (aantal === 0) return t('result.stenenGeen');
+  return aantal === 1 ? t('result.stenenEen') : t('result.stenen', { aantal });
 }
 
 /**
- * Wat terugkomen oplevert (ADR-149).
+ * Wat terugkomen oplevert.
  *
- * Een kind dat nog geen enkel plaatje in kleur heeft, hoort wat het al begon:
- * wie nog twijfelt, trekt het meest aan wat er al is (Koo & Fishbach). Wie
- * verder is, hoort wat morgen kan: kleur, of plaatjes die terugkomen, of anders
- * over hoeveel dagen het eerste terugkomt.
+ * Dit is de enige regel die vooruit kijkt, en hij is de tegenhanger van de
+ * steenregel: wat er niet terugkomt, levert ook niets op. Komt er morgen niets,
+ * dan zegt hij wanneer wel — een kind dat vandaag niets kreeg, hoort zo dat het
+ * niet aan hem lag maar aan de kalender.
  */
-function vooruitZin(
-  inKleur: boolean,
-  kleur: number,
-  begonnen: number,
-  totaal: number,
-  ids: readonly string[],
-  states: ReadonlyMap<string, ItemState>,
-  now: Date,
-): string {
-  if (inKleur) return t('result.paginaInKleur');
-  // "Je bent begonnen aan 9 van de 12 plaatjes" is wat het zegt: er staat al
-  // iets, en er is nog iets te beginnen. Staat de hele pagina aan, dan telt die
-  // regel hetzelfde op als de regel erboven ("12 plaatjes verder") en zegt hij
-  // niets over terugkomen, wat deze regel nu juist moet doen. Dan kijkt hij
-  // vooruit, net als bij een kind dat al kleur heeft.
-  if (kleur === 0 && begonnen < totaal) return t('result.alBegonnen', { begonnen, totaal });
-  const blik = vooruitblik(ids, states, now);
-  if (blik.morgenKleur > 0) {
-    return blik.morgenKleur === 1
-      ? t('result.morgenKleurEen')
-      : t('result.morgenKleur', { aantal: blik.morgenKleur });
-  }
-  if (blik.morgenTerug > 0) {
-    return blik.morgenTerug === 1
-      ? t('result.morgenTerugEen')
-      : t('result.morgenTerug', { aantal: blik.morgenTerug });
-  }
-  if (blik.eerstVolgende !== null) return t('result.eerstVolgende', { dagen: blik.eerstVolgende });
-  return t('result.alBegonnen', { begonnen, totaal });
+function morgenZin(blik: {
+  readonly morgenTerug: number;
+  readonly eerstVolgende: number | null;
+}): string {
+  if (blik.morgenTerug === 1) return t('result.morgenTerugEen');
+  if (blik.morgenTerug > 1) return t('result.morgenTerug', { aantal: blik.morgenTerug });
+  if (blik.eerstVolgende !== null) return t('result.morgenNiets', { dagen: blik.eerstVolgende });
+  return t('result.morgenNiets', { dagen: 1 });
 }
 
 /**

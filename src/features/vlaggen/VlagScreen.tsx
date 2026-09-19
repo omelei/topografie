@@ -7,8 +7,7 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { AlbumStap } from '@/features/album/AlbumStap';
-import { PlaatjeInhoud, plaatjeNaam } from '@/features/album/inhoud';
+import { SteenRegel } from '@/features/toren/SteenRegel';
 import { Vlag } from './Vlag';
 import { VlagResultScreen } from './VlagResultScreen';
 import { useVlagRound, type VlagMode } from './useVlagRound';
@@ -183,14 +182,8 @@ export function VlagScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackSub(state.lastCorrect, state.given, zoeken)}
                   </p>
-                  {/* Wat dit antwoord met het plaatje deed (ADR-149). */}
-                  <AlbumStap
-                    stap={state.stap}
-                    state={state.states.get(vlag.id)}
-                    naam={plaatjeNaam(vlag)}
-                  >
-                    <PlaatjeInhoud item={vlag} />
-                  </AlbumStap>
+                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
+                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

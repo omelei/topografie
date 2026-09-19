@@ -25,7 +25,7 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
 
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
 
   for (const weg of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium']) {
     await expect(page.getByRole('region', { name: weg })).toHaveCount(0);
@@ -35,7 +35,7 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
   const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
   const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
   expect(plek('Jouw naam')).toBeLessThan(plek('Instellingen'));
-  expect(plek('Instellingen')).toBeLessThan(plek('Jouw album'));
+  expect(plek('Instellingen')).toBeLessThan(plek('Je toren'));
 });
 
 test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page }) => {
@@ -56,7 +56,7 @@ test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page
   expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
   expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Hoe gaat het?'));
 
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Je toren' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);
 });
 

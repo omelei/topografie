@@ -86,7 +86,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // that has to survive being mostly empty: a new child has none of them.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { name: 'Jij', exact: true })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await shoot(page, size, '04-jij');
 
   await page.goto('/onthouden');
@@ -99,11 +99,15 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(page.getByRole('list', { name: 'Je weekkaart' })).toBeVisible();
   await shoot(page, size, '16-week');
 
-  // A module page with a set chosen carries that set's album page.
+  // Een modulepagina met een set gekozen zegt één ding over de toren: wat er
+  // hier vandaag terugkomt, want alleen dat kan een steen opleveren (ADR-158).
   await page.goto('/topografie/provincies');
-  await expect(page.getByRole('region', { name: 'Jouw albumpagina' })).toBeVisible(READY);
-  await page.getByRole('region', { name: 'Jouw albumpagina' }).scrollIntoViewIfNeeded();
-  await shoot(page, size, '17-albumpagina');
+  const terug = page.getByText(
+    /komt hier vandaag terug|komen hier vandaag terug|voorlopig niets terug|Morgen \d+/,
+  );
+  await expect(terug.first()).toBeVisible(READY);
+  await terug.first().scrollIntoViewIfNeeded();
+  await shoot(page, size, '17-moduleterug');
 });
 
 /**

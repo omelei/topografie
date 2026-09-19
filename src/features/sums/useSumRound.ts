@@ -137,6 +137,7 @@ export function useSumRound(
 ) {
   const { kern, settle, next, stop } = useRoundCore<SumSet, SumQuestion, SumItem, number>({
     setId,
+    moduleId: 'tafels',
     mode,
     basisRegel: SUM_ROUND_RULE[mode],
     aantal: mode === 'tafeldiploma' ? null : aantal,

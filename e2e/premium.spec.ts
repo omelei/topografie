@@ -96,7 +96,7 @@ test('without a code the premium parts are labelled once, and say what they do',
   // album ook (ADR-149): wat een kind onthoudt, ziet een kind zonder code.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);

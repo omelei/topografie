@@ -35,10 +35,10 @@ test('Jij toont eerst wat je hebt, en de gaten pas als je erom vraagt', async ({
   await expect(page.locator('.tk-diploma')).toHaveCount(0);
 });
 
-test('Jij toont het album en het schooljaar van dit kind', async ({ page }) => {
+test('Jij toont de toren en het schooljaar van dit kind', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw schooljaar' })).toBeVisible();
   // Geen held meer, en geen badges (ADR-149).
   await expect(page.getByRole('region', { name: 'Jouw held' })).toHaveCount(0);

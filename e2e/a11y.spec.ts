@@ -149,7 +149,7 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   await signIn(page, 'Lieve');
 
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw album' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   // En de andere helft, sinds ADR-136 een pagina op zichzelf.

@@ -233,6 +233,20 @@ export function StampIcon(props: Omit<IconProps, 'children'>) {
   );
 }
 
+/**
+ * De toren (ADR-158): drie lagen metselwerk, en de bovenste nog in aanbouw.
+ *
+ * Met opzet niet hetzelfde als het stempel: die is rond en dit is gestapeld,
+ * zodat de twee ook op twintig pixels niet op elkaar lijken.
+ */
+export function TorenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M6 20h12M6 20v-4h12v4M7.5 16v-4h9v4M9 12V8h6v4" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
 /** Read aloud: something that speaks, and two marks that it is heard. */
 export function SpeakIcon(props: Omit<IconProps, 'children'>) {
   return (

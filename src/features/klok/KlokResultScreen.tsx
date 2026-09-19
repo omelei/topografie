@@ -66,8 +66,9 @@ export function KlokResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      voor={state.statesVoor}
       na={state.states}
+      stenen={state.stenen}
+      groei={state.groei}
       reward={state.reward}
       oefenTitel={t('klok.practiceMore')}
       missed={state.missed}

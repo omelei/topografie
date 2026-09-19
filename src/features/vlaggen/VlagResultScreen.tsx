@@ -61,8 +61,9 @@ export function VlagResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      voor={state.statesVoor}
       na={state.states}
+      stenen={state.stenen}
+      groei={state.groei}
       reward={reward}
       diploma={diploma}
       melding={melding}

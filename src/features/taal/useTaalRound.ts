@@ -85,6 +85,7 @@ export function useTaalRound(
 
   const { kern, settle, next, stop } = useRoundCore<TaalSet, TaalVraag, TaalItem, string>({
     setId,
+    moduleId: 'woorden',
     mode,
     basisRegel: TAAL_ROUND_RULE[mode],
     aantal,

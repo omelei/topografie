@@ -8680,6 +8680,153 @@ om uit te zonderen. `index.ts` is daarom bijna leeg — twee regels die naar
 
 ---
 
+## ADR-158 — De toren: één steen voor wat je nog wist
+
+**Status:** accepted. **Date:** 2026-09-19. Op verzoek van de eigenaar. Vervangt
+het album (ADR-149) in zijn geheel: de lagen, de stempels, de tekens, de
+weekkaart, het weekdoel, de zegels, de jaarstrook en de bijhoudstempels. Herstelt
+op één punt wat ADR-149 wegnam: de dagreeks (ADR-110, ADR-148), en wel strenger
+dan die was — zie de Consequences. Bouwt op ADR-114 (aan de beurt), ADR-142 (de
+bewegingslaag) en ADR-151 (de groep). Raakt ADR-139, ADR-141 en ADR-153 niet. Het
+volledige ontwerp staat in `docs/beloning-toren.md`.
+
+### Context
+
+Het album gaf elk item een laag, afgeleid van de hoogste doos die het ooit
+bereikte, en legde daar stempels, tekens, een weekkaart, een weekdoel, zegels,
+een jaarstrook en bijhoudstempels bovenop. Zes boekhoudingen over één feit.
+
+Drie dingen gingen daar mis. Een kind van zes kan niet in één zin zeggen wat het
+kreeg — laag, stempel, teken, zegel en doel tellen alle vijf iets anders, en één
+ervan gaat over iets wat slechter ging. Een kind van twaalf ziet dat het plaatje
+klaar is: de laag volgt de hoogste doos ooit, dus na één keer doos vijf verandert
+er nooit meer iets aan waar het naar kijkt, en de stempel die dat moest repareren
+kan hooguit eens per drie weken vallen. En het plaatje is de leerstof niet: een
+ingekleurd plaatje van Drenthe is geen kennis van Drenthe.
+
+### Decision
+
+**Een antwoord levert één steen op als het goed is, het item aan de beurt was, en
+het item eerder al eens beantwoord is.** Alles daarbuiten levert nul op, en er
+gaat nooit iets af — niet bij een fout, niet na een week niets doen, nooit. Dit is
+strenger dan de doosstap: een nieuw item is per definitie aan de beurt en gaat bij
+goed van doos één naar twee, maar levert geen steen op. De steen is er voor het
+moment dat iets terugkwam en je het nóg wist, want dat is het enige moment waarop
+er bewijs is dat er iets blijft hangen. Het begrip bestond al als `stempels` in
+`leitner.ts`, alleen beperkt tot doos vijf; de steen is hetzelfde voor alle dozen.
+Eén boekhouding, geen tweede. `leitner.ts` verandert geen letter.
+
+**Tien stenen is een verdieping**, met een nummer en een datum, en die blijft voor
+altijd staan. Er is geen niveau boven de verdieping, geen rang, geen titel, geen
+einde, en de drempel loopt nooit op.
+
+**De toren is het enige beeld.** Een verdieping is vijf stenen breed en twee hoog,
+zodat tien na te tellen is maar het silhouet een toren is en geen muur. Elke steen
+draagt de kleur van zijn vak, en kleur is versiering: gevuld is verdiend,
+gestippeld ligt klaar, en dat verschil is een vorm. De toren wordt altijd op zijn
+eigen kader geschaald, zodat hij nooit buiten beeld loopt en zodat twee torens
+nooit met het oog te vergelijken zijn. Hooguit de bovenste twintig verdiepingen
+worden los getekend — op 393px is dat de grens waaronder een rij stenen minder dan
+vijf pixels hoog wordt — en alles daaronder is één fundamentblok met het aantal
+erin, wat zelf een beloning is: je begin wordt piepklein.
+
+**De ijkpunten zijn inhoud en geen regel**, dus ze staan in één const met een test:
+giraf op twee verdiepingen, dan huis, boom, windmolen, kerktoren, reuzenrad,
+Domtoren, Euromast, Eiffeltoren, de wolken, een kilometer. Drie meter per
+verdieping. Alleen de echte bouwwerken krijgen een geverifieerde hoogte; de rest
+is "ongeveer", want een kind dat één getal natrekt en het mis vindt, gelooft de
+rest ook niet meer.
+
+**Twee gezichten, één regel.** Voor groep 3-5 en zonder groep staat het beeld
+voorop: de toren groot, het ijkpunt in woorden, geen meters en geen datums. Voor
+groep 6-8 staan de getallen voorop, met de datumlog van de verdiepingen eronder —
+voor die leeftijd het interessantste deel — en de onthoudring ernaast. Eén
+voorkeur op Voor ouders overschrijft het register, standaard afgeleid uit de
+groep, zelfde patroon als `readAloud`.
+
+**Tijdens de ronde komt er niets bij.** Geen strook, geen teller, geen toren:
+decoratie naast de leerstof schaadt het leren, en dat is het eigen onderzoek
+achter ADR-149. Er staat één ding, op de plek waar `AlbumStap` stond: een gevuld
+blokje bij een steen, een gestippelde omtrek bij goed-maar-niet-aan-de-beurt en
+bij nieuw, en bij een fout niets dan het bestaande foutteken. Zwijgen is daar het
+ontwerp. Denker staat nooit op het vraagscherm.
+
+**De beweging zit op één scherm**: Ronde klaar, één scène van hoogstens 3,2
+seconden, met een tik over te slaan en met knoppen die vanaf de eerste frame
+werken. Alleen transform en opacity, met de tokens van ADR-142. De tussenruimte
+tussen de stenen is een formule en geen tabel, omdat zestig milliseconden en een
+veeg van zevenhonderd elkaar bij precies tien stenen tegenspreken. Bij nul stenen
+is er geen scène: dan verschijnen de stenen van morgen als gestippelde omtrekken,
+en dat mag nooit overgeslagen worden, want de eerste twee dagen van elke module
+leveren rekenkundig nul stenen op.
+
+**De reeks telt alle dagen op rij met een afgemaakte ronde, en één gemiste dag
+breekt hem.** Weekend en vakantie tellen mee. Het record blijft voor altijd staan,
+de reeks levert geen stenen op, en er is geen herstel te koop, geen bevriezing en
+geen valuta. Hij wordt afgeleid uit de afgemaakte rondes en nergens bewaard. De
+app noemt bij een lopende reeks op een nog lege dag expliciet wat er op het spel
+staat; wat er niet bij komt is een aftelklok, een alarmkleur of een melding.
+
+**Opslag is `toren:<kindId>` in de settings-store**, zelfde vorm en zelfde
+defensieve leeswijze als `zegels:<kindId>`: append-only, met het totaal, de volle
+verdiepingen en de verdieping in aanbouw. Bij de eerste lezing begint het aantal
+stenen op de som van alle `goedCount` van dat kind, als fundament zonder datum met
+één label: "Wat je al had." Royaal met opzet, want de overgang mag nooit als
+verlies voelen. Geen schemawijziging; `hoogsteDoos` en `stempels` blijven staan en
+worden door niets meer gelezen — het patroon van ADR-130 en ADR-149.
+
+### Consequences
+
+- **De reeks en de steenregel trekken aan hetzelfde kind twee kanten op.** Een
+  kind dat zijn reeks wil redden op een dag dat er niets aan de beurt is, oefent
+  voor nul stenen. Dat is precies waarom ADR-149 de reeks sloopte: een reeks
+  breekt op elke lege dag, en een lege dag is wat spreiden nodig heeft. De
+  eigenaar heeft de strenge variant en het expliciet noemen van het verlies
+  gekozen nadat dit bezwaar is voorgelegd. Het is verlies-als-prikkel bij kinderen
+  vanaf zes, het staat op de verbodenlijst van het eigen onderzoek dat aan
+  ADR-149 voorafging, en het raakt DSA art. 28 en de Code voor Kinderrechten. De verzachting is dat een gebroken reeks geen enkele steen
+  kost en dat de breukzin over de toren gaat. Gaat dit in de praktijk bijten, dan
+  is dat een volgende ADR en geen stille reparatie.
+- **Een kleine, goed gekende set droogt op.** Tafel 1 foutloos geoefend geeft in
+  negentig dagen zestig stenen; dezelfde tafel met vijftien procent fouten geeft
+  er tweehonderdelf. Dat is de eerlijke keerzijde van "een fout kost nooit iets",
+  en het is het bezwaar dat een twaalfjarige binnen een week zelf bedenkt. Het
+  antwoord is dat de toren over alle vakken telt, dat nieuwe stof nieuwe stenen
+  opent, en dat de onthoudring ernaast staat — een antwoord, geen oplossing.
+- **De eerste twee dagen leveren rekenkundig nul stenen op**, in elke module: op
+  dag één is alles nieuw en op dag twee is niets aan de beurt. De gestippelde
+  omtrekken van morgen moeten dat dragen, en dat is het eerste wat getoetst moet
+  worden bij een kind dat de app voor het eerst opent.
+- **Het fundament telt antwoorden mee die onder de nieuwe regel nooit een steen
+  zouden zijn geweest.** Dat is bewust, en het is de reden dat het een eigen label
+  heeft en geen datum: de eerste verdiepingen van een bestaand kind betekenen iets
+  anders dan alle verdiepingen daarna.
+- **De stenen dragen `data-vak` en niet `data-module`.** `[data-module='topo']`
+  zet `--module` op de merkkleur en verzet stilletjes elke `--module-*` token in
+  de subtree; een steen zou dus blauw zijn om de verkeerde reden. Dit kost één
+  CSS-blok, en een achtste vak blijft één blok.
+- **Het rondetotaal wordt per antwoord opgeteld en niet uit een verschil
+  afgeleid.** Een item dat eerst fout was en drie vragen later goed, ziet er in
+  een vergelijking van de stand voor en na de ronde uit als een steen, terwijl het
+  er geen is: na de fout stond het in doos één en was het tweede antwoord niet aan
+  de beurt.
+- **Er zijn twee rondes en ze haken allebei aan.** `useRoundCore` bedient klok,
+  tafels, vlaggen en taal; topografie draait op een eigen implementatie in
+  `features/practice/useRound.ts`. De regel staat één keer in `game-core`.
+- **De reeks is zo lang als de rondes op dit apparaat.** Sessies staan per
+  apparaat in IndexedDB, dus een kind op een tweede apparaat begint daar met een
+  kortere geschiedenis. Dat geldt vandaag al voor de weekkaart en wordt niet met
+  een tweede opslag gerepareerd.
+- **De scène wordt door een puur draaiboek bepaald**, zodat de volgorde, de
+  geluiden en het rustig-gedrag zonder DOM te testen zijn. Geen Web Animations
+  API: jsdom kent `Element.animate` niet, en dan zou juist de bewering die het
+  eerst rot — onder rustig is het dezelfde scène zonder beweging — niet te testen
+  zijn. Twee tests leggen dat vast als gelijkheid van beats en van geluiden.
+- **De inkleurende topokaart verdwijnt niet, maar verhuist** naar Onthouden. Hij
+  houdt op een beloning te zijn en wordt wat hij is: de stand.
+
+---
+
 ## ADR-159 — De huisstijl draait naar het logo: warme neutralen, en koraal blijft van het merk
 
 **Status:** accepted. **Date:** 2026-09-19. Maakt de beslissing af die ADR-154

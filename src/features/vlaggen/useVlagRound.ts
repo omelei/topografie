@@ -119,6 +119,7 @@ export function useVlagRound(
 ) {
   const { kern, settle, next, stop } = useRoundCore<VlagSet, VlagQuestion, VlagItem, VlagItem>({
     setId,
+    moduleId: 'vlaggen',
     mode,
     basisRegel: VLAG_ROUND_RULE[mode],
     // A diploma is its own length, like the tafeldiploma.

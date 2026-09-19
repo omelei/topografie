@@ -87,6 +87,25 @@ export function zetRustig(aan: boolean): void {
 }
 
 /**
+ * Of er nu rustig gedaan moet worden — meteen, zonder te wachten.
+ *
+ * `usePreferences` geeft bij de eerste render de standaardwaarden terug en leest
+ * pas daarna uit IndexedDB. Een scène die op mount begint, is dan al aan het
+ * bewegen voordat de voorkeur binnen is — precies bij het kind dat gezegd heeft
+ * dat niet te willen. Dit leest het attribuut dat `zetRustig` bij het opstarten
+ * al op `<html>` heeft gezet, en valt terug op wat het systeem zegt.
+ */
+export function leesRustig(): boolean {
+  if (typeof document === 'undefined') return true;
+  if (document.documentElement.dataset.beweging === 'rustig') return true;
+  return (
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+/**
  * The preferences as React state, for the screens that obey them.
  *
  * Deliberately not a context: a handful of consumers, one read each, and a
