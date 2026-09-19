@@ -9184,6 +9184,15 @@ de kop "Hier begin je mee vandaag". De volgorde van de pagina is daarmee: waar
 druk je, wat is er nu aan de beurt, wat wil je deze week halen, en dan de
 geschiedenis.
 
+**Eén regel op de modulepagina gaat mee: "Nog eens herhalen" is eruit.** Dat
+woord stond onder elke tegel met stof die onder de groep van dit kind valt — in
+groep 7 onder de halve tafelrij — en het is het enige bijschrift op die pagina
+dat een kind vertelt hoe het over zijn eigen keuze hoort te denken. De tegel
+stond toch al onderaan, en dát is wat de volgorde moet zeggen; het woord erbij
+maakte er een oordeel van. "Voor later" blijft staan, want dat zegt iets wat de
+volgorde niet zegt: dit is stof die je nog niet gehad hebt, en dat is een
+waarschuwing in plaats van een oordeel.
+
 ### Consequences
 
 - De voorspelling naar een toetsdatum bestaat niet meer. Wat blijft is de
@@ -9201,6 +9210,8 @@ geschiedenis.
 - `weekdoel.test.ts` legt de weekgrens vast, want dat is het enige aan dit blok
   dat stil kan gaan liegen: een doel dat op zondagavond "3 van de 4" zegt en op
   maandagochtend nog steeds, is geen weekdoel meer.
+- ADR-151 beschrijft nog twee woorden onder een tegel buiten de groep. Dat blad
+  blijft staan zoals het geschreven is; er is er nog één, en dit blad is waarom.
 - **Nog niet in een browser gezien.** De kaart is die van ADR-141 met een rij
   erin die de vorm van `tk-lijstrij` leent; of drie doelen met een balk erbij
   rustig ogen naast "Vandaag herhalen" is iets om te bekijken.

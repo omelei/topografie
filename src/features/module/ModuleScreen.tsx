@@ -726,13 +726,20 @@ export function ModuleScreen({
 }
 
 /**
- * Het woord onder een tegel die niet bij de groep past (ADR-151), of niets. Het
- * zegt waarom hij onderaan staat, en dat hij er nog is.
+ * Het woord onder een tegel die niet bij de groep past (ADR-151), of niets.
+ *
+ * Nog één woord sinds ADR-162, en dat is "Voor later". **"Nog eens herhalen"
+ * is eruit.** Het stond onder elk onderwerp dat onder de groep van dit kind
+ * valt — voor een kind in groep 7 onder de halve tafelrij — en het is het
+ * enige bijschrift op deze pagina dat een kind vertelt hoe het over zijn eigen
+ * keuze hoort te denken. De tegel stond toch al onderaan, en dát is wat de
+ * volgorde hier moet zeggen; het woord erbij maakte er een oordeel van.
+ *
+ * "Voor later" blijft staan, want dat zegt iets wat de volgorde niet zegt: dit
+ * is stof die je nog niet gehad hebt. Dat is een waarschuwing en geen oordeel.
  */
 function groepLabel(indeling: Indeling): string | null {
-  if (indeling === 'herhaling') return t('groep.herhaling');
-  if (indeling === 'later') return t('groep.later');
-  return null;
+  return indeling === 'later' ? t('groep.later') : null;
 }
 
 /** A subject whose sets are a second question: the tables before the table. */

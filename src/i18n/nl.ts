@@ -1555,9 +1555,13 @@ export const nl = {
   'groep.geen': 'Geen groep',
   'groep.gekozen': '{naam} zit in groep {groep}.',
   'groep.nietGekozen': 'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
-  // Op een tegel die niet bij de groep past. Hij blijft kiesbaar; dit zegt
-  // alleen waarom hij onderaan staat.
-  'groep.herhaling': 'Nog eens herhalen',
+  // Op een tegel met stof die dit kind nog niet gehad heeft. Hij blijft
+  // kiesbaar; dit zegt alleen waarom hij onderaan staat.
+  //
+  // "Nog eens herhalen" stond hier ook, onder alles wat onder de groep viel, en
+  // is eruit (ADR-162): de tegel stond toch al onderaan, en dat is wat de
+  // volgorde moet zeggen — het woord erbij maakte er een oordeel van over de
+  // keuze van een kind.
   'groep.later': 'Voor later',
 
   // Alles van dit apparaat halen (ADR-166). Onderaan Voor ouders, in twee
