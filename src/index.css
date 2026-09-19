@@ -4030,7 +4030,6 @@
     font-weight: var(--type-kaartkop-weight);
   }
 
-
   /* ---- Ronde klaar (ADR-112, ADR-158) -----------------------------------
    * Drie regels, elk met een pictogram op de tint van de module, zodat een
    * kind dat nog langzaam leest aan het beeld ziet welke regel wat zegt. */
@@ -4072,7 +4071,6 @@
     border-radius: var(--kaart-radius);
     background: var(--kaart);
   }
-
 
   /* ---- Diploma's: rijp, bijhouden en afzwemmen (ADR-149) -----------------
    * Rijp staat in inkt, zoals gehaald: het is iets om te doen. De seizoenen
@@ -4536,7 +4534,6 @@
         background-color var(--beweeg-vlot) var(--beweeg-uit),
         transform var(--beweeg-vlot) var(--beweeg-veer);
     }
-
   }
 }
 
@@ -4648,4 +4645,3 @@
     opacity: 1;
   }
 }
-

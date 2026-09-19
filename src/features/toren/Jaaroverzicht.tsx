@@ -72,9 +72,7 @@ export function Jaaroverzicht() {
   if (overzicht === null) return null;
 
   const regels = [
-    overzicht.stenen === 1
-      ? t('jaar.steenEen')
-      : t('jaar.stenen', { aantal: overzicht.stenen }),
+    overzicht.stenen === 1 ? t('jaar.steenEen') : t('jaar.stenen', { aantal: overzicht.stenen }),
     t('jaar.verdiepingen', { aantal: overzicht.ditJaar, totaal: overzicht.verdiepingen }),
     t('jaar.hoogte', { meter: overzicht.meter }),
     t('jaar.reeks', { aantal: overzicht.reeks.record }),

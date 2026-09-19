@@ -21,9 +21,7 @@ export function ReeksRegel() {
 
   return (
     <p className="tk-reeksregel">
-      {reeks.dagen === 1
-        ? t('reeks.opHetSpelEen')
-        : t('reeks.opHetSpel', { aantal: reeks.dagen })}
+      {reeks.dagen === 1 ? t('reeks.opHetSpelEen') : t('reeks.opHetSpel', { aantal: reeks.dagen })}
     </p>
   );
 }

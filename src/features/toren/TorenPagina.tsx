@@ -147,7 +147,9 @@ function Getallen({
         <div className="flex min-w-0 flex-col gap-2">
           <p className="tk-torenstand">
             <span className="tk-torenstand-getal">
-              {stand.stenen === 1 ? t('toren.totaalEen') : t('toren.totaal', { aantal: stand.stenen })}
+              {stand.stenen === 1
+                ? t('toren.totaalEen')
+                : t('toren.totaal', { aantal: stand.stenen })}
             </span>
             <span className="tk-torenstand-deel">
               {stand.verdiepingen === 1

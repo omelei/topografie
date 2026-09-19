@@ -91,13 +91,7 @@ export interface HomeScreenProps {
   readonly onDiplomas: () => void;
 }
 
-export function HomeScreen({
-  naam,
-  onBegin,
-  onVerder,
-  onPlan,
-  onDiplomas,
-}: HomeScreenProps) {
+export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);

@@ -16,10 +16,7 @@ import { loadPlayedRounds } from '@/store/progress';
  */
 export async function leesReeks(now: Date = new Date()): Promise<Reeks> {
   const rondes = await loadPlayedRounds();
-  return reeksVan(
-    dagenGeoefend(rondes.map((ronde) => ronde.at)),
-    now,
-  );
+  return reeksVan(dagenGeoefend(rondes.map((ronde) => ronde.at)), now);
 }
 
 export function useReeks(): Reeks | null {

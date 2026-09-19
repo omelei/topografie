@@ -35,10 +35,7 @@ export function useDiplomaStand(): DiplomaStand | null {
   return stand;
 }
 
-function maakStand(
-  states: Awaited<ReturnType<typeof loadItemStates>>,
-  now: Date,
-): DiplomaStand {
+function maakStand(states: Awaited<ReturnType<typeof loadItemStates>>, now: Date): DiplomaStand {
   const witten = doelwitten(onderdelen(), true);
   return {
     rijp: (diplomaId) => {

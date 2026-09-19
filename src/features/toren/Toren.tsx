@@ -127,9 +127,7 @@ export function Toren({
       {/* De datums worden niet getekend, maar ze zijn er wel: voor wie luistert
           is de log het interessantste deel van de toren. Een kind zonder
           verdiepingen krijgt geen lege lijst. */}
-      {maat.inFundament > 0 ? (
-        <p className="tk-torenfundament">{t('toren.fundament')}</p>
-      ) : null}
+      {maat.inFundament > 0 ? <p className="tk-torenfundament">{t('toren.fundament')}</p> : null}
 
       {stand.verdiepingen > 0 ? (
         <ol className="tk-sr-only">
