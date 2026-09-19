@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { DiplomaIcon, NextIcon, TodayIcon, TorenIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import {
@@ -145,6 +145,28 @@ export function RondeKlaar({
     speelMoment('diploma', geluid);
   }, [diplomaKlinkt, geluid]);
 
+  // Stabiel houden: de scène wapent per beat een timer, en een nieuw object bij
+  // elke render zou die timer telkens opnieuw zetten. `useVandaag` en het
+  // diploma komen allebei ná de eerste render binnen, dus dat gebeurt echt.
+  const mijlpaalId = mijlpaal?.id ?? null;
+  const heeftDiploma = diploma !== null;
+  const morgen = blik.morgenTerug;
+  const sceneInvoer = useMemo(
+    () => ({
+      stenen,
+      verdiepingKlaar,
+      mijlpaal: mijlpaalId,
+      diploma: heeftDiploma,
+      vandaagKlaar,
+      morgen,
+    }),
+    [stenen, verdiepingKlaar, mijlpaalId, heeftDiploma, vandaagKlaar, morgen],
+  );
+  const mijlpaalZin =
+    mijlpaalId === null
+      ? null
+      : t('toren.hoger', { ding: t(`ijkpunt.${mijlpaalId}` as TranslationKey) });
+
   const gedaan =
     beantwoord === 1 ? t('result.gedaanEen', { goed }) : t('result.gedaan', { beantwoord, goed });
 
@@ -172,15 +194,8 @@ export function RondeKlaar({
             <Scene
               stand={groei.na}
               geluid={geluid}
-              mijlpaalZin={mijlpaal === null ? null : t('toren.hoger', { ding: t(`ijkpunt.${mijlpaal.id}` as TranslationKey) })}
-              invoer={{
-                stenen,
-                verdiepingKlaar,
-                mijlpaal: mijlpaal?.id ?? null,
-                diploma: diploma !== null,
-                vandaagKlaar,
-                morgen: blik.morgenTerug,
-              }}
+              mijlpaalZin={mijlpaalZin}
+              invoer={sceneInvoer}
             />
           </section>
         ) : null}
