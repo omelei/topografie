@@ -4,10 +4,12 @@
  * It is the highlight on the map, the progress bar, the retention indicator and
  * the item status — and the half-filled dot is also the shape of the "Bijna"
  * answer state. It was the logo too, until ADR-108 gave the logo a shape of its
- * own; that is what freed it to mean only "how far along". That last overlap is not a coincidence to
- * be tidied away: a dot half full means "practised, not yet certain" in the
- * table on K9 and "nearly right" after an answer, and those are the same idea.
- * Which is why there is one component and not two that look alike.
+ * own; the logo has been Denker since ADR-154, and the dot has meant only "how
+ * far along" ever since it stopped being a mark. That last overlap is not a
+ * coincidence to be tidied away: a dot half full means "practised, not yet
+ * certain" in the table on K9 and "nearly right" after an answer, and those are
+ * the same idea. Which is why there is one component and not two that look
+ * alike.
  *
  * Geometry, styleguide §A:
  *

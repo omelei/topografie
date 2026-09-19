@@ -45,10 +45,17 @@
    */
   :root {
     /* ---- Colour, light: the styleguide's table ---------------------------
-     * "Leisteen" (docs/leer.nu Styleguide - Leisteen.dc.html §01-02). One cool, clean
-     * ground under clean white cards: the page-wide subject tint is gone, and
-     * saturated colour is kept for three things — the action button, progress,
-     * and good/wrong.
+     * "Leisteen" (docs/leer.nu Styleguide - Leisteen.dc.html §01-02), turned warm to
+     * meet the logo (ADR-159). One clean ground under clean white cards: the
+     * page-wide subject tint is gone, and saturated colour is kept for three
+     * things — the action button, progress, and good/wrong.
+     *
+     * The neutrals are the styleguide's own ladder with the hue moved from its
+     * cool 264 to cacao's 52, so every lightness — and with it every ratio
+     * below — is the one the styleguide measured, and the ground under a white
+     * card is the warmth of the logo rather than an argument with it. Ink is
+     * cacao itself, the delivery's #2A1E17, which lands within .005 of the
+     * lightness Leisteen gave it.
      *
      * The styleguide writes its colours in oklch. They are written here as the
      * sRGB a browser resolves them to, so this file keeps one notation and
@@ -57,18 +64,18 @@
      *
      * Ratios as text, on kaart / on papier.
      */
-    --canvas: #e3e7ef; /* outside the screen: one step under the ground */
-    --papier: #eff1f5; /* the ground of every screen */
+    --canvas: #eee5e0; /* oklch(.928 .012 52): outside the screen, one step under */
+    --papier: #f4f0ee; /* oklch(.958 .005 52): the ground of every screen */
     --kaart: #ffffff; /* card and panel, and the frame round the page */
-    --inkt: #1b2230; /* text and headings                       15.93 / 14.09 */
-    --tekst-secundair: #5a6274; /*                                  6.12 / 5.41 */
-    /* The styleguide's caption ink is #6a7385, which it measures on a card
-     * (4.77) and not on the ground, where it reaches 4.22 and fails AA. This is
-     * that colour at the same hue and chroma, two steps darker, so it clears on
-     * both — the one place the palette is deliberately not the literal hex. */
-    --tekst-tertiair: #636c7e; /* oklch(.53 .03 264)                5.28 / 4.67 */
-    --rand-licht: #dde1e8; /* 1px, carries no text                   1.31 on kaart */
-    --rand-sterk: #d6dbe3; /* the screen's frame                      1.39 on kaart */
+    --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.30 */
+    --tekst-secundair: #715e52; /* oklch(.497 .031 52)              6.13 / 5.41 */
+    /* The styleguide's caption ink is the one place its ladder is deliberately
+     * not followed: it measures that tone on a card (4.77) and not on the
+     * ground, where it reaches 4.22 and fails AA. This is the same step two
+     * darker, warmed with the rest. */
+    --tekst-tertiair: #7b675c; /* oklch(.530 .031 52)               5.33 / 4.71 */
+    --rand-licht: #e7dfdb; /* 1px, carries no text                   1.31 on kaart */
+    --rand-sterk: #e2d9d4; /* the screen's frame                      1.39 on kaart */
 
     /* ---- The action colour, §02 -------------------------------------------
      * Indigo is the only colour that means "here you press". It is deliberately
@@ -81,20 +88,27 @@
     --actie-tint: #e2ebff; /* oklch(.94 .035 265): the fill behind a label */
     --actie-tekst: #264698; /* oklch(.42 .14 265)            7.28 on actie-tint */
 
-    /* ---- The mark, §07 -----------------------------------------------------
-     * "nu" in the wordmark, and the beeldmerk on its own, are drawn in the
-     * action colour, as the designer's positive woordbeeld draws them; "leer"
-     * stays ink. A brand role of its own rather than the accent, because the
-     * mark is identical in every module and may never learn about one
-     * (accent.test.ts). Reversed out of ink it is simply the light.
+    /* ---- Where the mark's colour is not -----------------------------------
+     * There was a --merk token here, pointing at the action colour, from when
+     * the wordmark was drawn in code and set "nu" in it (ADR-147). The logo is
+     * a picture now (ADR-154) and draws its own colours, so the token had
+     * stopped meaning anything and is gone.
+     *
+     * Koraal does not come back in its place. It is the colour the brand is
+     * drawn in — Denker's body, the app icon, the share card — and it enters
+     * the app only through the delivery's own file, src/design/kleuren.css,
+     * which logo.test.ts holds to the designer's byte for byte. It is eight
+     * degrees of hue from the red that means wrong, so it may not become
+     * something a child presses, something that says how a subject is going, or
+     * anything near an answer (ADR-159). This stylesheet therefore names no
+     * --leernu- colour at all, and huisstijl.test.ts keeps it that way.
      */
-    --merk: var(--actie);
 
     /* ---- Good, §05 ---------------------------------------------------------
      * Green is a status and nothing else now that the action colour has the
      * buttons: it says "onthouden", never "press here".
      */
-    --nadruk: #0a7e3a; /* oklch(.52 .14 150)                      5.17 / 4.58 */
+    --nadruk: #0a7e3a; /* oklch(.52 .14 150)                      5.17 / 4.57 */
     --nadruk-vlak: #d1f2d7; /* oklch(.93 .05 150) */
     --nadruk-tekst: #005724; /* oklch(.40 .12 150)             7.28 on nadruk-vlak */
 
@@ -105,20 +119,20 @@
      * styleguide's dark set (§08) is not carried.
      */
     /* The edge of a control. The screens draw every field, option and
-     * secondary button in the tertiary ink — 5.28:1, where the light rule's
+     * secondary button in the tertiary ink — 5.33:1, where the light rule's
      * 1.31 would fail WCAG 1.4.11 for the one line that says "press here". */
     --rand-bediening: var(--tekst-tertiair);
     /* What a control turns to under the pointer, and the fill of a chosen row. */
     --vlak-hover: var(--papier);
     /* The empty part of a bar, an empty dot, and a switched-off button: the
      * styleguide's own track, one step darker than the light rule (§06). */
-    --balk-leeg: #e7eaf1;
+    --balk-leeg: #f0e8e4;
     /* Wrong, §05. Wrong is a hatched area and a cross; this is the colour that
      * goes with the shape, never the shape itself. Text in this red stands on a
-     * card: 5.76 there, 5.09 on the ground. */
+     * card: 5.76 there, 5.08 on the ground. */
     --fout: #ba3535; /* oklch(.53 .17 25) */
     --fout-vlak: #ffe4e1; /* oklch(.94 .04 25) */
-    --fout-tekst: var(--inkt); /* on the hatching                13.23 on fout-vlak */
+    --fout-tekst: var(--inkt); /* on the hatching                13.45 on fout-vlak */
     --fout-arcering-grond: var(--fout-vlak);
     --fout-arcering-streep: #eb827b; /* oklch(.72 .13 25) */
     /* The same on the map, where the round has a pair of its own. */
@@ -132,8 +146,8 @@
     --map-land: var(--papier);
     --map-land-hover: var(--rand-licht);
     --map-grens: var(--inkt);
-    /* Behind a dialog. */
-    --scrim: rgb(27 34 48 / 45%);
+    /* Behind a dialog: the ink's own channels. */
+    --scrim: rgb(42 30 23 / 45%);
     /* What is chosen, done, or being asked about. Outside a module this is the
      * action colour: the styleguide keeps green for "goed" and gives indigo
      * everything a child presses. Inside a module it becomes the module's own
@@ -275,7 +289,7 @@
     /* The one shadow: on a reward image, and nowhere else. The arguments of a
      * drop-shadow() filter rather than a box-shadow, so it follows the
      * drawing and not its box. */
-    --schaduw-beloning: 0 10px 18px rgb(27 34 48 / 22%);
+    --schaduw-beloning: 0 10px 18px rgb(42 30 23 / 22%);
 
     /* ---- Hit targets ---------------------------------------------------------
      * brand.minTouchTargetPx carries the floor of 44 (ADR-032).
