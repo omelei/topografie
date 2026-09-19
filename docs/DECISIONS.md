@@ -9207,6 +9207,83 @@ geschiedenis.
 
 ---
 
+## ADR-163 — Een slot vraagt eerst je ouders
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-116 en ADR-125 (wat
+een slot doet).
+
+### Context
+
+Sinds ADR-116 doet elk slot in de app hetzelfde: het brengt je naar de
+premiumpagina. Dat was de goede keuze tegenover de twee alternatieven — een
+uitgeschakelde tegel die nergens heen wijst, of een codeveld voor iemand die
+nog geen code heeft — en het is de verkeerde geworden zodra je kijkt naar wie er
+op dat moment drukt.
+
+**Dat is bijna altijd het kind.** Een kind van acht kiest op /rekenen een spel
+uit, drukt op de bliksemronde, en de hele pagina wordt vervangen door een
+etalage: een kop met een prijs, vier kaarten met wat premium voor je doet, een
+tabel met vijftien regels waarin basis en premium naast elkaar staan, vier
+redenen om ons te vertrouwen, en helemaal onderaan een veld voor een code. Dat
+is een goede pagina — voor een ouder die aan het overwegen is. Voor het kind is
+het een deur die dichtging en een verkooppraatje dat ervoor in de plaats kwam,
+en er staat niets op dat het kind zelf kan doen, want het kind koopt niets.
+
+En het kost bovendien de plek waar hij was: terug naar de kiezer is een stap
+terug in de geschiedenis, en de manier die hij bijna koos, is hij kwijt.
+
+### Decision
+
+**Een slot dat een kind indrukt, opent eerst een venster: "Vraag het even aan je
+ouders".** Het staat over de pagina waar je was, en het heeft drie dingen en
+niets meer.
+
+1. **Wat er aan de hand is**, in één zin, en wat premium doet, in één. Geen vier
+   kaarten en geen tabel: dit is geen plek om een besluit op te nemen.
+2. **Het codeveld.** Veel gezinnen hebben een code en het kind weet dat niet, en
+   dit is precies het moment waarop er iemand over de schouder meekijkt. Klopt
+   de code, dan gaat het venster dicht en staat het kind weer waar het stond —
+   met het spel nu open, want elk scherm hoort de code binnenkomen (ADR-116).
+3. **De weg naar een code** voor wie er geen heeft: de knop naar de kassa, en
+   een knop naar de pagina die het hele verhaal vertelt.
+
+De prijs staat er niet. Die staat op de pagina erachter en bij de kassa; een
+bedrag in een venster dat een kind van acht opende is een getal zonder
+betekenis, en het maakt van de vraag een prijskaartje.
+
+**Welke sloten.** De vensters komen op de plekken waar een kind een spel kiest:
+het begin van een ronde (`App.beginRonde`, de ene plek waar elke ronde langskomt
+— een favoriet, een regel in de geschiedenis, een onafgemaakte ronde) en de
+tegels op een modulepagina. De `PremiumSlot`-blokken op Onthouden, Vandaag en
+Voor ouders blijven naar de pagina gaan: die staan er niet omdat iemand ergens
+op drukte, ze leggen uit wat er mist, en de knop erop heet "Bekijk premium".
+
+**Het venster heeft geen adres.** Het is een vraag over wat je net aanraakte,
+geen scherm. Een adres zou van wegklikken een stap terug maken, en dan zet de
+systeem-terugknop op een telefoon je twee stappen terug in plaats van één.
+
+Het is een echte `<dialog>` met `showModal`: de browser doet de toplaag, de
+focusval en Escape. Met de hand nagebouwd blijft daar altijd de helft van staan.
+
+### Consequences
+
+- Het codeveld staat nu op twee plekken, dus het is één component geworden
+  (`CodeVeld`). Twee formulieren die hetzelfde doen lopen uit elkaar op de dag
+  dat er een foutmelding bij komt.
+- De toegankelijke naam van een premiumtegel zegt niet meer "Je gaat naar de
+  premiumpagina" maar "Je krijgt eerst een vraag voor je ouders". De regel van
+  ADR-125 is dezelfde — een tegel die iets anders doet dan kiezen, zegt dat
+  voordat hij wordt ingedrukt — alleen wat hij doet is veranderd.
+- Het venster staat in `main.tsx` naast de app en niet in een scherm: een slot
+  zit overal, ook op het uitslagscherm na een ronde, dat buiten de Shell valt.
+  Een `<dialog>` in de toplaag trekt zich niets aan van waar hij in het document
+  staat, dus één is genoeg.
+- **Nog niet in een browser gezien.** Vooral de telefoonmaat: het venster gaat
+  daar tegen de onderrand staan, en of het codeveld met het toetsenbord omhoog
+  nog te bereiken is, is iets om te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

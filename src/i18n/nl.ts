@@ -643,11 +643,26 @@ export const nl = {
   // wat erachter zit, en daar koopt niemand iets van. De knop gaat naar de
   // uitleg, niet naar een codeveld — wie hier staat heeft meestal geen code.
   'premium.slotKnop': 'Bekijk premium',
-  // Wat er in de naam van een tegel staat die naar de premiumpagina gaat
-  // (ADR-125). Een tegel die de hele kiezer vervangt hoort dat te zeggen
-  // voordat hij wordt ingedrukt; op het scherm zie je de pagina veranderen,
-  // in een naam die eindigt op het kale woord "Premium" stond het nergens.
-  'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
+  // Wat er in de naam van een tegel staat die een slot is (ADR-125, ADR-163).
+  // Een tegel die iets anders doet dan kiezen, hoort dat te zeggen voordat hij
+  // wordt ingedrukt; op het scherm zie je het venster opengaan, maar in een
+  // naam die eindigt op het kale woord "Premium" stond het nergens.
+  'premium.tegelSlot': 'Premium. Je krijgt eerst een vraag voor je ouders.',
+
+  // "Vraag het even aan je ouders" (ADR-163): het venster dat een kind krijgt
+  // als het op een slot drukt, in plaats van de hele premiumpagina. Kort, en
+  // het spreekt het kind aan als het kind: haal er iemand bij, want jij koopt
+  // niets. De prijs staat er niet — die staat op de knop die ernaartoe gaat en
+  // op de pagina erachter, en een bedrag in een venster voor een kind van acht
+  // is een getal zonder betekenis.
+  'ouderVraag.titel': 'Vraag het even aan je ouders',
+  'ouderVraag.uitleg':
+    'Dit onderdeel hoort bij premium. Je ouders hebben er een code voor nodig — haal er even iemand bij.',
+  'ouderVraag.watPremium':
+    'Met premium zet leer.nu elke dag klaar wat je bijna vergeet, en kun je zien wat je onthoudt.',
+  'ouderVraag.bekijken': 'Wat is premium?',
+  'ouderVraag.terug': 'Nee, ik doe iets anders',
+  'ouderVraag.sluit': 'Sluiten',
   'premium.wat.onthouden':
     'Zie per vak en per onderdeel wat je kind onthoudt, hoe het oefenen week na week gaat, en wat er over drie weken nog van over is.',
   'premium.wat.lijsten':

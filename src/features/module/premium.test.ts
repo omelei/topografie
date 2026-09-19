@@ -58,12 +58,12 @@ describe('premium', () => {
     expect(metPremium('Meerkeuze', false)).toBe('Meerkeuze');
   });
 
-  it('says where a locked tile goes, because pressing it leaves the page', () => {
-    // ADR-125. Een premiumtegel is niet uitgeschakeld: hij vervangt de hele
-    // kiezer door de premiumpagina, en een naam die eindigt op het kale woord
-    // "Premium" kondigde dat niet aan.
+  it('says what a locked tile does, because pressing it is not choosing', () => {
+    // ADR-125, ADR-163. Een premiumtegel is niet uitgeschakeld: hij opent de
+    // vraag aan de ouders, en een naam die eindigt op het kale woord "Premium"
+    // kondigde dat niet aan.
     expect(metPremium('Oefentoets', true, false)).toBe(
-      'Oefentoets. Premium. Je gaat naar de premiumpagina.',
+      'Oefentoets. Premium. Je krijgt eerst een vraag voor je ouders.',
     );
     // Met code is er nergens heen te sturen, dus staat het woord er weer alleen.
     expect(metPremium('Oefentoets', true, true)).toBe('Oefentoets. Premium');

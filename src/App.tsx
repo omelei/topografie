@@ -38,6 +38,7 @@ import { loadPreferences, zetRustig } from '@/features/player/settings';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
+import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
@@ -144,11 +145,7 @@ export default function App() {
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
 
-  /** The premium page, from a lock (ADR-116). Whatever screen was up is left. */
-  const naarPremium = () => {
-    setScreen({ name: 'home' });
-    go({ name: 'premium' });
-  };
+
 
   // The tab bar's four destinations, two of which exist. Mapping them here
   // rather than inside the Shell keeps the frame ignorant of what a screen is.
@@ -199,9 +196,11 @@ export default function App() {
   ) => {
     // The one place every round starts, so the one place premium is asked
     // (ADR-116): a favourite, a line in the history or an unfinished round in
-    // a premium way goes to the code page rather than into the round.
+    // a premium way asks first. Sinds ADR-163 is dat een pop-up en niet meer
+    // de hele premiumpagina: een kind dat op een spel drukte hoort niet in een
+    // etalage te staan, en de code die het nodig heeft ligt bij zijn ouders.
     if (!premium && (toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId))) {
-      naarPremium();
+      vraagOuders();
       return;
     }
 

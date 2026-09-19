@@ -3951,6 +3951,80 @@
     background: var(--kaart);
   }
 
+  /* ---- "Vraag het even aan je ouders" (ADR-163) ---------------------------
+   * Een echte `<dialog>`, dus de browser doet de toplaag, de focusval en
+   * Escape. Wat hier staat is alleen hoe hij eruitziet: een kaart zoals elke
+   * andere kaart in de app, midden op het scherm, en op een telefoon tegen de
+   * onderrand aan zodat hij met een duim te bedienen is.
+   */
+  .tk-venster {
+    position: fixed;
+    inset: 0;
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+    color: var(--inkt);
+  }
+  .tk-venster::backdrop {
+    /* Zwart met veel doorzicht: de pagina eronder blijft te zien, want het
+     * venster is een vraag over wat je daar net aanraakte en niet een nieuw
+     * scherm. */
+    background: rgb(0 0 0 / 45%);
+  }
+  .tk-venster-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+  }
+  .tk-venster-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Het kruisje rechtsboven. Het staat er náást de knop onderaan en niet in
+   * plaats daarvan: een kind zoekt een zin, een volwassene zoekt een kruisje. */
+  .tk-venster-sluit {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--raak);
+    height: var(--raak);
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: transparent;
+    color: var(--tekst-secundair);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .tk-venster-sluit:hover {
+    background: var(--papier);
+    color: var(--inkt);
+  }
+  @media (max-width: 640px) {
+    /* Op een telefoon onderaan, over de volle breedte: daar is de duim. */
+    .tk-venster {
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 90vh;
+      margin: auto auto 0;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      border-radius: var(--kaart-radius) var(--kaart-radius) 0 0;
+    }
+  }
+
   /* "Je doelen voor deze week" (ADR-141, ADR-162). Dezelfde kaart als "Vandaag
    * herhalen", maar met een hairline rondom in plaats van de dikke band aan de
    * voorkant: dat blok zegt wat er nú moet, dit zegt waar de week heen gaat.

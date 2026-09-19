@@ -22,7 +22,8 @@ import { Tafeldiplomas } from './Tafeldiplomas';
 import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
 import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
-import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
+import { vraagOuders } from '@/features/premium/ouderVraag';
+import { usePremium } from '@/features/premium/usePremium';
 import {
   itemsVan,
   naamVan,
@@ -139,10 +140,9 @@ export function ModuleScreen({
   const [toetsstand, setToetsstand] = useState(false);
   const kleinScherm = useSmallScreen();
   const nogId = useId();
-  // What a premium tile does without a code: it goes to the page where one is
-  // entered, rather than being chosen and refused at the start (ADR-116).
+  // Wat een premiumtegel zonder code doet: hij vraagt het even aan de ouders in
+  // plaats van gekozen en bij de start geweigerd te worden (ADR-116, ADR-163).
   const { actief } = usePremium();
-  const naarPremium = useNaarPremium();
 
   useEffect(() => {
     void loadItemStates().then(setStates);
@@ -425,7 +425,7 @@ export function ModuleScreen({
                   onClick={() => {
                     if (open) return;
                     if (premium && !actief) {
-                      naarPremium();
+                      vraagOuders();
                       return;
                     }
                     setRegio(hier);
@@ -531,7 +531,7 @@ export function ModuleScreen({
                   aria-pressed={gekozenVorm}
                   onClick={() => {
                     if (premium && !actief) {
-                      naarPremium();
+                      vraagOuders();
                       return;
                     }
                     setFormId(candidate.id);
@@ -565,7 +565,7 @@ export function ModuleScreen({
                   actief,
                 )}
                 aria-pressed={alsToets}
-                onClick={() => (actief ? setToetsstand(true) : naarPremium())}
+                onClick={() => (actief ? setToetsstand(true) : vraagOuders())}
               >
                 <span className="tk-plaat">
                   <PaperIcon size={24} />

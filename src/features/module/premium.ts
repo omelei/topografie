@@ -71,12 +71,12 @@ export function isPremiumOnderwerp(id: string): boolean {
  * after what the tile is — the name still leads, and a query anchored on it
  * still finds it.
  *
- * **Zonder code zegt hij wat indrukken doet** (ADR-125). Een premiumtegel is
- * niet uitgeschakeld: hij vervangt de hele kiezer door de premiumpagina. Op het
- * scherm is dat tenminste te zien — de pagina verandert onder je ogen — maar
- * het woord "Premium" op zichzelf zei nergens dat een druk je ergens heen
- * brengt, en wie met een schermlezer werkt stond op de nieuwe pagina zonder
- * dat iets had aangekondigd dat hij de kiezer verliet.
+ * **Zonder code zegt hij wat indrukken doet** (ADR-125, ADR-163). Een
+ * premiumtegel is niet uitgeschakeld: hij opent de vraag aan de ouders. Op het
+ * scherm is dat te zien — er komt een venster overheen — maar het woord
+ * "Premium" op zichzelf zei nergens dat een druk iets anders doet dan kiezen,
+ * en wie met een schermlezer werkt stond ineens in een venster zonder dat iets
+ * dat had aangekondigd.
  */
 export function metPremium(label: string, premium: boolean, actief = true): string {
   if (!premium) return label;

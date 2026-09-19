@@ -70,7 +70,9 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
-  // A premium way on a module page goes there too, rather than being chosen.
+  // Een premiummanier op een modulepagina wordt niet gekozen, maar vraagt het
+  // even aan de ouders (ADR-163): een venster over de pagina heen, met een
+  // codeveld erin, en de pagina eronder blijft waar hij was.
   await page.goto('/topografie');
   await page
     .getByRole('region', { name: /Kies een onderwerp/ })
@@ -78,6 +80,24 @@ test('without a code the premium parts are labelled once, and say what they do',
     .click();
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
   await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+
+  const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+  await expect(venster).toBeVisible();
+  await expect(venster.getByLabel('Typ de code')).toBeVisible();
+  await expect(page).toHaveURL(/\/topografie\/provincies$/);
+
+  // Wegklikken zet je terug waar je was, en de manier is niet gekozen.
+  await venster.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
+  await expect(venster).toBeHidden();
+  await expect(page).toHaveURL(/\/topografie\/provincies$/);
+  await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+
+  // En vanuit het venster is de premiumpagina één druk ver, voor wie hem wil.
+  await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+  await venster.getByRole('button', { name: 'Wat is premium?' }).click();
   await expect(page).toHaveURL(/\/premium$/);
 
   // And a free way is still simply a way.

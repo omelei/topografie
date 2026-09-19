@@ -1,4 +1,4 @@
-import { useId, useState, type ComponentType, type FormEvent } from 'react';
+import { useId, type ComponentType } from 'react';
 import {
   CorrectIcon,
   DiplomaIcon,
@@ -11,14 +11,8 @@ import {
   TodayIcon,
 } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
-import {
-  activeer,
-  isTeKoop,
-  isVerlopen,
-  meldAf,
-  verlooptBinnenkort,
-  type PremiumReden,
-} from '@/store/premium';
+import { isTeKoop, isVerlopen, meldAf, verlooptBinnenkort } from '@/store/premium';
+import { CodeVeld } from './CodeVeld';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
@@ -105,15 +99,7 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   ],
 ];
 
-const FOUT: Record<PremiumReden, TranslationKey> = {
-  leeg: 'premium.fout.leeg',
-  onbekend: 'premium.fout.onbekend',
-  verlopen: 'premium.fout.verlopen',
-  vol: 'premium.fout.vol',
-  'te-vaak': 'premium.fout.te-vaak',
-  'geen-verbinding': 'premium.fout.geen-verbinding',
-  'niet-ingesteld': 'premium.fout.niet-ingesteld',
-};
+
 
 /**
  * De premiumpagina: wat het is, wat het kost, en pas daarna het veld (ADR-116,
@@ -389,56 +375,14 @@ function Cel({ ja }: { readonly ja: boolean }) {
  * Het veld, onderaan en klein. Het is de laatste stap van een reis die ergens
  * anders begon: je hebt betaald, je hebt een mail, je typt hem over.
  *
- * "Inloggen" is een code en niets meer. Geen e-mail en geen wachtwoord: er is
- * geen account om in te loggen (ADR-015), en een veld voor een van beide zou
- * precies verzamelen wat dit product beloofd heeft niet te verzamelen.
+ * Het veld zelf staat in `CodeVeld`, want sinds ADR-163 staat het ook in de
+ * pop-up die een kind bij een slot krijgt.
  */
 function Code() {
-  const [invoer, setInvoer] = useState('');
-  const [bezig, setBezig] = useState(false);
-  const [fout, setFout] = useState<PremiumReden | null>(null);
-  const veld = useId();
-  const melding = useId();
-
-  async function gebruik(event: FormEvent) {
-    event.preventDefault();
-    setBezig(true);
-    setFout(null);
-    const uitkomst = await activeer(invoer);
-    setBezig(false);
-    if (uitkomst.ok) setInvoer('');
-    else setFout(uitkomst.reden);
-  }
-
   return (
     <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
       <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
-      <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void gebruik(event)}>
-        <label htmlFor={veld} className="tk-label">
-          {t('premium.codeLabel')}
-        </label>
-        <input
-          id={veld}
-          className="tk-input max-w-xs"
-          value={invoer}
-          onChange={(event) => setInvoer(event.target.value)}
-          placeholder={t('premium.codePlaceholder')}
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          maxLength={20}
-          aria-describedby={fout ? melding : undefined}
-          aria-invalid={fout ? true : undefined}
-        />
-        <button type="submit" className="tk-button tk-button-secondary self-start" disabled={bezig}>
-          {bezig ? t('premium.bezig') : t('premium.codeGebruiken')}
-        </button>
-        {fout ? (
-          <p id={melding} role="alert" className="text-lopend">
-            {t(FOUT[fout])}
-          </p>
-        ) : null}
-      </form>
+      <CodeVeld />
     </section>
   );
 }
