@@ -22,9 +22,7 @@ export function dagenTot(moment: string, now: Date): number {
 export interface Vooruitblik {
   /** Plaatjes die morgen aan de beurt zijn (vandaag meegeteld). */
   readonly morgenTerug: number;
-  /** Daarvan: plaatjes die dan voor het eerst kleur kunnen krijgen. */
-  readonly morgenKleur: number;
-  /** Anders: over zoveel dagen komt het eerste plaatje terug. */
+  /** Anders: over zoveel dagen komt het eerste onderdeel terug. */
   readonly eerstVolgende: number | null;
 }
 
@@ -35,7 +33,6 @@ export function vooruitblik(
 ): Vooruitblik {
   const overmorgen = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 2).getTime();
   let morgenTerug = 0;
-  let morgenKleur = 0;
   let eerst: string | null = null;
   for (const id of new Set(ids)) {
     const state = states.get(id);
@@ -43,14 +40,12 @@ export function vooruitblik(
     const wanneer = new Date(state.volgendeReview).getTime();
     if (wanneer < overmorgen) {
       morgenTerug++;
-      if (state.box === ONTHOUDEN_BOX - 1 && laagVan(state) === ONTHOUDEN_BOX - 1) morgenKleur++;
     } else if (eerst === null || state.volgendeReview < eerst) {
       eerst = state.volgendeReview;
     }
   }
   return {
     morgenTerug,
-    morgenKleur,
     eerstVolgende: morgenTerug === 0 && eerst !== null ? dagenTot(eerst, now) : null,
   };
 }

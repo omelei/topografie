@@ -1,5 +1,5 @@
 import { useEffect, useId, useState } from 'react';
-import type { Item, ItemState } from '@/game-core';
+import type { ItemState } from '@/game-core';
 import { loadGeoSet, type GeoSet } from '@/content/loadGeo';
 import type { AnswerLayer } from '@/features/practice/MapCanvas';
 import { statusOf } from './itemStatus';
@@ -23,6 +23,16 @@ export function heeftKaart(setId: string): setId is SetId {
   return Object.prototype.hasOwnProperty.call(SETS, setId);
 }
 
+/**
+ * Wat de kaart van een onderdeel nodig heeft: een identiteit en, als het op de
+ * kaart ligt, de vorm waar het bij hoort. Smaller dan `Item`, zodat de
+ * statuspagina zijn eigen lijst kan doorgeven zonder te casten.
+ */
+interface KaartItem {
+  readonly id: string;
+  readonly geometrieRef?: string | undefined;
+}
+
 export function StandKaart({
   setId,
   items,
@@ -31,7 +41,7 @@ export function StandKaart({
   label,
 }: {
   readonly setId: SetId;
-  readonly items: readonly Item[];
+  readonly items: readonly KaartItem[];
   readonly states: ReadonlyMap<string, ItemState>;
   readonly now: Date;
   /** Eén zin voor een schermlezer: wat er op deze kaart staat. */
@@ -57,7 +67,7 @@ export function StandKaart({
 
   if (kaart === null) return <div className="tk-standkaart" aria-busy="true" />;
 
-  const perRef = new Map<string, Item>();
+  const perRef = new Map<string, KaartItem>();
   for (const item of items) {
     if (item.geometrieRef) perRef.set(item.geometrieRef, item);
   }

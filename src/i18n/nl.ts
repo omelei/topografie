@@ -601,6 +601,7 @@ export const nl = {
   'premium.groep.uitdagen': 'Uitdagen',
   'premium.groep.ouders': 'Voor ouders',
   'premium.regel.vakken': 'Alle vakken en alle onderwerpen',
+  'premium.regel.toren': 'Je toren, je reeks en je diploma’s',
   'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
   'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
