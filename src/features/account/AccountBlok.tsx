@@ -131,7 +131,17 @@ function Formulier({
   return (
     <>
       <p className="text-lopend text-tekst-secundair">{t('account.uitleg')}</p>
-      <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void verstuur(event)}>
+      {/*
+        Geen browservalidatie: `type="email"` zou het formulier zelf tegenhouden,
+        met een ballon die per browser anders is en die niet in het meldingsvak
+        staat. Het oordeel hoort bij `invoerFout`, zodat er één antwoord is en
+        een schermlezer het ook krijgt.
+      */}
+      <form
+        className="tk-card flex flex-col gap-3"
+        noValidate
+        onSubmit={(event) => void verstuur(event)}
+      >
         <label htmlFor={emailVeld} className="tk-label">
           {t('account.email')}
         </label>
