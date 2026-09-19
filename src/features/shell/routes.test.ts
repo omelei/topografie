@@ -236,11 +236,12 @@ describe('the addresses', () => {
     expect(routeFor('/ontdekkingsreis')).toEqual({ name: 'home' });
   });
 
-  it('gives the weekkaart an address, and keeps the old streak address working', () => {
-    // The long view of one block, not a fifth tab (ADR-110, ADR-149).
-    expect(routeFor('/week')).toEqual({ name: 'week' });
-    expect(pathFor({ name: 'week' })).toMatch(/\/week$/);
-    expect(routeFor('/reeks')).toEqual({ name: 'week' });
+  it('laat de oude adressen van de week en de reeks naar de voordeur vallen', () => {
+    // De weekkaart is met het album vervallen (ADR-158). Een adres dat iemand
+    // bewaard heeft, komt ergens uit in plaats van op een leeg scherm — net als
+    // elk ander woord dat de router niet kent.
+    expect(routeFor('/week')).toEqual({ name: 'home' });
+    expect(routeFor('/reeks')).toEqual({ name: 'home' });
   });
 
   it('keeps the retention screen at a word a child could type', () => {

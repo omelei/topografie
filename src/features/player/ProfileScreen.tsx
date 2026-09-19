@@ -9,7 +9,7 @@ import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { TopoDiplomas } from '@/features/module/TopoDiplomas';
 import { usePremium } from '@/features/premium/usePremium';
 import { TorenPagina } from '@/features/toren/TorenPagina';
-import { Jaaroverzicht } from '@/features/album/Jaaroverzicht';
+import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).

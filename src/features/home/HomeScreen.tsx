@@ -20,7 +20,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { WeekBlok } from '@/features/week/WeekBlok';
+import { ReeksRegel } from '@/features/toren/ReeksRegel';
 import { DoelBlok } from './DoelBlok';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
@@ -74,8 +74,6 @@ const OPEN_SHOWN = 10;
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
   readonly naam: string;
-  /** The way to the weekkaart's own page, which the week block links to. */
-  readonly onWeek: () => void;
   /**
    * One way into a round, whichever module it is in: the same one the child's
    * own column and the module pages use.
@@ -95,7 +93,6 @@ export interface HomeScreenProps {
 
 export function HomeScreen({
   naam,
-  onWeek,
   onBegin,
   onVerder,
   onPlan,
@@ -175,7 +172,9 @@ export function HomeScreen({
   );
 
   const toetsen = <ToetsenBlok />;
-  const week = <WeekBlok onWeek={onWeek} />;
+  // Eén regel als er een reeks loopt en vandaag nog leeg is (ADR-158). De
+  // weekkaart stond hier; die is met de toren vervallen.
+  const reeksRegel = <ReeksRegel />;
   const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   if (desk) {
@@ -184,6 +183,7 @@ export function HomeScreen({
         <div className="tk-home-main">
           {kop}
           {terug}
+          {reeksRegel}
           {vandaagBoven}
           {groepVraag}
           {doel}
@@ -193,7 +193,6 @@ export function HomeScreen({
 
         <aside className="tk-home-aside">
           {toetsen}
-          {week}
           {favorieten}
         </aside>
       </div>
@@ -205,9 +204,9 @@ export function HomeScreen({
     <div className="tk-home">
       {kop}
       {terug}
+      {reeksRegel}
       {vandaagBoven}
       {groepVraag}
-      {week}
       {doel}
       {toetsen}
       {rijen}

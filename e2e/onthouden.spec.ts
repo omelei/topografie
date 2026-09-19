@@ -96,15 +96,11 @@ test('de getallen over het oefenen staan alleen op Onthouden', async ({ page }) 
   await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Deze week' })).toHaveCount(0);
 
-  // Het oude adres van de reeks opent de weekkaart (ADR-149). Die telt dagen met
-  // stempels: geen rondes, geen vragen, geen rustdagen en niets "op rij".
+  // De weekkaart is met het album vervallen (ADR-158), dus haar adres en dat
+  // van de oude reeks komen op de voordeur uit in plaats van op een leeg
+  // scherm.
   await page.goto('/reeks');
-  await expect(page.getByRole('heading', { name: 'Jouw week' })).toBeVisible();
-  for (const weg of ['Rondes gespeeld', 'Vragen beantwoord', 'Rustdagen bewaard']) {
-    await expect(page.getByText(weg)).toHaveCount(0);
-  }
-  await expect(page.getByText(/rustdag/i)).toHaveCount(0);
-  await expect(page.getByText(/op rij/i)).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Vandaag' })).toBeVisible();
 
   // En de kolom naast de pagina zegt niet nog eens hoeveel er goed was.
   await page.goto('/');

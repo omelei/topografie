@@ -1,6 +1,6 @@
-import { DiplomaIcon, StampIcon } from '@/components/Icon';
+import { DiplomaIcon } from '@/components/Icon';
 import type { Module } from '@/features/shell/modules';
-import { t, type TranslationKey } from '@/i18n';
+import { t } from '@/i18n';
 import { Embleem } from './Embleem';
 import { useDiplomaStand } from './useDiplomaStand';
 
@@ -44,13 +44,7 @@ export function DiplomaRaster({
     <ul className="tk-diplomas">
       {vakken.map((vak) => {
         const rijp = !vak.gehaald && (stand?.rijp(vak.diplomaId) ?? false);
-        const seizoenen = vak.gehaald && stand ? stand.seizoenen(vak.diplomaId) : [];
-        const stempels = seizoenen.filter((s) => s.stempel).length;
-        const label = [
-          vak.label,
-          rijp ? t('diploma.rijp') : null,
-          vak.gehaald && stempels > 0 ? t('diploma.bijgehouden', { aantal: stempels }) : null,
-        ]
+        const label = [vak.label, rijp ? t('diploma.rijp') : null]
           .filter((deel): deel is string => deel !== null)
           .join('. ');
 
@@ -67,20 +61,6 @@ export function DiplomaRaster({
             >
               {vak.gehaald ? t('diploma.gehaald') : rijp ? t('diploma.rijp') : t('diploma.nogNiet')}
             </span>
-            {seizoenen.length > 0 ? (
-              <span className="tk-diploma-seizoenen" aria-hidden="true">
-                {seizoenen.map(({ seizoen, stempel }) => (
-                  <span
-                    key={seizoen}
-                    className="tk-diploma-seizoen"
-                    data-stempel={stempel ? 'ja' : undefined}
-                    title={t(`seizoen.${seizoen}` as TranslationKey)}
-                  >
-                    {stempel ? <StampIcon size={14} /> : null}
-                  </span>
-                ))}
-              </span>
-            ) : null}
           </>
         );
 

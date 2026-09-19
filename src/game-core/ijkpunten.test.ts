@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { bereikt, gepasseerd, IJKPUNTEN, ijkpuntenVoor, meterVoor, volgende } from './ijkpunten';
+import {
+  bereikt,
+  gepasseerd,
+  IJKPUNTEN,
+  ijkpuntenVoor,
+  keuzeUit,
+  meterVoor,
+  registerUit,
+  registerVoor,
+  volgende,
+} from './ijkpunten';
 import { METER_PER_VERDIEPING } from './toren';
 
 describe('de lijst', () => {
@@ -71,5 +81,41 @@ describe('waar de toren staat', () => {
     expect(volgende(2, 'beeld')?.id).toBe('huis');
     expect(volgende(0, 'getal')?.id).toBe('huis');
     expect(volgende(99_999, 'getal')).toBeNull();
+  });
+});
+
+describe('welk gezicht een kind krijgt', () => {
+  it('geeft de onderbouw het beeld en de bovenbouw de getallen', () => {
+    expect(registerVoor(3)).toBe('beeld');
+    expect(registerVoor(5)).toBe('beeld');
+    expect(registerVoor(6)).toBe('getal');
+    expect(registerVoor(8)).toBe('getal');
+  });
+
+  it('kiest zonder groep het beeld', () => {
+    // De veilige kant: een kind van zes dat getallen krijgt snapt er niets van,
+    // en een twaalfjarige die het beeld krijgt heeft één schakelaar nodig.
+    expect(registerVoor(undefined)).toBe('beeld');
+  });
+});
+
+describe('de voorkeur die het register overschrijft', () => {
+  it('leest de twee gezichten terug en valt verder terug op de groep', () => {
+    expect(keuzeUit('beeld')).toBe('beeld');
+    expect(keuzeUit('getal')).toBe('getal');
+    for (const rommel of [undefined, 'auto', 'aan', '']) {
+      expect(keuzeUit(rommel)).toBe('auto');
+    }
+  });
+
+  it('laat een gekozen gezicht winnen van de groep', () => {
+    expect(registerUit('beeld', 8)).toBe('beeld');
+    expect(registerUit('getal', 3)).toBe('getal');
+  });
+
+  it('volgt de groep zodra de keuze dat zegt', () => {
+    expect(registerUit('auto', 3)).toBe('beeld');
+    expect(registerUit('auto', 7)).toBe('getal');
+    expect(registerUit('auto', undefined)).toBe('beeld');
   });
 });

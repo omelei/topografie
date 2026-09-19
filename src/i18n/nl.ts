@@ -102,36 +102,7 @@ export const nl = {
 
   // De weekkaart (ADR-149), waar de reeks stond. Dagen tellen, reeksen niet:
   // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
-  'week.titel': 'Jouw week',
-  'week.kaartLabel': 'Je weekkaart',
-  'week.dagWel': '{dag}: stempel',
-  'week.dagNiet': '{dag}: nog geen stempel',
-  'week.vandaagWel': 'Vandaag: stempel',
-  'week.vandaagNiet': 'Vandaag: nog geen stempel',
-  'week.stand': '{aantal} van de {doel} dagen.',
-  'week.nogEen': 'Nog 1 dag tot je doel.',
-  'week.nog': 'Nog {aantal} dagen tot je doel.',
-  'week.gehaald': 'Doel gehaald. Deze week krijgt een zegel.',
-  'week.bekijk': 'Bekijk je week',
   // Het doel kiest een kind samen met een ouder, twee tot vijf dagen.
-  'week.doelTitel': 'Je weekdoel',
-  'week.doelUitleg':
-    'Kies samen met je vader, moeder of wie voor je zorgt op hoeveel dagen per week je wilt oefenen.',
-  'week.doelOuder':
-    'Kies samen met je kind op hoeveel dagen per week het wil oefenen. Haalt het dat, dan krijgt de week een zegel.',
-  'week.doelKeuze': '{aantal} dagen',
-  'week.strookTitel': 'Je schooljaar',
-  'week.strookNul': 'Nog geen zegels dit schooljaar.',
-  'week.strookEen': '1 zegel dit schooljaar.',
-  'week.strookStand': '{aantal} zegels dit schooljaar.',
-  'week.zegelWel': 'Week van {datum}: zegel',
-  'week.zegelNiet': 'Week van {datum}',
-  'week.zegelNu': 'Deze week',
-  'week.regelsTitel': 'Zo werkt je weekkaart',
-  'week.regel1':
-    'Oefen je op een dag, dan krijgt die dag een stempel. Vier rondes op één dag zijn samen één stempel.',
-  'week.regel2': 'Haal je je doel, dan krijgt de week een zegel. Een zegel gaat nooit meer weg.',
-  'week.regel3': 'Mis je een dag? Er gaat niets weg. Maandag begint een nieuwe kaart.',
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   'terug.titel': 'Welkom terug',
   'terug.zin': 'Je toren staat er nog.',
@@ -142,13 +113,13 @@ export const nl = {
   'terug.knop': 'Opfrissen',
   // Het jaaroverzicht op Jij, om te laten zien of te printen.
   'jaar.titel': 'Jouw schooljaar',
-  'jaar.kop': 'Het album van {naam}, schooljaar {van}–{tot}',
-  'jaar.zegels': '{aantal} van de {weken} weken met een zegel',
-  'jaar.kleur': '{aantal} plaatjes in kleur',
-  'jaar.lijst': '{aantal} plaatjes stevig onthouden',
-  'jaar.stempels': '{aantal} stempels dit schooljaar',
+  'jaar.kop': 'De toren van {naam}, schooljaar {van}–{tot}',
+  'jaar.stenen': '{aantal} stenen in totaal',
+  'jaar.steenEen': '1 steen in totaal',
+  'jaar.verdiepingen': '{aantal} verdiepingen dit schooljaar, {totaal} in totaal',
+  'jaar.hoogte': '{meter} meter hoog',
+  'jaar.reeks': 'Je langste reeks: {aantal} dagen',
   'jaar.diplomas': 'Diploma’s',
-  'jaar.diplomaBijgehouden': '{naam}, {aantal} keer bijgehouden',
   'jaar.print': 'Print je schooljaar',
   // Afzwemmen (ADR-149): vooraf wat er gevraagd wordt, of de pagina rijp is, en
   // of er iemand meekijkt. Een diploma komt alleen op een rijpe pagina.
@@ -189,26 +160,8 @@ export const nl = {
   'afzwemmen.printZonderNaam': 'Gehaald',
   'afzwemmen.printDatum': 'op {datum}',
   // De seizoenen op een diploma, voor de bijhoudstempels.
-  'seizoen.herfst': 'herfst',
-  'seizoen.winter': 'winter',
-  'seizoen.lente': 'lente',
-  'seizoen.zomer': 'zomer',
   // De dagen van de week: kort boven een streepje, voluit voor wie voorleest.
   // Genummerd zoals Date.getDay telt: zondag is 0.
-  'dag.kort.0': 'zo',
-  'dag.kort.1': 'ma',
-  'dag.kort.2': 'di',
-  'dag.kort.3': 'wo',
-  'dag.kort.4': 'do',
-  'dag.kort.5': 'vr',
-  'dag.kort.6': 'za',
-  'dag.lang.0': 'zondag',
-  'dag.lang.1': 'maandag',
-  'dag.lang.2': 'dinsdag',
-  'dag.lang.3': 'woensdag',
-  'dag.lang.4': 'donderdag',
-  'dag.lang.5': 'vrijdag',
-  'dag.lang.6': 'zaterdag',
   // De prijzenkast op Jij (ADR-143): eerst wat je hébt, en de gaten pas als je
   // erom vraagt. Op een modulepagina blijft elk gat een uitnodiging, want daar
   // is hij aan te raken; hier was hij dat niet.
@@ -652,7 +605,6 @@ export const nl = {
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
   'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
   'premium.regel.album': 'Het album: zien wat je al onthoudt',
-  'premium.regel.weekkaart': 'De weekkaart, met een weekdoel en zegels',
   'premium.regel.tafeldiploma': 'De twaalf tafeldiploma’s',
   'premium.regel.diplomas': 'Diploma’s voor vlaggen, klok en topografie',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
@@ -1241,29 +1193,14 @@ export const nl = {
   // Wat je deed, wat er veranderde, en wat terugkomen oplevert.
   'result.gedaan': '{beantwoord} vragen, {goed} goed',
   'result.gedaanEen': '1 vraag, {goed} goed',
-  'result.verderEen': '1 plaatje verder',
-  'result.verder': '{aantal} plaatjes verder',
-  'result.weerGoedEen': '1 lastige weer goed',
-  'result.weerGoed': '{aantal} lastige weer goed',
-  'result.stempelsEen': '1 stempel erbij',
-  'result.stempels': '{aantal} stempels erbij',
-  'result.pleisterEen': '1 plaatje kreeg een pleister',
-  'result.pleister': '{aantal} plaatjes kregen een pleister',
   'result.stenen': '{aantal} stenen erbij.',
   'result.stenenEen': '1 steen erbij.',
   'result.stenenGeen': 'Nog geen stenen — deze zag je voor het eerst.',
   'result.morgenNiets': 'Morgen komt er niets terug. Over {dagen} dagen weer.',
-  'result.albumNiets': 'Nog geen plaatje verder. Ze tellen als ze terugkomen.',
-  'result.alBegonnen': 'Je bent begonnen aan {begonnen} van de {totaal} plaatjes.',
-  'result.morgenKleurEen': 'Morgen kan er 1 plaatje kleur krijgen.',
-  'result.morgenKleur': 'Morgen kunnen er {aantal} plaatjes kleur krijgen.',
   'result.morgenTerugEen': 'Morgen komt er 1 terug.',
   'result.morgenTerug': 'Morgen komen er {aantal} terug.',
   // Zonder "weer": deze regel staat nu ook onder een allereerste ronde, en dan
   // is er nog niets teruggekomen om weer te komen.
-  'result.eerstVolgende': 'Over {dagen} dagen komt het eerste plaatje terug.',
-  'result.paginaInKleur':
-    'Deze pagina is helemaal in kleur. Over een week kunnen de eerste lijstjes komen.',
   // Stoppen is ook af: als er vandaag niets meer terug moet komen, is "Klaar" de
   // eerste knop en brengt een extra ronde nieuwe plaatjes.
   'result.vandaagKlaar': 'Klaar voor vandaag',
@@ -1380,49 +1317,10 @@ export const nl = {
   // Het album (ADR-149). Elk item is een plaatje dat lagen krijgt: een schets,
   // kleur, een lijstje, stempels. De laag staat in vorm én in woorden, en het
   // woord voor doos vier is overal hetzelfde: onthoud je (ADR-030).
-  'album.titel': 'Jouw album',
-  'album.uitleg':
-    'Alles wat je leert, is een plaatje. Het krijgt kleur als je het op verschillende dagen goed weet, en daarna een lijstje en stempels.',
-  'album.laag0': 'nog niet geoefend',
-  'album.laag1': 'begonnen',
-  'album.laag2': 'aan het oefenen',
-  'album.laag3': 'aan het oefenen',
-  'album.laag4': 'onthoud je',
-  'album.laag5': 'stevig onthouden',
-  'album.tekenOpfrissen': 'even opfrissen',
-  'album.tekenLastig': 'lastig',
-  'album.stempelsEen': '1 stempel',
-  'album.stempelsVeel': '{aantal} stempels',
-  'album.stand': '{kleur} van de {totaal} in kleur',
-  'album.standLijst': '{aantal} stevig',
-  'album.standLastig': '{aantal} lastig',
-  'album.standOpfrissen': '{aantal} even opfrissen',
-  'album.paginaTitel': 'Jouw albumpagina',
-  'album.paginaLabel': 'Albumpagina {naam}',
-  'album.kaartLabel': 'Kaart van {naam}: {kleur} van de {totaal} in kleur',
-  'album.allePlaatjes': 'Alle plaatjes van deze pagina',
   // Na een antwoord: wat het met het plaatje deed. Eén zin, en geen als er
   // niets veranderde.
-  'album.stapBegonnen': 'Je bent begonnen aan dit plaatje.',
-  'album.stapSchets': 'Het plaatje krijgt een laag erbij.',
-  'album.stapKleur': 'Dit onthoud je nu: het plaatje krijgt kleur.',
-  'album.stapLijst': 'Het plaatje krijgt een lijstje.',
-  'album.stapStempel': 'Een stempel: je weet het nog.',
-  'album.stapLastig': 'Het plaatje krijgt een pleister. De kleur blijft.',
-  'album.stapWeerGoed': 'De pleister mag eraf.',
   // Goed, maar niet aan de beurt. Zo leert een kind spreiden zonder het woord.
-  'album.stapWachtEen': 'Die ken je al. Morgen telt hij weer.',
-  'album.stapWacht': 'Die ken je al. Over {dagen} dagen telt hij weer.',
   // De achterkant van een plaatje.
-  'album.achterkantNooit': 'Nog niet geoefend.',
-  'album.achterkantNu': 'Komt nu terug.',
-  'album.achterkantMorgen': 'Komt morgen terug.',
-  'album.achterkantTerug': 'Komt over {dagen} dagen terug.',
-  'album.achterkantLastig':
-    'Dit ging een keer fout. Weet je het weer een paar keer als het terugkomt, dan mag de pleister eraf.',
-  'album.achterkantStempels': 'Stempels',
-  'album.achterkantGeenStempels': 'Stempels komen als je het na een lijstje nog weet.',
-  'album.sluit': 'Sluit',
 
   // De toren (ADR-158). Een steen is een goed antwoord op iets dat aan de beurt
   // was en dat je eerder al eens had. Tien stenen is een verdieping, en er gaat
@@ -1458,6 +1356,34 @@ export const nl = {
   'toren.steenNieuw': 'Nieuw. Over {dagen} dagen komt hij terug.',
 
   // De ijkpunten (ADR-158): inhoud, geen regel.
+  // De reeks (ADR-158). Alle dagen tellen mee, ook het weekend, en één gemiste
+  // dag breekt hem. De app noemt bij een lopende reeks wat er op het spel staat;
+  // wat er niet is: een aftelklok, een alarmkleur, of herstel te koop. Breken
+  // kost nooit een steen, en daar gaat de zin bij een nieuwe start dan ook over.
+  // Welk gezicht de toren laat zien (ADR-158).
+  'retention.kaartLabel': 'De kaart van {wat}, met per plek hoe het ervoor staat.',
+
+  'register.titel': 'Hoe de toren eruitziet',
+  'register.uitleg':
+    'Jongere kinderen zien het beeld met een zin erbij, oudere de getallen en de datums. Standaard kiest de groep.',
+  'register.auto': 'Volg de groep',
+  'register.beeld': 'Het beeld',
+  'register.getal': 'De getallen',
+
+  'reeks.naam': 'Je reeks',
+  'reeks.dagen': '{aantal} dagen op rij',
+  'reeks.dagenEen': '1 dag',
+  'reeks.vandaag': 'Vandaag telt al mee.',
+  'reeks.record': 'Je langste: {aantal} dagen.',
+  'reeks.recordEen': 'Je langste: 1 dag.',
+  'reeks.uitleg': 'Alle dagen tellen mee, ook het weekend.',
+  'reeks.opnieuw': 'Je reeks begint opnieuw. Je toren staat er nog.',
+  'reeks.leeg': 'Je reeks begint op de dag dat je een ronde afmaakt.',
+  'reeks.opHetSpel': 'Je reeks staat op {aantal} dagen. Nog vandaag, anders begint hij opnieuw.',
+  'reeks.opHetSpelEen': 'Je reeks staat op 1 dag. Nog vandaag, anders begint hij opnieuw.',
+  'reeks.ouderRegel': '{aantal} dagen op rij; het langst {record} dagen.',
+  'reeks.ouderGeen': 'Geen reeks op dit moment; het langst was {record} dagen.',
+
   'ijkpunt.giraf': 'een giraf',
   'ijkpunt.huis': 'een huis',
   'ijkpunt.boom': 'de hoogste boom',
@@ -1541,7 +1467,6 @@ export const nl = {
   'diploma.nogNiet': 'Nog niet',
   // Rijp: de pagina is ver genoeg om af te zwemmen (ADR-141, ADR-149).
   'diploma.rijp': 'Klaar om af te zwemmen',
-  'diploma.bijgehouden': '{aantal} keer bijgehouden dit schooljaar',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet

@@ -1,3 +1,4 @@
+import type { Groep } from './groep';
 import { METER_PER_VERDIEPING } from './toren';
 
 /**
@@ -46,6 +47,43 @@ export const IJKPUNTEN: readonly IJkpunt[] = [
   { id: 'kilometer', verdiepingen: 334, echt: 1000, alleen: null },
   { id: 'tienkilometer', verdiepingen: 3334, echt: 10000, alleen: 'getal' },
 ];
+
+/**
+ * Welk gezicht de toren laat zien (ADR-158).
+ *
+ * **Groep 3-5 en geen groep: het beeld.** De toren groot, het ijkpunt in
+ * woorden, geen meters en geen datums. Zonder groep ook, en dat is met opzet de
+ * veilige kant: een kind van zes dat het getallengezicht krijgt, snapt er niets
+ * van, terwijl een twaalfjarige die het beeldgezicht krijgt zich hoogstens
+ * jonger behandeld voelt — en dat is te repareren met één schakelaar.
+ *
+ * **Groep 6-8: de getallen.** Stenen, verdiepingen, meters, en de datumlog,
+ * want dat is voor die leeftijd het interessantste deel.
+ *
+ * Eén regel, twee gezichten. Wat een steen is, verandert hier niet.
+ */
+export function registerVoor(groep: Groep | undefined): Register {
+  return groep !== undefined && groep >= 6 ? 'getal' : 'beeld';
+}
+
+/**
+ * De drie standen van de voorkeur op Voor ouders. `auto` volgt de groep.
+ *
+ * Drie en niet twee, want "volg de groep" moet zelf een stand zijn: anders
+ * staat een kind dat overgaat voor altijd vast op wat er ooit een keer gekozen
+ * is.
+ */
+export type RegisterKeuze = 'auto' | Register;
+
+/** Gelezen alsof een vreemde het schreef: alles wat geen keuze is, volgt de groep. */
+export function keuzeUit(waarde: string | undefined): RegisterKeuze {
+  return waarde === 'beeld' || waarde === 'getal' ? waarde : 'auto';
+}
+
+/** Het register dat deze keuze en deze groep samen opleveren. */
+export function registerUit(keuze: RegisterKeuze, groep: Groep | undefined): Register {
+  return keuze === 'auto' ? registerVoor(groep) : keuze;
+}
 
 /** De ijkpunten van één register, laagste eerst. */
 export function ijkpuntenVoor(register: Register): readonly IJkpunt[] {

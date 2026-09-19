@@ -13,11 +13,10 @@ import {
 } from '@/features/module/onderdelen';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
-import { WeekBlok } from '@/features/week/WeekBlok';
 import { ToetsenBlok } from './ToetsenBlok';
 
 /**
- * The child's own column: the tests that are coming, the weekkaart, and where
+ * The child's own column: the tests that are coming, and where
  * they keep going back to.
  *
  * It is the same column on every page inside the shell, because it is what the
@@ -43,13 +42,9 @@ import { ToetsenBlok } from './ToetsenBlok';
  * élke pagina meegaat stond het ook naast diezelfde pagina.
  */
 export function SideColumn({
-  onWeek,
   onBegin,
   vanOuder = false,
-  opWeek = false,
 }: {
-  /** The way to the weekkaart's own page, which is what the week block leads to. */
-  readonly onWeek: () => void;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
   /**
    * Op de ouderpagina (ADR-143). Daar stonden alle vier de blokken, elk met een
@@ -62,13 +57,6 @@ export function SideColumn({
    * gaan over hoe het kind het doet, en die staan op de pagina's van het kind.
    */
   readonly vanOuder?: boolean;
-  /**
-   * Op de weekkaart zelf (ADR-149). Het weekblok is die pagina in het klein, en
-   * ernaast stond hij dus twee keer: dezelfde vakjes, dezelfde zin en twee koppen
-   * "Jouw week". Het is dezelfde regel als bij "Goed beantwoord" (ADR-148): wat
-   * de pagina al zegt, zegt de kolom ernaast niet nog eens.
-   */
-  readonly opWeek?: boolean;
 }) {
   const desk = useDesk();
   if (!desk) return null;
@@ -76,12 +64,7 @@ export function SideColumn({
   return (
     <aside className="tk-home-aside">
       <ToetsenBlok />
-      {vanOuder ? null : (
-        <>
-          {opWeek ? null : <WeekBlok onWeek={onWeek} />}
-          <FavorietenBlok onBegin={onBegin} />
-        </>
-      )}
+      {vanOuder ? null : <FavorietenBlok onBegin={onBegin} />}
     </aside>
   );
 }
