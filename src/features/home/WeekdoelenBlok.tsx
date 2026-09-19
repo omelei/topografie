@@ -208,13 +208,21 @@ export function WeekdoelenBlok({
         />
       ) : (
         <div className="tk-doel-knoppen">
+          {/* De knop erbij is een kale knop en niet `Button`, om het teken:
+              `Button` stopt zijn kinderen in één span, en de 8px tussenruimte
+              van `.tk-button` geldt voor directe kinderen. Zo doet "Nog een
+              kind erbij" op Jij het ook. */}
           {vol ? (
             <p className="tk-hulp">{t('weekdoel.vol')}</p>
           ) : (
-            <Button variant="secondary" onClick={() => setNieuw('rondes')}>
+            <button
+              type="button"
+              className="tk-button tk-button-secondary"
+              onClick={() => setNieuw('rondes')}
+            >
               <PlusIcon size={20} />
               {t('weekdoel.toevoegen')}
-            </Button>
+            </button>
           )}
           <button type="button" className="tk-doel-ander" onClick={() => zetUit(true)}>
             {vanOuder ? t('weekdoel.uitZettenOuder') : t('weekdoel.uitZetten')}
