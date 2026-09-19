@@ -146,7 +146,9 @@ de rest van de app ook niet meer.
 
 De kadanstabel van het oude ontwerp rekende met rondes van tien vragen en keek
 langs `composeRound` heen. Hieronder staat de uitkomst van de échte planner:
-`INTERVAL_DAYS` (1, 2, 5, 8, 21 dagen), `review` inclusief zijn vroege tak voor
+`INTERVAL_DAYS` (1, 2, 5, 8, 21 dagen — de tabel zoals hij was; ADR-160 heeft de
+eerste drie dozen daarna op één dag gezet, dus de kadans hieronder is die van
+vóór die beslissing), `review` inclusief zijn vroege tak voor
 goed-maar-niet-aan-de-beurt, `mixVoor`/`TEMPO_MIX`, en `composeRound` met het
 opvullen van tekorten en het terugzetten van een fout antwoord in dezelfde ronde.
 `ROUND_SIZE` is `{ topo: 15, tafels: 10, klok: 10, vlaggen: 10, taal: 10 }` en de

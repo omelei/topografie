@@ -41,7 +41,8 @@ describe('itemRetention', () => {
   // The sentence the whole model has to survive being explained by: after one
   // box interval you still know about nine tenths of it.
   it('is nine tenths after exactly one interval', () => {
-    // Box 3 has a five-day interval since ADR-114.
+    // A box-three step is five days on the forgetting curve (GEHEUGEN_DAGEN),
+    // which is where it stayed when the schedule got faster (ADR-160).
     expect(itemRetention(state('x', 3, 0), days(5))).toBeCloseTo(0.9, 6);
   });
 

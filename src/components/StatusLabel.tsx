@@ -34,8 +34,12 @@ const COPY = {
 /**
  * How full the dot is for each status. Opfrissen is a dot not quite full: it
  * was remembered, and the quarter that is missing is the time since.
+ *
+ * Exported because K9 draws the same four dots without the words beside them —
+ * on its tiles and in its wall of dots — and two tables of these numbers would
+ * be two pictures of one idea.
  */
-const FILL = {
+export const STATUS_FILL = {
   refresh: 0.75,
   remembered: 1,
   practising: 0.5,
@@ -60,7 +64,7 @@ export function StatusLabel({ status, className }: StatusLabelProps) {
           Decorative, because the word beside it says the same thing, and a
           screen reader announcing both would say everything twice down a
           column of twelve provinces. */}
-      <Dot size={24} fill={FILL[status]} tone="inherit" />
+      <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
       {t(COPY[status])}
     </span>
   );

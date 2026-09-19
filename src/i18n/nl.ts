@@ -210,9 +210,9 @@ export const nl = {
   // in één blik — dezelfde vorm, kleiner, geen tweede diagram om te leren.
   'retention.title': 'Wat je onthoudt',
   // Elk vak, niet alleen topografie (ADR-112). De zin eronder zegt wat
-  // onthouden hier betekent (ADR-114): na een week nog goed.
+  // onthouden hier betekent (ADR-114, ADR-160): na een dag nog goed.
   'retention.intro':
-    'Hoeveel je onthoudt en hoe je oefent. Iets onthoud je als je het nog weet nadat er een week tussen zat.',
+    'Hoeveel je onthoudt en hoe je oefent. Iets onthoud je als je het nog weet nadat er een dag tussen zat.',
   // De bovenkant van de pagina (ADR-148): alles bij elkaar, over elk vak.
   'retention.geheugenTitel': 'Je geheugen',
   'retention.geheugenEen': 'onderdeel onthoud je',
@@ -267,7 +267,10 @@ export const nl = {
   'retention.dagGeleden': '1 dag geleden',
   'retention.dagenGeleden': '{aantal} dagen geleden',
   'retention.nooit': '–',
-  // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114).
+  // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114), en
+  // sinds ADR-160 bovenaan de pagina en open: alles eronder telt dit ene woord.
+  // De dag in regel 2 is de snelste weg die het schema toelaat (INTERVAL_DAYS):
+  // goed op dag 0, dag 1 en dag 2.
   // De gratis voorproef (ADR-124): de pagina zegt welk onderwerp ze laat zien,
   // want zonder de chips kan een kind niet zien dat er meer is.
   'retention.voorproef':
@@ -276,7 +279,7 @@ export const nl = {
   'retention.regel1':
     'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
   'retention.regel2':
-    'Onthouden is drie keer goed op verschillende dagen, met minstens een week tussen de eerste en de laatste keer.',
+    'Onthouden is drie keer goed op verschillende dagen, met minstens een dag tussen de eerste en de laatste keer.',
   'retention.regel3':
     'Heb je iets heel lang niet gezien, dan staat er even opfrissen. Eén goed antwoord en je onthoudt het weer.',
   'retention.regel4': 'Eén fout antwoord en je begint bij dat onderdeel weer bij het begin.',
