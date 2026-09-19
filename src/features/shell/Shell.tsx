@@ -38,7 +38,18 @@ import { VakMenu } from './VakMenu';
  * **Nothing here appears during a round.** Not hidden: not rendered. A round
  * screen is not wrapped in this component at all (ADR-041), and
  * e2e/shell.spec.ts asserts it from the outside.
+ *
+ * **En er staat een overslaan-link bovenaan** (ADR-166). Aan een bureau staan
+ * er twaalf knoppen vóór de inhoud — het merk, vier bestemmingen, de
+ * premiumknop, het kind, en zes vakken in de rail — en die staan op élke
+ * pagina. Wie met het toetsenbord werkt, liep ze elke keer opnieuw af. De link
+ * is onzichtbaar tot hij focus krijgt en springt naar `main`, dat daarvoor een
+ * id en `tabIndex={-1}` heeft: een doel dat geen focus kan krijgen, verplaatst
+ * de focus niet en dan doet de link niets voor wie hem het hardst nodig heeft.
  */
+
+/** Waar de overslaan-link heen springt. */
+const INHOUD_ID = 'inhoud';
 
 /** A mark per destination, for the tab bar, where a row of words is read rather than recognised. */
 const DESTINATION_ICON: Record<Destination['id'], ComponentType<Omit<IconProps, 'children'>>> = {
@@ -108,6 +119,25 @@ export function Shell({
 
   return (
     <div className="flex min-h-screen flex-col bg-kaart">
+      {/* Het eerste wat de tab-toets raakt, op elke pagina (ADR-166).
+          De focus wordt met de hand verzet in plaats van aan het anker
+          overgelaten: browsers zijn het er niet over eens of springen naar een
+          fragment ook de focus meeneemt, en een link die de pagina wel scrollt
+          maar de focus laat staan, helpt precies niemand. Het adres blijft
+          schoon, want het volgende `pushState` schrijft toch alleen het pad. */}
+      <a
+        className="tk-overslaan"
+        href={`#${INHOUD_ID}`}
+        onClick={(event) => {
+          event.preventDefault();
+          const inhoud = document.getElementById(INHOUD_ID);
+          inhoud?.focus();
+          inhoud?.scrollIntoView();
+        }}
+      >
+        {t('nav.overslaan')}
+      </a>
+
       <header className="tk-appbar flex-none">
         {/* The logo, and the way back to the front door: Denker and the name,
             at every width (ADR-154). */}
@@ -177,6 +207,8 @@ export function Shell({
         ) : null}
 
         <main
+          id={INHOUD_ID}
+          tabIndex={-1}
           className="tk-grond min-h-0 min-w-0 flex-1"
           data-grond={grondSoort(grond)}
           data-module={grond === 'vandaag' ? undefined : grond}

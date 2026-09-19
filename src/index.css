@@ -501,6 +501,37 @@
     text-wrap: pretty;
   }
 
+  /* De overslaan-link (ADR-166). Weg tot hij focus krijgt, en dan een gewone
+   * knop linksboven, over alles heen. Niet `display: none` en niet
+   * `visibility: hidden`: allebei halen hem uit de tabvolgorde, en dan is er
+   * niets om overheen te slaan. Wat hem verbergt is dat hij boven het scherm
+   * staat, en bij focus zakt hij erin. */
+  .tk-overslaan {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--raak);
+    padding: 0 16px;
+    border-radius: 0 0 var(--kaart-radius) var(--kaart-radius);
+    background: var(--inkt);
+    color: var(--kaart);
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-120%);
+  }
+  .tk-overslaan:focus-visible {
+    transform: translateY(0);
+  }
+  /* Het doel van de link draagt `tabIndex={-1}` en krijgt dus focus. Een rand
+   * om de hele pagina is daar geen hulp — de focus is er om verder te tabben,
+   * niet om iets aan te wijzen. */
+  #inhoud:focus {
+    outline: none;
+  }
+
   /* One focus style everywhere. On a map region an outline follows the bounding
    * box rather than the shape, which draws a rectangle in the sea — so map
    * shapes thicken their own stroke instead (see .tk-shape). */

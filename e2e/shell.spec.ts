@@ -36,6 +36,23 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
+/**
+ * De overslaan-link (ADR-166): het eerste wat de tab-toets raakt, op elke
+ * pagina, en hij zet de focus echt in `main` in plaats van alleen het adres te
+ * veranderen. Op elke maat, want de twaalf knoppen ervoor zijn er aan een
+ * bureau en de balk en de tabbalk staan er op een telefoon.
+ */
+test('de eerste tab is de weg naar de inhoud', async ({ page }) => {
+  await signIn(page, 'Fem');
+
+  const overslaan = page.getByRole('link', { name: 'Naar de inhoud' });
+  await page.keyboard.press('Tab');
+  await expect(overslaan).toBeFocused();
+
+  await page.keyboard.press('Enter');
+  await expect(page.locator('main')).toBeFocused();
+});
+
 test('a round has no navigation in the document at all', async ({ page }) => {
   await signIn(page, 'Sanne');
   await startRound(page);

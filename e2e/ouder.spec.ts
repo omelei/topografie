@@ -78,3 +78,39 @@ test('de twee pagina’s wijzen naar elkaar, en allebei hebben ze een adres', as
   await page.getByRole('button', { name: 'Naar Jij' }).click();
   await expect(page).toHaveURL(/\/jij$/);
 });
+
+/**
+ * Alles van dit apparaat halen (ADR-166).
+ *
+ * De belofte van dit product is dat de voortgang op het apparaat blijft. Deze
+ * test legt vast wat die belofte waard maakt: dat je er ook bij kunt. In twee
+ * stappen, met een uitweg, en daarna is het kind er echt niet meer — de app
+ * opent weer op de vraag naar een naam.
+ */
+test('een ouder kan alles van dit apparaat halen, in twee stappen', async ({ page }) => {
+  await signIn(page, 'Loes');
+  await page.goto('/ouder');
+
+  const blok = page.getByRole('region', { name: 'Alles van dit apparaat halen' });
+  await expect(blok).toBeVisible();
+
+  // Eén druk wist nog niets: er komt eerst te staan wat er weggaat.
+  await blok.getByRole('button', { name: 'Alles wissen' }).click();
+  await expect(blok).toContainText('Dit kan niet ongedaan gemaakt worden.');
+
+  // En de uitweg brengt je terug zonder dat er iets gebeurd is.
+  await blok.getByRole('button', { name: 'Laat maar staan' }).click();
+  await expect(blok.getByRole('button', { name: 'Alles wissen' })).toBeVisible();
+
+  await page.goto('/');
+  await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toBeVisible();
+
+  // En dan echt.
+  await page.goto('/ouder');
+  await blok.getByRole('button', { name: 'Alles wissen' }).click();
+  await blok.getByRole('button', { name: 'Ja, haal alles weg' }).click();
+
+  // Terug bij het begin: geen kind meer, en dus weer de vraag naar een naam.
+  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
+  await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toHaveCount(0);
+});

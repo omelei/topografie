@@ -284,7 +284,14 @@ export function getDb(): Promise<IDBPDatabase<TopoDB>> {
   return dbPromise;
 }
 
-/** Test seam: forces the next getDb() to reopen. */
-export function resetDbForTests(): void {
+/**
+ * Vergeet de open verbinding, zodat de volgende `getDb()` er een nieuwe opent.
+ *
+ * Het heette `resetDbForTests` en had geen enkele gebruiker. Sinds ADR-166 is
+ * het er een die er echt toe doet: `wisAlles` moet de verbinding kwijt zijn
+ * voordat `deleteDatabase` iets kan, want IndexedDB blokkeert dat zolang er een
+ * open verbinding is — zonder fout, en dan gebeurt er gewoon niets.
+ */
+export function vergeetDb(): void {
   dbPromise = null;
 }

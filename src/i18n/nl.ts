@@ -205,6 +205,10 @@ export const nl = {
   // scherm verdwijnen voor wie het niet ziet. De merknaam komt uit brand.ts.
   'nav.home': '{merk}, naar Vandaag',
   'nav.destinations': 'Waar je heen kunt',
+  // De overslaan-link (ADR-166). Onzichtbaar tot hij focus krijgt, en dan het
+  // eerste wat er staat. "Naar de inhoud" en niet "Skip to content": de app is
+  // Nederlands, ook waar alleen een schermlezer meeleest.
+  'nav.overslaan': 'Naar de inhoud',
   // Het vakmenu onder de balk op een tablet en een telefoon, waar de rail niet
   // staat. De knop zegt welk vak je open hebt; waar je in geen vak bent noemt
   // hij wat hij doet, want daar is hij de weg naar een ronde (ADR-121). De naam
@@ -657,7 +661,7 @@ export const nl = {
   'premium.perMaand': 'per maand',
   'premium.perSchooljaarKort': 'per schooljaar',
   'premium.maandKnop': 'Per maand',
-  'premium.maandUitleg': 'Maandelijks opzegbaar. Je zit nergens aan vast.',
+  'premium.maandUitleg': 'Maandelijks opzegbaar. Je zegt op wanneer je wilt.',
   'premium.jaarVoordeel': 'Een heel schooljaar kost minder dan vijf maanden.',
   'premium.ofPerMaand': 'Of {prijs} per maand, maandelijks opzegbaar.',
 
@@ -1555,6 +1559,34 @@ export const nl = {
   // alleen waarom hij onderaan staat.
   'groep.herhaling': 'Nog eens herhalen',
   'groep.later': 'Voor later',
+
+  // Alles van dit apparaat halen (ADR-166). Onderaan Voor ouders, in twee
+  // stappen, en de tweede stap vertelt wat er weggaat in plaats van "weet je
+  // het zeker?" te vragen — die vraag leert iemand alleen om twee keer te
+  // drukken.
+  'wissen.titel': 'Alles van dit apparaat halen',
+  'wissen.uitleg':
+    'Alles wat je kinderen hebben geoefend, staat op dit apparaat en nergens anders. Hier haal je het er weer af.',
+  'wissen.knop': 'Alles wissen',
+  'wissen.zeker': 'Dit haalt leer.nu helemaal leeg op dit apparaat:',
+  'wissen.watVoortgang':
+    'De namen en de voortgang van elk kind: wat ze geoefend hebben, hun diploma’s en hun toren.',
+  'wissen.watCode':
+    'De premiumcode. Je kunt hem daarna gewoon opnieuw invullen — en dit apparaat telt niet meer mee voor de drie.',
+  'wissen.onomkeerbaar': 'Dit kan niet ongedaan gemaakt worden.',
+  'wissen.doe': 'Ja, haal alles weg',
+  'wissen.laatMaar': 'Laat maar staan',
+  'wissen.bezig': 'Bezig met wissen…',
+
+  // Als er iets kapotgaat (ADR-166). Een zin en twee knoppen, geen
+  // foutmelding: de tekst van een uitzondering zegt een kind niets en een
+  // ouder bijna niets. En meteen de geruststelling die het eerst nodig is.
+  'fout.titel': 'Er ging iets mis',
+  'fout.uitleg':
+    'Dit scherm deed het even niet. Probeer het nog een keer, of ga terug naar het begin.',
+  'fout.bewaard': 'Alles wat je geoefend hebt, staat er nog. Er gaat hierdoor niets verloren.',
+  'fout.opnieuw': 'Probeer opnieuw',
+  'fout.naarBegin': 'Terug naar het begin',
 
   // Accessible names for things that have no visible label of their own
   'a11y.progress': 'Voortgang in deze ronde',

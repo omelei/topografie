@@ -9427,6 +9427,101 @@ een voorbeeld is.
 
 ---
 
+## ADR-166 — Drie dingen die overal misten: een uitweg, een vangnet en een overslaan-link
+
+**Status:** accepted. **Date:** 2026-09-19. Vult ADR-015 (alles op het
+apparaat), ADR-093 (het frame) en ADR-136 (Voor ouders) aan.
+
+### Context
+
+De feedbackronde vroeg om drie verbeteringen aan de overige pagina's, gekozen
+op waarde. Dit zijn ze, en ze hebben iets gemeen: het zijn geen schermen die
+beter kunnen, het zijn dingen die in het hele product ontbreken. Dat is waarom
+ze de andere kandidaten verslaan — een rij die netter uitlijnt, een blok dat een
+regel korter kan — want die raken één pagina en deze drie raken ze allemaal.
+
+**1. Er was geen manier om ergens vanaf te komen.** Dit product zegt op bijna
+elke pagina dat de voortgang op het apparaat blijft, en sinds ADR-164 zegt de
+premiumpagina erbij dat we geen namen van kinderen opslaan. Allebei waar, en
+allebei een belofte waar een ouder niets aan had: er was geen enkele weg om het
+er weer af te halen. De enige uitweg was de site-data van de browser wissen — een
+menu dat de meeste ouders niet vinden, dat de premiumcode meeneemt zonder de
+plek op de server vrij te geven, en dat op een gedeelde iPad veel meer wist dan
+leer.nu. ADR-126 noemde dat al als de enige ontsnapping uit een verkeerd
+gespelde naam, en behandelde het toen als een gegeven.
+
+**2. Een fout in welk scherm dan ook gaf een wit vlak.** Er was geen
+`ErrorBoundary`. Elk scherm in deze app leest IndexedDB, en dat is de plek waar
+het hele geheugen van dit product staat: een browser die de opslag halverwege
+weggooide, een rij uit een nieuwere versie, een iPad zonder quota. De stores
+lezen elk voor zich alsof een vreemde geschreven had, maar dat dekt alleen de
+rij die ze zelf lezen. Wat een kind overhield aan alles daarbuiten was een leeg
+scherm zonder woord, zonder knop en zonder weg terug — en wat een ouder ervan
+hoorde was "de app is stuk".
+
+**3. Er was geen weg langs de navigatie heen.** Aan een bureau staan er twaalf
+knoppen vóór de inhoud: het merk, vier bestemmingen, de premiumknop, het kind, en
+zes vakken in de rail. Op élke pagina. Wie met het toetsenbord werkt, liep ze
+elke keer opnieuw af. Dat is WCAG 2.4.1 Bypass Blocks, niveau A, en het is het
+soort gat dat axe niet vindt — de e2e-scans komen er dus niet op uit.
+
+### Decision
+
+**Een blok "Alles van dit apparaat halen", onderaan Voor ouders.** In twee
+stappen, en de tweede is geen "weet je het zeker?": die vraag leert iemand alleen
+om twee keer te drukken. De tweede stap zegt wat er weggaat — de namen en de
+voortgang van elk kind, en de premiumcode — en de knop erop zegt wat hij doet.
+
+De uitweg is de zwáárste knop van de twee. De primaire knop is de weg vooruit,
+en vooruit is hier "laat staan"; wissen is een echt alternatief dat je bewust
+kiest, en dat is precies wat secundair betekent (`Button.tsx`: drie gewichten en
+geen vierde). Een rode knopsoort erbij zou een kleur aan de huisstijl toevoegen
+voor één scherm.
+
+**De volgorde van het wissen is het hele werk.** Eerst de code van dit apparaat
+afmelden, dán de database weggooien. Andersom is de plek die de code op de server
+bezet houdt niet meer terug te geven, en een gezin dat drie apparaten mag
+gebruiken raakt er een kwijt aan een apparaat dat niets meer weet. Mislukt het
+afmelden — geen verbinding, geen kassa — dan gaat het wissen door: wie op deze
+knop drukt wil dat er niets achterblijft, en de server ziet de code vanzelf
+verlopen.
+
+**Een `Foutscherm` om de hele app heen.** Een zin, de geruststelling dat de
+voortgang er nog staat, en twee knoppen: opnieuw proberen, of terug naar het
+begin. Geen foutmelding — de tekst van een uitzondering zegt een kind niets en
+een ouder bijna niets. De fout gaat naar de console, want daar kijkt degene die
+hem moet oplossen; het is de enige `console`-regel in het product.
+
+Geen van beide knoppen raakt de opslag aan. Een scherm dat het niet doet, is geen
+bewijs dat de voortgang stuk is, en dit is precies het moment waarop iemand in
+paniek op de verkeerde knop drukt.
+
+**En een overslaan-link, als eerste element in de Shell.** Onzichtbaar tot hij
+focus krijgt — boven het scherm geparkeerd, niet `display: none`, want dan valt
+hij uit de tabvolgorde en is er niets om overheen te slaan. Hij verzet de focus
+met de hand naar `main`, dat daarvoor `tabIndex={-1}` draagt: browsers zijn het
+er niet over eens of een sprong naar een fragment ook de focus meeneemt, en een
+link die wel scrollt maar de focus laat staan, helpt precies niemand.
+
+### Consequences
+
+- `resetDbForTests` heet nu `vergeetDb` en heeft eindelijk een gebruiker die
+  ertoe doet: `deleteDatabase` doet niets zolang er een open verbinding is, en
+  het doet dat zonder fout.
+- Het wissen wacht niet op `blocked`. Dat betekent dat een ander tabblad de
+  database open heeft, en daar valt van hier niets aan te doen; wachten zou de
+  knop laten hangen tot iemand een tabblad sluit dat hij misschien niet kan
+  vinden. De herlaadbeurt sluit dit tabblad af en de volgende keer lukt het wel.
+- Het `Foutscherm` is een klasse. `componentDidCatch` bestaat alleen daar, en er
+  is geen hook die het vervangt.
+- De overslaan-link staat er ook tijdens een ronde niet: een ronde is niet in de
+  Shell gewikkeld (ADR-041), en daar is ook geen navigatie om overheen te slaan.
+- **Nog niet in een browser gezien.** Met name de overslaan-link: of hij bij
+  focus netjes onder de bovenrand vandaan komt en niet half achter de app-balk
+  blijft steken, is iets om te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

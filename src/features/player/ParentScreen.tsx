@@ -27,6 +27,7 @@ import { RegisterInstelling } from '@/features/toren/RegisterInstelling';
 import { WeekdoelenBlok } from '@/features/home/WeekdoelenBlok';
 import { getActiveChild } from '@/store/children';
 import { GroepInstelling } from './GroepInstelling';
+import { Wissen } from './Wissen';
 
 /**
  * "Voor ouders": alles wat niet van het kind is (ADR-136).
@@ -198,6 +199,10 @@ export function ParentScreen({
 
           <p className="tk-hulp">{t('you.stays')}</p>
         </div>
+
+        {/* Onderaan, en als laatste: de belofte hierboven — het blijft op dit
+            apparaat — is pas iets waard als je er ook bij kunt (ADR-166). */}
+        <Wissen />
       </div>
     </div>
   );
