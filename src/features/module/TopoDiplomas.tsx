@@ -39,6 +39,9 @@ export function TopoDiplomas({
 
   // Nothing until it is known, for the reason every wall gives.
   if (behaald === null) return null;
+  // Op Jij staat alleen wat gehaald is (ADR-158): een lege wand met een kop
+  // erboven zegt een kind dat het niets heeft, en dat is niet de boodschap.
+  if (alleenBehaald && behaald.size === 0) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('topo.diplomasTitle')}>

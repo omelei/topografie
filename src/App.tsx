@@ -544,9 +544,11 @@ export default function App() {
 
   const goOuder = () => go({ name: 'ouder' });
   const goJij = () => go({ name: 'you' });
+  // "Bekijk alle diploma's" gaat sinds ADR-158 naar Voor ouders: daar staat het
+  // hele raster, want daar zijn de lege vakjes iets waar iemand wat mee kan.
   const goDiplomas = () => {
     setDiplomasOpen(true);
-    go({ name: 'you' });
+    go({ name: 'ouder' });
   };
 
   /** The child's own column, which every screen inside the shell carries. */
@@ -628,13 +630,7 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen
-          profile={boot.profile}
-          aside={eigenKolom}
-          onOuder={goOuder}
-          diplomasOpen={diplomasOpen}
-          onDiplomasGezien={() => setDiplomasOpen(false)}
-        />
+        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
       </Shell>
     );
   }
@@ -647,6 +643,8 @@ export default function App() {
           aside={<SideColumn onBegin={beginRonde} vanOuder />}
           onJij={goJij}
           onOnthouden={() => go({ name: 'retention' })}
+          diplomasOpen={diplomasOpen}
+          onDiplomasGezien={() => setDiplomasOpen(false)}
         />
       </Shell>
     );

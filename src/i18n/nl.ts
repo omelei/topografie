@@ -160,13 +160,12 @@ export const nl = {
   'afzwemmen.printZonderNaam': 'Gehaald',
   'afzwemmen.printDatum': 'op {datum}',
   // De seizoenen op een diploma, voor de bijhoudstempels.
-  // De dagen van de week: kort boven een streepje, voluit voor wie voorleest.
-  // Genummerd zoals Date.getDay telt: zondag is 0.
-  // De prijzenkast op Jij (ADR-143): eerst wat je hébt, en de gaten pas als je
-  // erom vraagt. Op een modulepagina blijft elk gat een uitnodiging, want daar
-  // is hij aan te raken; hier was hij dat niet.
+  // De prijzenkast, sinds ADR-158 op Voor ouders: eerst wat gehaald is, en de
+  // gaten pas als je erom vraagt. Op een modulepagina blijft elk gat een
+  // uitnodiging, want daar is hij aan te raken; hier is hij dat niet. De
+  // knoppen spreken de ouder aan, want dit is zijn pagina.
   'prijzenkast.meer': 'Laat zien wat er nog te halen is',
-  'prijzenkast.minder': 'Laat alleen zien wat ik heb',
+  'prijzenkast.minder': 'Laat alleen zien wat gehaald is',
   // Wat er wel is maar niet vooraan hoeft (ADR-143).
   'uitklap.tabel': 'Laat de tabel zien',
   'uitklap.tabelDicht': 'Verberg de tabel',
@@ -1348,7 +1347,14 @@ export const nl = {
   'toren.fundamentUitleg': 'Je toren begint met alles wat je tot nu toe goed had.',
   'toren.samenvatting':
     'De toren: {stenen} stenen, {verdiepingen} verdiepingen, {meter} meter hoog.',
-
+  // Voor de ouder (ADR-158). De derde zin is de belangrijkste: zonder die zin
+  // lijkt een kind dat het goed doet te verslappen, terwijl het tegendeel
+  // gebeurt.
+  'toren.ouderTitel': 'Hoe de toren werkt',
+  'toren.ouderUitleg':
+    'Een steen is één keer dat je kind iets nog wist toen het terugkwam. Nieuwe woorden en sommen tellen nog niet mee; die tellen de dag dat ze terugkomen. Er gaat nooit iets af, ook niet na een fout antwoord of een week zonder oefenen.',
+  'toren.ouderTempo':
+    'Hoe beter je kind iets kent, hoe minder vaak het terugkomt. Dan komen er langzamer stenen bij — dat is geen verslapping maar het bewijs dat het blijft hangen. Een nieuw onderwerp opent nieuwe stenen.',
   // De vier dingen die in een ronde gezegd worden. Bij een fout staat er niets:
   // het foutteken heeft dat al gezegd.
   'toren.steenGoed': 'Je wist hem nog. Eén steen.',
@@ -1378,6 +1384,8 @@ export const nl = {
   'reeks.record': 'Je langste: {aantal} dagen.',
   'reeks.recordEen': 'Je langste: 1 dag.',
   'reeks.uitleg': 'Alle dagen tellen mee, ook het weekend.',
+  'reeks.ouderUitleg':
+    'De reeks telt dagen met een afgemaakte ronde. Het weekend telt mee, en één dag overslaan breekt hem. Breken kost nooit stenen, en het record blijft staan.',
   'reeks.opnieuw': 'Je reeks begint opnieuw. Je toren staat er nog.',
   'reeks.leeg': 'Je reeks begint op de dag dat je een ronde afmaakt.',
   'reeks.opHetSpel': 'Je reeks staat op {aantal} dagen. Nog vandaag, anders begint hij opnieuw.',
@@ -1407,6 +1415,9 @@ export const nl = {
     'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',
   'ouder.naar': 'Voor ouders',
   'ouder.naarOnthouden': 'Bekijk wat je kind onthoudt en hoe het oefent',
+  'ouder.diplomasTitel': 'Alle diploma’s',
+  'ouder.diplomasUitleg':
+    'Wat je kind gehaald heeft, en wat er nog te halen valt. Een diploma is een toets: je kind doet hem als de stof ver genoeg is, en kan hem printen.',
   'ouder.terug': 'Naar Jij',
 
   // Het account van de ouder (ADR-155). Alleen van de ouder: een kind heeft geen

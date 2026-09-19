@@ -39,6 +39,9 @@ export function VlagDiplomas({
   // Nothing until it is known: a wall that shows six gaps and then fills two of
   // them has told a child they had none.
   if (behaald === null) return null;
+  // Op Jij staat alleen wat gehaald is (ADR-158): een lege wand met een kop
+  // erboven zegt een kind dat het niets heeft, en dat is niet de boodschap.
+  if (alleenBehaald && behaald.size === 0) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('vlag.diplomasTitle')}>

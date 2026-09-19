@@ -568,7 +568,18 @@ Vijf, en de eerste drie kunnen alleen met echte kinderen.
    Ronde klaar, en de zin op de modulepagina. Album eruit.
 2. Het register per groep, de ijkpunten, de reeks, de kaart naar Onthouden, het
    jaaroverzicht opnieuw.
-3. De etalage van diploma's van Jij naar Voor ouders, en de ouderuitleg.
+3. De diploma's naar Voor ouders, en de ouderuitleg.
+
+Bij die derde is één ding anders uitgevallen dan "de etalage verhuist". **Jij
+houdt wat gehaald is** — dat hoort bij de toren en de reeks, want het is wat dit
+kind gebouwd heeft. Wat naar Voor ouders gaat, is het hele raster mét de gaten:
+drieëndertig vakjes waarvan de meeste leeg, en dáár zijn die gaten het punt
+(ADR-064) omdat een ouder er iets mee kan. Is er nog niets gehaald, dan staat er
+op Jij niets — vier lege wanden met een kop erboven vertellen een kind op dag
+één dat het niets heeft.
+
+Daarmee verhuist ook de diepe link van ADR-153: "Bekijk alle diploma's" op de
+voordeur gaat naar Voor ouders in plaats van naar Jij.
 
 Eén ADR voor het hele besluit, drie PR's voor de code.
 

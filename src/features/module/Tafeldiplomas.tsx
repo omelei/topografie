@@ -45,6 +45,9 @@ export function Tafeldiplomas({
   // Nothing until it is known: a wall that shows twelve gaps and then fills
   // four of them has told a child they had none.
   if (behaald === null) return null;
+  // Op Jij staat alleen wat gehaald is (ADR-158): een lege wand met een kop
+  // erboven zegt een kind dat het niets heeft, en dat is niet de boodschap.
+  if (alleenBehaald && behaald.size === 0) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('rekenen.diplomasTitle')}>
