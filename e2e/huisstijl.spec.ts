@@ -35,7 +35,7 @@ test('stands on the styleguide’s ground and sets its headings in Archivo', asy
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(ground).toBe('rgb(239, 241, 245)');
+  expect(ground).toBe('rgb(244, 240, 238)');
 
   const heading = page.getByRole('heading', { name: /^Welkom / });
   await expect(heading).toBeVisible();
@@ -58,7 +58,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(239, 241, 245)',
+    'rgb(244, 240, 238)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();

@@ -6,8 +6,11 @@
  * Below 24px the favicon instead: bigger eyes and no dot, as the delivery
  * asks.
  *
- * The expressions are feedback in the app only: never in place of the logo,
- * and at most one on a screen.
+ * The expressions are feedback in the app only: never in place of the logo, and
+ * at most one on a screen. And never the answer itself — Denker is koraal,
+ * eight degrees of hue from the red that means wrong, so an expression may
+ * stand beside a result but may not be what tells a child it was right
+ * (ADR-159). The shapes of §8 do that.
  *
  * Silent, always. The name is the logo's job.
  */

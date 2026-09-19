@@ -6,18 +6,21 @@ import { describe, expect, it } from 'vitest';
    purpose: the palette's table, to hold the stylesheet to it letter for letter. */
 
 /**
- * The house style, held in place (ADR-109, docs/HUISSTIJL.md).
+ * The house style, held in place (ADR-109, ADR-159, docs/HUISSTIJL.md).
  *
  * The colours are the styleguide's ("Leisteen", docs/leer.nu Styleguide - Leisteen.dc.html)
- * and the rest of the tokens are design_handoff_leernu/README.md's; both are
- * definitive. This file is what makes that true for the next page as well as
- * for this one: a new screen that reaches for a literal colour, a shadow, a
- * third typeface or one of the old token names fails here, with the file and
- * the line, before anyone has to notice it in a screenshot.
+ * with the neutrals turned to the logo's warmth (ADR-159), and the rest of the
+ * tokens are design_handoff_leernu/README.md's; all three are definitive. This
+ * file is what makes that true for the next page as well as for this one: a new
+ * screen that reaches for a literal colour, a shadow, a third typeface or one of
+ * the old token names fails here, with the file and the line, before anyone has
+ * to notice it in a screenshot.
  *
  * The styleguide writes its colours in oklch and index.css in the sRGB a
  * browser resolves them to, so the hexes below are that resolution — the oklch
- * they came from stands beside each one in index.css.
+ * they came from stands beside each one in index.css. The neutrals below are
+ * that same ladder at cacao's hue: every lightness is the styleguide's, so
+ * every ratio contrast.test.ts measures is the one it measured before.
  */
 
 const ROOT = process.cwd();
@@ -61,19 +64,22 @@ function offenders(pattern: RegExp, files: string[]): string[] {
 
 describe('the tokens are the styleguide’s', () => {
   it.each([
-    ['canvas', '#e3e7ef'],
-    ['papier', '#eff1f5'],
+    ['canvas', '#eee5e0'],
+    ['papier', '#f4f0ee'],
     ['kaart', '#ffffff'],
-    ['inkt', '#1b2230'],
-    ['tekst-secundair', '#5a6274'],
-    // The styleguide's caption ink is #6a7385, which it measures on a card and
-    // not on the ground, where it fails AA. index.css carries that colour two
-    // steps darker, on the same hue and chroma; contrast.test.ts is what holds
-    // it there, and this is the note that says the difference is deliberate.
-    ['tekst-tertiair', '#636c7e'],
-    ['rand-licht', '#dde1e8'],
-    ['rand-sterk', '#d6dbe3'],
-    ['balk-leeg', '#e7eaf1'],
+    // Ink is cacao, the logo's own value, which lands within .005 of the
+    // lightness the styleguide gave its ink.
+    ['inkt', '#2a1e17'],
+    ['tekst-secundair', '#715e52'],
+    // The styleguide's caption ink is the one place its ladder is deliberately
+    // not followed: it measures that tone on a card and not on the ground,
+    // where it fails AA. index.css carries it two steps darker;
+    // contrast.test.ts is what holds it there, and this is the note that says
+    // the difference is deliberate.
+    ['tekst-tertiair', '#7b675c'],
+    ['rand-licht', '#e7dfdb'],
+    ['rand-sterk', '#e2d9d4'],
+    ['balk-leeg', '#f0e8e4'],
     ['actie', '#385db8'],
     ['actie-hover', '#264698'],
     ['actie-tint', '#e2ebff'],
@@ -179,8 +185,8 @@ describe('the tokens are the styleguide’s', () => {
     ['touch-duim', '56px'],
     ['touch-ronde', '56px'],
     ['touch-vo', '44px'],
-    // The one shadow, on the styleguide's ink.
-    ['schaduw-beloning', '0 10px 18px rgb(27 34 48 / 22%)'],
+    // The one shadow, on the ink's own channels.
+    ['schaduw-beloning', '0 10px 18px rgb(42 30 23 / 22%)'],
   ])('--%s is %s', (name, value) => {
     expect(rootValue(name)).toBe(value);
   });
@@ -247,6 +253,42 @@ describe('the stylesheet uses them and nothing else', () => {
     expect(ronde).toContain('--knop-hoogte: var(--touch-ronde)');
     expect(ronde).not.toMatch(/--(papier|kaart|inkt|nadruk|accent)[\w-]*:/);
     expect(cssCode).not.toMatch(/--donker-/);
+  });
+});
+
+/**
+ * The logo's colours are the logo's (ADR-159).
+ *
+ * Koraal is eight degrees of hue from the red that means wrong, so it may not
+ * pick up a second meaning on the way past: not a control, not a subject, not
+ * an answer. It reaches the app through the delivery's own file and the
+ * pictures that file colours, and through nothing else — which is a rule you
+ * can check rather than a sentence in a document nobody opens.
+ */
+describe('koraal stays the logo’s', () => {
+  it('is named in the delivery’s own file and nowhere else in the styling', () => {
+    expect(cssCode).not.toMatch(/--leernu-/);
+    expect(cssCode).not.toMatch(/--denker-/);
+  });
+
+  it('is the only stylesheet beside index.css', () => {
+    // A third stylesheet is where a second palette starts, which is the state
+    // ADR-159 ended: index.css holds the app's colours, kleuren.css holds the
+    // logo's, and there is no third opinion.
+    const sheets = sourceFiles(join(ROOT, 'src'), /\.css$/)
+      .map((full) => relative(ROOT, full).split('\\').join('/'))
+      .sort();
+    expect(sheets).toEqual(['src/design/kleuren.css', 'src/index.css']);
+  });
+
+  it('is not reached for by a component', () => {
+    expect(offenders(/--leernu-|--denker-/, sourceFiles(join(ROOT, 'src'), /\.tsx?$/))).toEqual([]);
+  });
+
+  it('left no --merk token behind', () => {
+    // It pointed at the action colour, for a wordmark that was drawn in code
+    // (ADR-147). The logo is a picture now and colours itself.
+    expect(rootValue('merk')).toBe(undefined);
   });
 });
 

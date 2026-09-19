@@ -1,27 +1,39 @@
 # Huisstijl
 
-De huisstijl van leer.nu staat in twee bladen, en allebei zijn ze definitief
-voor hun eigen deel:
+De huisstijl van leer.nu staat in drie bronnen, en elk is definitief voor zijn
+eigen deel:
 
-- **Kleur en logo** komen uit `docs/leer.nu Styleguide - Leisteen.dc.html`, de
-  richting "Leisteen" (ADR-144). Eén koele ondergrond, witte kaarten, indigo
-  voor wat je indrukt, zes vakhues op gelijke lichtheid, en groen en rood alleen
-  voor goed en fout.
+- **Het logo** is de levering `leernu-logo-denker`, ongewijzigd in `docs/logo`
+  (ADR-154). Die map bepaalt het merk: Denker, het woordbeeld, de app-iconen en
+  de vier merkkleuren koraal, koraal diep, cacao en room. Niemand retoucheert
+  daar iets; `logo.test.ts` houdt elke kopie in `public` er byte voor byte aan.
+- **Kleur** komt uit `docs/leer.nu Styleguide - Leisteen.dc.html`, de richting
+  "Leisteen" (ADR-144), met de neutralen naar het logo toe gedraaid (ADR-159).
+  Eén warme ondergrond, witte kaarten, indigo voor wat je indrukt, zes vakhues
+  op gelijke lichtheid, en groen en rood alleen voor goed en fout.
 - **Typografie, ruimte, vorm, iconen en trefmaten** komen uit de overdracht
   `design_handoff_leernu` (in `topo-prive`, README onder "Ontwerptokens") en de
   styleguide die daarbij hoort, `docs/leer.nu Styleguide.dc.html`.
 
 Dit blad zegt hoe je een scherm bouwt dat erbij hoort; ADR-109 zegt waarom het
-zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
+zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft,
+ADR-154 wat het logo is en ADR-159 hoe die twee één ding zijn geworden.
 
 ## Waar de waarden staan
 
 - **`src/index.css`** is de enige plek die een kleur, lettertype of maat van de
-  huisstijl noemt. Bovenaan staat `:root` met de tokentabel van de overdracht,
+  _app_ noemt. Bovenaan staat `:root` met de tokentabel van de overdracht,
   daaronder de telefoon, VO, de modules en het blok `[data-thema='ronde']`.
+- **`src/design/kleuren.css`** is de enige plek die een kleur van het _logo_
+  noemt, en het is het bestand van de ontwerper zelf: `--leernu-koraal`,
+  `--leernu-koraal-diep`, `--leernu-cacao`, `--leernu-room` en de drie
+  `--denker-*` die de sprite inkleuren. Verder zijn er geen stylesheets, en dat
+  is een regel die `huisstijl.test.ts` bewaakt: een derde is waar een tweede
+  palet begint.
 - **`tailwind.config.ts`** vertaalt de tokens naar klassen. Kleuren, fonts,
   radii, schaduwen en de typeschaal _vervangen_ Tailwinds eigen waarden:
   `bg-blue-500`, `rounded-lg`, `shadow-md` en `font-serif` bestaan hier niet.
+  De merkkleuren staan er niet in, en horen er niet in.
 
 ## Een nieuw scherm
 
@@ -87,6 +99,22 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
    `data-grond` — maar ze wijzen alle zeven naar `papier`, zodat een scherm het
    niet hoeft te weten. Maak er geen nieuwe hex voor.
 
+10. **Het merk, en waar koraal wel en niet mag.** Het logo is een plaatje:
+    `Wordmark` voor het liggende logo met de naam, `Brandmark` voor Denker los.
+    Teken ze niet na en zet de naam nergens in een lettertype — het woordbeeld
+    bestaat uit vormen en draagt `alt="leer.nu"`. Het logo staat op wit of op
+    `papier`, nooit kleiner dan 88 px breed; Denker los nooit kleiner dan 24,
+    en daaronder de favicon. Een uitdrukking van Denker is terugkoppeling,
+    hooguit één per scherm, en nooit in plaats van het logo.
+
+    Koraal is de kleur waarin het merk getekend is, en verder niets. Het komt
+    de app binnen via `kleuren.css` en de plaatjes die dat bestand inkleurt.
+    Het is geen knop, geen vak, geen balk en geen antwoordstaat: koraal ligt
+    acht graden tint van het rood dat "fout" betekent, en dat is precies de
+    verwarring die het niet mag veroorzaken (ADR-159). Zet Denker dus naast een
+    uitslag, niet _als_ de uitslag — de vormen van punt 8 zeggen wat er gebeurd
+    is.
+
 ## Wat het bewaakt
 
 - `src/design/huisstijl.test.ts` houdt elke tokenwaarde aan de overdracht, en
@@ -98,7 +126,9 @@ zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft.
 - `src/design/accent.test.ts` houdt bij waar een accent mag.
 - `src/design/answerStates.test.ts` houdt de vormregels vast.
 - `src/design/logo.test.ts` houdt de kopieën in `public` aan de levering in
-  `docs/logo` (ADR-154).
+  `docs/logo` (ADR-154), en `huisstijl.test.ts` houdt koraal daarbinnen: geen
+  `--leernu-` of `--denker-` in `index.css` of in een component, en geen derde
+  stylesheet.
 - `e2e/huisstijl.spec.ts` kijkt in de draaiende app: de grond, Archivo in de
   koppen, en een ronde op dezelfde grond met knoppen van 56.
 - ESLint weigert een hexwaarde in TypeScript.

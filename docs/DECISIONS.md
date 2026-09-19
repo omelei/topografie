@@ -8678,6 +8678,105 @@ om uit te zonderen. `index.ts` is daarom bijna leeg — twee regels die naar
   en of de foutcodes zijn wat ze volgens de documentatie zijn. De tests dekken
   het oordeel en niet de andere kant van de lijn.
 
+---
+
+## ADR-159 — De huisstijl draait naar het logo: warme neutralen, en koraal blijft van het merk
+
+**Status:** accepted. **Date:** 2026-09-19. Maakt de beslissing af die ADR-154
+bewust openliet.
+
+### Context
+
+ADR-154 zette het logo Denker in de app en schreef er zelf bij: "Een koraal merk
+op het blauwe palet van de app is een bewuste tussenstand: het palet is een
+aparte beslissing." Dat is de stand die dit blad opruimt.
+
+De tussenstand was zichtbaar op drie plekken. De app stond op de koele grond van
+Leisteen — `#eff1f5`, tint 264 — met een logo ernaast dat in koraal en cacao
+getekend is; naast elkaar leest dat als twee huisstijlen die elkaar verdragen.
+Het tabblad kreeg `theme-color` room uit de levering, terwijl de balk eronder
+wit is, zodat de browser boven de app een crèmekleurige rand tekende die
+nergens op sloeg. En er stond nog een `--merk`-token in `index.css` dat naar de
+actiekleur wees, uit de tijd dat het woordbeeld in code werd getekend en "nu" in
+indigo zette (ADR-147); sinds ADR-154 is het logo een plaatje en kleurt het
+zichzelf, dus het token wees nergens meer heen en werd door niets gebruikt.
+
+Daarbij noemde `docs/HUISSTIJL.md` twee bronnen waar er drie zijn, en zei het
+dat `index.css` de enige plek is die een kleur noemt, terwijl
+`src/design/kleuren.css` de vier merkkleuren zet en globaal wordt geladen.
+
+### Decision
+
+**De neutralen van Leisteen draaien mee naar de tint van het logo.** Niet de
+lichtheid, alleen de tint: elke neutrale waarde houdt de lichtheid en de chroma
+die de styleguide gaf en gaat van tint 264 naar de 52 van cacao. Daardoor is
+elke verhouding die `contrast.test.ts` meet dezelfde als ervoor — 144 metingen,
+allemaal op de cijfers die de styleguide bedoelde — en is alleen de temperatuur
+veranderd.
+
+| token             | was       | wordt     |
+| ----------------- | --------- | --------- |
+| `canvas`          | `#e3e7ef` | `#eee5e0` |
+| `papier`          | `#eff1f5` | `#f4f0ee` |
+| `inkt`            | `#1b2230` | `#2a1e17` |
+| `tekst-secundair` | `#5a6274` | `#715e52` |
+| `tekst-tertiair`  | `#636c7e` | `#7b675c` |
+| `rand-licht`      | `#dde1e8` | `#e7dfdb` |
+| `rand-sterk`      | `#d6dbe3` | `#e2d9d4` |
+| `balk-leeg`       | `#e7eaf1` | `#f0e8e4` |
+
+`inkt` is daarbij cacao zelf, `#2A1E17` uit de levering: de ontwerper zette die
+inkt op lichtheid .247 en Leisteen de zijne op .252, dus het was al dezelfde
+stap in een andere tint. `kaart` blijft wit. De schaduw en het scrim droegen de
+kanalen van de oude inkt en dragen nu die van cacao.
+
+**De structuur van Leisteen blijft staan.** Witte kaarten op één grond, indigo
+als de enige kleur die "hier druk je" zegt, groen voor onthouden, rood voor
+fout, zes vakhues op gelijke lichtheid. Dat is wat ADR-144 koos en wat werkt;
+alleen de ondergrond is nu warm. Een warme grond onder witte kaarten is
+bovendien precies wat de levering vraagt van het vlak waar het logo op staat.
+
+**Koraal krijgt geen tweede baan.** Het is de kleur waarin het merk getekend is
+— Denker, het app-icoon, de deelkaart — en het komt de app uitsluitend binnen
+via `src/design/kleuren.css`, het bestand van de ontwerper zelf. Het wordt geen
+knop, geen vak, geen balk en geen antwoordstaat. De reden is meetbaar en niet
+esthetisch: koraal ligt op tint 33 en het rood dat "fout" betekent op 25. Acht
+graden is te dichtbij om koraal ook iets anders te laten zeggen. Een uitdrukking
+van Denker mag daarom naast een uitslag staan, maar nooit de uitslag zíjn; de
+vormen van ADR-109 §8 doen dat werk.
+
+`--merk` gaat weg in plaats van naar koraal te wijzen. Een token dat een regel
+vastlegt die niemand aanroept is geen regel maar een uitnodiging;
+`huisstijl.test.ts` legt de regel nu vast als een verbod: geen `--leernu-` of
+`--denker-` in `index.css` of in een component, en geen derde stylesheet naast
+`index.css` en `kleuren.css`.
+
+**`theme-color` wordt de kleur van wat eronder staat: wit.** De balk bovenaan de
+app is een kaart, dus de band die de browser erboven tekent is wit. Het manifest
+houdt room als `background_color` en `theme_color`, want dat is het laadscherm,
+en daar staat het logo alleen op zijn eigen vlak — precies zoals de levering het
+voorschrijft. Die twee verschillen dus met opzet, en het staat in `index.html`
+waarom.
+
+### Consequences
+
+- `docs/HUISSTIJL.md` noemt nu drie bronnen in plaats van twee, zegt van welke
+  twee bestanden welk palet komt, en heeft een elfde punt over het merk: hoe het
+  logo geplaatst wordt en waar koraal niet mag komen.
+- `e2e/huisstijl.spec.ts` verwacht de nieuwe grond, `rgb(244, 240, 238)`.
+- De levering in `docs/logo` en de kopieën in `public` zijn niet aangeraakt.
+  `site.webmanifest` is nog steeds byte voor byte die van de ontwerper, wat
+  `logo.test.ts` ook eist.
+- De zes vakkleuren, de actiekleur, groen en rood zijn niet veranderd. Ze staan
+  nu op een warme grond en houden daar hun verhoudingen: gemeten, niet
+  aangenomen.
+- **Nog niet in een browser gezien.** De cijfers kloppen en de tests zijn groen,
+  maar of een warme grond onder de zes vakhues net zo rustig oogt als de koele
+  is iets wat je moet bekijken, niet berekenen. Dat is de controle die bij deze
+  ADR hoort.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
