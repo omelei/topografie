@@ -33,7 +33,7 @@ export const nl = {
   'home.popularTitle': 'Meest geoefend',
   // Dezelfde rij, voor wie nog niets deed. "Meest geoefend" is dan een kop over
   // een geschiedenis die niet bestaat (ADR-131).
-  'home.popularStart': 'Hier begin je mee',
+  'home.popularStart': 'Hier begin je mee vandaag',
   'home.popularTimes': '{aantal} keer gespeeld',
   'home.popularOnce': '1 keer gespeeld',
   'home.popularNone': 'nog niet geoefend',
@@ -58,28 +58,47 @@ export const nl = {
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
   'vandaag.verder': 'Volgende ronde',
-  // Waar dit kind zelf voor gaat (ADR-141). Een diploma, want dat is de enige
-  // mijlpaal in dit product die een kind van acht zelf zou noemen — en de
-  // voortgang eronder is hoeveel het van die set onthoudt, wat toevallig ook
-  // precies zegt wat er nog te doen is.
-  'doel.titel': 'Waar je voor gaat',
-  'doel.vraag': 'Kies een diploma om voor te gaan.',
-  'doel.nu': 'Waar ga je nu voor?',
-  'doel.rij': 'Diploma \u00b7 je onthoudt er {onthouden} van de {totaal}',
-  'doel.diplomaVan': 'Diploma {naam}',
-  'doel.onthouden': 'Je onthoudt er {onthouden} van de {totaal}.',
-  'doel.balk': '{onthouden} van de {totaal} onthouden',
-  'doel.rijp': 'Je kent ze allemaal. Nu de toets.',
-  'doel.oefenen': 'Oefenen',
-  'doel.toets': 'Doe de toets',
-  'doel.ander': 'Ander doel kiezen',
-  'doel.gehaald': 'Gehaald! Je hebt het diploma {naam}.',
-  'doel.later': 'Even geen doel',
-  'doel.alles': 'Je hebt alle diploma\u2019s die je kunt halen.',
-  // Onder de voorstellen: naar de prijzenkast op Jij, met ook wat nog te halen
-  // is open (ADR-153).
-  'doel.alleDiplomas': 'Bekijk alle diploma’s',
-  'doel.gehaaldRonde': 'Dit was waar je voor ging.',
+  // De doelen van deze week (ADR-162). "Waar je voor gaat" stond hier: één
+  // diploma, gekozen uit drie voorstellen, dat maanden kon duren. Dit heeft een
+  // einde en noemt het ook — de datums van maandag tot en met zondag — en het
+  // wordt zelf gemaakt, door het kind hier of door de ouder op Voor ouders.
+  'weekdoel.titel': 'Je doelen voor deze week',
+  'weekdoel.ouderTitel': 'Doelen van {naam} voor deze week',
+  'weekdoel.leeg': 'Nog geen doel. Wat wil je deze week halen?',
+  'weekdoel.leegOuder':
+    'Nog geen doel voor deze week. Je kind kan er zelf een kiezen op Vandaag, en jij hier.',
+  'weekdoel.vraag': 'Wat voor doel wil je?',
+  'weekdoel.soort.rondes': 'Een aantal rondes',
+  'weekdoel.soort.dagen': 'Op een aantal dagen oefenen',
+  'weekdoel.soort.diploma': 'Een diploma halen',
+  'weekdoel.hoeveel': 'Hoeveel?',
+  'weekdoel.welkDiploma': 'Welk diploma?',
+  'weekdoel.rondesDoel': '{aantal} rondes doen',
+  'weekdoel.dagenDoel': 'Op {aantal} dagen oefenen',
+  'weekdoel.diplomaDoel': 'Het diploma {naam} halen',
+  // Een diploma dat er niet meer is — een set die weg is, of een premiumvorm
+  // zonder code. De rij blijft staan met een eerlijke zin in plaats van een
+  // lege naam, zodat hij weggehaald kan worden.
+  'weekdoel.diplomaWeg': 'Dit diploma bestaat niet meer',
+  'weekdoel.balk': '{gedaan} van de {nodig}',
+  'weekdoel.gehaald': 'Gehaald!',
+  'weekdoel.toevoegen': 'Doel toevoegen',
+  'weekdoel.annuleer': 'Laat maar',
+  'weekdoel.vol': 'Drie doelen is genoeg voor één week.',
+  'weekdoel.wegVan': 'Weghalen: {doel}',
+  'weekdoel.geenDiplomas': 'Er is nu geen diploma om deze week voor te gaan.',
+  // Onderaan het blok: naar het hele raster op Voor ouders, ook wat nog te
+  // halen is (ADR-153).
+  'weekdoel.alleDiplomas': 'Bekijk alle diploma’s',
+  // Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
+  // opnieuw gevraagd. Aanzetten kan bij de ouder, waar de instellingen staan.
+  'weekdoel.uitZetten': 'Ik wil geen doelen',
+  'weekdoel.uitZettenOuder': 'Geen doelen tonen',
+  'weekdoel.uitUitleg':
+    'Doelen staan uit. Er staat niets over doelen op Vandaag, en er wordt niet opnieuw naar gevraagd.',
+  'weekdoel.aanZetten': 'Doelen aanzetten',
+  // Op het uitslagscherm, onder het diploma dat net binnen is.
+  'weekdoel.gehaaldRonde': 'Dit was een doel van deze week.',
   // Het einde van een ronde, aangekondigd (ADR-140).
   'practice.laatsteVraag': 'Laatste vraag',
   // Het begin van een ronde (ADR-140): de zin waarmee dit product zijn eigen
@@ -284,41 +303,11 @@ export const nl = {
     'Heb je iets heel lang niet gezien, dan staat er even opfrissen. Eén goed antwoord en je onthoudt het weer.',
   'retention.regel4': 'Eén fout antwoord en je begint bij dat onderdeel weer bij het begin.',
 
-  // Het toetsenblok, bovenaan de eigen kolom van het kind. Het is de reden dat
-  // het kind deze week oefent, en het zegt alleen dat: wanneer, en waarover.
-  'home.testLabel': 'toets',
-  'home.testNone': 'Nog geen toetsdatum',
-  // Meer dan één, want een periode is nooit één toets: topografie op dinsdag en
-  // de tafels de vrijdag erna. Het blok toont ze allemaal en verder niets.
-  'home.testTitle': 'Jouw toetsen',
-  'home.testToday': 'De toets is vandaag',
-  'home.testTomorrow': 'De toets is morgen',
-  'home.testInDays': 'Toets over {aantal} dagen',
-  'home.testPick': 'Wanneer is de toets?',
-  // Het vooruitzicht per toets (ADR-127): de enige plek waar de voorspelling
-  // naar een dátum rekent in plaats van naar drie weken vooruit.
-  'home.testNothingYet': 'Hier heb je nog niets van geoefend.',
-  'home.testForecast': 'Op de dag van de toets weet je hier naar verwachting {procent}% van.',
-  'home.testForecastRound': 'Doe vandaag een ronde: dan is het {procent}%.',
-  'home.testAdd': 'Toets toevoegen',
-  'home.testSave': 'Toevoegen',
-  'home.testRemove': 'Verwijder',
-  // Begint met het woord op de knop, zodat wie de knop bij naam aanspreekt
-  // hem ook zo vindt (WCAG 2.5.3), en zegt daarna welke toets.
-  'home.testRemoveOne': 'Verwijder: {wanneer}',
-  // Kort, zoals het blok ze toont: het woord "toets" staat al in de kop.
-  'home.testSoonToday': 'Vandaag',
-  'home.testSoonTomorrow': 'Morgen',
-  'home.testSoonDays': 'Over {aantal} dagen',
-  // Op een tablet en een telefoon is het blok eerst alleen de datums. Erop
-  // tikken klapt het open tot wat een laptop meteen laat zien.
-  'home.testsChange': 'Toetsen wijzigen',
-  'home.testsDone': 'Klaar',
-  // Het vak erbij, want een datum zonder vak plant niets. Alleen vakken die
-  // bestaan: een toets voor woordjes instellen belooft oefenstof die er niet
-  // is. Het gekozen vak bepaalt waarmee "Ga verder" verdergaat.
-  'home.testSubjectPick': 'Voor welk vak?',
-  'home.testSubjectNone': 'Nog geen vak',
+  // Het toetsblok is weg (ADR-162). Het vroeg een datum en een vak, en gaf
+  // daar een voorspelling voor terug; wat het niet gaf was een reden om een
+  // van beide in te typen. Zijn woorden staan hier niet meer: copy die
+  // nergens meer verschijnt, is copy die bij de volgende ronde toch wordt
+  // meegewogen.
 
   // Een module die het plan wel heeft en het product nog niet. Geen datum,
   // want een datum die we missen is erger dan geen datum — en geen enkele
@@ -476,7 +465,6 @@ export const nl = {
   // van vier woorden een zin van acht — op een telefoon twee regels lang.
   // De volgorde blijft; wat weg is, is het bijschrift erop.
   'choose.stepHow': 'Hoe wil je oefenen?',
-  'choose.testSubject': 'Hier gaat je toets over.',
 
   // De startknop draagt de gekozen combinatie in woorden, en zijn maat komt
   // uit de ronde zelf: vragen, seconden of levens. Daarnaast hoe lang het
@@ -506,7 +494,6 @@ export const nl = {
   'choose.testModeWhy':
     'Je typt zonder hulp. Aan het eind zie je wat goed was en krijg je een cijfer.',
   'choose.startTest': '{wat} · oefentoets',
-  'choose.likeTheTest': 'Oefen zoals de toets',
   'choose.howMany': 'Hoeveel vragen?',
   'choose.howManyOne': '{aantal} vragen',
   // De hele set, als die in één ronde past: twaalf provincies zijn "Alle 12".
@@ -612,7 +599,6 @@ export const nl = {
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
   'premium.regel.onthouden': 'Per vak en per onderwerp zien wat je kind onthoudt, week na week',
   'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
-  'premium.regel.toets': 'Zien wat je kind op de dag van de toets nog weet',
   'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
   'premium.regel.bliksem': 'De bliksemronde en overleven',
   'premium.regel.bericht': 'Het weekbericht: hoe de week ging',
@@ -670,8 +656,7 @@ export const nl = {
     'Hoe de week ging: of er geoefend is, wat er blijft hangen, en wat er wacht.',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
-  'premium.wat.toets':
-    'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
+
   'premium.wat.jij':
     'Premium plant het herhalen, laat zien wat je kind onthoudt en werkt voor al je kinderen.',
 
@@ -1502,7 +1487,13 @@ export const nl = {
   'groep.uitleg':
     'Dan zetten we de oefeningen voor jouw groep bovenaan. Je kunt altijd alles kiezen. Je groep blijft op dit apparaat.',
   'groep.knop': 'Groep {groep}',
-  'groep.weetNiet': 'Weet ik niet',
+  // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
+  // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
+  // een keuze, en daarmee hetzelfde antwoord zonder de kleine vernedering.
+  'groep.zegIkNiet': 'Zeg ik niet',
+  // En de volwassene die het apparaat als eerste in handen heeft, hoeft niet
+  // te doen alsof hij in groep 6 zit. Hij gaat naar Voor ouders.
+  'groep.ouder': 'Ik ben een ouder',
   'groep.terug': 'Terug naar je naam',
   // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
   'groep.nietNu': 'Niet nu',

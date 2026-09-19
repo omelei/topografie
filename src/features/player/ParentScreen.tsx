@@ -24,8 +24,9 @@ import { AccountBlok } from '@/features/account/AccountBlok';
 import { EigenLijsten } from './EigenLijsten';
 import { Prijzenkast } from '@/features/badges/Prijzenkast';
 import { RegisterInstelling } from '@/features/toren/RegisterInstelling';
+import { WeekdoelenBlok } from '@/features/home/WeekdoelenBlok';
+import { getActiveChild } from '@/store/children';
 import { GroepInstelling } from './GroepInstelling';
-import type { ReactNode } from 'react';
 
 /**
  * "Voor ouders": alles wat niet van het kind is (ADR-136).
@@ -49,14 +50,12 @@ import type { ReactNode } from 'react';
  * niet dat een kind ze niet mag zien.
  */
 export function ParentScreen({
-  aside,
   onJij,
   onOnthouden,
   diplomasOpen = false,
   onDiplomasGezien,
   now = new Date(),
 }: {
-  readonly aside: ReactNode;
   readonly onJij: () => void;
   /** De weg naar wat het kind onthoudt, per onderwerp (ADR-143). */
   readonly onOnthouden: () => void;
@@ -68,9 +67,15 @@ export function ParentScreen({
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [loaded, setLoaded] = useState(false);
   const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
+  /** Wie er nu oefent, voor de kop boven de doelen van deze week (ADR-162). */
+  const [kindnaam, setKindnaam] = useState<string | null>(null);
 
   useEffect(() => {
     void loadPlayedRounds().then(setRondes);
+  }, []);
+
+  useEffect(() => {
+    void getActiveChild().then((kind) => setKindnaam(kind?.naam ?? null));
   }, []);
 
   useEffect(() => {
@@ -155,6 +160,12 @@ export function ParentScreen({
 
         <RegisterInstelling />
 
+        {/* De doelen van deze week (ADR-162). Hetzelfde blok als op de
+            voordeur, met dezelfde knoppen: een ouder die het gesprek thuis
+            voert, hoort er een doel bij te kunnen zetten zonder het kind erbij
+            te roepen — en hij is degene die ze helemaal uit kan zetten. */}
+        <WeekdoelenBlok vanOuder naam={kindnaam ?? undefined} />
+
         <EigenLijsten />
 
         {/* De lezing van de week: is er geoefend, blijft het hangen, wat wacht
@@ -188,8 +199,6 @@ export function ParentScreen({
           <p className="tk-hulp">{t('you.stays')}</p>
         </div>
       </div>
-
-      {aside}
     </div>
   );
 }

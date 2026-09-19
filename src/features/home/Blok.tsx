@@ -4,9 +4,10 @@ import type { ReactNode } from 'react';
  * The shape every block in the child's own column has (ADR-094): a card with a
  * band across the top that names it, and the block itself under the band.
  *
- * The band is the block's heading and its landmark name at once, so the four of
- * them are four regions a screen reader can jump between — "Jouw toetsen",
- * "Jouw voortgang" — and four a test can find by the word a child reads.
+ * The band is the block's heading and its landmark name at once, so each is a
+ * region a screen reader can jump to by the word a child reads — "Jouw
+ * favorieten" — and a test can find the same way. There were four of them; the
+ * column is down to one (ADR-148, ADR-162), and the shape is what is left.
  */
 export function Blok({
   titel,

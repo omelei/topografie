@@ -21,13 +21,12 @@ import {
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
 import { ReeksRegel } from '@/features/toren/ReeksRegel';
-import { DoelBlok } from './DoelBlok';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { FavorietenBlok } from './SideColumn';
 import { GroepVraag } from './GroepVraag';
-import { ToetsenBlok } from './ToetsenBlok';
+import { WeekdoelenBlok } from './WeekdoelenBlok';
 
 /**
  * K1, the front door — which is also leer.nu itself.
@@ -37,6 +36,16 @@ import { ToetsenBlok } from './ToetsenBlok';
  * in — what this child goes back to most, what they did last and how it went,
  * and what they started and did not finish. Then the child's own column: the
  * tests, the weekkaart and their favourites.
+ *
+ * **Waar je begint staat bovenaan** (ADR-162). "Hier begin je mee vandaag" is
+ * het eerste blok onder de begroeting, en het is de enige rij die zegt: druk
+ * hier, dan oefen je. Voor wie al geoefend heeft is het dezelfde rij onder de
+ * kop "Meest geoefend" — wat dit kind zelf het vaakst koos, is waar het vandaag
+ * ook weer mee begint.
+ *
+ * **En "Waar je voor gaat" is "Je doelen voor deze week" geworden** (ADR-162):
+ * één diploma dat maanden kon duren, vervangen door een handvol doelen met een
+ * zondag eraan, zelf gemaakt en weg te laten.
  *
  * **Two rows that scroll sideways, and one list.** "Meest geoefend" and "Maak
  * af" are rows of cards at every size, one swipe, press or arrow key from what
@@ -51,18 +60,14 @@ import { ToetsenBlok } from './ToetsenBlok';
  * dinner was ready. Each card is one of those, and pressing it asks the
  * questions that round had not asked yet.
  *
- * **The column is beside the rows, or it is the tests alone.** From 1200 it
- * stands beside the rows. Below that only the tests stay, above the rows: they
- * are where a test is planned, and a phone is where a parent often does it. The
- * favourites are not drawn below 1200 (ADR-119), which is decided here, in
- * React, rather than hidden in CSS, so a screen reader does not meet them
- * either (see `useDesk`). The weekkaart is, under "Vandaag": it is what makes
- * coming back on more days visible, and a phone is where most of those days
- * happen (ADR-149).
+ * **The column is beside the rows, or it is not drawn.** From 1200 the
+ * favourites stand beside them. Below that they are not drawn at all (ADR-119),
+ * which is decided here, in React, rather than hidden in CSS, so a screen
+ * reader does not meet them either (see `useDesk`). Until ADR-162 the tests
+ * stayed below 1200; that block is gone, so there is nothing left to keep.
  *
- * Two things it deliberately does not do. **It does not forecast** — "wat
- * onthoud je" is K9's. And **the test block is about the tests**: when they are
- * and what they are about, with no mark, no bar and no projection.
+ * One thing it deliberately does not do: **it does not forecast** — "wat
+ * onthoud je" is K9's.
  */
 
 /** How many rounds the history shows: as many as "meest geoefend" holds. */
@@ -142,71 +147,57 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
   // Vandaag, zodat het plan er eerst staat en niemand wacht (ADR-151).
   const groepVraag = <GroepVraag onGekozen={setGroep} />;
 
-  // En waar het naartoe gaat (ADR-141). Onder "Vandaag" en niet erboven: eerst
-  // wat er nu te doen is, dan waarvoor. Andersom leest de voordeur als een
-  // doelstelling met huiswerk eronder.
+  // En wat dit kind zich deze week voorneemt (ADR-162). Onder de rij waar het
+  // mee begint en onder "Vandaag": eerst waar je kunt drukken, dan wat er nu
+  // aan de beurt is, dan waar het deze week heen moet. Andersom leest de
+  // voordeur als een doelstelling met huiswerk eronder.
   //
   // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
   // meteen de diploma's die erbij passen (ADR-153).
-  const doel = (
-    <DoelBlok
-      key={`doel-${groep ?? 'geen'}`}
-      gespeeld={gespeeld}
-      onBegin={onBegin}
-      onDiplomas={onDiplomas}
-    />
-  );
+  const weekdoelen = <WeekdoelenBlok key={`weekdoel-${groep ?? 'geen'}`} onDiplomas={onDiplomas} />;
+
+  // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
+  // die zegt "druk hier, dan oefen je" (ADR-162).
+  const beginnen = <Populairst populair={populair} groep={groep} onBegin={onBegin} />;
 
   const rijen = (
     <>
-      <Populairst populair={populair} groep={groep} onBegin={onBegin} />
       <Recent gespeeld={gespeeld} onBegin={onBegin} />
       <MaakAf open={open} alles={alles} onVerder={onVerder} />
     </>
   );
 
-  const toetsen = <ToetsenBlok />;
   // Eén regel als er een reeks loopt en vandaag nog leeg is (ADR-158). De
   // weekkaart stond hier; die is met de toren vervallen.
   const reeksRegel = <ReeksRegel />;
   const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
+  const kern = (
+    <>
+      {kop}
+      {terug}
+      {reeksRegel}
+      {beginnen}
+      {vandaagBoven}
+      {groepVraag}
+      {weekdoelen}
+      {rijen}
+      {vandaagOnder}
+    </>
+  );
+
   if (desk) {
     return (
       <div className="tk-home">
-        <div className="tk-home-main">
-          {kop}
-          {terug}
-          {reeksRegel}
-          {vandaagBoven}
-          {groepVraag}
-          {doel}
-          {rijen}
-          {vandaagOnder}
-        </div>
+        <div className="tk-home-main">{kern}</div>
 
-        <aside className="tk-home-aside">
-          {toetsen}
-          {favorieten}
-        </aside>
+        <aside className="tk-home-aside">{favorieten}</aside>
       </div>
     );
   }
 
-  // Below 1200 the tests and the weekkaart, above the rows (ADR-119, ADR-149).
-  return (
-    <div className="tk-home">
-      {kop}
-      {terug}
-      {reeksRegel}
-      {vandaagBoven}
-      {groepVraag}
-      {doel}
-      {toetsen}
-      {rijen}
-      {vandaagOnder}
-    </div>
-  );
+  // Below 1200 without the column at all (ADR-119, ADR-162).
+  return <div className="tk-home">{kern}</div>;
 }
 
 /**

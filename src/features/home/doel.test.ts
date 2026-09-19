@@ -156,9 +156,10 @@ describe('wat we voorstellen', () => {
 });
 
 /**
- * Waar je voor gaat, met een groep (ADR-153). Zonder groep kreeg elk kind dat
- * nog niets deed de tafels van 1, 2 en 3 — ook in groep 8. De sets hier zijn
- * de echte diploma-sets, met de groepen uit de koppeltabel en de leerdoelen.
+ * De voorgestelde diploma's, met een groep (ADR-153). Zonder groep kreeg elk
+ * kind dat nog niets deed de tafels van 1, 2 en 3 — ook in groep 8. De sets
+ * hier zijn de echte diploma-sets, met de groepen uit de koppeltabel en de
+ * leerdoelen.
  */
 describe('welke doelen bij een groep passen', () => {
   const topo = (setId: string, leerdoel: string): Onderdeel => ({

@@ -17,7 +17,7 @@ import { loadItemStates } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { useTestPlan } from '@/features/home/testPlan';
+
 import { Tafeldiplomas } from './Tafeldiplomas';
 import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
@@ -137,7 +137,6 @@ export function ModuleScreen({
   const [aantal, setAantal] = useState<number | null>(null);
   /** Whether the round should keep its answers until the end (ADR-085). */
   const [toetsstand, setToetsstand] = useState(false);
-  const plan = useTestPlan();
   const kleinScherm = useSmallScreen();
   const nogId = useId();
   // What a premium tile does without a code: it goes to the page where one is
@@ -238,12 +237,6 @@ export function ModuleScreen({
   const gekozen = aantal !== null && lengtes.includes(aantal) ? aantal : null;
   const vragen = form === null ? null : questionCount(form, setSize, gekozen);
   const minuten = form === null ? null : minutesFor(form, vragen);
-  /**
-   * Everything this module holds, under one name. What a test asks about. The
-   * row's own where it has one — the Werkwoordmix on Werkwoorden — and the
-   * module's first otherwise.
-   */
-  const mix = mixVan(onderwerpen) ?? mixVan(alleOnderwerpen);
   const zin =
     chosen === null || form === null
       ? ''
@@ -354,32 +347,10 @@ export function ModuleScreen({
               it is a question (ADR-095). */}
           <h1 className="tk-display tk-titel">{t('choose.title', { naam })}</h1>
 
-          {/* The reason this week has a reason, but only on the page it is
-              about. */}
-          {plan.subject === module.id ? (
-            <p className="flex flex-wrap items-center gap-3">
-              <span className="tk-badge">{t('home.testLabel')}</span>
-              <span className="text-tekst-secundair">{t('choose.testSubject')}</span>
-              {/* One press that answers this page the way the test will ask it:
-                  everything the subject holds, and no answers until the end.
-                  It chooses rather than starts (ADR-085). */}
-              {mix === null ? null : (
-                <Button
-                  variant="tertiary"
-                  onClick={() => {
-                    if (!actief) {
-                      naarPremium();
-                      return;
-                    }
-                    kiesElders(mix);
-                    setToetsstand(true);
-                  }}
-                >
-                  {t('choose.likeTheTest')}
-                </Button>
-              )}
-            </p>
-          ) : null}
+          {/* Hier stond "Hier gaat je toets over", met een knop die de hele
+              module als toets oefende. Het hing aan een toetsdatum, en die
+              wordt sinds ADR-162 nergens meer ingevoerd. De oefentoets zelf
+              staat er nog, bij de manieren, waar hij altijd stond. */}
         </div>
 
         {/* Where on the map, or which part of Taal, and only where there is
@@ -825,15 +796,6 @@ function vorderingVan(vak: Onderwerp, known: ReadonlyMap<string, ItemState>, now
   return begonnen
     ? t('home.setMastered', { goed: mastered, totaal: ids.length })
     : t('home.setNew');
-}
-
-/**
- * The subject that holds everything this module has, if it has one: what "the
- * way the test will ask" means, because a test does not come one set at a time.
- */
-function mixVan(onderwerpen: readonly Onderwerp[]): string | null {
-  const mix = onderwerpen.find((vak) => vak.sets.length === 1 && vak.sets[0]?.mix === true);
-  return mix?.sets[0]?.setId ?? null;
 }
 
 /**

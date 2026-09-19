@@ -24,7 +24,7 @@ import { t, type TranslationKey } from '@/i18n';
 import type { RoundOutcome } from '@/store/rewardStore';
 import { behaaldDiploma } from '@/features/home/doel';
 import { getActiveChild } from '@/store/children';
-import { leesDoel } from '@/store/doelStore';
+import { leesWeekdoelen } from '@/store/weekdoelStore';
 import { HerhaalFouten } from './HerhaalFouten';
 import { speelMoment } from './geluid';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
@@ -369,12 +369,13 @@ function morgenZin(blik: {
 }
 
 /**
- * "Dit was waar je voor ging" (ADR-141).
+ * "Dit was een doel van deze week" (ADR-141, ADR-162).
  *
- * Alleen die ene regel, en alleen als dit diploma het gekozen doel was. Het
- * vieren gebeurt hier, op het moment zelf, want dat is waar het gebeurde; de
- * vraag wat nu staat op de voordeur, want een nieuw doel kiezen hoort niet aan
- * het eind van een ronde waar het kind al vier dingen moet lezen.
+ * Alleen die ene regel, en alleen als dit diploma een van de doelen van deze
+ * week was. Het vieren gebeurt hier, op het moment zelf, want dat is waar het
+ * gebeurde; het doel weghalen of een nieuw kiezen staat op de voordeur, want
+ * dat hoort niet aan het eind van een ronde waar het kind al vier dingen moet
+ * lezen.
  *
  * De uitslag draagt het diploma in woorden, en woorden zijn niet te vergelijken
  * met wat er bewaard staat. `behaaldDiploma` rekent de id terug uit de beloning
@@ -386,11 +387,13 @@ function DoelRegel({ reward }: { readonly reward: RoundOutcome | null }) {
 
   useEffect(() => {
     if (id === null) return;
-    void leesDoel().then((doel) => setGehaald(doel === id));
+    void leesWeekdoelen().then(({ doelen }) =>
+      setGehaald(doelen.some((doel) => doel.diplomaId === id)),
+    );
   }, [id]);
 
   if (!gehaald) return null;
-  return <span className="tk-lijstrij-regel">{t('doel.gehaaldRonde')}</span>;
+  return <span className="tk-lijstrij-regel">{t('weekdoel.gehaaldRonde')}</span>;
 }
 
 const DATUM = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });

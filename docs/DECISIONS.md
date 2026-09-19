@@ -9044,6 +9044,169 @@ het vlak en het zwaardere gewicht die er al waren ernaast.
 
 ---
 
+## ADR-161 — De eerste vraag: "Zeg ik niet", en een knop voor de ouder
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-151 (de groep).
+
+### Context
+
+Het allereerste scherm van leer.nu vraagt een naam en daarna een groep. ADR-151
+legde uit waarom die groep er weer is en waarom hij altijd over te slaan moet
+zijn. De uitweg heette "Weet ik niet".
+
+Twee dingen daaraan kloppen niet.
+
+**"Weet ik niet" is het enige antwoord op die kaart dat een kind iets over
+zichzelf laat toegeven.** Elk kind van zeven weet in welke groep het zit. Wie de
+uitweg kiest, weet het dus wél en wil het niet zeggen — tegen een app die het
+scherm ervoor beloofde dat zijn naam op dit apparaat blijft. Het antwoord dat
+wij nodig hebben is "geen groep"; het woord dat erop staat maakt er een
+bekentenis van, en dat is een rare eerste ervaring van een product dat over
+privacy gaat.
+
+**En de eerste die dit scherm ziet, is vaak niet het kind.** Een ouder die
+leer.nu opzoekt, komt op dezelfde kaart terecht en moet een groep kiezen om
+ergens te komen — of de uitweg nemen die zegt dat hij het niet weet. Daarna
+staat hij op de voordeur van een kind, terwijl hij kwam kijken wat dit is, wat
+het kost, en wat er met de gegevens van zijn kind gebeurt. Dat staat allemaal op
+Voor ouders (ADR-136), en er was geen weg ernaartoe die bij die eerste vraag
+begon.
+
+### Decision
+
+**De uitweg heet "Zeg ik niet".** Precies dezelfde knop, hetzelfde gevolg —
+`createProfile` zonder groep, de vraag geldt als gesteld — met een woord dat een
+keuze is in plaats van een tekortkoming. Op Voor ouders blijft hij "Geen groep"
+heten: daar is het een instelling en geen antwoord.
+
+**En er komt een derde knop bij: "Ik ben een ouder".** Hij staat in dezelfde rij
+chips, want hij is een antwoord op dezelfde vraag, maar hij draagt nooit
+`aria-pressed`: er valt niets aan te staan, want het is geen groep.
+
+Hij maakt het profiel aan zonder groep — de naam is al getypt en de groep is toch
+altijd over te slaan — en opent dan `/ouder` in plaats van de voordeur. Geen
+aparte onboarding, geen tweede vragenlijst: Voor ouders is de pagina die al
+bestaat om deze vragen te beantwoorden, en de groep van het kind is daar alsnog
+te zetten.
+
+Het profiel wordt wél gemaakt. De app heeft er overal een nodig, en een tweede
+soort bezoeker die geen profiel heeft, zou elk scherm een geval erbij geven voor
+iets wat het kind daarna toch invult. Wat er anders is aan deze weg, is één
+ding: het adres waarop de app opent. Dat reist daarom als los argument naast het
+profiel mee (`onReady(profile, naarOuder)`) en wordt nergens bewaard.
+
+### Consequences
+
+- `GroepKiezer` krijgt een optionele `onOuder`. Alleen de eerste vraag geeft hem
+  mee; op de voordeur (de eenmalige vraag aan een kind van vóór ADR-151) en op
+  Voor ouders staat hij er niet, want daar zou hij naar de pagina wijzen waar je
+  al bent.
+- Elke e2e-test die het eerste scherm doorloopt, klikt nu "Zeg ik niet". Dat is
+  één woord in achtentwintig bestanden; de knop doet hetzelfde als altijd.
+- Een ouder die deze weg neemt, heeft daarna een kind met de naam die hij typte
+  en zonder groep. Dat is dezelfde staat als "Zeg ik niet", en op Voor ouders
+  staat meteen wat eraan te veranderen is.
+
+---
+
+## ADR-162 — De voordeur gaat over vandaag: de toetsen weg, de doelen per week
+
+**Status:** accepted. **Date:** 2026-09-19. Vervangt ADR-077 en ADR-127 (de
+toetsen) en ADR-141 (het doel). Verandert de indeling van ADR-094 en ADR-152.
+
+### Context
+
+De voordeur droeg zeven blokken. Van boven naar beneden: de begroeting, "je was
+even weg", de reeks, "Vandaag herhalen", de vraag naar de groep, "Waar je voor
+gaat", en dan drie rijen — meest geoefend, recent geoefend, maak af. Ernaast, op
+elke pagina van de app, de eigen kolom met "Jouw toetsen" en "Jouw favorieten".
+
+Drie dingen daarvan zijn opgezegd, en de reden is bij alle drie dezelfde: ze
+vragen iets van de lezer zonder hem iets terug te geven.
+
+**"Jouw toetsen" vroeg werk van de ouder en gaf er niets voor terug.** Het blok
+was een datum en een vak, en daarvoor kreeg je een percentage: wat je kind op de
+dag van de toets naar verwachting nog weet (ADR-127). Dat is een mooi getal en
+er valt thuis niets mee te doen — "62%" is geen advies. Wie de datum oversloeg,
+miste niets: het dagplan, de Leitner-doos en de diploma's werken allemaal door
+zonder. Daarmee was het het enige blok in de app dat een handeling vroeg die
+nergens op uitkwam, en het stond op elke pagina, want de kolom gaat overal mee.
+
+**"Waar je voor gaat" had geen einde.** Eén diploma, door het kind gekozen uit
+drie voorstellen (ADR-141). Dat is een goed antwoord op "waarvoor", en het was
+de juiste correctie op een app die alleen "wat nu" kon zeggen. Maar een
+tafeldiploma duurt weken en een werelddeel maanden, dus op donderdagavond zegt
+het blok precies hetzelfde als op maandagochtend. Een doel dat nooit gehaald en
+nooit gemist wordt, is geen doel maar een etiket.
+
+**En waar je kunt beginnen stond te laag.** De rij "Hier begin je mee" — voor
+wie al geoefend heeft "Meest geoefend" — is de enige plek op de voordeur waar
+één druk een ronde start zonder dat er eerst iets gekozen moet worden. Die stond
+onder drie blokken die alle drie over de planning gaan.
+
+### Decision
+
+**Het toetsblok is weg, overal.** Het blok, het formulier, de voorspelling per
+toets, de balk "Hier gaat je toets over" op de modulepagina en de regel in de
+premiumvergelijking. `testPlan.ts` en `toetsZicht.ts` gaan mee: code die nergens
+meer uit te komen is, is geen code die bewaard moet worden tot iemand hem weer
+nodig heeft. De **oefentoets** blijft precies waar hij stond, bij de manieren op
+elke modulepagina (ADR-100): die hangt aan geen datum.
+
+Daarmee is de eigen kolom nog één blok groot — de favorieten — en op Voor ouders
+is hij leeg, dus die pagina draagt hem niet meer.
+
+**"Waar je voor gaat" wordt "Je doelen voor deze week".** Met de datums erbij:
+"14 t/m 20 september". Dat is het hele verschil — er is een zondag, dus er is
+iets te halen en iets te missen.
+
+Drie regels eronder:
+
+1. **Ze worden zelf gemaakt**, door het kind op de voordeur of door de ouder op
+   Voor ouders, in hetzelfde blok met dezelfde knoppen. Er wordt niets
+   voorgesteld dat er al staat. Een doel dat de app zelf stelt is het dagplan
+   nog een keer, en het punt van dit blok is juist dat het van jou is.
+2. **Drie soorten, alle drie op zondag na te rekenen**: een aantal rondes, een
+   aantal dagen waarop geoefend is, of één diploma. Er is niets nieuws verzonnen
+   om te tellen — alle drie komen uit `progress` en `rewardStore`, waar ze al
+   stonden, zodat er geen tweede boekhouding is die kan gaan scheellopen. Wat
+   bewaard wordt is alleen de bedoeling; de voortgang wordt elke keer geteld.
+3. **Het mag leeg blijven.** "Ik wil geen doelen" zet het blok weg en vraagt
+   daarna niet elke maandag opnieuw. Aanzetten kan op Voor ouders, waar de
+   instellingen staan (ADR-143).
+
+Drie doelen is het maximum: een week met vijf doelen is een lijst met klusjes.
+Een doel blijft staan over de weekgrens heen en telt vanaf maandag weer vanaf
+nul — anders moet een kind elke maandag opnieuw iets invullen om niets te zien.
+
+**En de rij waar je mee begint staat bovenaan**, direct onder de begroeting, met
+de kop "Hier begin je mee vandaag". De volgorde van de pagina is daarmee: waar
+druk je, wat is er nu aan de beurt, wat wil je deze week halen, en dan de
+geschiedenis.
+
+### Consequences
+
+- De voorspelling naar een toetsdatum bestaat niet meer. Wat blijft is de
+  voorspelling over drie weken, die op Onthouden en op "Ronde klaar" staat en
+  die geen datum van de gebruiker nodig heeft.
+- `premium.regel.toets` valt uit de vergelijkingstabel. De belofte stond er en
+  het product kan hem niet meer waarmaken, en dat is de enige volgorde waarin
+  een regel uit die tabel mag verdwijnen.
+- `doelStore.ts` is weg; `weekdoelStore.ts` staat ervoor in de plaats. Een kind
+  met een oud doel in de opslag verliest dat doel: het was één diploma zonder
+  datum, en het heeft in het nieuwe blok geen betekenis. Niets van de voortgang
+  raakt het — de rij die weggaat bevat alleen de id van een diploma.
+- De regel op "Ronde klaar" die zei "Dit was waar je voor ging" zegt nu "Dit was
+  een doel van deze week", en leest daarvoor de weekdoelen.
+- `weekdoel.test.ts` legt de weekgrens vast, want dat is het enige aan dit blok
+  dat stil kan gaan liegen: een doel dat op zondagavond "3 van de 4" zegt en op
+  maandagochtend nog steeds, is geen weekdoel meer.
+- **Nog niet in een browser gezien.** De kaart is die van ADR-141 met een rij
+  erin die de vorm van `tk-lijstrij` leent; of drie doelen met een balk erbij
+  rustig ogen naast "Vandaag herhalen" is iets om te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

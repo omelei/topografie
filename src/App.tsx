@@ -420,7 +420,18 @@ export default function App() {
   if (boot.status === 'loading') return <div aria-busy="true" />;
 
   if (boot.profile === null) {
-    return <ProfileGate onReady={(profile) => setBoot({ status: 'ready', profile })} />;
+    return (
+      <ProfileGate
+        // "Ik ben een ouder" op de eerste vraag opent Voor ouders in plaats van
+        // de voordeur (ADR-161). Het profiel is er dan al — de app heeft er
+        // overal een nodig — en het draagt geen groep, precies als bij "Zeg ik
+        // niet". Alleen het adres is anders.
+        onReady={(profile, naarOuder) => {
+          setBoot({ status: 'ready', profile });
+          if (naarOuder) go({ name: 'ouder' });
+        }}
+      />
+    );
   }
 
   // Explore and practice are rounds, and a round has no navigation: no rail,
@@ -639,8 +650,9 @@ export default function App() {
   if (route.name === 'ouder') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
+        {/* Zonder kolom sinds ADR-162: wat er voor de ouder in stond waren de
+            toetsen, en die zijn weg; de favorieten zijn van het kind. */}
         <ParentScreen
-          aside={<SideColumn onBegin={beginRonde} vanOuder />}
           onJij={goJij}
           onOnthouden={() => go({ name: 'retention' })}
           diplomasOpen={diplomasOpen}

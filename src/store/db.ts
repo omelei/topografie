@@ -65,7 +65,7 @@ export interface ProfileRecord {
    * dat was (ADR-151). `huidigeGroep` rekent daar de groep van nu uit, zodat
    * een kind op 1 augustus vanzelf een groep verder is.
    *
-   * Allebei weg bij een kind dat "Weet ik niet" koos, en bij elk kind van vóór
+   * Allebei weg bij een kind dat "Zeg ik niet" koos, en bij elk kind van vóór
    * ADR-151. Een rij zonder deze velden leest ze terug als `undefined`, en dat
    * is precies "geen groep": daarom geen nieuwe `DB_VERSION` en geen migratie.
    *

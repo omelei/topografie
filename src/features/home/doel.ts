@@ -42,7 +42,8 @@ import type { RoundOutcome } from '@/store/rewardStore';
  * moet doen. Acht van de tien onthouden betekent: oefen die twee.
  *
  * Puur: er gaan onderdelen, Leitner-standen en behaalde diploma's in, er komt
- * een lijstje uit. Wat er bewaard wordt staat in `store/doelStore.ts`.
+ * een lijstje uit. Welke ervan als doel van de week gekozen zijn, staat in
+ * `store/weekdoelStore.ts` (ADR-162).
  */
 
 export interface Doelwit {

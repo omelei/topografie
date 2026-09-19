@@ -88,7 +88,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
 
   // The name is in the app bar now, beside the streak — K1 puts the profile
   // switch top right, so that is where "you are signed in" is visible.
@@ -136,71 +136,6 @@ test('greets the child by name on the front door', async ({ page }) => {
 });
 
 /**
- * The subject of the soonest test is not decoration: it is the subject the
- * front door's one accented block is about, and the block wears that module's
- * accent to say so.
- *
- * There can be more than one test (ADR-077), so this also checks the thing that
- * makes a list a plan rather than a calendar: the soonest one wins.
- *
- * It used to be asserted through "Ga verder met Rekenen", the card that stood
- * between the test block and the log. That card is gone (ADR-082) and the rule
- * it demonstrated is not, so the assertion moved to where the rule still shows.
- */
-test('the soonest test decides what the block on the front door is about', async ({ page }) => {
-  await signIn(page, 'Tijn');
-  // The block is in the child's own column now, in the same card shape as the
-  // three blocks beside it (ADR-094), and it still says which module it is
-  // about — on itself, where everything inside it takes its accent from.
-  const toetsblok = page.getByRole('region', { name: 'Jouw toetsen' });
-
-  // With no test set there is no subject, so the block takes no accent at all
-  // rather than guessing at one.
-  await expect(toetsblok).not.toHaveAttribute('data-module', /\w/);
-
-  await addTest(page, '2099-01-10', 'tafels');
-  await expect(toetsblok).toHaveAttribute('data-module', 'tafels');
-
-  // A second test, earlier than the first. The plan follows the soonest one.
-  await addTest(page, '2099-01-05', 'topo');
-  await expect(toetsblok).toHaveAttribute('data-module', 'topo');
-
-  // And it is a device setting, so it survives the page rather than the render.
-  await page.reload();
-  await expect(toetsblok).toHaveAttribute('data-module', 'topo');
-
-  // Both are on the list, and taking the soonest one off puts the other back
-  // in charge — which is the whole of what makes a list a plan.
-  await openToetsen(page);
-  await expect(page.getByRole('button', { name: /^Verwijder:/ })).toHaveCount(2);
-
-  await page
-    .getByRole('button', { name: /^Verwijder:/ })
-    .first()
-    .click();
-  await expect(toetsblok).toHaveAttribute('data-module', 'tafels');
-});
-
-/**
- * Below 1200 the block is only its dates once it has any, and pressing them
- * opens it into the whole thing a laptop shows straight away (ADR-094). At a
- * desk, and with no tests, it is already whole and this does nothing.
- */
-async function openToetsen(page: Page) {
-  const datums = page.getByRole('button', { name: /Toetsen wijzigen$/ });
-  if (await datums.isVisible()) await datums.click();
-}
-
-/** One test, through the block that is now a list with a form under it. */
-async function addTest(page: Page, date: string, subject: string) {
-  await openToetsen(page);
-  await page.getByRole('button', { name: 'Toets toevoegen' }).click();
-  await page.getByLabel('Wanneer is de toets?').fill(date);
-  await page.getByLabel('Voor welk vak?').selectOption(subject);
-  await page.getByRole('button', { name: 'Toevoegen', exact: true }).click();
-}
-
-/**
  * The rows on the front door hide their scrollbar (ADR-094), and hiding it must
  * not take scrolling away from anyone who does not swipe. The row is a stop in
  * the tab order and the arrow keys move it — checked at every size, because a
@@ -210,9 +145,9 @@ async function addTest(page: Page, date: string, subject: string) {
 test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   await signIn(page, 'Rik');
 
-  // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee" en niet
-  // "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is.
-  const rij = page.getByRole('group', { name: 'Hier begin je mee' });
+  // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee vandaag"
+  // en niet "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is.
+  const rij = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
   await rij.focus();
   await page.keyboard.press('ArrowRight');
 
@@ -707,7 +642,7 @@ test('the starter row is not called "most practised" before anything is practise
   page,
 }) => {
   await signIn(page, 'Sam');
-  await expect(page.getByRole('group', { name: 'Hier begin je mee' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
   await expect(page.getByRole('group', { name: 'Meest geoefend' })).toHaveCount(0);
 
   await eenRondeProvincies(page);

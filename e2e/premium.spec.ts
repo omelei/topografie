@@ -23,7 +23,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
@@ -232,8 +232,8 @@ test('without a code the premium page points at the kassa, and with one it does 
     tabel.getByRole('row', { name: /Alle vakken en alle onderwerpen/ }).getByRole('img'),
   ).toHaveCount(2);
 
-  // Zonder de kolom ernaast: het toetsblok hoort niet op de pagina waar je betaalt.
-  await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toHaveCount(0);
+  // Zonder de kolom ernaast: de pagina waar je betaalt heeft de breedte nodig.
+  await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
   const knop = page.getByRole('link', { name: 'Een code kopen' }).first();
   await expect(knop).toBeVisible();

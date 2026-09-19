@@ -13,11 +13,9 @@ import {
 } from '@/features/module/onderdelen';
 import { useDesk } from '@/features/shell/useSmallScreen';
 import { Blok } from './Blok';
-import { ToetsenBlok } from './ToetsenBlok';
 
 /**
- * The child's own column: the tests that are coming, and where
- * they keep going back to.
+ * The child's own column: where this child keeps going back to.
  *
  * It is the same column on every page inside the shell, because it is what the
  * app knows about the child, and that does not change when they walk into
@@ -40,31 +38,29 @@ import { ToetsenBlok } from './ToetsenBlok';
  * **"Goed beantwoord" staat er niet meer** (ADR-148). Het is een getal over hoe
  * het oefenen gaat, en die staan op Onthouden bij elkaar; in een kolom die op
  * élke pagina meegaat stond het ook naast diezelfde pagina.
+ *
+ * **En "Jouw toetsen" ook niet** (ADR-162). Dat blok vroeg een datum en een vak
+ * om er een voorspelling voor terug te geven, en het stond op elke pagina van
+ * de app. Wat het niet gaf, was een reden om die datum in te typen: wie hem
+ * oversloeg, miste niets, en wie hem invulde kreeg een percentage waar thuis
+ * niets mee te doen viel. Daarmee was het het enige blok in de kolom dat werk
+ * vroeg van de ouder en er niets voor teruggaf. Wat een kind deze week wil
+ * halen, staat sindsdien op de voordeur en is van het kind zelf.
+ *
+ * Daarmee is de kolom nog één blok groot, en op Voor ouders is hij leeg — die
+ * pagina draagt hem dus niet meer.
  */
 export function SideColumn({
   onBegin,
-  vanOuder = false,
 }: {
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
-  /**
-   * Op de ouderpagina (ADR-143). Daar stonden alle vier de blokken, elk met een
-   * kop die begint met "Jouw" — een ouder die "Voor ouders" opende werd in de
-   * kolom ernaast aangesproken alsof hij het kind was, met zijn week, zijn
-   * cijfer en zijn favorieten.
-   *
-   * De toetsen blijven staan, en dat is geen uitzondering maar de regel die
-   * eronder ligt: een toetsdatum wordt door de ouder ingevoerd. De andere twee
-   * gaan over hoe het kind het doet, en die staan op de pagina's van het kind.
-   */
-  readonly vanOuder?: boolean;
 }) {
   const desk = useDesk();
   if (!desk) return null;
 
   return (
     <aside className="tk-home-aside">
-      <ToetsenBlok />
-      {vanOuder ? null : <FavorietenBlok onBegin={onBegin} />}
+      <FavorietenBlok onBegin={onBegin} />
     </aside>
   );
 }

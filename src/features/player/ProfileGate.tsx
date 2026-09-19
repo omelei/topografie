@@ -21,10 +21,31 @@ import { GroepKiezer } from './GroepKiezer';
  * dit apparaat zoals de naam, en gaat hij nooit naar een derde. Het blijft bij
  * de groep: een leeftijd of een geboortedatum wordt nooit gevraagd.
  *
+ * **De uitweg heet "Zeg ik niet"** (ADR-161). Hij heette "Weet ik niet", en dat
+ * is het enige antwoord op deze kaart dat een kind iets over zichzelf laat
+ * toegeven wat het gewoon weet. Overslaan hoort een keuze te zijn en geen
+ * bekentenis; wat de app ermee doet, is precies hetzelfde.
+ *
+ * **En er is een derde weg: "Ik ben een ouder"** (ADR-161). Dit scherm is het
+ * allereerste wat iemand van leer.nu ziet, en dat is vaak niet het kind maar de
+ * volwassene die de app opzoekt. Die werd hier gedwongen een groep te kiezen om
+ * ergens te komen. Nu maakt die knop het profiel aan zonder groep — de naam is
+ * al getypt en de groep is toch altijd over te slaan — en opent Voor ouders,
+ * waar staat wat leer.nu doet en waar de groep van het kind alsnog gezet wordt.
+ *
  * Twee stappen op één kaart, en het kind bestaat pas na de tweede. Wie bij de
  * groep terug wil naar de naam, is nog niemand.
  */
-export function ProfileGate({ onReady }: { readonly onReady: (profile: ProfileRecord) => void }) {
+export function ProfileGate({
+  onReady,
+}: {
+  /**
+   * Het profiel bestaat. `naarOuder` zegt of de app op Voor ouders moet openen
+   * in plaats van op de voordeur: dat is geen eigenschap van het profiel, dus
+   * het reist ernaast mee en wordt nergens bewaard.
+   */
+  readonly onReady: (profile: ProfileRecord, naarOuder?: boolean) => void;
+}) {
   const [naam, setNaam] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [stap, setStap] = useState<'naam' | 'groep'>('naam');
@@ -39,9 +60,9 @@ export function ProfileGate({ onReady }: { readonly onReady: (profile: ProfileRe
     setStap('groep');
   }
 
-  async function kies(groep: Groep | undefined) {
+  async function kies(groep: Groep | undefined, naarOuder = false) {
     setBusy(true);
-    onReady(await createProfile(naam, groep));
+    onReady(await createProfile(naam, groep), naarOuder);
   }
 
   return (
@@ -88,9 +109,10 @@ export function ProfileGate({ onReady }: { readonly onReady: (profile: ProfileRe
           <p className="text-tekst-secundair">{t('groep.uitleg')}</p>
           <GroepKiezer
             gekozen={null}
-            uitweg="groep.weetNiet"
+            uitweg="groep.zegIkNiet"
             bezig={busy}
             onKies={(groep) => void kies(groep)}
+            onOuder={() => void kies(undefined, true)}
           />
           <button
             type="button"

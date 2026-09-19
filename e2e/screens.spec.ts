@@ -31,7 +31,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   // The name is in the app bar now, beside the streak — K1 puts the profile
   // switch top right, so that is where "you are signed in" is visible.
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
@@ -64,13 +64,11 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await shoot(page, size, '01-naam');
 
   await signIn(page, 'Fenna');
-  // The child's column is read from IndexedDB, and on WebKit — both iPads and
-  // the iPhone — the read is slower than a screenshot taken the moment the name
-  // appears. The page draws the cards at once and fills them when it knows
-  // (ADR-094); a picture of the empty cards is not the page a child looks at,
-  // so this waits for the filled one. Below 1200 the column is not drawn and
-  // the tests are the one block left (ADR-119).
-  await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
+  // De voordeur leest uit IndexedDB, en op WebKit — beide iPads en de iPhone —
+  // duurt die lezing langer dan een schermafdruk die meteen na de naam wordt
+  // genomen. Wachten op de rij waar een kind mee begint: die is het eerste blok
+  // van de pagina en staat er pas als de geschiedenis gelezen is (ADR-162).
+  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
   await page.goto('/topografie');
