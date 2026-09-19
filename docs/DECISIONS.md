@@ -8568,6 +8568,116 @@ faalt de goede kant op.
   dat het aanmaken in twee stappen werkt zoals bedoeld. Gaat een van die twee
   niet op, dan is dat een volgende ADR en geen stille reparatie.
 
+---
+
+## ADR-157 — De accountlaag achter één interface, en de ouder die in- en uitlogt
+
+**Status:** accepted. **Date:** 2026-09-18. Bouwt op ADR-155 en ADR-156. Het
+kind komt niet in dit record voor; dat is de volgende fase.
+
+### Context
+
+ADR-155 koos de vorm en ADR-156 het schema. Wat er nog niet was, is de kant van
+de app: iets dat weet of er iemand is ingelogd, en een scherm waarop dat kan.
+
+De moeilijkheid is niet het formulier maar het testen. Er is geen
+Supabase-project in CI en er zijn geen sleutels, dus alles wat rechtstreeks met
+Supabase praat, is hier niet te controleren — en dit is precies de laag waar
+niet-gecontroleerd geen optie hoort te zijn.
+
+### Decision
+
+**Alles loopt door één interface, en daar zijn er twee van.** `Account` in
+`src/store/account/types.ts` heeft vier dingen: aanmelden, inloggen, uitloggen,
+en de sessie opvragen. `supabaseAccount.ts` doet dat echt; `nepAccount.ts` doet
+het in het geheugen. De tests draaien op de tweede en raken geen netwerk.
+
+Dat is geen dubbel werk zolang het oordeel maar op één plek staat: `oordeel.ts`
+kent het adres, het wachtwoord, het verlopen en het vertalen van wat Supabase
+antwoordt, en allebei de implementaties gebruiken het. Een test die slaagt zegt
+daardoor iets over wat er echt gebeurt. Wat de nep níét naspeelt is Supabase
+zelf, en dat is eerlijk gezegd de helft van het risico.
+
+**Acht tekens voor een ouder, waar ADR-155 er zes gaf aan een kind.** Het
+verschil is geen slordigheid. Het wachtwoord van een kind opent één omgeving en
+zit achter een inlogcode die er óók bij moet; dat van een ouder opent alles van
+al zijn kinderen en zit achter een adres dat iedereen kan raden. En waar acht
+tekens voor een achtjarige een eis zijn die de ouder omzeilt, zijn ze voor die
+ouder zelf gewoon te doen.
+
+**Aanmelden zit erbij, wachtwoord vergeten niet.** Inloggen zonder aanmelden is
+niets — er zou niemand zijn om in te loggen — dus is dat de kleinste schil die
+werkt. Herstel loopt langs de mail van Supabase en hoort bij de schermen waar
+een ouder zijn kinderen beheert; dat is F5. Het is hier weggelaten en niet
+vergeten.
+
+**Bij inloggen één antwoord, bij aanmelden niet.** "Dit adres kennen we niet" en
+"dit wachtwoord klopt niet" zijn van buiten hetzelfde, zoals bij het kind. Bij
+aanmelden kan dat niet: daar ís "dit adres bestaat al" het antwoord. Dat is de
+reden dat Supabase bevestiging per mail aanraadt, en waarom `docs/SUPABASE.md`
+die aanzet.
+
+**De sessie staat in localStorage, naast de premiumstand.** Om dezelfde reden
+als ADR-116: hij hoort bij het apparaat en niet bij een kind, en hij wordt op het
+eerste frame gelezen zodat een scherm niet eerst "niet ingelogd" toont en dat
+daarna terugneemt. Er staat een token en een adres in, en geen wachtwoord: dat
+heeft de app nooit langer vast dan het ene verzoek waarin het verstuurd wordt.
+
+**Geen verbinding logt niemand uit.** Een vernieuwtoken dat geweigerd wordt, is
+een ingetrokken sessie — dat doet `kind-beheer` met opzet na een nieuw
+wachtwoord — en dan is uitloggen het juiste antwoord. Maar een verzoek dat
+helemaal niet aankomt, is een tunnel of een schoolwifi, en dan blijft de sessie
+staan. Hetzelfde uitgangspunt als premium, dat twee weken zonder antwoord blijft
+werken.
+
+**Uitloggen ruimt eerst hier op en praat daarna pas.** Andersom zou een mislukt
+verzoek iemand ingelogd laten die op uitloggen heeft gedrukt, en dat is de ene
+kant op waar het niet fout mag gaan.
+
+**Het blok staat op Voor ouders, na premium.** Niet op de voordeur: inloggen is
+een aanbod en geen poort (ADR-152), en een kind dat de app opent hoort niet als
+eerste een inlogscherm te zien. Voor ouders is de pagina waar de volwassene toch
+al komt. Na premium, omdat dat het eerste is waar een ouder voor terugkomt en de
+volgorde van die pagina van ADR-145 is.
+
+**Een bouw zonder adres en sleutel zegt dat, en toont geen formulier.** Dezelfde
+vorm als `isTeKoop` voor premium: twee variabelen, `VITE_GEZIN_URL` en
+`VITE_GEZIN_KEY`, en zonder die twee staat er één regel in plaats van een
+formulier dat nergens heen kan. Een formulier dat niets doet is erger dan geen
+formulier.
+
+Het staat met opzet níét achter `features.accounts` in `config/brand.ts`. Die
+vlag belooft volgens zijn eigen commentaar dat de code erachter áf is, en dat is
+dit pas na F7. Bovendien hangt het antwoord niet aan een constante maar aan twee
+variabelen die per omgeving verschillen: in CI staan ze leeg, in de e2e-bouw
+wijzen ze naar een adres dat niet bestaat, en in productie naar het echte.
+
+**Kale `fetch`, en lui geladen.** Geen `@supabase/supabase-js`, zoals
+`store/premium.ts` het al doet. Dat is niet alleen zuinig maar nodig om te
+kunnen zeggen dat de shell van 300 kB niet groeit voor een kind dat nooit
+inlogt: `tools/report-bundle-size.mjs` telt élk bestand in `dist/assets` op, dus
+een lui geladen brok zou daar gewoon in meetellen. Zonder bibliotheek is er niets
+om uit te zonderen. `index.ts` is daarom bijna leeg — twee regels die naar
+`import.meta.env` kijken — en haalt de rest pas op als er werkelijk iets gebeurt.
+
+### Consequences
+
+- `e2e/account.spec.ts` legt vast dat de voordeur van het kind niet verandert:
+  geen blok, geen knop, en oefenen zonder dat er iets gevraagd is.
+  `network.spec.ts` blijft ongewijzigd — tijdens een ronde gaat er nog steeds
+  niets de deur uit, want dit blok staat op een pagina die een ronde niet opent.
+- De build krijgt `GEZIN_URL` en `GEZIN_KEY` mee in `ci.yml`, leeg tot het
+  project is ingericht. Vanaf nu is dat geen dode configuratie meer.
+- **`sessie()` wordt door de app nog nergens aangeroepen.** Het verversen is
+  geschreven en getest, maar er is in deze fase niets dat een token gebruikt —
+  dat begint bij het syncen (F4) en het ouderoverzicht (F5). Het staat er omdat
+  de interface anders in twee stappen zou groeien, en het is beter dat te zeggen
+  dan het als werkend gedrag te presenteren.
+- **Niet geverifieerd.** Alles wat `supabaseAccount.ts` tegen Supabase zegt: de
+  vorm van het antwoord op aanmelden, hoe een geweigerd vernieuwtoken eruitziet,
+  en of de foutcodes zijn wat ze volgens de documentatie zijn. De tests dekken
+  het oordeel en niet de andere kant van de lijn.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

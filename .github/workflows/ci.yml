@@ -283,6 +283,13 @@ jobs:
           # nooit in een build. Leeg tot de kassa is ingesteld, en dan zeggen de
           # pagina's onder /kopen dat ze dicht zijn.
           KASSA_URL: ${{ vars.KASSA_URL }}
+          # Het gezinsproject (ADR-155): waar een ouder inlogt, en de publieke
+          # sleutel die dat mag vragen. Allebei openbaar bedoeld — de sleutel
+          # komt niet verder dan wat row level security toestaat. Leeg tot het
+          # project is ingericht (docs/SUPABASE.md), en dan zegt het blok op
+          # Voor ouders dat inloggen nog niet beschikbaar is.
+          VITE_GEZIN_URL: ${{ vars.GEZIN_URL }}
+          VITE_GEZIN_KEY: ${{ vars.GEZIN_KEY }}
       # Cheap, and it closes the only way this build can be wrong while every
       # test passes: the tests run against a dev server that does not have a
       # base at all, so nothing else in this file ever looks at the paths that
