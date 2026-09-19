@@ -70,12 +70,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // (ADR-094); a picture of the empty cards is not the page a child looks at,
   // so this waits for the filled one. Below 1200 the column is not drawn and
   // the tests are the one block left (ADR-119).
-  if ((page.viewportSize()?.width ?? 0) >= 1200) {
-    const week = page.locator('.tk-home-aside').getByRole('region', { name: 'Jouw week' });
-    await expect(week).not.toHaveAttribute('aria-busy', 'true');
-  } else {
-    await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
-  }
+  await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
   await page.goto('/topografie');
@@ -92,12 +87,6 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await page.goto('/onthouden');
   await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
   await shoot(page, size, '12-onthouden');
-
-  // The weekkaart (ADR-149): seven squares, the goal and the school year.
-  await page.goto('/week');
-  await expect(page.getByRole('heading', { name: 'Jouw week' })).toBeVisible();
-  await expect(page.getByRole('list', { name: 'Je weekkaart' })).toBeVisible();
-  await shoot(page, size, '16-week');
 
   // Een modulepagina met een set gekozen zegt één ding over de toren: wat er
   // hier vandaag terugkomt, want alleen dat kan een steen opleveren (ADR-158).

@@ -11,6 +11,9 @@ import {
   type Vak,
 } from '@/game-core';
 import type { TorenGroei } from '@/store/torenStore';
+import { ReeksBlok } from '@/features/toren/ReeksBlok';
+import { useReeks } from '@/features/toren/reeks';
+import { useRegister } from '@/features/toren/register';
 import { Scene } from '@/features/toren/Scene';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
@@ -121,8 +124,12 @@ export function RondeKlaar({
   // Een verdieping die volliep, en het ijkpunt dat daarbij gepasseerd werd. Het
   // register is hier nog het beeldregister; de groep kiest het in fase twee.
   const verdiepingKlaar = groei !== null && groei.na.verdiepingen > groei.voor.verdiepingen;
+  // Het ijkpunt dat deze ronde gepasseerd werd, in het register van dit kind:
+  // de onderbouw hoort over een giraf, de bovenbouw over meters (ADR-158).
+  const register = useRegister();
+  const reeks = useReeks();
   const mijlpaal =
-    groei === null ? null : gepasseerd(groei.voor.verdiepingen, groei.na.verdiepingen, 'beeld');
+    groei === null ? null : gepasseerd(groei.voor.verdiepingen, groei.na.verdiepingen, register);
 
   // Vandaag klaar: het plan van vandaag is af (ADR-139), of niets wat dit kind
   // ooit begon is nu nog aan de beurt. Het tweede is voor wie geen plan ziet:
@@ -323,6 +330,9 @@ export function RondeKlaar({
             {children}
           </section>
         ) : null}
+
+        {/* Helemaal onderaan, en nergens anders in de ronde (ADR-158). */}
+        <ReeksBlok reeks={reeks} />
       </div>
     </main>
   );

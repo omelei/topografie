@@ -1,22 +1,21 @@
 import { useEffect, useState } from 'react';
-import { schooljaarVan, SEIZOENEN, type Seizoen } from '@/game-core';
 import { doelwitten, standVan } from '@/features/home/doel';
 import { onderdelen } from '@/features/module/onderdelen';
-import { leesBijhouden, type Bijhouden } from '@/store/bijhoudStore';
 import { loadItemStates } from '@/store/progress';
 
 /**
- * Wat een diplomamuur naast "gehaald" nog weet (ADR-149): of een diploma rijp
- * is om af te zwemmen, en in welke seizoenen van dit schooljaar het een
- * bijhoudstempel kreeg.
+ * Wat een diplomamuur naast "gehaald" nog weet: of een diploma rijp is om af te
+ * zwemmen.
  *
  * Rijp is de lat van ADR-141, dezelfde die het doelblok gebruikt: negen op de
- * tien plaatjes van de pagina onthoud je nu, bij een tafel allemaal.
+ * tien onderdelen van de set onthoud je nu, bij een tafel allemaal.
+ *
+ * De bijhoudstempels stonden hier ook. Die zijn met het album vervallen
+ * (ADR-158): een diploma is een toets en geen beloning, en wat bijhouden
+ * oplevert staat nu in de toren.
  */
 export interface DiplomaStand {
   readonly rijp: (diplomaId: string) => boolean;
-  /** De seizoenen van dit schooljaar, met of zonder stempel voor dit diploma. */
-  readonly seizoenen: (diplomaId: string) => readonly { seizoen: Seizoen; stempel: boolean }[];
 }
 
 export function useDiplomaStand(): DiplomaStand | null {
@@ -24,9 +23,9 @@ export function useDiplomaStand(): DiplomaStand | null {
 
   useEffect(() => {
     let levend = true;
-    void Promise.all([loadItemStates(), leesBijhouden()]).then(([states, bijhouden]) => {
+    void loadItemStates().then((states) => {
       if (!levend) return;
-      setStand(maakStand(states, bijhouden, new Date()));
+      setStand(maakStand(states, new Date()));
     });
     return () => {
       levend = false;
@@ -36,22 +35,12 @@ export function useDiplomaStand(): DiplomaStand | null {
   return stand;
 }
 
-function maakStand(
-  states: Awaited<ReturnType<typeof loadItemStates>>,
-  bijhouden: Bijhouden,
-  now: Date,
-): DiplomaStand {
+function maakStand(states: Awaited<ReturnType<typeof loadItemStates>>, now: Date): DiplomaStand {
   const witten = doelwitten(onderdelen(), true);
-  const jaar = schooljaarVan(now);
   return {
     rijp: (diplomaId) => {
       const doelwit = witten.find((kandidaat) => kandidaat.id === diplomaId);
       return doelwit ? standVan(doelwit, states, now).rijp : false;
     },
-    seizoenen: (diplomaId) =>
-      SEIZOENEN.map((seizoen) => ({
-        seizoen,
-        stempel: (bijhouden[diplomaId] ?? []).includes(`${jaar}-${seizoen}`),
-      })),
   };
 }

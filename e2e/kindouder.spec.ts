@@ -61,11 +61,11 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
-  // De weekkaart, het cijfer en de favorieten van het kind horen op de pagina's
-  // van het kind, en staan hier dus niet. Het weekdoel wel: dat kiest een ouder
-  // mee (ADR-149).
+  // Het cijfer en de favorieten van het kind horen op de pagina's van het kind
+  // en staan hier dus niet. Hoe de toren eruitziet wel: dat stelt een ouder in
+  // (ADR-158).
   await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Je weekdoel' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Hoe de toren eruitziet' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
   // De toetsdatum blijft wél: die voert de ouder in. Alleen waar de kolom

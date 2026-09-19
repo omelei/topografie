@@ -20,10 +20,9 @@ import {
   type Preferences,
 } from './settings';
 import { Weekbericht } from './Weekbericht';
-import { useWeek } from '@/features/week/useWeek';
-import { WeekdoelKiezer } from '@/features/week/Weekkaart';
 import { AccountBlok } from '@/features/account/AccountBlok';
 import { EigenLijsten } from './EigenLijsten';
+import { RegisterInstelling } from '@/features/toren/RegisterInstelling';
 import { GroepInstelling } from './GroepInstelling';
 import type { ReactNode } from 'react';
 
@@ -144,11 +143,11 @@ export function ParentScreen({
           </ul>
         </section>
 
-        {/* Wat je kind oefent begint bij zijn groep (ADR-151): wat de app
-            voorstelt, vóór het weekdoel dat het kind zelf haalt. */}
+        {/* Wat je kind oefent begint bij zijn groep (ADR-151), en de groep
+            kiest ook welk gezicht de toren laat zien (ADR-158). */}
         <GroepInstelling />
 
-        <Weekdoel />
+        <RegisterInstelling />
 
         <EigenLijsten />
 
@@ -295,23 +294,5 @@ function Weg({
       <span className="tk-kaartje-kop">{label}</span>
       <NextIcon size={20} />
     </button>
-  );
-}
-
-/**
- * Het weekdoel, ook hier (ADR-149): een kind kiest het samen met een ouder, en
- * de ouder is vaak degene die deze pagina opent. Dezelfde keuze als op de
- * weekkaart, dus wat hier gekozen wordt, staat daar ook.
- */
-function Weekdoel() {
-  const { week, kiesDoel } = useWeek();
-  if (week === null) return null;
-
-  return (
-    <section className="flex flex-col gap-3" aria-label={t('week.doelTitel')}>
-      <h2 className="tk-sectie">{t('week.doelTitel')}</h2>
-      <p className="text-lopend">{t('week.doelOuder')}</p>
-      <WeekdoelKiezer doel={week.kaart.doel} onKies={kiesDoel} />
-    </section>
   );
 }

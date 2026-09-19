@@ -35,7 +35,6 @@ import {
 import { ProfileScreen } from '@/features/player/ProfileScreen';
 import { ParentScreen } from '@/features/player/ParentScreen';
 import { loadPreferences, zetRustig } from '@/features/player/settings';
-import { WeekScreen } from '@/features/week/WeekScreen';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
@@ -543,8 +542,6 @@ export default function App() {
     );
   }
 
-  /** The way to the weekkaart's page, from the block that shows the week. */
-  const goWeek = () => go({ name: 'week' });
   const goOuder = () => go({ name: 'ouder' });
   const goJij = () => go({ name: 'you' });
   const goDiplomas = () => {
@@ -553,7 +550,7 @@ export default function App() {
   };
 
   /** The child's own column, which every screen inside the shell carries. */
-  const eigenKolom = <SideColumn onWeek={goWeek} onBegin={beginRonde} />;
+  const eigenKolom = <SideColumn onBegin={beginRonde} />;
 
   // What premium is and where the code goes (ADR-116). Reached from every
   // lock and from Jij, by its address, and never from the tab bar.
@@ -564,18 +561,6 @@ export default function App() {
             maar niemand komt hier om een toets te plannen, en de vergelijking
             tussen basis en premium heeft de breedte nodig. */}
         <PremiumScreen />
-      </Shell>
-    );
-  }
-
-  // The weekkaart's own page: this week, the goal and the school year's seals
-  // (ADR-149). Reached from the week block and by its address, never from the
-  // tab bar. Its column leaves the week block out, because that block is this
-  // page again.
-  if (route.name === 'week') {
-    return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        <WeekScreen aside={<SideColumn onWeek={goWeek} onBegin={beginRonde} opWeek />} />
       </Shell>
     );
   }
@@ -659,7 +644,7 @@ export default function App() {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
         <ParentScreen
-          aside={<SideColumn onWeek={goWeek} onBegin={beginRonde} vanOuder />}
+          aside={<SideColumn onBegin={beginRonde} vanOuder />}
           onJij={goJij}
           onOnthouden={() => go({ name: 'retention' })}
         />
@@ -679,7 +664,6 @@ export default function App() {
     <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule} grond="vandaag">
       <HomeScreen
         naam={boot.profile.naam}
-        onWeek={goWeek}
         onBegin={beginRonde}
         onVerder={maakAf}
         onPlan={maakAf}

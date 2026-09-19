@@ -1,14 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * De toren en de weekkaart (ADR-158).
+ * De toren en de reeks (ADR-158).
  *
  * Wat hier vastligt is de boog van één dag: de modulepagina zegt wat er vandaag
  * terugkomt, een ronde laat de toren zien en wat ze ermee deed, de dag krijgt
- * een stempel op de weekkaart, en het weekdoel kies je op de weekkaart of samen
- * met een ouder op Voor ouders — en het is hetzelfde doel.
- *
- * De weekkaart gaat in fase twee weg; zolang hij er staat, wordt hij getoetst.
+ * de dag telt voor de reeks, en het gezicht van de toren volgt de groep.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -62,32 +59,28 @@ test('een ronde laat de toren zien, en de dag krijgt een stempel', async ({ page
   // Na één vraag gestopt is geen "klaar voor vandaag".
   await expect(page.getByRole('button', { name: 'Terug naar start' })).toBeVisible();
 
-  // De weekkaart telt de dag, ook voor een ronde die halverwege stopte.
-  await page.goto('/week');
-  await expect(page.getByRole('heading', { name: 'Jouw week' })).toBeVisible();
-  await expect(page.getByRole('list', { name: 'Je weekkaart' })).toContainText('Vandaag: stempel');
-  await expect(page.getByText('1 van de 3 dagen.')).toBeVisible();
-  await expect(page.getByText(/op rij/i)).toHaveCount(0);
+  // De reeks telt de dag, ook voor een ronde die halverwege stopte: het kind
+  // kwam opdagen en deed het werk (ADR-158).
+  const reeks = page.getByRole('region', { name: 'Je reeks' });
+  await expect(reeks).toContainText('Vandaag telt al mee.');
 });
 
-test('het weekdoel is één doel, op de weekkaart en bij de ouder', async ({ page }) => {
+test('het register volgt de groep, en een ouder kan het omzetten', async ({ page }) => {
   await signIn(page, 'Roos');
 
-  await page.goto('/week');
-  const doel = page.getByRole('group', { name: 'Je weekdoel' });
-  await expect(doel.getByRole('button', { name: '3 dagen' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  await doel.getByRole('button', { name: '4 dagen' }).click();
-  await expect(doel.getByRole('button', { name: '4 dagen' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  // Zonder groep het beeldgezicht: dat is de veilige kant (ADR-158).
+  await page.goto('/jij');
+  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
 
+  // En op Voor ouders staat de schakelaar, standaard op "volg de groep".
   await page.goto('/ouder');
-  const bijOuder = page.getByRole('group', { name: 'Je weekdoel' });
-  await expect(bijOuder.getByRole('button', { name: '4 dagen' })).toHaveAttribute(
+  const keuze = page.getByRole('group', { name: 'Hoe de toren eruitziet' });
+  await expect(keuze.getByRole('button', { name: 'Volg de groep' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await keuze.getByRole('button', { name: 'De getallen' }).click();
+  await expect(keuze.getByRole('button', { name: 'De getallen' })).toHaveAttribute(
     'aria-pressed',
     'true',
   );

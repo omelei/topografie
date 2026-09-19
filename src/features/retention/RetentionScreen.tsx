@@ -17,6 +17,7 @@ import { itemRetention } from '@/game-core';
 import { klokVoluit } from '@/features/klok/klokTaal';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
 import { regiosVan } from '@/features/module/regios';
+import { heeftKaart, StandKaart } from './StandKaart';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -341,6 +342,18 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
         <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
           <h2 className="tk-sectie">{t('retention.glance')}</h2>
           <div className="tk-card flex flex-col gap-4">
+            {/* De kaart van topografie hoort hier, en niet meer bij een
+                beloning (ADR-158): dezelfde vier statussen als de stippen en
+                de tabel, op de plek waar de dingen liggen. */}
+            {deel && !deel.mix && heeftKaart(deel.setId) ? (
+              <StandKaart
+                setId={deel.setId}
+                items={items}
+                states={states}
+                now={now}
+                label={t('retention.kaartLabel', { wat: naamVan(deel) })}
+              />
+            ) : null}
             <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
             {/* The legend is the table's own four labels: one language for
                 both views. */}

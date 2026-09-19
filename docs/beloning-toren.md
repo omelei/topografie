@@ -223,9 +223,21 @@ voor wie het al kan.
 De app kent de groep al (`src/game-core/groep.ts`, ADR-151). Groep is optioneel en
 altijd over te slaan. De regel verandert nooit; alleen wat er vooraan staat.
 
-**Groep 3-5 en geen groep — het beeld voorop.** De toren groot, Denker ernaast op
-ware schaal, het ijkpunt in woorden ("Hoger dan een giraf."). Korte zinnen, geen
-meters, geen datums.
+**Groep 3-5 en geen groep — het beeld voorop.** De toren groot, Denker aan de
+voet, het ijkpunt in woorden ("Hoger dan een giraf."). Korte zinnen, geen meters,
+geen datums.
+
+Denker staat er op een vaste maat en niet op ware schaal. Op ware schaal is een
+mens 1,7 van de 3 meter die een verdieping hoog is, dus bij schaal 1 zo'n 17
+pixels — en zodra de toren boven de tien verdiepingen komt en de schaal krimpt,
+is hij een stip. Een poppetje dat verdwijnt zegt minder dan geen poppetje. Wat
+de hoogte betekent staat daarom in woorden, en dat is ook wat een kind van zes
+ervan navertelt.
+
+**Zonder groep krijgt een kind het beeld**, en dat is de veilige kant: een kind
+van zes dat de getallen krijgt snapt er niets van, terwijl een twaalfjarige die
+het beeld krijgt zich hoogstens jonger behandeld voelt — en dat is met één
+schakelaar te repareren.
 
 **Groep 6-8 — de getallen voorop.** "412 stenen · 41 verdiepingen · 123 meter",
 daaronder de datumlog van de verdiepingen, en de toren kleiner ernaast. Nuchtere
@@ -238,7 +250,12 @@ wél omhooggaat naarmate je iets beheerst, en het is het antwoord op het bezwaar
 uit §4.2.
 
 Eén voorkeur op Voor ouders overschrijft het register, standaard afgeleid uit de
-groep. Zelfde patroon als `readAloud` in `src/features/player/settings.ts`.
+groep. Op het apparaat en niet per kind, zoals `voorlezen`, met dezelfde
+afweging: het zijn schakelaars van het ding waar je op oefent.
+
+Drie standen en niet twee: "volg de groep" moet zelf een stand zijn, anders
+staat een kind dat overgaat voor altijd vast op wat er ooit een keer gekozen
+is.
 
 ---
 
@@ -356,9 +373,15 @@ opnieuw opgebouwd uit toren + reeksrecord + diploma's.
 
 ### 6.6 Onthouden
 
-De inkleurende topokaart (`AlbumKaart`) **verhuist hierheen** als statusbeeld voor
-de gekozen set, gratis, naast de bestaande heatmap. Hij verdwijnt dus niet — hij
-houdt op een beloning te zijn en wordt wat hij is: de stand.
+De inkleurende topokaart **verhuist hierheen** als statusbeeld voor de gekozen
+set, gratis, naast de bestaande heatmap. Hij verdwijnt dus niet — hij houdt op
+een beloning te zijn en wordt wat hij is: de stand.
+
+Hij spreekt daar ook de taal van de pagina: elke plek draagt een van de vier
+statussen die de stippen en de tabel ernaast ook gebruiken (nog niet geoefend,
+aan het oefenen, onthouden, even opfrissen), in plaats van de albumlagen. Eén
+taal voor drie beelden van hetzelfde. De stempels en de tekens die erop stonden,
+zijn met het album vervallen.
 
 ---
 
