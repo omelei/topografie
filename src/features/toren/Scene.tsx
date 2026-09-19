@@ -103,9 +103,7 @@ export function Scene({
 
       {!plan.overslaanbaar ? (
         <p className="tk-toneel-morgen">
-          {invoer.morgen === 0
-            ? t('toren.leegNul')
-            : t('toren.leeg', { aantal: invoer.morgen })}
+          {invoer.morgen === 0 ? t('toren.leegNul') : t('toren.leeg', { aantal: invoer.morgen })}
         </p>
       ) : null}
     </div>

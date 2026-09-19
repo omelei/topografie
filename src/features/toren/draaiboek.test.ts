@@ -50,7 +50,9 @@ describe('rustig neemt de beweging weg en verder niets', () => {
   it('laat hetzelfde klinken', () => {
     for (const geval of alleGevallen()) {
       const stil = draaiboek({ ...geval, rustig: true }).beats.map((beat) => beat.geluid ?? '');
-      const bewegend = draaiboek({ ...geval, rustig: false }).beats.map((beat) => beat.geluid ?? '');
+      const bewegend = draaiboek({ ...geval, rustig: false }).beats.map(
+        (beat) => beat.geluid ?? '',
+      );
       expect(stil).toEqual(bewegend);
     }
   });
@@ -102,7 +104,9 @@ describe('de scène zelf', () => {
   });
 
   it('laat de verdieping klinken, en zwijgt als er een diploma komt', () => {
-    expect(draaiboek({ ...BASIS, verdiepingKlaar: true }).beats.some((b) => b.geluid === 'pagina')).toBe(true);
+    expect(
+      draaiboek({ ...BASIS, verdiepingKlaar: true }).beats.some((b) => b.geluid === 'pagina'),
+    ).toBe(true);
     expect(
       draaiboek({ ...BASIS, verdiepingKlaar: true, diploma: true }).beats.some((b) => b.geluid),
     ).toBe(false);

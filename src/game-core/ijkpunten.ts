@@ -69,11 +69,7 @@ export function bereikt(verdiepingen: number, register: Register): IJkpunt | nul
  * Alleen de passage zelf telt, en hooguit één per ronde: het hoogste. Wie in één
  * ronde over twee ijkpunten heen gaat, hoort over het verste.
  */
-export function gepasseerd(
-  voor: number,
-  na: number,
-  register: Register,
-): IJkpunt | null {
+export function gepasseerd(voor: number, na: number, register: Register): IJkpunt | null {
   const punten = ijkpuntenVoor(register).filter(
     (punt) => voor < punt.verdiepingen && na >= punt.verdiepingen,
   );

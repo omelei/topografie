@@ -96,11 +96,7 @@ export function beginToren(goedTotaal: number): TorenOpslag {
  * raakt, krijgt het nummer dat op het fundament en de eerdere verdiepingen volgt,
  * en de datum van dit moment.
  */
-export function stenenErbij(
-  toren: TorenOpslag,
-  vakken: readonly Vak[],
-  now: Date,
-): TorenOpslag {
+export function stenenErbij(toren: TorenOpslag, vakken: readonly Vak[], now: Date): TorenOpslag {
   if (vakken.length === 0) return toren;
 
   const datum = now.toISOString();
@@ -141,7 +137,8 @@ export function standVan(toren: TorenOpslag): TorenStand {
   const fundament = toren.fundament / STENEN_PER_VERDIEPING;
   const verdiepingen = fundament + toren.verdiepingen.length;
   return {
-    stenen: toren.fundament + toren.verdiepingen.length * STENEN_PER_VERDIEPING + toren.aanbouw.length,
+    stenen:
+      toren.fundament + toren.verdiepingen.length * STENEN_PER_VERDIEPING + toren.aanbouw.length,
     verdiepingen,
     meter: verdiepingen * METER_PER_VERDIEPING,
     fundament,

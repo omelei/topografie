@@ -51,14 +51,18 @@ export function TorenPagina() {
           <>
             <p className="tk-torenstand">
               <span className="tk-torenstand-getal">
-                {stand.stenen === 1 ? t('toren.totaalEen') : t('toren.totaal', { aantal: stand.stenen })}
+                {stand.stenen === 1
+                  ? t('toren.totaalEen')
+                  : t('toren.totaal', { aantal: stand.stenen })}
               </span>
               <span className="tk-torenstand-deel">
                 {stand.verdiepingen === 1
                   ? t('toren.verdiepingEen')
                   : t('toren.verdiepingen', { aantal: stand.verdiepingen })}
               </span>
-              <span className="tk-torenstand-deel">{t('toren.hoogte', { meter: stand.meter })}</span>
+              <span className="tk-torenstand-deel">
+                {t('toren.hoogte', { meter: stand.meter })}
+              </span>
             </p>
 
             {gehaald !== null ? (
@@ -73,9 +77,7 @@ export function TorenPagina() {
                 : t('toren.rest', { aantal: stand.rest, n: stand.inAanbouw })}
             </p>
 
-            {stand.fundament > 0 ? (
-              <p className="tk-hulp">{t('toren.fundamentUitleg')}</p>
-            ) : null}
+            {stand.fundament > 0 ? <p className="tk-hulp">{t('toren.fundamentUitleg')}</p> : null}
           </>
         )}
 

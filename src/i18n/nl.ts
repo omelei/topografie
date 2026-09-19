@@ -1274,7 +1274,8 @@ export const nl = {
     'Er hoeft vandaag niets meer terug te komen. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
   'result.nieuwePlaatjes': 'Iets nieuws leren',
-  'result.nieuwePlaatjesUitleg': 'Dit levert vandaag nog geen stenen op. Ze tellen als ze terugkomen.',
+  'result.nieuwePlaatjesUitleg':
+    'Dit levert vandaag nog geen stenen op. Ze tellen als ze terugkomen.',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde
@@ -1446,7 +1447,8 @@ export const nl = {
     'Je toren begint zodra iets terugkomt. Wat je vandaag leert, telt als het terugkomt.',
   'toren.fundament': 'Wat je al had',
   'toren.fundamentUitleg': 'Je toren begint met alles wat je tot nu toe goed had.',
-  'toren.samenvatting': 'De toren: {stenen} stenen, {verdiepingen} verdiepingen, {meter} meter hoog.',
+  'toren.samenvatting':
+    'De toren: {stenen} stenen, {verdiepingen} verdiepingen, {meter} meter hoog.',
 
   // De vier dingen die in een ronde gezegd worden. Bij een fout staat er niets:
   // het foutteken heeft dat al gezegd.

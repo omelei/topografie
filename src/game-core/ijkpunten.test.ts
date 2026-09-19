@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  bereikt,
-  gepasseerd,
-  IJKPUNTEN,
-  ijkpuntenVoor,
-  meterVoor,
-  volgende,
-} from './ijkpunten';
+import { bereikt, gepasseerd, IJKPUNTEN, ijkpuntenVoor, meterVoor, volgende } from './ijkpunten';
 import { METER_PER_VERDIEPING } from './toren';
 
 describe('de lijst', () => {

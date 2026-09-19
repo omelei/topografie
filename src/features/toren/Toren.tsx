@@ -76,7 +76,9 @@ export function Toren({
       >
         <g
           className="tk-toren-camera"
-          style={{ '--tk-pan': pan, '--tk-verdieping': maat.schaal * VERDIEPING_HOOG } as CSSProperties}
+          style={
+            { '--tk-pan': pan, '--tk-verdieping': maat.schaal * VERDIEPING_HOOG } as CSSProperties
+          }
         >
           {/* De grond staat onder het midden, en omhoog is negatief. */}
           <g transform={`translate(${TONEEL.breed / 2} ${TONEEL.hoog - 30}) scale(${maat.schaal})`}>

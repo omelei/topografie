@@ -1,4 +1,11 @@
-import { beginToren, standVan, stenenErbij, type TorenOpslag, type TorenStand, type Vak } from '@/game-core';
+import {
+  beginToren,
+  standVan,
+  stenenErbij,
+  type TorenOpslag,
+  type TorenStand,
+  type Vak,
+} from '@/game-core';
 import { activeChildId } from './children';
 import { loadItemStates } from './progress';
 import { getSetting, setSetting } from './settings';

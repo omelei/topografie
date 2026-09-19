@@ -301,9 +301,7 @@ function Vraag({
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
                   {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
-                  {state.question ? (
-                    <SteenRegel steen={state.steen} />
-                  ) : null}
+                  {state.question ? <SteenRegel steen={state.steen} /> : null}
                 </div>
               </div>
 

@@ -127,8 +127,16 @@ export interface RondeKern<S, Q, T, A> {
 }
 
 export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOpties<S, Q, T>) {
-  const { setId, moduleId, mode, basisRegel, aantal, toetsstand, itemVan, stoptBijFout = false } =
-    opties;
+  const {
+    setId,
+    moduleId,
+    mode,
+    basisRegel,
+    aantal,
+    toetsstand,
+    itemVan,
+    stoptBijFout = false,
+  } = opties;
 
   const [set, setSet] = useState<S | null>(null);
   const [itemIds, setItemIds] = useState<readonly string[]>([]);

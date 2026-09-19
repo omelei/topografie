@@ -72,9 +72,7 @@ export function reeksVan(geoefend: ReadonlySet<string>, now: Date): Reeks {
   const gisteren = dayKey(new Date(now.getTime() - DAG_MS));
   const vandaagTelt = geoefend.has(vandaag);
 
-  const dagen = vandaagTelt
-    ? terugtellen(geoefend, vandaag)
-    : terugtellen(geoefend, gisteren);
+  const dagen = vandaagTelt ? terugtellen(geoefend, vandaag) : terugtellen(geoefend, gisteren);
 
   return {
     dagen,

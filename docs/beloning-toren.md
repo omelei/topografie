@@ -12,6 +12,7 @@ besloten, en waarom het besloten is staat erbij.
 ## 1. De regel
 
 > **Een antwoord levert één steen op als alle drie waar zijn:**
+>
 > 1. het antwoord is goed,
 > 2. het item was aan de beurt,
 > 3. het item is eerder al eens beantwoord.
@@ -32,12 +33,12 @@ Dat is het hele systeem. Eén regel, één getal, één beeld.
 De regel is **strenger dan de doosstap van Leitner**, en dat is met opzet. Een
 nieuw item is per definitie aan de beurt en gaat bij een goed antwoord van doos 1
 naar doos 2 — maar het levert geen steen op, want je wist het nog niet, je leerde
-het net. De steen is er voor het moment dat iets terugkwam en je het *nog* wist.
+het net. De steen is er voor het moment dat iets terugkwam en je het _nog_ wist.
 Dat is het enige moment waarop er bewijs is dat er iets blijft hangen, en het is
 precies wat spaced repetition meet.
 
 Het begrip bestond al in de code, alleen te smal: `leitner.ts` schreef een
-*stempel* bij een goed, aan-de-beurt antwoord op een item in doos 5. De steen is
+_stempel_ bij een goed, aan-de-beurt antwoord op een item in doos 5. De steen is
 hetzelfde, maar voor alle dozen. Eén boekhouding, geen tweede.
 
 ### Wat de regel níét is
@@ -52,7 +53,7 @@ hetzelfde, maar voor alle dozen. Eén boekhouding, geen tweede.
 
 ## 2. Waarom het album weg moet
 
-ADR-149 gaf elk item een *laag*, afgeleid van de hoogste doos die het ooit
+ADR-149 gaf elk item een _laag_, afgeleid van de hoogste doos die het ooit
 bereikte, en legde daar stempels, tekens, een weekkaart, een weekdoel, zegels,
 een jaarstrook en bijhoudstempels bovenop. Zes boekhoudingen over één feit.
 
@@ -61,7 +62,7 @@ Drie dingen gingen daar mis.
 **Een kind van zes kan niet in één zin zeggen wat het kreeg.** Dat is de toets
 die het album niet haalde: laag, stempel, teken, zegel en doel zijn vijf dingen
 die alle vijf iets anders tellen, en een van de vijf (het teken) gaat zelfs over
-iets wat *slechter* ging.
+iets wat _slechter_ ging.
 
 **Een kind van twaalf ziet dat het plaatje klaar is.** De laag volgt de hoogste
 doos ooit. Eén keer doos 5 gehaald, en er verandert nooit meer iets aan waar het
@@ -84,8 +85,8 @@ nooit af is.
 
 **Elke steen krijgt de kleur van zijn vak** — de module-accenten uit
 `src/index.css`. Kleur is versiering. Er staat geen informatie in die alleen in
-kleur te zien is: een verdiende steen is *gevuld*, een steen die klaarligt is een
-*gestippelde omtrek*. Dat verschil is een vorm, niet een tint.
+kleur te zien is: een verdiende steen is _gevuld_, een steen die klaarligt is een
+_gestippelde omtrek_. Dat verschil is een vorm, niet een tint.
 
 **Hoogte: 3 meter per verdieping.** De toren groeit omhoog en wordt altijd
 geschaald op zijn eigen kader. Dat doet twee dingen tegelijk: hij loopt nooit
@@ -115,19 +116,19 @@ zonder code te wijzigen aan te vullen.
 
 **Groep 3-5 en zonder groep** — met beeld, zonder meters:
 
-| verdiepingen | hoogte | wat het is |
-|---|---|---|
-| 2 | 6 m | een giraf |
-| 4 | 12 m | een huis |
-| 7 | 21 m | de hoogste boom |
-| 11 | 33 m | een windmolen |
-| 17 | 51 m | een kerktoren |
-| 25 | 75 m | een reuzenrad |
-| 38 | 114 m | de Domtoren |
-| 62 | 186 m | de Euromast |
-| 100 | 300 m | de Eiffeltoren |
-| 167 | 501 m | de wolken |
-| 334 | 1002 m | een kilometer |
+| verdiepingen | hoogte | wat het is      |
+| ------------ | ------ | --------------- |
+| 2            | 6 m    | een giraf       |
+| 4            | 12 m   | een huis        |
+| 7            | 21 m   | de hoogste boom |
+| 11           | 33 m   | een windmolen   |
+| 17           | 51 m   | een kerktoren   |
+| 25           | 75 m   | een reuzenrad   |
+| 38           | 114 m  | de Domtoren     |
+| 62           | 186 m  | de Euromast     |
+| 100          | 300 m  | de Eiffeltoren  |
+| 167          | 501 m  | de wolken       |
+| 334          | 1002 m | een kilometer   |
 
 **Groep 6-8** — dezelfde lijst zonder giraf en boom, met de echte hoogte erbij,
 en aan de bovenkant verlengd: Burj Khalifa (276 verdiepingen, 828 m) en 10 km
@@ -154,15 +155,15 @@ de mediaan van de eerste dag waarop het gebeurt, met dag 1 als eerste oefendag.
 
 **Elke dag oefenen, foutloos:**
 
-| set (items, ronde) | 1e steen | verd. 1 | verd. 2 (giraf) | verd. 4 (huis) | na 90 dagen |
-|---|---|---|---|---|---|
-| tafel-1 (10, 10) | dag 3 | dag 4 | dag 9 | dag 39 | 60 stenen |
-| provincies (12, 15) | dag 3 | dag 4 | dag 9 | dag 39 | 72 |
-| klok heel (12, 10) | dag 3 | dag 4 | dag 9 | dag 39 | 72 |
-| spelling dt (40, 10) | dag 3 | dag 5 | dag 6 | dag 10 | 240 |
-| europa-landen (46, 15) | dag 3 | dag 3 | dag 5 | dag 7 | 276 |
-| klok vijf (96, 10) | dag 3 | dag 5 | dag 6 | dag 10 | 501 |
-| wereld-landen (167, 15) | dag 3 | dag 3 | dag 5 | dag 7 | 812 |
+| set (items, ronde)      | 1e steen | verd. 1 | verd. 2 (giraf) | verd. 4 (huis) | na 90 dagen |
+| ----------------------- | -------- | ------- | --------------- | -------------- | ----------- |
+| tafel-1 (10, 10)        | dag 3    | dag 4   | dag 9           | dag 39         | 60 stenen   |
+| provincies (12, 15)     | dag 3    | dag 4   | dag 9           | dag 39         | 72          |
+| klok heel (12, 10)      | dag 3    | dag 4   | dag 9           | dag 39         | 72          |
+| spelling dt (40, 10)    | dag 3    | dag 5   | dag 6           | dag 10         | 240         |
+| europa-landen (46, 15)  | dag 3    | dag 3   | dag 5           | dag 7          | 276         |
+| klok vijf (96, 10)      | dag 3    | dag 5   | dag 6           | dag 10         | 501         |
+| wereld-landen (167, 15) | dag 3    | dag 3   | dag 5           | dag 7          | 812         |
 
 Drie keer per week (ma/wo/vr) schuift de eerste verdieping naar dag 4-7 en de
 giraf naar dag 9-14.
@@ -191,8 +192,8 @@ fouten geeft er 211.
 
 Dat is de eerlijke keerzijde van "een fout kost nooit iets": wie het goed kent,
 krijgt het minder vaak terug, en krijgt dus minder stenen. Het is precies het
-bezwaar dat een kind van twaalf binnen een week zelf bedenkt — *hoe beter ik het
-ken, hoe minder stenen ik krijg* — en het is waar.
+bezwaar dat een kind van twaalf binnen een week zelf bedenkt — _hoe beter ik het
+ken, hoe minder stenen ik krijg_ — en het is waar.
 
 Het antwoord is niet om de regel te verbuigen. Het is drieledig:
 
@@ -251,12 +252,12 @@ onderzoek achter ADR-149. Denker staat hier nooit.
 
 Op de plek waar nu `AlbumStap` staat komt precies één ding:
 
-| geval | vorm | zin |
-|---|---|---|
-| steen verdiend | klein **gevuld** blokje in vakkleur, 120ms | "Je wist hem nog. Eén steen." |
-| goed, niet aan de beurt | dezelfde vorm als **gestippelde omtrek** | "Die ken je al. Over {dagen} dagen telt hij weer." |
-| nieuw item | gestippelde omtrek | "Nieuw. Over {dagen} dagen komt hij terug." |
-| fout | het bestaande foutteken en de uitleg | **niets** |
+| geval                   | vorm                                       | zin                                                |
+| ----------------------- | ------------------------------------------ | -------------------------------------------------- |
+| steen verdiend          | klein **gevuld** blokje in vakkleur, 120ms | "Je wist hem nog. Eén steen."                      |
+| goed, niet aan de beurt | dezelfde vorm als **gestippelde omtrek**   | "Die ken je al. Over {dagen} dagen telt hij weer." |
+| nieuw item              | gestippelde omtrek                         | "Nieuw. Over {dagen} dagen komt hij terug."        |
+| fout                    | het bestaande foutteken en de uitleg       | **niets**                                          |
 
 Bij een fout: geen omtrek, geen knipperende toren, geen zin over stenen.
 **Zwijgen is het ontwerp.** Een kind dat het niet wist, hoeft niet ook nog te
@@ -317,7 +318,7 @@ informatie en geen beloning.
 Bij `:root[data-beweging='rustig']` staat alles meteen in de eindstand. Zelfde
 zinnen, zelfde geluid, nul beweging.
 
-De globale regel in `src/index.css` drukt alleen *duur* naar 0,01ms. Dat is op
+De globale regel in `src/index.css` drukt alleen _duur_ naar 0,01ms. Dat is op
 drie plekken niet genoeg, en die drie krijgen een expliciete tak:
 
 1. **`animation-delay` wordt niet gesquasht.** Tien stenen zouden dus nog steeds
@@ -416,7 +417,7 @@ het is de reden dat de breukzin over de toren gaat en niet over de reeks.
 ## 8. Wat verdwijnt en wat blijft
 
 **Weg.** Lagen 0-5 en `hoogsteDoos` als zichtbaar begrip, de plaatjes en het
-raster, de stempels, de tekens *lastig* en *even opfrissen* (die horen op
+raster, de stempels, de tekens _lastig_ en _even opfrissen_ (die horen op
 Onthouden), de weekkaart, het weekdoel, de zegels, de jaarstrook, de
 bijhoudstempels, de seizoensvakjes, de pagina `/week` en de omleiding van
 `/reeks`, en de knopnaam "Nieuwe plaatjes" (wordt "Iets nieuws leren", met erbij
@@ -470,7 +471,7 @@ export function levertSteen(vorige: ItemState, correct: boolean, now: Date): boo
 **Het rondetotaal wordt per antwoord opgeteld, niet uit een verschil afgeleid.**
 Dat is geen smaak. Een item dat eerst fout was en drie vragen later goed, staat na
 de fout in doos 1 met een nieuwe `volgendeReview`; het tweede, goede antwoord is
-dan niet aan de beurt en levert terecht nul op. Maar het *verschil* tussen de
+dan niet aan de beurt en levert terecht nul op. Maar het _verschil_ tussen de
 stand vóór en na de ronde laat `goedCount` +1 én een gewijzigde `volgendeReview`
 zien, en een diff-functie zou daar een steen van maken. Per antwoord optellen is
 bovendien de enige bron die het vraagscherm ook nodig heeft.
@@ -491,7 +492,7 @@ wordt uitgerekend, niet gemeten. Vaste viewBox omdat een viewBox die met het
 aantal verdiepingen meebeweegt, betekent dat de code niet weet hoe groot een
 letter op het scherm wordt. Het pannen van één verdieping is één CSS-transform op
 een cameragroep, nooit een viewBox-wijziging, zodat het op de compositor blijft.
-De toren staat een verdieping *in* de grond, zodat een pan nooit een rand
+De toren staat een verdieping _in_ de grond, zodat een pan nooit een rand
 blootlegt.
 
 **De scène wordt door één puur draaiboek bepaald** (`draaiboek()`), zodat de
@@ -503,10 +504,12 @@ dezelfde scène zonder beweging" — niet te testen zijn.
 De twee tests die dat bewijzen zijn één regel elk:
 
 ```ts
-expect(draaiboek({ ...basis, rustig: true }).beats.map(b => b.id))
-  .toEqual(draaiboek({ ...basis, rustig: false }).beats.map(b => b.id));
-expect(draaiboek({ ...basis, rustig: true }).beats.map(b => b.geluid))
-  .toEqual(draaiboek({ ...basis, rustig: false }).beats.map(b => b.geluid));
+expect(draaiboek({ ...basis, rustig: true }).beats.map((b) => b.id)).toEqual(
+  draaiboek({ ...basis, rustig: false }).beats.map((b) => b.id),
+);
+expect(draaiboek({ ...basis, rustig: true }).beats.map((b) => b.geluid)).toEqual(
+  draaiboek({ ...basis, rustig: false }).beats.map((b) => b.geluid),
+);
 ```
 
 **Overslaan neemt niets weg.** De tik zit op de tekening en niet op de pagina, er
