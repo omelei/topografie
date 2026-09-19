@@ -38,7 +38,9 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
   expect(plek('Instellingen')).toBeLessThan(plek('Je toren'));
 });
 
-test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page }) => {
+test('Voor ouders draagt de uitleg en alle diploma’s, en niet de pagina van het kind', async ({
+  page,
+}) => {
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
@@ -56,8 +58,13 @@ test('Voor ouders gaat over de ouder en niet over de prijzenkast', async ({ page
   expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
   expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Hoe gaat het?'));
 
+  // De toren zelf en de naam van het kind horen op Jij en staan hier niet. Wat
+  // hier wél staat sinds ADR-158: de uitleg van de regel, en alle diploma's —
+  // ook die nog niet gehaald zijn.
   await expect(page.getByRole('region', { name: 'Je toren' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Hoe de toren werkt' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Alle diploma’s' })).toBeVisible();
 });
 
 test('de twee pagina’s wijzen naar elkaar, en allebei hebben ze een adres', async ({ page }) => {

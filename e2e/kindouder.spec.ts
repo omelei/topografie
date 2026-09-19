@@ -6,7 +6,8 @@ import { expect, test, type Page } from '@playwright/test';
  * ADR-136 trok die grens op één pagina. Deze test kijkt naar de plekken waar
  * hij daarna nog scheef lag: een prijzenkast die drieënveertig lege vakjes
  * toonde, een tabel met percentages in het menu van het kind, en een ouderkolom
- * die de ouder aansprak alsof hij het kind was.
+ * die de ouder aansprak alsof hij het kind was. Sinds ADR-158 staat de kast bij
+ * de ouder en houdt het kind alleen wat het gehaald heeft.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -18,11 +19,24 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-test('Jij toont eerst wat je hebt, en de gaten pas als je erom vraagt', async ({ page }) => {
+test('Jij zwijgt over diploma’s tot er een gehaald is', async ({ page }) => {
   await signIn(page, 'Fien');
   await page.goto('/jij');
 
-  // De koppen met hun stand staan er altijd; de vakjes niet.
+  // Geen vakjes, en ook geen koppen: vier lege wanden zouden een kind op dag
+  // één vertellen dat het niets heeft (ADR-158).
+  await expect(page.locator('.tk-diploma')).toHaveCount(0);
+  await expect(page.getByText('0 van de 12 gehaald')).toHaveCount(0);
+});
+
+test('Voor ouders toont eerst wat gehaald is, en de gaten pas als je erom vraagt', async ({
+  page,
+}) => {
+  await signIn(page, 'Fien');
+  await page.goto('/ouder');
+
+  // De koppen met hun stand staan er altijd; de vakjes niet. Hier zijn de gaten
+  // wél iets om iets mee te doen (ADR-064).
   await expect(page.getByText('0 van de 12 gehaald')).toBeVisible();
   await expect(page.locator('.tk-diploma')).toHaveCount(0);
 
@@ -31,7 +45,7 @@ test('Jij toont eerst wat je hebt, en de gaten pas als je erom vraagt', async ({
   // Twaalf tafels, zes werelddelen, vier klokstappen en elf kaarten.
   await expect(page.locator('.tk-diploma')).toHaveCount(33);
 
-  await page.getByRole('button', { name: 'Laat alleen zien wat ik heb' }).click();
+  await page.getByRole('button', { name: 'Laat alleen zien wat gehaald is' }).click();
   await expect(page.locator('.tk-diploma')).toHaveCount(0);
 });
 

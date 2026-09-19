@@ -204,8 +204,9 @@ test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s
   await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
   await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
 
-  // De knop eronder: naar Jij, met de prijzenkast open.
+  // De knop eronder: naar Voor ouders, met de kast open (ADR-158). Daar staat
+  // het hele raster, want daar zijn de lege vakjes iets om iets mee te doen.
   await blok.getByRole('button', { name: 'Bekijk alle diploma’s' }).click();
-  await expect(page).toHaveURL(/\/jij$/);
-  await expect(page.getByRole('button', { name: 'Laat alleen zien wat ik heb' })).toBeVisible();
+  await expect(page).toHaveURL(/\/ouder$/);
+  await expect(page.getByRole('button', { name: 'Laat alleen zien wat gehaald is' })).toBeVisible();
 });

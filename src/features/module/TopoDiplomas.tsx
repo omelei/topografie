@@ -18,11 +18,14 @@ import { KAART_NAAM } from './topoDiplomaNamen';
 export function TopoDiplomas({
   onKies,
   alleenBehaald = false,
+  stilAlsLeeg = false,
 }: {
   /** Where pressing a diploma chooses its map. Absent where the wall is only shown. */
   readonly onKies?: ((setId: TopoDiplomaSet) => void) | undefined;
   /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
   readonly alleenBehaald?: boolean;
+  /** Niets tonen zolang er niets gehaald is (ADR-158). */
+  readonly stilAlsLeeg?: boolean;
 }) {
   const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<TopoDiplomaSet> | null>(null);
@@ -39,6 +42,10 @@ export function TopoDiplomas({
 
   // Nothing until it is known, for the reason every wall gives.
   if (behaald === null) return null;
+  // Op Jij zwijgt een lege wand (ADR-158): een kop met "0 van de 12" erboven
+  // zegt een kind op dag een dat het niets heeft. Op Voor ouders staat hij wel,
+  // want daar is een gat iets om iets mee te doen.
+  if (stilAlsLeeg && behaald.size === 0) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('topo.diplomasTitle')}>

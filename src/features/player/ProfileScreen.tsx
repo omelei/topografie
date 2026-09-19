@@ -3,10 +3,7 @@ import { t } from '@/i18n';
 import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
-import { Tafeldiplomas } from '@/features/module/Tafeldiplomas';
-import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
-import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
-import { TopoDiplomas } from '@/features/module/TopoDiplomas';
+import { BehaaldeDiplomas } from '@/features/badges/Prijzenkast';
 import { usePremium } from '@/features/premium/usePremium';
 import { TorenPagina } from '@/features/toren/TorenPagina';
 import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
@@ -33,15 +30,10 @@ export function ProfileScreen({
   profile,
   aside,
   onOuder,
-  diplomasOpen = false,
-  onDiplomasGezien,
 }: {
   readonly profile: ProfileRecord;
   readonly aside: ReactNode;
   readonly onOuder: () => void;
-  /** Gekomen via "Bekijk alle diploma's": de prijzenkast open, en ernaartoe. */
-  readonly diplomasOpen?: boolean;
-  readonly onDiplomasGezien?: (() => void) | undefined;
 }) {
   return (
     <div className="tk-page">
@@ -78,7 +70,9 @@ export function ProfileScreen({
 
         <TorenPagina />
 
-        <Prijzenkast open={diplomasOpen} onGezien={onDiplomasGezien} />
+        {/* Alleen wat gehaald is: dat hoort bij de toren en de reeks. Het
+            hele raster staat op Voor ouders (ADR-158). */}
+        <BehaaldeDiplomas />
 
         <Jaaroverzicht />
       </div>
@@ -170,55 +164,6 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
         </div>
       )}
     </section>
-  );
-}
-
-/**
- * De vier muren met diploma's, onder één knop (ADR-143).
- *
- * Ze stonden als losse secties boven aan de pagina, samen goed voor drieëndertig
- * vakjes die op dag één allemaal leeg zijn. Dat is niet minder waard geworden —
- * de gaten zijn juist het punt (ADR-064) — maar het is wat een kind ziet nadat
- * het iets gedaan heeft. De badges stonden hier ook, tot ADR-149.
- */
-function Prijzenkast({
-  open,
-  onGezien,
-}: {
-  readonly open: boolean;
-  readonly onGezien?: (() => void) | undefined;
-}) {
-  const [alles, setAlles] = useState(open);
-  const id = useId();
-
-  // Wie op de voordeur "Bekijk alle diploma's" koos, komt hier binnen: alles
-  // open, en de kast in beeld in plaats van de kop van Jij (ADR-153).
-  useEffect(() => {
-    if (!open) return;
-    document.getElementById(id)?.scrollIntoView({ block: 'start' });
-    onGezien?.();
-    // Eén keer, bij binnenkomst.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return (
-    <div id={id} className="flex flex-col gap-6">
-      <Tafeldiplomas alleenBehaald={!alles} />
-      <VlagDiplomas alleenBehaald={!alles} />
-      <KlokDiplomas alleenBehaald={!alles} />
-      <TopoDiplomas alleenBehaald={!alles} />
-
-      <p>
-        <button
-          type="button"
-          className="tk-button tk-button-secondary"
-          aria-expanded={alles}
-          onClick={() => setAlles(!alles)}
-        >
-          {alles ? t('prijzenkast.minder') : t('prijzenkast.meer')}
-        </button>
-      </p>
-    </div>
   );
 }
 

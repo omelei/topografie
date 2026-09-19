@@ -140,10 +140,10 @@ test('the module pages have no violations, in each of their four shapes', async 
 });
 
 /**
- * Jij: the album and the diplomas, most of them not earned yet (ADR-149).
- * It is where the temptation to say "not yet" with a colour alone is
- * strongest, so it is worth a scan of its own — and so is Onthouden, which is
- * a table and a wall of dots.
+ * Jij draagt de toren en de reeks; Voor ouders het hele raster met diploma's,
+ * de meeste nog niet gehaald (ADR-158). Dat laatste is waar de verleiding om
+ * "nog niet" met alleen een kleur te zeggen het grootst is, dus allebei zijn
+ * ze een scan waard — en Onthouden ook, dat een tabel en een muur stippen is.
  */
 test('the Jij page and the Onthouden page have no violations', async ({ page }) => {
   await signIn(page, 'Lieve');
@@ -152,9 +152,14 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  // En de andere helft, sinds ADR-136 een pagina op zichzelf.
+  // En de andere helft, sinds ADR-136 een pagina op zichzelf. Wachten tot de
+  // diplomawanden er zijn: die laden zelf en zouden anders buiten de scan
+  // vallen — precies het raster waar "nog niet" het vaakst gezegd wordt.
   await page.goto('/ouder');
   await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }),
+  ).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   await page.goto('/onthouden');

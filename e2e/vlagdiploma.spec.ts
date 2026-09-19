@@ -109,9 +109,9 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await expect(page.getByText(/^Proefzwemmen gelukt|^Nog geen diploma/)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
-  // And on the child's own page, as pictures rather than buttons (ADR-112) —
-  // achter de knop die de hele muur laat zien (ADR-143).
-  await page.goto('/jij');
+  // En op Voor ouders, als plaatjes in plaats van knoppen (ADR-112), achter de
+  // knop die de hele muur laat zien (ADR-143, ADR-158).
+  await page.goto('/ouder');
   await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
   const verzameling = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
   await expect(verzameling.getByRole('img')).toHaveCount(6);
