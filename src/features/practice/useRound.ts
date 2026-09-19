@@ -689,7 +689,7 @@ export function useRound(
       // achteraf uit het verschil afgeleid: een fout die in dezelfde ronde
       // hersteld wordt, ziet er in dat verschil uit als een steen.
       setSteen(steenStapVan(previous, nextState, correct, now, MODULE));
-      if (levertSteen(previous, correct, now)) setStenen([...stenen, MODULE]);
+      if (levertSteen(previous, correct, now)) setStenen((eerdere) => [...eerdere, MODULE]);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
       // in een toets: die zegt niets tot het einde, ook niet met een toon.
       speelUitkomst(correct, geluidAan && !toetsstand);

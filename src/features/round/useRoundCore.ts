@@ -233,7 +233,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       // vragen later goed, ziet er in dat verschil uit als een steen terwijl het
       // er geen is — na de fout was het niet meer aan de beurt.
       setSteen(steenStapVan(previous, nextState, correct, now, moduleId));
-      if (levertSteen(previous, correct, now)) setStenen([...stenen, moduleId]);
+      if (levertSteen(previous, correct, now)) setStenen((eerdere) => [...eerdere, moduleId]);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
       // in een toets: die zegt niets tot het einde, ook niet met een toon.
       speelUitkomst(correct, geluidAan && !toetsstand);

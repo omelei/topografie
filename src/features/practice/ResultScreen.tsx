@@ -77,7 +77,6 @@ export function ResultScreen({
           ? { gedaan: state.answeredCount, totaal: state.total }
           : null
       }
-      voor={state.statesVoor}
       na={state.states}
       stenen={state.stenen}
       groei={state.groei}

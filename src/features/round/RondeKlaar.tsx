@@ -58,7 +58,6 @@ export function RondeKlaar({
   goed,
   beantwoord,
   gestopt,
-  voor,
   na,
   stenen,
   groei,
@@ -82,8 +81,7 @@ export function RondeKlaar({
   readonly beantwoord: number;
   /** A fixed round stopped before its end: how far it got, and how far it was going. */
   readonly gestopt: { readonly gedaan: number; readonly totaal: number } | null;
-  /** The boxes as the round found them, and as it left them. */
-  readonly voor: ReadonlyMap<string, ItemState>;
+  /** De dozen zoals de ronde ze achterliet: wat er morgen terugkomt. */
   readonly na: ReadonlyMap<string, ItemState>;
   /** De stenen die deze ronde opleverde, op volgorde (ADR-158). */
   readonly stenen: readonly Vak[];
