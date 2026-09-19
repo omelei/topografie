@@ -272,6 +272,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
       mode,
       rule,
       livesLeft,
+      moduleId,
     ],
   );
 

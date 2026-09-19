@@ -125,13 +125,15 @@ describe('useRoundCore', () => {
     });
   });
 
-  it("carries each answer's step on the album, and the boxes before and after", async () => {
+  it('tells each answer what it earned, and keeps the boxes before and after', async () => {
     const { result } = ronde({ ids: ['a', 'b'] });
     await waitFor(() => expect(result.current.kern.phase).toBe('asking'));
 
     act(() => result.current.settle(goed));
-    expect(result.current.kern.stap?.van).toBe(0);
-    expect(result.current.kern.stap?.naar).toBeGreaterThan(0);
+    // Een item dat nog nooit beantwoord was, levert geen steen op: je wist het
+    // nog niet, je leerde het net (ADR-158).
+    expect(result.current.kern.steen?.uitkomst).toBe('nieuw');
+    expect(result.current.kern.stenen).toHaveLength(0);
     expect(result.current.kern.statesVoor.has('a')).toBe(false);
     expect(result.current.kern.states.get('a')?.goedCount).toBe(1);
   });

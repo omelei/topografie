@@ -8,9 +8,9 @@ import {
   vooruitblik,
   type ItemState,
   type ModeId,
-  type TorenGroei,
   type Vak,
 } from '@/game-core';
+import type { TorenGroei } from '@/store/torenStore';
 import { Scene } from '@/features/toren/Scene';
 import { Embleem } from '@/features/badges/Embleem';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
