@@ -20,12 +20,16 @@ const EERSTE_RONDE = 9;
 const DAG_MS = 86_400_000;
 
 /**
- * Terugkomen na weken (ADR-149).
+ * Terugkomen na weken (ADR-149, ADR-158).
  *
  * Wie twee weken of langer geen ronde deed, wordt begroet als iemand die
  * terugkomt, niet als iemand die iets miste. Er staat geen aantal gemiste dagen
- * en er is niets weg: het album staat er nog. Wel hoeveel plaatjes even
- * opgefrist willen worden, en hoe lang de eerste ronde duurt.
+ * en er is niets weg: de toren staat er nog, want er gaat nooit iets af. Wel
+ * hoeveel stenen er klaarliggen, en hoe lang de eerste ronde duurt.
+ *
+ * Dat aantal is `aanDeBeurt`, en dat klopt precies: die telt alleen onderdelen
+ * die eerder beantwoord zijn én nu aan de beurt zijn — en dat is woord voor
+ * woord wat een steen oplevert.
  *
  * **De eerste ronde is kort en makkelijk.** Negen vragen, uit de set met de
  * meeste plaatjes die terug moeten komen, en de sterkste eerst: wie drie weken
@@ -67,7 +71,7 @@ export function TerugBlok({
       <span className="tk-lijstrij-tekst">
         <span className="tk-lijstrij-titel">{t('terug.zin')}</span>
         <span className="tk-lijstrij-regel">
-          {aantal === 1 ? t('terug.opfrissenEen') : t('terug.opfrissen', { aantal })}{' '}
+          {aantal === 1 ? t('terug.klaarEen') : t('terug.klaar', { aantal })}{' '}
           {minuten === 1 ? t('terug.minuutEen') : t('terug.minuten', { minuten })}
         </span>
       </span>
