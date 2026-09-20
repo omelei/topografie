@@ -4913,7 +4913,7 @@ four shape rules — and holding for pages that do not exist yet.
 - The old fonts are gone from `public/fonts/`, and with them 8 requests' worth
   of files.
 - `docs/HUISSTIJL.md` is the page to read before building a screen;
-  `MIGRATIE-STATUS.md` says where every old token went.
+  `docs/MIGRATIE-STATUS.md` says where every old token went.
 
 ---
 
@@ -7721,8 +7721,12 @@ op Vandaag, waar hij ook wordt ingevoerd.
 
 ## ADR-149 — Het album: een plaatje is nooit af, de week wel
 
-**Status:** accepted. **Date:** 2026-09-17. Op verzoek van de eigenaar: een nieuw
-beloningsprogramma dat kinderen van 6 tot 12 jaar op meer dagen laat oefenen,
+**Status:** superseded by ADR-158 (2026-09-19), en wat er daarna nog van over was
+door ADR-170 (2026-09-20). Bewaard omdat de redenering die eraan voorafging — het
+onderzoek naar wat een beloning bij een kind doet — nog steeds geldt en in
+ADR-167 opnieuw gebruikt is. **Date:** 2026-09-17. Op verzoek van de eigenaar:
+een nieuw beloningsprogramma dat kinderen van 6 tot 12 jaar op meer dagen laat
+oefenen,
 zodat ze het blijven kunnen, met de helden en alles eromheen los te laten. De
 eigenaar besliste vooraf: "vaker" is op meer dagen; een fout op een plaatje in
 kleur laat de kleur staan en geeft een teken; geen snelheidslaag bij de tafels;
@@ -8682,7 +8686,10 @@ om uit te zonderen. `index.ts` is daarom bijna leeg — twee regels die naar
 
 ## ADR-158 — De toren: één steen voor wat je nog wist
 
-**Status:** accepted. **Date:** 2026-09-19. Op verzoek van de eigenaar. Vervangt
+**Status:** superseded by ADR-167 (2026-09-20) als beloningsprogramma, en
+gesloopt door ADR-169 (2026-09-20). Bewaard omdat het bezwaar dat hier
+uitgeschreven staat — stapelen beloont volume — het ontwerp van de diploma's
+gevormd heeft. **Date:** 2026-09-19. Op verzoek van de eigenaar. Vervangt
 het album (ADR-149) in zijn geheel: de lagen, de stempels, de tekens, de
 weekkaart, het weekdoel, de zegels, de jaarstrook en de bijhoudstempels. Herstelt
 op één punt wat ADR-149 wegnam: de dagreeks (ADR-110, ADR-148), en wel strenger

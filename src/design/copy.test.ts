@@ -40,6 +40,34 @@ const LABELLED_ATTRIBUTES =
 /** Text sitting between two tags on one line, with no expression around it. */
 const JSX_TEXT = />([^<>{}]*[a-zA-Z]{2,}[^<>{}]*)</g;
 
+/**
+ * Key families built from a template — `t(`mode.${mode}`)` and its like — so the
+ * whole name never appears in the source. Each one is a real call site; the
+ * pattern is the seam, not an exemption.
+ */
+const SAMENGESTELD: readonly RegExp[] = [
+  /^mode\./, // RondeKlaar, HomeScreen, Afzwemmen
+  /^regio\./, // vlagNamen, VlagDiplomas
+  /^set\./, // KlokDiplomas, KlokResultScreen
+  /^status\./, // RetentionScreen
+  /^zoom\./, // ZoomKiezer
+  /^klok\.(uur|getal)\./, // klokTaal
+  /^sums\.mixLevel/, // onderdelen
+  /^taal\.kaart\./, // taalTaal
+  /^taal\.uitleg\./, // taalTaal, via UITLEG
+  /^weekdoel\.soort\./, // WeekdoelenBlok
+];
+
+/** Every TypeScript file under a directory, tests included. */
+function sourceFiles(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry);
+    if (statSync(full).isDirectory()) sourceFiles(full, out);
+    else if (/\.tsx?$/.test(entry)) out.push(full);
+  }
+  return out;
+}
+
 function componentFiles(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
@@ -137,5 +165,38 @@ describe('the words', () => {
       // straight quote. Between words it is usually a quotation, which wants „ ”.
       expect(value, `${key} uses a straight apostrophe`).not.toMatch(/\w'\w/);
     }
+  });
+
+  /**
+   * The other direction, and the one nothing was watching.
+   *
+   * The rule above keeps copy out of components; nothing kept copy that no
+   * component reads out of nl.ts. Three reward programmes came and went in as
+   * many weeks and left twenty-one sentences behind — phrases for a prijzenkast
+   * and a weekdoel screen that no longer exist. Dead copy is worse than dead
+   * code: it is read as the product's voice, so a review argues about a line
+   * that nobody can reach.
+   *
+   * A key is used when its name appears somewhere outside nl.ts, in src or in
+   * e2e. That is coarse on purpose — it is cheaper to be reminded of a key that
+   * is only named in a test than to let another twenty pile up.
+   */
+  it('keeps no sentence that nothing says', () => {
+    const genoemd = new Set<string>();
+    for (const full of [
+      ...componentFiles(join(ROOT, 'src')),
+      ...sourceFiles(join(ROOT, 'src')),
+      ...sourceFiles(join(ROOT, 'e2e')),
+    ]) {
+      if (relative(ROOT, full).split(sep).join('/') === 'src/i18n/nl.ts') continue;
+      for (const match of readFileSync(full, 'utf8').matchAll(/[a-zA-Z0-9_.-]+/g)) {
+        genoemd.add(match[0]);
+      }
+    }
+
+    const dood = Object.keys(nl).filter(
+      (key) => !genoemd.has(key) && !SAMENGESTELD.some((familie) => familie.test(key)),
+    );
+    expect(dood, 'niets leest deze sleutels; haal ze weg of gebruik ze').toEqual([]);
   });
 });

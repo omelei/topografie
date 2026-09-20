@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ItemState, LeitnerBox, Schedulable } from '@/game-core';
+import { review, type ItemState, type LeitnerBox, type Schedulable } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
 import { doelwitVan } from '@/features/home/doel';
 import { kaartStandVan, voortgangVan, vulling, type Voortgang } from './voortgang';
@@ -72,6 +72,22 @@ describe('de ring loopt nooit terug', () => {
   const ids = tafel.deel.items.map((item) => item.id);
   // Ver voorbij het eigen interval van doos vier (acht dagen), dus `isStale`.
   const langGeleden = new Date(NU.getTime() - 40 * DAG);
+
+  /**
+   * De belofte van ADR-167 bij de gebeurtenis waar het programma omheen gebouwd
+   * is. Dit stond in drie commentaren en in de ADR, en de code deed het
+   * omgekeerde: `bewezen` las de doos van vandaag, en een fout zet een item naar
+   * doos één, dus de ring liep leeg bij elke fout. `hoogsteDoos` werd wel
+   * geschreven en door niemand gelezen.
+   */
+  it('telt ook wat door een fout is teruggezet', () => {
+    const states = standen(ids, 4, new Date(NU.getTime() - DAG));
+    const eersteId = ids[0] as string;
+    states.set(eersteId, review(states.get(eersteId) as ItemState, false, NU));
+
+    expect(states.get(eersteId)?.box, 'een fout zet het item naar doos één').toBe(1);
+    expect(voortgangVan(tafel, states, NU).bewezen).toBe(10);
+  });
 
   it('telt ook wat lang niet gezien is', () => {
     expect(voortgangVan(tafel, standen(ids, 4, langGeleden), NU).bewezen).toBe(10);

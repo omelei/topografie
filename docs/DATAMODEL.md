@@ -50,9 +50,14 @@ in — a child who never does loses none of this and notices none of it.
 //   children on one iPad shared one set of boxes, and that was the bug.
 {
   (kindId, itemId, box, laatsteReview, volgendeReview, goedCount, foutCount);
-  // since ADR-149, both optional: the highest box ever reached (the album's
-  // layer), and the moments of every due right answer in box 5 (its stamps)
-  (hoogsteDoos, stempels);
+  // optional since ADR-149: the highest box ever reached. The diploma's
+  // progress ring reads it, which is why the ring never falls (ADR-167).
+  // Read it with `hoogsteDoosVan`, never directly — older rows do not have it.
+  (hoogsteDoos);
+  // `stempels` stood here too, the moments of every due right answer in box 5.
+  // It was the album's stamps, the album went with ADR-158, and nothing has
+  // read the field since. It is no longer written (the column in part C's
+  // `voortgang` is still there, and is a migration of its own to drop).
 }
 
 // object store: sessions      same shape as part B §4, minus organisationId
@@ -640,6 +645,9 @@ create table voortgang (
   goed_count        integer not null default 0,
   fout_count        integer not null default 0,
   hoogste_doos      smallint check (hoogste_doos between 1 and 5),
+  -- `stempels` staat in 0001_gezin.sql en wordt sinds ADR-158 door niets meer
+  -- geschreven of gelezen. Weghalen is een volgende migratie, geen bewerking
+  -- van deze: zie de regel daarover in SUPABASE.md §2.
   stempels          timestamptz[] not null default '{}',
   primary key (kind_id, item_id),
   foreign key (kind_id, ouder_id) references kinderen (id, ouder_id) on delete cascade

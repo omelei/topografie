@@ -154,18 +154,24 @@ inside the frame from 1200 wide; below that only the tests stay, on the front
 door ([ADR-119](docs/DECISIONS.md)): the tests, the week, and the exercises
 they keep going back to.
 
-**What practising earns is the album** ([ADR-149](docs/DECISIONS.md)). Every
-province, flag, clock, sum and word is a picture, and its layer follows the
-highest Leitner box it ever reached: a sketch while it is being learnt, colour
-once it is remembered, a frame after that, and a stamp for every review in the
-last box that was due. Nothing is taken away — a mistake puts a small sign on a
-coloured picture and leaves the colour — and nothing is earned by volume: a
-right answer that was not due changes nothing, and says when it will count
-again. Days count, runs do not: the weekkaart stamps each day with a round, the
-child chooses a goal of two to five days, and a week that reaches it gets a seal
-on the school year's strip. A diploma is sat on a page that is ripe, with
-someone watching if the child wants, and kept up season by season. Nothing in
-the reward path is random, nothing can be bought, and nothing counts in a row.
+**What practising earns is a diploma** ([ADR-167](docs/DECISIONS.md), designed
+in [beloning-diplomas.md](docs/beloning-diplomas.md)). Every set that is a set
+of its own has one — sixty-eight in all — and each carries a ring that follows
+what this child has proven: the number of its items that ever reached the last
+Leitner box. That number cannot fall, so a fortnight away comes back to a ring
+standing where it stood, and nothing in this programme is ever taken away. The
+ring is not the diploma, though. A diploma is sat as a test, on a page that is
+ripe ([ADR-141](docs/DECISIONS.md)) — the whole table for a tafeldiploma, nine
+in ten elsewhere — with someone watching if the child wants. What it leaves
+behind is a date that stays put and a sheet that can be printed.
+
+Days count, runs do not. A child sets up to three goals for the week — a number
+of rounds, a number of days, or a named diploma — and a week that misses them
+costs nothing. The run of days itself is on the parent's page and not the
+child's ([ADR-169](docs/DECISIONS.md)): it is information a parent can act on,
+and a streak a child watches is loss dressed up as a reward. The school year's
+diplomas are there too, to read or to print. Nothing in the reward path is
+random, nothing can be bought, and nothing the child sees counts in a row.
 
 The forecast — "69%, weet je hier over drie weken nog van" — is the number the
 product argues from and it lives on **Onthouden**, one screen along. On the
@@ -174,12 +180,21 @@ front door beside a mark it read as a second opinion about the same thing
 
 ## Architecture in one paragraph
 
-A static single-page app with **no backend at all**. Everything a player does
-lives in IndexedDB on their device ([ADR-015](docs/DECISIONS.md)). There are no
-accounts, so there is no personal data, so there is nothing to secure beyond the
-device. Maps are pre-projected SVG paths built offline from CBS geodata and
-fetched per region set, never bundled. Fonts are self-hosted. Nothing loads from
-a third party.
+A static single-page app. **Everything a child practises lives in IndexedDB on
+their device** ([ADR-015](docs/DECISIONS.md)) and a child who never signs in
+loses nothing — signing in is an offer, not a gate ([ADR-152](docs/DECISIONS.md)).
+Maps are pre-projected SVG paths built offline from CBS geodata and fetched per
+region set, never bundled. Fonts are self-hosted. Nothing loads from a third
+party, and there is still no analytics and no error reporter.
+
+What server there is sits beside the app rather than under it, in two Supabase
+projects that are deliberately not one ([SUPABASE.md](docs/SUPABASE.md)): the
+till that sells and checks premium codes, which holds nothing about a child
+([ADR-116](docs/DECISIONS.md), [ADR-123](docs/DECISIONS.md)), and the family
+project behind the optional parent and child accounts
+([ADR-155](docs/DECISIONS.md), [ADR-157](docs/DECISIONS.md)). Three edge
+functions and one migration, in `supabase/`. Keeping them apart is what lets
+the first sentence of this paragraph stay true.
 
 ## Where it runs
 
@@ -260,12 +275,17 @@ python -m http.server 8942
 
 ## Documents
 
-|                                         |                                                                                          |
-| --------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How it is put together and why                                                           |
-| [DATAMODEL.md](docs/DATAMODEL.md)       | Part A: the local store. Part B: the deferred school model                               |
-| [DECISIONS.md](docs/DECISIONS.md)       | Every decision that would be expensive to reverse, including the ones that were reversed |
-| [DATA_SOURCES.md](docs/DATA_SOURCES.md) | Every geodata source with licence, URL and retrieval date                                |
+|                                                   |                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [DECISIONS.md](docs/DECISIONS.md)                 | Every decision that would be expensive to reverse, including the ones that were reversed |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md)           | How it is put together and why. Written at phase 0; read its header for what has moved   |
+| [DATAMODEL.md](docs/DATAMODEL.md)                 | Part A: the local store. Part B: the deferred school model                               |
+| [HUISSTIJL.md](docs/HUISSTIJL.md)                 | How to build a screen in the house style                                                 |
+| [MIGRATIE-STATUS.md](docs/MIGRATIE-STATUS.md)     | Where every old design token went when the house style landed                            |
+| [SUPABASE.md](docs/SUPABASE.md)                   | The two Supabase projects, and why they are two                                          |
+| [beloning-diplomas.md](docs/beloning-diplomas.md) | The reward programme in full, from the rule to the words on screen                       |
+| [beloning-toren.md](docs/beloning-toren.md)       | The reward programme it replaced. History, kept because the diploma design cites it      |
+| [DATA_SOURCES.md](docs/DATA_SOURCES.md)           | Every geodata source with licence, URL and retrieval date                                |
 
 ## Still to come
 

@@ -10,16 +10,13 @@ export type Locale = keyof typeof dictionaries;
  * the first commit anyway, because retrofitting i18n means touching every
  * component that ever shipped, while carrying it from the start costs one
  * function call per string.
+ *
+ * A constant, not a variable: the setter and the getter that stood here were
+ * never called by anything, and a switch nobody can reach is not a seam. What
+ * a second language needs is this line and a second dictionary, and that is
+ * exactly what the indirection is for.
  */
-let activeLocale: Locale = 'nl';
-
-export function setLocale(locale: Locale): void {
-  activeLocale = locale;
-}
-
-export function getLocale(): Locale {
-  return activeLocale;
-}
+const activeLocale: Locale = 'nl';
 
 /**
  * Interpolates {name} placeholders. Deliberately not a template engine: a

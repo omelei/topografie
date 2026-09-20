@@ -72,7 +72,6 @@ export const nl = {
   'weekdoel.soort.dagen': 'Op een aantal dagen oefenen',
   'weekdoel.soort.diploma': 'Een diploma halen',
   'weekdoel.hoeveel': 'Hoeveel?',
-  'weekdoel.welkDiploma': 'Welk diploma?',
   'weekdoel.rondesDoel': '{aantal} rondes doen',
   'weekdoel.dagenDoel': 'Op {aantal} dagen oefenen',
   'weekdoel.diplomaDoel': 'Het diploma {naam} halen',
@@ -168,18 +167,9 @@ export const nl = {
   'afzwemmen.printNaam': 'Gehaald door {naam}',
   'afzwemmen.printZonderNaam': 'Gehaald',
   'afzwemmen.printDatum': 'op {datum}',
-  // De prijzenkast, sinds ADR-158 op Voor ouders: eerst wat gehaald is, en de
-  // gaten pas als je erom vraagt. Op een modulepagina blijft elk gat een
-  // uitnodiging, want daar is hij aan te raken; hier is hij dat niet. De
-  // knoppen spreken de ouder aan, want dit is zijn pagina.
-  'prijzenkast.meer': 'Laat zien wat er nog te halen is',
-  'prijzenkast.minder': 'Laat alleen zien wat gehaald is',
   // Wat er wel is maar niet vooraan hoeft (ADR-143).
   'uitklap.tabel': 'Laat de tabel zien',
   'uitklap.tabelDicht': 'Verberg de tabel',
-  'uitklap.uitlegDicht': 'Verberg de uitleg',
-  'home.modules': 'Wat je kunt oefenen',
-  'home.continueTitle': 'Verder waar je was',
   'home.retention': 'weet je hier over drie weken nog van',
   'home.setMastered': '{goed} van de {totaal} onthoud je',
   'home.setNew': 'nog niet geoefend',
@@ -565,7 +555,6 @@ export const nl = {
     'Je code loopt af op {datum}. Verleng hem vóór die dag, dan merkt niemand thuis er iets van.',
   'premium.verlopen':
     'Je code is verlopen op {datum}. Alles wat je kinderen hebben geoefend, staat nog gewoon op dit apparaat en komt terug zodra je verlengt.',
-  'premium.verlengen': 'Premium verlengen',
   'premium.afmelden': 'Code van dit apparaat halen',
   'premium.afmeldenUitleg':
     'Dan komt er een plek vrij om de code op een ander apparaat te gebruiken.',
@@ -736,11 +725,6 @@ export const nl = {
   'onderwerp.rekenmix': 'Rekenmix',
   'onderwerp.rekenmix.uitleg': 'Alle soorten sommen door elkaar',
   'onderwerp.rekenmix.keuze': 'Hoe moeilijk?',
-  // Het enige onderwerp dat voor elk kind anders is. Hij staat er alleen als er
-  // iets in zit: een kaart met nul sommen is een kaart over niets.
-  'onderwerp.fouten': 'Oefen je fouten',
-  'onderwerp.fouten.uitleg': 'De sommen die je eerder fout had',
-
   // Explore
   'explore.kind': 'Ontdek de kaart',
   'explore.hint': 'Kies een naam. Je ziet meteen waar het ligt.',
@@ -759,7 +743,6 @@ export const nl = {
   'practice.correct': '{naam} — goed.',
   'practice.wrong': '{naam} ligt hier.',
   'practice.wrongSub': 'Je wees {gekozen} aan.',
-  'practice.wrongTyped': 'Je schreef {gekozen}.',
   // The near miss from ADR-017: naming another real place is not a typo, and
   // saying so is the whole reason that decision exists.
   'practice.almost': 'Bijna!',
@@ -805,7 +788,6 @@ export const nl = {
   'zoom.oceanie': 'Oceanië',
   'practice.typePlaceholder': 'Naam',
   'practice.check': 'Kijk na',
-  'practice.emptyAnswer': 'Typ eerst een naam.',
   'practice.loading': 'Kaart wordt geladen…',
   'practice.mapFailed': 'De kaart kon niet geladen worden.',
 
@@ -964,11 +946,6 @@ export const nl = {
   'onderwerp.vlaggen.mix.uitleg': 'Alle landen en provincies door elkaar',
   'onderwerp.vlaggen.provincies': 'Provincievlaggen',
   'onderwerp.vlaggen.provincies.uitleg': 'De vlaggen van de twaalf provincies',
-  'onderwerp.vlaggen.fouten.uitleg': 'De vlaggen die je eerder fout had',
-  // "Oefen je fouten" bij topografie en klok (ADR-103). Per kaart, want een
-  // ronde blijft op één kaart.
-  'onderwerp.topo.fouten.uitleg': 'De plekken die je eerder fout had',
-  'onderwerp.klok.fouten.uitleg': 'De tijden die je eerder fout had',
   'set.nl-fouten': 'Jouw fouten in Nederland',
   'set.europa-fouten': 'Jouw fouten in Europa',
   'set.afrika-fouten': 'Jouw fouten in Afrika',
@@ -1054,7 +1031,6 @@ export const nl = {
   'onderwerp.taal.achter.keuze': 'Welk woordeinde?',
   'onderwerp.taal.spellingmix': 'Spellingmix',
   'onderwerp.taal.spellingmix.uitleg': 'Alle spelling door elkaar',
-  'onderwerp.taal.fouten.uitleg': 'De woorden die je eerder fout had',
   // Werkwoorden: drie tijden, een mix en je fouten.
   'onderwerp.taal.tt': 'Tegenwoordige tijd',
   'onderwerp.taal.tt.uitleg': 'Ik word, hij wordt, word jij?',
@@ -1064,7 +1040,6 @@ export const nl = {
   'onderwerp.taal.vd.uitleg': 'Ge- en een t of een d: gefietst, geleefd',
   'onderwerp.taal.werkwoordmix': 'Werkwoordmix',
   'onderwerp.taal.werkwoordmix.uitleg': 'Alle werkwoorden door elkaar',
-  'onderwerp.taal.werkwoorden.fouten.uitleg': 'De werkwoorden die je eerder fout had',
   // De naam van een set: wat de startbalk en de kaarten tonen.
   // Het korte woord staat op het knopje als de set een van meer is.
   'set.taal-sp-eiij': 'Ei of ij',
@@ -1264,9 +1239,8 @@ export const nl = {
     'Er hoeft vandaag niets meer terug te komen. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
   'result.nieuwePlaatjes': 'Iets nieuws leren',
-  // De toren is met ADR-169 weggegaan en deze zin bleef erover praten. Wat er
-  // nu geldt is de regel van de diploma's: iets nieuws telt pas mee als je het
-  // op een volgende dag weer goed weet (ADR-167).
+  // De regel van de diploma's (ADR-167): iets nieuws telt pas mee als je het op
+  // een volgende dag weer goed weet.
   'result.nieuwePlaatjesUitleg':
     'Iets nieuws telt nog niet mee voor je diploma. Dat gebeurt als het terugkomt.',
 
@@ -1357,7 +1331,6 @@ export const nl = {
   'you.lijstenImportLeeg': 'In dit bestand stonden geen woorden die we konden gebruiken.',
   'you.lijstenImportFout': 'Dit bestand konden we niet lezen. Kies een CSV- of tekstbestand.',
   'you.lijstenGeen': 'Je hebt nog geen lijst.',
-  'you.lijstenNieuw': 'Nieuwe lijst',
   'you.lijstenNaam': 'Naam van de lijst',
   'you.lijstenNaamHint': 'Bijvoorbeeld: Week 12',
   'you.lijstenMaak': 'Lijst maken',
@@ -1388,9 +1361,6 @@ export const nl = {
     'Wat je geregeld hebt, hoe de app werkt, de oefenstof van school en hoe het gaat.',
   'ouder.naar': 'Voor ouders',
   'ouder.naarOnthouden': 'Bekijk wat je kind onthoudt en hoe het oefent',
-  'ouder.diplomasTitel': 'Alle diploma’s',
-  'ouder.diplomasUitleg':
-    'Wat je kind gehaald heeft, en wat er nog te halen valt. Een diploma is een toets: je kind doet hem als de stof ver genoeg is, en kan hem printen.',
   'ouder.terug': 'Naar Jij',
 
   // Het account van de ouder (ADR-155). Alleen van de ouder: een kind heeft geen
@@ -1444,7 +1414,6 @@ export const nl = {
   'you.premiumVerlopen':
     'Premium is afgelopen op {datum}. De voortgang van je kinderen staat er nog.',
   'you.premiumVerleng': 'Premium verlengen',
-  'you.premiumUit': 'Premium staat nog niet aan op dit apparaat.',
   'you.premiumBekijk': 'Naar premium',
 
   // Onder een diploma, in woorden: "nog niet" is nooit alleen een tint.
@@ -1499,8 +1468,6 @@ export const nl = {
   'kast.regel':
     'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen.',
   'kast.vakAantal': '{aantal} diploma’s',
-  'kast.vakOpen': 'Laat de diploma’s van {vak} zien',
-  'kast.vakDicht': 'Verberg de diploma’s van {vak}',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet

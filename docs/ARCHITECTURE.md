@@ -5,6 +5,27 @@ Revised after the scope decision of 2026-09-05 (ADR-014): build the app, with no
 commercial model and no class or pupil administration. Anyone can play and
 learn. Accounts, classes, teachers and licensing come later.
 
+**What this document no longer describes.** It was written at phase 0 and has
+not been rewritten since; `DECISIONS.md` is what governs, and three of the facts
+below have moved:
+
+- **There is a backend now, beside the app rather than under it.** §1 says "no
+  Supabase, no Edge Functions, no database, no auth". Since ADR-116 and ADR-123
+  a Supabase project sells and checks premium codes, and since ADR-155 and
+  ADR-157 a second one — deliberately a second, see `SUPABASE.md` — carries
+  optional parent and child accounts. What has not moved is the sentence those
+  two projects exist to keep true: everything a child practises still lives in
+  IndexedDB on the device, and a child who never signs in loses nothing
+  (ADR-152).
+- **It ships from GitHub Pages**, not Cloudflare Pages (`README.md`, "Where it
+  runs").
+- **The local store holds no XP, streak or badges** in the shape §2 draws. The
+  currency went with ADR-130, and the reward programme is the diplomas of
+  ADR-167 through ADR-170; `DATAMODEL.md` is the current description.
+
+The reasoning below is kept because it is why the app is local-first at all, and
+that has held through every one of those changes.
+
 The product name is a working title. Everything user-visible reads it from
 `src/config/brand.ts`; no component hardcodes it.
 

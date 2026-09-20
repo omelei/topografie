@@ -511,7 +511,14 @@ function vlagOnderdelen(): Onderdeel[] {
     .map(vlagOnderdeel);
 }
 
-const VLAG_ONDERWERP: Record<VlagOnderwerp, { naam: TranslationKey; uitleg: TranslationKey }> = {
+/**
+ * De naam en de uitleg per onderwerp. Zonder `fouten`: die is met ADR-168 geen
+ * onderwerp meer maar een spelvorm, en `vlagOnderwerpen` biedt hem niet aan.
+ */
+const VLAG_ONDERWERP: Record<
+  Exclude<VlagOnderwerp, 'fouten'>,
+  { naam: TranslationKey; uitleg: TranslationKey }
+> = {
   bekend: { naam: 'onderwerp.vlaggen.bekend', uitleg: 'onderwerp.vlaggen.bekend.uitleg' },
   alle: { naam: 'onderwerp.vlaggen.alle', uitleg: 'onderwerp.vlaggen.alle.uitleg' },
   lijkt: { naam: 'onderwerp.vlaggen.lijkt', uitleg: 'onderwerp.vlaggen.lijkt.uitleg' },
@@ -520,7 +527,6 @@ const VLAG_ONDERWERP: Record<VlagOnderwerp, { naam: TranslationKey; uitleg: Tran
     naam: 'onderwerp.vlaggen.provincies',
     uitleg: 'onderwerp.vlaggen.provincies.uitleg',
   },
-  fouten: { naam: 'onderwerp.fouten', uitleg: 'onderwerp.vlaggen.fouten.uitleg' },
 };
 
 /**
@@ -538,11 +544,11 @@ const VLAG_ONDERWERP: Record<VlagOnderwerp, { naam: TranslationKey; uitleg: Tran
  */
 function vlagOnderwerpen(): Onderwerp[] {
   return loadVlagSets().flatMap((set): Onderwerp[] => {
-    const tekst = VLAG_ONDERWERP[set.onderwerp];
-    const deel = vlagOnderdeel(set);
-
     // De eigen foutenlijst is geen onderwerp meer maar een spelvorm (ADR-168).
     if (set.onderwerp === 'fouten') return [];
+
+    const tekst = VLAG_ONDERWERP[set.onderwerp];
+    const deel = vlagOnderdeel(set);
 
     return [
       {

@@ -1,7 +1,9 @@
 # De diploma's — het beloningsprogramma van leer.nu
 
-**Status:** ontwerp. **Datum:** 2026-09-20. Op verzoek van de eigenaar.
-Vervangt de toren (ADR-158). Vastgelegd als ADR-1nn, ADR-1nn+1 en ADR-1nn+2.
+**Status:** gebouwd. **Datum:** 2026-09-20. Op verzoek van de eigenaar.
+Vervangt de toren (ADR-158). Vastgelegd als ADR-167 (de ring en de kaart),
+ADR-168 (de modulepagina en de feedbackronde), ADR-169 (de toren weg, de reeks
+en het schooljaar naar de ouder) en ADR-170 (proefzwemmen weg).
 
 Dit document beschrijft één beloningssysteem, van de regel tot de tekst op het
 scherm. Het is geschreven om te bouwen, niet om te overtuigen: wat hier staat is

@@ -292,7 +292,7 @@ describe('koraal stays the logo’s', () => {
   });
 });
 
-/** The names the handoff replaced (MIGRATIE-STATUS.md), gone for good. */
+/** The names the handoff replaced (docs/MIGRATIE-STATUS.md), gone for good. */
 const OLD_TOKENS =
   /(?<![\w-])--(paper|surface|sunken|grond|line|line-strong|ink|ink-2|ink-3|good|good-text|bad|attention|attention-text|neutral|shadow-1|shadow-2|shadow-menu|shadow-held|touch|touch-min|touch-board|control-height|card-radius|card-padding|row-gap|radius-card|radius-control|radius-field|radius-full|radius-flat|radius-plaat|radius-klein|radius-balk|type-(?:h1|h2|h3|body|label|small|score)(?:-lh|-ls)?)(?![\w-])/;
 
