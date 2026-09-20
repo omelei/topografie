@@ -522,7 +522,12 @@
     text-decoration: none;
     transform: translateY(-120%);
   }
-  .tk-overslaan:focus-visible {
+  /* `:focus` en niet `:focus-visible`. Deze link is alleen met een toetsenbord
+   * te bereiken, dus het onderscheid dat `:focus-visible` maakt levert hier
+   * niets op — en het kost wél iets: wie de focus langs een andere weg krijgt
+   * dan een toetsaanslag, zou een link hebben die focus heeft en niet te zien
+   * is. Dat is de ene fout die een overslaan-link niet mag maken. */
+  .tk-overslaan:focus {
     transform: translateY(0);
   }
   /* Het doel van de link draagt `tabIndex={-1}` en krijgt dus focus. Een rand

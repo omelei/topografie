@@ -37,17 +37,34 @@ async function startRound(page: Page) {
 }
 
 /**
- * De overslaan-link (ADR-166): het eerste wat de tab-toets raakt, op elke
- * pagina, en hij zet de focus echt in `main` in plaats van alleen het adres te
- * veranderen. Op elke maat, want de twaalf knoppen ervoor zijn er aan een
- * bureau en de balk en de tabbalk staan er op een telefoon.
+ * De overslaan-link (ADR-166): het eerste in de tabvolgorde, op elke pagina, en
+ * hij zet de focus echt in `main` in plaats van alleen het adres te veranderen.
+ * Op elke maat, want de twaalf knoppen ervoor zijn er aan een bureau en de balk
+ * en de tabbalk staan er op een telefoon.
+ *
+ * Niet met de Tab-toets nagespeeld maar met de volgorde zelf. Of Tab een link
+ * aandoet, is in WebKit een voorkeur van de gebruiker en niet iets van deze
+ * pagina; wat deze pagina belooft is dat hij vooraan staat en dat indrukken de
+ * focus verzet, en dat is precies wat hier staat.
  */
-test('de eerste tab is de weg naar de inhoud', async ({ page }) => {
+test('de overslaan-link staat vooraan en verzet de focus naar de inhoud', async ({ page }) => {
   await signIn(page, 'Fem');
 
+  const tabbaar = page.locator(
+    'a[href], button:not([disabled]), input, select, textarea, [tabindex]:not([tabindex="-1"])',
+  );
+  await expect(tabbaar.first()).toHaveAccessibleName('Naar de inhoud');
+
+  // Focus met de hand en dan Enter, en niet klikken: zolang hij geen focus
+  // heeft staat hij bóven het scherm geparkeerd, en daar valt niet op te
+  // klikken — dat is precies de bedoeling.
   const overslaan = page.getByRole('link', { name: 'Naar de inhoud' });
-  await page.keyboard.press('Tab');
-  await expect(overslaan).toBeFocused();
+  await overslaan.evaluate((el: HTMLElement) => el.focus());
+
+  // En met focus zakt hij het scherm in, want een link die je niet ziet is
+  // geen link.
+  const doos = await overslaan.boundingBox();
+  expect(doos?.y ?? -1).toBeGreaterThanOrEqual(0);
 
   await page.keyboard.press('Enter');
   await expect(page.locator('main')).toBeFocused();
