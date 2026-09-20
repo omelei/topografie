@@ -4,6 +4,10 @@ import {
   kaartVanDiploma,
   klokDiplomaFor,
   klokVanDiploma,
+  rekenDiplomaFor,
+  rekenSetVanDiploma,
+  taalDiplomaFor,
+  taalSetVanDiploma,
   tableOfDiploma,
   topoDiplomaFor,
   vlagDiplomaFor,
@@ -30,6 +34,10 @@ import { activeChildId, ensureProgressPerChild } from './children';
 export interface RoundOutcome {
   /** The table this round earned a diploma for, or null. */
   readonly diploma: number | null;
+  /** De rekenset waar dit diploma over ging, als set-id, of null (ADR-168). */
+  readonly rekenDiploma: string | null;
+  /** De taalset waar dit diploma over ging, als set-id, of null (ADR-168). */
+  readonly taalDiploma: string | null;
   /** The werelddeel this round earned a vlaggendiploma for, or null (ADR-104). */
   readonly vlagDiploma: DiplomaWerelddeel | null;
   /** The step of the clock this round earned a klokdiploma for, or null (ADR-117). */
@@ -138,33 +146,41 @@ export async function applyRoundRewards(params: {
   };
 
   const diplomaId = diplomaFor(params.snapshot);
+  const rekenDiplomaId = rekenDiplomaFor(params.snapshot);
   const vlagDiplomaId = vlagDiplomaFor(params.snapshot);
   const klokDiplomaId = klokDiplomaFor(params.snapshot);
   const topoDiplomaId = topoDiplomaFor(params.snapshot);
+  const taalDiplomaId = taalDiplomaFor(params.snapshot);
+  const alle = [
+    diplomaId,
+    rekenDiplomaId,
+    vlagDiplomaId,
+    klokDiplomaId,
+    topoDiplomaId,
+    taalDiplomaId,
+  ];
 
   if (!params.rijp && isDiplomaVorm(params.snapshot.mode)) {
-    const gehaald = [diplomaId, vlagDiplomaId, klokDiplomaId, topoDiplomaId].some(
-      (id) => id !== null,
-    );
     return {
       diploma: null,
+      rekenDiploma: null,
       vlagDiploma: null,
       klokDiploma: null,
       topoDiploma: null,
-      proef: gehaald ? 'gehaald' : 'niet',
+      taalDiploma: null,
+      proef: alle.some((id) => id !== null) ? 'gehaald' : 'niet',
     };
   }
 
-  await bewaar(diplomaId);
-  await bewaar(vlagDiplomaId);
-  await bewaar(klokDiplomaId);
-  await bewaar(topoDiplomaId);
+  for (const id of alle) await bewaar(id);
 
   return {
     diploma: diplomaId === null ? null : tableOfDiploma(diplomaId),
+    rekenDiploma: rekenDiplomaId === null ? null : rekenSetVanDiploma(rekenDiplomaId),
     vlagDiploma: vlagDiplomaId === null ? null : werelddeelVanDiploma(vlagDiplomaId),
     klokDiploma: klokDiplomaId === null ? null : klokVanDiploma(klokDiplomaId),
     topoDiploma: topoDiplomaId === null ? null : kaartVanDiploma(topoDiplomaId),
+    taalDiploma: taalDiplomaId === null ? null : taalSetVanDiploma(taalDiplomaId),
     proef: null,
   };
 }

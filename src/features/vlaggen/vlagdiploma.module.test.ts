@@ -23,9 +23,11 @@ const tegels = (setId: string) =>
 const diploma = formsFor('vlaggen').find((form) => form.id === 'vlag-diploma') as PracticeForm;
 
 describe('the vlaggendiploma', () => {
-  it('is offered on the whole of a werelddeel and nowhere else', () => {
+  it('is offered on the whole of a werelddeel, and op de provincies', () => {
     expect(tegels('vlag-europa-alle')).toContain('vlag-diploma');
     expect(tegels('vlag-zuid-amerika-alle')).toContain('vlag-diploma');
+    // Sinds ADR-168 ook thuis: de twaalf provincievlaggen zijn een hele set.
+    expect(tegels('vlag-nederland-provincies')).toContain('vlag-diploma');
 
     for (const setId of [
       'vlag-europa-bekend',
@@ -33,7 +35,6 @@ describe('the vlaggendiploma', () => {
       'vlag-europa-fouten',
       'vlag-wereld-alle',
       'vlag-wereld-mix',
-      'vlag-nederland-provincies',
     ]) {
       expect(tegels(setId), setId).not.toContain('vlag-diploma');
     }

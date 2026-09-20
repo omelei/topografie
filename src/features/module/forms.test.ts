@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { DiplomaIcon } from '@/components/Icon';
+import { isDiplomaVorm } from '@/game-core';
 import {
   KLOK_FORMS,
   MAX_FORMS,
@@ -62,7 +64,14 @@ describe('the ways of practising', () => {
     ['ontdekken'],
     ['bliksemronde'],
     ['overleven'],
-    ['tafeldiploma', 'vlag-diploma', 'klok-diploma', 'topo-diploma'],
+    [
+      'tafeldiploma',
+      'reken-diploma',
+      'vlag-diploma',
+      'klok-diploma',
+      'topo-diploma',
+      'taal-diploma',
+    ],
     ['vlag-gemengd'],
   ];
   const plek = (id: string) => ORDE.findIndex((groep) => groep.includes(id));
@@ -83,7 +92,10 @@ describe('the ways of practising', () => {
       'som-typen',
       'bliksemronde',
       'overleven',
+      // Twee diploma's, en nooit allebei op één set (ADR-168): de tafel is
+      // foutloos, elke andere soort som is negen op de tien.
       'tafeldiploma',
+      'reken-diploma',
     ]);
     expect(KLOK_FORMS.map((form) => form.id)).toEqual([
       'klok-welke-klok',
@@ -98,12 +110,14 @@ describe('the ways of practising', () => {
       'taal-flitsdictee',
       'ontdekken',
       'overleven',
+      'taal-diploma',
     ]);
     expect(WERKWOORD_FORMS.map((form) => form.id)).toEqual([
       'taal-vorm-kiezen',
       'taal-vorm-typen',
       'ontdekken',
       'overleven',
+      'taal-diploma',
     ]);
 
     for (const forms of ALLE) {
@@ -153,13 +167,15 @@ describe('the ways of practising', () => {
     }
   });
 
-  it('offers no bliksemronde and no diploma on Taal, whatever the part', () => {
+  it('offers no bliksemronde on Taal, but wel een diploma, whatever the part', () => {
     // ADR-118, departing from ADR-112's "a bliksemronde on every page": a clock
-    // on spelling teaches guessing, and no school hands out a spelling diploma.
+    // on spelling teaches guessing. Het diploma stond in diezelfde zin en is er
+    // sinds ADR-168 wél, met de redenering van ADR-117.
     for (const forms of [SPELLING_FORMS, WERKWOORD_FORMS]) {
       const ids = forms.map((form) => form.id);
       expect(ids).not.toContain('bliksemronde');
-      expect(ids.some((id) => id.endsWith('diploma'))).toBe(false);
+      expect(ids).toContain('taal-diploma');
+      expect(ids.at(-1)).toBe('taal-diploma');
     }
     expect(formsFor('woorden', 'spelling')).toBe(SPELLING_FORMS);
     expect(formsFor('woorden', 'werkwoorden')).toBe(WERKWOORD_FORMS);
@@ -184,9 +200,16 @@ describe('the ways of practising', () => {
     // Six cards a child recognises rather than six cards a child reads is the
     // whole argument for an icon here, and it collapses the moment two of them
     // are the same drawing.
+    //
+    // De diploma's zijn de ene uitzondering, en met opzet (ADR-168): rekenen
+    // heeft er twee — de tafel en elke andere soort som — en die dragen
+    // hetzelfde teken omdat ze hetzelfde ding zijn. Er staat er nooit meer dan
+    // een tegelijk op de pagina, want geen set is allebei.
     for (const forms of ALLE) {
-      const icons = forms.map((form) => form.icon);
+      const icons = forms.filter((form) => !isDiplomaVorm(form.id)).map((form) => form.icon);
       expect(new Set(icons).size).toBe(icons.length);
+      const diplomas = forms.filter((form) => isDiplomaVorm(form.id));
+      for (const diploma of diplomas) expect(diploma.icon).toBe(DiplomaIcon);
     }
   });
 
@@ -217,14 +240,23 @@ describe('the ways of practising', () => {
     expect(opMix).toHaveLength(KLOK_FORMS.length - 1);
   });
 
-  it('offers a topodiploma on one map, and not on the world, the mix or a list of mistakes', () => {
-    for (const setId of ['nl-provincies', 'nl-steden', 'europa-landen', 'oceanie-landen']) {
+  it('offers a topodiploma on every map, and not on the mix or a list of mistakes', () => {
+    // De wereld hoort er sinds ADR-168 bij: het bezwaar was dat twintig van de
+    // honderdzevenenzestig een loting is, en dat is opgelost door het getal en
+    // niet door het diploma weg te laten (`topodiplomaVragen`).
+    for (const setId of [
+      'nl-provincies',
+      'nl-steden',
+      'europa-landen',
+      'oceanie-landen',
+      'wereld-landen',
+    ]) {
       expect(
         offeredForms(TOPO_FORMS, setId).map((form) => form.id),
         setId,
       ).toContain('topo-diploma');
     }
-    for (const setId of ['wereld-landen', 'nl-mix', 'nl-fouten']) {
+    for (const setId of ['nl-mix', 'nl-fouten']) {
       expect(
         offeredForms(TOPO_FORMS, setId).map((form) => form.id),
         setId,

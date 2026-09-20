@@ -75,20 +75,32 @@ describe('the topodiploma', () => {
     expect(topoDiplomaFor(topo({ setId: 'nl-waddeneilanden', setSize: 5, correct: 4 }))).toBeNull();
   });
 
-  it('is sat on one map and not on the world, the Topomix or a list of mistakes', () => {
+  it('is sat on every map, and not on the Topomix or a list of mistakes', () => {
     expect(topoDiplomaFor(topo({ setId: 'europa-landen', setSize: 46, correct: 18 }))).toBe(
       'diploma-topo-europa-landen',
     );
-    for (const setId of ['wereld-landen', 'nl-mix', 'nl-fouten']) {
+    for (const setId of ['nl-mix', 'nl-fouten']) {
       expect(topoDiplomaFor(topo({ setId, correct: 20 })), setId).toBeNull();
     }
     expect(topoDiplomaFor(topo({ mode: 'hoe-heet-dit' }))).toBeNull();
     expect(topoDiplomaFor(topo({ completeRound: false }))).toBeNull();
   });
 
+  it('vraagt een kwart van de wereldkaart in plaats van twintig landen', () => {
+    // ADR-168: de wereld heeft een diploma, en het bezwaar ertegen — twintig
+    // van de honderdzevenenzestig is een loting — is opgelost met het getal.
+    expect(topodiplomaVragen(167)).toBe(42);
+    expect(topodiplomaVragen(46)).toBe(20);
+    expect(topodiplomaVragen(12)).toBe(12);
+
+    const wereld = { setId: 'wereld-landen', setSize: 167 };
+    expect(topoDiplomaFor(topo({ ...wereld, correct: 38 }))).toBe('diploma-topo-wereld-landen');
+    expect(topoDiplomaFor(topo({ ...wereld, correct: 37 }))).toBeNull();
+  });
+
   it('reads back which map a stored diploma is for', () => {
     expect(kaartVanDiploma('diploma-topo-oceanie-landen')).toBe('oceanie-landen');
-    expect(kaartVanDiploma('diploma-topo-wereld-landen')).toBeNull();
+    expect(kaartVanDiploma('diploma-topo-wereld-landen')).toBe('wereld-landen');
     expect(kaartVanDiploma('diploma-klok-half')).toBeNull();
   });
 });

@@ -1,11 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * "Oefen je fouten" on the map and on the clock (ADR-103).
+ * "Je fouten" is een spelvorm op de gekozen set (ADR-103, ADR-168).
  *
  * A child who says "ik weet het niet" has not known it, and the boxes record
  * that as a mistake — so a round answered that way is the quickest honest way
- * to five of them. After it, the list is on the page it was made on.
+ * to a handful of them. Daarna staat de tegel in stap 3, bij de manieren, en
+ * niet meer tussen de onderwerpen: wát je oefent koos je in stap 2, en dit
+ * zegt welk deel ervan gevraagd wordt.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -46,22 +48,27 @@ async function weetHetNiet(page: Page) {
   throw new Error('De ronde hield niet op.');
 }
 
-test('the clock offers the faces you did not know', async ({ page }) => {
+test('de klok biedt "Je fouten" pas aan als er fouten zijn, bij de manieren', async ({ page }) => {
   await signIn(page, 'Ties');
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
+  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
 
+  // Nergens een onderwerp dat over fouten gaat, met of zonder fouten.
   await page.goto('/klokkijken');
-  await expect(wat.getByRole('button', { name: /^Oefen je fouten/ })).toHaveCount(0);
+  await expect(wat.getByRole('button', { name: /fouten/i })).toHaveCount(0);
+
+  // En zonder fouten ook geen spelvorm: er valt niets te oefenen.
+  await wat.getByRole('button', { name: /^Hele uren/ }).click();
+  await expect(hoe.getByRole('button', { name: /^Je fouten/ })).toHaveCount(0);
 
   await kies(page, '/klokkijken', /^Hele uren/, /^Meerkeuze/);
   await weetHetNiet(page);
 
+  // Nu staat hij er, bij de manieren, en hij start een ronde over dezelfde set.
   await page.goto('/klokkijken');
-  await wat.getByRole('button', { name: /^Oefen je fouten/ }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await wat.getByRole('button', { name: /^Hele uren/ }).click();
+  await hoe.getByRole('button', { name: /^Je fouten/ }).click();
+  await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start button').click();
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();
 });
@@ -79,19 +86,34 @@ test('the result screen repeats the round’s mistakes', async ({ page }) => {
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();
 });
 
-test('topography offers the places you did not know, on their own map', async ({ page }) => {
+test('topografie biedt dezelfde spelvorm, op de set die gekozen is', async ({ page }) => {
   await signIn(page, 'Isa');
   await kies(page, '/topografie', /^Provincies/, /^Meerkeuze/);
   await weetHetNiet(page);
 
   await page.goto('/topografie');
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Oefen je fouten/ })).toBeVisible();
+  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
+  await expect(wat.getByRole('button', { name: /fouten/i })).toHaveCount(0);
 
-  // And it has an address, the one word, like the mix.
-  await page.goto('/topografie/fouten');
-  await expect(wat.getByRole('button', { name: /^Oefen je fouten/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  // Op de provincies wel, want daar zijn ze gemaakt; op de wateren niet.
+  await wat.getByRole('button', { name: /^Provincies/ }).click();
+  await expect(hoe.getByRole('button', { name: /^Je fouten/ })).toBeVisible();
+
+  await wat.getByRole('button', { name: /^Wateren/ }).click();
+  await expect(hoe.getByRole('button', { name: /^Je fouten/ })).toHaveCount(0);
+});
+
+test('het diploma staat als laatste manier, met zijn eigen regel erbij', async ({ page }) => {
+  await signIn(page, 'Sam');
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+
+  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
+  const manieren = hoe.getByRole('button');
+  await expect(manieren.last()).toContainText('Topodiploma');
+  await expect(hoe.locator('.tk-tegel-diploma')).toHaveCount(1);
 });

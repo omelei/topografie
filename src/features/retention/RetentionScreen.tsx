@@ -196,12 +196,12 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
   }
 
   const modules = BUILT_MODULES;
-  const soorten = moduleId === 'tafels' ? somSoorten(states) : [];
+  const soorten = moduleId === 'tafels' ? somSoorten() : [];
   const soort = soorten.find((vak) => vak.id === soortId) ?? soorten[0] ?? null;
   // Taal asks which part first, as its own page does (ADR-118).
   const delen = moduleId === 'woorden' ? regiosVan('woorden') : [];
   const deelKeuze = delen.find((kandidaat) => kandidaat.id === soortId) ?? delen[0] ?? null;
-  const sets = setsVan(moduleId, states, deelKeuze?.id ?? soort?.id ?? null);
+  const sets = setsVan(moduleId, deelKeuze?.id ?? soort?.id ?? null);
   // The set the child chose, or the module's first: topography opens on the
   // provinces, as it always has.
   const deel = sets.find((kandidaat) => kandidaat.setId === setId) ?? sets[0] ?? null;
@@ -218,7 +218,7 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
   // twee uitzonderingen als de keuzes hieronder.
   const vakken = perVak(
     modules.flatMap((module) =>
-      onderwerpenVan(module.id, states)
+      onderwerpenVan(module.id)
         .flatMap((vak) => vak.sets)
         .filter((set) => !set.mix && !set.setId.endsWith('fouten')),
     ),
@@ -568,14 +568,10 @@ function Voorbeeld({
  * as its own page does, because thirty-odd sets in one row are not one either.
  * Taal asks which part first, Spelling or Werkwoorden, for the same reason.
  */
-function setsVan(
-  moduleId: Module['id'],
-  states: ReadonlyMap<string, ItemState>,
-  onderwerpId: string | null,
-): Onderdeel[] {
+function setsVan(moduleId: Module['id'], onderwerpId: string | null): Onderdeel[] {
   const gezien = new Set<string>();
   const sets: Onderdeel[] = [];
-  for (const vak of onderwerpenVan(moduleId, states)) {
+  for (const vak of onderwerpenVan(moduleId)) {
     if (moduleId === 'tafels' && vak.id !== onderwerpId) continue;
     if (moduleId === 'woorden' && vak.regio !== onderwerpId) continue;
     for (const deel of vak.sets) {
@@ -594,11 +590,9 @@ function setsVan(
   return sets;
 }
 
-/** Rekenen's kinds of sum that hold a set of their own: not the mix, not the mistakes. */
-function somSoorten(states: ReadonlyMap<string, ItemState>) {
-  return onderwerpenVan('tafels', states).filter(
-    (vak) => vak.id !== 'fouten' && vak.sets.some((deel) => !deel.mix),
-  );
+/** Rekenen's kinds of sum that hold a set of their own: not the mix. */
+function somSoorten() {
+  return onderwerpenVan('tafels').filter((vak) => vak.sets.some((deel) => !deel.mix));
 }
 
 /**

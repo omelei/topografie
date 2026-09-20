@@ -13,6 +13,8 @@ import {
 import {
   alsTopoDiplomaSet,
   diplomaWerelddeelVanSet,
+  isRekenDiplomaSet,
+  isTaalDiplomaSet,
   KLOK_DIPLOMA_SETS,
   type ModeId,
   type RoundRule,
@@ -251,7 +253,22 @@ export const SUM_FORMS: readonly PracticeForm[] = [
     icon: DiplomaIcon,
     rule: SUM_ROUND_RULE.tafeldiploma,
     seconds: 8,
+    vasteLengte: true,
     geldtVoor: (setId) => /^tafel-\d+$/.test(setId),
+  },
+  {
+    // En op elke andere soort som hetzelfde, onder zijn eigen naam (ADR-168).
+    // Twee tegels en niet één, omdat het twee verschillende toetsen zijn: de
+    // tafel is foutloos en de rest haal je met negen op de tien. Op één set is
+    // er altijd precies één van de twee te zien.
+    id: 'reken-diploma',
+    name: 'mode.reken-diploma',
+    reason: 'way.reken-diploma',
+    icon: DiplomaIcon,
+    rule: SUM_ROUND_RULE['reken-diploma'],
+    seconds: 8,
+    vasteLengte: true,
+    geldtVoor: isRekenDiplomaSet,
   },
 ];
 
@@ -449,10 +466,15 @@ export const VLAG_FORMS: readonly PracticeForm[] = [
  * it teaches guessing (businessplan v6 §5.8). This departs from ADR-112's
  * "a bliksemronde on every page", and ADR-118 says so.
  *
- * **Overleven**, over three lives, asks the letters. **No diploma**: no school
- * hands one out for spelling, and inventing one would be inventing a
- * certificate. The oefentoets is the flitsdictee, with nothing said until the
- * end (`TOETS_VORM`).
+ * **Overleven**, over three lives, asks the letters. De oefentoets is de
+ * flitsdictee, met niets gezegd tot het eind (`TOETS_VORM`).
+ *
+ * **En er is wél een diploma** (ADR-168). Hier stond dat geen school er een
+ * uitdeelt voor spelling en dat het verzinnen ervan een verzonnen certificaat
+ * is. Datzelfde argument stond bij de klok en bij de kaart, en ADR-117 heeft
+ * het daar omgedraaid met de reden die hier net zo goed geldt: het diploma is
+ * in dit product de toets aan het eind van het oefenen. Wat er stond, maakte
+ * Taal het enige vak waar niets te halen viel.
  */
 export const SPELLING_FORMS: readonly PracticeForm[] = [
   {
@@ -487,6 +509,18 @@ export const SPELLING_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: TAAL_ROUND_RULE.overleven,
     seconds: null,
+  },
+  {
+    // Het taaldiploma, als laatste (ADR-168). Zie `rewards.ts` voor waarom de
+    // zin hierboven — "geen school deelt er een uit" — is omgedraaid.
+    id: 'taal-diploma',
+    name: 'mode.taal-diploma',
+    reason: 'way.taal-diploma',
+    icon: DiplomaIcon,
+    rule: TAAL_ROUND_RULE['taal-diploma'],
+    seconds: 12,
+    vasteLengte: true,
+    geldtVoor: isTaalDiplomaSet,
   },
 ];
 
@@ -527,7 +561,8 @@ export const EIGEN_FORMS: readonly PracticeForm[] = [
  * each with examples from the set. **Overleven** chooses, over three lives.
  *
  * No zoeken, because there is nothing to find; no bliksemronde, because d, t
- * or dt against a clock is guessing; no diploma. The oefentoets types.
+ * or dt against a clock is guessing. Een diploma wél, sinds ADR-168, met
+ * dezelfde redenering als bij spelling. The oefentoets types.
  */
 export const WERKWOORD_FORMS: readonly PracticeForm[] = [
   {
@@ -562,6 +597,16 @@ export const WERKWOORD_FORMS: readonly PracticeForm[] = [
     icon: ShieldIcon,
     rule: TAAL_ROUND_RULE.overleven,
     seconds: null,
+  },
+  {
+    id: 'taal-diploma',
+    name: 'mode.taal-diploma',
+    reason: 'way.taal-diploma',
+    icon: DiplomaIcon,
+    rule: TAAL_ROUND_RULE['taal-diploma'],
+    seconds: 12,
+    vasteLengte: true,
+    geldtVoor: isTaalDiplomaSet,
   },
 ];
 

@@ -2902,6 +2902,46 @@
     color: var(--accent-text);
   }
 
+  /* Het diploma onder de manieren (ADR-168): dezelfde tegel, zwaarder gezet.
+   *
+   * Het stond als achtste vakje in het raster van twee kolommen en was daarin
+   * niet van een bliksemronde te onderscheiden — terwijl het het enige is op
+   * deze pagina waar een kind iets aan overhoudt.
+   *
+   * **En het licht op zonder kleur.** De verleiding is het accent, en dat mag
+   * hier juist niet: het accent zegt "dit heb jij gekozen" (`accent.test.ts`),
+   * en een tegel die er altijd mee opgloeit, leert een kind die betekenis af.
+   * Wat het onderscheid draagt zijn drie dingen die geen hue zijn, zoals §A
+   * vraagt: hij staat over de volle breedte waar de rest in twee kolommen
+   * staat, hij staat op papier met de rand van een bediening — twee pixels, in
+   * de kleur die een knop ook draagt — in plaats van op de kaart met een
+   * haarlijn, en hij draagt zijn eigen regel — wat de toets vraagt — waar
+   * de andere tegels alleen hun naam dragen. De gekozen staat blijft daarna
+   * precies die van elke andere tegel. */
+  .tk-tegel-diploma {
+    align-items: flex-start;
+    width: 100%;
+    margin-block-start: 12px;
+    border-width: var(--stroke-active);
+    border-color: var(--rand-bediening);
+    background: var(--papier);
+  }
+  .tk-tegel-diploma:not([aria-pressed='true']) {
+    /* De dikkere rand kost een pixel padding terug, zoals bij een gekozen
+     * tegel, zodat de rij eronder niet opschuift. */
+    padding: 19px;
+  }
+  .tk-tegel-diploma .tk-plaat {
+    background: var(--kaart);
+  }
+  .tk-tegel-diploma:not([aria-pressed='true']):hover {
+    background: var(--kaart);
+    border-color: var(--inkt);
+  }
+  .tk-tegel-diploma .tk-hulp {
+    font-weight: 400;
+  }
+
   /* Premium (ADR-111): what will need an account, said on the tile before there
    * is one. The quiet badge's look — ink on paper, a rule round it — at a
    * label's size, so it reads as a fact about the tile and not as one more

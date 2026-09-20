@@ -1,6 +1,7 @@
 import { t } from '@/i18n';
 import { sumUitgewerkt } from '@/game-core';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
+import { naamVanSet } from '@/features/module/onderdelen';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import type { SumRoundState } from './useSumRound';
 
@@ -36,6 +37,10 @@ export function SumResultScreen({
 }) {
   const ModuleIcon = MODULE_ICON.tafels;
   const diploma = state.reward?.diploma ?? null;
+  // Het rekendiploma zegt hetzelfde over een andere soort som (ADR-168), en
+  // noemt de set bij de naam die de startbalk er ook aan gaf.
+  const rekenDiploma = state.reward?.rekenDiploma ?? null;
+  const somNaam = naamVanSet(setId);
 
   return (
     <RondeKlaar
@@ -56,8 +61,20 @@ export function SumResultScreen({
       stenen={state.stenen}
       groei={state.groei}
       reward={state.reward}
-      diploma={diploma ? t('sums.diplomaEarned', { tafel: diploma }) : null}
-      melding={state.mode === 'tafeldiploma' && !diploma ? t('sums.diplomaMissed') : null}
+      diploma={
+        diploma
+          ? t('sums.diplomaEarned', { tafel: diploma })
+          : rekenDiploma
+            ? t('sums.rekendiplomaEarned', { naam: somNaam })
+            : null
+      }
+      melding={
+        state.mode === 'tafeldiploma' && !diploma
+          ? t('sums.diplomaMissed')
+          : state.mode === 'reken-diploma' && state.reward && !rekenDiploma
+            ? t('sums.rekendiplomaMissed')
+            : null
+      }
       oefenTitel={t('sums.practiceMore')}
       missed={state.missed}
       onAgain={onAgain}

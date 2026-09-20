@@ -45,9 +45,23 @@ describe('welk diploma bij welke set hoort', () => {
 
   it('geeft niets terug voor een set zonder diploma', () => {
     expect(doelwitVan(deel('tafel-13', 'tafels', 10))).toBeNull();
-    expect(doelwitVan(deel('wereld-landen', 'topo', 167))).toBeNull();
     expect(doelwitVan(deel('klok-mix', 'klok', 40))).toBeNull();
+    // De helft van een werelddeel: een certificaat voor de makkelijke helft.
     expect(doelwitVan(deel('vlag-europa-bekend', 'vlaggen', 12))).toBeNull();
+    // En een eigen lijst van een ouder: die heet morgen anders (ADR-168).
+    expect(doelwitVan(deel('eigen-1', 'woorden', 20))).toBeNull();
+  });
+
+  it('geeft sinds ADR-168 ook de vakken die er geen hadden een diploma', () => {
+    expect(doelwitVan(deel('wereld-landen', 'topo', 167))?.mode).toBe('topo-diploma');
+    expect(doelwitVan(deel('plus-20', 'tafels', 45))?.mode).toBe('reken-diploma');
+    expect(doelwitVan(deel('delen-100', 'tafels', 140))?.mode).toBe('reken-diploma');
+    expect(doelwitVan(deel('taal-sp-eiij', 'woorden', 40))?.mode).toBe('taal-diploma');
+    expect(doelwitVan(deel('taal-ww-vt', 'woorden', 30))?.mode).toBe('taal-diploma');
+    expect(doelwitVan(deel('vlag-nederland-provincies', 'vlaggen', 12))?.mode).toBe('vlag-diploma');
+    // Een mix van Taal niet, zoals geen enkele mix.
+    expect(doelwitVan(deel('taal-sp-mix', 'woorden', 300))).toBeNull();
+    expect(doelwitVan(deel('taal-sp-fouten', 'woorden', 300))).toBeNull();
   });
 
   /** Een mix heeft er geen: er bestaat geen diploma voor "alles door elkaar". */
@@ -223,19 +237,23 @@ describe('welke doelen bij een groep passen', () => {
 describe('welk diploma een ronde opleverde', () => {
   const leeg = {
     diploma: null,
+    rekenDiploma: null,
+    taalDiploma: null,
     vlagDiploma: null,
     klokDiploma: null,
     topoDiploma: null,
     proef: null,
   } as const;
 
-  it('rekent alle vier de gevallen terug naar een id', () => {
+  it('rekent alle zes de gevallen terug naar een id', () => {
     expect(behaaldDiploma({ ...leeg, diploma: 7 })).toBe('diploma-tafel-7');
     expect(behaaldDiploma({ ...leeg, vlagDiploma: 'europa' })).toBe('diploma-vlag-europa');
     expect(behaaldDiploma({ ...leeg, klokDiploma: 'klok-half' })).toBe('diploma-klok-half');
     expect(behaaldDiploma({ ...leeg, topoDiploma: 'nl-provincies' })).toBe(
       'diploma-topo-nl-provincies',
     );
+    expect(behaaldDiploma({ ...leeg, rekenDiploma: 'plus-20' })).toBe('diploma-plus-20');
+    expect(behaaldDiploma({ ...leeg, taalDiploma: 'taal-sp-eiij' })).toBe('diploma-taal-sp-eiij');
   });
 
   it('geeft niets terug voor een gewone ronde', () => {

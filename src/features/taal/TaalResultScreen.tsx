@@ -1,4 +1,5 @@
 import { t } from '@/i18n';
+import { naamVanSet } from '@/features/module/onderdelen';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import type { TaalRoundState } from './useTaalRound';
 
@@ -29,6 +30,9 @@ export function TaalResultScreen({
   readonly onHerhaal: (ids: readonly string[]) => void;
 }) {
   const werkwoorden = state.set?.deel === 'werkwoorden';
+  // Het taaldiploma (ADR-168), zoals de klok en de vlaggen het zeggen: wat het
+  // opleverde, of hoe ver het ernaast zat.
+  const diploma = state.reward?.taalDiploma ?? null;
 
   return (
     <RondeKlaar
@@ -47,6 +51,10 @@ export function TaalResultScreen({
       stenen={state.stenen}
       groei={state.groei}
       reward={state.reward}
+      diploma={diploma ? t('taal.diplomaEarned', { naam: naamVanSet(setId) }) : null}
+      melding={
+        state.mode === 'taal-diploma' && state.reward && !diploma ? t('taal.diplomaMissed') : null
+      }
       oefenTitel={t(werkwoorden ? 'taal.practiceMoreVormen' : 'taal.practiceMore')}
       missed={state.missed}
       onAgain={onAgain}

@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import {
   alleenDeze,
   composeRound,
+  DIPLOMA_VRAGEN,
+  isDiplomaVorm,
   judgeSum,
   metFouten,
   sumDistractors,
@@ -26,7 +28,8 @@ import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/u
  * all of it.
  */
 
-export type SumMode = 'som-typen' | 'som-meerkeuze' | 'bliksemronde' | 'overleven' | 'tafeldiploma';
+export type SumMode =
+  'som-typen' | 'som-meerkeuze' | 'bliksemronde' | 'overleven' | 'tafeldiploma' | 'reken-diploma';
 
 /*
  * Which of these a child is offered, in which order and with what said about
@@ -47,6 +50,9 @@ export const SUM_ROUND_RULE: Record<SumMode, RoundRule> = {
   // Ten, like any round of a table — the difference is not the length but that
   // it ends on the first mistake. See `stopsOnAMistake`.
   tafeldiploma: { kind: 'fixed', aantal: 10 },
+  // Twintig sommen, of de hele set waar die kleiner is (`diplomaVragen`). De
+  // regel draagt het maximum; `useRoundCore` kapt hem op de set af.
+  'reken-diploma': { kind: 'fixed', aantal: DIPLOMA_VRAGEN },
 };
 
 /**
@@ -140,8 +146,10 @@ export function useSumRound(
     moduleId: 'tafels',
     mode,
     basisRegel: SUM_ROUND_RULE[mode],
-    aantal: mode === 'tafeldiploma' ? null : aantal,
-    toetsstand,
+    // Een diploma heeft zijn eigen lengte: de hele tafel, of twintig sommen.
+    aantal: isDiplomaVorm(mode) ? null : aantal,
+    // En het zegt niets tot het eind, want dat is wat een toets is (ADR-100).
+    toetsstand: toetsstand || isDiplomaVorm(mode),
     itemVan: somVan,
     stoptBijFout: stopsOnAMistake(mode),
     stel: (states, rule) => {
