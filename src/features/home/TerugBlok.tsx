@@ -24,12 +24,12 @@ const DAG_MS = 86_400_000;
  *
  * Wie twee weken of langer geen ronde deed, wordt begroet als iemand die
  * terugkomt, niet als iemand die iets miste. Er staat geen aantal gemiste dagen
- * en er is niets weg: de toren staat er nog, want er gaat nooit iets af. Wel
+ * en er is niets weg: de diploma's staan er nog, en een ring loopt nooit terug. Wel
  * hoeveel stenen er klaarliggen, en hoe lang de eerste ronde duurt.
  *
  * Dat aantal is `aanDeBeurt`, en dat klopt precies: die telt alleen onderdelen
  * die eerder beantwoord zijn én nu aan de beurt zijn — en dat is woord voor
- * woord wat een steen oplevert.
+ * woord wat er te halen valt.
  *
  * **De eerste ronde is kort en makkelijk.** Negen vragen, uit de set met de
  * meeste plaatjes die terug moeten komen, en de sterkste eerst: wie drie weken

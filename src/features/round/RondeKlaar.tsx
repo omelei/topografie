@@ -1,20 +1,7 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { DiplomaIcon, NextIcon, TodayIcon, TorenIcon } from '@/components/Icon';
+import { useEffect, useState, type ReactNode } from 'react';
+import { DiplomaIcon, NextIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
-import {
-  aanDeBeurt,
-  gepasseerd,
-  setRetention,
-  vooruitblik,
-  type ItemState,
-  type ModeId,
-  type Vak,
-} from '@/game-core';
-import type { TorenGroei } from '@/store/torenStore';
-import { ReeksBlok } from '@/features/toren/ReeksBlok';
-import { useReeks } from '@/features/toren/reeks';
-import { useRegister } from '@/features/toren/register';
-import { Scene } from '@/features/toren/Scene';
+import { aanDeBeurt, setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
 import { Embleem } from '@/features/badges/Embleem';
 import { datumVan } from '@/features/badges/datums';
 import { Uitreiking } from '@/features/badges/Uitreiking';
@@ -63,8 +50,6 @@ export function RondeKlaar({
   beantwoord,
   gestopt,
   na,
-  stenen,
-  groei,
   reward,
   diploma = null,
   melding = null,
@@ -87,10 +72,6 @@ export function RondeKlaar({
   readonly gestopt: { readonly gedaan: number; readonly totaal: number } | null;
   /** De dozen zoals de ronde ze achterliet: wat er morgen terugkomt. */
   readonly na: ReadonlyMap<string, ItemState>;
-  /** De stenen die deze ronde opleverde, op volgorde (ADR-158). */
-  readonly stenen: readonly Vak[];
-  /** Wat de ronde met de toren deed, zodra het weggeschreven is. */
-  readonly groei: TorenGroei | null;
   readonly reward: RoundOutcome | null;
   /** A diploma this round earned, in words. */
   readonly diploma?: string | null | undefined;
@@ -122,16 +103,6 @@ export function RondeKlaar({
   const ids = eigenDeel ? eigenDeel.items.map((item) => item.id) : [];
   const blik = vooruitblik(ids, na, now);
 
-  // Een verdieping die volliep, en het ijkpunt dat daarbij gepasseerd werd. Het
-  // register is hier nog het beeldregister; de groep kiest het in fase twee.
-  const verdiepingKlaar = groei !== null && groei.na.verdiepingen > groei.voor.verdiepingen;
-  // Het ijkpunt dat deze ronde gepasseerd werd, in het register van dit kind:
-  // de onderbouw hoort over een giraf, de bovenbouw over meters (ADR-158).
-  const register = useRegister();
-  const reeks = useReeks();
-  const mijlpaal =
-    groei === null ? null : gepasseerd(groei.voor.verdiepingen, groei.na.verdiepingen, register);
-
   // Vandaag klaar: het plan van vandaag is af (ADR-139), of niets wat dit kind
   // ooit begon is nu nog aan de beurt. Het tweede is voor wie geen plan ziet:
   // stoppen is ook zonder code een goed moment (ADR-149). Niet na een ronde die
@@ -156,28 +127,6 @@ export function RondeKlaar({
     };
   }, []);
 
-  // Stabiel houden: de scène wapent per beat een timer, en een nieuw object bij
-  // elke render zou die timer telkens opnieuw zetten. `useVandaag` en het
-  // diploma komen allebei ná de eerste render binnen, dus dat gebeurt echt.
-  const mijlpaalId = mijlpaal?.id ?? null;
-  const heeftDiploma = diploma !== null;
-  const morgen = blik.morgenTerug;
-  const sceneInvoer = useMemo(
-    () => ({
-      stenen,
-      verdiepingKlaar,
-      mijlpaal: mijlpaalId,
-      diploma: heeftDiploma,
-      vandaagKlaar,
-      morgen,
-    }),
-    [stenen, verdiepingKlaar, mijlpaalId, heeftDiploma, vandaagKlaar, morgen],
-  );
-  const mijlpaalZin =
-    mijlpaalId === null
-      ? null
-      : t('toren.hoger', { ding: t(`ijkpunt.${mijlpaalId}` as TranslationKey) });
-
   const gedaan =
     beantwoord === 1 ? t('result.gedaanEen', { goed }) : t('result.gedaan', { beantwoord, goed });
 
@@ -197,20 +146,6 @@ export function RondeKlaar({
           </p>
         </header>
 
-        {/* De toren, en wat deze ronde ermee deed (ADR-158). Pas als de stenen
-            zijn weggeschreven: eerder is er geen stand om te tekenen. */}
-        {groei !== null ? (
-          <section className="tk-card flex flex-col gap-4" aria-label={t('toren.naam')}>
-            <h2 className="tk-sectie">{t('toren.naam')}</h2>
-            <Scene
-              stand={groei.na}
-              geluid={geluid}
-              mijlpaalZin={mijlpaalZin}
-              invoer={sceneInvoer}
-            />
-          </section>
-        ) : null}
-
         <section className="tk-card flex flex-col gap-4" aria-label={t('result.samenvatting')}>
           {toetsstand ? (
             <dl className="tk-cijfers">
@@ -224,12 +159,6 @@ export function RondeKlaar({
                 <NextIcon size={20} />
               </span>
               {gedaan}
-            </li>
-            <li>
-              <span className="tk-uitslag-regelicoon" aria-hidden="true">
-                <TorenIcon size={20} />
-              </span>
-              {stenenZin(stenen.length)}
             </li>
             {eigenDeel ? (
               <li>
@@ -364,24 +293,9 @@ export function RondeKlaar({
             {children}
           </section>
         ) : null}
-
-        {/* Helemaal onderaan, en nergens anders in de ronde (ADR-158). */}
-        <ReeksBlok reeks={reeks} />
       </div>
     </main>
   );
-}
-
-/**
- * Wat deze ronde opleverde, in één regel (ADR-158).
- *
- * Nul stenen is geen mislukking en wordt ook niet zo gezegd: wie iets voor het
- * eerst ziet, kan het nog niet teruggeweten hebben. Die zin is de enige plek
- * waar de regel wordt uitgelegd op het moment dat hij bijt.
- */
-function stenenZin(aantal: number): string {
-  if (aantal === 0) return t('result.stenenGeen');
-  return aantal === 1 ? t('result.stenenEen') : t('result.stenen', { aantal });
 }
 
 /**

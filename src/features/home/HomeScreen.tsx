@@ -19,7 +19,6 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { ReeksRegel } from '@/features/toren/ReeksRegel';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -166,15 +165,10 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
     </>
   );
 
-  // Eén regel als er een reeks loopt en vandaag nog leeg is (ADR-158). De
-  // weekkaart stond hier; die is met de toren vervallen.
-  const reeksRegel = <ReeksRegel />;
-
   const kern = (
     <>
       {kop}
       {terug}
-      {reeksRegel}
       {beginnen}
       {vandaagBoven}
       {groepVraag}

@@ -58,8 +58,6 @@ export function SumResultScreen({
           : null
       }
       na={state.states}
-      stenen={state.stenen}
-      groei={state.groei}
       reward={state.reward}
       diploma={
         diploma

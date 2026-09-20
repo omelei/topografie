@@ -6,7 +6,7 @@ import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { loadItemStates } from '@/store/progress';
-import { useReeks } from '@/features/toren/reeks';
+import { useReeks } from './reeks';
 import { weekbericht, type BerichtSet } from './weekbericht';
 
 /**

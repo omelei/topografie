@@ -19,11 +19,8 @@ vi.mock('@/store/progress', () => ({
 vi.mock('@/store/rewardStore', () => ({
   applyRoundRewards: vi.fn(async () => null),
 }));
-// De toren schrijft na een ronde zijn stenen weg, en of een pagina rijp is
-// leest elke set die er is (ADR-158). Geen van beide is wat dit bestand test.
-vi.mock('@/store/torenStore', () => ({
-  voegStenenToe: vi.fn(async () => null),
-}));
+// Of een pagina rijp is leest elke set die er is, en dat is niet wat dit
+// bestand test.
 vi.mock('@/features/badges/rijp', () => ({
   rijpVoorDiploma: vi.fn(() => false),
 }));
@@ -65,7 +62,6 @@ function ronde(
   const hook = renderHook(() =>
     useRoundCore<string, Vraag, { readonly id: string }, string>({
       setId: 'test',
-      moduleId: 'topo',
       mode: 'meerkeuze',
       basisRegel: options.basisRegel ?? TIEN,
       aantal: options.aantal ?? null,
@@ -125,15 +121,13 @@ describe('useRoundCore', () => {
     });
   });
 
-  it('tells each answer what it earned, and keeps the boxes before and after', async () => {
+  it('keeps the boxes as they were before the round, and as they are after', async () => {
     const { result } = ronde({ ids: ['a', 'b'] });
     await waitFor(() => expect(result.current.kern.phase).toBe('asking'));
 
     act(() => result.current.settle(goed));
-    // Een item dat nog nooit beantwoord was, levert geen steen op: je wist het
-    // nog niet, je leerde het net (ADR-158).
-    expect(result.current.kern.steen?.uitkomst).toBe('nieuw');
-    expect(result.current.kern.stenen).toHaveLength(0);
+    // `statesVoor` is de stand waarmee de ronde begon: het diploma leest hem,
+    // zodat een ronde zichzelf niet rijp kan maken.
     expect(result.current.kern.statesVoor.has('a')).toBe(false);
     expect(result.current.kern.states.get('a')?.goedCount).toBe(1);
   });

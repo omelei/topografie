@@ -152,7 +152,6 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   // Wachten tot de kast er is: die laadt zelf en zou anders buiten de scan
   // vallen — precies het raster waar "nog niet" het vaakst gezegd wordt.
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 

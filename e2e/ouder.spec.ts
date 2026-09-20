@@ -25,7 +25,7 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
 
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
 
   for (const weg of ['Deze week', 'Hoe gaat het?', 'Eigen woorden', 'Premium']) {
     await expect(page.getByRole('region', { name: weg })).toHaveCount(0);
@@ -35,7 +35,7 @@ test('Jij gaat over het kind en niet over de rekening', async ({ page }) => {
   const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
   const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
   expect(plek('Jouw naam')).toBeLessThan(plek('Instellingen'));
-  expect(plek('Instellingen')).toBeLessThan(plek('Je toren'));
+  expect(plek('Instellingen')).toBeLessThan(plek('Jouw diploma’s'));
 });
 
 test('Voor ouders draagt de uitleg en alle diploma’s, en niet de pagina van het kind', async ({
@@ -59,10 +59,15 @@ test('Voor ouders draagt de uitleg en alle diploma’s, en niet de pagina van he
   expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
   expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Hoe gaat het?'));
 
-  // De toren zelf en de naam van het kind horen op Jij en staan hier niet.
-  await expect(page.getByRole('region', { name: 'Je toren' })).toHaveCount(0);
+  // De naam van het kind hoort op Jij en staat hier niet.
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Hoe de toren werkt' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);
+  // Wat hier wél staat: de uitleg voor de ouder, de reeks en het schooljaar.
+  // Die drie stonden bij het kind; een reeks is verlies-als-prikkel en hoort
+  // daar niet, en het schooljaar is een vraag van de ouder.
+  await expect(page.getByRole('region', { name: 'Hoe een diploma verdiend wordt' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'De reeks' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toBeVisible();
 
   // En het raster met alle diploma's ook niet meer. ADR-158 zette het hier
   // omdat een diploma een toets is en dus hoort bij wie hem afneemt; zodra het

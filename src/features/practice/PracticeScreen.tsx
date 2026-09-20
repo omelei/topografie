@@ -16,7 +16,6 @@ import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { SteenRegel } from '@/features/toren/SteenRegel';
 import { ResultScreen } from './ResultScreen';
 import {
   choosesTheAnswer,
@@ -302,7 +301,6 @@ export function PracticeScreen({
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
                   {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
-                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

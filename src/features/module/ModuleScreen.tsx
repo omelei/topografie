@@ -787,8 +787,8 @@ export function ModuleScreen({
           </div>
         )}
 
-        {/* Eén zin, en geen tweede toren (ADR-158): wat hier vandaag terugkomt,
-            want dat is het enige wat een steen kan opleveren. */}
+        {/* Eén zin: wat hier vandaag terugkomt. Dat is de voorwaarde voor het
+            diploma — alleen wat terugkomt kan onthouden raken. */}
         {chosen !== null && states !== null ? (
           <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
         ) : null}
@@ -1006,12 +1006,12 @@ function Stap({ nummer, label }: { readonly nummer: number; readonly label: stri
 }
 
 /**
- * Wat er van deze set vandaag terugkomt (ADR-158).
+ * Wat er van deze set vandaag terugkomt.
  *
- * De enige zin op deze pagina die over de toren gaat, en hij gaat over de
- * voorwaarde en niet over de beloning: alleen wat terugkomt kan een steen
- * opleveren. Komt er vandaag niets, dan staat er wanneer wel — anders leest een
- * kind "nul" als "je hebt iets verkeerd gedaan".
+ * De zin gaat over de voorwaarde en niet over de beloning: alleen wat terugkomt
+ * kan onthouden raken, en alleen wat onthouden is telt voor het diploma. Komt er
+ * vandaag niets, dan staat er wanneer wel — anders leest een kind "nul" als "je
+ * hebt iets verkeerd gedaan".
  */
 function terugZin(
   items: readonly { readonly id: string }[],

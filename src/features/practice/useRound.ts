@@ -5,17 +5,13 @@ import {
   composeRound,
   emptyState,
   judgeAnswer,
-  levertSteen,
   metFouten,
   review,
-  steenStapVan,
   TOPODIPLOMA_VRAGEN,
   type AnswerVerdict,
   type Item,
   type RoundRule,
   type ItemState,
-  type SteenStap,
-  type Vak,
 } from '@/game-core';
 import { loadGeoSet, loadPointSet, type Detailniveau, type GeoSet } from '@/content/loadGeo';
 import { loadAllItems, loadItemSets } from '@/content/loadSets';
@@ -23,11 +19,8 @@ import { loadNeighbours } from '@/content/loadNeighbours';
 import { finishSession, loadItemStates, saveAnswer, startSession } from '@/store/progress';
 import { usePreferences } from '@/features/player/settings';
 import { rijpVoorDiploma } from '@/features/badges/rijp';
-import { voegStenenToe, type TorenGroei } from '@/store/torenStore';
 import { speelUitkomst } from '@/features/round/geluid';
 
-/** Dit bestand ís de topografieronde, dus het vak van een steen staat vast. */
-const MODULE = 'topo';
 import { applyRoundRewards, type RoundOutcome } from '@/store/rewardStore';
 import type { AnswerLayer } from './MapCanvas';
 
@@ -425,12 +418,6 @@ export interface RoundState {
   readonly correctCount: number;
   readonly chosenId: string | null;
   readonly lastCorrect: boolean;
-  /** Wat dit antwoord opleverde: een steen, of niet (ADR-158). */
-  readonly steen: SteenStap | null;
-  /** De stenen die deze ronde tot nu toe opleverde, op volgorde. */
-  readonly stenen: readonly Vak[];
-  /** Wat de ronde met de toren deed. Pas gevuld als de ronde klaar is. */
-  readonly groei: TorenGroei | null;
   /** Present after a typed answer: how it was judged (ADR-017). */
   readonly verdict: AnswerVerdict | null;
   /** Items answered wrongly, for the result screen. */
@@ -507,9 +494,6 @@ export function useRound(
   const [phase, setPhase] = useState<RoundPhase>('loading');
   const [chosenId, setChosen] = useState<string | null>(null);
   const [lastCorrect, setLastCorrect] = useState(false);
-  const [steen, setSteen] = useState<SteenStap | null>(null);
-  const [stenen, setStenen] = useState<readonly Vak[]>([]);
-  const [groei, setGroei] = useState<TorenGroei | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
   const [missed, setMissed] = useState<Item[]>([]);
@@ -685,11 +669,6 @@ export function useRound(
       setChosen(params.chosenForMap);
       setVerdict(params.judged);
       setLastCorrect(correct);
-      // Wat dit antwoord opleverde (ADR-158). Per antwoord geteld en niet
-      // achteraf uit het verschil afgeleid: een fout die in dezelfde ronde
-      // hersteld wordt, ziet er in dat verschil uit als een steen.
-      setSteen(steenStapVan(previous, nextState, correct, now, MODULE));
-      if (levertSteen(previous, correct, now)) setStenen((eerdere) => [...eerdere, MODULE]);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
       // in een toets: die zegt niets tot het einde, ook niet met een toon.
       speelUitkomst(correct, geluidAan && !toetsstand);
@@ -833,13 +812,9 @@ export function useRound(
     if (phase === 'finished') return;
     setPhase('finished');
     // A round counts even when it was stopped early: the child turned up and
-    // did the work. De reeks leest de rondes terug, dus de sessie gaat eerst op
-    // papier en pas daarna groeit de toren (ADR-158). Dit mag een ronde nooit
-    // laten haperen, dus het faalt stil.
-    const opgeslagen = sessionId.current
-      ? finishSession(sessionId.current, correctCount, answeredCount)
-      : Promise.resolve();
-    void opgeslagen.then(() => voegStenenToe(stenen)).then(setGroei, () => {});
+    // did the work. De reeks leest de rondes terug, dus de sessie moet op
+    // papier.
+    if (sessionId.current) void finishSession(sessionId.current, correctCount, answeredCount);
 
     void applyRoundRewards({
       snapshot: {
@@ -860,7 +835,6 @@ export function useRound(
     items,
     questions.length,
     setId,
-    stenen,
     statesVoor,
     practiceMode,
   ]);
@@ -957,9 +931,6 @@ export function useRound(
     correctCount,
     chosenId,
     lastCorrect,
-    steen,
-    stenen,
-    groei,
     verdict,
     missed,
     answeredCount,

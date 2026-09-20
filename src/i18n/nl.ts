@@ -122,23 +122,23 @@ export const nl = {
   // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
   // Het doel kiest een kind samen met een ouder, twee tot vijf dagen.
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
+  // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.
   'terug.titel': 'Welkom terug',
-  'terug.zin': 'Je toren staat er nog.',
-  'terug.klaar': '{aantal} stenen liggen klaar.',
-  'terug.klaarEen': '1 steen ligt klaar.',
+  'terug.zin': 'Je diploma’s staan er nog.',
+  'terug.klaar': '{aantal} onderdelen staan klaar.',
+  'terug.klaarEen': '1 onderdeel staat klaar.',
   'terug.minuutEen': 'De eerste ronde duurt ongeveer 1 minuut.',
   'terug.minuten': 'De eerste ronde duurt ongeveer {minuten} minuten.',
   'terug.knop': 'Opfrissen',
-  // Het jaaroverzicht op Jij, om te laten zien of te printen.
-  'jaar.titel': 'Jouw schooljaar',
-  'jaar.kop': 'De toren van {naam}, schooljaar {van}–{tot}',
-  'jaar.stenen': '{aantal} stenen in totaal',
-  'jaar.steenEen': '1 steen in totaal',
-  'jaar.verdiepingen': '{aantal} verdiepingen dit schooljaar, {totaal} in totaal',
-  'jaar.hoogte': '{meter} meter hoog',
-  'jaar.reeks': 'Je langste reeks: {aantal} dagen',
-  'jaar.diplomas': 'Diploma’s',
-  'jaar.print': 'Print je schooljaar',
+  // Het schooljaar op Voor ouders, om te laten zien of te printen: welke
+  // diploma's dit kind haalde en wanneer.
+  'jaar.titel': 'Het schooljaar',
+  'jaar.kop': 'Het schooljaar van {naam}, {van}–{tot}',
+  'jaar.reeks': 'De langste reeks: {aantal} dagen achter elkaar geoefend.',
+  'jaar.diploma': '{naam} — {datum}',
+  'jaar.eerder': 'Eerder gehaald',
+  'jaar.geenDiplomas': 'Dit schooljaar nog geen diploma gehaald.',
+  'jaar.print': 'Print het schooljaar',
   // Afzwemmen (ADR-149): vooraf wat er gevraagd wordt, of de pagina rijp is, en
   // of er iemand meekijkt. Een diploma komt alleen op een rijpe pagina.
   'afzwemmen.titel': 'Afzwemmen: {naam}',
@@ -622,7 +622,7 @@ export const nl = {
   'premium.groep.uitdagen': 'Uitdagen',
   'premium.groep.ouders': 'Voor ouders',
   'premium.regel.vakken': 'Alle vakken en alle onderwerpen',
-  'premium.regel.toren': 'Je toren en je reeks: zien wat er blijft hangen',
+  'premium.regel.blijfthangen': 'Zien wat er blijft hangen, vak voor vak',
   'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
   'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
@@ -1257,13 +1257,9 @@ export const nl = {
   'result.mapHelp': 'De blauwe plekken moet je nog oefenen.',
   // De ronde in getallen, als tegels bovenaan "Ronde klaar" (ADR-112).
   'result.samenvatting': 'Hoe de ronde ging',
-  // Wat de ronde met het album deed (ADR-149): eerst de pagina, dan drie regels.
-  // Wat je deed, wat er veranderde, en wat terugkomen oplevert.
+  // Wat je deed, en wat terugkomen oplevert.
   'result.gedaan': '{beantwoord} vragen, {goed} goed',
   'result.gedaanEen': '1 vraag, {goed} goed',
-  'result.stenen': '{aantal} stenen erbij.',
-  'result.stenenEen': '1 steen erbij.',
-  'result.stenenGeen': 'Nog geen stenen — deze zag je voor het eerst.',
   'result.morgenNiets': 'Morgen komt er niets terug. Over {dagen} dagen weer.',
   'result.morgenTerugEen': 'Morgen komt er 1 terug.',
   'result.morgenTerug': 'Morgen komen er {aantal} terug.',
@@ -1306,7 +1302,7 @@ export const nl = {
   // velden die een naam op een apparaat veranderen in een vindbaar kind.
   'you.title': 'Jij',
   // Onder de titel, in de kop die de etalage van premium is (ADR-150).
-  'you.intro': 'Wie je bent, en wat je gemaakt hebt: je album en je diploma’s.',
+  'you.intro': 'Wie je bent, en wat je gehaald hebt: je diploma’s.',
   'you.nameIs': 'Je oefent als {naam}.',
   // De persoon bovenaan Jij (ADR-126), met de naam die tot nu toe nergens te
   // veranderen was.
@@ -1382,98 +1378,15 @@ export const nl = {
   'you.lijstenVol': 'Deze lijst is vol.',
   'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
   // De ouderpagina, losgetrokken van "Jij" (ADR-136).
-  // Het album (ADR-149). Elk item is een plaatje dat lagen krijgt: een schets,
-  // kleur, een lijstje, stempels. De laag staat in vorm én in woorden, en het
-  // woord voor doos vier is overal hetzelfde: onthoud je (ADR-030).
-  // Na een antwoord: wat het met het plaatje deed. Eén zin, en geen als er
-  // niets veranderde.
-  // Goed, maar niet aan de beurt. Zo leert een kind spreiden zonder het woord.
-  // De achterkant van een plaatje.
-
-  // De toren (ADR-158). Een steen is een goed antwoord op iets dat aan de beurt
-  // was en dat je eerder al eens had. Tien stenen is een verdieping, en er gaat
-  // nooit iets af — dus er staat nergens wat iets kost.
-  'toren.naam': 'Je toren',
-  'toren.uitleg':
-    'Alles wat je oefent komt een keer terug. Weet je het dan nog, dan krijg je een steen. Tien stenen is een verdieping, en die blijft staan.',
-  'toren.totaal': '{aantal} stenen',
-  'toren.totaalEen': '1 steen',
-  'toren.verdiepingen': '{aantal} verdiepingen',
-  'toren.verdiepingEen': '1 verdieping',
-  'toren.verdieping': 'Verdieping {n}',
-  'toren.verdiepingVol': 'Verdieping {n} is af.',
-  'toren.verdiepingDatum': 'Verdieping {n}, {datum}',
-  'toren.rest': 'Nog {aantal} tot verdieping {n} af is.',
-  'toren.restEen': 'Nog 1 tot verdieping {n} af is.',
-  'toren.hoogte': '{meter} meter hoog',
-  'toren.hoger': 'Hoger dan {ding}.',
-  'toren.naarHoger': 'Nog {aantal} verdiepingen tot {ding}.',
-  'toren.leeg': 'Je toren begint morgen. Dan liggen er {aantal} stenen klaar.',
-  'toren.leegNul':
-    'Je toren begint zodra iets terugkomt. Wat je vandaag leert, telt als het terugkomt.',
-  'toren.fundament': 'Wat je al had',
-  'toren.fundamentUitleg': 'Je toren begint met alles wat je tot nu toe goed had.',
-  'toren.samenvatting':
-    'De toren: {stenen} stenen, {verdiepingen} verdiepingen, {meter} meter hoog.',
-  // Voor de ouder (ADR-158). De derde zin is de belangrijkste: zonder die zin
-  // lijkt een kind dat het goed doet te verslappen, terwijl het tegendeel
-  // gebeurt.
-  'toren.ouderTitel': 'Hoe de toren werkt',
-  'toren.ouderUitleg':
-    'Een steen is één keer dat je kind iets nog wist toen het terugkwam. Nieuwe woorden en sommen tellen nog niet mee; die tellen de dag dat ze terugkomen. Er gaat nooit iets af, ook niet na een fout antwoord of een week zonder oefenen.',
-  'toren.ouderTempo':
-    'Hoe beter je kind iets kent, hoe minder vaak het terugkomt. Dan komen er langzamer stenen bij — dat is geen verslapping maar het bewijs dat het blijft hangen. Een nieuw onderwerp opent nieuwe stenen.',
-  // De vier dingen die in een ronde gezegd worden. Bij een fout staat er niets:
-  // het foutteken heeft dat al gezegd.
-  'toren.steenGoed': 'Je wist hem nog. Eén steen.',
-  'toren.steenAl': 'Die ken je al. Over {dagen} dagen telt hij weer.',
-  'toren.steenMorgen': 'Die ken je al. Morgen telt hij.',
-  'toren.steenNieuw': 'Nieuw. Over {dagen} dagen komt hij terug.',
-
-  // De ijkpunten (ADR-158): inhoud, geen regel.
-  // De reeks (ADR-158). Alle dagen tellen mee, ook het weekend, en één gemiste
-  // dag breekt hem. De app noemt bij een lopende reeks wat er op het spel staat;
-  // wat er niet is: een aftelklok, een alarmkleur, of herstel te koop. Breken
-  // kost nooit een steen, en daar gaat de zin bij een nieuwe start dan ook over.
-  // Welk gezicht de toren laat zien (ADR-158).
   'retention.kaartLabel': 'De kaart van {wat}, met per plek hoe het ervoor staat.',
 
-  'register.titel': 'Hoe de toren eruitziet',
-  'register.uitleg':
-    'Jongere kinderen zien het beeld met een zin erbij, oudere de getallen en de datums. Standaard kiest de groep.',
-  'register.auto': 'Volg de groep',
-  'register.beeld': 'Het beeld',
-  'register.getal': 'De getallen',
-
-  'reeks.naam': 'Je reeks',
-  'reeks.dagen': '{aantal} dagen op rij',
-  'reeks.dagenEen': '1 dag',
-  'reeks.vandaag': 'Vandaag telt al mee.',
-  'reeks.record': 'Je langste: {aantal} dagen.',
-  'reeks.recordEen': 'Je langste: 1 dag.',
-  'reeks.uitleg': 'Alle dagen tellen mee, ook het weekend.',
+  'reeks.ouderNaam': 'De reeks',
   'reeks.ouderUitleg':
-    'De reeks telt dagen met een afgemaakte ronde. Het weekend telt mee, en één dag overslaan breekt hem. Breken kost nooit stenen, en het record blijft staan.',
-  'reeks.opnieuw': 'Je reeks begint opnieuw. Je toren staat er nog.',
-  'reeks.leeg': 'Je reeks begint op de dag dat je een ronde afmaakt.',
-  'reeks.opHetSpel': 'Je reeks staat op {aantal} dagen. Nog vandaag, anders begint hij opnieuw.',
-  'reeks.opHetSpelEen': 'Je reeks staat op 1 dag. Nog vandaag, anders begint hij opnieuw.',
+    'De reeks telt dagen met een afgemaakte ronde. Het weekend telt mee, en één dag overslaan breekt hem. Het record blijft staan.',
   'reeks.ouderRegel': '{aantal} dagen op rij; het langst {record} dagen.',
   'reeks.ouderGeen': 'Geen reeks op dit moment; het langst was {record} dagen.',
+  'reeks.ouderNooit': 'Nog geen reeks: die begint op de eerste dag met een afgemaakte ronde.',
 
-  'ijkpunt.giraf': 'een giraf',
-  'ijkpunt.huis': 'een huis',
-  'ijkpunt.boom': 'de hoogste boom',
-  'ijkpunt.windmolen': 'een windmolen',
-  'ijkpunt.kerktoren': 'een kerktoren',
-  'ijkpunt.reuzenrad': 'een reuzenrad',
-  'ijkpunt.domtoren': 'de Domtoren',
-  'ijkpunt.euromast': 'de Euromast',
-  'ijkpunt.eiffeltoren': 'de Eiffeltoren',
-  'ijkpunt.wolken': 'de wolken',
-  'ijkpunt.burjkhalifa': 'de Burj Khalifa',
-  'ijkpunt.kilometer': 'een kilometer',
-  'ijkpunt.tienkilometer': 'tien kilometer, waar vliegtuigen vliegen',
   'module.terugVandaag': '{aantal} komen hier vandaag terug.',
   'module.terugVandaagEen': '1 komt hier vandaag terug.',
   'module.terugMorgen': 'Hier komt vandaag niets terug. Morgen {aantal}.',
@@ -1578,6 +1491,14 @@ export const nl = {
   'diploma.soortKlok': 'Klokdiploma',
   'diploma.soortTopo': 'Topodiploma',
 
+  // Hoe een diploma verdiend wordt, voor de ouder. De middelste zin is de
+  // belangrijkste: één keer goed antwoorden telt niet mee.
+  'ouder.diplomaTitel': 'Hoe een diploma verdiend wordt',
+  'ouder.diplomaUitleg':
+    'Een onderdeel telt pas mee als uw kind het drie keer goed wist, op drie verschillende dagen, steeds op het moment dat het weer aan de beurt was. Eén keer goed antwoorden telt niet mee — dat is het verschil tussen iets kennen en iets onthouden.',
+  'ouder.diplomaTempo':
+    'Hoe beter uw kind de stof kent, hoe sneller het diploma komt: alles wat onthouden is, blijft meetellen. De ring op een diploma loopt nooit terug.',
+
   // De diplomakast op Jij: alle diploma's, één vak open en de rest als regel.
   'kast.titel': 'Jouw diploma’s',
   'kast.stand': '{aantal} van de {totaal} gehaald.',
@@ -1646,7 +1567,7 @@ export const nl = {
   'wissen.knop': 'Alles wissen',
   'wissen.zeker': 'Dit haalt leer.nu helemaal leeg op dit apparaat:',
   'wissen.watVoortgang':
-    'De namen en de voortgang van elk kind: wat ze geoefend hebben, hun diploma’s en hun toren.',
+    'De namen en de voortgang van elk kind: wat ze geoefend hebben en hun diploma’s.',
   'wissen.watCode':
     'De premiumcode. Je kunt hem daarna gewoon opnieuw invullen — en dit apparaat telt niet meer mee voor de drie.',
   'wissen.onomkeerbaar': 'Dit kan niet ongedaan gemaakt worden.',

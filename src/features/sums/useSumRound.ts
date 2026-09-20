@@ -143,7 +143,6 @@ export function useSumRound(
 ) {
   const { kern, settle, next, stop } = useRoundCore<SumSet, SumQuestion, SumItem, number>({
     setId,
-    moduleId: 'tafels',
     mode,
     basisRegel: SUM_ROUND_RULE[mode],
     // Een diploma heeft zijn eigen lengte: de hele tafel, of twintig sommen.

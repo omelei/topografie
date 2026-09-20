@@ -7,7 +7,6 @@ import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
-import { SteenRegel } from '@/features/toren/SteenRegel';
 import { KlokFace } from './KlokFace';
 import { klokVoluit, klokWoorden } from './klokTaal';
 import { useKlokRound, typesTheKlok, wijstDeKlokAan, type KlokMode } from './useKlokRound';
@@ -203,7 +202,6 @@ export function KlokScreen({
                         : t('klok.wrongSub', { gegeven })}
                   </p>
                   {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
-                  <SteenRegel steen={state.steen} />
                 </div>
               </div>
 

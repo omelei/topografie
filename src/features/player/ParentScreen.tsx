@@ -22,7 +22,9 @@ import {
 import { Weekbericht } from './Weekbericht';
 import { AccountBlok } from '@/features/account/AccountBlok';
 import { EigenLijsten } from './EigenLijsten';
-import { RegisterInstelling } from '@/features/toren/RegisterInstelling';
+import { Jaaroverzicht } from './Jaaroverzicht';
+import { ReeksBlok } from './ReeksBlok';
+import { useReeks } from './reeks';
 import { WeekdoelenBlok } from '@/features/home/WeekdoelenBlok';
 import { getActiveChild } from '@/store/children';
 import { GroepInstelling } from './GroepInstelling';
@@ -149,11 +151,8 @@ export function ParentScreen({
           </ul>
         </section>
 
-        {/* Wat je kind oefent begint bij zijn groep (ADR-151), en de groep
-            kiest ook welk gezicht de toren laat zien (ADR-158). */}
+        {/* Wat je kind oefent begint bij zijn groep (ADR-151). */}
         <GroepInstelling />
-
-        <RegisterInstelling />
 
         {/* De doelen van deze week (ADR-162). Hetzelfde blok als op de
             voordeur, met dezelfde knoppen: een ouder die het gesprek thuis
@@ -174,10 +173,19 @@ export function ParentScreen({
             getallen over het oefenen, en deze pagina telt niets meer zelf. */}
         <Weekbericht afgemaakt={afgemaakt} now={now} />
 
-        {/* Wat een steen is, en waarom het tempo zakt naarmate een kind iets
-            beter kent (ADR-158). Hier en niet bij het kind: dit is de uitleg
-            die een ouder nodig heeft om thuis het goede te zeggen. */}
-        <TorenUitleg />
+        {/* Hoe een diploma verdiend wordt, en waarom één keer goed niet telt.
+            Hier en niet bij het kind: dit is de uitleg die een ouder nodig
+            heeft om thuis het goede te zeggen. */}
+        <DiplomaUitleg />
+
+        {/* De reeks, en het schooljaar. Allebei stonden ze bij het kind. De
+            reeks is verlies-als-prikkel — ADR-158 schreef zelf op dat dat op de
+            verbodenlijst staat van het onderzoek dat aan ADR-149 voorafging —
+            dus het kind ziet hem niet meer en de ouder wel: die kan er iets mee
+            zonder dat een kind zich erop blindstaart. */}
+        <ReeksBlok reeks={useReeks()} />
+
+        <Jaaroverzicht />
 
         {/* De weg naar de cijfers (ADR-143, ADR-148): wat het kind onthoudt,
             per vak en per onderwerp, en hoe het oefenen week na week gaat. */}
@@ -322,22 +330,23 @@ function Weg({
 }
 
 /**
- * Wat een steen is, in de woorden van een ouder (ADR-158).
+ * Hoe een diploma verdiend wordt, voor de ouder.
  *
- * Drie dingen, en het derde is het belangrijkste: hoe beter een kind iets kent,
- * hoe minder vaak het terugkomt, dus hoe langzamer de toren groeit. Zonder die
- * zin lijkt een kind dat het goed doet te verslappen, en dat is het tegendeel
- * van wat er gebeurt.
+ * Drie zinnen, en de middelste is de belangrijkste: één keer goed antwoorden
+ * telt niet mee. Dat is het verschil tussen iets kennen en iets onthouden, en
+ * het is het enige dat thuis uitgelegd moet worden — een kind dat alles goed
+ * had en toch geen diploma kreeg, is anders een kind met een ouder die denkt
+ * dat de app stuk is.
  */
-function TorenUitleg() {
+function DiplomaUitleg() {
   return (
-    <section className="flex flex-col gap-3" aria-labelledby="toren-ouder">
-      <h2 id="toren-ouder" className="tk-sectie">
-        {t('toren.ouderTitel')}
+    <section className="flex flex-col gap-3" aria-labelledby="diploma-ouder">
+      <h2 id="diploma-ouder" className="tk-sectie">
+        {t('ouder.diplomaTitel')}
       </h2>
       <div className="tk-card flex flex-col gap-2">
-        <p className="text-lopend">{t('toren.ouderUitleg')}</p>
-        <p className="text-lopend">{t('toren.ouderTempo')}</p>
+        <p className="text-lopend">{t('ouder.diplomaUitleg')}</p>
+        <p className="text-lopend">{t('ouder.diplomaTempo')}</p>
         <p className="text-lopend">{t('reeks.ouderUitleg')}</p>
       </div>
     </section>

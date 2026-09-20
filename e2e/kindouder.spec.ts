@@ -72,11 +72,18 @@ test('de kast staat op Jij en niet meer bij de ouder, met één vak open', async
   await expect(kast.locator('.tk-diploma')).toHaveCount(32);
 });
 
-test('Jij toont de toren en het schooljaar van dit kind', async ({ page }) => {
+test('Jij toont de diploma’s van dit kind, en het schooljaar staat bij de ouder', async ({
+  page,
+}) => {
   await signIn(page, 'Bram');
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw schooljaar' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
+
+  // Het schooljaar en de reeks staan hier niet meer: die zijn een vraag van de
+  // ouder, en een reeks bij het kind is verlies-als-prikkel.
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'De reeks' })).toHaveCount(0);
+
   // Geen held meer, en geen badges (ADR-149).
   await expect(page.getByRole('region', { name: 'Jouw held' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
@@ -99,9 +106,8 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await page.goto('/ouder');
 
   // Het cijfer van het kind hoort op de pagina's van het kind en staat hier dus
-  // niet. Hoe de toren eruitziet wel: dat stelt een ouder in (ADR-158).
+  // niet.
   await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
-  await expect(page.getByRole('group', { name: 'Hoe de toren eruitziet' })).toBeVisible();
 
   // Er staat helemaal geen kolom meer naast een pagina, hier niet en nergens
   // (ADR-162, ADR-168).

@@ -73,7 +73,7 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   [
     'premium.groep.belonen',
     [
-      { tekst: 'premium.regel.toren', basis: true },
+      { tekst: 'premium.regel.blijfthangen', basis: true },
       { tekst: 'premium.regel.tafeldiploma', basis: true },
       { tekst: 'premium.regel.diplomas', basis: false },
     ],

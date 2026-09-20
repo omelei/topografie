@@ -48,10 +48,10 @@ async function answerOne(page: Page) {
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
-  // De stenen worden na de ronde weggeschreven en het uitslagscherm wacht daar
-  // niet op, dus nu weglopen zou met die schrijfactie racen. De toren verschijnt
-  // pas als hij er staat, dus dit is het scherm dat zegt dat het geland is.
-  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
+  // De beloning wordt na de ronde weggeschreven en het uitslagscherm wacht daar
+  // niet op, dus nu weglopen zou met die schrijfactie racen. De samenvatting is
+  // het scherm dat zegt dat de ronde geland is.
+  await expect(page.getByRole('region', { name: 'Hoe de ronde ging' })).toBeVisible();
 }
 
 async function addChild(page: Page, naam: string) {
