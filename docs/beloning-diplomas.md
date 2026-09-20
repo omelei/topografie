@@ -281,11 +281,49 @@ Het verschil tussen een plank met onverdiende beloningen (ADR-059, afgewezen) en
 een raster met gaten (ADR-064, het ontwerp) is of een kind erop kan mikken. Een
 diploma kun je gaan halen. Daarom horen alle rasters bij het kind.
 
-ADR-158 zweeg op Jij bij een lege kast, want _"vier lege wanden vertellen een
-kind op dag één dat het niets heeft"_. Die reden vervalt met de voortgangsring:
-elk diploma staat er, elke ring staat op de stand van dat moment, en elke kaart
-is een knop. Wat er op dag één precies staat — en waarom dat nog steeds het
-zwakste punt is — staat in §11.
+### Wat ADR-158 werkelijk tegenwierp
+
+ADR-158 zweeg op Jij bij een lege kast, want _"**vier** lege wanden met een kop
+erboven vertellen een kind op dag één dat het niets heeft"_. Lees die zin
+nauwkeurig: het bezwaar gaat over **stapelen**, niet over een onverdiend vakje.
+Dat laatste heeft ADR-064 hierboven al besloten, in het voordeel, en het draait
+vandaag — de rekenenpagina toont elk kind twaalf niet-behaalde tafeldiplomakaarten,
+sinds 8 september. **[aanname]** Dat is een besluit dat is blijven staan, geen
+meting: er is nog geen verkeer, en het diagnosescherm van ADR-128 is leeg.
+
+En het bezwaar is kleiner dan het lijkt. **[feit]** `VlagDiplomas.tsx:39`,
+`KlokDiplomas.tsx:41` en `TopoDiplomas.tsx:41` doen alle drie
+`if (!actief) return null`; alleen `Tafeldiplomas` heeft geen premiumslot. **Een
+kind zonder code ziet dus nooit vier rasters, maar altijd precies één van
+twaalf.** Het probleem dat ADR-158 beschrijft — vier koppen, vier rasters,
+drieëndertig niet-behaalde kaarten in één scroll — bestaat alleen voor een kind
+mét code.
+
+Drie ingrepen maken het weg, en geen ervan raakt jouw besluit dat alle
+drieëndertig op Jij staan.
+
+**1. Nooit een nul afdrukken.** `kast.stand` verschijnt pas vanaf één gehaald
+diploma; tot die tijd staat er de uitnodiging. Hetzelfde per raster: de
+meta-telling die `vlag.diplomasCount` vandaag al zet ("0 van de 6") verschijnt pas
+vanaf één. Een kop die de afwezigheid uitrekent, is wat "je hebt niets" letterlijk
+op het scherm zet.
+
+**2. Eén vak uitgeklapt, de andere drie als regel.** Het vak van je laatste ronde
+staat open; de rest staat eronder als drie enkele regels die opengaan als je erop
+drukt. **[feit]** Dat is het patroon dat `Prijzenkast.tsx:58-67` al voert
+(`prijzenkast.meer` / `.minder`) — geen nieuw idee en geen nieuwe component,
+alleen per vak in plaats van in één keer. Zonder ronde in de geschiedenis staat
+tafels open: dat is het vak dat gratis is, en het vak dat een Nederlands kind al
+wil. **Voor een kind zonder code verandert er hierdoor niets**, want dat heeft er
+maar één.
+
+**3. En bewust géén "Begin hier"-kaart.** Dat is de toevoeging die je hier per
+reflex doet, en hij moet niet. ADR-064 schreef de volgorde al voor — _"twelve
+named tables in the order they are taught"_ — dus tafel 1 staat linksboven en het
+raster leest vanzelf als een leerlijn in plaats van als een veld. Een accentkaart
+erbovenop zou bovendien botsen met `WeekdoelenBlok` op de voordeur, dat via
+`suggesties()` (ADR-153, ADR-162) al vertelt wat je hierna kunt doen. Twee plekken
+die allebei "doe dit nu" zeggen, is één te veel.
 
 ### De pagina
 
@@ -303,15 +341,55 @@ Jouw diploma's
   Topografie  [diploma] …                  ← elf, alleen met code
 ```
 
-**Elk vlak is een knop**, en wat hij doet volgt uit hoe hij eruitziet:
+### Eén regel: elke kaart opent het diploma groot
 
-- **Gehaald** (dicht, in kleur) → het diploma gaat groot open, met "Print je
-  diploma". **[feit]** Dat is vandaag onmogelijk: de printknop bestaat alleen op
-  Ronde klaar (`RondeKlaar.tsx:422-429`), dus wie zijn diploma een week later wil
-  printen, kan dat niet.
-- **Nog niet** (bleek, gestippeld) → naar die set, om te oefenen. **[feit]** Dat
-  is precies wat een gat op de modulepagina al doet (`DiplomaRaster.tsx:69-78`,
-  `onKies`); het wordt alleen ook op Jij aangesloten.
+**Elke kaart is een knop, en elke knop doet hetzelfde.** Gehaald of niet, je
+krijgt het diploma groot te zien. Eén zin, geen uitzondering:
+
+> "Druk op een diploma om hem te bekijken."
+
+Een eerdere versie van dit ontwerp liet een gehaalde kaart het diploma openen en
+een niet-gehaalde een oefenronde starten. Dat waren twee regels waar er één hoort
+te zijn, af te leiden uit hoe een kaart eruitziet — en dat is precies het soort
+onderscheid dat een kind van zes niet maakt.
+
+#### Wat je in dat grote beeld kunt doen
+
+Eén knop, die van woord verandert en niet van plek. **[feit]** Dat is geen nieuwe
+regel maar die van ADR-141, hier hergebruikt op een tweede scherm: _"De knop
+verandert van woord en niet van plek. 'Oefenen' wordt 'Doe de toets' zodra
+`standVan` het doel rijp noemt."_
+
+| stand van dit diploma | de knop zegt     | wat hij doet                |
+| --------------------- | ---------------- | --------------------------- |
+| nog niet rijp         | Ga oefenen       | opent die set om te oefenen |
+| rijp                  | Doe de toets     | gaat naar Afzwemmen         |
+| gehaald               | Print je diploma | `window.print()`            |
+
+Daarnaast staat er altijd "Terug", die het beeld sluit en de kast terugzet waar
+hij stond.
+
+Dat lost twee dingen tegelijk op. **[feit]** Een gehaald diploma is vandaag niet
+opnieuw te printen: de printknop bestaat alleen op Ronde klaar
+(`RondeKlaar.tsx:422-429`), dus wie zijn diploma een week later wil ophangen, kan
+dat niet. En het grote diploma bestond in dit ontwerp alleen op het moment van
+halen — één keer, en daarna nooit meer. Nu is het de plek waar je je diploma's
+bekijkt én waar de regel wordt uitgelegd, kaart voor kaart. Een kind dat op dag
+één op een niet-behaalde kaart drukt, valt dus niet in een ronde maar krijgt eerst
+het antwoord op "wat is dit dan?".
+
+De directe weg naar oefenen verdwijnt niet: op de **modulepagina** blijft een gat
+één druk van een ronde af (`DiplomaRaster.tsx:69-78`, `onKies`), want dát is de
+pagina waar je komt om te oefenen. Jij is de pagina waar je komt om te kijken.
+
+#### Waar het staat, technisch
+
+Hetzelfde component op twee plekken: schermvullend over Ronde klaar bij de
+uitreiking (§7), en als dialoog over Jij om te kijken. De dialoog is het
+bewerkelijke deel en dat staat hier zodat het niet vergeten wordt:
+`role="dialog"`, `aria-modal`, focus die naar binnen gaat en bij sluiten terugkeert
+naar de kaart waarop gedrukt is, Escape sluit, en de scrollpositie van de kast
+blijft staan.
 
 ### Zonder code
 
@@ -562,6 +640,17 @@ Nederlands op het scherm, Engels in de code.
 | `diploma.gehaaldKop` | Gehaald! |
 | `diploma.verder`     | Verder   |
 
+**Het grote diploma, geopend vanuit de kast** (§5)
+
+| sleutel             | zin                       |
+| ------------------- | ------------------------- |
+| `diploma.openLabel` | Bekijk je diploma: {naam} |
+| `diploma.oefen`     | Ga oefenen                |
+| `diploma.toets`     | Doe de toets              |
+| `diploma.terug`     | Terug                     |
+
+`kast.print` ("Print je diploma") is de derde stand van diezelfde knop.
+
 **Voor ouders**
 
 | sleutel               | zin                                                                                                                                                                                                                                                 |
@@ -690,7 +779,7 @@ het diploma een bijzaak was; het is het niet meer.
 
 ## 11. Wat hier zwak aan is
 
-Vier dingen, opgeschreven omdat ze anders pas na de bouw gevonden worden.
+Vijf dingen, opgeschreven omdat ze anders pas na de bouw gevonden worden.
 
 **De ring kan vol staan terwijl de toets niet open is.** De voortgangsring telt
 elk onderdeel dat ooit doos 4 haalde; de diplomadrempel telt alleen wat ook
@@ -699,17 +788,37 @@ die uit elkaar, en dan staat er een vierde zin op de kaart die er niet hoorde te
 zijn. Het alternatief was een ring die leegloopt, en dat is erger. Maar het is
 een extra stand, en de zesjarigentoets is hier het strengst.
 
-**Op dag één staat er een raster waarin geen enkele kaart gehaald is.** Twaalf
-(of drieëndertig) kaarten met een gestippelde rand, een grijze kleurband en een
-voortgangsring op nul. ADR-158 vond dat een verkeerde boodschap en zette het
-raster daarom op Voor ouders. De ring kan dat pas vanaf de derde oefendag dragen,
-want eerder kan er niets in staan. **[hypothese]** Dit is het eerste wat getoetst
-moet worden bij een kind dat de app voor het eerst opent.
+**Op dag één is er nog geen kaart gehaald, en de ring staat overal op nul.** §5
+haalt het zwaarste eraf — geen nultellingen, één vak open in plaats van vier, en
+het grote beeld dat uitlegt wat een diploma is zodra je erop drukt — maar het
+blijft waar dat een kind op dag één naar twaalf niet-behaalde kaarten kijkt, en
+dat de voortgangsring het pas vanaf de derde oefendag kan dragen omdat er eerder
+niets in kan staan. Die twee dagen leunen op één zin: _"Nog niets onthouden. Je
+moet het drie keer goed weten, op drie dagen."_ **[hypothese]** Dit blijft het
+eerste wat getoetst moet worden bij een kind dat de app voor het eerst opent
+(toets 3 in §12).
 
-**Twee acties in één raster.** Een gehaald diploma opent zichzelf; een niet-gehaald
-diploma opent een oefenronde. Dat volgt uit hoe de kaart eruitziet, maar het zijn
-twee regels waar er één hoorde te zijn. Struikelt het daar, dan is de ingreep:
-elke kaart gaat groot open, en "Ga oefenen" staat in het grote beeld.
+**Als die toets faalt, is de uitweg klein en staat hij hier alvast.** Geef een
+raster weer `stilAlsLeeg` wanneer er niets gehaald én niets in aanbouw is — dan
+verschijnt een vak in de kast zodra je het aanraakt. **[feit]** Dat is één boolean
+op een prop die er al is (`Tafeldiplomas.tsx:39`, en dezelfde in de andere drie),
+geen herontwerp. Het staat hier opgeschreven zodat het later niet opnieuw
+bevochten hoeft te worden. Het is niet de standaard, omdat het voor een kind mét
+code verbergt dat klokkijken bestaat: de kast is ook het menu van het product, en
+een ouder heeft voor vier vakken betaald.
+
+**Het grote beeld kost een druk extra op weg naar oefenen.** Kaart → groot beeld →
+"Ga oefenen", waar het eerst kaart → ronde was. Dat is de prijs van één regel in
+plaats van twee (§5), en ik denk dat hij het waard is omdat die tussenstap het
+antwoord geeft op "wat is dit dan?". Maar het is een aanname, en de directe weg
+bestaat nog: op de modulepagina is een gat één druk van een ronde af. Blijkt de
+extra druk in de weg te zitten, dan is de kast de verkeerde plek om te beginnen
+met oefenen, niet het grote beeld de verkeerde oplossing.
+
+**De dialoog is het bewerkelijkste deel van PR 1.** Focus die naar binnen gaat en
+bij sluiten terugkeert naar de kaart waarop gedrukt is, Escape, `aria-modal`, en
+een scrollpositie die blijft staan. Dat is standaardwerk, maar het is het soort
+standaardwerk dat half af gaat en dan alleen met een toetsenbord opvalt.
 
 **De dagelijkse beweging is schraler dan de toren.** Dat is met opzet (§3), maar
 het is niet gratis. Op een dag waarop geen enkel item een doos opschuift, gebeurt
@@ -742,10 +851,19 @@ afgenomen.
 Drie PR's, drie ADR's. De nummers worden **pas vlak voor het committen** van
 `origin/main` genomen; vandaag is ADR-166 het hoogste.
 
-**PR 1 — Het diploma wordt het beloningsprogramma.** `bewezenVan()`, de
-voortgangsring op `DiplomaRaster`, de vier standen en hun zinnen, het grote diploma als component,
-de scène op Ronde klaar met `draaiboek()` en `leesRustig()`, de kast op Jij, en
-de toetsen die er niet waren (afzwemmen, het draaiboek, de voortgangsring).
+**PR 1 — Het diploma wordt het beloningsprogramma.**
+
+- `bewezenVan()`: `countMastered(states, ids)` zonder `now`.
+- De voortgangsring op `DiplomaRaster`, met `.tk-ring` als mechaniek en `--vul`.
+- De vier standen van een kaart en hun zinnen (§3), en nergens een telling die
+  nul is (§5).
+- **Het grote diploma als één component**, op twee plekken: schermvullend bij de
+  uitreiking, en als dialoog over Jij — met de focusafhandeling uit §11.
+- De scène op Ronde klaar, met `draaiboek()` en `leesRustig()`.
+- De kast op Jij: alle diploma's, één vak open en de rest ingeklapt, elke kaart
+  één knop met één uitkomst.
+- De toetsen die er niet waren: `afzwemmen`, het draaiboek, de voortgangsring, en
+  de dialoog met een toetsenbord.
 
 De toren staat er nog gewoon onder. **Dit is de PR die als eerste weg kan zonder
 dat er een gat valt** — en tegelijk de PR waarna de toren overbodig is.
