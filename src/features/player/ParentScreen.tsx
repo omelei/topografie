@@ -164,8 +164,13 @@ export function ParentScreen({
         {/* De doelen van deze week (ADR-162). Hetzelfde blok als op de
             voordeur, met dezelfde knoppen: een ouder die het gesprek thuis
             voert, hoort er een doel bij te kunnen zetten zonder het kind erbij
-            te roepen — en hij is degene die ze helemaal uit kan zetten. */}
-        <WeekdoelenBlok vanOuder naam={kindnaam ?? undefined} />
+            te roepen — en hij is degene die ze helemaal uit kan zetten.
+
+            Pas als de naam bekend is. De kop draagt hem, dus zonder die naam
+            zou het blok even "Je doelen voor deze week" heten en dan van naam
+            veranderen — en een blok dat onder je ogen anders gaat heten, heeft
+            je iets verteld wat niet waar was. */}
+        {kindnaam === null ? null : <WeekdoelenBlok vanOuder naam={kindnaam} />}
 
         <EigenLijsten />
 
