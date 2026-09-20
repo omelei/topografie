@@ -433,6 +433,7 @@ function Blik({
   states,
   telling,
   now,
+  voorbeeld = false,
 }: {
   readonly moduleId: Module['id'];
   readonly deel: Onderdeel | null;
@@ -440,6 +441,12 @@ function Blik({
   readonly states: ReadonlyMap<string, ItemState>;
   readonly telling: Record<ItemStatus, number>;
   readonly now: Date;
+  /**
+   * De kaart van het voorbeeldkind. Alleen de namen veranderen ervan, en dat
+   * is geen detail: twee kaarten op één pagina met dezelfde naam zijn voor een
+   * schermlezer één ding dat twee keer staat, en voor een test onvindbaar.
+   */
+  readonly voorbeeld?: boolean;
 }) {
   return (
     <div className="tk-card tk-vakkleur flex flex-col gap-4">
@@ -467,10 +474,20 @@ function Blik({
           items={items}
           states={states}
           now={now}
-          label={t('retention.kaartLabel', { wat: naamVan(deel) })}
+          label={
+            voorbeeld
+              ? t('retention.voorbeeldKaart', { wat: naamVan(deel) })
+              : t('retention.kaartLabel', { wat: naamVan(deel) })
+          }
         />
       ) : null}
-      <Heatmap moduleId={moduleId} items={items} states={states} now={now} />
+      <Heatmap
+        moduleId={moduleId}
+        items={items}
+        states={states}
+        now={now}
+        label={voorbeeld ? t('retention.voorbeeldStippen') : t('retention.glance')}
+      />
     </div>
   );
 }
@@ -526,6 +543,7 @@ function Voorbeeld({
         states={states}
         telling={telling}
         now={now}
+        voorbeeld
       />
 
       <div className="tk-etalage">
@@ -619,14 +637,17 @@ function Heatmap({
   items,
   states,
   now,
+  label,
 }: {
   readonly moduleId: Module['id'];
   readonly items: readonly Schedulable[];
   readonly states: ReadonlyMap<string, ItemState>;
   readonly now: Date;
+  /** Hoe de muur heet. Die van het voorbeeldkind heet anders (ADR-165). */
+  readonly label: string;
 }) {
   return (
-    <div className="tk-stippen" role="list" aria-label={t('retention.glance')}>
+    <div className="tk-stippen" role="list" aria-label={label}>
       {items.map((item) => {
         const state = states.get(item.id);
         const status = t(`status.${statusOf(state, now)}` as TranslationKey);

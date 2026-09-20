@@ -72,6 +72,12 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page.getByText('Dit zijn niet jouw cijfers.')).toBeVisible();
   await expect(page.getByText('Dit wil je over je eigen kind zien')).toBeVisible();
 
+  // De muur van het voorbeeld draagt een eigen naam, waar die van het kind
+  // zelf niet in zit: twee dingen met dezelfde naam zijn er voor een
+  // schermlezer één die twee keer staat, en voor een test onvindbaar.
+  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(1);
+  await expect(page.getByRole('list', { name: 'Het voorbeeld, in één blik' })).toHaveCount(1);
+
   await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();

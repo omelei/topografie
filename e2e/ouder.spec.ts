@@ -47,8 +47,9 @@ test('Voor ouders draagt de uitleg en alle diploma’s, en niet de pagina van he
   for (const blok of ['Hoe gaat het?', 'Eigen woorden', 'Premium', 'Instellingen']) {
     await expect(page.getByRole('region', { name: blok })).toBeVisible();
   }
-  // De tegels van deze week staan op Onthouden (ADR-148): deze pagina telt niets zelf.
-  await expect(page.getByRole('region', { name: 'Deze week' })).toHaveCount(0);
+  // De tegels van deze week staan op Onthouden (ADR-148): deze pagina telt niets
+  // zelf. Exact, sinds ADR-162: "Doelen van … voor deze week" staat hier wél.
+  await expect(page.getByRole('region', { name: 'Deze week', exact: true })).toHaveCount(0);
 
   // Wat je geregeld hebt, hoe de app werkt, de oefenstof, en dan de cijfers
   // (ADR-145). Tot nu toe opende de pagina met de cijfers.

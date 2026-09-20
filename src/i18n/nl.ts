@@ -304,6 +304,15 @@ export const nl = {
   'retention.voorbeeldLabel': 'Voorbeeld',
   'retention.voorbeeldUitleg':
     'Dit zijn niet jouw cijfers. Zo ziet het eruit bij een kind dat hier een paar weken mee oefent.',
+  // De muur en de kaart van het voorbeeld heten anders dan die van het kind
+  // zelf. Twee dingen met dezelfde naam op één pagina zijn voor een schermlezer
+  // één ding dat twee keer staat.
+  //
+  // En geen naam waar de echte naam ín zit: wie "Alles in één blik" zoekt,
+  // vindt "Alles in één blik, als voorbeeld" er gewoon bij — dat is hoe een
+  // toegankelijke naam gezocht wordt, op een stuk van het geheel.
+  'retention.voorbeeldStippen': 'Het voorbeeld, in één blik',
+  'retention.voorbeeldKaart': 'Voorbeeldkaart van {wat}, met per plek hoe het ervoor staat.',
   // De vraag zelf, op de pagina die de hele belofte ís, en dus in woorden die
   // zeggen wat je erbij krijgt in plaats van dat er iets op slot zit.
   'retention.verkoopKop': 'Dit wil je over je eigen kind zien',

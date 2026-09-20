@@ -35,6 +35,14 @@ import { naarPremium, usePremium } from './usePremium';
  * eigen laag over de pagina — drie dingen die met de hand nagebouwd altijd voor
  * de helft blijven staan. Wegklikken brengt je terug waar je was, want deze
  * vraag heeft geen adres (`ouderVraag.ts`).
+ *
+ * **Dicht is leeg.** Een gesloten `<dialog>` staat niet op het scherm, maar hij
+ * staat wél in het document, en daarmee stond er een tweede codeveld in de
+ * pagina — op de premiumpagina zelfs naast het echte. Voor een schermlezer is
+ * dat niets, want `display: none` haalt hem uit de boom; voor alles wat het
+ * document zelf leest, is het een dubbele. Dus wordt de inhoud pas getekend als
+ * het venster opengaat, en daarmee is elke keer dat hij opengaat ook een vers
+ * veld in plaats van de tekst die er de vorige keer nog in stond.
  */
 
 /** De kassa, als adres, zoals op de premiumpagina (ADR-123). */
@@ -65,7 +73,10 @@ export function OuderVraag() {
     <dialog
       ref={venster}
       className="tk-venster"
-      aria-labelledby={kop}
+      // Alleen als er een kop is om naar te wijzen: dicht is dit venster leeg,
+      // en een `aria-labelledby` naar een id dat niet bestaat is een kapot
+      // attribuut in plaats van een naam.
+      aria-labelledby={open ? kop : undefined}
       // Escape en de klik op de achtergrond sluiten het venster zelf; dit houdt
       // onze schakelaar gelijk aan wat de browser deed.
       onClose={sluitOuderVraag}
@@ -73,52 +84,57 @@ export function OuderVraag() {
         if (event.target === venster.current) sluitOuderVraag();
       }}
     >
-      <div className="tk-venster-body">
-        <p className="tk-kaartteken">
-          <FamilyIcon size={24} />
-        </p>
-        <h2 id={kop} className="tk-titel">
-          {t('ouderVraag.titel')}
-        </h2>
-        <p className="text-lopend">{t('ouderVraag.uitleg')}</p>
-        <p className="text-lopend text-tekst-secundair">{t('ouderVraag.watPremium')}</p>
+      {/* Alleen als hij openstaat: zie hierboven. */}
+      {open ? (
+        <>
+          <div className="tk-venster-body">
+            <p className="tk-kaartteken">
+              <FamilyIcon size={24} />
+            </p>
+            <h2 id={kop} className="tk-titel">
+              {t('ouderVraag.titel')}
+            </h2>
+            <p className="text-lopend">{t('ouderVraag.uitleg')}</p>
+            <p className="text-lopend text-tekst-secundair">{t('ouderVraag.watPremium')}</p>
 
-        <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
+            <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
 
-        <div className="tk-venster-knoppen">
-          {isTeKoop() ? (
-            <a className="tk-button tk-button-secondary" href={KASSA_PAD}>
-              {t('premium.kopenKnop')}
-            </a>
-          ) : null}
+            <div className="tk-venster-knoppen">
+              {isTeKoop() ? (
+                <a className="tk-button tk-button-secondary" href={KASSA_PAD}>
+                  {t('premium.kopenKnop')}
+                </a>
+              ) : null}
+              <button
+                type="button"
+                className="tk-button tk-button-tertiary"
+                onClick={() => {
+                  sluitOuderVraag();
+                  naarPremium();
+                }}
+              >
+                {t('ouderVraag.bekijken')}
+              </button>
+            </div>
+
+            {/* De uitweg als laatste en als gewone knop: wie niets wil, hoort
+                niet te hoeven zoeken hoe hij terugkomt. Het kruisje rechtsboven
+                doet hetzelfde en staat er voor wie het daar zoekt. */}
+            <button type="button" className="tk-doel-ander self-start" onClick={sluitOuderVraag}>
+              {t('ouderVraag.terug')}
+            </button>
+          </div>
+
           <button
             type="button"
-            className="tk-button tk-button-tertiary"
-            onClick={() => {
-              sluitOuderVraag();
-              naarPremium();
-            }}
+            className="tk-venster-sluit"
+            aria-label={t('ouderVraag.sluit')}
+            onClick={sluitOuderVraag}
           >
-            {t('ouderVraag.bekijken')}
+            <span aria-hidden="true">×</span>
           </button>
-        </div>
-
-        {/* De uitweg als laatste en als gewone knop: wie niets wil, hoort niet
-            te hoeven zoeken hoe hij terugkomt. Het kruisje rechtsboven doet
-            hetzelfde en staat er voor wie het daar zoekt. */}
-        <button type="button" className="tk-doel-ander self-start" onClick={sluitOuderVraag}>
-          {t('ouderVraag.terug')}
-        </button>
-      </div>
-
-      <button
-        type="button"
-        className="tk-venster-sluit"
-        aria-label={t('ouderVraag.sluit')}
-        onClick={sluitOuderVraag}
-      >
-        <span aria-hidden="true">×</span>
-      </button>
+        </>
+      ) : null}
     </dialog>
   );
 }
