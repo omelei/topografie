@@ -140,26 +140,35 @@ test('the module pages have no violations, in each of their four shapes', async 
 });
 
 /**
- * Jij draagt de toren en de reeks; Voor ouders het hele raster met diploma's,
- * de meeste nog niet gehaald (ADR-158). Dat laatste is waar de verleiding om
- * "nog niet" met alleen een kleur te zeggen het grootst is, dus allebei zijn
- * ze een scan waard — en Onthouden ook, dat een tabel en een muur stippen is.
+ * Jij draagt de diplomakast: het hele raster, de meeste kaarten nog niet
+ * gehaald. Dat is waar de verleiding om "nog niet" met alleen een kleur te
+ * zeggen het grootst is — de ring is een boog, en de zin eronder zegt
+ * hetzelfde. Voor ouders is een scan waard om wat het draagt, en Onthouden
+ * omdat het een tabel en een muur stippen is.
  */
 test('the Jij page and the Onthouden page have no violations', async ({ page }) => {
   await signIn(page, 'Lieve');
 
+  // Wachten tot de kast er is: die laadt zelf en zou anders buiten de scan
+  // vallen — precies het raster waar "nog niet" het vaakst gezegd wordt.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  // En de andere helft, sinds ADR-136 een pagina op zichzelf. Wachten tot de
-  // diplomawanden er zijn: die laden zelf en zouden anders buiten de scan
-  // vallen — precies het raster waar "nog niet" het vaakst gezegd wordt.
+  // En met een diploma groot open, want dat is een dialoog: een eigen laag met
+  // een eigen focus, en het soort ding dat stil kapot gaat.
+  await page
+    .getByRole('button', { name: /^Bekijk je diploma: / })
+    .first()
+    .click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+  await page.keyboard.press('Escape');
+
+  // En de andere helft, sinds ADR-136 een pagina op zichzelf.
   await page.goto('/ouder');
   await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
-  await expect(
-    page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }),
-  ).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   await page.goto('/onthouden');

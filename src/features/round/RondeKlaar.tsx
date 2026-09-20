@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { DiplomaIcon, NextIcon, TodayIcon, TorenIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import {
@@ -16,6 +16,8 @@ import { useReeks } from '@/features/toren/reeks';
 import { useRegister } from '@/features/toren/register';
 import { Scene } from '@/features/toren/Scene';
 import { Embleem } from '@/features/badges/Embleem';
+import { datumVan } from '@/features/badges/datums';
+import { Uitreiking } from '@/features/badges/Uitreiking';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { usePreferences } from '@/features/player/settings';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -26,7 +28,6 @@ import { behaaldDiploma } from '@/features/home/doel';
 import { getActiveChild } from '@/store/children';
 import { leesWeekdoelen } from '@/store/weekdoelStore';
 import { HerhaalFouten } from './HerhaalFouten';
-import { speelMoment } from './geluid';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
 import { useVandaag } from '@/features/home/useVandaag';
 
@@ -140,17 +141,20 @@ export function RondeKlaar({
     (vandaag?.voortgang.klaar ?? false) ||
     (gestopt === null && na.size > 0 && aanDeBeurt([...na.keys()], na, now) === 0);
 
-  // Het diploma klinkt hier, één keer: het komt pas binnen als de beloning is
-  // weggeschreven, dus wordt er gewacht tot het er is in plaats van alleen bij
-  // het openen te luisteren. De verdieping klinkt in de scène zelf, op het
-  // moment dat hij dichtgaat, en het draaiboek zwijgt dan hier (ADR-158).
-  const diplomaKlinkt = diploma !== null;
-  const geklonken = useRef(false);
+  // Het diploma klinkt niet meer hier: de uitreiking speelt het op de beat
+  // waarop het zegel gedrukt wordt, en dát is het moment. Eén geluid, één keer.
+  // Wie de uitreiking wegtikt, heeft het al gehoord.
+  const [uitreiking, setUitreiking] = useState(true);
+  const [kindNaam, setKindNaam] = useState('');
   useEffect(() => {
-    if (geklonken.current || !diplomaKlinkt) return;
-    geklonken.current = true;
-    speelMoment('diploma', geluid);
-  }, [diplomaKlinkt, geluid]);
+    let levend = true;
+    void getActiveChild().then((kind) => {
+      if (levend) setKindNaam(kind?.naam ?? '');
+    });
+    return () => {
+      levend = false;
+    };
+  }, []);
 
   // Stabiel houden: de scène wapent per beat een timer, en een nieuw object bij
   // elke render zou die timer telkens opnieuw zetten. `useVandaag` en het
@@ -303,6 +307,40 @@ export function RondeKlaar({
           )}
         </div>
 
+        {diploma !== null && uitreiking ? (
+          <div className="tk-diplomavenster" data-uitreiking="ja">
+            <div className="tk-diplomavenster-blad">
+              <Uitreiking
+                geluid={geluid}
+                beeld={{
+                  module: moduleId,
+                  soort: t(`mode.${mode}` as TranslationKey),
+                  naam: deel ? naamVan(deel) : diploma,
+                  gehaald: true,
+                  kindNaam,
+                  datum: datumVan(now),
+                  vul: undefined,
+                  standZin: null,
+                }}
+                knoppen={
+                  <div className="tk-diplomavenster-knoppen">
+                    <button type="button" className="tk-button" onClick={() => window.print()}>
+                      {t('afzwemmen.print')}
+                    </button>
+                    <button
+                      type="button"
+                      className="tk-button tk-button-secondary"
+                      onClick={() => setUitreiking(false)}
+                    >
+                      {t('diploma.verder')}
+                    </button>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        ) : null}
+
         {diploma ? (
           <section className="flex flex-col gap-3" aria-label={t('result.beloningTitle')}>
             <h2 className="tk-sectie">{t('result.beloningTitle')}</h2>
@@ -317,10 +355,6 @@ export function RondeKlaar({
                 </div>
               </li>
             </ul>
-            <PrintDiploma
-              titel={deel ? naamVan(deel) : diploma}
-              vorm={t(`mode.${mode}` as TranslationKey)}
-            />
           </section>
         ) : null}
 
@@ -394,47 +428,6 @@ function DoelRegel({ reward }: { readonly reward: RoundOutcome | null }) {
 
   if (!gehaald) return null;
   return <span className="tk-lijstrij-regel">{t('weekdoel.gehaaldRonde')}</span>;
-}
-
-const DATUM = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
-
-/**
- * Het diploma op papier (ADR-149): met de naam van het kind en de datum, om
- * op te hangen of te laten zien. Op het scherm alleen de knop; wat de printer
- * krijgt, staat er onzichtbaar naast (`data-print`), zodat de rest van de
- * uitslag niet mee op papier komt.
- */
-function PrintDiploma({ titel, vorm }: { readonly titel: string; readonly vorm: string }) {
-  const [naam, setNaam] = useState('');
-  const [datum] = useState(() => DATUM.format(new Date()));
-
-  useEffect(() => {
-    let levend = true;
-    void getActiveChild().then((kind) => {
-      if (levend) setNaam(kind?.naam ?? '');
-    });
-    return () => {
-      levend = false;
-    };
-  }, []);
-
-  return (
-    <>
-      <button
-        type="button"
-        className="tk-button tk-button-secondary self-start"
-        onClick={() => window.print()}
-      >
-        {t('afzwemmen.print')}
-      </button>
-      <div className="tk-diplomaprint" data-print="ja" aria-hidden="true">
-        <p className="tk-diplomaprint-soort">{vorm}</p>
-        <p className="tk-diplomaprint-titel">{titel}</p>
-        <p>{naam === '' ? t('afzwemmen.printZonderNaam') : t('afzwemmen.printNaam', { naam })}</p>
-        <p>{t('afzwemmen.printDatum', { datum })}</p>
-      </div>
-    </>
-  );
 }
 
 /** Three weeks out: the horizon the product has always forecast to (`home.retention`). */

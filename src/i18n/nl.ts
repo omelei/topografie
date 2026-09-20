@@ -1548,6 +1548,47 @@ export const nl = {
   // Rijp: de pagina is ver genoeg om af te zwemmen (ADR-141, ADR-149).
   'diploma.rijp': 'Klaar om af te zwemmen',
 
+  // Wat er onder een diplomakaart staat, per stand. Vijf zinnen, en nooit een
+  // telling die nul is: een kop die de afwezigheid uitrekent, is wat "je hebt
+  // niets" letterlijk op het scherm zet.
+  'diploma.gehaaldOp': 'Gehaald op {datum}',
+  'diploma.onthoudt': 'Je onthoudt er {bewezen} van de {totaal}.',
+  // De eerste twee dagen kan er niets in de ring staan: een onderdeel telt pas
+  // mee na drie goede antwoorden op drie dagen. In het grote diploma staat de
+  // regel dan voluit — daar gaat het over één diploma. Op een kaart staat
+  // alleen `diploma.nogNiet`: twaalf keer dezelfde zin onder elkaar is geen
+  // uitleg maar een muur, en de kaarten verdwijnen erin.
+  'diploma.nogNiets': 'Nog niets onthouden. Je moet het drie keer goed weten, op drie dagen.',
+  // De ring telt wat ooit bewezen is, de lat telt wat vers is. Na ruim twee
+  // weken weg lopen die uiteen, en dan staat dit er.
+  'diploma.opfrissen': 'Je diploma is vol. Fris het even op, dan mag je de toets doen.',
+
+  // Het grote diploma, geopend vanuit de kast. Eén knop die van woord verandert
+  // en niet van plek — de regel van ADR-141, hier op een tweede scherm.
+  'diploma.openLabel': 'Bekijk je diploma: {naam}',
+  'diploma.oefen': 'Ga oefenen',
+  'diploma.toets': 'Doe de toets',
+  'diploma.terug': 'Terug',
+  'diploma.gehaaldKop': 'Gehaald!',
+  'diploma.verder': 'Verder',
+  'diploma.soortTafel': 'Tafeldiploma',
+  'diploma.soortReken': 'Rekendiploma',
+  'diploma.soortTaal': 'Taaldiploma',
+  'diploma.soortVlag': 'Vlaggendiploma',
+  'diploma.soortKlok': 'Klokdiploma',
+  'diploma.soortTopo': 'Topodiploma',
+
+  // De diplomakast op Jij: alle diploma's, één vak open en de rest als regel.
+  'kast.titel': 'Jouw diploma’s',
+  'kast.stand': '{aantal} van de {totaal} gehaald.',
+  'kast.leeg': 'Hier komen je diploma’s te hangen. Druk op een diploma om eraan te beginnen.',
+  // De regel, één keer boven het raster in plaats van op elke kaart.
+  'kast.regel':
+    'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen.',
+  'kast.vakAantal': '{aantal} diploma’s',
+  'kast.vakOpen': 'Laat de diploma’s van {vak} zien',
+  'kast.vakDicht': 'Verberg de diploma’s van {vak}',
+
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet
   // weet waarvoor het er een kreeg, kan er ook niet nog een verdienen.

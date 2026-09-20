@@ -110,10 +110,10 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await expect(page.getByText(/^Proefzwemmen gelukt|^Nog geen diploma/)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
-  // En op Voor ouders, als plaatjes in plaats van knoppen (ADR-112), achter de
-  // knop die de hele muur laat zien (ADR-143, ADR-158).
-  await page.goto('/ouder');
-  await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
-  const verzameling = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
-  await expect(verzameling.getByRole('img')).toHaveCount(7);
+  // En in de kast op Jij, waar alle diploma's staan die dit kind kan halen.
+  await page.goto('/jij');
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  // Vlaggen staat open: het vak van de laatste ronde is het vak dat openstaat.
+  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
+  await expect(kast.getByRole('region', { name: 'Vlaggen' }).getByRole('button')).toHaveCount(7);
 });

@@ -148,8 +148,20 @@ export function standVan(
  */
 function rijpVoor(doelwit: Doelwit, onthouden: number, totaal: number): boolean {
   if (totaal === 0) return false;
-  if (doelwit.mode === 'tafeldiploma') return onthouden === totaal;
-  return onthouden >= diplomaDrempel(totaal);
+  return onthouden >= nodigVoor(doelwit, totaal);
+}
+
+/**
+ * Hoeveel van de set onthouden moet zijn voordat het diploma aangeboden wordt.
+ *
+ * Dit stond op twee plekken: hier, verstopt in `rijpVoor`, en nog eens
+ * uitgeschreven in `Afzwemmen.tsx`. Sinds de diplomakaart de stand ook toont,
+ * zouden het er drie zijn geweest. Eén uitdrukking dus, en `rijpVoor` gebruikt
+ * hem zelf — dan kan een kaart niet iets anders beweren dan de knop die de
+ * toets aanbiedt.
+ */
+export function nodigVoor(doelwit: Doelwit, totaal: number): number {
+  return doelwit.mode === 'tafeldiploma' ? totaal : diplomaDrempel(totaal);
 }
 
 /** Hoeveel doelen er voorgesteld worden. Drie: meer is een lijst, niet een keuze. */

@@ -233,10 +233,13 @@ test('the countries of the world have an address of their own', async ({ page })
     'aria-pressed',
     'true',
   );
-  await expect(page.getByRole('button', { name: /^Wereld/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  // In de regiorij: sinds ADR-168 heet het vakje van het wereldtopodiploma ook
+  // "Wereld".
+  await expect(
+    page
+      .getByRole('region', { name: 'Waar op de kaart?' })
+      .getByRole('button', { name: /^Wereld/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 /**

@@ -22,7 +22,6 @@ import {
 import { Weekbericht } from './Weekbericht';
 import { AccountBlok } from '@/features/account/AccountBlok';
 import { EigenLijsten } from './EigenLijsten';
-import { Prijzenkast } from '@/features/badges/Prijzenkast';
 import { RegisterInstelling } from '@/features/toren/RegisterInstelling';
 import { WeekdoelenBlok } from '@/features/home/WeekdoelenBlok';
 import { getActiveChild } from '@/store/children';
@@ -53,16 +52,11 @@ import { Wissen } from './Wissen';
 export function ParentScreen({
   onJij,
   onOnthouden,
-  diplomasOpen = false,
-  onDiplomasGezien,
   now = new Date(),
 }: {
   readonly onJij: () => void;
   /** De weg naar wat het kind onthoudt, per onderwerp (ADR-143). */
   readonly onOnthouden: () => void;
-  /** Gekomen via "Bekijk alle diploma's": de kast open, en ernaartoe (ADR-153). */
-  readonly diplomasOpen?: boolean;
-  readonly onDiplomasGezien?: (() => void) | undefined;
   readonly now?: Date;
 }) {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
@@ -184,15 +178,6 @@ export function ParentScreen({
             beter kent (ADR-158). Hier en niet bij het kind: dit is de uitleg
             die een ouder nodig heeft om thuis het goede te zeggen. */}
         <TorenUitleg />
-
-        {/* Alle diploma's, ook wat nog niet gehaald is (ADR-158). Hier zijn de
-            gaten het punt (ADR-064) — een ouder kan er iets mee. Een diploma is
-            een toets, en die hoort bij degene die hem afneemt. */}
-        <section className="flex flex-col gap-3" aria-label={t('ouder.diplomasTitel')}>
-          <h2 className="tk-sectie">{t('ouder.diplomasTitel')}</h2>
-          <p className="text-lopend text-tekst-secundair">{t('ouder.diplomasUitleg')}</p>
-          <Prijzenkast open={diplomasOpen} onGezien={onDiplomasGezien} />
-        </section>
 
         {/* De weg naar de cijfers (ADR-143, ADR-148): wat het kind onthoudt,
             per vak en per onderwerp, en hoe het oefenen week na week gaat. */}

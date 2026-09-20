@@ -1,10 +1,12 @@
-import { useEffect, useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '@/i18n';
 import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
-import { BehaaldeDiplomas } from '@/features/badges/Prijzenkast';
+import { Kast } from '@/features/badges/Kast';
 import { usePremium } from '@/features/premium/usePremium';
+import type { ModeId } from '@/game-core';
+import type { Onderdeel } from '@/features/module/onderdelen';
 import { TorenPagina } from '@/features/toren/TorenPagina';
 import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
 
@@ -29,10 +31,29 @@ import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
 export function ProfileScreen({
   profile,
   onOuder,
+  onOefen,
+  onToets,
+  kastOpen = false,
+  onKastGezien,
 }: {
   readonly profile: ProfileRecord;
   readonly onOuder: () => void;
+  readonly onOefen: (deel: Onderdeel) => void;
+  readonly onToets: (deel: Onderdeel, mode: ModeId) => void;
+  /** Binnengekomen via "Bekijk alle diploma's": de kast in beeld (ADR-153). */
+  readonly kastOpen?: boolean;
+  readonly onKastGezien?: (() => void) | undefined;
 }) {
+  const kast = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!kastOpen) return;
+    kast.current?.scrollIntoView({ block: 'start' });
+    onKastGezien?.();
+    // Eén keer, bij binnenkomst.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="tk-page">
       <div className="tk-page-main">
@@ -68,9 +89,13 @@ export function ProfileScreen({
 
         <TorenPagina />
 
-        {/* Alleen wat gehaald is: dat hoort bij de toren en de reeks. Het
-            hele raster staat op Voor ouders (ADR-158). */}
-        <BehaaldeDiplomas />
+        {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
+            zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
+            tekort meer maar een doel — en dan hoort het raster hier en niet bij
+            de ouder, want een kind kan erop mikken (ADR-064). */}
+        <div ref={kast}>
+          <Kast onOefen={onOefen} onToets={onToets} />
+        </div>
 
         <Jaaroverzicht />
       </div>

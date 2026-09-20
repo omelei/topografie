@@ -125,18 +125,21 @@ test('without a code the premium parts are labelled once, and say what they do',
   );
 
   // Op Jij: de toren staat er gewoon, want die is gratis (ADR-158) — wat een
-  // kind bouwt, ziet een kind zonder code. Nog niets gehaald, dus nog geen
-  // diplomawand: die zwijgt tot er iets staat.
+  // kind bouwt, ziet een kind zonder code.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
 
-  // En op Voor ouders staan de tafeldiploma's zonder code, want die zijn
-  // gratis; de vlaggen zijn dat niet en staan er dus niet.
-  await page.goto('/ouder');
-  await expect(page.getByRole('region', { name: 'Jouw tafeldiploma’s' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw vlaggendiploma’s' })).toHaveCount(0);
+  // En de kast staat er ook, met precies twaalf kaarten: de tafeldiploma's zijn
+  // gratis (ADR-122) en de andere drie soorten worden zonder code helemaal niet
+  // getekend (ADR-124). Geen kast die voor tweederde op slot zit, en geen enkel
+  // vak dat op slot te zien is.
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  await expect(kast.locator('.tk-diploma')).toHaveCount(12);
+  await expect(kast.getByRole('button', { name: /^Vlaggen / })).toHaveCount(0);
+  await expect(kast.getByRole('button', { name: /^Klok / })).toHaveCount(0);
+  await expect(kast.getByRole('button', { name: /^Topo / })).toHaveCount(0);
 
   // En op de ouderpagina: één premiumblok in plaats van vijf (ADR-124, ADR-136).
   await page.goto('/ouder');
