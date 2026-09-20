@@ -950,6 +950,13 @@
     width: 44px;
     height: 44px;
   }
+  /* Op het grote diploma is het embleem het zegel: dezelfde vorm, groter, en
+   * met een rand die de boog draagt op een maat waarop je hem kunt lezen. */
+  .tk-embleem-groot {
+    width: 88px;
+    height: 88px;
+    border-width: 4px;
+  }
   .tk-embleem[data-module] {
     --embleem: var(--module);
     --embleem-vlak: var(--module-tint);
@@ -960,6 +967,27 @@
     border-color: var(--embleem);
     background: var(--embleem-vlak);
     color: var(--embleem-tekst);
+  }
+
+  /* De rand die meeloopt met wat je onthoudt (het diplomaprogramma).
+   *
+   * De gestippelde ring wordt een boog die voor `--vul` dichtloopt. Geen tweede
+   * cirkel eromheen, maar de rand zelf: twee achtergronden, de binnenste tot de
+   * padding-box en de kegel tot de border-box, zodat de rand de enige plek is
+   * waar de kegel te zien is. Daarom staat de rand hier op `solid` met een
+   * doorzichtige kleur — een gestippelde rand laat de kegel door de gaatjes
+   * heen zien.
+   *
+   * Op nul komt hij er niet: dan staat er `data-vul='leeg'` en blijft de
+   * gestippelde ring van hierboven staan. Dat is dezelfde vorm als "nog niet",
+   * en dat is precies wat het dan is — een boog van nul procent zou een
+   * volledig grijze cirkel zijn, en die zegt iets anders. */
+  .tk-embleem[data-vul='ja'] {
+    border-style: solid;
+    border-color: transparent;
+    background:
+      linear-gradient(var(--papier), var(--papier)) padding-box,
+      conic-gradient(var(--embleem) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%)) border-box;
   }
 
   /* ---- The wall of diplomas (ADR-064, ADR-104, ADR-112) ------------------
@@ -4311,7 +4339,10 @@
   /* ---- Diploma's: rijp, bijhouden en afzwemmen (ADR-149) -----------------
    * Rijp staat in inkt, zoals gehaald: het is iets om te doen. De seizoenen
    * zijn vier vakjes, gestippeld tot er een stempel in staat. */
-  .tk-diploma-stand[data-rijp] {
+  /* Rijp en "even opfrissen" staan in inkt, zoals gehaald: het zijn dingen om
+   * te doen. De andere standen zijn de stand, en die dringt niet aan. */
+  .tk-diploma-stand[data-stand='rijp'],
+  .tk-diploma-stand[data-stand='opfrissen'] {
     color: var(--inkt);
     font-weight: 600;
   }
@@ -4343,6 +4374,161 @@
     border-color: var(--module);
   }
 
+  /* ---- De diplomakast op Jij --------------------------------------------
+   * Eén vak open, de rest als regel. Het bezwaar van ADR-158 ging over
+   * stapelen en niet over een onverdiend vakje, dus dit is de ingreep: vier
+   * koppen met vier rasters worden één raster met drie regels eronder. */
+  .tk-vakrij {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: var(--raak);
+    padding: 0 14px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+    color: var(--inkt);
+    text-align: left;
+  }
+  .tk-vakrij:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-vakrij-naam {
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    font-weight: 600;
+  }
+  .tk-vakrij-meta {
+    font-size: var(--type-bijschrift);
+    color: var(--tekst-secundair);
+  }
+
+  /* Het venster waarin een diploma opengaat. Een laag over de pagina, en de
+   * pagina eronder staat stil zodat de kast terugkomt waar hij stond. */
+  .tk-diplomavenster {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    background: var(--scrim);
+    overflow-y: auto;
+  }
+  .tk-diplomavenster-blad {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 360px;
+  }
+  .tk-diplomavenster-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* ---- Het diploma, groot (het diplomaprogramma) -------------------------
+   * Hetzelfde object op het scherm en op papier. De dubbele rand van acht
+   * pixels komt van het printdiploma van ADR-149; nieuw zijn de band in de
+   * vakkleur langs de bovenrand — de enige plek waar het vak kleur krijgt — en
+   * het embleem als zegel rechtsonder.
+   *
+   * Staand 3:4, zodat hij op 393px onder de schermpadding past met de knoppen
+   * eronder in beeld. */
+  .tk-grootdiploma {
+    position: relative;
+    display: grid;
+    /* Vier rijen, en het zegel staat erin in plaats van eroverheen. Absoluut
+     * gepositioneerd liep de voettekst eronder door — met het oog meteen te
+     * zien en met geen enkele toets. De volgorde is ook de volgorde van de
+     * uitreiking: soort, naam, zegel, van wie en wanneer. */
+    grid-template-rows: auto 1fr auto auto;
+    justify-items: center;
+    gap: 12px;
+    aspect-ratio: 3 / 4;
+    max-width: 100%;
+    padding: 28px 20px 20px;
+    border: 8px double var(--inkt);
+    background: var(--kaart);
+    color: var(--inkt);
+    text-align: center;
+    overflow: hidden;
+  }
+  .tk-grootdiploma::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 12px;
+    background: var(--module);
+  }
+  .tk-grootdiploma:not([data-gehaald]) {
+    border-style: dashed;
+    border-width: 3px;
+    border-color: var(--rand-sterk);
+  }
+  .tk-grootdiploma:not([data-gehaald])::before {
+    background: var(--balk-leeg);
+  }
+  .tk-grootdiploma-soort {
+    margin: 0;
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    line-height: var(--type-kaartkop-lh);
+    font-weight: var(--type-kaartkop-weight);
+    color: var(--module-tekst);
+  }
+  .tk-grootdiploma-naam {
+    align-self: center;
+    margin: 0;
+    font-family: var(--font-kop);
+    font-size: var(--type-sectiekop);
+    line-height: var(--type-sectiekop-lh);
+    letter-spacing: var(--type-sectiekop-ls);
+    font-weight: var(--type-sectiekop-weight);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-soort,
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-naam {
+    color: var(--tekst-tertiair);
+  }
+  .tk-grootdiploma-voet {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-voet p {
+    margin: 0;
+  }
+  .tk-grootdiploma-zegel {
+    display: inline-flex;
+  }
+
+  /* De uitreiking: de enige beweging in dit programma, en zij neemt het
+   * scèneslot over dat ADR-158 op Ronde klaar uitzonderde. Elke beat is een
+   * binnenkomst waarvan de eindstand de gewone ruststand is, dus de squash van
+   * `rustig` is vanzelf de juiste eindstand en overslaan is vanzelf correct. */
+  .tk-uitreiking {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .tk-uitreiking-denker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tk-uitreiking-kop {
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    font-weight: var(--type-kaartkop-weight);
+  }
+  .tk-uitreiking [data-beat]:not([data-aan]) {
+    opacity: 0;
+  }
+
   /* Wat de printer krijgt: een diploma of het jaaroverzicht, en verder niets.
    * Het diploma op papier staat op het scherm nergens; de knop wel. */
   .tk-diplomaprint {
@@ -4361,6 +4547,16 @@
       top: 0;
       left: 0;
       width: 100%;
+    }
+    .tk-grootdiploma {
+      aspect-ratio: auto;
+      border-width: 8px;
+      border-style: double;
+      border-color: var(--inkt);
+      padding: 64px 32px;
+    }
+    .tk-grootdiploma::before {
+      display: none;
     }
     .tk-diplomaprint {
       display: flex;
@@ -4678,6 +4874,27 @@
    * stilstaat.
    */
   @media (prefers-reduced-motion: no-preference) {
+    /* De uitreiking: zeven binnenkomsten, samen 1620ms. Alleen transform en
+     * opacity, met de tokens van ADR-142. Elke eindstand is de ruststand die in
+     * de stylesheet staat, dus `rustig` hoeft alleen de duur plat te drukken. */
+    .tk-uitreiking [data-beat='diploma'][data-aan] {
+      animation: tk-diploma-in var(--beweeg-traag) var(--beweeg-uit) both;
+    }
+    .tk-uitreiking [data-beat='soort'][data-aan],
+    .tk-uitreiking [data-beat='naam'][data-aan],
+    .tk-uitreiking [data-beat='wie'][data-aan],
+    .tk-uitreiking [data-beat='knoppen'][data-aan] {
+      animation: tk-diploma-deel 180ms var(--beweeg-uit) both;
+    }
+    .tk-uitreiking [data-beat='ring'][data-aan] {
+      animation: tk-diploma-zegel var(--beweeg-rustig) var(--beweeg-veer) both;
+    }
+    .tk-uitreiking [data-beat='denker'][data-aan] {
+      animation: tk-diploma-denker var(--beweeg-rustig) var(--beweeg-veer) both;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
     /* De toren (ADR-158). Elke animatie hier is een binnenkomst waarvan het
        eind de gewone ruststand is: geen enkele houdt met `forwards` iets vast
        dat niet al hierboven staat. Daardoor is overslaan altijd goed, en landt
@@ -4826,6 +5043,29 @@
    schaal één, opacity één. Dat is wat overslaan en rustig allebei goed
    maakt. De ademhaling van Denker begint én eindigt op nul, zodat één
    doorloop van 0,01ms — wat de squash ervan maakt — op rust landt. */
+@keyframes tk-diploma-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+@keyframes tk-diploma-deel {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes tk-diploma-zegel {
+  from {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+@keyframes tk-diploma-denker {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
 @keyframes tk-steen-aan {
   from {
     transform: translateY(40px);

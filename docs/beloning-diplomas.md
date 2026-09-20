@@ -768,6 +768,29 @@ zijn diploma's staan er nog, en de voortgangsring van het volgende diploma staat
 op de juiste hoogte omdat het uit de Leitner-standen komt die er al zijn. Er valt
 geen gat — en dat is precies waarom de migratie niets hoeft uit te leggen.
 
+### Twee dingen die pas bij het bouwen bleken
+
+**[feit]** `useDiplomaStand` stond op `onderdelen()`, en die kent maar twee
+vlaggensets — de wereld en de provincies. De zes werelddelen worden pas door
+`loadVlagSets()` opgebouwd, en die zit alleen in `startbareOnderdelen()`. Voor de
+zes vlaggendiploma's gaf `rijp` dus **altijd `false`**: "Klaar om af te zwemmen"
+stond daar nooit, hoe goed een kind de vlaggen ook kende. Dat is ouder dan dit
+ontwerp en is in PR 1 gerepareerd, met een toets die telt dat het er
+drieëndertig zijn.
+
+Hetzelfde mankement zit in elk ander gebruik van `doelwitten(onderdelen(), …)`,
+en dus in de weekdoelen van ADR-162: die kunnen geen vlaggendiploma voorstellen.
+Dat is niet meegerepareerd — het raakt een andere beslissing — maar het staat nu
+opgeschreven en `kast.test.ts` bewaakt het verschil.
+
+**[feit]** De diplomadrempel stond op twee plekken: verstopt in `rijpVoor`
+(`doel.ts`) en nog eens uitgeschreven in `Afzwemmen.tsx:82`. Met de kaart erbij
+zouden het er drie zijn geweest — precies de tweede boekhouding waar dit hele
+ontwerp tegen is. `nodigVoor` is nu één geëxporteerde uitdrukking die `rijpVoor`
+zelf gebruikt. Dat is de enige regel in `doel.ts` die verandert, en hij verandert
+niets aan de lat: `onthouden === totaal` en `onthouden >= totaal` zijn hetzelfde
+zolang `onthouden` nooit boven `totaal` komt.
+
 ### Een gat in de dekking
 
 **[feit]** Er is **geen** `src/features/afzwemmen/*.test.ts` en **geen**
@@ -862,8 +885,14 @@ Drie PR's, drie ADR's. De nummers worden **pas vlak voor het committen** van
 - De scène op Ronde klaar, met `draaiboek()` en `leesRustig()`.
 - De kast op Jij: alle diploma's, één vak open en de rest ingeklapt, elke kaart
   één knop met één uitkomst.
+- **Twee dingen die uit PR 3 naar voren zijn gehaald**, omdat ze anders een gat
+  laten vallen: het raster verdwijnt van Voor ouders (anders staat het twee keer)
+  en de diepe link van ADR-153 wijst weer naar Jij (anders wijst hij naar een
+  pagina waar het raster niet meer staat).
 - De toetsen die er niet waren: `afzwemmen`, het draaiboek, de voortgangsring, en
   de dialoog met een toetsenbord.
+
+**Vastgelegd als ADR-167.**
 
 De toren staat er nog gewoon onder. **Dit is de PR die als eerste weg kan zonder
 dat er een gat valt** — en tegelijk de PR waarna de toren overbodig is.
@@ -872,7 +901,7 @@ dat er een gat valt** — en tegelijk de PR waarna de toren overbodig is.
 ouders, `TorenUitleg` wordt `DiplomaUitleg`, `SteenRegel` uit de vijf
 rondeschermen, de e2e-specs bijgewerkt.
 
-**PR 3 — De opruiming.** Proefzwemmen eruit, de albumzinnen herschreven, de diepe
-link van ADR-153 terug naar Jij, de dode seizoen-CSS, de zwevende i18n-kopjes, en
-de resterende album-opmerkingen in `badges/rijp.ts:11`, `useDiplomaStand.ts:13`,
-`retention/StandKaart.tsx:11`, `game-core/terugkomst.ts:6`, `rewards.ts:9`.
+**PR 3 — De opruiming.** Proefzwemmen eruit, de albumzinnen herschreven, de dode
+seizoen-CSS, de zwevende i18n-kopjes, en de resterende album-opmerkingen in
+`badges/rijp.ts:11`, `retention/StandKaart.tsx:11`, `game-core/terugkomst.ts:6`,
+`rewards.ts:9`. De diepe link is in PR 1 al verhuisd.

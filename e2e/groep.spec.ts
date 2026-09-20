@@ -238,10 +238,10 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
   await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
   await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
 
-  // De knop onderaan het blok: naar Voor ouders, met de kast open (ADR-158).
-  // Daar staat het hele raster, want daar zijn de lege vakjes iets om iets mee
-  // te doen.
+  // De knop onderaan het blok: naar Jij, met de kast in beeld — precies wat
+  // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
+  // stond; nu het diploma zelf de beloning is, staat het weer bij het kind.
   await blok.getByRole('button', { name: 'Bekijk alle diploma’s' }).click();
-  await expect(page).toHaveURL(/\/ouder$/);
-  await expect(page.getByRole('button', { name: 'Laat alleen zien wat gehaald is' })).toBeVisible();
+  await expect(page).toHaveURL(/\/jij$/);
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
 });

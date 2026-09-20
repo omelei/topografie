@@ -9533,6 +9533,139 @@ link die wel scrollt maar de focus laat staan, helpt precies niemand.
 
 ---
 
+## ADR-167 — Het diploma is het beloningsprogramma: een ring die meeloopt met wat je onthoudt
+
+**Status:** accepted. **Date:** 2026-09-20. Op verzoek van de eigenaar.
+Vervangt de toren (ADR-158) als beloningsprogramma en neemt zijn scèneslot over;
+de toren zelf wordt in een volgende stap gesloopt. Wijzigt ADR-158 voor de plaats
+van de diploma's en herstelt daarmee de diepe link van ADR-153. Raakt de lat van
+ADR-141, de ronde en `leitner.ts` niet. ADR-122 blijft: de tafeldiploma's zijn
+gratis. Het ontwerp voluit staat in `docs/beloning-diplomas.md`.
+
+### Context
+
+Dit is de derde keer dat dit product zijn beloningsprogramma herontwerpt —
+helden en kisten, het album, de toren — en dat is zelf het belangrijkste
+gegeven. Elke keer ging het op dezelfde manier mis: er kwam een tweede
+boekhouding naast de leerstof, die iets anders telde dan wat het kind leerde.
+Munten, XP, sterren, kisten, lagen, stempels, zegels, stenen.
+
+Bij de toren is dat aanwijsbaar. De steenregel (`toren.ts`) is strenger dan de
+doosstap, dus "een steen" en "onthouden" zijn twee verschillende uitspraken over
+dezelfde vraag: een kind kon een steen krijgen voor een item dat nog niet
+meetelde voor zijn diploma, en geen steen krijgen op een dag dat zijn diploma
+juist wel vooruitging. Daarbovenop had de toren acht begrippen — stenen,
+verdiepingen, meters, ijkpunten, een fundament, twee gezichten per groep, een
+register en een reeks — en de toets die daarbij hoort, "laat een kind van zes na
+één ronde uitleggen wat het kreeg", is nooit afgenomen. En hij beloonde het
+verkeerde: tafel-1 foutloos geoefend geeft zestig stenen in negentig dagen,
+dezelfde tafel met vijftien procent fouten tweehonderdelf. Dat bezwaar staat in
+het torenontwerp zelf opgeschreven als "waar".
+
+De diploma's hadden geen van die drie problemen en stonden er al. Wat ze misten
+was zichtbaarheid tussen twee diploma's in — want die vallen zelden — en dáár
+kwam de toren voor.
+
+### Decision
+
+**De ring op een diplomakaart is `countMastered`, gelezen zonder `now`.** Elke
+kaart draagt een cirkel waarvan de rand rond volloopt naarmate dit kind meer van
+die set onthoudt. Dat is dezelfde som die de diplomadrempel van ADR-141 legt en
+die de modulepagina en Onthouden al tonen: er komt geen getal bij. Zonder `now`
+telt hij wat ooit doos vier haalde in plaats van wat vers is — `leitner.ts`
+schreef zelf al op dat de beloningen het zo willen, "they count what was proven,
+not what is fresh" — en daardoor kan de ring nooit teruglopen. Er gaat in dit
+programma nooit iets af.
+
+De prijs staat erbij: na ruim twee weken wegblijven loopt de ring uit de pas met
+de lat, die wél met `now` telt. Dan staat de ring vol en is de toets dicht, en
+zegt de kaart dat met zoveel woorden: even opfrissen. Het alternatief was een
+ring die leegloopt, en dat is verlies-als-prikkel bij kinderen vanaf zes.
+
+**Eén keer goed levert niets op, en dat hoefde niet ingebouwd te worden.** Een
+onderdeel telt pas mee na drie goede antwoorden, elk op een moment dat het aan de
+beurt was, op drie verschillende dagen (`INTERVAL_DAYS`, `ONTHOUDEN_BOX`). Een
+kind dat op dag één alles goed heeft, staat op nul. De eerste twee dagen kan er
+dus niets in de ring staan, en daar staat de regel zelf in plaats van een nul.
+
+**De drempel komt voortaan uit één uitdrukking.** `nodigVoor` in `doel.ts` was
+verstopt in `rijpVoor` en stond nog eens uitgeschreven in `Afzwemmen.tsx`; met de
+kaart erbij zouden het er drie zijn geweest. Nu gebruikt `rijpVoor` hem zelf, dus
+een kaart kan niet iets anders beweren dan de knop die de toets aanbiedt.
+
+**Het hele raster staat bij het kind, en niet meer bij de ouder.** ADR-158 zette
+het bij de ouder met de redenering dat een diploma een toets is en dus hoort bij
+wie hem afneemt. Die hield zolang het diploma náást de toren stond; zodra het
+diploma zelf de beloning is keert hij om, en geldt weer wat ADR-064 schreef: een
+gat is de enige onverdiende zaak die dit product met opzet tekent, omdat een kind
+erop kan mikken. Daarmee wijst "Bekijk alle diploma's" ook weer naar Jij, wat
+ADR-153 er oorspronkelijk over schreef.
+
+**Het bezwaar van ADR-158 ging over stapelen, niet over een onverdiend vakje**,
+en dat wordt apart opgelost: één vak staat open en de rest staat als regel
+eronder, en nergens wordt een telling van nul afgedrukt. Zonder code verandert
+dat niets — dan is er maar één vak.
+
+**Elke kaart doet hetzelfde: hij opent het diploma groot.** Gehaald of niet, geen
+uitzondering. Twee uitkomsten die je moet afleiden uit hoe een kaart eruitziet,
+zijn er één te veel voor een kind van zes. Wat je daarna kunt doen staat in dat
+grote beeld, in één knop die van woord verandert en niet van plek — Ga oefenen,
+Doe de toets, Print je diploma. Dat is de regel van ADR-141, hier op een tweede
+scherm. De directe weg naar een ronde blijft op de modulepagina, want dát is de
+pagina waar je komt om te oefenen.
+
+**Het grote diploma is hetzelfde ding op het scherm en op papier.** Het bestond
+al als `.tk-diplomaprint` maar stond nergens op het scherm, dus wie zijn diploma
+een week later wilde ophangen kon dat niet: de printknop zat alleen op Ronde
+klaar. Nu is het één component op twee plekken, met een band in de vakkleur en
+het embleem als zegel erbij.
+
+**De uitreiking neemt het scèneslot van ADR-158 over en maakt het kleiner.**
+Zeven beats, 1620 ms waar de toren er 2200 gebruikte, op hetzelfde scherm en met
+dezelfde voorwaarden: alleen transform en opacity, met een tik over te slaan, en
+knoppen die vanaf de eerste frame werken. Er komt geen tweede uitzondering op de
+vierhonderdtwintig milliseconden van ADR-142 bij, en tijdens de ronde komt er
+niets bij. Het draaiboek is puur, zodat de volgorde, het geluid en het
+rustig-gedrag zonder DOM te toetsen zijn; twee tests leggen vast dat rustig
+dezelfde beats met dezelfde geluiden geeft.
+
+### Consequences
+
+- **Het diplomageluid is verhuisd.** Het klonk los op Ronde klaar zodra de
+  beloning was weggeschreven; nu klinkt het op de beat waarop het zegel gedrukt
+  wordt, want dát is het moment. Eén geluid, één keer.
+- **`useDiplomaStand` stond op de verkeerde lijst, en dat was een stille fout.**
+  `onderdelen()` kent maar twee vlaggensets — de wereld en de provincies — omdat
+  de zes werelddelen pas door `loadVlagSets()` worden opgebouwd. Daardoor gaf
+  `rijp` voor de zes vlaggendiploma's altijd `false` en stond "Klaar om af te
+  zwemmen" daar nooit, hoe goed een kind de vlaggen ook kende. Het staat nu op
+  `startbareOnderdelen()`, en een test telt dat het er drieëndertig zijn.
+- **`doelwitten(onderdelen(), …)` elders heeft hetzelfde mankement.** De
+  weekdoelen van ADR-162 kunnen daardoor geen vlaggendiploma voorstellen. Dat is
+  hier niet gerepareerd omdat het een andere beslissing raakt, maar het is nu
+  opgeschreven en `kast.test.ts` bewaakt het verschil.
+- **De diplomakast is nieuw gebouwd uit `doelwitten()`** en niet uit de vier
+  wandcomponenten van de modulepagina's: die geven een verzameling ids terug, en
+  de kast heeft per diploma het onderdeel en de ronde nodig — anders kan de knop
+  in het grote beeld niet naar de toets die erbij hoort. De vier wanden op de
+  modulepagina's zijn niet aangeraakt.
+- **De dialoog draagt de toetsenbordkant met de hand**: focus naar binnen, terug
+  naar de kaart in de opruiming van het effect en niet in de knop die sluit —
+  anders zet React de dialoog daarná pas weg en gaat de focus alsnog verloren —
+  Escape, een Tab die rondloopt, en een pagina die niet scrollt zolang hij open
+  staat. Zes tests leggen dat vast, en de a11y-scan kijkt nu ook met het venster
+  open.
+- **`e2e/doel.spec.ts:138` is intermitterend**, ongeveer één op drie. Nagemeten
+  op de ongewijzigde broncode met hetzelfde resultaat, dus het is niet van deze
+  wijziging; CI verbergt het met `retries: 2`. Opgeschreven zodat het niet nog
+  een keer voor nieuw wordt aangezien.
+- **Nog niet in een browser gezien.** De container hier heeft Chromium 1194 en
+  dit project pint Playwright 1.63 (revisie 1243), dus de e2e-suite draaide op de
+  browser die er was. Met name het grote diploma op 393px en de uitreiking met
+  beweging aan zijn met het oog te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
