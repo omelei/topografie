@@ -105,9 +105,10 @@ export function emptyState(itemId: string): ItemState {
  * A wrong answer counts whenever it comes. Not knowing it an hour after the
  * last round is exactly as much news as not knowing it a week later.
  *
- * **Het album gaat mee** (ADR-149). De hoogste doos onthoudt wat een kind ooit
- * bereikte, ook als een fout het item terug naar doos één zet; en een goed
- * antwoord in doos vijf dat aan de beurt was, krijgt een stempel.
+ * **De beloning gaat mee** (ADR-149, ADR-167). De hoogste doos onthoudt wat een
+ * kind ooit bereikte, ook als een fout het item terug naar doos één zet; dat is
+ * wat de voortgangsring op een diploma leest, en het is waarom die nooit
+ * terugloopt.
  */
 export function review(state: ItemState, correct: boolean, now: Date): ItemState {
   if (correct && !isDue(state, now)) {

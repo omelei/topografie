@@ -19,8 +19,8 @@ import { t } from '@/i18n';
  * unfinished round — meets the same rule; the rest is gated where it is drawn,
  * each with the same slot (`PremiumSlot`).
  *
- * The album, the weekkaart and "klaar voor vandaag" are free (ADR-149): what a
- * child remembers, and when today is done, are the child's to see.
+ * What a child remembers, and when today is done, are the child's to see, so
+ * "klaar voor vandaag" is free (ADR-149). So is the tafeldiploma (ADR-122).
  */
 const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Zoeken: on the map the name is given and the child finds the place.

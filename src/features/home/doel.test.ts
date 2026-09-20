@@ -242,7 +242,6 @@ describe('welk diploma een ronde opleverde', () => {
     vlagDiploma: null,
     klokDiploma: null,
     topoDiploma: null,
-    proef: null,
   } as const;
 
   it('rekent alle zes de gevallen terug naar een id', () => {

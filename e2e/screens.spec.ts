@@ -75,8 +75,9 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
   await shoot(page, size, '03-kiezen');
 
-  // Jij carries the album and the diplomas (ADR-149), which makes it the page
-  // that has to survive being mostly empty: a new child has none of them.
+  // Jij carries the diplomas, which since ADR-167 are the whole reward
+  // programme — so it is the page that has to survive being mostly empty: a
+  // new child has none of them.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { name: 'Jij', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();

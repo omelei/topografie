@@ -181,7 +181,6 @@ export function VlagScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackSub(state.lastCorrect, state.given, zoeken)}
                   </p>
-                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
                 </div>
               </div>
 

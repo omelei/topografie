@@ -1629,8 +1629,7 @@
     margin: 0 auto;
     padding: var(--padding-scherm);
   }
-  .tk-page-main,
-  .tk-home-main {
+  .tk-page-main {
     display: flex;
     flex-direction: column;
     gap: 32px;
@@ -1658,14 +1657,12 @@
     .tk-home {
       gap: 24px;
     }
-    .tk-page-main,
-    .tk-home-main {
+    .tk-page-main {
       gap: 48px;
     }
   }
   @media (min-width: 1200px) {
-    .tk-page-main,
-    .tk-home-main {
+    .tk-page-main {
       gap: var(--gap-sectie);
     }
   }
@@ -2009,63 +2006,6 @@
     background: var(--vlak-hover);
   }
 
-  /* ---- A block in the child's own column --------------------------------
-   * A card with a band across the top that names it. The band is a surface
-   * and a hairline rather than a heading size: four blocks in a column of 320
-   * are four things of equal weight, and it is the words in them that differ.
-   */
-  /* Positioned as well as clipped: `overflow: hidden` only clips what it is
-   * the containing block of, and the lines for screen readers inside a block
-   * are absolute (see .tk-rij-baan). */
-  .tk-blok {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-  }
-  .tk-blok-kop {
-    padding: 12px var(--kaart-padding);
-    background: var(--papier);
-    border-bottom: var(--stroke-hair) solid var(--rand-licht);
-    font-weight: 600;
-  }
-  .tk-blok-body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 12px;
-    padding: var(--kaart-padding);
-  }
-  /* A block still reading what goes in it: its card at roughly the height of
-   * what arrives, so the page under it does not move when it does. */
-  .tk-blok[aria-busy='true'] .tk-blok-body {
-    min-height: 76px;
-  }
-  /* The way on out of a block: add a test, see everything there is to earn. A
-   * secondary control at the floor height, because it is the second thing in
-   * its block and every page this column is on has its own primary. */
-  .tk-blok-knop {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: var(--raak);
-    padding: 0 16px;
-    border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
-    background: var(--kaart);
-    color: var(--inkt);
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-blok-knop:hover {
-    background: var(--vlak-hover);
-  }
   /* A line that helps, as a caption: under a bar, beside a plate. */
   .tk-hulp {
     font-size: var(--type-bijschrift);
@@ -2320,20 +2260,6 @@
     line-height: var(--type-bijschrift-lh);
     font-variant-numeric: tabular-nums;
     color: var(--tekst-secundair);
-  }
-  /* "Verder oefenen": a module with its bar, narrower than the exercise cards
-   * above it because it says less. The bar's track is the module's tint. */
-  .tk-verder {
-    align-items: stretch;
-    width: 236px;
-  }
-  .tk-verder-kop {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .tk-verder .tk-progress-rail {
-    background: var(--module-tint);
   }
   /* A module the plan has and the product does not: a dashed rule and a
    * plate with no module in it. A shape rather than a colour, so "not yet" is
@@ -4428,25 +4354,6 @@
     color: var(--inkt);
     font-weight: 600;
   }
-  .tk-diploma-seizoenen {
-    display: flex;
-    gap: 4px;
-  }
-  .tk-diploma-seizoen {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border: var(--stroke-hair) dashed var(--rand-sterk);
-    border-radius: var(--radius-chip);
-    color: var(--inkt);
-  }
-  .tk-diploma-seizoen[data-stempel] {
-    border-style: solid;
-    border-color: var(--inkt);
-    background: var(--balk-leeg);
-  }
   .tk-afzwemmen-kop {
     display: flex;
     align-items: center;
@@ -4611,11 +4518,7 @@
     opacity: 0;
   }
 
-  /* Wat de printer krijgt: een diploma of het jaaroverzicht, en verder niets.
-   * Het diploma op papier staat op het scherm nergens; de knop wel. */
-  .tk-diplomaprint {
-    display: none;
-  }
+  /* Wat de printer krijgt: een diploma of het jaaroverzicht, en verder niets. */
   @media print {
     body * {
       visibility: hidden;
@@ -4639,31 +4542,6 @@
     }
     .tk-grootdiploma::before {
       display: none;
-    }
-    .tk-diplomaprint {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      padding: 64px 32px;
-      border: 8px double var(--inkt);
-      color: var(--inkt);
-      text-align: center;
-    }
-    .tk-diplomaprint p {
-      margin: 0;
-      font-size: var(--type-lopend);
-    }
-    .tk-diplomaprint .tk-diplomaprint-soort {
-      font-family: var(--font-kop);
-      font-size: var(--type-sectiekop);
-      font-weight: var(--type-sectiekop-weight);
-    }
-    .tk-diplomaprint .tk-diplomaprint-titel {
-      font-family: var(--font-kop);
-      font-size: var(--type-paginakop);
-      line-height: var(--type-paginakop-lh);
-      font-weight: var(--type-paginakop-weight);
     }
   }
 
@@ -4714,7 +4592,6 @@
     .tk-keuze,
     .tk-tafel,
     .tk-module-card,
-    .tk-blok-knop,
     .tk-profiel,
     .tk-rail-item,
     .tk-vakmenu-optie,
@@ -4733,8 +4610,7 @@
     .tk-kaart:hover,
     .tk-lijstrij:hover,
     .tk-tegel:hover:not(:disabled),
-    .tk-module-card:hover:not(:disabled),
-    .tk-blok-knop:hover {
+    .tk-module-card:hover:not(:disabled) {
       transform: translateY(-2px);
     }
 
@@ -4742,7 +4618,6 @@
      * zakken is wat een kaart doet die terugkomt, indrukken is wat een knop
      * doet die iets doet. */
     .tk-button:active,
-    .tk-blok-knop:active,
     .tk-keuze:active,
     .tk-tafel:active,
     .tk-tegel:active:not(:disabled) {
@@ -4821,7 +4696,7 @@
   }
 }
 
-/* De toren (ADR-158). Elke reeks eindigt op de ruststand: translate nul,
+/* De uitreiking (ADR-167). Elke reeks eindigt op de ruststand: translate nul,
    schaal één, opacity één. Dat is wat overslaan en rustig allebei goed
    maakt. De ademhaling van Denker begint én eindigt op nul, zodat één
    doorloop van 0,01ms — wat de squash ervan maakt — op rust landt. */

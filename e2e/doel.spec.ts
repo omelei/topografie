@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { alsOnthouden } from './zaai';
 
 /**
  * Je doelen voor deze week (ADR-162).
@@ -49,39 +50,6 @@ async function tafelVanEen(page: Page, vorm: RegExp) {
     .getByRole('button', { name: vorm })
     .click();
   await page.locator('.tk-choose-start button').click();
-}
-
-/**
- * Alles wat dit kind geoefend heeft in doos vier zetten: dan is het onthouden
- * (ADR-114), en dat is wat bepaalt welk diploma bovenaan de voorstellen staat.
- * Vier goede rondes over een week afspelen zou hetzelfde doen en tien minuten
- * duren.
- */
-async function alsOnthouden(page: Page) {
-  await page.evaluate(async () => {
-    await new Promise<void>((klaar, mis) => {
-      const open = indexedDB.open('leernu');
-      open.onerror = () => mis(open.error);
-      open.onsuccess = () => {
-        const db = open.result;
-        const tx = db.transaction('progress', 'readwrite');
-        const store = tx.objectStore('progress');
-        store.getAll().onsuccess = (event) => {
-          const rijen = (event.target as IDBRequest).result as Record<string, unknown>[];
-          const nu = new Date().toISOString();
-          const straks = new Date(Date.now() + 14 * 86_400_000).toISOString();
-          for (const rij of rijen) {
-            store.put({ ...rij, box: 4, goedCount: 4, laatsteReview: nu, volgendeReview: straks });
-          }
-        };
-        tx.oncomplete = () => {
-          db.close();
-          klaar();
-        };
-        tx.onerror = () => mis(tx.error);
-      };
-    });
-  });
 }
 
 test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ page }) => {

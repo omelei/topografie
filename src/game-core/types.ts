@@ -72,9 +72,9 @@ export interface ItemState {
   readonly goedCount: number;
   readonly foutCount: number;
   /**
-   * De hoogste doos die dit item ooit bereikte (ADR-149). Het album tekent die,
-   * niet de huidige: wat een kind verdiende, gaat er bij een fout niet af.
-   * Ontbreekt op rijen van vóór het album; lees hem met `hoogsteDoosVan`.
+   * De hoogste doos die dit item ooit bereikte (ADR-149). De voortgangsring op
+   * een diploma leest die, niet de huidige: wat een kind verdiende, gaat er bij
+   * een fout niet af. Ontbreekt op oudere rijen; lees hem met `hoogsteDoosVan`.
    */
   readonly hoogsteDoos?: LeitnerBox;
   /**

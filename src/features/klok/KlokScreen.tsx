@@ -201,7 +201,6 @@ export function KlokScreen({
                         ? t('klok.dontKnowSub')
                         : t('klok.wrongSub', { gegeven })}
                   </p>
-                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
                 </div>
               </div>
 

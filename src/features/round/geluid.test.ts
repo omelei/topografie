@@ -72,14 +72,13 @@ describe('de toon bij een antwoord', () => {
     expect(oscillators[0]?.frequency.value).toBeLessThan(400);
   });
 
-  it('speelt drie tonen bij een pagina in kleur en bij een diploma, en niets als het uitstaat', () => {
+  it('speelt drie tonen bij een diploma, en niets als het uitstaat', () => {
     const { ctx, oscillators } = nepContext();
     installeer(ctx);
-    speelMoment('pagina', false);
+    speelMoment('diploma', false);
     expect(oscillators).toHaveLength(0);
-    speelMoment('pagina', true);
     speelMoment('diploma', true);
-    expect(oscillators).toHaveLength(6);
+    expect(oscillators).toHaveLength(3);
   });
 
   it('hergebruikt één context in plaats van er een per antwoord te maken', () => {

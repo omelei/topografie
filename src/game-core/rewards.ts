@@ -6,11 +6,11 @@
  * earned. The audience is ten years old. Everything here is deterministic and
  * explainable: a child who asks "waarom kreeg ik dat?" gets a sentence.
  *
- * **Er stonden ook niveaus en badges, en die zijn weg (ADR-149).** Het album
- * beloont wat een kind onthoudt, plaatje voor plaatje, en een diploma is daar
- * het moment waarop een hele pagina rijp is. Tien losse badges naast die
- * pagina's waren een tweede verzameling over dezelfde leerstof, en vier ervan
- * beloonden iets anders dan onthouden: tempo, volume en een reeks.
+ * **Er stonden ook niveaus en badges, en die zijn weg (ADR-149).** Wat er
+ * beloond wordt is wat een kind onthoudt, en sinds ADR-167 is het diploma
+ * daarvoor het hele programma. Tien losse badges ernaast waren een tweede
+ * verzameling over dezelfde leerstof, en vier ervan beloonden iets anders dan
+ * onthouden: tempo, volume en een reeks.
  */
 
 /** What the diploma rules get to look at. Nothing else is in scope. */

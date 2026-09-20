@@ -182,7 +182,6 @@ export function SumScreen({
                         ? t('sums.dontKnowSub')
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
-                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
                 </div>
               </div>
 

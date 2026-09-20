@@ -27,13 +27,14 @@ const GOED: readonly Toon[] = [
 ];
 
 /**
- * De twee momenten die een eigen geluid krijgen (ADR-149): een pagina van het
- * album die helemaal in kleur komt, en een diploma. Drie tonen, en niet bij elke
- * laag: bij tachtig lagen per week zou geluid ruis worden. Een pagina klinkt als
- * een goed antwoord dat één trede verder gaat; een diploma begint hoog en landt.
+ * Het moment dat een eigen geluid krijgt: een diploma. Drie tonen, en niet bij
+ * elk goed antwoord — bij tachtig per week zou geluid ruis worden. Het begint
+ * hoog en landt.
+ *
+ * Hier stond er een tweede naast, voor een albumpagina die helemaal in kleur
+ * kwam. Het album is met ADR-158 opgeheven, dus die toon klonk nergens meer.
  */
 const MOMENT = {
-  pagina: [...GOED, { hz: 1320, na: 0.19, duur: 0.16 }],
   diploma: [
     { hz: 880, na: 0, duur: 0.1 },
     { hz: 1320, na: 0.09, duur: 0.1 },
