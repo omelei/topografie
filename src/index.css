@@ -4441,7 +4441,12 @@
   .tk-grootdiploma {
     position: relative;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    /* Vier rijen, en het zegel staat erin in plaats van eroverheen. Absoluut
+     * gepositioneerd liep de voettekst eronder door — met het oog meteen te
+     * zien en met geen enkele toets. De volgorde is ook de volgorde van de
+     * uitreiking: soort, naam, zegel, van wie en wanneer. */
+    grid-template-rows: auto 1fr auto auto;
+    justify-items: center;
     gap: 12px;
     aspect-ratio: 3 / 4;
     max-width: 100%;
@@ -4498,9 +4503,7 @@
     margin: 0;
   }
   .tk-grootdiploma-zegel {
-    position: absolute;
-    right: 18px;
-    bottom: 18px;
+    display: inline-flex;
   }
 
   /* De uitreiking: de enige beweging in dit programma, en zij neemt het

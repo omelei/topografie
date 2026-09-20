@@ -43,9 +43,10 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   await expect(page.getByText('0 van de 12 gehaald')).toHaveCount(0);
   await expect(kast).toContainText('Hier komen je diploma’s te hangen.');
 
-  // De eerste twee dagen kan er niets in de ring staan, dus daar staat de regel
-  // zelf en geen nul.
-  await expect(kast.getByText('Nog niets onthouden.', { exact: false }).first()).toBeVisible();
+  // De regel staat er één keer en niet op elke kaart: twaalf keer dezelfde zin
+  // onder elkaar is geen uitleg maar een muur waarin de kaarten verdwijnen.
+  await expect(kast.getByText(/Een onderdeel telt mee als je het drie keer/)).toHaveCount(1);
+  await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(12);
 });
 
 test('de kast staat op Jij en niet meer bij de ouder, met één vak open', async ({ page }) => {

@@ -1532,8 +1532,10 @@ export const nl = {
   'diploma.gehaaldOp': 'Gehaald op {datum}',
   'diploma.onthoudt': 'Je onthoudt er {bewezen} van de {totaal}.',
   // De eerste twee dagen kan er niets in de ring staan: een onderdeel telt pas
-  // mee na drie goede antwoorden op drie dagen. Daar hoort de regel zelf, niet
-  // een nul.
+  // mee na drie goede antwoorden op drie dagen. In het grote diploma staat de
+  // regel dan voluit — daar gaat het over één diploma. Op een kaart staat
+  // alleen `diploma.nogNiet`: twaalf keer dezelfde zin onder elkaar is geen
+  // uitleg maar een muur, en de kaarten verdwijnen erin.
   'diploma.nogNiets': 'Nog niets onthouden. Je moet het drie keer goed weten, op drie dagen.',
   // De ring telt wat ooit bewezen is, de lat telt wat vers is. Na ruim twee
   // weken weg lopen die uiteen, en dan staat dit er.
@@ -1556,6 +1558,9 @@ export const nl = {
   'kast.titel': 'Jouw diploma’s',
   'kast.stand': '{aantal} van de {totaal} gehaald.',
   'kast.leeg': 'Hier komen je diploma’s te hangen. Druk op een diploma om eraan te beginnen.',
+  // De regel, één keer boven het raster in plaats van op elke kaart.
+  'kast.regel':
+    'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen.',
   'kast.vakAantal': '{aantal} diploma’s',
   'kast.vakOpen': 'Laat de diploma’s van {vak} zien',
   'kast.vakDicht': 'Verberg de diploma’s van {vak}',

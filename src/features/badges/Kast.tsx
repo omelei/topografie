@@ -102,6 +102,9 @@ export function Kast({
             ? t('kast.leeg')
             : t('kast.stand', { aantal: gehaaldTotaal, totaal: alleTotaal })}
         </p>
+        {/* De regel, één keer. Op elke kaart zou het twaalf keer dezelfde zin
+            zijn, en dan leest niemand hem meer. */}
+        <p className="tk-hulp">{t('kast.regel')}</p>
       </div>
 
       {vakken.map(({ module, doelen }) => {

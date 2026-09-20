@@ -55,6 +55,16 @@ export function GrootDiploma({ beeld }: { readonly beeld: DiplomaBeeld }) {
         {beeld.naam}
       </p>
 
+      <span className="tk-grootdiploma-zegel" data-beat="ring">
+        <Embleem
+          icon={DiplomaIcon}
+          module={beeld.module}
+          gehaald={beeld.gehaald}
+          groot
+          vul={beeld.vul}
+        />
+      </span>
+
       <div className="tk-grootdiploma-voet" data-beat="wie">
         {beeld.gehaald ? (
           <>
@@ -71,16 +81,6 @@ export function GrootDiploma({ beeld }: { readonly beeld: DiplomaBeeld }) {
           <p>{beeld.standZin}</p>
         )}
       </div>
-
-      <span className="tk-grootdiploma-zegel" data-beat="ring">
-        <Embleem
-          icon={DiplomaIcon}
-          module={beeld.module}
-          gehaald={beeld.gehaald}
-          groot
-          vul={beeld.vul}
-        />
-      </span>
     </div>
   );
 }

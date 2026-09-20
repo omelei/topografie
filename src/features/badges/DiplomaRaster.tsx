@@ -141,7 +141,10 @@ function zinVan(
     case 'opfrissen':
       return t('diploma.opfrissen');
     case 'nietsNog':
-      return t('diploma.nogNiets');
+      // Kort, want dit staat op elke kaart die nog op nul staat. De regel zelf
+      // staat één keer boven het raster; twaalf keer dezelfde zin onder elkaar
+      // is een muur waarin de kaarten verdwijnen.
+      return t('diploma.nogNiet');
     case 'bezig':
       return voortgang
         ? t('diploma.onthoudt', { bewezen: voortgang.bewezen, totaal: voortgang.totaal })
