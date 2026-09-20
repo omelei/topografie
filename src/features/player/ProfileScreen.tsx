@@ -13,8 +13,8 @@ import type { Onderdeel } from '@/features/module/onderdelen';
  *
  * In the order of a profile page (ADR-145): **who you are** — the name and who
  * is practising — then **where the settings are**, then **what you have
- * made**: the album, the diplomas and the year so far (ADR-149). The hero and
- * the badges stood here until the album replaced them.
+ * made**: the diplomas, which since ADR-167 are the whole reward programme.
+ * A hero, then badges, then an album stood here before them.
  *
  * Most of what the design draws here needs something that does not exist yet.
  * The avatar set, the group, the friend code all belong to the parent account

@@ -12,8 +12,8 @@ import { useVandaag } from './useVandaag';
  *
  * **Als vandaag af is, zegt de uitslag dat zelf** (ADR-149): "Klaar voor
  * vandaag", met Klaar als eerste knop. Dit blok stond daar eerst met de held
- * van het kind; het album heeft geen held, en twee keer "af" onder elkaar is er
- * één te veel.
+ * van het kind; die held is met ADR-149 vervallen, en twee keer "af" onder
+ * elkaar is er één te veel.
  *
  * **Niets zonder plan.** Wie geen dagplan heeft — geen code, of niets aan de
  * beurt — ziet hier niets. Dit blok telt af, het verkoopt niet. Een dag die leeg

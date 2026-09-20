@@ -44,8 +44,8 @@ interface Voorkennis {
  * kind weet of het klaar is om af te zwemmen: dat hangt aan de pagina, niet
  * aan één goede ronde. Is de pagina rijp, dan vraagt het scherm of er iemand
  * mag meekijken — een diploma is iets om samen te zien. Is ze het nog niet,
- * dan is de eerste knop oefenen en kan een kind al proefzwemmen: het hoort hoe
- * het ging, maar het diploma komt pas als de pagina rijp is.
+ * dan is er één knop, en die gaat terug naar oefenen: de toets afleggen terwijl
+ * vaststaat dat er geen diploma uit kan komen, kan hier niet meer.
  *
  * Buiten het frame, zoals een ronde en zijn uitslag (ADR-041).
  */
@@ -149,11 +149,13 @@ export function Afzwemmen({
               ) : (
                 <>
                   <p className="text-lopend">
-                    {t('afzwemmen.nietRijpZin', {
-                      onthouden: voorkennis.stand.onthouden,
-                      totaal: voorkennis.stand.totaal,
-                      nodig: voorkennis.nodig,
-                    })}
+                    {voorkennis.stand.onthouden === 0
+                      ? t('afzwemmen.nietRijpNiets', { nodig: voorkennis.nodig })
+                      : t('afzwemmen.nietRijpZin', {
+                          onthouden: voorkennis.stand.onthouden,
+                          totaal: voorkennis.stand.totaal,
+                          nodig: voorkennis.nodig,
+                        })}
                   </p>
                   <p className="text-lopend text-tekst-secundair">
                     {t('afzwemmen.nietRijpUitleg')}
@@ -203,9 +205,6 @@ export function Afzwemmen({
               <div className="tk-uitslag-knoppen">
                 <button type="button" className="tk-button" onClick={onTerug}>
                   {t('afzwemmen.oefen')}
-                </button>
-                <button type="button" className="tk-button tk-button-secondary" onClick={onBegin}>
-                  {t('afzwemmen.proef')}
                 </button>
               </div>
             )}

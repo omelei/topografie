@@ -115,12 +115,6 @@ export const nl = {
   'home.rowBack': 'Terug in {rij}',
   'home.rowOn': 'Verder in {rij}',
 
-  // Waar je zelf steeds naar teruggaat, in één tik. Geen aanbeveling en geen
-  // algoritme: het is wat je het vaakst gekozen hebt.
-
-  // De weekkaart (ADR-149), waar de reeks stond. Dagen tellen, reeksen niet:
-  // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
-  // Het doel kiest een kind samen met een ouder, twee tot vijf dagen.
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.
   'terug.titel': 'Welkom terug',
@@ -153,8 +147,13 @@ export const nl = {
   'afzwemmen.nietRijpTitel': 'Nog niet klaar om af te zwemmen',
   'afzwemmen.nietRijpZin':
     'Je onthoudt er nu {onthouden} van de {totaal}. Voor het diploma moet je er {nodig} onthouden.',
+  // Nooit een telling die nul is (ADR-167). De eerste twee dagen kan er niets
+  // staan — een onderdeel telt pas na drie goede antwoorden op drie dagen — en
+  // "0 van de 10" leest als een cijfer voor het kind in plaats van als de stand.
+  'afzwemmen.nietRijpNiets':
+    'Je hebt hier nog niets onthouden. Voor het diploma moet je er {nodig} onthouden.',
   'afzwemmen.nietRijpUitleg':
-    'Een plaatje krijgt kleur als je het op verschillende dagen goed weet. Proefzwemmen kan al, maar het diploma krijg je dan nog niet.',
+    'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen. Oefen nog even, dan mag je afzwemmen.',
   'afzwemmen.alGehaald': 'Dit diploma heb je al. De datum op je diploma blijft staan.',
   'afzwemmen.meekijkenVraag': 'Wil je dat iemand meekijkt?',
   'afzwemmen.meekijkenUitleg':
@@ -165,19 +164,10 @@ export const nl = {
   'afzwemmen.begin': 'Begin',
   'afzwemmen.terug': 'Terug',
   'afzwemmen.oefen': 'Eerst oefenen',
-  'afzwemmen.proef': 'Proefzwemmen',
-  'afzwemmen.proefGehaald': 'Proefzwemmen gelukt.',
-  // Niet nog een keer "dit was proefzwemmen": dat staat er met
-  // `afzwemmen.proefGehaald` al boven. Wel wat het voor vandaag betekent, want
-  // de regel erboven kan "met 5 goed is hij van jou" zijn en dat gaat over een
-  // andere dag dan deze.
-  'afzwemmen.proefUitleg':
-    'Bij proefzwemmen krijg je nog geen diploma. Dat komt als je albumpagina klaar is om af te zwemmen.',
   'afzwemmen.print': 'Print je diploma',
   'afzwemmen.printNaam': 'Gehaald door {naam}',
   'afzwemmen.printZonderNaam': 'Gehaald',
   'afzwemmen.printDatum': 'op {datum}',
-  // De seizoenen op een diploma, voor de bijhoudstempels.
   // De prijzenkast, sinds ADR-158 op Voor ouders: eerst wat gehaald is, en de
   // gaten pas als je erom vraagt. Op een modulepagina blijft elk gat een
   // uitnodiging, want daar is hij aan te raken; hier is hij dat niet. De
@@ -289,10 +279,6 @@ export const nl = {
   'retention.dagGeleden': '1 dag geleden',
   'retention.dagenGeleden': '{aantal} dagen geleden',
   'retention.nooit': '–',
-  // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114), en
-  // sinds ADR-160 bovenaan de pagina en open: alles eronder telt dit ene woord.
-  // De dag in regel 2 is de snelste weg die het schema toelaat (INTERVAL_DAYS):
-  // goed op dag 0, dag 1 en dag 2.
   // De gratis voorproef (ADR-124): de pagina zegt welk onderwerp ze laat zien,
   // want zonder de chips kan een kind niet zien dat er meer is.
   'retention.voorproef':
@@ -318,6 +304,10 @@ export const nl = {
   'retention.verkoopTekst':
     'Met premium staat hier je eigen kind: elk vak, elk onderwerp en elke som, week na week, met hoeveel het er over drie weken nog van weet. En leer.nu zet elke dag klaar wat het bijna vergeet.',
   'retention.verkoopKnop': 'Bekijk premium',
+  // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114), en
+  // sinds ADR-160 bovenaan de pagina en open: alles eronder telt dit ene woord.
+  // De dag in regel 2 is de snelste weg die het schema toelaat (INTERVAL_DAYS):
+  // goed op dag 0, dag 1 en dag 2.
   'retention.regelsTitel': 'Wanneer onthoud je iets?',
   'retention.regel1':
     'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
@@ -819,11 +809,6 @@ export const nl = {
   'practice.loading': 'Kaart wordt geladen…',
   'practice.mapFailed': 'De kaart kon niet geladen worden.',
 
-  // Result
-  // "Ronde klaar" and not "Klaar!" (K8). The exclamation mark congratulated the
-  // child for stopping, which is the one thing on this screen that is not an
-  // achievement — and the register rule is that we talk about the work, never
-  // about the child.
   // Rekenen. De tafels van 1 tot 12 en tien sommen per tafel, allebei uit het
   // app-ontwerp v2. Het oefenscherm zelf is daar niet getekend (ADR-049).
   'sums.table': 'Tafel van {tafel}',
@@ -1249,6 +1234,10 @@ export const nl = {
   'taal.uitleg.ig': 'Hoor je aan het eind „ug”? Je schrijft altijd -ig, zoals in gelukkig.',
   'taal.uitleg.lijk': 'Hoor je aan het eind „luk”? Je schrijft altijd -lijk, zoals in vrolijk.',
 
+  // "Ronde klaar" and not "Klaar!" (K8). The exclamation mark congratulated the
+  // child for stopping, which is the one thing on this screen that is not an
+  // achievement — and the register rule is that we talk about the work, never
+  // about the child.
   'result.title': 'Ronde klaar',
   'result.practiceMore': 'Deze moet je nog oefenen',
   'result.home': 'Terug naar start',
@@ -1275,8 +1264,11 @@ export const nl = {
     'Er hoeft vandaag niets meer terug te komen. Stoppen is nu ook goed.',
   'result.klaar': 'Klaar',
   'result.nieuwePlaatjes': 'Iets nieuws leren',
+  // De toren is met ADR-169 weggegaan en deze zin bleef erover praten. Wat er
+  // nu geldt is de regel van de diploma's: iets nieuws telt pas mee als je het
+  // op een volgende dag weer goed weet (ADR-167).
   'result.nieuwePlaatjesUitleg':
-    'Dit levert vandaag nog geen stenen op. Ze tellen als ze terugkomen.',
+    'Iets nieuws telt nog niet mee voor je diploma. Dat gebeurt als het terugkomt.',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde

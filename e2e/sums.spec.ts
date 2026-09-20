@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { alsOnthouden } from './zaai';
 
 /**
  * Rekenen: the second module, and the first thing in this product that is not a
@@ -56,37 +57,6 @@ async function tienGoed(page: Page) {
     await volgende.click();
   }
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
-}
-
-/**
- * Everything this child practised in box four: remembered (ADR-114), which is
- * what makes a page ripe. Four good rounds over a week would do the same.
- */
-async function alsOnthouden(page: Page) {
-  await page.evaluate(async () => {
-    await new Promise<void>((klaar, mis) => {
-      const open = indexedDB.open('leernu');
-      open.onerror = () => mis(open.error);
-      open.onsuccess = () => {
-        const db = open.result;
-        const tx = db.transaction('progress', 'readwrite');
-        const store = tx.objectStore('progress');
-        store.getAll().onsuccess = (event) => {
-          const rijen = (event.target as IDBRequest).result as Record<string, unknown>[];
-          const nu = new Date().toISOString();
-          const straks = new Date(Date.now() + 14 * 86_400_000).toISOString();
-          for (const rij of rijen) {
-            store.put({ ...rij, box: 4, goedCount: 4, laatsteReview: nu, volgendeReview: straks });
-          }
-        };
-        tx.oncomplete = () => {
-          db.close();
-          klaar();
-        };
-        tx.onerror = () => mis(tx.error);
-      };
-    });
-  });
 }
 
 /** The one way out of K2, whatever was chosen. See e2e/app.spec.ts. */
@@ -428,9 +398,16 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
     page.getByRole('region', { name: /Hoe wil je/ }).getByRole('button', { name: /Tafeldiploma/ }),
   ).toHaveCount(0);
 
+  // Eerst de tafel echt kennen. Sinds proefzwemmen weg is, is dit de enige weg
+  // naar een diplomaronde: een pagina die niet rijp is heeft geen knop die er
+  // een start.
+  await startTable(page, 1, /Zelf typen/);
+  await tienGoed(page);
+  await alsOnthouden(page);
+
   await startTable(page, 1, /Tafeldiploma/);
-  // Nothing practised yet, so it is proefzwemmen (ADR-149).
-  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
+  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Nee, ik begin' }).click();
 
   // A diploma asks the table straight through, so the first sum is 1 x 1.
   await expect(page.locator('.tk-sum')).toContainText('1 × 1');

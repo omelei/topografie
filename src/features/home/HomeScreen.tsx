@@ -121,8 +121,8 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
     </div>
   );
 
-  // Wie twee weken weg was, hoort eerst dat het album er nog staat, en wat de
-  // eerste ronde terug kost (ADR-149). Niets als er niets te zeggen is.
+  // Wie twee weken weg was, hoort eerst dat zijn diploma's er nog hangen, en
+  // wat de eerste ronde terug kost (ADR-149). Niets als er niets te zeggen is.
   const terug = <TerugBlok played={played} gespeeld={gespeeld} onVerder={onVerder} />;
 
   // Met premium bovenaan, boven alles: dan is het het enige blok dat zegt wat er

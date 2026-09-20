@@ -151,8 +151,8 @@ test('without a code the premium parts are labelled once, and say what they do',
  * Er stonden twee sloten in — de reeks en "Goed beantwoord" — dus twee keer nee
  * op de voordeur, op elke modulepagina, en zelfs op de premiumpagina zelf.
  * "Goed beantwoord" staat sinds ADR-148 niet meer in de kolom maar op
- * Onthouden, en ook daar alleen met een code. De toren en de reeks zijn gratis
- * (ADR-158): wat een kind zelf gebouwd heeft, zit nooit achter een slot.
+ * Onthouden, en ook daar alleen met een code. Wat een kind zelf gehaald heeft,
+ * zit nooit achter een slot.
  */
 test('without a code the column beside every page carries no lock at all', async ({ page }) => {
   await signIn(page, 'Sep');

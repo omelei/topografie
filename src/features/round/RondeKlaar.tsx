@@ -21,11 +21,11 @@ import { useVandaag } from '@/features/home/useVandaag';
 /**
  * "Ronde klaar": the page after every round, in every module (K8, ADR-112).
  *
- * Since ADR-149 it opens with the **album**: the page of the set just
- * practised, with what changed lit up, and three short lines under it — what
- * the child did, what changed on the page, and what coming back brings. The
- * picture comes first, so a child of six who reads slowly still sees what
- * happened; each line carries an icon for the same reason.
+ * It opens with **the set just practised**, with what changed lit up, and
+ * three short lines under it — what the child did, what changed, and what
+ * coming back brings. The picture comes first, so a child of six who reads
+ * slowly still sees what happened; each line carries an icon for the same
+ * reason.
  *
  * Then **the way on**. When nothing is due any more anywhere, the page says
  * "Klaar voor vandaag" and the first button is Klaar: stopping is also done.
@@ -176,14 +176,7 @@ export function RondeKlaar({
               <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
             ) : null}
             {toetsstand ? <p className="text-tekst-secundair">{t('result.markWhy')}</p> : null}
-            {reward?.proef === 'gehaald' ? (
-              <p className="text-tekst-secundair">{t('afzwemmen.proefGehaald')}</p>
-            ) : melding ? (
-              <p className="text-tekst-secundair">{melding}</p>
-            ) : null}
-            {reward?.proef ? (
-              <p className="text-tekst-secundair">{t('afzwemmen.proefUitleg')}</p>
-            ) : null}
+            {melding ? <p className="text-tekst-secundair">{melding}</p> : null}
           </div>
         </section>
 
@@ -301,10 +294,9 @@ export function RondeKlaar({
 /**
  * Wat terugkomen oplevert.
  *
- * Dit is de enige regel die vooruit kijkt, en hij is de tegenhanger van de
- * steenregel: wat er niet terugkomt, levert ook niets op. Komt er morgen niets,
- * dan zegt hij wanneer wel — een kind dat vandaag niets kreeg, hoort zo dat het
- * niet aan hem lag maar aan de kalender.
+ * Dit is de enige regel die vooruit kijkt. Komt er morgen niets, dan zegt hij
+ * wanneer wel — een kind dat vandaag niets kreeg, hoort zo dat het niet aan hem
+ * lag maar aan de kalender.
  */
 function morgenZin(blik: {
   readonly morgenTerug: number;

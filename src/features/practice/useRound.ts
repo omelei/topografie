@@ -429,7 +429,7 @@ export interface RoundState {
   readonly livesLeft: number | null;
   /** Set once the round ends: what it earned. */
   readonly reward: RoundOutcome | null;
-  /** Every item of the sets in this round: the album page after it (ADR-149). */
+  /** Every item of the sets in this round: the picture on "Ronde klaar". */
   readonly items: readonly Item[];
   /** The boxes as the round found them, and as they are now. */
   readonly statesVoor: ReadonlyMap<string, ItemState>;
@@ -613,7 +613,7 @@ export function useRound(
         setCatalogue(loadAllItems().filter((item) => item.regioSet === sets[0]?.regioSet));
         setStates(loadedStates);
         // What the round found, so the result can say what changed: K8's whole
-        // point, and since ADR-149 drawn on the album page (`rondeAlbum`).
+        // point, and what "Ronde klaar" draws.
         setStatesVoor(new Map(loadedStates));
         setQuestions(round);
         setPhase(round.length > 0 ? 'asking' : 'finished');

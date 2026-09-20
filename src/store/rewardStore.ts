@@ -44,12 +44,6 @@ export interface RoundOutcome {
   readonly klokDiploma: KlokDiplomaSet | null;
   /** The map this round earned a topodiploma for, or null (ADR-117). */
   readonly topoDiploma: TopoDiplomaSet | null;
-  /**
-   * A diploma round on a page that was not ripe yet (ADR-149): proefzwemmen.
-   * `gehaald` when the round itself was good enough, `niet` when it was not,
-   * null for every other round and for a diploma sat on a ripe page.
-   */
-  readonly proef: 'gehaald' | 'niet' | null;
 }
 
 /** A diploma this child holds, and the day it was first earned. */
@@ -122,8 +116,9 @@ export async function loadTopoDiplomas(): Promise<Set<TopoDiplomaSet>> {
  * **Only on a ripe page** (ADR-149). A diploma used to be one round, which a
  * child could cram for in ten minutes and hold for ever. Now the page has to
  * be ripe when the round starts — nine in ten of it remembered, a table all of
- * it (ADR-141) — and the round is the afzwemmen on top. A round sat before
- * that is proefzwemmen: it says how it went and writes nothing.
+ * it (ADR-141) — and the round is the afzwemmen on top. Sitting one before
+ * that can no longer be started at all, and this stays the second lock: a
+ * round that arrives here unripe writes nothing.
  *
  * **The first day stays** (ADR-149). A child who sits a diploma again and
  * passes again has passed again, and the result screen says so; but the date
@@ -168,7 +163,6 @@ export async function applyRoundRewards(params: {
       klokDiploma: null,
       topoDiploma: null,
       taalDiploma: null,
-      proef: alle.some((id) => id !== null) ? 'gehaald' : 'niet',
     };
   }
 
@@ -181,6 +175,5 @@ export async function applyRoundRewards(params: {
     klokDiploma: klokDiplomaId === null ? null : klokVanDiploma(klokDiplomaId),
     topoDiploma: topoDiplomaId === null ? null : kaartVanDiploma(topoDiplomaId),
     taalDiploma: taalDiplomaId === null ? null : taalSetVanDiploma(taalDiplomaId),
-    proef: null,
   };
 }

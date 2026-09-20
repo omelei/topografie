@@ -33,9 +33,9 @@ export function isGroep(waarde: unknown): waarde is Groep {
  * is de dag waarop elk kind in elke regio al klaar is met het vorige jaar. Zo
  * schuift niemand een groep door terwijl de zomervakantie nog niet begon.
  *
- * Het album telt schooljaren vanaf 1 september (`schooljaarVan`, ADR-149):
- * daar hoort augustus nog bij het jaar ervoor. Hier moet een kind vóór de
- * eerste schooldag al een groep verder zijn, en daarom is dit een eigen functie.
+ * Het schooljaar telt vanaf 1 september (`schooljaarVan`, ADR-149): daar hoort
+ * augustus nog bij het jaar ervoor. Hier moet een kind vóór de eerste schooldag
+ * al een groep verder zijn, en daarom is dit een eigen functie.
  */
 export function groepsjaarVan(now: Date): number {
   return now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;

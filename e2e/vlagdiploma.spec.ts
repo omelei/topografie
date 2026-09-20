@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { alsOnthouden } from './zaai';
 
 /**
  * The vlaggendiploma (ADR-104): six on the flags page with the gaps showing,
@@ -75,6 +76,42 @@ async function speel(page: Page) {
   throw new Error('Het diploma hield niet op.');
 }
 
+/**
+ * Een gewone ronde Zuid-Amerika, vlag zoeken, eerste keus elke keer. Twee keer
+ * gespeeld raakt de twaalf vlaggen van het werelddeel; `alsOnthouden` zet
+ * daarna de doos, en pas dan is de pagina rijp genoeg om af te zwemmen — elf
+ * van de twaalf (ADR-141).
+ */
+async function zoekDeVlaggen(page: Page) {
+  await page.goto('/vlaggen');
+  await page
+    .getByRole('region', { name: 'Waar op de kaart?' })
+    .getByRole('button', { name: 'Zuid-Amerika' })
+    .click();
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Alle vlaggen/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Vlag zoeken/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
+  const volgende = page.getByRole('button', { name: 'Volgende vraag' });
+  const vlaggen = page.getByRole('group', { name: 'Kies een vlag' });
+  const namen = page.getByRole('group', { name: 'Kies een naam' });
+  for (let vraag = 0; vraag < 40; vraag++) {
+    await expect(klaar.or(volgende).or(vlaggen).or(namen).first()).toBeVisible();
+    if (await klaar.isVisible()) return;
+    if (await volgende.isVisible()) await volgende.click();
+    else if (await vlaggen.isVisible()) await vlaggen.getByRole('button').first().click();
+    else await namen.getByRole('button').first().click();
+  }
+  throw new Error('De ronde Zuid-Amerika hield niet op.');
+}
+
 test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', async ({ page }) => {
   await signIn(page, 'Anouk');
   await page.goto('/vlaggen');
@@ -103,11 +140,28 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 
   await page.locator('.tk-choose-start button').click();
-  // Nobody practised these flags, so this is proefzwemmen (ADR-149).
-  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
+
+  // Niemand oefende deze vlaggen, dus de pagina is niet rijp: één knop, en die
+  // gaat terug naar oefenen. Sinds proefzwemmen weg is, is dat de enige uitweg.
+  await expect(page.getByText('Nog niet klaar om af te zwemmen')).toBeVisible();
+  const knoppen = page.locator('.tk-uitslag-knoppen').getByRole('button');
+  await expect(knoppen).toHaveCount(1);
+  await expect(knoppen).toHaveText('Eerst oefenen');
+  await knoppen.click();
+
+  // Dus eerst oefenen. Twee rondes raken alle twaalf de vlaggen.
+  await zoekDeVlaggen(page);
+  await zoekDeVlaggen(page);
+  await alsOnthouden(page);
+
+  await page.goto('/vlaggen');
+  await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
+  await page.locator('.tk-choose-start button').click();
+  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await speel(page);
 
-  await expect(page.getByText(/^Proefzwemmen gelukt|^Nog geen diploma/)).toBeVisible();
+  await expect(page.getByText(/^Vlaggendiploma|^Nog geen diploma/)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
   // En in de kast op Jij, waar alle diploma's staan die dit kind kan halen.

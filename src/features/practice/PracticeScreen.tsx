@@ -300,7 +300,6 @@ export function PracticeScreen({
                   <p className="text-lopend text-tekst-secundair">
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
-                  {/* Wat dit antwoord opleverde: een steen, of niet (ADR-158). */}
                 </div>
               </div>
 

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { alsOnthouden } from './zaai';
 
 /**
  * The klokdiploma and the topodiploma (ADR-117): a wall on the module page
@@ -13,6 +14,35 @@ async function signIn(page: Page, naam: string) {
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
   await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
+}
+
+/**
+ * Een gewone ronde over de Waddeneilanden, aanwijzen, alles fout. Het gaat om
+ * de rijen in `progress`: `alsOnthouden` zet er de doos van, en verzint niets
+ * bij wat nooit geoefend is.
+ */
+async function wijsDeEilandenAan(page: Page) {
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Waddeneilanden/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
+  const weetNiet = page.getByRole('button', { name: 'Ik weet het niet' });
+  const volgende = page.getByRole('button', { name: 'Volgende vraag' });
+  for (let vraag = 0; vraag < 20; vraag++) {
+    await expect(klaar.or(weetNiet).or(volgende).first()).toBeVisible();
+    if (await klaar.isVisible()) return;
+    if (await volgende.isVisible()) await volgende.click();
+    else await weetNiet.click();
+  }
+  throw new Error('De ronde over de Waddeneilanden hield niet op.');
 }
 
 test('four klokdiploma’s, and one press chooses a step and the diploma', async ({ page }) => {
@@ -56,10 +86,25 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await page.locator('.tk-choose-start button').click();
 
   // Afzwemmen first (ADR-149): what it asks, and that a page nobody practised
-  // is not ripe. Proefzwemmen still says how it went.
+  // is not ripe. Er is dan precies één knop, en die gaat terug naar oefenen —
+  // de toets afleggen terwijl er geen diploma uit kan komen, kan niet meer.
   await expect(page.getByRole('heading', { name: /^Afzwemmen: / })).toBeVisible();
   await expect(page.getByText('Nog niet klaar om af te zwemmen')).toBeVisible();
-  await page.getByRole('button', { name: 'Proefzwemmen' }).click();
+  const knoppen = page.locator('.tk-uitslag-knoppen').getByRole('button');
+  await expect(knoppen).toHaveCount(1);
+  await expect(knoppen).toHaveText('Eerst oefenen');
+  await knoppen.click();
+  await expect(page.locator('.tk-choose-start button')).toBeVisible();
+
+  // Dus eerst de eilanden leren, en dan pas afzwemmen. De doosstand zetten
+  // scheelt de vier rondes over een week die het echt zou kosten.
+  await wijsDeEilandenAan(page);
+  await alsOnthouden(page);
+  await page.goto('/topografie');
+  await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
+  await page.locator('.tk-choose-start button').click();
+  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Nee, ik begin' }).click();
 
   // Five islands, and "ik weet het niet" to each: no answer is shown between.
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
@@ -74,7 +119,6 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(
     page.getByText('Nog geen diploma: 0 van de 5 goed. Met 5 goed is hij van jou.'),
   ).toBeVisible();
-  await expect(page.getByText(/^Bij proefzwemmen krijg je nog geen diploma\./)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
   // En in de kast op Jij, waar alle diploma's staan die dit kind kan halen. Eén

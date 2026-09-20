@@ -9880,6 +9880,94 @@ Leitner-standen die er al zijn.
 
 ---
 
+## ADR-170 — Proefzwemmen gaat weg: een toets die niets kan opleveren
+
+**Status:** accepted. **Date:** 2026-09-20. Op verzoek van de eigenaar. Neemt
+de proefronde van ADR-149 terug. Stap drie van drie na ADR-167 en ADR-169; het
+ontwerp staat in `docs/beloning-diplomas.md`, §9. Raakt de oefentoets van
+ADR-085 en ADR-100 niet, en `leitner.ts`, `doel.ts` en de lat van ADR-141
+evenmin.
+
+### Context
+
+Proefzwemmen liet een kind de diplomatoets afleggen terwijl vaststond dat er
+geen diploma uit kon komen: de afzwempagina had bij "nog niet rijp" een tweede
+knop, `rewardStore` schreef dan niets en gaf `proef: 'gehaald' | 'niet'` terug,
+en Ronde klaar zei dat het een proef was.
+
+Het bestond om iets echts op te lossen. Een kind dat nog nooit een diploma had
+gedaan, kon niet voelen hoe die ronde is — niets terug tot het eind, één fout
+en de poging is voorbij — en dat blind in moeten gaan is een slechte eerste
+ervaring.
+
+Dat argument valt nu op twee manieren tegelijk weg. De voortgangsring van
+ADR-167 laat op elke diplomakaart zien hoe ver een kind is, dus "hoe ver ben
+ik" is beantwoord zonder een ronde te spelen. En de oefentoets (ADR-085,
+ADR-100) ís letterlijk dezelfde vorm — ADR-104 schrijft voor dat een diploma
+draait _"the way de oefentoets runs"_ — maar dan op elke set, ook op mixen
+zonder diploma, en met een cijfer eraan.
+
+Wat overblijft is een toets naast een toets, waarvan er één niets oplevert. Dat
+holt de waarde uit van het enige dat dit product nog beloont. Het is dezelfde
+fout als de toren en het album in het klein: twee dingen die over dezelfde stof
+gaan en iets anders zeggen.
+
+### Decision
+
+**Proefzwemmen verdwijnt, de oefentoets blijft.** Het scherm Afzwemmen heeft op
+een pagina die nog niet rijp is precies één knop — "Eerst oefenen" — en die gaat
+terug naar de modulepagina. `RoundOutcome.proef` vervalt, en met hem de twee
+regels op Ronde klaar.
+
+**De poort in `rewardStore` blijft staan.** De vroege return bij een niet-rijpe
+diplomaronde schrijft nog steeds niets; hij rapporteert alleen niets meer. Dat
+is nu een tweede slot achter een deur die dicht is, en dat is waar het hoort:
+de lat van ADR-141 mag niet afhangen van welk scherm een ronde startte.
+
+**Hernoemen kan niet en hoeft niet.** "Oefentoets" ís de naam van dat ding
+sinds ADR-100, waar het een eigen tegel kreeg; de premiumpagina verkoopt hem
+onder die naam.
+
+**En de taal van het album gaat mee.** Het album is met ADR-158 opgeheven, maar
+`afzwemmen.proefUitleg` sprak op het scherm nog over "je albumpagina" en
+`afzwemmen.nietRijpUitleg` over een plaatje dat kleur krijgt. Beide zijn weg.
+`result.nieuwePlaatjesUitleg` beloofde nog stenen — een zin die ADR-169 miste.
+In het commentaar is het onderscheid gemaakt tussen wat geschiedenis beschrijft
+("Dit was `album.ts`", en dat klopt) en wat in de tegenwoordige tijd over iets
+sprak dat niet meer bestaat; alleen het tweede is herschreven.
+
+### Consequences
+
+- **Een kind zonder rijpe pagina kan geen diplomaronde meer starten.** Dat is
+  het doel, en het is ook de prijs: de eerste diplomaronde van een kind is
+  meteen de echte. De oefentoets vangt dat op, en die staat op elke set.
+- **Nooit meer een nul op het afzwemscherm.** `afzwemmen.nietRijpZin` zei "Je
+  onthoudt er nu 0 van de 10" zolang er nog niets telde — precies de telling die
+  ADR-167 verbood, en zichtbaar zodra het scherm het enige is dat er nog staat.
+  `afzwemmen.nietRijpNiets` zegt daar de regel in plaats van het cijfer.
+- **De drie e2e-toetsen die een diplomaronde speelden, komen er nu anders in.**
+  Ze kwamen alle drie binnen via proefzwemmen, op een set die nooit geoefend
+  was. Nu oefenen ze eerst en zetten daarna de doosstand —
+  `e2e/zaai.ts::alsOnthouden`, het patroon dat `doel.spec.ts` en `sums.spec.ts`
+  elk al apart hadden staan en dat nu op één plek staat. Dat is een eerlijker
+  toets: hij loopt de weg die een kind ook loopt.
+- **Het geluid van een albumpagina in kleur is weg.** `speelMoment('pagina')`
+  werd alleen nog door zijn eigen toets aangeroepen; het diplomageluid blijft.
+- **Twaalf dode CSS-klassen zijn weg**, waaronder de hele `.tk-diplomaprint`,
+  die ADR-167 verving door `.tk-grootdiploma` zonder de oude op te ruimen. Geen
+  ervan komt nog in `src/` of `e2e/` voor.
+- **Vijf zwevende commentaarblokken in `nl.ts` staan weer bij hun sleutel**, of
+  zijn weg waar hun sleutel dat ook is. Een commentaar dat vier sleutelgroepen
+  van zijn onderwerp af staat, beschrijft de verkeerde regels.
+- **Geen migratie en geen schemawijziging.** `proef` stond alleen in een
+  teruggegeven object, nooit in de opslag.
+- **Nog niet in een browser gezien op alle maten.** Afzwemmen is in beide
+  standen en Ronde klaar zijn op 393px bekeken vóór het afronden — dat vond de
+  nul en de belofte van stenen, die geen van de 1111 toetsen meldde — maar deze
+  omgeving heeft Chromium 1194 terwijl het project Playwright 1.63 (revisie 1243) pint, dus de andere vijf maten zijn CI's oordeel.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
