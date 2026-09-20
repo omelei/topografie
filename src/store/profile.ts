@@ -23,7 +23,7 @@ export async function getProfile(): Promise<ProfileRecord | undefined> {
 
 /**
  * Het kind van het eerste scherm. Daar is de groep al gevraagd (ADR-151), ook
- * als het antwoord "Weet ik niet" was, dus de voordeur vraagt het niet nog
+ * als het antwoord "Zeg ik niet" was, dus de voordeur vraagt het niet nog
  * eens. Een kind dat later op Jij wordt toegevoegd, krijgt de vraag wel.
  */
 export async function createProfile(naam: string, groep?: Groep): Promise<ProfileRecord> {

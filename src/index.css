@@ -501,6 +501,42 @@
     text-wrap: pretty;
   }
 
+  /* De overslaan-link (ADR-166). Weg tot hij focus krijgt, en dan een gewone
+   * knop linksboven, over alles heen. Niet `display: none` en niet
+   * `visibility: hidden`: allebei halen hem uit de tabvolgorde, en dan is er
+   * niets om overheen te slaan. Wat hem verbergt is dat hij boven het scherm
+   * staat, en bij focus zakt hij erin. */
+  .tk-overslaan {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--raak);
+    padding: 0 16px;
+    border-radius: 0 0 var(--kaart-radius) var(--kaart-radius);
+    background: var(--inkt);
+    color: var(--kaart);
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-120%);
+  }
+  /* `:focus` en niet `:focus-visible`. Deze link is alleen met een toetsenbord
+   * te bereiken, dus het onderscheid dat `:focus-visible` maakt levert hier
+   * niets op — en het kost wél iets: wie de focus langs een andere weg krijgt
+   * dan een toetsaanslag, zou een link hebben die focus heeft en niet te zien
+   * is. Dat is de ene fout die een overslaan-link niet mag maken. */
+  .tk-overslaan:focus {
+    transform: translateY(0);
+  }
+  /* Het doel van de link draagt `tabIndex={-1}` en krijgt dus focus. Een rand
+   * om de hele pagina is daar geen hulp — de focus is er om verder te tabben,
+   * niet om iets aan te wijzen. */
+  #inhoud:focus {
+    outline: none;
+  }
+
   /* One focus style everywhere. On a map region an outline follows the bounding
    * box rather than the shape, which draws a rectangle in the sea — so map
    * shapes thicken their own stroke instead (see .tk-shape). */
@@ -720,16 +756,6 @@
    * `--accent` — dit is geen modulekleur en verandert nergens mee mee. Op een
    * telefoon valt het woord weg en blijft de ster over, want daar vecht de balk
    * al met de naam van het kind. */
-  /* Het vooruitzicht onder een toets (ADR-127): een hele regel onder de badge,
-   * de dagen en de weg-knop, dus over de volle breedte van de rij. */
-  .tk-toets-zicht {
-    flex-basis: 100%;
-    margin-top: 4px;
-    font-size: var(--type-hulp);
-    line-height: var(--type-hulp-lh);
-    color: var(--tekst-secundair);
-  }
-
   .tk-premiumknop {
     display: inline-flex;
     flex-shrink: 0;
@@ -1849,6 +1875,29 @@
     line-height: var(--type-getal-lh);
     font-weight: var(--type-getal-weight);
   }
+  /* De twee prijzen naast elkaar (ADR-164), en onder elkaar zodra ze niet
+   * passen: "€ 24,95 per schooljaar" en "€ 5 per maand" zijn samen breder dan
+   * een kolom op een telefoon. De tweede krijgt een streep ervoor waar ze naast
+   * elkaar staan, zodat het één regel blijft lezen en geen twee aanbiedingen. */
+  .tk-premium-prijzen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px 20px;
+  }
+  @media (min-width: 480px) {
+    .tk-premium-prijzen > * + * {
+      padding-left: 20px;
+      border-left: var(--stroke-hair) solid var(--rand-licht);
+    }
+  }
+  /* De twee knoppen. Het jaar is de primaire en de maand de secundaire: de
+   * pagina raadt er één aan, en twee even zware knoppen raden niets aan. */
+  .tk-premium-plan-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 
   /* De tabel scrolt in zijn eigen doos als hij niet past, nooit de pagina. */
   .tk-premium-tabel-rol {
@@ -2266,87 +2315,6 @@
   .tk-kaart[data-soon] .tk-plaat {
     background: var(--papier);
     color: var(--tekst-secundair);
-  }
-
-  /* ---- The tests ----------------------------------------------------------
-   * One row per test: the subject as a badge, when, and a way to take it off
-   * the list. A hairline between rows rather than a card round each: the block
-   * is already the card.
-   */
-  .tk-toets-lijst {
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-toets {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 12px;
-    padding: 8px 0;
-  }
-  .tk-toets + .tk-toets {
-    border-top: var(--stroke-hair) solid var(--rand-licht);
-  }
-  .tk-toets-wanneer {
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
-  }
-  .tk-toets-weg {
-    min-height: var(--raak);
-    margin-left: auto;
-    padding: 0 4px;
-    border: 0;
-    background: transparent;
-    color: var(--tekst-secundair);
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    cursor: pointer;
-  }
-  .tk-toets-weg:hover {
-    color: var(--inkt);
-  }
-  /* Which subject, as the module's mark and name in its tint. */
-  .tk-vakbadge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: var(--radius-pil);
-    background: var(--module-tint);
-    color: var(--module-tekst);
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    font-weight: 600;
-  }
-  /* The block closed, below 1200: only the dates, and the whole of it one
-   * button that opens it. */
-  .tk-toetsen-kort {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 12px 20px;
-    width: 100%;
-    min-height: var(--raak);
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--inkt);
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-toetsen-kort-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
   }
 
   /* ---- Onthouden, over alles (ADR-148) -----------------------------------
@@ -4041,10 +4009,84 @@
     background: var(--kaart);
   }
 
-  /* "Waar je voor gaat" (ADR-141). Dezelfde kaart als "Vandaag herhalen", maar
-   * met een hairline rondom in plaats van de dikke band aan de voorkant: dat
-   * blok zegt wat er nú moet, dit zegt waar het naartoe gaat. Twee keer
-   * dezelfde nadruk boven elkaar is geen nadruk meer. */
+  /* ---- "Vraag het even aan je ouders" (ADR-163) ---------------------------
+   * Een echte `<dialog>`, dus de browser doet de toplaag, de focusval en
+   * Escape. Wat hier staat is alleen hoe hij eruitziet: een kaart zoals elke
+   * andere kaart in de app, midden op het scherm, en op een telefoon tegen de
+   * onderrand aan zodat hij met een duim te bedienen is.
+   */
+  .tk-venster {
+    position: fixed;
+    inset: 0;
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+    color: var(--inkt);
+  }
+  .tk-venster::backdrop {
+    /* Zwart met veel doorzicht: de pagina eronder blijft te zien, want het
+     * venster is een vraag over wat je daar net aanraakte en niet een nieuw
+     * scherm. */
+    background: rgb(0 0 0 / 45%);
+  }
+  .tk-venster-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 24px;
+  }
+  .tk-venster-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  /* Het kruisje rechtsboven. Het staat er náást de knop onderaan en niet in
+   * plaats daarvan: een kind zoekt een zin, een volwassene zoekt een kruisje. */
+  .tk-venster-sluit {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--raak);
+    height: var(--raak);
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: transparent;
+    color: var(--tekst-secundair);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .tk-venster-sluit:hover {
+    background: var(--papier);
+    color: var(--inkt);
+  }
+  @media (max-width: 640px) {
+    /* Op een telefoon onderaan, over de volle breedte: daar is de duim. */
+    .tk-venster {
+      width: 100vw;
+      max-width: 100vw;
+      max-height: 90vh;
+      margin: auto auto 0;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      border-radius: var(--kaart-radius) var(--kaart-radius) 0 0;
+    }
+  }
+
+  /* "Je doelen voor deze week" (ADR-141, ADR-162). Dezelfde kaart als "Vandaag
+   * herhalen", maar met een hairline rondom in plaats van de dikke band aan de
+   * voorkant: dat blok zegt wat er nú moet, dit zegt waar de week heen gaat.
+   * Twee keer dezelfde nadruk boven elkaar is geen nadruk meer. */
   .tk-doel {
     display: flex;
     flex-direction: column;
@@ -4053,6 +4095,53 @@
     border: var(--stroke-hair) solid var(--rand-licht);
     border-radius: var(--kaart-radius);
     background: var(--kaart);
+  }
+  /* De kop en de datums van de week ernaast, en onder elkaar zodra het niet
+   * past: "29 september t/m 5 oktober" is te lang om naast een kop te blijven
+   * staan op een telefoon. */
+  .tk-weekdoel-kop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 16px;
+  }
+  /* Eén doel. Dezelfde indeling als een lijstrij, maar geen knop: er valt niets
+   * te openen, en de enige knop erin is die ene om hem weg te halen. */
+  .tk-weekdoel-rij {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .tk-weekdoel-rij .tk-lijstrij-tekst {
+    gap: 4px;
+  }
+  /* Gehaald staat in het woord eronder; dit zet de regel erboven er alleen
+   * zwaarder neer, zodat een blok van drie in één blik te lezen is. */
+  .tk-weekdoel-rij[data-gehaald] .tk-lijstrij-titel {
+    color: var(--inkt);
+  }
+  /* Het kruisje dat een doel weghaalt. Een raakvlak van --raak, want het is het
+   * kleinste doel op deze kaart, en secundair van kleur: weghalen is nooit waar
+   * de aandacht heen moet. */
+  .tk-weekdoel-weg {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--raak);
+    min-height: var(--raak);
+    margin-left: auto;
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: transparent;
+    color: var(--tekst-secundair);
+    cursor: pointer;
+  }
+  .tk-weekdoel-weg:hover {
+    background: var(--papier);
+    color: var(--inkt);
   }
   /* De knop en de uitweg ernaast, en onder elkaar zodra er geen ruimte is: op
    * een telefoon is "Ander doel kiezen" naast een knop van 56 hoog een regel
@@ -4631,7 +4720,7 @@
     .tk-rail-item,
     .tk-vakmenu-optie,
     .tk-doel-ander,
-    .tk-toets-weg {
+    .tk-weekdoel-weg {
       transition:
         transform var(--beweeg-vlot) var(--beweeg-uit),
         background-color var(--beweeg-vlot) var(--beweeg-uit),

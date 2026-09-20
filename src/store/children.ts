@@ -136,7 +136,7 @@ export async function groepAlGevraagd(kindId: string): Promise<boolean> {
   return (await getSetting(groepGevraagdSleutel(kindId))) === 'ja';
 }
 
-/** Een keuze, "Weet ik niet" of "Niet nu": dit kind is gevraagd. */
+/** Een keuze, "Zeg ik niet" of "Niet nu": dit kind is gevraagd. */
 export async function zetGroepGevraagd(kindId: string): Promise<void> {
   await setSetting(groepGevraagdSleutel(kindId), 'ja');
 }

@@ -1,4 +1,4 @@
-import { useId, useState, type ComponentType, type FormEvent } from 'react';
+import { useId, type ComponentType } from 'react';
 import {
   CorrectIcon,
   DiplomaIcon,
@@ -11,21 +11,19 @@ import {
   TodayIcon,
 } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
-import {
-  activeer,
-  isTeKoop,
-  isVerlopen,
-  meldAf,
-  verlooptBinnenkort,
-  type PremiumReden,
-} from '@/store/premium';
+import { isTeKoop, isVerlopen, meldAf, verlooptBinnenkort } from '@/store/premium';
+import { CodeVeld } from './CodeVeld';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
  * De kassa, als adres. Geen route van de app maar een echte pagina onder
  * `public/kopen`, dus een gewone link die de app verlaat (ADR-123).
+ *
+ * Sinds ADR-164 draagt hij welk plan je koos. De kassa leest dat en zegt wat
+ * je koopt; de app hoeft daarmee nog steeds niets van betalen te weten.
  */
 const KASSA_PAD = '/kopen/';
+const KASSA_MAAND = '/kopen/?plan=maand';
 
 type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
 
@@ -44,7 +42,7 @@ const DOET: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = 
 const WAAROM: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] = [
   [ShieldIcon, 'premium.waarom.reclame', 'premium.waarom.reclameUit'],
   [PupilIcon, 'premium.waarom.apparaat', 'premium.waarom.apparaatUit'],
-  [CorrectIcon, 'premium.waarom.abonnement', 'premium.waarom.abonnementUit'],
+  [FamilyIcon, 'premium.waarom.geenNamen', 'premium.waarom.geenNamenUit'],
   [StarIcon, 'premium.waarom.gok', 'premium.waarom.gokUit'],
 ];
 
@@ -86,7 +84,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
       { tekst: 'premium.regel.plan', basis: false },
       { tekst: 'premium.regel.onthouden', basis: false },
       { tekst: 'premium.regel.fouten', basis: false },
-      { tekst: 'premium.regel.toets', basis: false },
     ],
   ],
   [
@@ -105,16 +102,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
     ],
   ],
 ];
-
-const FOUT: Record<PremiumReden, TranslationKey> = {
-  leeg: 'premium.fout.leeg',
-  onbekend: 'premium.fout.onbekend',
-  verlopen: 'premium.fout.verlopen',
-  vol: 'premium.fout.vol',
-  'te-vaak': 'premium.fout.te-vaak',
-  'geen-verbinding': 'premium.fout.geen-verbinding',
-  'niet-ingesteld': 'premium.fout.niet-ingesteld',
-};
 
 /**
  * De premiumpagina: wat het is, wat het kost, en pas daarna het veld (ADR-116,
@@ -269,14 +256,22 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
       </h2>
       <p className="tk-etalage-tekst">{t('premium.intro')}</p>
       {teKoop ? (
-        <div className="tk-etalage-knoppen">
-          <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
-            {t('premium.kopenKnop')}
-          </a>
-          <p className="tk-premium-etalage-prijs">
-            <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
+        <>
+          <div className="tk-etalage-knoppen">
+            <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
+              {t('premium.kopenKnop')}
+            </a>
+            <p className="tk-premium-etalage-prijs">
+              <span className="tk-display">{t('premium.prijs')}</span> {t('premium.perSchooljaar')}
+            </p>
+          </div>
+          {/* De maandprijs als regel en niet als tweede knop ernaast (ADR-164).
+              Twee even zware knoppen is geen aanbod maar een vraag, en de
+              vergelijking eronder zet beide plannen wél naast elkaar. */}
+          <p className="tk-etalage-tekst">
+            {t('premium.ofPerMaand', { prijs: t('premium.maandPrijs') })}
           </p>
-        </div>
+        </>
       ) : null}
     </section>
   );
@@ -316,19 +311,39 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
             <span className="tk-premium-plan-naam">{t('premium.titel')}</span>
             <span className="tk-pil">{t('premium.aanrader')}</span>
           </p>
+          {/* Twee manieren om hetzelfde te krijgen, naast elkaar (ADR-164). Ze
+              staan in één kaart en niet in twee, want het is één product: wat
+              verschilt is wanneer je betaalt, niet wat je koopt. Het jaar
+              voorop, met de reden erbij dat het goedkoper is — een aanrader
+              zonder rekensom is een duwtje, met de rekensom is het een
+              argument. */}
           {teKoop ? (
-            <p className="tk-premium-plan-prijs">
-              <span className="tk-display">{t('premium.prijs')}</span>{' '}
-              <span className="text-tekst-secundair">{t('premium.perSchooljaar')}</span>
-            </p>
+            <div className="tk-premium-prijzen">
+              <p className="tk-premium-plan-prijs">
+                <span className="tk-display">{t('premium.prijs')}</span>{' '}
+                <span className="text-tekst-secundair">{t('premium.perSchooljaarKort')}</span>
+              </p>
+              <p className="tk-premium-plan-prijs">
+                <span className="tk-display">{t('premium.maandPrijs')}</span>{' '}
+                <span className="text-tekst-secundair">{t('premium.perMaand')}</span>
+              </p>
+            </div>
           ) : null}
           <p className="text-tekst-secundair">{t('premium.premiumVoor')}</p>
           {teKoop ? (
             <>
-              <a className="tk-button self-start" href={KASSA_PAD}>
-                {t('premium.kopenKnop')}
-              </a>
+              <div className="tk-premium-plan-knoppen">
+                <a className="tk-button" href={KASSA_PAD}>
+                  {t('premium.kopenKnop')}
+                </a>
+                <a className="tk-button tk-button-secondary" href={KASSA_MAAND}>
+                  {t('premium.maandKnop')}
+                </a>
+              </div>
               <p className="tk-hulp">{t('premium.kopenUitleg')}</p>
+              <p className="tk-hulp">
+                {t('premium.maandUitleg')} {t('premium.jaarVoordeel')}
+              </p>
             </>
           ) : null}
         </div>
@@ -390,56 +405,14 @@ function Cel({ ja }: { readonly ja: boolean }) {
  * Het veld, onderaan en klein. Het is de laatste stap van een reis die ergens
  * anders begon: je hebt betaald, je hebt een mail, je typt hem over.
  *
- * "Inloggen" is een code en niets meer. Geen e-mail en geen wachtwoord: er is
- * geen account om in te loggen (ADR-015), en een veld voor een van beide zou
- * precies verzamelen wat dit product beloofd heeft niet te verzamelen.
+ * Het veld zelf staat in `CodeVeld`, want sinds ADR-163 staat het ook in de
+ * pop-up die een kind bij een slot krijgt.
  */
 function Code() {
-  const [invoer, setInvoer] = useState('');
-  const [bezig, setBezig] = useState(false);
-  const [fout, setFout] = useState<PremiumReden | null>(null);
-  const veld = useId();
-  const melding = useId();
-
-  async function gebruik(event: FormEvent) {
-    event.preventDefault();
-    setBezig(true);
-    setFout(null);
-    const uitkomst = await activeer(invoer);
-    setBezig(false);
-    if (uitkomst.ok) setInvoer('');
-    else setFout(uitkomst.reden);
-  }
-
   return (
     <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
       <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
-      <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void gebruik(event)}>
-        <label htmlFor={veld} className="tk-label">
-          {t('premium.codeLabel')}
-        </label>
-        <input
-          id={veld}
-          className="tk-input max-w-xs"
-          value={invoer}
-          onChange={(event) => setInvoer(event.target.value)}
-          placeholder={t('premium.codePlaceholder')}
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          maxLength={20}
-          aria-describedby={fout ? melding : undefined}
-          aria-invalid={fout ? true : undefined}
-        />
-        <button type="submit" className="tk-button tk-button-secondary self-start" disabled={bezig}>
-          {bezig ? t('premium.bezig') : t('premium.codeGebruiken')}
-        </button>
-        {fout ? (
-          <p id={melding} role="alert" className="text-lopend">
-            {t(FOUT[fout])}
-          </p>
-        ) : null}
-      </form>
+      <CodeVeld />
     </section>
   );
 }

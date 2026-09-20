@@ -14,7 +14,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
@@ -94,7 +94,9 @@ test('de getallen over het oefenen staan alleen op Onthouden', async ({ page }) 
 
   await page.goto('/ouder');
   await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Deze week' })).toHaveCount(0);
+  // Exact, sinds ADR-162: "Doelen van Ties voor deze week" staat hier wél, en
+  // een naam die niet exact is, vindt die ook.
+  await expect(page.getByRole('region', { name: 'Deze week', exact: true })).toHaveCount(0);
 
   // De weekkaart is met het album vervallen (ADR-158), dus haar adres en dat
   // van de oude reeks komen op de voordeur uit in plaats van op een leeg

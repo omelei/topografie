@@ -90,7 +90,7 @@ test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', 
 
   // De tweede stap: zes groepen en een uitweg. Nooit een leeftijd.
   await expect(page.getByRole('heading', { name: 'In welke groep zit je?' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Weet ik niet' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Zeg ik niet' })).toBeVisible();
   await expect(page.getByText(/leeftijd|geboren/i)).toHaveCount(0);
   await foto(page, project, 'groep-stap');
 
@@ -122,6 +122,33 @@ test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', 
   await wisselGroep(page, 'Mees', 'Geen groep');
   await page.goto('/');
   expect(await provinciesEerst(page)).toBe(true);
+});
+
+/**
+ * "Ik ben een ouder" op de eerste vraag (ADR-161): geen groep, en meteen Voor
+ * ouders in plaats van de voordeur. Het profiel bestaat daarna wel — de app
+ * heeft er overal een nodig — en de groep is daar alsnog te zetten.
+ */
+test('"Ik ben een ouder" maakt het profiel zonder groep en opent Voor ouders', async ({ page }) => {
+  await page.goto('/');
+  await page.getByPlaceholder('Je naam').fill('Sanne');
+  await page.getByRole('button', { name: 'Beginnen' }).click();
+
+  await expect(page.getByRole('heading', { name: 'In welke groep zit je?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ik ben een ouder' }).click();
+
+  await expect(page).toHaveURL(/\/ouder$/);
+  await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
+
+  // Geen groep gekozen, en de instelling zegt dat ook.
+  const instelling = page.getByRole('region', { name: 'Groep van Sanne' });
+  await expect(instelling.getByRole('status')).toHaveText(
+    'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
+  );
+
+  // En de vraag komt niet terug op de voordeur: die is beantwoord.
+  await page.goto('/');
+  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
 
 test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één keer', async ({
@@ -159,7 +186,7 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
   await expect(
     page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true }),
   ).toBeVisible();
-  const begin = page.getByRole('group', { name: 'Hier begin je mee' });
+  const begin = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
   await expect(begin.getByRole('button').first()).toContainText('Provincies van Nederland');
 
   // De vraag staat er, rustig, en houdt niets tegen.
@@ -176,11 +203,11 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
 });
 
 /**
- * Waar je voor gaat, met een groep (ADR-153): groep 8 krijgt geen tafel van 1
- * meer voorgesteld, groep 3 geen landen van Europa. En de weg naar alle
- * diploma's staat eronder.
+ * De diploma's die als weekdoel worden voorgesteld, passen bij de groep
+ * (ADR-153, ADR-162): groep 8 krijgt geen tafel van 1 meer voorgesteld, groep 3
+ * geen landen van Europa. En de weg naar alle diploma's staat eronder.
  */
-test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s', async ({
+test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle diploma’s', async ({
   page,
 }, testInfo) => {
   const project = testInfo.project.name;
@@ -190,10 +217,16 @@ test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s
   await page.getByRole('button', { name: 'Beginnen' }).click();
   await page.getByRole('button', { name: 'Groep 8', exact: true }).click();
 
-  const blok = page.getByRole('region', { name: 'Waar je voor gaat' });
+  const blok = page.getByRole('region', { name: 'Je doelen voor deze week' });
+  const voorstellen = async () => {
+    await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
+    await blok.getByRole('button', { name: 'Een diploma halen', exact: true }).click();
+  };
+
+  await voorstellen();
   await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toBeVisible();
-  await expect(blok.getByRole('button', { name: /Tafel van 1\b/ })).toHaveCount(0);
-  await expect(blok.getByRole('button', { name: /Tafel van 2\b/ })).toHaveCount(0);
+  await expect(blok.getByRole('button', { name: /Tafel van 1 / })).toHaveCount(0);
+  await expect(blok.getByRole('button', { name: /Tafel van 2 / })).toHaveCount(0);
   await blok.scrollIntoViewIfNeeded();
   await foto(page, project, 'doel-groep-8');
 
@@ -201,11 +234,13 @@ test('Waar je voor gaat past bij de groep, en toont de weg naar alle diploma’s
   await page.goto('/ouder');
   await wisselGroep(page, 'Fenna', 'Groep 3');
   await page.goto('/');
+  await voorstellen();
   await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
   await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
 
-  // De knop eronder: naar Voor ouders, met de kast open (ADR-158). Daar staat
-  // het hele raster, want daar zijn de lege vakjes iets om iets mee te doen.
+  // De knop onderaan het blok: naar Voor ouders, met de kast open (ADR-158).
+  // Daar staat het hele raster, want daar zijn de lege vakjes iets om iets mee
+  // te doen.
   await blok.getByRole('button', { name: 'Bekijk alle diploma’s' }).click();
   await expect(page).toHaveURL(/\/ouder$/);
   await expect(page.getByRole('button', { name: 'Laat alleen zien wat gehaald is' })).toBeVisible();

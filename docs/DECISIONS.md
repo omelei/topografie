@@ -9044,6 +9044,495 @@ het vlak en het zwaardere gewicht die er al waren ernaast.
 
 ---
 
+## ADR-161 — De eerste vraag: "Zeg ik niet", en een knop voor de ouder
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-151 (de groep).
+
+### Context
+
+Het allereerste scherm van leer.nu vraagt een naam en daarna een groep. ADR-151
+legde uit waarom die groep er weer is en waarom hij altijd over te slaan moet
+zijn. De uitweg heette "Weet ik niet".
+
+Twee dingen daaraan kloppen niet.
+
+**"Weet ik niet" is het enige antwoord op die kaart dat een kind iets over
+zichzelf laat toegeven.** Elk kind van zeven weet in welke groep het zit. Wie de
+uitweg kiest, weet het dus wél en wil het niet zeggen — tegen een app die het
+scherm ervoor beloofde dat zijn naam op dit apparaat blijft. Het antwoord dat
+wij nodig hebben is "geen groep"; het woord dat erop staat maakt er een
+bekentenis van, en dat is een rare eerste ervaring van een product dat over
+privacy gaat.
+
+**En de eerste die dit scherm ziet, is vaak niet het kind.** Een ouder die
+leer.nu opzoekt, komt op dezelfde kaart terecht en moet een groep kiezen om
+ergens te komen — of de uitweg nemen die zegt dat hij het niet weet. Daarna
+staat hij op de voordeur van een kind, terwijl hij kwam kijken wat dit is, wat
+het kost, en wat er met de gegevens van zijn kind gebeurt. Dat staat allemaal op
+Voor ouders (ADR-136), en er was geen weg ernaartoe die bij die eerste vraag
+begon.
+
+### Decision
+
+**De uitweg heet "Zeg ik niet".** Precies dezelfde knop, hetzelfde gevolg —
+`createProfile` zonder groep, de vraag geldt als gesteld — met een woord dat een
+keuze is in plaats van een tekortkoming. Op Voor ouders blijft hij "Geen groep"
+heten: daar is het een instelling en geen antwoord.
+
+**En er komt een derde knop bij: "Ik ben een ouder".** Hij staat in dezelfde rij
+chips, want hij is een antwoord op dezelfde vraag, maar hij draagt nooit
+`aria-pressed`: er valt niets aan te staan, want het is geen groep.
+
+Hij maakt het profiel aan zonder groep — de naam is al getypt en de groep is toch
+altijd over te slaan — en opent dan `/ouder` in plaats van de voordeur. Geen
+aparte onboarding, geen tweede vragenlijst: Voor ouders is de pagina die al
+bestaat om deze vragen te beantwoorden, en de groep van het kind is daar alsnog
+te zetten.
+
+Het profiel wordt wél gemaakt. De app heeft er overal een nodig, en een tweede
+soort bezoeker die geen profiel heeft, zou elk scherm een geval erbij geven voor
+iets wat het kind daarna toch invult. Wat er anders is aan deze weg, is één
+ding: het adres waarop de app opent. Dat reist daarom als los argument naast het
+profiel mee (`onReady(profile, naarOuder)`) en wordt nergens bewaard.
+
+### Consequences
+
+- `GroepKiezer` krijgt een optionele `onOuder`. Alleen de eerste vraag geeft hem
+  mee; op de voordeur (de eenmalige vraag aan een kind van vóór ADR-151) en op
+  Voor ouders staat hij er niet, want daar zou hij naar de pagina wijzen waar je
+  al bent.
+- Elke e2e-test die het eerste scherm doorloopt, klikt nu "Zeg ik niet". Dat is
+  één woord in achtentwintig bestanden; de knop doet hetzelfde als altijd.
+- Een ouder die deze weg neemt, heeft daarna een kind met de naam die hij typte
+  en zonder groep. Dat is dezelfde staat als "Zeg ik niet", en op Voor ouders
+  staat meteen wat eraan te veranderen is.
+
+---
+
+## ADR-162 — De voordeur gaat over vandaag: de toetsen weg, de doelen per week
+
+**Status:** accepted. **Date:** 2026-09-19. Vervangt ADR-077 en ADR-127 (de
+toetsen) en ADR-141 (het doel). Verandert de indeling van ADR-094 en ADR-152.
+
+### Context
+
+De voordeur droeg zeven blokken. Van boven naar beneden: de begroeting, "je was
+even weg", de reeks, "Vandaag herhalen", de vraag naar de groep, "Waar je voor
+gaat", en dan drie rijen — meest geoefend, recent geoefend, maak af. Ernaast, op
+elke pagina van de app, de eigen kolom met "Jouw toetsen" en "Jouw favorieten".
+
+Drie dingen daarvan zijn opgezegd, en de reden is bij alle drie dezelfde: ze
+vragen iets van de lezer zonder hem iets terug te geven.
+
+**"Jouw toetsen" vroeg werk van de ouder en gaf er niets voor terug.** Het blok
+was een datum en een vak, en daarvoor kreeg je een percentage: wat je kind op de
+dag van de toets naar verwachting nog weet (ADR-127). Dat is een mooi getal en
+er valt thuis niets mee te doen — "62%" is geen advies. Wie de datum oversloeg,
+miste niets: het dagplan, de Leitner-doos en de diploma's werken allemaal door
+zonder. Daarmee was het het enige blok in de app dat een handeling vroeg die
+nergens op uitkwam, en het stond op elke pagina, want de kolom gaat overal mee.
+
+**"Waar je voor gaat" had geen einde.** Eén diploma, door het kind gekozen uit
+drie voorstellen (ADR-141). Dat is een goed antwoord op "waarvoor", en het was
+de juiste correctie op een app die alleen "wat nu" kon zeggen. Maar een
+tafeldiploma duurt weken en een werelddeel maanden, dus op donderdagavond zegt
+het blok precies hetzelfde als op maandagochtend. Een doel dat nooit gehaald en
+nooit gemist wordt, is geen doel maar een etiket.
+
+**En waar je kunt beginnen stond te laag.** De rij "Hier begin je mee" — voor
+wie al geoefend heeft "Meest geoefend" — is de enige plek op de voordeur waar
+één druk een ronde start zonder dat er eerst iets gekozen moet worden. Die stond
+onder drie blokken die alle drie over de planning gaan.
+
+### Decision
+
+**Het toetsblok is weg, overal.** Het blok, het formulier, de voorspelling per
+toets, de balk "Hier gaat je toets over" op de modulepagina en de regel in de
+premiumvergelijking. `testPlan.ts` en `toetsZicht.ts` gaan mee: code die nergens
+meer uit te komen is, is geen code die bewaard moet worden tot iemand hem weer
+nodig heeft. De **oefentoets** blijft precies waar hij stond, bij de manieren op
+elke modulepagina (ADR-100): die hangt aan geen datum.
+
+Daarmee is de eigen kolom nog één blok groot — de favorieten — en op Voor ouders
+is hij leeg, dus die pagina draagt hem niet meer.
+
+**"Waar je voor gaat" wordt "Je doelen voor deze week".** Met de datums erbij:
+"14 t/m 20 september". Dat is het hele verschil — er is een zondag, dus er is
+iets te halen en iets te missen.
+
+Drie regels eronder:
+
+1. **Ze worden zelf gemaakt**, door het kind op de voordeur of door de ouder op
+   Voor ouders, in hetzelfde blok met dezelfde knoppen. Er wordt niets
+   voorgesteld dat er al staat. Een doel dat de app zelf stelt is het dagplan
+   nog een keer, en het punt van dit blok is juist dat het van jou is.
+2. **Drie soorten, alle drie op zondag na te rekenen**: een aantal rondes, een
+   aantal dagen waarop geoefend is, of één diploma. Er is niets nieuws verzonnen
+   om te tellen — alle drie komen uit `progress` en `rewardStore`, waar ze al
+   stonden, zodat er geen tweede boekhouding is die kan gaan scheellopen. Wat
+   bewaard wordt is alleen de bedoeling; de voortgang wordt elke keer geteld.
+3. **Het mag leeg blijven.** "Ik wil geen doelen" zet het blok weg en vraagt
+   daarna niet elke maandag opnieuw. Aanzetten kan op Voor ouders, waar de
+   instellingen staan (ADR-143).
+
+Drie doelen is het maximum: een week met vijf doelen is een lijst met klusjes.
+Een doel blijft staan over de weekgrens heen en telt vanaf maandag weer vanaf
+nul — anders moet een kind elke maandag opnieuw iets invullen om niets te zien.
+
+**En de rij waar je mee begint staat bovenaan**, direct onder de begroeting, met
+de kop "Hier begin je mee vandaag". De volgorde van de pagina is daarmee: waar
+druk je, wat is er nu aan de beurt, wat wil je deze week halen, en dan de
+geschiedenis.
+
+**Eén regel op de modulepagina gaat mee: "Nog eens herhalen" is eruit.** Dat
+woord stond onder elke tegel met stof die onder de groep van dit kind valt — in
+groep 7 onder de halve tafelrij — en het is het enige bijschrift op die pagina
+dat een kind vertelt hoe het over zijn eigen keuze hoort te denken. De tegel
+stond toch al onderaan, en dát is wat de volgorde moet zeggen; het woord erbij
+maakte er een oordeel van. "Voor later" blijft staan, want dat zegt iets wat de
+volgorde niet zegt: dit is stof die je nog niet gehad hebt, en dat is een
+waarschuwing in plaats van een oordeel.
+
+### Consequences
+
+- De voorspelling naar een toetsdatum bestaat niet meer. Wat blijft is de
+  voorspelling over drie weken, die op Onthouden en op "Ronde klaar" staat en
+  die geen datum van de gebruiker nodig heeft.
+- `premium.regel.toets` valt uit de vergelijkingstabel. De belofte stond er en
+  het product kan hem niet meer waarmaken, en dat is de enige volgorde waarin
+  een regel uit die tabel mag verdwijnen.
+- `doelStore.ts` is weg; `weekdoelStore.ts` staat ervoor in de plaats. Een kind
+  met een oud doel in de opslag verliest dat doel: het was één diploma zonder
+  datum, en het heeft in het nieuwe blok geen betekenis. Niets van de voortgang
+  raakt het — de rij die weggaat bevat alleen de id van een diploma.
+- De regel op "Ronde klaar" die zei "Dit was waar je voor ging" zegt nu "Dit was
+  een doel van deze week", en leest daarvoor de weekdoelen.
+- `weekdoel.test.ts` legt de weekgrens vast, want dat is het enige aan dit blok
+  dat stil kan gaan liegen: een doel dat op zondagavond "3 van de 4" zegt en op
+  maandagochtend nog steeds, is geen weekdoel meer.
+- ADR-151 beschrijft nog twee woorden onder een tegel buiten de groep. Dat blad
+  blijft staan zoals het geschreven is; er is er nog één, en dit blad is waarom.
+- **Nog niet in een browser gezien.** De kaart is die van ADR-141 met een rij
+  erin die de vorm van `tk-lijstrij` leent; of drie doelen met een balk erbij
+  rustig ogen naast "Vandaag herhalen" is iets om te bekijken.
+
+---
+
+## ADR-163 — Een slot vraagt eerst je ouders
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-116 en ADR-125 (wat
+een slot doet).
+
+### Context
+
+Sinds ADR-116 doet elk slot in de app hetzelfde: het brengt je naar de
+premiumpagina. Dat was de goede keuze tegenover de twee alternatieven — een
+uitgeschakelde tegel die nergens heen wijst, of een codeveld voor iemand die
+nog geen code heeft — en het is de verkeerde geworden zodra je kijkt naar wie er
+op dat moment drukt.
+
+**Dat is bijna altijd het kind.** Een kind van acht kiest op /rekenen een spel
+uit, drukt op de bliksemronde, en de hele pagina wordt vervangen door een
+etalage: een kop met een prijs, vier kaarten met wat premium voor je doet, een
+tabel met vijftien regels waarin basis en premium naast elkaar staan, vier
+redenen om ons te vertrouwen, en helemaal onderaan een veld voor een code. Dat
+is een goede pagina — voor een ouder die aan het overwegen is. Voor het kind is
+het een deur die dichtging en een verkooppraatje dat ervoor in de plaats kwam,
+en er staat niets op dat het kind zelf kan doen, want het kind koopt niets.
+
+En het kost bovendien de plek waar hij was: terug naar de kiezer is een stap
+terug in de geschiedenis, en de manier die hij bijna koos, is hij kwijt.
+
+### Decision
+
+**Een slot dat een kind indrukt, opent eerst een venster: "Vraag het even aan je
+ouders".** Het staat over de pagina waar je was, en het heeft drie dingen en
+niets meer.
+
+1. **Wat er aan de hand is**, in één zin, en wat premium doet, in één. Geen vier
+   kaarten en geen tabel: dit is geen plek om een besluit op te nemen.
+2. **Het codeveld.** Veel gezinnen hebben een code en het kind weet dat niet, en
+   dit is precies het moment waarop er iemand over de schouder meekijkt. Klopt
+   de code, dan gaat het venster dicht en staat het kind weer waar het stond —
+   met het spel nu open, want elk scherm hoort de code binnenkomen (ADR-116).
+3. **De weg naar een code** voor wie er geen heeft: de knop naar de kassa, en
+   een knop naar de pagina die het hele verhaal vertelt.
+
+De prijs staat er niet. Die staat op de pagina erachter en bij de kassa; een
+bedrag in een venster dat een kind van acht opende is een getal zonder
+betekenis, en het maakt van de vraag een prijskaartje.
+
+**Welke sloten.** De vensters komen op de plekken waar een kind een spel kiest:
+het begin van een ronde (`App.beginRonde`, de ene plek waar elke ronde langskomt
+— een favoriet, een regel in de geschiedenis, een onafgemaakte ronde) en de
+tegels op een modulepagina. De `PremiumSlot`-blokken op Onthouden, Vandaag en
+Voor ouders blijven naar de pagina gaan: die staan er niet omdat iemand ergens
+op drukte, ze leggen uit wat er mist, en de knop erop heet "Bekijk premium".
+
+**Het venster heeft geen adres.** Het is een vraag over wat je net aanraakte,
+geen scherm. Een adres zou van wegklikken een stap terug maken, en dan zet de
+systeem-terugknop op een telefoon je twee stappen terug in plaats van één.
+
+Het is een echte `<dialog>` met `showModal`: de browser doet de toplaag, de
+focusval en Escape. Met de hand nagebouwd blijft daar altijd de helft van staan.
+
+### Consequences
+
+- Het codeveld staat nu op twee plekken, dus het is één component geworden
+  (`CodeVeld`). Twee formulieren die hetzelfde doen lopen uit elkaar op de dag
+  dat er een foutmelding bij komt.
+- De toegankelijke naam van een premiumtegel zegt niet meer "Je gaat naar de
+  premiumpagina" maar "Je krijgt eerst een vraag voor je ouders". De regel van
+  ADR-125 is dezelfde — een tegel die iets anders doet dan kiezen, zegt dat
+  voordat hij wordt ingedrukt — alleen wat hij doet is veranderd.
+- Het venster staat in `main.tsx` naast de app en niet in een scherm: een slot
+  zit overal, ook op het uitslagscherm na een ronde, dat buiten de Shell valt.
+  Een `<dialog>` in de toplaag trekt zich niets aan van waar hij in het document
+  staat, dus één is genoeg.
+- **Nog niet in een browser gezien.** Vooral de telefoonmaat: het venster gaat
+  daar tegen de onderrand staan, en of het codeveld met het toetsenbord omhoog
+  nog te bereiken is, is iets om te bekijken.
+
+---
+
+## ADR-164 — De premiumpagina: statistieken, geen namen, en een maand
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-124 en ADR-145 (de
+premiumpagina) en ADR-123 (de kassa).
+
+### Context
+
+Drie dingen aan de premiumpagina, alle drie gemeld na het lezen ervan.
+
+**De sterkste belofte stond er bescheiden op.** "Je ziet wat blijft hangen", met
+eronder één zin over wat je kind al kent. Dat is waar, en het is een fractie van
+wat er werkelijk staat zodra je een code hebt: per vak, per onderwerp en per
+som, hoe het oefenen week na week gaat, en de voorspelling over drie weken. Dat
+is de enige boekhouding van zijn soort in dit product, en de pagina die hem moet
+verkopen noemde hem in het voorbijgaan.
+
+**Wat er níét bewaard wordt, stond nergens.** De vier redenen om ons te
+vertrouwen waren: geen advertenties, alles op je eigen apparaat, geen abonnement,
+en belonen zonder gokken. Alle vier waar. Maar de vraag die een ouder over een
+app voor zijn kind als eerste stelt — wat weten jullie van mijn kind? — werd
+alleen zijdelings beantwoord, via "alles blijft op je apparaat".
+
+**En een schooljaar vooruit betalen is een grote eerste stap.** € 24,95 eenmalig
+is een goede prijs voor wie weet dat dit product past, en dat weet je pas nadat
+je het gebruikt hebt.
+
+### Decision
+
+**"Je ziet wat blijft hangen" wordt "Uitgebreide statistieken over je kind".**
+Met eronder wat er precies staat: per vak, per onderwerp en per som, week na
+week, en hoeveel er over drie weken nog van over is. Elke term in die zin is een
+ding dat op de Onthouden-pagina echt staat — een belofte die nergens uitkomt is
+de snelste manier om een ouder kwijt te raken die net betaald heeft.
+
+**"Geen abonnement" maakt plaats voor "We slaan geen namen van kinderen op".**
+Die eerste kan niet blijven staan naast een knop met "€ 5 per maand" erop, en de
+plek gaat naar de belofte die dit product wél onderscheidt. De zin eronder zegt
+wat er waar is en niets erbij: de voornaam die een kind invult staat op het
+apparaat en gaat nergens heen, en achternaam, school, woonplaats en
+geboortedatum worden nergens gevraagd.
+
+**En er komt een tweede manier van betalen bij: € 5 per maand, maandelijks
+opzegbaar.** Het jaar blijft de aanrader, met de rekensom erbij — een heel
+schooljaar kost minder dan vijf maanden. In de etalage staat de maand als regel
+onder de knop en niet als tweede knop ernaast: twee even zware knoppen zijn geen
+aanbod maar een vraag. In de vergelijking staan beide prijzen wél naast elkaar,
+binnen één kaart, want het is één product en wat verschilt is wanneer je betaalt.
+
+### Wat hier bewust niet in zit
+
+**De incasso is niet gebouwd.** Een maandabonnement is bij Mollie een mandaat,
+een abonnement, een webhook per termijn en een opzegging, en daarvan staat niets
+in `supabase/functions/kassa` — die kent één eenmalige betaling die één code van
+365 dagen oplevert.
+
+Wat er wél is, is de naad: de premiumpagina linkt naar `/kopen/?plan=maand`, en
+de kassa leest dat en toont het maandblok. Wat dat blok zegt, is wat er is: de
+prijs, "maandelijks opzegbaar", en dat automatisch betalen per maand nog wordt
+opgezet — met de code voor een heel schooljaar als de weg die vandaag werkt. Een
+knop "Betalen met iDEAL" die € 24,95 afschrijft onder een kop die € 5 per maand
+belooft, is het enige wat hier echt niet mag, en daarom staat hij er niet.
+
+### Consequences
+
+- De premiumpagina noemt twee bedragen. `kassa.test.ts` bewaakt dat het
+  jaarbedrag gelijk is aan `PRIJS_CENTEN`; het maandbedrag heeft nog geen
+  tegenhanger in de kassa en heeft die pas nodig als de incasso er is.
+- **De belofte over namen heeft een houdbaarheidsdatum.** Hij is waar zolang een
+  kind alleen op dit apparaat bestaat. In F3 van de accountfasering (ADR-155)
+  krijgt een kind een rij in `public.kinderen`, met een voornaam erin. Die ADR
+  moet deze zin herschrijven — naar wat er dan waar is, en niet andersom.
+- `premium.waarom.abonnement` verdwijnt uit de teksten. Hij stond in de kassa
+  ook, in andere woorden, en die zin is daar aangepast: de code loopt vanzelf af
+  en er wordt daarna niets afgeschreven, wat waar blijft.
+
+---
+
+## ADR-165 — Onthouden laat zien waar het over gaat
+
+**Status:** accepted. **Date:** 2026-09-19. Verandert ADR-124 (de gratis
+voorproef).
+
+### Context
+
+ADR-124 gaf de Onthouden-pagina een gratis voorproef, en de redenering klopte:
+dit is de pagina die de hele propositie ís, en er stond een kaal slot waar het
+product hoort. Dus toont hij sindsdien zonder code de vier tegels en de stippen
+voor het onderwerp waar hij op opent — de eigen stand van het kind. Het inzicht
+is gratis, het bijhouden is betaald.
+
+Wat die redenering oversloeg, is wie er op dat moment kijkt. **Iemand zonder
+code heeft meestal ook nog niets geoefend.** Dan zijn de vier getallen vier
+nullen en is de muur een muur van lege stippen. Dat is een eerlijke pagina, en
+het laat precies niets zien van waar dit product over gaat: het verschil tussen
+"nog aan het oefenen" en "dit onthoud je nu", en hoe dat er na drie weken
+uitziet.
+
+En de vraag zelf stond halverwege, bij de tabel, als een `PremiumSlot` met
+dezelfde toon als elk ander slot in de app — terwijl dit de ene pagina is waar
+die vraag thuishoort.
+
+### Decision
+
+**Zonder code staat er een tweede kaart onder de eigen kaart: dezelfde kaart,
+met de stand van een verzonnen kind dat er een paar weken mee bezig is.** Zes
+onthouden, één even opfrissen, twee nog aan het oefenen, één nog niet geoefend —
+inclusief de kaart van Nederland waar die er is, dus met de provincies in vier
+sterktes.
+
+Drie regels eromheen, en ze zijn alle drie het punt:
+
+- **Eronder, nooit ervoor.** De eigen cijfers van het kind gaan voor, hoe leeg
+  ze ook zijn. Een voorbeeld dat voor de werkelijkheid langs gaat staan, is een
+  leugen over die werkelijkheid.
+- **Gemerkt in woorden**, niet alleen in kleur: een pil met "Voorbeeld" én de
+  zin "Dit zijn niet jouw cijfers."
+- **Vast en puur.** Dezelfde onderdelen geven altijd dezelfde standen, dus de
+  kaart springt niet en er komt nooit iets van in `progress` terecht.
+
+**En de vraag eronder is een etalage in plaats van een slot.** "Dit wil je over
+je eigen kind zien", met wat er dan staat, en één knop. Dezelfde vorm die de
+premiumpagina en de kop van deze pagina al dragen (ADR-150), op de plek waar het
+voorbeeld net heeft laten zien waar het over gaat.
+
+De kaart zelf is één component geworden (`Blik`), omdat hij nu twee keer
+getekend wordt. Twee kopieën zouden uit elkaar lopen op de dag van de eerste
+wijziging, en dan laat het voorbeeld iets anders zien dan het ding waarvan het
+een voorbeeld is.
+
+### Consequences
+
+- Wie wél geoefend heeft en geen code heeft, ziet zijn eigen stand én het
+  voorbeeld. Dat is één kaart meer dan nodig voor dat ene geval. De regel "de
+  eigen cijfers gaan voor" is het waard: de andere volgorde zou van het
+  voorbeeld de hoofdzaak maken voor iedereen zonder code.
+- Het `PremiumSlot` bij de detailtabel blijft staan. Dat gaat over de tabel, en
+  die is een ander ding dan het beeld erboven.
+- **Nog niet in een browser gezien.** Twee kaarten met dezelfde vorm onder
+  elkaar, waarvan de onderste een merkje draagt: of dat leest als "voorbeeld" en
+  niet als "nog een keer", is precies wat er bekeken moet worden.
+
+---
+
+## ADR-166 — Drie dingen die overal misten: een uitweg, een vangnet en een overslaan-link
+
+**Status:** accepted. **Date:** 2026-09-19. Vult ADR-015 (alles op het
+apparaat), ADR-093 (het frame) en ADR-136 (Voor ouders) aan.
+
+### Context
+
+De feedbackronde vroeg om drie verbeteringen aan de overige pagina's, gekozen
+op waarde. Dit zijn ze, en ze hebben iets gemeen: het zijn geen schermen die
+beter kunnen, het zijn dingen die in het hele product ontbreken. Dat is waarom
+ze de andere kandidaten verslaan — een rij die netter uitlijnt, een blok dat een
+regel korter kan — want die raken één pagina en deze drie raken ze allemaal.
+
+**1. Er was geen manier om ergens vanaf te komen.** Dit product zegt op bijna
+elke pagina dat de voortgang op het apparaat blijft, en sinds ADR-164 zegt de
+premiumpagina erbij dat we geen namen van kinderen opslaan. Allebei waar, en
+allebei een belofte waar een ouder niets aan had: er was geen enkele weg om het
+er weer af te halen. De enige uitweg was de site-data van de browser wissen — een
+menu dat de meeste ouders niet vinden, dat de premiumcode meeneemt zonder de
+plek op de server vrij te geven, en dat op een gedeelde iPad veel meer wist dan
+leer.nu. ADR-126 noemde dat al als de enige ontsnapping uit een verkeerd
+gespelde naam, en behandelde het toen als een gegeven.
+
+**2. Een fout in welk scherm dan ook gaf een wit vlak.** Er was geen
+`ErrorBoundary`. Elk scherm in deze app leest IndexedDB, en dat is de plek waar
+het hele geheugen van dit product staat: een browser die de opslag halverwege
+weggooide, een rij uit een nieuwere versie, een iPad zonder quota. De stores
+lezen elk voor zich alsof een vreemde geschreven had, maar dat dekt alleen de
+rij die ze zelf lezen. Wat een kind overhield aan alles daarbuiten was een leeg
+scherm zonder woord, zonder knop en zonder weg terug — en wat een ouder ervan
+hoorde was "de app is stuk".
+
+**3. Er was geen weg langs de navigatie heen.** Aan een bureau staan er twaalf
+knoppen vóór de inhoud: het merk, vier bestemmingen, de premiumknop, het kind, en
+zes vakken in de rail. Op élke pagina. Wie met het toetsenbord werkt, liep ze
+elke keer opnieuw af. Dat is WCAG 2.4.1 Bypass Blocks, niveau A, en het is het
+soort gat dat axe niet vindt — de e2e-scans komen er dus niet op uit.
+
+### Decision
+
+**Een blok "Alles van dit apparaat halen", onderaan Voor ouders.** In twee
+stappen, en de tweede is geen "weet je het zeker?": die vraag leert iemand alleen
+om twee keer te drukken. De tweede stap zegt wat er weggaat — de namen en de
+voortgang van elk kind, en de premiumcode — en de knop erop zegt wat hij doet.
+
+De uitweg is de zwáárste knop van de twee. De primaire knop is de weg vooruit,
+en vooruit is hier "laat staan"; wissen is een echt alternatief dat je bewust
+kiest, en dat is precies wat secundair betekent (`Button.tsx`: drie gewichten en
+geen vierde). Een rode knopsoort erbij zou een kleur aan de huisstijl toevoegen
+voor één scherm.
+
+**De volgorde van het wissen is het hele werk.** Eerst de code van dit apparaat
+afmelden, dán de database weggooien. Andersom is de plek die de code op de server
+bezet houdt niet meer terug te geven, en een gezin dat drie apparaten mag
+gebruiken raakt er een kwijt aan een apparaat dat niets meer weet. Mislukt het
+afmelden — geen verbinding, geen kassa — dan gaat het wissen door: wie op deze
+knop drukt wil dat er niets achterblijft, en de server ziet de code vanzelf
+verlopen.
+
+**Een `Foutscherm` om de hele app heen.** Een zin, de geruststelling dat de
+voortgang er nog staat, en twee knoppen: opnieuw proberen, of terug naar het
+begin. Geen foutmelding — de tekst van een uitzondering zegt een kind niets en
+een ouder bijna niets. De fout gaat naar de console, want daar kijkt degene die
+hem moet oplossen; het is de enige `console`-regel in het product.
+
+Geen van beide knoppen raakt de opslag aan. Een scherm dat het niet doet, is geen
+bewijs dat de voortgang stuk is, en dit is precies het moment waarop iemand in
+paniek op de verkeerde knop drukt.
+
+**En een overslaan-link, als eerste element in de Shell.** Onzichtbaar tot hij
+focus krijgt — boven het scherm geparkeerd, niet `display: none`, want dan valt
+hij uit de tabvolgorde en is er niets om overheen te slaan. Hij verzet de focus
+met de hand naar `main`, dat daarvoor `tabIndex={-1}` draagt: browsers zijn het
+er niet over eens of een sprong naar een fragment ook de focus meeneemt, en een
+link die wel scrollt maar de focus laat staan, helpt precies niemand.
+
+### Consequences
+
+- `resetDbForTests` heet nu `vergeetDb` en heeft eindelijk een gebruiker die
+  ertoe doet: `deleteDatabase` doet niets zolang er een open verbinding is, en
+  het doet dat zonder fout.
+- Het wissen wacht niet op `blocked`. Dat betekent dat een ander tabblad de
+  database open heeft, en daar valt van hier niets aan te doen; wachten zou de
+  knop laten hangen tot iemand een tabblad sluit dat hij misschien niet kan
+  vinden. De herlaadbeurt sluit dit tabblad af en de volgende keer lukt het wel.
+- Het `Foutscherm` is een klasse. `componentDidCatch` bestaat alleen daar, en er
+  is geen hook die het vervangt.
+- De overslaan-link staat er ook tijdens een ronde niet: een ronde is niet in de
+  Shell gewikkeld (ADR-041), en daar is ook geen navigatie om overheen te slaan.
+- **Nog niet in een browser gezien.** Met name de overslaan-link: of hij bij
+  focus netjes onder de bovenrand vandaan komt en niet half achter de app-balk
+  blijft steken, is iets om te bekijken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -15,7 +15,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
@@ -82,12 +82,13 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await expect(page.getByRole('group', { name: 'Hoe de toren eruitziet' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // De toetsdatum blijft wél: die voert de ouder in. Alleen waar de kolom
-  // getekend wordt — onder de 1200 is er geen kolom, op geen enkele pagina.
-  const kolom = page.locator('.tk-home-aside');
-  if (await kolom.count()) {
-    await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toBeVisible();
-  }
+  // Er staat helemaal geen kolom meer naast deze pagina (ADR-162): wat erin
+  // stond voor de ouder waren de toetsen, en die zijn weg.
+  await expect(page.locator('.tk-home-aside')).toHaveCount(0);
+
+  // De doelen van deze week staan hier wél: een ouder mag er een bij zetten,
+  // en hij is degene die ze uit kan zetten (ADR-162).
+  await expect(page.getByRole('region', { name: 'Doelen van Noor voor deze week' })).toBeVisible();
 
   // En er is een weg naar het detail, dat hiervoor alleen in het menu van het
   // kind stond.

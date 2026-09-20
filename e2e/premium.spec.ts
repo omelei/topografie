@@ -23,7 +23,7 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
@@ -66,11 +66,25 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page.getByRole('region', { name: 'Deze week' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Per vak' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
+
+  // En onder de eigen kaart het voorbeeldkind (ADR-165), gemerkt in woorden,
+  // met de vraag eronder in plaats van een kaal slot.
+  await expect(page.getByText('Dit zijn niet jouw cijfers.')).toBeVisible();
+  await expect(page.getByText('Dit wil je over je eigen kind zien')).toBeVisible();
+
+  // De muur van het voorbeeld draagt een eigen naam, waar die van het kind
+  // zelf niet in zit: twee dingen met dezelfde naam zijn er voor een
+  // schermlezer één die twee keer staat, en voor een test onvindbaar.
+  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(1);
+  await expect(page.getByRole('list', { name: 'Het voorbeeld, in één blik' })).toHaveCount(1);
+
   await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
-  // A premium way on a module page goes there too, rather than being chosen.
+  // Een premiummanier op een modulepagina wordt niet gekozen, maar vraagt het
+  // even aan de ouders (ADR-163): een venster over de pagina heen, met een
+  // codeveld erin, en de pagina eronder blijft waar hij was.
   await page.goto('/topografie');
   await page
     .getByRole('region', { name: /Kies een onderwerp/ })
@@ -78,6 +92,24 @@ test('without a code the premium parts are labelled once, and say what they do',
     .click();
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
   await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+
+  const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+  await expect(venster).toBeVisible();
+  await expect(venster.getByLabel('Typ de code')).toBeVisible();
+  await expect(page).toHaveURL(/\/topografie\/provincies$/);
+
+  // Wegklikken zet je terug waar je was, en de manier is niet gekozen.
+  await venster.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
+  await expect(venster).toBeHidden();
+  await expect(page).toHaveURL(/\/topografie\/provincies$/);
+  await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+
+  // En vanuit het venster is de premiumpagina één druk ver, voor wie hem wil.
+  await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+  await venster.getByRole('button', { name: 'Wat is premium?' }).click();
   await expect(page).toHaveURL(/\/premium$/);
 
   // And a free way is still simply a way.
@@ -222,6 +254,19 @@ test('without a code the premium page points at the kassa, and with one it does 
   ]);
   await expect(page.getByText('€ 24,95').first()).toBeVisible();
 
+  // Twee manieren van betalen (ADR-164): het jaar als aanrader, de maand
+  // ernaast, met een knop die de kassa zegt welk plan gekozen is.
+  await expect(page.getByText('€ 5').first()).toBeVisible();
+  await expect(page.getByText('Maandelijks opzegbaar.').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Per maand' })).toHaveAttribute(
+    'href',
+    '/kopen/?plan=maand',
+  );
+
+  // En de belofte over namen staat erbij (ADR-164).
+  await expect(page.getByText('We slaan geen namen van kinderen op')).toBeVisible();
+  await expect(page.getByText('Uitgebreide statistieken over je kind')).toBeVisible();
+
   // En de vergelijking zegt per regel wat erin zit: de bliksemronde niet in
   // basis, alle vakken wel (ADR-122, ADR-145).
   const tabel = page.getByRole('table', { name: 'Basis en premium naast elkaar' });
@@ -232,8 +277,8 @@ test('without a code the premium page points at the kassa, and with one it does 
     tabel.getByRole('row', { name: /Alle vakken en alle onderwerpen/ }).getByRole('img'),
   ).toHaveCount(2);
 
-  // Zonder de kolom ernaast: het toetsblok hoort niet op de pagina waar je betaalt.
-  await expect(page.getByRole('region', { name: 'Jouw toetsen' })).toHaveCount(0);
+  // Zonder de kolom ernaast: de pagina waar je betaalt heeft de breedte nodig.
+  await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
   const knop = page.getByRole('link', { name: 'Een code kopen' }).first();
   await expect(knop).toBeVisible();

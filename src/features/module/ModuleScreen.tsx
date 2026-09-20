@@ -17,12 +17,13 @@ import { loadItemStates } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { useTestPlan } from '@/features/home/testPlan';
+
 import { Tafeldiplomas } from './Tafeldiplomas';
 import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
 import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
-import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
+import { vraagOuders } from '@/features/premium/ouderVraag';
+import { usePremium } from '@/features/premium/usePremium';
 import {
   itemsVan,
   naamVan,
@@ -137,13 +138,11 @@ export function ModuleScreen({
   const [aantal, setAantal] = useState<number | null>(null);
   /** Whether the round should keep its answers until the end (ADR-085). */
   const [toetsstand, setToetsstand] = useState(false);
-  const plan = useTestPlan();
   const kleinScherm = useSmallScreen();
   const nogId = useId();
-  // What a premium tile does without a code: it goes to the page where one is
-  // entered, rather than being chosen and refused at the start (ADR-116).
+  // Wat een premiumtegel zonder code doet: hij vraagt het even aan de ouders in
+  // plaats van gekozen en bij de start geweigerd te worden (ADR-116, ADR-163).
   const { actief } = usePremium();
-  const naarPremium = useNaarPremium();
 
   useEffect(() => {
     void loadItemStates().then(setStates);
@@ -238,12 +237,6 @@ export function ModuleScreen({
   const gekozen = aantal !== null && lengtes.includes(aantal) ? aantal : null;
   const vragen = form === null ? null : questionCount(form, setSize, gekozen);
   const minuten = form === null ? null : minutesFor(form, vragen);
-  /**
-   * Everything this module holds, under one name. What a test asks about. The
-   * row's own where it has one — the Werkwoordmix on Werkwoorden — and the
-   * module's first otherwise.
-   */
-  const mix = mixVan(onderwerpen) ?? mixVan(alleOnderwerpen);
   const zin =
     chosen === null || form === null
       ? ''
@@ -354,32 +347,10 @@ export function ModuleScreen({
               it is a question (ADR-095). */}
           <h1 className="tk-display tk-titel">{t('choose.title', { naam })}</h1>
 
-          {/* The reason this week has a reason, but only on the page it is
-              about. */}
-          {plan.subject === module.id ? (
-            <p className="flex flex-wrap items-center gap-3">
-              <span className="tk-badge">{t('home.testLabel')}</span>
-              <span className="text-tekst-secundair">{t('choose.testSubject')}</span>
-              {/* One press that answers this page the way the test will ask it:
-                  everything the subject holds, and no answers until the end.
-                  It chooses rather than starts (ADR-085). */}
-              {mix === null ? null : (
-                <Button
-                  variant="tertiary"
-                  onClick={() => {
-                    if (!actief) {
-                      naarPremium();
-                      return;
-                    }
-                    kiesElders(mix);
-                    setToetsstand(true);
-                  }}
-                >
-                  {t('choose.likeTheTest')}
-                </Button>
-              )}
-            </p>
-          ) : null}
+          {/* Hier stond "Hier gaat je toets over", met een knop die de hele
+              module als toets oefende. Het hing aan een toetsdatum, en die
+              wordt sinds ADR-162 nergens meer ingevoerd. De oefentoets zelf
+              staat er nog, bij de manieren, waar hij altijd stond. */}
         </div>
 
         {/* Where on the map, or which part of Taal, and only where there is
@@ -454,7 +425,7 @@ export function ModuleScreen({
                   onClick={() => {
                     if (open) return;
                     if (premium && !actief) {
-                      naarPremium();
+                      vraagOuders();
                       return;
                     }
                     setRegio(hier);
@@ -560,7 +531,7 @@ export function ModuleScreen({
                   aria-pressed={gekozenVorm}
                   onClick={() => {
                     if (premium && !actief) {
-                      naarPremium();
+                      vraagOuders();
                       return;
                     }
                     setFormId(candidate.id);
@@ -594,7 +565,7 @@ export function ModuleScreen({
                   actief,
                 )}
                 aria-pressed={alsToets}
-                onClick={() => (actief ? setToetsstand(true) : naarPremium())}
+                onClick={() => (actief ? setToetsstand(true) : vraagOuders())}
               >
                 <span className="tk-plaat">
                   <PaperIcon size={24} />
@@ -755,13 +726,20 @@ export function ModuleScreen({
 }
 
 /**
- * Het woord onder een tegel die niet bij de groep past (ADR-151), of niets. Het
- * zegt waarom hij onderaan staat, en dat hij er nog is.
+ * Het woord onder een tegel die niet bij de groep past (ADR-151), of niets.
+ *
+ * Nog één woord sinds ADR-162, en dat is "Voor later". **"Nog eens herhalen"
+ * is eruit.** Het stond onder elk onderwerp dat onder de groep van dit kind
+ * valt — voor een kind in groep 7 onder de halve tafelrij — en het is het
+ * enige bijschrift op deze pagina dat een kind vertelt hoe het over zijn eigen
+ * keuze hoort te denken. De tegel stond toch al onderaan, en dát is wat de
+ * volgorde hier moet zeggen; het woord erbij maakte er een oordeel van.
+ *
+ * "Voor later" blijft staan, want dat zegt iets wat de volgorde niet zegt: dit
+ * is stof die je nog niet gehad hebt. Dat is een waarschuwing en geen oordeel.
  */
 function groepLabel(indeling: Indeling): string | null {
-  if (indeling === 'herhaling') return t('groep.herhaling');
-  if (indeling === 'later') return t('groep.later');
-  return null;
+  return indeling === 'later' ? t('groep.later') : null;
 }
 
 /** A subject whose sets are a second question: the tables before the table. */
@@ -825,15 +803,6 @@ function vorderingVan(vak: Onderwerp, known: ReadonlyMap<string, ItemState>, now
   return begonnen
     ? t('home.setMastered', { goed: mastered, totaal: ids.length })
     : t('home.setNew');
-}
-
-/**
- * The subject that holds everything this module has, if it has one: what "the
- * way the test will ask" means, because a test does not come one set at a time.
- */
-function mixVan(onderwerpen: readonly Onderwerp[]): string | null {
-  const mix = onderwerpen.find((vak) => vak.sets.length === 1 && vak.sets[0]?.mix === true);
-  return mix?.sets[0]?.setId ?? null;
 }
 
 /**

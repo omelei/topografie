@@ -1,12 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * Waar je voor gaat (ADR-141).
+ * Je doelen voor deze week (ADR-162).
  *
- * De app wist elke dag wat er aan de beurt was en nooit waar het naartoe ging.
- * Deze test loopt de hele boog: een doel kiezen, zien hoe ver je bent, het
- * diploma halen zodra je er klaar voor bent, en het op de voordeur terugzien
- * met de vraag wat nu.
+ * "Waar je voor gaat" stond hier: één diploma, gekozen uit drie voorstellen,
+ * dat maanden kon duren. Deze test loopt de boog die ervoor in de plaats kwam:
+ * een doel zelf maken, het zien meelopen, het diploma halen en dat terugzien op
+ * het uitslagscherm — en het geheel uit kunnen zetten zonder dat het terugkomt.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -14,11 +14,11 @@ async function signIn(page: Page, naam: string) {
   await page.getByPlaceholder('Je naam').fill(naam);
   await page.getByRole('button', { name: 'Beginnen' }).click();
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Weet ik niet' }).click();
+  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-const blokVan = (page: Page) => page.getByRole('region', { name: 'Waar je voor gaat' });
+const blokVan = (page: Page) => page.getByRole('region', { name: 'Je doelen voor deze week' });
 
 /** De tafel van 1 spelen, tien sommen lang, alles goed. */
 async function tienSommen(page: Page) {
@@ -53,8 +53,9 @@ async function tafelVanEen(page: Page, vorm: RegExp) {
 
 /**
  * Alles wat dit kind geoefend heeft in doos vier zetten: dan is het onthouden
- * (ADR-114), en dat is wat de voortgang naar een diploma meet. Vier goede
- * rondes over een week afspelen zou hetzelfde doen en tien minuten duren.
+ * (ADR-114), en dat is wat bepaalt welk diploma bovenaan de voorstellen staat.
+ * Vier goede rondes over een week afspelen zou hetzelfde doen en tien minuten
+ * duren.
  */
 async function alsOnthouden(page: Page) {
   await page.evaluate(async () => {
@@ -83,47 +84,77 @@ async function alsOnthouden(page: Page) {
   });
 }
 
-test('een kind kiest een doel en oefent ernaartoe', async ({ page }) => {
+test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ page }) => {
   await signIn(page, 'Fien');
 
   const blok = blokVan(page);
   await expect(blok).toBeVisible();
-  await expect(blok).toContainText('Kies een diploma om voor te gaan.');
+  await expect(blok).toContainText('Nog geen doel. Wat wil je deze week halen?');
 
-  const eerste = blok.getByRole('button').first();
-  const naam = (await eerste.locator('.tk-lijstrij-titel').innerText()).trim();
-  await eerste.click();
+  // De datums van de week staan erbij: "deze week" heeft een einde.
+  await expect(blok).toContainText(/\d+ .*t\/m .*\d+ \w+/);
 
-  // Het doel staat er, met hoeveel van die set dit kind onthoudt — nul, want er
-  // is nog niets gedaan, en dat is precies wat er te doen is.
-  await expect(blok).toContainText(`Diploma ${naam}`);
-  await expect(blok).toContainText(/Je onthoudt er 0 van de \d+\./);
+  await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
+  await blok.getByRole('button', { name: '2 rondes doen', exact: true }).click();
 
-  // Eén druk, en je oefent eraan.
-  await blok.getByRole('button', { name: 'Oefenen' }).click();
-  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+  // Het doel staat er, op nul, want er is nog niets gedaan.
+  await expect(blok).toContainText('2 rondes doen');
+  await expect(blok).toContainText('0 van de 2');
+
+  // Eén ronde, en het doel loopt mee.
+  await tafelVanEen(page, /Zelf typen/);
+  await tienSommen(page);
+  await page.goto('/');
+  await expect(blok).toContainText('1 van de 2');
 });
 
-test('het doel blijft staan en is weer los te laten', async ({ page }) => {
+test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ page }) => {
   await signIn(page, 'Bram');
   const blok = blokVan(page);
 
-  const eerste = blok.getByRole('button').first();
-  const naam = (await eerste.locator('.tk-lijstrij-titel').innerText()).trim();
-  await eerste.click();
-  await expect(blok).toContainText(`Diploma ${naam}`);
+  for (const knop of ['2 rondes doen', '3 rondes doen', '5 rondes doen']) {
+    await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
+    await blok.getByRole('button', { name: knop, exact: true }).click();
+  }
 
+  // Vol: geen vierde erbij, en het blok zegt waarom.
+  await expect(blok.getByRole('button', { name: 'Doel toevoegen' })).toHaveCount(0);
+  await expect(blok).toContainText('Drie doelen is genoeg voor één week.');
+
+  // En het staat er nog na een rondje door de app.
   await page.goto('/rekenen');
   await page.goto('/');
-  await expect(blok).toContainText(`Diploma ${naam}`);
+  await expect(blok).toContainText('3 rondes doen');
 
-  await blok.getByRole('button', { name: 'Ander doel kiezen' }).click();
-  await expect(blok).toContainText('Kies een diploma om voor te gaan.');
+  await blok.getByRole('button', { name: 'Weghalen: 3 rondes doen' }).click();
+  await expect(blok).not.toContainText('3 rondes doen');
+  await expect(blok.getByRole('button', { name: 'Doel toevoegen' })).toBeVisible();
 });
 
-test('wie de hele set onthoudt krijgt de toets aangeboden, en haalt zijn doel', async ({
-  page,
-}) => {
+/**
+ * Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
+ * opnieuw gevraagd. De ouder kan het weer aanzetten.
+ */
+test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async ({ page }) => {
+  await signIn(page, 'Sep');
+
+  await blokVan(page).getByRole('button', { name: 'Ik wil geen doelen' }).click();
+  await expect(blokVan(page)).toHaveCount(0);
+
+  await page.reload();
+  await expect(blokVan(page)).toHaveCount(0);
+
+  // Op Voor ouders staat de weg terug.
+  await page.goto('/ouder');
+  const bijOuder = page.getByRole('region', { name: 'Doelen van Sep voor deze week' });
+  await expect(bijOuder).toContainText('Doelen staan uit.');
+  await bijOuder.getByRole('button', { name: 'Doelen aanzetten' }).click();
+
+  await page.goto('/');
+  await expect(blokVan(page)).toBeVisible();
+});
+
+test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({ page }) => {
   await signIn(page, 'Tess');
 
   // Eerst de tafel van 1 kennen: dan staat hij bovenaan de voorstellen, want
@@ -134,26 +165,35 @@ test('wie de hele set onthoudt krijgt de toets aangeboden, en haalt zijn doel', 
 
   await page.goto('/');
   const blok = blokVan(page);
-  await blok
-    .getByRole('button', { name: /Tafel van 1 / })
-    .first()
+  await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
+  await blok.getByRole('button', { name: 'Een diploma halen', exact: true }).click();
+  await blok.getByRole('button', { name: 'Het diploma Tafel van 1 halen', exact: true }).click();
+
+  await expect(blok).toContainText('Het diploma Tafel van 1 halen');
+  await expect(blok).toContainText('0 van de 1');
+
+  // Het diploma zelf wordt gehaald waar het altijd gehaald werd: op de muur
+  // met de twaalf tafeldiploma's (ADR-075). Eén druk kiest de tafel én de
+  // vorm; daarna is er nog één startknop.
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
     .click();
-
-  // Rijp: de knop zegt niet meer "Oefenen".
-  await expect(blok).toContainText('Diploma Tafel van 1');
-  await expect(blok).toContainText('Je kent ze allemaal. Nu de toets.');
-
-  await blok.getByRole('button', { name: 'Doe de toets' }).click();
+  await page
+    .getByRole('region', { name: 'Jouw tafeldiploma’s' })
+    .getByRole('button', { name: 'Tafel van 1: nog geen diploma' })
+    .click();
+  await page.locator('.tk-choose-start button').click();
   // Afzwemmen (ADR-149): de pagina is rijp, dus de vraag is of er iemand meekijkt.
   await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await tienSommen(page);
 
   // Op het moment zelf, naast het diploma.
-  await expect(page.getByText('Dit was waar je voor ging.')).toBeVisible();
+  await expect(page.getByText('Dit was een doel van deze week.')).toBeVisible();
 
-  // En op de voordeur de vraag wat nu.
+  // En op de voordeur staat het doel op gehaald.
   await page.goto('/');
-  await expect(blok).toContainText('Gehaald! Je hebt het diploma Tafel van 1.');
-  await expect(blok).toContainText('Waar ga je nu voor?');
+  await expect(blok).toContainText('Gehaald!');
 });

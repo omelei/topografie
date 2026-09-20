@@ -33,7 +33,7 @@ export const nl = {
   'home.popularTitle': 'Meest geoefend',
   // Dezelfde rij, voor wie nog niets deed. "Meest geoefend" is dan een kop over
   // een geschiedenis die niet bestaat (ADR-131).
-  'home.popularStart': 'Hier begin je mee',
+  'home.popularStart': 'Hier begin je mee vandaag',
   'home.popularTimes': '{aantal} keer gespeeld',
   'home.popularOnce': '1 keer gespeeld',
   'home.popularNone': 'nog niet geoefend',
@@ -58,28 +58,47 @@ export const nl = {
   'vandaag.over': 'Nog {aantal} van vandaag.',
   'vandaag.overEen': 'Nog 1 van vandaag.',
   'vandaag.verder': 'Volgende ronde',
-  // Waar dit kind zelf voor gaat (ADR-141). Een diploma, want dat is de enige
-  // mijlpaal in dit product die een kind van acht zelf zou noemen — en de
-  // voortgang eronder is hoeveel het van die set onthoudt, wat toevallig ook
-  // precies zegt wat er nog te doen is.
-  'doel.titel': 'Waar je voor gaat',
-  'doel.vraag': 'Kies een diploma om voor te gaan.',
-  'doel.nu': 'Waar ga je nu voor?',
-  'doel.rij': 'Diploma \u00b7 je onthoudt er {onthouden} van de {totaal}',
-  'doel.diplomaVan': 'Diploma {naam}',
-  'doel.onthouden': 'Je onthoudt er {onthouden} van de {totaal}.',
-  'doel.balk': '{onthouden} van de {totaal} onthouden',
-  'doel.rijp': 'Je kent ze allemaal. Nu de toets.',
-  'doel.oefenen': 'Oefenen',
-  'doel.toets': 'Doe de toets',
-  'doel.ander': 'Ander doel kiezen',
-  'doel.gehaald': 'Gehaald! Je hebt het diploma {naam}.',
-  'doel.later': 'Even geen doel',
-  'doel.alles': 'Je hebt alle diploma\u2019s die je kunt halen.',
-  // Onder de voorstellen: naar de prijzenkast op Jij, met ook wat nog te halen
-  // is open (ADR-153).
-  'doel.alleDiplomas': 'Bekijk alle diploma’s',
-  'doel.gehaaldRonde': 'Dit was waar je voor ging.',
+  // De doelen van deze week (ADR-162). "Waar je voor gaat" stond hier: één
+  // diploma, gekozen uit drie voorstellen, dat maanden kon duren. Dit heeft een
+  // einde en noemt het ook — de datums van maandag tot en met zondag — en het
+  // wordt zelf gemaakt, door het kind hier of door de ouder op Voor ouders.
+  'weekdoel.titel': 'Je doelen voor deze week',
+  'weekdoel.ouderTitel': 'Doelen van {naam} voor deze week',
+  'weekdoel.leeg': 'Nog geen doel. Wat wil je deze week halen?',
+  'weekdoel.leegOuder':
+    'Nog geen doel voor deze week. Je kind kan er zelf een kiezen op Vandaag, en jij hier.',
+  'weekdoel.vraag': 'Wat voor doel wil je?',
+  'weekdoel.soort.rondes': 'Een aantal rondes',
+  'weekdoel.soort.dagen': 'Op een aantal dagen oefenen',
+  'weekdoel.soort.diploma': 'Een diploma halen',
+  'weekdoel.hoeveel': 'Hoeveel?',
+  'weekdoel.welkDiploma': 'Welk diploma?',
+  'weekdoel.rondesDoel': '{aantal} rondes doen',
+  'weekdoel.dagenDoel': 'Op {aantal} dagen oefenen',
+  'weekdoel.diplomaDoel': 'Het diploma {naam} halen',
+  // Een diploma dat er niet meer is — een set die weg is, of een premiumvorm
+  // zonder code. De rij blijft staan met een eerlijke zin in plaats van een
+  // lege naam, zodat hij weggehaald kan worden.
+  'weekdoel.diplomaWeg': 'Dit diploma bestaat niet meer',
+  'weekdoel.balk': '{gedaan} van de {nodig}',
+  'weekdoel.gehaald': 'Gehaald!',
+  'weekdoel.toevoegen': 'Doel toevoegen',
+  'weekdoel.annuleer': 'Laat maar',
+  'weekdoel.vol': 'Drie doelen is genoeg voor één week.',
+  'weekdoel.wegVan': 'Weghalen: {doel}',
+  'weekdoel.geenDiplomas': 'Er is nu geen diploma om deze week voor te gaan.',
+  // Onderaan het blok: naar het hele raster op Voor ouders, ook wat nog te
+  // halen is (ADR-153).
+  'weekdoel.alleDiplomas': 'Bekijk alle diploma’s',
+  // Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
+  // opnieuw gevraagd. Aanzetten kan bij de ouder, waar de instellingen staan.
+  'weekdoel.uitZetten': 'Ik wil geen doelen',
+  'weekdoel.uitZettenOuder': 'Geen doelen tonen',
+  'weekdoel.uitUitleg':
+    'Doelen staan uit. Er staat niets over doelen op Vandaag, en er wordt niet opnieuw naar gevraagd.',
+  'weekdoel.aanZetten': 'Doelen aanzetten',
+  // Op het uitslagscherm, onder het diploma dat net binnen is.
+  'weekdoel.gehaaldRonde': 'Dit was een doel van deze week.',
   // Het einde van een ronde, aangekondigd (ADR-140).
   'practice.laatsteVraag': 'Laatste vraag',
   // Het begin van een ronde (ADR-140): de zin waarmee dit product zijn eigen
@@ -186,6 +205,10 @@ export const nl = {
   // scherm verdwijnen voor wie het niet ziet. De merknaam komt uit brand.ts.
   'nav.home': '{merk}, naar Vandaag',
   'nav.destinations': 'Waar je heen kunt',
+  // De overslaan-link (ADR-166). Onzichtbaar tot hij focus krijgt, en dan het
+  // eerste wat er staat. "Naar de inhoud" en niet "Skip to content": de app is
+  // Nederlands, ook waar alleen een schermlezer meeleest.
+  'nav.overslaan': 'Naar de inhoud',
   // Het vakmenu onder de balk op een tablet en een telefoon, waar de rail niet
   // staat. De knop zegt welk vak je open hebt; waar je in geen vak bent noemt
   // hij wat hij doet, want daar is hij de weg naar een ronde (ADR-121). De naam
@@ -275,6 +298,27 @@ export const nl = {
   // want zonder de chips kan een kind niet zien dat er meer is.
   'retention.voorproef':
     'Je ziet hier {onderwerp}. Met premium kies je elk vak en elk onderwerp, en zie je het per onderdeel.',
+  // Het voorbeeldkind (ADR-165). Het woord "voorbeeld" staat er twee keer — in
+  // de pil en in de zin — omdat dit het enige op deze pagina is wat niet over
+  // dit kind gaat, en één merkje is er dan één te weinig.
+  'retention.voorbeeldLabel': 'Voorbeeld',
+  'retention.voorbeeldUitleg':
+    'Dit zijn niet jouw cijfers. Zo ziet het eruit bij een kind dat hier een paar weken mee oefent.',
+  // De muur en de kaart van het voorbeeld heten anders dan die van het kind
+  // zelf. Twee dingen met dezelfde naam op één pagina zijn voor een schermlezer
+  // één ding dat twee keer staat.
+  //
+  // En geen naam waar de echte naam ín zit: wie "Alles in één blik" zoekt,
+  // vindt "Alles in één blik, als voorbeeld" er gewoon bij — dat is hoe een
+  // toegankelijke naam gezocht wordt, op een stuk van het geheel.
+  'retention.voorbeeldStippen': 'Het voorbeeld, in één blik',
+  'retention.voorbeeldKaart': 'Voorbeeldkaart van {wat}, met per plek hoe het ervoor staat.',
+  // De vraag zelf, op de pagina die de hele belofte ís, en dus in woorden die
+  // zeggen wat je erbij krijgt in plaats van dat er iets op slot zit.
+  'retention.verkoopKop': 'Dit wil je over je eigen kind zien',
+  'retention.verkoopTekst':
+    'Met premium staat hier je eigen kind: elk vak, elk onderwerp en elke som, week na week, met hoeveel het er over drie weken nog van weet. En leer.nu zet elke dag klaar wat het bijna vergeet.',
+  'retention.verkoopKnop': 'Bekijk premium',
   'retention.regelsTitel': 'Wanneer onthoud je iets?',
   'retention.regel1':
     'Een goed antwoord telt pas als het weer aan de beurt was. Nog een keer goed op dezelfde middag is oefenen, nog geen onthouden.',
@@ -284,41 +328,11 @@ export const nl = {
     'Heb je iets heel lang niet gezien, dan staat er even opfrissen. Eén goed antwoord en je onthoudt het weer.',
   'retention.regel4': 'Eén fout antwoord en je begint bij dat onderdeel weer bij het begin.',
 
-  // Het toetsenblok, bovenaan de eigen kolom van het kind. Het is de reden dat
-  // het kind deze week oefent, en het zegt alleen dat: wanneer, en waarover.
-  'home.testLabel': 'toets',
-  'home.testNone': 'Nog geen toetsdatum',
-  // Meer dan één, want een periode is nooit één toets: topografie op dinsdag en
-  // de tafels de vrijdag erna. Het blok toont ze allemaal en verder niets.
-  'home.testTitle': 'Jouw toetsen',
-  'home.testToday': 'De toets is vandaag',
-  'home.testTomorrow': 'De toets is morgen',
-  'home.testInDays': 'Toets over {aantal} dagen',
-  'home.testPick': 'Wanneer is de toets?',
-  // Het vooruitzicht per toets (ADR-127): de enige plek waar de voorspelling
-  // naar een dátum rekent in plaats van naar drie weken vooruit.
-  'home.testNothingYet': 'Hier heb je nog niets van geoefend.',
-  'home.testForecast': 'Op de dag van de toets weet je hier naar verwachting {procent}% van.',
-  'home.testForecastRound': 'Doe vandaag een ronde: dan is het {procent}%.',
-  'home.testAdd': 'Toets toevoegen',
-  'home.testSave': 'Toevoegen',
-  'home.testRemove': 'Verwijder',
-  // Begint met het woord op de knop, zodat wie de knop bij naam aanspreekt
-  // hem ook zo vindt (WCAG 2.5.3), en zegt daarna welke toets.
-  'home.testRemoveOne': 'Verwijder: {wanneer}',
-  // Kort, zoals het blok ze toont: het woord "toets" staat al in de kop.
-  'home.testSoonToday': 'Vandaag',
-  'home.testSoonTomorrow': 'Morgen',
-  'home.testSoonDays': 'Over {aantal} dagen',
-  // Op een tablet en een telefoon is het blok eerst alleen de datums. Erop
-  // tikken klapt het open tot wat een laptop meteen laat zien.
-  'home.testsChange': 'Toetsen wijzigen',
-  'home.testsDone': 'Klaar',
-  // Het vak erbij, want een datum zonder vak plant niets. Alleen vakken die
-  // bestaan: een toets voor woordjes instellen belooft oefenstof die er niet
-  // is. Het gekozen vak bepaalt waarmee "Ga verder" verdergaat.
-  'home.testSubjectPick': 'Voor welk vak?',
-  'home.testSubjectNone': 'Nog geen vak',
+  // Het toetsblok is weg (ADR-162). Het vroeg een datum en een vak, en gaf
+  // daar een voorspelling voor terug; wat het niet gaf was een reden om een
+  // van beide in te typen. Zijn woorden staan hier niet meer: copy die
+  // nergens meer verschijnt, is copy die bij de volgende ronde toch wordt
+  // meegewogen.
 
   // Een module die het plan wel heeft en het product nog niet. Geen datum,
   // want een datum die we missen is erger dan geen datum — en geen enkele
@@ -476,7 +490,6 @@ export const nl = {
   // van vier woorden een zin van acht — op een telefoon twee regels lang.
   // De volgorde blijft; wat weg is, is het bijschrift erop.
   'choose.stepHow': 'Hoe wil je oefenen?',
-  'choose.testSubject': 'Hier gaat je toets over.',
 
   // De startknop draagt de gekozen combinatie in woorden, en zijn maat komt
   // uit de ronde zelf: vragen, seconden of levens. Daarnaast hoe lang het
@@ -506,7 +519,6 @@ export const nl = {
   'choose.testModeWhy':
     'Je typt zonder hulp. Aan het eind zie je wat goed was en krijg je een cijfer.',
   'choose.startTest': '{wat} · oefentoets',
-  'choose.likeTheTest': 'Oefen zoals de toets',
   'choose.howMany': 'Hoeveel vragen?',
   'choose.howManyOne': '{aantal} vragen',
   // De hele set, als die in één ronde past: twaalf provincies zijn "Alle 12".
@@ -572,9 +584,15 @@ export const nl = {
   'premium.usp.plan': 'Het herhalen wordt voor je gepland',
   'premium.usp.planUit':
     'Je kind hoeft niet te bedenken waar het moet beginnen. Leer.nu zet elke dag klaar wat aan de beurt is, net voordat het vergeten wordt.',
-  'premium.usp.zicht': 'Je ziet wat blijft hangen',
+  // De statistieken als eigen belofte (ADR-164). "Je ziet wat blijft hangen"
+  // stond hier, en dat is waar maar bescheiden: wat premium werkelijk geeft is
+  // de hele boekhouding van het oefenen, tot per som. Elke regel hieronder is
+  // een ding dat op de Onthouden-pagina echt staat, want een belofte die
+  // nergens uitkomt is de snelste manier om een ouder kwijt te raken die net
+  // betaald heeft.
+  'premium.usp.zicht': 'Uitgebreide statistieken over je kind',
   'premium.usp.zichtUit':
-    'Per onderwerp zie je wat je kind al kent, wat opgefrist moet worden en hoeveel het er over drie weken nog van weet.',
+    'Per vak, per onderwerp en per som: wat je kind al kent, wat opgefrist moet worden, hoe het oefenen week na week gaat, en hoeveel het er over drie weken nog van weet.',
   'premium.usp.zelf': 'Je kind overhoort zichzelf',
   'premium.usp.zelfUit':
     'Met de oefentoets test je kind zelf of het de stof kent: zonder hulp, met een cijfer aan het eind. Jij hoeft niet meer te overhoren.',
@@ -612,7 +630,6 @@ export const nl = {
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
   'premium.regel.onthouden': 'Per vak en per onderwerp zien wat je kind onthoudt, week na week',
   'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
-  'premium.regel.toets': 'Zien wat je kind op de dag van de toets nog weet',
   'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
   'premium.regel.bliksem': 'De bliksemronde en overleven',
   'premium.regel.bericht': 'Het weekbericht: hoe de week ging',
@@ -629,9 +646,12 @@ export const nl = {
   'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
   'premium.waarom.apparaatUit':
     'Wat je kind oefent, gaat nergens heen. Alleen de code gaat naar onze server, om te controleren of hij klopt.',
-  'premium.waarom.abonnement': 'Geen abonnement',
-  'premium.waarom.abonnementUit':
-    'Je betaalt één keer. De code verloopt na een schooljaar vanzelf, en er wordt nooit iets afgeschreven.',
+  // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
+  // waar "€ 5 per maand" op staat (ADR-164), en de plek gaat naar de belofte
+  // die dit product wél onderscheidt en die nergens anders stond.
+  'premium.waarom.geenNamen': 'We slaan geen namen van kinderen op',
+  'premium.waarom.geenNamenUit':
+    'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
     'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed weet. Niets hangt van geluk af, en er valt niets te kopen.',
@@ -643,6 +663,16 @@ export const nl = {
   'premium.kopenUitleg':
     'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
+  // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
+  // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
+  // Daarom ook per maand, en dan zonder een jaar eraan vast te zitten.
+  'premium.maandPrijs': '€ 5',
+  'premium.perMaand': 'per maand',
+  'premium.perSchooljaarKort': 'per schooljaar',
+  'premium.maandKnop': 'Per maand',
+  'premium.maandUitleg': 'Maandelijks opzegbaar. Je zegt op wanneer je wilt.',
+  'premium.jaarVoordeel': 'Een heel schooljaar kost minder dan vijf maanden.',
+  'premium.ofPerMaand': 'Of {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',
@@ -657,11 +687,26 @@ export const nl = {
   // wat erachter zit, en daar koopt niemand iets van. De knop gaat naar de
   // uitleg, niet naar een codeveld — wie hier staat heeft meestal geen code.
   'premium.slotKnop': 'Bekijk premium',
-  // Wat er in de naam van een tegel staat die naar de premiumpagina gaat
-  // (ADR-125). Een tegel die de hele kiezer vervangt hoort dat te zeggen
-  // voordat hij wordt ingedrukt; op het scherm zie je de pagina veranderen,
-  // in een naam die eindigt op het kale woord "Premium" stond het nergens.
-  'premium.tegelSlot': 'Premium. Je gaat naar de premiumpagina.',
+  // Wat er in de naam van een tegel staat die een slot is (ADR-125, ADR-163).
+  // Een tegel die iets anders doet dan kiezen, hoort dat te zeggen voordat hij
+  // wordt ingedrukt; op het scherm zie je het venster opengaan, maar in een
+  // naam die eindigt op het kale woord "Premium" stond het nergens.
+  'premium.tegelSlot': 'Premium. Je krijgt eerst een vraag voor je ouders.',
+
+  // "Vraag het even aan je ouders" (ADR-163): het venster dat een kind krijgt
+  // als het op een slot drukt, in plaats van de hele premiumpagina. Kort, en
+  // het spreekt het kind aan als het kind: haal er iemand bij, want jij koopt
+  // niets. De prijs staat er niet — die staat op de knop die ernaartoe gaat en
+  // op de pagina erachter, en een bedrag in een venster voor een kind van acht
+  // is een getal zonder betekenis.
+  'ouderVraag.titel': 'Vraag het even aan je ouders',
+  'ouderVraag.uitleg':
+    'Dit onderdeel hoort bij premium. Je ouders hebben er een code voor nodig — haal er even iemand bij.',
+  'ouderVraag.watPremium':
+    'Met premium zet leer.nu elke dag klaar wat je bijna vergeet, en kun je zien wat je onthoudt.',
+  'ouderVraag.bekijken': 'Wat is premium?',
+  'ouderVraag.terug': 'Nee, ik doe iets anders',
+  'ouderVraag.sluit': 'Sluiten',
   'premium.wat.onthouden':
     'Zie per vak en per onderdeel wat je kind onthoudt, hoe het oefenen week na week gaat, en wat er over drie weken nog van over is.',
   'premium.wat.lijsten':
@@ -670,8 +715,7 @@ export const nl = {
     'Hoe de week ging: of er geoefend is, wat er blijft hangen, en wat er wacht.',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
-  'premium.wat.toets':
-    'Zie wat je kind op de dag van de toets naar verwachting nog weet, en wat één ronde vandaag daaraan verandert.',
+
   'premium.wat.jij':
     'Premium plant het herhalen, laat zien wat je kind onthoudt en werkt voor al je kinderen.',
 
@@ -1502,7 +1546,13 @@ export const nl = {
   'groep.uitleg':
     'Dan zetten we de oefeningen voor jouw groep bovenaan. Je kunt altijd alles kiezen. Je groep blijft op dit apparaat.',
   'groep.knop': 'Groep {groep}',
-  'groep.weetNiet': 'Weet ik niet',
+  // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
+  // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
+  // een keuze, en daarmee hetzelfde antwoord zonder de kleine vernedering.
+  'groep.zegIkNiet': 'Zeg ik niet',
+  // En de volwassene die het apparaat als eerste in handen heeft, hoeft niet
+  // te doen alsof hij in groep 6 zit. Hij gaat naar Voor ouders.
+  'groep.ouder': 'Ik ben een ouder',
   'groep.terug': 'Terug naar je naam',
   // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
   'groep.nietNu': 'Niet nu',
@@ -1514,10 +1564,42 @@ export const nl = {
   'groep.geen': 'Geen groep',
   'groep.gekozen': '{naam} zit in groep {groep}.',
   'groep.nietGekozen': 'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
-  // Op een tegel die niet bij de groep past. Hij blijft kiesbaar; dit zegt
-  // alleen waarom hij onderaan staat.
-  'groep.herhaling': 'Nog eens herhalen',
+  // Op een tegel met stof die dit kind nog niet gehad heeft. Hij blijft
+  // kiesbaar; dit zegt alleen waarom hij onderaan staat.
+  //
+  // "Nog eens herhalen" stond hier ook, onder alles wat onder de groep viel, en
+  // is eruit (ADR-162): de tegel stond toch al onderaan, en dat is wat de
+  // volgorde moet zeggen — het woord erbij maakte er een oordeel van over de
+  // keuze van een kind.
   'groep.later': 'Voor later',
+
+  // Alles van dit apparaat halen (ADR-166). Onderaan Voor ouders, in twee
+  // stappen, en de tweede stap vertelt wat er weggaat in plaats van "weet je
+  // het zeker?" te vragen — die vraag leert iemand alleen om twee keer te
+  // drukken.
+  'wissen.titel': 'Alles van dit apparaat halen',
+  'wissen.uitleg':
+    'Alles wat je kinderen hebben geoefend, staat op dit apparaat en nergens anders. Hier haal je het er weer af.',
+  'wissen.knop': 'Alles wissen',
+  'wissen.zeker': 'Dit haalt leer.nu helemaal leeg op dit apparaat:',
+  'wissen.watVoortgang':
+    'De namen en de voortgang van elk kind: wat ze geoefend hebben, hun diploma’s en hun toren.',
+  'wissen.watCode':
+    'De premiumcode. Je kunt hem daarna gewoon opnieuw invullen — en dit apparaat telt niet meer mee voor de drie.',
+  'wissen.onomkeerbaar': 'Dit kan niet ongedaan gemaakt worden.',
+  'wissen.doe': 'Ja, haal alles weg',
+  'wissen.laatMaar': 'Laat maar staan',
+  'wissen.bezig': 'Bezig met wissen…',
+
+  // Als er iets kapotgaat (ADR-166). Een zin en twee knoppen, geen
+  // foutmelding: de tekst van een uitzondering zegt een kind niets en een
+  // ouder bijna niets. En meteen de geruststelling die het eerst nodig is.
+  'fout.titel': 'Er ging iets mis',
+  'fout.uitleg':
+    'Dit scherm deed het even niet. Probeer het nog een keer, of ga terug naar het begin.',
+  'fout.bewaard': 'Alles wat je geoefend hebt, staat er nog. Er gaat hierdoor niets verloren.',
+  'fout.opnieuw': 'Probeer opnieuw',
+  'fout.naarBegin': 'Terug naar het begin',
 
   // Accessible names for things that have no visible label of their own
   'a11y.progress': 'Voortgang in deze ronde',
