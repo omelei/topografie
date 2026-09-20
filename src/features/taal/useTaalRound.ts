@@ -86,7 +86,6 @@ export function useTaalRound(
 
   const { kern, settle, next, stop } = useRoundCore<TaalSet, TaalVraag, TaalItem, string>({
     setId,
-    moduleId: 'woorden',
     mode,
     basisRegel: TAAL_ROUND_RULE[mode],
     // Een diploma heeft zijn eigen lengte en zegt niets tot het eind: het is

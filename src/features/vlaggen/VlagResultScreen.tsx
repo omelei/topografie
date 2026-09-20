@@ -62,8 +62,6 @@ export function VlagResultScreen({
           : null
       }
       na={state.states}
-      stenen={state.stenen}
-      groei={state.groei}
       reward={reward}
       diploma={diploma}
       melding={melding}

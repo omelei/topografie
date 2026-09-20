@@ -6,7 +6,8 @@ import { type ItemState } from './types';
  * Dit was `album.ts`. Wat er over is, is wat niets met het album te maken had:
  * de vraag hoeveel er vandaag of morgen aan de beurt is, en hoe lang een ronde
  * ongeveer duurt. De lagen, de stempels en de tekens zijn met het album zelf
- * vervallen — wat een antwoord oplevert, staat nu in `toren.ts`.
+ * vervallen. Wat een antwoord oplevert voor een diploma staat in
+ * `features/badges/voortgang.ts`.
  */
 
 const DAG_MS = 86_400_000;

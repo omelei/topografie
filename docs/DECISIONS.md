@@ -9798,6 +9798,88 @@ hier al had (ADR-145).
 
 ---
 
+## ADR-169 — De toren gaat weg; de reeks en het schooljaar blijven bij de ouder
+
+**Status:** accepted. **Date:** 2026-09-20. Op verzoek van de eigenaar.
+Sloopt de toren van ADR-158 in zijn geheel: de stenen, de verdiepingen, de
+ijkpunten, het register en de scène. Herstelt daarmee de dagreeks (ADR-110,
+ADR-148) niet — die gaat naar Voor ouders en verdwijnt bij het kind. ADR-167
+bracht het beloningsprogramma dat hiervoor in de plaats komt; het ontwerp staat
+in `docs/beloning-diplomas.md`. Raakt `leitner.ts` en de lat van ADR-141 niet.
+
+### Context
+
+Sinds ADR-167 zijn de diploma's het beloningsprogramma, met een ring die
+meeloopt met wat een kind onthoudt. De toren stond er sindsdien naast en deed
+niets meer dat niet elders beter gebeurde.
+
+Dat is niet alleen overbodig maar schadelijk, want het is precies waar dit
+product nu drie keer op is vastgelopen: twee boekhoudingen die iets anders
+tellen over dezelfde stof. De steenregel (`toren.ts`) was strenger dan de
+doosstap, dus "een steen" en "onthouden" zeiden twee verschillende dingen over
+dezelfde vraag — een kind kon een steen krijgen voor een item dat nog niet
+meetelde voor zijn diploma, en geen steen op een dag dat zijn diploma juist wel
+vooruitging.
+
+### Decision
+
+**Alles wat de toren was, gaat weg.** `src/features/toren/`,
+`game-core/toren.ts`, `game-core/ijkpunten.ts` en `store/torenStore.ts`, met hun
+CSS, hun vierenveertig i18n-sleutels, hun vijf toetsbestanden en `TorenIcon`.
+Ruim tweeduizend regels.
+
+**De reeks gaat naar Voor ouders en verdwijnt bij het kind.** Hij stond op Jij
+en onderaan Ronde klaar. ADR-158 schreef zelf op wat dat kostte: een reeks is
+verlies-als-prikkel bij kinderen vanaf zes, dat staat op de verbodenlijst van
+het onderzoek dat aan ADR-149 voorafging, en het raakt DSA art. 28 en de Code
+voor Kinderrechten. Zolang de toren ernaast stond was er één verzachting —
+breken kostte geen steen — en die verzachting gaat nu weg. Dan blijft alleen de
+prikkel over.
+
+Voor een ouder is volhouden wél informatie, want spreiden heeft het nodig.
+Daarom spreekt het blok daar de ouder aan en niet het kind: `reeks.ouderRegel`
+en `reeks.ouderGeen` bestonden al, de elf kindzinnen zijn weg.
+
+**Het schooljaar wordt herbouwd uit de diploma's en verhuist mee.** Het ging
+over stenen, verdiepingen en meters; nu somt het op welke diploma's dit kind
+haalde en wanneer, met de oudere eronder. Het bewaart niets en telt niets dat
+elders al geteld wordt: een diploma draagt zijn datum al, want `rewardStore`
+schrijft die één keer weg en laat hem staan.
+
+**De opslag blijft staan en wordt door niets meer gelezen.** `toren:<kindId>` en
+`register` blijven in de settings-store, het patroon van ADR-130 en ADR-149, en
+precies wat `torenStore.ts` zelf al deed met `hoogsteDoos` en `stempels`. Geen
+migratie, geen schemawijziging, geen risico op dataverlies — en een kind ziet
+niets van de overgang, want de ring van het volgende diploma komt uit de
+Leitner-standen die er al zijn.
+
+### Consequences
+
+- **Vijf schermen zeiden nog iets over een toren die er niet meer is**, en dat
+  had geen enkele toets gemeld. De voordeur zei na weken weg "Je toren staat er
+  nog. 3 stenen liggen klaar", de pagina Jij heette "wat je gemaakt hebt: je
+  album en je diploma's", de premiumpagina verkocht "Je toren en je reeks", en
+  het wisscherm noemde "hun diploma's en hun toren". Alle vier herschreven. De
+  vijfde is `afzwemmen.proefUitleg`, die nog "albumpagina" zegt; die vervalt met
+  proefzwemmen in de volgende stap.
+- **De ouderpagina sprak het kind aan.** De reeks en het schooljaar stonden bij
+  het kind en zijn zinnen gingen mee: "Je reeks", "Jouw schooljaar", "Je langste
+  reeks: 0 dagen". Op Voor ouders spreekt de app de ouder aan — daar is een
+  e2e-toets voor — dus die zijn omgezet, en de nul wordt niet meer afgedrukt.
+- **`moduleId` is uit `useRoundCore` verdwenen.** Die optie bestond alleen om een
+  steen zijn vakkleur te geven; vier rondehaken gaven hem door aan niemand.
+- **`game-core/reeks.ts` blijft.** De reeks bestaat nog, alleen niet meer bij het
+  kind.
+- **`.tk-ring` blijft ook**, ondanks de naam: die is van Onthouden en van de
+  voortgangsring van ADR-167, niet van de toren.
+- **Nog niet in een browser gezien op alle maten.** Jij en Voor ouders zijn op
+  393px bekeken vóór het afronden — dat is wat bij ADR-167 twee fouten vond die
+  geen toets meldde — maar deze omgeving heeft Chromium 1194 terwijl het project
+  Playwright 1.63 (revisie 1243) pint, dus de andere vijf maten zijn CI's
+  oordeel.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

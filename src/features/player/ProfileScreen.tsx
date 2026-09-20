@@ -7,8 +7,6 @@ import { Kast } from '@/features/badges/Kast';
 import { usePremium } from '@/features/premium/usePremium';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
-import { TorenPagina } from '@/features/toren/TorenPagina';
-import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
 
 /**
  * K10, "Jij": the child's own page (ADR-112).
@@ -87,8 +85,6 @@ export function ProfileScreen({
           </div>
         </section>
 
-        <TorenPagina />
-
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
             tekort meer maar een doel — en dan hoort het raster hier en niet bij
@@ -96,8 +92,6 @@ export function ProfileScreen({
         <div ref={kast}>
           <Kast onOefen={onOefen} onToets={onToets} />
         </div>
-
-        <Jaaroverzicht />
       </div>
     </div>
   );

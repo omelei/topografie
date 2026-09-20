@@ -78,8 +78,6 @@ export function ResultScreen({
           : null
       }
       na={state.states}
-      stenen={state.stenen}
-      groei={state.groei}
       reward={state.reward}
       oefenTitel={t('result.practiceMore')}
       missed={state.missed}

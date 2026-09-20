@@ -29,7 +29,7 @@ const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
  *
  * **Waarom het hele raster hier staat en niet bij de ouder.** ADR-158 zette het
  * bij de ouder met de redenering dat een diploma een toets is, dus hoort bij
- * wie hem afneemt. Die hield zolang het diploma náást de toren stond; zodra het
+ * wie hem afneemt. Die hield zolang het diploma naast een ander programma stond; zodra het
  * diploma zelf de beloning is keert hij om, en geldt weer wat ADR-064 schreef:
  * een gat is de enige onverdiende zaak die dit product met opzet tekent, omdat
  * een kind erop kan mikken.

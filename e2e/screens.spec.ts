@@ -79,15 +79,15 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // that has to survive being mostly empty: a new child has none of them.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { name: 'Jij', exact: true })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Je toren' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
   await shoot(page, size, '04-jij');
 
   await page.goto('/onthouden');
   await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
   await shoot(page, size, '12-onthouden');
 
-  // Een modulepagina met een set gekozen zegt één ding over de toren: wat er
-  // hier vandaag terugkomt, want alleen dat kan een steen opleveren (ADR-158).
+  // Een modulepagina met een set gekozen zegt één ding over het leren: wat er
+  // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.
   await page.goto('/topografie/provincies');
   const terug = page.getByText(
     /komt hier vandaag terug|komen hier vandaag terug|voorlopig niets terug|Morgen \d+/,
