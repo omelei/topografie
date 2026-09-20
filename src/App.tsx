@@ -552,11 +552,21 @@ export default function App() {
 
   const goOuder = () => go({ name: 'ouder' });
   const goJij = () => go({ name: 'you' });
-  // "Bekijk alle diploma's" gaat sinds ADR-158 naar Voor ouders: daar staat het
-  // hele raster, want daar zijn de lege vakjes iets waar iemand wat mee kan.
+  // "Bekijk alle diploma's" opent Jij met de kast in beeld — precies wat
+  // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
+  // stond; nu het diploma zelf de beloning is, staat het raster weer bij het
+  // kind en wijst de link daar ook weer heen.
   const goDiplomas = () => {
     setDiplomasOpen(true);
-    go({ name: 'ouder' });
+    go({ name: 'you' });
+  };
+
+  /** Uit de kast: naar dat vak met de set gekozen, om te oefenen. */
+  const goOefen = (deel: Onderdeel) => {
+    const module = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
+    if (!module?.built) return;
+    setScreen({ name: 'home' });
+    go({ name: 'module', module, setId: deel.setId });
   };
 
   /** The child's own column, which every screen inside the shell carries. */
@@ -638,7 +648,15 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
+        <ProfileScreen
+          profile={boot.profile}
+          aside={eigenKolom}
+          onOuder={goOuder}
+          onOefen={goOefen}
+          onToets={(deel, mode) => beginRonde(deel, mode)}
+          kastOpen={diplomasOpen}
+          onKastGezien={() => setDiplomasOpen(false)}
+        />
       </Shell>
     );
   }
@@ -649,12 +667,7 @@ export default function App() {
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
         {/* Zonder kolom sinds ADR-162: wat er voor de ouder in stond waren de
             toetsen, en die zijn weg; de favorieten zijn van het kind. */}
-        <ParentScreen
-          onJij={goJij}
-          onOnthouden={() => go({ name: 'retention' })}
-          diplomasOpen={diplomasOpen}
-          onDiplomasGezien={() => setDiplomasOpen(false)}
-        />
+        <ParentScreen onJij={goJij} onOnthouden={() => go({ name: 'retention' })} />
       </Shell>
     );
   }

@@ -8,7 +8,7 @@ import {
   type ModeId,
 } from '@/game-core';
 import { Embleem } from '@/features/badges/Embleem';
-import { doelwitVan, standVan, type Stand } from '@/features/home/doel';
+import { doelwitVan, nodigVoor, standVan, type Stand } from '@/features/home/doel';
 import { naamVan, type Onderdeel } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES } from '@/features/shell/modules';
@@ -76,7 +76,7 @@ export function Afzwemmen({
       const stand = standVan(doelwit, states, new Date());
       setVoorkennis({
         stand,
-        nodig: mode === 'tafeldiploma' ? stand.totaal : diplomaDrempel(stand.totaal),
+        nodig: nodigVoor(doelwit, stand.totaal),
         alGehaald: behaald.has(doelwit.id),
       });
     });

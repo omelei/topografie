@@ -76,14 +76,43 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(page.getByText(/^Bij proefzwemmen krijg je nog geen diploma\./)).toBeVisible();
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
 
-  // En op Voor ouders, als plaatjes in plaats van knoppen. De muur staat achter
-  // een knop (ADR-143) en sinds ADR-158 op de pagina van de ouder: daar zijn de
-  // lege vakjes iets om iets mee te doen.
-  await page.goto('/ouder');
-  await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
-  const verzameling = page.getByRole('region', { name: 'Jouw topodiploma’s' });
-  await expect(verzameling.getByRole('img')).toHaveCount(11);
+  // En in de kast op Jij, waar alle diploma's staan die dit kind kan halen. Eén
+  // vak open en de rest als regel: het bezwaar van ADR-158 ging over stapelen,
+  // niet over een onverdiend vakje.
+  await page.goto('/jij');
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  await expect(kast).toBeVisible();
+  // Nog niets gehaald: dan staat er de uitnodiging en nergens een nul.
   await expect(
-    page.getByRole('region', { name: 'Jouw klokdiploma’s' }).getByRole('img'),
-  ).toHaveCount(4);
+    kast.getByText('Hier komen je diploma’s te hangen.', { exact: false }),
+  ).toBeVisible();
+
+  // Het vak van de laatste ronde staat open, de andere drie als regel.
+  await expect(kast.getByRole('region', { name: 'Topo' }).getByRole('button')).toHaveCount(11);
+  await kast.getByRole('button', { name: /^Klok / }).click();
+  await expect(kast.getByRole('region', { name: 'Klok' }).getByRole('button')).toHaveCount(4);
+});
+
+test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ page }) => {
+  await signIn(page, 'Fenna');
+  await page.goto('/jij');
+
+  // Zonder gespeelde ronde staat tafels open: het enige vak dat zonder code
+  // diploma's heeft (ADR-122).
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
+  await kast.getByRole('button', { name: /^Bekijk je diploma: Tafel van 1$/ }).click();
+
+  // Eén regel: elke kaart opent dit. En één knop, die van woord verandert —
+  // niets onthouden, dus oefenen.
+  const venster = page.getByRole('dialog');
+  await expect(venster).toBeVisible();
+  await expect(venster.getByText('Tafeldiploma')).toBeVisible();
+  await expect(venster.getByText('Nog niets onthouden.', { exact: false })).toBeVisible();
+  await expect(venster.getByRole('button', { name: 'Ga oefenen' })).toBeVisible();
+
+  // Escape sluit, en dan staat de kast er weer.
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(kast).toBeVisible();
 });

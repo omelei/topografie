@@ -59,13 +59,17 @@ test('Voor ouders draagt de uitleg en alle diploma’s, en niet de pagina van he
   expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Eigen woorden'));
   expect(teksten.indexOf('Eigen woorden')).toBeLessThan(teksten.indexOf('Hoe gaat het?'));
 
-  // De toren zelf en de naam van het kind horen op Jij en staan hier niet. Wat
-  // hier wél staat sinds ADR-158: de uitleg van de regel, en alle diploma's —
-  // ook die nog niet gehaald zijn.
+  // De toren zelf en de naam van het kind horen op Jij en staan hier niet.
   await expect(page.getByRole('region', { name: 'Je toren' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw naam' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Hoe de toren werkt' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Alle diploma’s' })).toBeVisible();
+
+  // En het raster met alle diploma's ook niet meer. ADR-158 zette het hier
+  // omdat een diploma een toets is en dus hoort bij wie hem afneemt; zodra het
+  // diploma zelf de beloning is keert die redenering om, en is een gat geen
+  // tekort maar een doel waar een kind op kan mikken (ADR-064).
+  await expect(page.getByRole('region', { name: 'Alle diploma’s' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toHaveCount(0);
 });
 
 test('de twee pagina’s wijzen naar elkaar, en allebei hebben ze een adres', async ({ page }) => {
