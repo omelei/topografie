@@ -14,6 +14,32 @@ en nog niet getoetst.
 
 ---
 
+## 0b. De woorden die dit document gebruikt
+
+Een ontwerpdocument dat zijn eigen woorden niet vastlegt, leidt tot code die ze
+door elkaar haalt. Deze zeven, met wat ze letterlijk op het scherm of in de code
+zijn. **Twee ervan zijn met opzet géén metafoor**, omdat dit product al twee keer
+een afgeschaft woord heeft hergebruikt.
+
+| woord                     | wat het letterlijk is                                                                                                                                                                                                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **de diplomakaart**       | Eén kaart in `DiplomaRaster`: een staand vlak met een kleurband bovenaan, de naam, een voortgangsring en een zin eronder.                                                                                                                                                  |
+| **de voortgangsring**     | De cirkel op die kaart met `DiplomaIcon` erin — 40px in het raster, 88px op het grote diploma. De rand loopt rond vol naarmate het kind meer onderdelen van die set onthoudt. Technisch een `conic-gradient` met `--vul`, hetzelfde mechaniek als `.tk-ring` op Onthouden. |
+| **het diplomaraster**     | Eén raster kaarten voor één vak: 12 tafels, 6 werelddelen, 4 kloktypen, 11 topokaarten (`DiplomaRaster`).                                                                                                                                                                  |
+| **de diplomakast**        | De vier rasters samen op Jij (`Prijzenkast`).                                                                                                                                                                                                                              |
+| **de diplomadrempel**     | Wat je moet onthouden om te mogen afzwemmen: 10 van de 10 bij een tafel, 9 van de 10 elders. Heet `diplomaDrempel` in de code.                                                                                                                                             |
+| **rijp**                  | Bestaande projectterm (ADR-141): de set haalt de diplomadrempel, dus de toets wordt aangeboden.                                                                                                                                                                            |
+| **de diploma-uitreiking** | Het scherm dat over Ronde klaar heen komt zodra de toets gehaald is (§7).                                                                                                                                                                                                  |
+
+**Niet gebruikt, en waarom niet.** _Zegel_ — dat betekende in dit product de
+weekzegel van ADR-149 (`zegels:<kind>`), die ADR-158 heeft gesloopt; het staat nog
+acht keer in `DECISIONS.md` voor dat andere ding. _Stempel_ — dat waren de
+bijhoudstempels van ADR-149 en het stempelbegrip in `leitner.ts`. _Laag_, _steen_
+en _verdieping_ — album en toren. Een woord dat in de geschiedenis van dit product
+al iets anders betekent, is geen naam maar een valstrik.
+
+---
+
 ## 1. De regel
 
 > **Een onderdeel telt mee voor je diploma als je het drie keer goed wist, op
@@ -103,7 +129,7 @@ het is één ding met één naam, en het komt sneller naarmate je de stof beter 
 
 ---
 
-## 3. Wat er dagelijks beweegt: het zegel
+## 3. Wat er dagelijks beweegt: de voortgangsring
 
 Dit is de scherpste vraag van de opdracht. Diploma's vallen zelden — tussen twee
 diploma's kunnen weken zitten. Wat ziet een kind in die weken?
@@ -125,9 +151,10 @@ overblijft is dat je die weken moet kúnnen zien.
 
 ### De vulling
 
-Elk diploma dat je nog niet hebt, draagt een **zegel dat meeloopt**: de ring is
-voor `bewezen / totaal` volgelopen. Acht van de tien onderdelen onthouden is een
-zegel dat voor acht tiende gekleurd is.
+Elke diplomakaart draagt een **voortgangsring**: een cirkel met `DiplomaIcon`
+erin, waarvan de rand rond volloopt naarmate het kind meer onderdelen van die set
+onthoudt. Acht van de tien onderdelen onthouden is een ring die voor acht tiende
+gekleurd is. In het raster is die cirkel 40px, op het grote diploma 88px.
 
 **[model]** Dit is geen tweede boekhouding. Het is `countMastered()` — dezelfde
 som die de modulepagina, Onthouden en Voor ouders vandaag al tonen, en dezelfde
@@ -142,32 +169,35 @@ waarvoor:
 > "Without `now` the second half is not asked, which is what the rewards want —
 > they count what was proven, not what is fresh."
 
-Het zegel leest `countMastered(states, ids)` **zonder `now`**. Daarmee zakt het
-nooit. Een kind dat twee weken ziek is, komt terug bij een zegel dat staat waar
-het stond. Dat is geen nieuwe functie en geen nieuw veld — het is één argument
-niet meegeven.
+De voortgangsring leest `countMastered(states, ids)` **zonder `now`**. In gewone
+woorden: een onderdeel telt mee zodra het ooit doos 4 heeft gehaald, en er wordt
+niet gekeken of het daarna te lang niet gezien is. Daarmee kan de ring nooit
+teruglopen — een kind dat twee weken ziek is, komt terug bij een ring die staat
+waar hij stond. Dat is geen nieuwe functie en geen nieuw veld: het is één
+argument niet meegeven.
 
 De lat (`standVan`, mét `now`) verandert níét. Dat is ADR-141 en die staat vast.
 
 ### De vier standen van een kaart
 
-| stand          | wanneer               | zegel                          | wat eronder staat                                                       |
-| -------------- | --------------------- | ------------------------------ | ----------------------------------------------------------------------- |
-| nog niet       | `bewezen < nodig`     | ring, deels gevuld             | "Je onthoudt er {bewezen} van de {totaal}."                             |
-| net begonnen   | `bewezen == 0`        | ring leeg                      | "Nog niets onthouden. Je moet het drie keer goed weten, op drie dagen." |
-| klaar          | zegel vol én rijp     | ring vol, in vakkleur          | "Klaar om af te zwemmen" — **[feit]** bestaat al als `diploma.rijp`     |
-| even opfrissen | zegel vol, niet rijp  | ring vol, in `--balk-leeg`     | "Je diploma is vol. Fris het even op, dan mag je de toets doen."        |
-| gehaald        | staat in `kindBadges` | zegel dicht, met `DiplomaIcon` | "Gehaald op {datum}"                                                    |
+| stand          | wanneer               | voortgangsring                | wat eronder staat                                                       |
+| -------------- | --------------------- | ----------------------------- | ----------------------------------------------------------------------- |
+| nog niet       | `bewezen < nodig`     | ring, deels gevuld            | "Je onthoudt er {bewezen} van de {totaal}."                             |
+| net begonnen   | `bewezen == 0`        | ring leeg                     | "Nog niets onthouden. Je moet het drie keer goed weten, op drie dagen." |
+| klaar          | ring vol én rijp      | ring vol, in vakkleur         | "Klaar om af te zwemmen" — **[feit]** bestaat al als `diploma.rijp`     |
+| even opfrissen | ring vol, niet rijp   | ring vol, in `--balk-leeg`    | "Je diploma is vol. Fris het even op, dan mag je de toets doen."        |
+| gehaald        | staat in `kindBadges` | ring dicht, met `DiplomaIcon` | "Gehaald op {datum}"                                                    |
 
 **[feit]** `leitner.ts:159-163`. De stand _even opfrissen_ ontstaat als een item
 méér dan zijn eigen interval te laat is — voor doos 4 dus ruim zestien dagen. Het
-is de prijs van "het zegel zakt nooit", en het is de eerlijke prijs: het beeld
+is de prijs van "de ring loopt nooit terug", en het is de eerlijke prijs: het beeld
 liegt niet, het wacht. Het kind verliest niets; het moet iets doen. Dit is het
 zwakste punt van het ontwerp en het staat in §11.
 
 ### De eerste twee dagen
 
-Op dag 1 en dag 2 is het zegel leeg, in élke module. Daar mag geen nul staan. Er
+Op dag 1 en dag 2 staat elke voortgangsring op nul, in élke module. Daar mag geen
+getal nul staan. Er
 staat de regel zelf: _"Nog niets onthouden. Je moet het drie keer goed weten, op
 drie dagen."_ Dat is een belofte in plaats van een tekort, en het is wat een kind
 van zes ervan navertelt.
@@ -185,7 +215,7 @@ meer deden. De conclusie was elke keer dezelfde: een beloning die af is, is dood
 Maar de oorzaak was niet "er beweegt te weinig". De oorzaak was dat het ding dat
 bewoog **niet de leerstof was**.
 
-Een zegel dat meeloopt met wat je onthoudt, kan niet af zijn zolang er stof is
+Een ring die meeloopt met wat je onthoudt, kan niet af zijn zolang er stof is
 die je nog niet onthoudt, en het beweegt precies wanneer het leren beweegt. Dat
 is de enige beweging die dit product zou moeten tonen. Is ze traag, dan is het
 leren traag, en dan is de eerlijkste ingreep de stof — niet de teller.
@@ -237,7 +267,7 @@ degene die de toets afneemt, en een gat is iets waar een ouder iets mee kan._
 Die redenering hield zolang het diploma náást de toren stond. **Zodra het diploma
 zelf de beloning is, keert hij om.**
 
-Dat is geen nieuwe gedachte. Het is de stichtende zin van de diplomawand, uit
+Dat is geen nieuwe gedachte. Het is de stichtende zin van het diplomaraster, uit
 ADR-064:
 
 > "Twelve of them, on a wall, with the gaps showing. **This is the one place in
@@ -248,13 +278,14 @@ ADR-064:
 > afternoon**."
 
 Het verschil tussen een plank met onverdiende beloningen (ADR-059, afgewezen) en
-een wand met gaten (ADR-064, het ontwerp) is of een kind erop kan mikken. Een
-diploma kun je gaan halen. Daarom hoort de hele wand bij het kind.
+een raster met gaten (ADR-064, het ontwerp) is of een kind erop kan mikken. Een
+diploma kun je gaan halen. Daarom horen alle rasters bij het kind.
 
 ADR-158 zweeg op Jij bij een lege kast, want _"vier lege wanden vertellen een
-kind op dag één dat het niets heeft"_. Die reden vervalt met het zegel: op dag
-één is de wand niet leeg, hij is **bleek**. Elk diploma staat er, elk zegel is
-leeg, en elk vlak is een knop.
+kind op dag één dat het niets heeft"_. Die reden vervalt met de voortgangsring:
+elk diploma staat er, elke ring staat op de stand van dat moment, en elke kaart
+is een knop. Wat er op dag één precies staat — en waarom dat nog steeds het
+zwakste punt is — staat in §11.
 
 ### De pagina
 
@@ -285,7 +316,7 @@ Jouw diploma's
 ### Zonder code
 
 **[feit]** `doel.ts:93` filtert al op premium, en `VlagDiplomas.tsx:39` tekent een
-premiumwand zonder code helemaal niet — geen slot, gewoon afwezig (ADR-124). Dat
+premiumraster zonder code helemaal niet — geen slot, gewoon afwezig (ADR-124). Dat
 blijft. Een kind zonder code ziet **twaalf diploma's, en dat is zijn hele kast**,
 niet een kast die voor tweederde op slot zit.
 
@@ -335,7 +366,7 @@ scherm — alleen op papier.
    plek waar het vak kleur krijgt. Genoeg om vier tafeldiploma's uit elkaar te
    houden zonder dat de kaart bont wordt, en het is de regel die HUISSTIJL §6 al
    stelt.
-2. **Het zegel**, rechtsonder: een cirkel van 88px met `--module` als rand,
+2. **De voortgangsring**, rechtsonder: een cirkel van 88px met `--module` als rand,
    `--module-tint` als vlak en `DiplomaIcon` erin op 40px. Dat is `Embleem` op 88
    in plaats van 56 — **geen nieuwe vorm, dezelfde taal** (`index.css:934-963`).
 3. **Denker** ernaast, op `goed-gedaan`. Náást het diploma, niet erop: koraal ligt
@@ -345,7 +376,7 @@ scherm — alleen op papier.
 Verhouding 3:4 staand, op `--kaart` wit. Op 393px is dat 321 breed en 428 hoog,
 en dat past onder de schermpadding met de knoppen eronder in beeld.
 
-### Klein — in de wand
+### Klein — in het raster
 
 Hetzelfde vlak op een kwart. De vormtaal van `Embleem` bepaalt het verschil, niet
 de tint:
@@ -355,7 +386,7 @@ de tint:
 | rand       | 2px **vol**, `--inkt` | 2px **gestippeld**, `--rand-sterk` |
 | band boven | `--module`            | `--balk-leeg`                      |
 | naam       | `--inkt`              | `--tekst-tertiair`                 |
-| zegel      | dicht, `DiplomaIcon`  | ring, deels gevuld                 |
+| ring       | dicht, `DiplomaIcon`  | ring, deels gevuld                 |
 | eronder    | "Gehaald op {datum}"  | "Je onthoudt er 8 van de 10."      |
 
 Gevuld is verdiend, gestippeld is nog niet. **[feit]** Dat is de regel die
@@ -363,7 +394,7 @@ Gevuld is verdiend, gestippeld is nog niet. **[feit]** Dat is de regel die
 zijn stenen: **een vorm, geen tint**, zodat het in grijstinten en bij
 kleurenblindheid overeind blijft. Die taal overleeft de toren.
 
-### Het zegel dat meeloopt — en waarom het niets nieuws kost
+### De voortgangsring — en waarom hij niets nieuws kost
 
 **[feit]** `src/index.css:2337-2346`. `.tk-ring` bestaat al, in gebruik op
 Onthouden, en is precies dit mechanisme:
@@ -372,11 +403,11 @@ Onthouden, en is precies dit mechanisme:
 background: conic-gradient(var(--inkt) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%));
 ```
 
-Een `--vul` op de wortel van de kaart, gezet uit `bewezen / totaal`. Het zegel is
-dus één bestaande CSS-klasse met een andere maat en `--module` in plaats van
-`--inkt`.
+Een `--vul` op de wortel van de kaart, gezet uit `bewezen / totaal`. De
+voortgangsring is dus één bestaande CSS-klasse met een andere maat en `--module`
+in plaats van `--inkt`.
 
-**De vulling is nooit de enige drager.** Onder elk zegel staat de zin met de
+**De vulling is nooit de enige drager.** Onder elke ring staat de zin met de
 getallen erin, en de rand zegt met een vorm of het diploma gehaald is. HUISSTIJL
 §8: nooit kleur als enige drager.
 
@@ -430,15 +461,15 @@ achter ADR-149 het willen — decoratie naast de leerstof schaadt het leren.
 
 ### De scène, beat voor beat
 
-| t    | wat                                                                                               | duur | hoe                             |
-| ---- | ------------------------------------------------------------------------------------------------- | ---- | ------------------------------- |
-| 0    | Ronde klaar zakt naar 15% dekking; het lege diploma komt in beeld, van schaal 0,94 naar 1         | 420  | `--beweeg-traag` `--beweeg-uit` |
-| 420  | De soort verschijnt: "Tafeldiploma"                                                               | 180  | opacity                         |
-| 600  | De naam verschijnt: "Tafel van 7"                                                                 | 180  | opacity                         |
-| 780  | **Het zegel wordt gedrukt**: van schaal 1,6 en dekking 0 naar 1. Eén keer `speelMoment('pagina')` | 240  | `--beweeg-veer`                 |
-| 1020 | "Gehaald door {naam}" en "op {datum}"                                                             | 180  | opacity                         |
-| 1200 | Denker komt ernaast staan op `goed-gedaan`, één sprongetje                                        | 240  | `--beweeg-veer`                 |
-| 1440 | De knoppen worden zichtbaar                                                                       | 180  | opacity                         |
+| t    | wat                                                                                                       | duur | hoe                             |
+| ---- | --------------------------------------------------------------------------------------------------------- | ---- | ------------------------------- |
+| 0    | Ronde klaar zakt naar 15% dekking; het lege diploma komt in beeld, van schaal 0,94 naar 1                 | 420  | `--beweeg-traag` `--beweeg-uit` |
+| 420  | De soort verschijnt: "Tafeldiploma"                                                                       | 180  | opacity                         |
+| 600  | De naam verschijnt: "Tafel van 7"                                                                         | 180  | opacity                         |
+| 780  | **De voortgangsring wordt gedrukt**: van schaal 1,6 en dekking 0 naar 1. Eén keer `speelMoment('pagina')` | 240  | `--beweeg-veer`                 |
+| 1020 | "Gehaald door {naam}" en "op {datum}"                                                                     | 180  | opacity                         |
+| 1200 | Denker komt ernaast staan op `goed-gedaan`, één sprongetje                                                | 240  | `--beweeg-veer`                 |
+| 1440 | De knoppen worden zichtbaar                                                                               | 180  | opacity                         |
 
 De knoppen zijn **vanaf de eerste frame bruikbaar** — alleen hun dekking
 animeert, ze staan in de documentvolgorde en er ligt niets overheen. Twee
@@ -537,14 +568,14 @@ Nederlands op het scherm, Engels in de code.
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ouder.diplomaTitel`  | Hoe een diploma verdiend wordt                                                                                                                                                                                                                      |
 | `ouder.diplomaUitleg` | Een onderdeel telt pas mee als uw kind het drie keer goed wist, op drie verschillende dagen, steeds op het moment dat het weer aan de beurt was. Eén keer goed antwoorden telt niet mee — dat is het verschil tussen iets kennen en iets onthouden. |
-| `ouder.diplomaTempo`  | Hoe beter uw kind de stof kent, hoe sneller het diploma komt: alles wat onthouden is, blijft meetellen. Het zegel op een diploma loopt nooit terug.                                                                                                 |
+| `ouder.diplomaTempo`  | Hoe beter uw kind de stof kent, hoe sneller het diploma komt: alles wat onthouden is, blijft meetellen. De ring op een diploma loopt nooit terug.                                                                                                   |
 
 **Herschreven, want ze gaan nog over het album**
 
-| sleutel                                      | nu                                                                                                                                       | wordt                                                                                                              |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `afzwemmen.nietRijpUitleg` (`nl.ts:157-158`) | "Een **plaatje krijgt kleur** als je het op verschillende dagen goed weet. Proefzwemmen kan al, maar het diploma krijg je dan nog niet." | "Je zegel kleurt vol als je de onderdelen op verschillende dagen goed weet. Is het vol, dan mag je de toets doen." |
-| `afzwemmen.proefUitleg` (`nl.ts:176`)        | "Bij proefzwemmen krijg je nog geen diploma. Dat komt als je **albumpagina** klaar is om af te zwemmen."                                 | vervalt met proefzwemmen (§9)                                                                                      |
+| sleutel                                      | nu                                                                                                                                       | wordt                                                                                                                |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `afzwemmen.nietRijpUitleg` (`nl.ts:157-158`) | "Een **plaatje krijgt kleur** als je het op verschillende dagen goed weet. Proefzwemmen kan al, maar het diploma krijg je dan nog niet." | "Je diploma kleurt vol als je de onderdelen op verschillende dagen goed weet. Is het vol, dan mag je de toets doen." |
+| `afzwemmen.proefUitleg` (`nl.ts:176`)        | "Bij proefzwemmen krijg je nog geen diploma. Dat komt als je **albumpagina** klaar is om af te zwemmen."                                 | vervalt met proefzwemmen (§9)                                                                                        |
 
 ---
 
@@ -567,7 +598,7 @@ onderbouwd.
 **Proefzwemmen gaat weg.** Het diploma moet echte waarde opleveren, en een toets
 die je mag afleggen terwijl vaststaat dat je er niets voor krijgt, is een toets
 zonder waarde. Hij bestond omdat een kind anders niet kon voelen hoe de toets is
-— en dat argument valt op twee manieren tegelijk weg: het zegel laat nu zien hoe
+— en dat argument valt op twee manieren tegelijk weg: de voortgangsring laat nu zien hoe
 ver je bent, en de oefentoets doet hetzelfde maar beter.
 
 **De oefentoets blijft, en is daarmee nodiger dan eerst.** **[feit]** ADR-104
@@ -644,7 +675,7 @@ schemawijziging, geen migratie, geen risico op dataverlies. `kindBadges`
 (`db.ts:202`) verandert niet: daar staan de diploma's al.
 
 **Een kind ziet niets van de overgang.** De toren is er op een dag niet meer,
-zijn diploma's staan er nog, en het zegel van het volgende diploma staat meteen
+zijn diploma's staan er nog, en de voortgangsring van het volgende diploma staat meteen
 op de juiste hoogte omdat het uit de Leitner-standen komt die er al zijn. Er valt
 geen gat — en dat is precies waarom de migratie niets hoeft uit te leggen.
 
@@ -661,19 +692,21 @@ het diploma een bijzaak was; het is het niet meer.
 
 Vier dingen, opgeschreven omdat ze anders pas na de bouw gevonden worden.
 
-**Het zegel kan vol staan terwijl de toets niet open is.** Het zegel telt bewezen
-(zonder `now`), de lat telt vers (mét `now`). Na ruim twee weken wegblijven lopen
+**De ring kan vol staan terwijl de toets niet open is.** De voortgangsring telt
+elk onderdeel dat ooit doos 4 haalde; de diplomadrempel telt alleen wat ook
+recent genoeg gezien is (`standVan` mét `now`). Na ruim twee weken wegblijven lopen
 die uit elkaar, en dan staat er een vierde zin op de kaart die er niet hoorde te
-zijn. Het alternatief was een zegel dat leegloopt, en dat is erger. Maar het is
+zijn. Het alternatief was een ring die leegloopt, en dat is erger. Maar het is
 een extra stand, en de zesjarigentoets is hier het strengst.
 
-**De wand op dag één is bleek, en dat is nog steeds een wand zonder iets erop.**
-ADR-158 vond dat een verkeerde boodschap en zette hem daarom op Voor ouders. Het
-zegel en de knopwerking moeten dat dragen, en dat is veel gevraagd van een
-gestippelde rand. **[hypothese]** Dit is het eerste wat getoetst moet worden bij
-een kind dat de app voor het eerst opent.
+**Op dag één staat er een raster waarin geen enkele kaart gehaald is.** Twaalf
+(of drieëndertig) kaarten met een gestippelde rand, een grijze kleurband en een
+voortgangsring op nul. ADR-158 vond dat een verkeerde boodschap en zette het
+raster daarom op Voor ouders. De ring kan dat pas vanaf de derde oefendag dragen,
+want eerder kan er niets in staan. **[hypothese]** Dit is het eerste wat getoetst
+moet worden bij een kind dat de app voor het eerst opent.
 
-**Twee acties op één wand.** Een gehaald diploma opent zichzelf; een niet-gehaald
+**Twee acties in één raster.** Een gehaald diploma opent zichzelf; een niet-gehaald
 diploma opent een oefenronde. Dat volgt uit hoe de kaart eruitziet, maar het zijn
 twee regels waar er één hoorde te zijn. Struikelt het daar, dan is de ingreep:
 elke kaart gaat groot open, en "Ga oefenen" staat in het grote beeld.
@@ -695,7 +728,7 @@ afgenomen.
    Komt daar meer dan één zin uit, dan is het ontwerp te groot.
 2. **Laat datzelfde kind zonder tekst zeggen wat het verschil is** tussen een
    gehaald en een niet-gehaald diploma.
-3. **Zet een kind op dag één voor de bleke wand** en vraag wat het ziet. Zegt het
+3. **Zet een kind op dag één voor het raster waarin niets gehaald is** en vraag wat het ziet. Zegt het
    "ik heb niets", dan faalt §5.
 4. **Zet rustig aan en haal een diploma.** Alles moet hetzelfde zeggen, zonder
    één beweging, met hetzelfde geluid.
@@ -709,10 +742,10 @@ afgenomen.
 Drie PR's, drie ADR's. De nummers worden **pas vlak voor het committen** van
 `origin/main` genomen; vandaag is ADR-166 het hoogste.
 
-**PR 1 — Het diploma wordt het beloningsprogramma.** `bewezenVan()`, het zegel op
-`DiplomaRaster`, de vier standen en hun zinnen, het grote diploma als component,
+**PR 1 — Het diploma wordt het beloningsprogramma.** `bewezenVan()`, de
+voortgangsring op `DiplomaRaster`, de vier standen en hun zinnen, het grote diploma als component,
 de scène op Ronde klaar met `draaiboek()` en `leesRustig()`, de kast op Jij, en
-de toetsen die er niet waren (afzwemmen, het draaiboek, het zegel).
+de toetsen die er niet waren (afzwemmen, het draaiboek, de voortgangsring).
 
 De toren staat er nog gewoon onder. **Dit is de PR die als eerste weg kan zonder
 dat er een gat valt** — en tegelijk de PR waarna de toren overbodig is.
