@@ -1578,15 +1578,26 @@
    * here. They keep two names because the front door's middle holds rows and a
    * module page's holds a chooser, and that is the whole difference.
    */
+  /* Eén kolom, op elke maat (ADR-168).
+   *
+   * Hier stond een raster van twee: de pagina en de eigen kolom van het kind
+   * ernaast, vanaf 1200. Die kolom droeg sinds ADR-162 nog één blok en is nu
+   * helemaal weg, dus is de tweede kolom een lege kolom — en een lege kolom van
+   * 344 breed duwt de pagina naar links en laat een derde van het scherm leeg.
+   *
+   * De maat is die van `.tk-page-enkel`, dat de premiumpagina hier al had
+   * (ADR-145): 1080 in plaats van 1400. Dat is ongeveer de breedte die de
+   * hoofdkolom naast de eigen kolom ook had, dus de regellengte en het raster
+   * van twee tegels blijven wat ze waren. Zonder die begrenzing zou elke pagina
+   * op een breed scherm ineens veertienhonderd pixels tekst worden, en dat
+   * leest niemand. */
   .tk-page,
   .tk-home {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     width: 100%;
-    /* The design's own measure: a monitor wider than the design is capped, and
-     * nothing narrower notices. */
-    max-width: 1400px;
+    max-width: 1080px;
     margin: 0 auto;
     padding: var(--padding-scherm);
   }
@@ -1625,20 +1636,6 @@
     }
   }
   @media (min-width: 1200px) {
-    .tk-page,
-    .tk-home {
-      /* The child's own column at 344, the width the design canvas draws its
-       * blocks at 1440. */
-      grid-template-columns: minmax(0, 1fr) 344px;
-      align-items: start;
-      gap: 48px;
-    }
-    /* Een pagina zonder eigen kolom (ADR-145): de premiumpagina. Op de maat
-     * van een leesbare prijspagina, en niet over de volle 1400. */
-    .tk-page.tk-page-enkel {
-      grid-template-columns: minmax(0, 1fr);
-      max-width: 1080px;
-    }
     .tk-page-main,
     .tk-home-main {
       gap: var(--gap-sectie);

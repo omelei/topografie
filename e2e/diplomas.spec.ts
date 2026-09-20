@@ -44,7 +44,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await page.goto('/topografie');
 
   const muur = page.getByRole('region', { name: 'Jouw topodiploma’s' });
-  await expect(muur.getByRole('button')).toHaveCount(11);
+  // Twaalf sinds ADR-168: de wereldkaart hoort er ook bij.
+  await expect(muur.getByRole('button')).toHaveCount(12);
   await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
 
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
@@ -82,7 +83,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await page.goto('/ouder');
   await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
   const verzameling = page.getByRole('region', { name: 'Jouw topodiploma’s' });
-  await expect(verzameling.getByRole('img')).toHaveCount(11);
+  await expect(verzameling.getByRole('img')).toHaveCount(12);
   await expect(
     page.getByRole('region', { name: 'Jouw klokdiploma’s' }).getByRole('img'),
   ).toHaveCount(4);

@@ -198,9 +198,16 @@ export function WeekdoelenBlok({
     DIPLOMA_KEUZE,
     groep,
   ).map((suggestie) => suggestie.doelwit);
+  // Elk diploma staat precies één keer in de lijst: wat bovenaan bij "Dichtbij"
+  // staat, staat niet nog eens onder zijn vak. Een keuzelijst waarin dezelfde
+  // regel twee keer voorkomt, is een lijst die je twee keer moet lezen om te
+  // weten of het er echt twee zijn.
+  const dichtbijIds = new Set(dichtbij.map((doelwit) => doelwit.id));
   const perVak = MODULES.map((module) => ({
     module,
-    doelen: openDoelwitten.filter((doelwit) => doelwit.deel.moduleId === module.id),
+    doelen: openDoelwitten.filter(
+      (doelwit) => doelwit.deel.moduleId === module.id && !dichtbijIds.has(doelwit.id),
+    ),
   })).filter((rij) => rij.doelen.length > 0);
 
   return (
@@ -400,7 +407,7 @@ function Toevoegen({
       </div>
 
       {soort === 'diploma' ? (
-        perVak.length === 0 ? (
+        perVak.length === 0 && dichtbij.length === 0 ? (
           <p className="text-tekst-secundair">{t('weekdoel.geenDiplomas')}</p>
         ) : (
           <div className="tk-doel-keuze">

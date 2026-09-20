@@ -37,13 +37,22 @@ test('Voor ouders toont eerst wat gehaald is, en de gaten pas als je erom vraagt
 
   // De koppen met hun stand staan er altijd; de vakjes niet. Hier zijn de gaten
   // wél iets om iets mee te doen (ADR-064).
-  await expect(page.getByText('0 van de 12 gehaald')).toBeVisible();
+  // Per wand, want sinds ADR-168 zijn er twee van twaalf: de tafels en de
+  // kaarten.
+  await expect(
+    page.getByRole('region', { name: 'Jouw tafeldiploma’s' }).getByText('0 van de 12 gehaald'),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Jouw topodiploma’s' }).getByText('0 van de 12 gehaald'),
+  ).toBeVisible();
   await expect(page.locator('.tk-diploma')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Laat zien wat er nog te halen is' }).click();
 
-  // Twaalf tafels, zes werelddelen, vier klokstappen en elf kaarten.
-  await expect(page.locator('.tk-diploma')).toHaveCount(33);
+  // Twaalf tafels, zeven vlaggensets, vier klokstappen en twaalf kaarten
+  // (ADR-168). De rekendiploma's en de taaldiploma's staan op hun eigen
+  // modulepagina en niet in deze vier wanden.
+  await expect(page.locator('.tk-diploma')).toHaveCount(35);
 
   await page.getByRole('button', { name: 'Laat alleen zien wat gehaald is' }).click();
   await expect(page.locator('.tk-diploma')).toHaveCount(0);

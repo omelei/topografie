@@ -148,8 +148,12 @@ export function useSumRound(
     basisRegel: SUM_ROUND_RULE[mode],
     // Een diploma heeft zijn eigen lengte: de hele tafel, of twintig sommen.
     aantal: isDiplomaVorm(mode) ? null : aantal,
-    // En het zegt niets tot het eind, want dat is wat een toets is (ADR-100).
-    toetsstand: toetsstand || isDiplomaVorm(mode),
+    // Het rekendiploma zegt niets tot het eind, zoals het klok-, vlaggen- en
+    // topodiploma (ADR-117). **Het tafeldiploma wél**, en dat blijft zo: dat
+    // stopt bij de eerste fout (`stopsOnAMistake`), en een ronde die afbreekt
+    // zonder te zeggen waarop, laat een kind met niets achter. De twee regels
+    // horen bij elkaar — wie er één overneemt, moet de andere ook overnemen.
+    toetsstand: toetsstand || mode === 'reken-diploma',
     itemVan: somVan,
     stoptBijFout: stopsOnAMistake(mode),
     stel: (states, rule) => {

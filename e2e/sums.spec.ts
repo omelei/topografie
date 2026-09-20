@@ -317,7 +317,7 @@ test('the lightning round is offered without a setting, and marked premium', asy
  * kind, that the page keeps its shape while they do, and that no section ever
  * grows past six cards.
  */
-test('rekenen offers nine subjects, as chips that wrap', async ({ page }) => {
+test('rekenen offers nine subjects, as the tiles every module uses', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/rekenen');
 
@@ -337,11 +337,14 @@ test('rekenen offers nine subjects, as chips that wrap', async ({ page }) => {
     await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
 
-  // Six was the ceiling a section of tiles may hold (ADR-061, ADR-062).
-  // Rekenen's subjects are chips (ADR-095), which wrap, and ADR-120 gave them
-  // three more kinds of sum. The step holds nothing else, so the region's
-  // buttons are the subjects.
+  // Six was the ceiling a section of tiles may hold (ADR-061, ADR-062). ADR-120
+  // gave rekenen three more kinds of sum, and ADR-168 made them tiles like every
+  // other module's subjects — "Oefen je fouten" is er geen meer, dus het zijn er
+  // negen en de rij eindigt op de Rekenmix. The step holds nothing else, so the
+  // region's buttons are the subjects.
   await expect(wat.getByRole('button')).toHaveCount(9);
+  await expect(wat.locator('.tk-tegel')).toHaveCount(9);
+  await expect(wat.getByRole('button').last()).toContainText('Rekenmix');
 });
 
 test('a subject with many sets asks which, instead of showing all of them', async ({ page }) => {
