@@ -75,15 +75,13 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
-  // Het cijfer en de favorieten van het kind horen op de pagina's van het kind
-  // en staan hier dus niet. Hoe de toren eruitziet wel: dat stelt een ouder in
-  // (ADR-158).
+  // Het cijfer van het kind hoort op de pagina's van het kind en staat hier dus
+  // niet. Hoe de toren eruitziet wel: dat stelt een ouder in (ADR-158).
   await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Hoe de toren eruitziet' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // Er staat helemaal geen kolom meer naast deze pagina (ADR-162): wat erin
-  // stond voor de ouder waren de toetsen, en die zijn weg.
+  // Er staat helemaal geen kolom meer naast een pagina, hier niet en nergens
+  // (ADR-162, ADR-168).
   await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
   // De doelen van deze week staan hier wél: een ouder mag er een bij zetten,

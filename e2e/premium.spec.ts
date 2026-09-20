@@ -277,7 +277,7 @@ test('without a code the premium page points at the kassa, and with one it does 
     tabel.getByRole('row', { name: /Alle vakken en alle onderwerpen/ }).getByRole('img'),
   ).toHaveCount(2);
 
-  // Zonder de kolom ernaast: de pagina waar je betaalt heeft de breedte nodig.
+  // Zonder kolom ernaast — die staat sinds ADR-168 nergens meer.
   await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
   const knop = page.getByRole('link', { name: 'Een code kopen' }).first();

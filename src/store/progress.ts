@@ -67,7 +67,7 @@ export async function finishSession(id: string, score: number, answered: number)
   });
 }
 
-/** One finished round, as K1's history and its favourites read it back. */
+/** One finished round, as K1's history reads it back. */
 export interface PlayedRound {
   readonly mode: ModeId;
   /** Which set it was about, or null on a round played before ADR-063. */

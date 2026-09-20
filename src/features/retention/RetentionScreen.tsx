@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Uitklap } from '@/components/Uitklap';
 import { Dot } from '@/components/Dot';
 import { StatusLabel, STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
@@ -119,9 +119,9 @@ const REGELS: readonly TranslationKey[] = [
 /** Where a subject row in Per vak takes you. */
 const ONDERWERP_ID = 'onthouden-onderwerp';
 
-export function RetentionScreen({ aside }: { readonly aside: ReactNode }) {
+export function RetentionScreen() {
   const { actief } = usePremium();
-  return <Onthouden aside={aside} premium={actief} />;
+  return <Onthouden premium={actief} />;
 }
 
 /** De kop van de pagina, als de etalage van premium (ADR-150). */
@@ -163,7 +163,7 @@ function Regels() {
   );
 }
 
-function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly premium: boolean }) {
+function Onthouden({ premium }: { readonly premium: boolean }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
   const [antwoorden, setAntwoorden] = useState<readonly Antwoord[]>([]);
@@ -411,8 +411,6 @@ function Onthouden({ aside, premium }: { readonly aside: ReactNode; readonly pre
           ) : null}
         </section>
       </div>
-
-      {aside}
     </div>
   );
 }

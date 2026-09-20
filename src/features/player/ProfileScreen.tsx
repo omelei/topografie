@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { t } from '@/i18n';
 import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
@@ -28,11 +28,9 @@ import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
  */
 export function ProfileScreen({
   profile,
-  aside,
   onOuder,
 }: {
   readonly profile: ProfileRecord;
-  readonly aside: ReactNode;
   readonly onOuder: () => void;
 }) {
   return (
@@ -76,8 +74,6 @@ export function ProfileScreen({
 
         <Jaaroverzicht />
       </div>
-
-      {aside}
     </div>
   );
 }

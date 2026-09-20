@@ -158,23 +158,14 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   await signIn(page, 'Jamie');
 
   const recent = page.getByRole('region', { name: 'Recent geoefend' });
-  const favourites = page.getByRole('region', { name: 'Jouw favorieten' });
-  // The favourites are in the child's own column, which is drawn from 1200
-  // and not below it (ADR-119).
-  const desk = (page.viewportSize()?.width ?? 0) >= 1200;
+  // De kolom met favorieten staat er niet meer, op geen enkele maat (ADR-168).
+  await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // Before the first round both are empty, and both say so rather than
-  // standing there as headings over nothing.
+  // Before the first round it is empty, and it says so rather than standing
+  // there as a heading over nothing.
   await expect(
     recent.getByText('Nog niets geoefend. Na je eerste ronde staat het hier.'),
   ).toBeVisible();
-  if (desk) {
-    await expect(
-      favourites.getByText('Nog geen favorieten. Wat je vaak oefent, komt hier te staan.'),
-    ).toBeVisible();
-  } else {
-    await expect(favourites).toHaveCount(0);
-  }
 
   await startRound(page, PROVINCIES, /Aanwijzen/);
   await page.getByRole('button', { name: 'Limburg' }).click();
@@ -188,13 +179,6 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   const tegel = recent.getByRole('button', { name: /Provincies van Nederland/ });
   await expect(tegel).toContainText(/Cijfer (10,0|1,0)/);
   await expect(tegel).toContainText('Aanwijzen');
-
-  // And it went into the column on the right as a way straight back in.
-  if (desk) {
-    await expect(
-      favourites.getByRole('button', { name: /Provincies van Nederland/ }),
-    ).toBeVisible();
-  }
 
   // The tile is the shortcut it looks like: same set, same way, no chooser.
   await tegel.click();

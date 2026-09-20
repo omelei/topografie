@@ -3,7 +3,6 @@ import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
-import { useDesk } from '@/features/shell/useSmallScreen';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
@@ -24,7 +23,6 @@ import { ReeksRegel } from '@/features/toren/ReeksRegel';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
-import { FavorietenBlok } from './SideColumn';
 import { GroepVraag } from './GroepVraag';
 import { WeekdoelenBlok } from './WeekdoelenBlok';
 
@@ -34,8 +32,7 @@ import { WeekdoelenBlok } from './WeekdoelenBlok';
  * Redrawn in 2026-09 (ADR-094) and still the same argument, in the same order.
  * First the child's own name, and under it what doing this is. Then the ways
  * in — what this child goes back to most, what they did last and how it went,
- * and what they started and did not finish. Then the child's own column: the
- * tests, the weekkaart and their favourites.
+ * and what they started and did not finish.
  *
  * **Waar je begint staat bovenaan** (ADR-162). "Hier begin je mee vandaag" is
  * het eerste blok onder de begroeting, en het is de enige rij die zegt: druk
@@ -60,11 +57,14 @@ import { WeekdoelenBlok } from './WeekdoelenBlok';
  * dinner was ready. Each card is one of those, and pressing it asks the
  * questions that round had not asked yet.
  *
- * **The column is beside the rows, or it is not drawn.** From 1200 the
- * favourites stand beside them. Below that they are not drawn at all (ADR-119),
- * which is decided here, in React, rather than hidden in CSS, so a screen
- * reader does not meet them either (see `useDesk`). Until ADR-162 the tests
- * stayed below 1200; that block is gone, so there is nothing left to keep.
+ * **Er staat geen kolom meer naast** (ADR-168). Van de vier blokken die de
+ * eigen kolom ooit droeg was "Jouw favorieten" het laatste, en het was een
+ * derde weg naar dezelfde ronde: "Meest geoefend" staat bovenaan deze pagina en
+ * "Recent geoefend" eronder, allebei met dezelfde set en dezelfde manier achter
+ * de knop. Drie lijsten van hetzelfde is geen keuze maar ruis, en het was de
+ * enige daarvan die alleen boven 1200 bestond — dus wat een kind op de laptop
+ * van thuis als "zijn plek" leerde kennen, was op de tablet van school weg.
+ * Eén kolom, op elke maat.
  *
  * One thing it deliberately does not do: **it does not forecast** — "wat
  * onthoud je" is K9's.
@@ -100,7 +100,6 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
-  const desk = useDesk();
 
   useEffect(() => {
     void loadPlayedRounds().then(setPlayed);
@@ -170,7 +169,6 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
   // Eén regel als er een reeks loopt en vandaag nog leeg is (ADR-158). De
   // weekkaart stond hier; die is met de toren vervallen.
   const reeksRegel = <ReeksRegel />;
-  const favorieten = <FavorietenBlok onBegin={onBegin} />;
 
   const kern = (
     <>
@@ -186,17 +184,7 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
     </>
   );
 
-  if (desk) {
-    return (
-      <div className="tk-home">
-        <div className="tk-home-main">{kern}</div>
-
-        <aside className="tk-home-aside">{favorieten}</aside>
-      </div>
-    );
-  }
-
-  // Below 1200 without the column at all (ADR-119, ADR-162).
+  // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
   return <div className="tk-home">{kern}</div>;
 }
 

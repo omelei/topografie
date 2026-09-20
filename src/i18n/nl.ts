@@ -87,6 +87,7 @@ export const nl = {
   'weekdoel.vol': 'Drie doelen is genoeg voor één week.',
   'weekdoel.wegVan': 'Weghalen: {doel}',
   'weekdoel.geenDiplomas': 'Er is nu geen diploma om deze week voor te gaan.',
+  'weekdoel.diplomaDichtbij': 'Dichtbij',
   // Onderaan het blok: naar het hele raster op Voor ouders, ook wat nog te
   // halen is (ADR-153).
   'weekdoel.alleDiplomas': 'Bekijk alle diploma’s',
@@ -116,8 +117,6 @@ export const nl = {
 
   // Waar je zelf steeds naar teruggaat, in één tik. Geen aanbeveling en geen
   // algoritme: het is wat je het vaakst gekozen hebt.
-  'home.favouritesTitle': 'Jouw favorieten',
-  'home.favouritesNone': 'Nog geen favorieten. Wat je vaak oefent, komt hier te staan.',
 
   // De weekkaart (ADR-149), waar de reeks stond. Dagen tellen, reeksen niet:
   // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
@@ -978,7 +977,7 @@ export const nl = {
   'set.oceanie-fouten': 'Jouw fouten in Oceanië',
   'set.wereld-fouten': 'Jouw fouten op de wereldkaart',
   'set.klok-fouten': 'Jouw fouten met de klok',
-  // De naam van een set: wat de startbalk, de kaarten en de favorieten tonen.
+  // De naam van een set: wat de startbalk en de kaarten tonen.
   'vlag.regio.wereld': 'de wereld',
   'vlag.set.bekend': 'Bekende vlaggen van {regio}',
   'vlag.set.alle': 'Alle vlaggen van {regio}',
@@ -1065,7 +1064,7 @@ export const nl = {
   'onderwerp.taal.werkwoordmix': 'Werkwoordmix',
   'onderwerp.taal.werkwoordmix.uitleg': 'Alle werkwoorden door elkaar',
   'onderwerp.taal.werkwoorden.fouten.uitleg': 'De werkwoorden die je eerder fout had',
-  // De naam van een set: wat de startbalk, de kaarten en de favorieten tonen.
+  // De naam van een set: wat de startbalk en de kaarten tonen.
   // Het korte woord staat op het knopje als de set een van meer is.
   'set.taal-sp-eiij': 'Ei of ij',
   'set.taal-sp-eiij.kort': 'ei / ij',

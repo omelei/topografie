@@ -28,9 +28,12 @@ export function TopBar({
           the name is said rather than shown — the button keeps it as its
           accessible name, so it is still the child's own button. */}
       <button type="button" className="tk-profiel" onClick={onProfile}>
-        {/* The first letter of their name. It was the hero they chose until
-            ADR-149 took the heroes out; a letter is what tells two children on
-            one device apart, and it needs nothing to be earned. */}
+        {/* De voorletter is de avatar, en alleen daar waar de naam niet past:
+            op een telefoon. Zodra de naam er staat, staat hij er alleen (ADR-168).
+            Een letter naast dezelfde naam zegt niets wat de naam niet al zegt —
+            het is dezelfde informatie, twee keer, in de smalste balk van de app.
+            Onder 768 is er geen naam om te lezen, en dan is de letter wél het
+            enige wat twee kinderen op één apparaat uit elkaar houdt. */}
         <span className="tk-profiel-letter" aria-hidden="true">
           {profile.naam.slice(0, 1).toLocaleUpperCase('nl-NL')}
         </span>

@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon } from '@/components/Icon';
 import {
@@ -104,7 +104,6 @@ export function ModuleScreen({
   regio: adresRegio = null,
   onSet,
   onStart,
-  aside,
 }: {
   readonly module: Module;
   /** Whose page this is. The heading asks them by name. */
@@ -121,8 +120,6 @@ export function ModuleScreen({
     aantal: number | null,
     toetsstand: boolean,
   ) => void;
-  /** The child's own column, the same one the front door carries. */
-  readonly aside: ReactNode;
 }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
@@ -690,8 +687,6 @@ export function ModuleScreen({
           />
         ) : null}
       </div>
-
-      {aside}
 
       {/* On a phone: the sentence and the way on, stuck to the foot of the
           screen. After the child's own column, as the last thing in the page, so

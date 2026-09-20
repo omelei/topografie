@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import { MODULES, type Category, type Module } from './modules';
@@ -24,11 +23,9 @@ import { MODULES, type Category, type Module } from './modules';
 export function CategoryScreen({
   category,
   onOpen,
-  aside,
 }: {
   readonly category: Category;
   readonly onOpen: (module: Module) => void;
-  readonly aside: ReactNode;
 }) {
   const modules = MODULES.filter((module) => category.modules.includes(module.id));
 
@@ -71,8 +68,6 @@ export function CategoryScreen({
           })}
         </ul>
       </div>
-
-      {aside}
     </div>
   );
 }

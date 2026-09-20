@@ -85,9 +85,6 @@ export const SET_NAME_KEY: Record<SetId, TranslationKey> = {
  */
 export const ROUND_SIZE = { topo: 15, tafels: 10, klok: 10, vlaggen: 10, taal: 10 } as const;
 
-/** How many favourites the column on the right holds. */
-export const FAVOURITES_SHOWN = 4;
-
 /**
  * How many cards the front door's "meest geoefend" row holds: five, which is
  * what the handoff draws in a row that scrolls rather than wraps (ADR-094).
@@ -1286,50 +1283,13 @@ export function geplaatst(rondes: readonly PlayedRound[], alles: readonly Onderd
 }
 
 /**
- * What a child keeps going back to: one entry per set and way of answering, the
- * ones chosen most often first.
- *
- * "Favourite" as in chosen, not as in recommended. There is no model here and
- * there is not going to be one — a child's own front door should not be a thing
- * that has opinions about them.
- */
-export interface Favoriet {
-  readonly deel: Onderdeel;
-  readonly mode: ModeId;
-  readonly keer: number;
-  readonly at: string;
-}
-
-export function favorieten(gespeeld: readonly Gespeeld[]): Favoriet[] {
-  const byKey = new Map<string, Favoriet>();
-
-  for (const { deel, ronde } of gespeeld) {
-    const key = `${deel.setId}|${ronde.mode}`;
-    const seen = byKey.get(key);
-    byKey.set(key, {
-      deel,
-      mode: ronde.mode,
-      keer: (seen?.keer ?? 0) + 1,
-      // The list arrives newest first, so the first sighting is the latest one.
-      at: seen?.at ?? ronde.at,
-    });
-  }
-
-  return [...byKey.values()]
-    .sort((a, b) => b.keer - a.keer || b.at.localeCompare(a.at))
-    .slice(0, FAVOURITES_SHOWN);
-}
-
-/**
  * The exercises this child goes back to most, with how often.
  *
  * One entry per set rather than per set and way — which is the difference
- * between this and `favorieten`, and the reason both exist. The column on the
- * right is a shortcut back into exactly what you did: provincies *aanwijzen*
- * and provincies *typen* are two shortcuts, because they are two different
- * afternoons. A tile on the front door is about the exercise, so the twelve
- * provinces are one tile however they were answered, and the way in is
- * whichever way this child chose most.
+ * between this and de rij die hiervoor per manier telde. Een tegel op de
+ * voordeur gaat over de oefening, dus zijn de twaalf provincies één tegel hoe
+ * ze ook beantwoord zijn, en de weg erin is de manier die dit kind het vaakst
+ * koos.
  *
  * The count is over this device and nothing else, and it is the honest one:
  * every round that was placed, mixes included.

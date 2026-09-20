@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { HomeScreen } from '@/features/home/HomeScreen';
-import { SideColumn } from '@/features/home/SideColumn';
 import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
 import { ProfileGate } from '@/features/player/ProfileGate';
@@ -559,9 +558,6 @@ export default function App() {
     go({ name: 'ouder' });
   };
 
-  /** The child's own column, which every screen inside the shell carries. */
-  const eigenKolom = <SideColumn onBegin={beginRonde} />;
-
   // What premium is and where the code goes (ADR-116). Reached from every
   // lock and from Jij, by its address, and never from the tab bar.
   if (route.name === 'premium') {
@@ -584,7 +580,6 @@ export default function App() {
         <CategoryScreen
           category={route.category}
           onOpen={(module) => go({ name: 'module', module, setId: null })}
-          aside={eigenKolom}
         />
       </Shell>
     );
@@ -612,7 +607,6 @@ export default function App() {
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
           onStart={beginRonde}
-          aside={eigenKolom}
         />
       </Shell>
     );
@@ -630,7 +624,7 @@ export default function App() {
         currentModule={route.module.id}
         grond={route.module.id}
       >
-        <ModuleSoon module={route.module} onOpen={goModule} aside={eigenKolom} />
+        <ModuleSoon module={route.module} onOpen={goModule} />
       </Shell>
     );
   }
@@ -638,7 +632,7 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ProfileScreen profile={boot.profile} aside={eigenKolom} onOuder={goOuder} />
+        <ProfileScreen profile={boot.profile} onOuder={goOuder} />
       </Shell>
     );
   }
@@ -647,8 +641,6 @@ export default function App() {
   if (route.name === 'ouder') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        {/* Zonder kolom sinds ADR-162: wat er voor de ouder in stond waren de
-            toetsen, en die zijn weg; de favorieten zijn van het kind. */}
         <ParentScreen
           onJij={goJij}
           onOnthouden={() => go({ name: 'retention' })}
@@ -662,7 +654,7 @@ export default function App() {
   if (route.name === 'retention' || screen.name === 'retention') {
     return (
       <Shell bar={bar} current="onthouden" onNavigate={goTo} onModule={goModule}>
-        <RetentionScreen aside={eigenKolom} />
+        <RetentionScreen />
       </Shell>
     );
   }
