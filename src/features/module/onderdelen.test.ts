@@ -55,7 +55,7 @@ describe('what a child goes back to most', () => {
 
   /**
    * One tile per set, not one per set and way. That is the difference between
-   * this block and the favourites in the column on the right: a shortcut back
+   * this block: a shortcut back
    * in is about the afternoon you had, a tile on the front door is about the
    * exercise. So the tile takes the way this child chose most.
    */

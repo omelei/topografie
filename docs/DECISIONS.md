@@ -9666,6 +9666,138 @@ dezelfde beats met dezelfde geluiden geeft.
 
 ---
 
+## ADR-168 — De feedbackronde: één balk, één kolom, dezelfde tegels, en overal een diploma
+
+**Status:** accepted. **Date:** 2026-09-20. Wijzigt ADR-095 (de modulepagina),
+ADR-100 (de manieren), ADR-103 (oefen je fouten), ADR-104/117 (de diploma's),
+ADR-118 (Taal), ADR-119/162 (de eigen kolom), ADR-154 (het logo) en ADR-162
+(de weekdoelen). Naast ADR-167 geschreven en daarna ermee samengevoegd: die
+maakt het diploma tot het beloningsprogramma, deze zorgt dat er op elk vak een
+te halen is.
+
+### Context
+
+Een feedbackronde van de eigenaar over drie plekken: de balk bovenaan, de
+modulepagina's en de voordeur. Elf punten, en ze hebben één ding gemeen dat de
+losse punten niet noemen: **de vier vakken hadden ieder hun eigen antwoord
+gegeven op dezelfde vraag.** Rekenen tekende zijn onderwerpen als chips en de
+andere vier als tegels. De mix stond overal achteraan, maar bij niemand omdat
+dat de regel was. "Oefen je fouten" was op vijf vakken een onderwerp en op geen
+van die vijf was het er een. Het diploma bestond op vier van de zes vakken.
+
+Dat is de vorm van het werk: niet vijf pagina's mooier maken, maar er één regel
+van maken en die overal toepassen.
+
+### Decision
+
+**De balk.** De naam van het kind staat er één keer. De voorletter ernaast was
+dezelfde informatie een tweede keer in de smalste balk van de app; hij blijft
+bestaan als avatar op een telefoon, waar er geen naam staat om te lezen, en
+krijgt daar een vlak onder zich. Het logo gaat van 32/40 naar 28/32 — **de helft
+van de balkhoogte**, op beide maten — want veertig hoog in een balk van
+vierenzestig is honderdeenentachtig pixels breed, en dan is het merk niet het
+eerste wat je ziet maar het enige.
+
+**De onderwerpen zijn tegels, op elk vak.** Stap 2 stelt overal dezelfde vraag
+en is nu overal hetzelfde ding om naar te kijken.
+
+**De mix staat altijd achteraan**, en dat wordt afgeleid uit de sets zelf
+(`isMixOnderwerp`) in plaats van per vak onthouden. Een mix is elk ander
+onderwerp van zijn rij nog een keer, dus is hij nooit waar je begint.
+
+**"Oefen je fouten" is een spelvorm en geen onderwerp.** Wát je oefent staat in
+stap 2; dit zegt welk deel ervan gevraagd wordt. Dus staat het bij de manieren,
+als een stand op de gekozen set — dezelfde tegel op elk vak, vanaf drie fouten,
+en de ronde krijgt die onderdelen mee via `alleen`, het pad dat "Maak af" en
+"Herhaal je fouten" al gebruikten. De lat zakt van vijf naar drie, want de
+vraag is nu "wat had je van déze set fout" en niet "van dit hele vak".
+
+**De manieren staan in één volgorde, met het diploma als laatste.** Eerst wat
+leert, dan wat druk zet, dan de twee standen (je fouten, de oefentoets), dan het
+diploma. Dat stond in `forms.ts` al achteraan en werd op het scherm alsnog door
+de oefentoets ingehaald. **En het diploma licht op**: over de volle breedte, op
+papier met de rand van een bediening, met zijn eigen regel eronder — maar
+**niet in de accentkleur**, want die betekent in dit product "dit heb jij
+gekozen" (`accent.test.ts`), en een tegel die daar altijd mee opgloeit leert een
+kind die betekenis af.
+
+**Voor alles is een diploma te halen.** Elk onderwerp dat een eigen set is
+heeft er een; een mix niet, en een eigen woordenlijst van een ouder niet.
+Concreet erbij:
+
+- **Het rekendiploma** voor elke soort som buiten de tafels. Twintig sommen
+  getypt, negen op de tien goed. Niet het tafeldiploma, want dat is foutloos, en
+  dat blijft het: een tafel is tien feiten die een kind opzegt, "plussommen tot
+  100" zijn vijfenveertig sommen waarvan er twintig gevraagd worden, en dat is
+  een toets die je met een cijfer haalt.
+- **Het taaldiploma**, met dezelfde lat, afgelegd zoals de oefentoets van dat
+  deel vraagt. Hier stond in `forms.ts` dat geen school er een uitdeelt voor
+  spelling en dat het verzinnen ervan een verzonnen certificaat is. Datzelfde
+  argument stond bij de klok en bij de kaart, en ADR-117 heeft het daar al
+  omgedraaid met de reden die hier net zo goed geldt: een diploma is in dit
+  product de toets aan het eind van het oefenen. Wat er stond, maakte Taal het
+  enige vak waar niets te halen viel.
+- **De wereldkaart.** Het bezwaar was dat twintig van de honderdzevenenzestig
+  landen een loting is. Dat klopt, en het is een bezwaar tegen het getal en niet
+  tegen het diploma: een diploma bemonstert minstens een kwart van wat het
+  certificeert, wat voor de wereld tweeënveertig landen is en voor elke andere
+  kaart niets verandert.
+- **De provincievlaggen**, het enige onderwerp onder Nederland op de
+  vlaggenpagina en daarmee de enige pagina waar niets te halen viel.
+
+Eén gedeelde wand (`Setdiplomas`) tekent de vakken die geen vaste lijst hebben,
+met hetzelfde raster als de vier oudere wanden, zodat een diplomategel op /taal
+er precies zo uitziet als op /topografie.
+
+**De weekdoelen: elk diploma is te kiezen.** Het blok stelde er drie voor, en
+dat wás de lijst — wie de tafel van 8 wilde en 12, 11 en 9 voorgesteld kreeg,
+kon niets anders kiezen. De drie blijven staan, bovenaan onder "Dichtbij", en
+daaronder staat per vak al het overige. Ook wat een code vraagt: die regel is
+dan de vraag aan de ouders (ADR-163) in plaats van te ontbreken. Elk diploma
+staat precies één keer in de lijst. Het teken in een doelregel staat voortaan op
+de titelregel in plaats van in het midden van drie regels.
+
+**De kolom met favorieten is weg, en daarmee de kolom.** Van de vier blokken die
+de eigen kolom ooit droeg was "Jouw favorieten" het laatste, en het was een
+derde weg naar dezelfde ronde: "Meest geoefend" staat bovenaan de voordeur en
+"Recent geoefend" eronder, allebei met dezelfde set en dezelfde manier achter de
+knop. Het was bovendien het enige daarvan dat alleen boven 1200 bestond, dus wat
+een kind op de laptop van thuis als zijn plek leerde kennen, was op de tablet van
+school weg. Zonder die kolom is het raster van twee kolommen een lege kolom van
+344 breed, dus wordt de pagina één kolom van 1080 — de maat die de premiumpagina
+hier al had (ADR-145).
+
+### Consequences
+
+- `onderwerpenVan` kent geen voortgang meer: de onderwerpen hingen alleen van
+  `known` af omdat de foutenlijst erin zat. Vijf aanroepers zijn een argument
+  kwijt.
+- De foutensets (`nl-fouten`, `klok-fouten`, `taal-sp-fouten`, …) bestaan nog:
+  ze staan in de geschiedenis, hebben een adres, en `Onthouden` rekent ermee.
+  Wat ze niet meer zijn, is een tegel op een modulepagina. Een adres als
+  `/topografie/fouten` opent voortaan de module zonder keuze, zoals elk adres
+  dat een set noemt die de pagina niet aanbiedt.
+- **Het tafeldiploma houdt zijn directe terugkoppeling.** Het rekendiploma zegt
+  niets tot het eind, zoals het klok-, vlaggen- en topodiploma; het
+  tafeldiploma stopt bij de eerste fout, en een ronde die afbreekt zonder te
+  zeggen waarop laat een kind met niets achter. Die twee regels horen bij
+  elkaar.
+- `RoundOutcome` krijgt twee velden erbij, `rekenDiploma` en `taalDiploma`, en
+  allebei dragen ze een set-id in plaats van een tafelnummer of een werelddeel:
+  een som en een woord hebben geen tweede naam.
+- `DIPLOMA_VORMEN` draagt nu de lijst van zes plekken die een nieuwe
+  diplomavorm raakt. Dat is er een meer dan er hiervoor waren, en het is de
+  reden dat die lijst er staat.
+- **Niet gedaan, met opzet:** Taal krijgt nog steeds geen bliksemronde (een klok
+  op spelling leert gokken — businessplan v6 §5.8, ADR-118) en rekenen geen
+  Ontdekken (de zevende som van de tafel van zeven is niets om in rond te
+  dwalen). "Zoveel mogelijk algemene spelvormen" is geen reden om een vorm aan
+  te bieden waarvan elders is opgeschreven waarom hij daar niet hoort.
+- De mixen houden geen diploma, en dat is dezelfde regel die `onderdelen()` al
+  hanteert: een mix telt nergens mee, want dan zou elke som twee keer tellen.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

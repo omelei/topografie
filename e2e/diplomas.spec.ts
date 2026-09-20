@@ -44,7 +44,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await page.goto('/topografie');
 
   const muur = page.getByRole('region', { name: 'Jouw topodiploma’s' });
-  await expect(muur.getByRole('button')).toHaveCount(11);
+  // Twaalf sinds ADR-168: de wereldkaart hoort er ook bij.
+  await expect(muur.getByRole('button')).toHaveCount(12);
   await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
 
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
@@ -88,7 +89,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   ).toBeVisible();
 
   // Het vak van de laatste ronde staat open, de andere drie als regel.
-  await expect(kast.getByRole('region', { name: 'Topo' }).getByRole('button')).toHaveCount(11);
+  // Twaalf sinds ADR-168: de wereldkaart hoort er ook bij.
+  await expect(kast.getByRole('region', { name: 'Topo' }).getByRole('button')).toHaveCount(12);
   await kast.getByRole('button', { name: /^Klok / }).click();
   await expect(kast.getByRole('region', { name: 'Klok' }).getByRole('button')).toHaveCount(4);
 });

@@ -151,7 +151,12 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
     ['Wereld', /Kies uit vier namen/, '14-wereld'],
   ] as const) {
     await page.goto('/topografie');
-    await page.getByRole('button', { name: new RegExp(`^${regio}`) }).click();
+    // In de regiorij: sinds ADR-168 heeft de wereldkaart ook een diploma, en
+    // dat vakje heet ook "Wereld".
+    await page
+      .getByRole('region', { name: 'Waar op de kaart?' })
+      .getByRole('button', { name: new RegExp(`^${regio}`) })
+      .click();
     await page
       .getByRole('region', { name: /Kies een onderwerp/ })
       .getByRole('button', { name: /^Landen/ })

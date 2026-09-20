@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   DIPLOMA_WERELDDELEN,
+  vlagDiplomaSet,
   diplomaWerelddeelVanSet,
   tableOfDiploma,
   vlagDiplomaFor,
@@ -63,17 +64,27 @@ describe('vlagDiplomaFor', () => {
 
   it('is only sat on the whole of a werelddeel, and only as a diploma', () => {
     expect(vlagDiplomaFor(ronde({ setId: 'vlag-europa-bekend' }))).toBeNull();
+    // De wereld niet: honderdzesennegentig vlaggen is geen werelddeel.
     expect(vlagDiplomaFor(ronde({ setId: 'vlag-wereld-alle' }))).toBeNull();
-    expect(vlagDiplomaFor(ronde({ setId: 'vlag-nederland-provincies' }))).toBeNull();
     expect(vlagDiplomaFor(ronde({ mode: 'vlag-gemengd' }))).toBeNull();
+  });
+
+  it('kent de provincievlaggen hun eigen diploma toe (ADR-168)', () => {
+    // Het enige onderwerp onder Nederland, en daarmee de enige pagina in de
+    // app waar niets te halen viel.
+    const provincies = { setId: 'vlag-nederland-provincies', setSize: 12 };
+    expect(vlagDiplomaFor(ronde({ ...provincies, correct: 11 }))).toBe('diploma-vlag-nederland');
+    expect(vlagDiplomaFor(ronde({ ...provincies, correct: 10 }))).toBeNull();
+    expect(vlagDiplomaSet('nederland')).toBe('vlag-nederland-provincies');
+    expect(vlagDiplomaSet('europa')).toBe('vlag-europa-alle');
   });
 });
 
 describe('the stored diploma', () => {
-  it('reads back as the werelddeel it was earned for, for all six', () => {
-    expect(DIPLOMA_WERELDDELEN).toHaveLength(6);
+  it('reads back as the werelddeel it was earned for, for all seven', () => {
+    expect(DIPLOMA_WERELDDELEN).toHaveLength(7);
     for (const deel of DIPLOMA_WERELDDELEN) {
-      expect(diplomaWerelddeelVanSet(`vlag-${deel}-alle`)).toBe(deel);
+      expect(diplomaWerelddeelVanSet(vlagDiplomaSet(deel))).toBe(deel);
       expect(werelddeelVanDiploma(`diploma-vlag-${deel}`)).toBe(deel);
     }
   });

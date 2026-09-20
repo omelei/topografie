@@ -4,7 +4,7 @@ import type { VlagRegio, VlagSet } from '@/content/loadVlaggen';
 
 /**
  * What a set of flags is called: the subject and the werelddeel in one phrase,
- * which is what the start bar, the cards on the front door and the favourites
+ * which is what the start bar and the cards on the front door
  * all show — "Bekende vlaggen van Europa".
  */
 export function vlagSetNaam(set: Pick<VlagSet, 'regio' | 'onderwerp'>): string {

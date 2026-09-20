@@ -80,7 +80,8 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await page.goto('/vlaggen');
 
   const muur = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
-  await expect(muur.getByRole('button')).toHaveCount(6);
+  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
+  await expect(muur.getByRole('button')).toHaveCount(7);
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
 
   const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
@@ -113,5 +114,6 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await page.goto('/jij');
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   // Vlaggen staat open: het vak van de laatste ronde is het vak dat openstaat.
-  await expect(kast.getByRole('region', { name: 'Vlaggen' }).getByRole('button')).toHaveCount(6);
+  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
+  await expect(kast.getByRole('region', { name: 'Vlaggen' }).getByRole('button')).toHaveCount(7);
 });

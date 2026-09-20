@@ -613,6 +613,17 @@
   .tk-sectie :is(h2, h3) {
     font: inherit;
   }
+  /* Een kop ín een sectie: de vakken in de diplomakeuze van een weekdoel
+   * (ADR-168). Een niveau kleiner en in de tekstletter, zodat een lijst van
+   * drieëndertig regels leesbaar in stukken valt zonder dat elk stuk zich
+   * gedraagt als een eigen sectie van de pagina. */
+  .tk-sectie-klein {
+    font-family: var(--font-tekst);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+    padding-bottom: 6px;
+  }
   .tk-sectie-meta {
     margin-left: auto;
     font-family: var(--font-tekst);
@@ -1595,15 +1606,26 @@
    * here. They keep two names because the front door's middle holds rows and a
    * module page's holds a chooser, and that is the whole difference.
    */
+  /* Eén kolom, op elke maat (ADR-168).
+   *
+   * Hier stond een raster van twee: de pagina en de eigen kolom van het kind
+   * ernaast, vanaf 1200. Die kolom droeg sinds ADR-162 nog één blok en is nu
+   * helemaal weg, dus is de tweede kolom een lege kolom — en een lege kolom van
+   * 344 breed duwt de pagina naar links en laat een derde van het scherm leeg.
+   *
+   * De maat is die van `.tk-page-enkel`, dat de premiumpagina hier al had
+   * (ADR-145): 1080 in plaats van 1400. Dat is ongeveer de breedte die de
+   * hoofdkolom naast de eigen kolom ook had, dus de regellengte en het raster
+   * van twee tegels blijven wat ze waren. Zonder die begrenzing zou elke pagina
+   * op een breed scherm ineens veertienhonderd pixels tekst worden, en dat
+   * leest niemand. */
   .tk-page,
   .tk-home {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 24px;
     width: 100%;
-    /* The design's own measure: a monitor wider than the design is capped, and
-     * nothing narrower notices. */
-    max-width: 1400px;
+    max-width: 1080px;
     margin: 0 auto;
     padding: var(--padding-scherm);
   }
@@ -1631,12 +1653,6 @@
   .tk-grond[data-grond='vandaag'] {
     background: var(--vandaag-grond);
   }
-  .tk-home-aside {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 0;
-  }
   @media (min-width: 768px) {
     .tk-page,
     .tk-home {
@@ -1648,20 +1664,6 @@
     }
   }
   @media (min-width: 1200px) {
-    .tk-page,
-    .tk-home {
-      /* The child's own column at 344, the width the design canvas draws its
-       * blocks at 1440. */
-      grid-template-columns: minmax(0, 1fr) 344px;
-      align-items: start;
-      gap: 48px;
-    }
-    /* Een pagina zonder eigen kolom (ADR-145): de premiumpagina. Op de maat
-     * van een leesbare prijspagina, en niet over de volle 1400. */
-    .tk-page.tk-page-enkel {
-      grid-template-columns: minmax(0, 1fr);
-      max-width: 1080px;
-    }
     .tk-page-main,
     .tk-home-main {
       gap: var(--gap-sectie);
@@ -2134,7 +2136,7 @@
   /* De plaat is een zachte tegel met een donker pictogram erop — de standaard
    * uit §03 van de styleguide, overal waar een vak zich noemt. ADR-142 maakte
    * hem verzadigd; dat is teruggenomen om de reden die §01 geeft: een plaat
-   * staat overal — de voordeur, de favorieten, de toetsen, de rail, het menu —
+   * staat overal — de voordeur, de lijsten, de rail, het menu —
    * en zes volle vlakken op elke pagina is precies de kleur die geen betekenis
    * draagt. De volle vulling blijft over voor de twee dingen die hem wél
    * verdienen: een voortgangsbalk, en het vak waar je nu in bent (hieronder).
@@ -2655,36 +2657,6 @@
     border-radius: 3px;
   }
 
-  /* ---- A favourite ---------------------------------------------------------
-   * A row that starts a round: a small plate, the exercise and the way. A line
-   * rather than a card — four of them fit where two cards would.
-   */
-  .tk-favorieten {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-favoriet {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    min-height: var(--raak);
-    padding: 8px;
-    border: 0;
-    border-radius: var(--radius-chip-groot);
-    background: transparent;
-    color: var(--inkt);
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-favoriet:hover {
-    background: var(--vlak-hover);
-  }
-
   /* ---- A list (ADR-112) ----------------------------------------------------
    * One card with a hairline between its rows: "Recent geoefend", the children
    * on this device, the badges. A row is a plate, a title at a button's size
@@ -2955,6 +2927,46 @@
     color: var(--accent-text);
   }
 
+  /* Het diploma onder de manieren (ADR-168): dezelfde tegel, zwaarder gezet.
+   *
+   * Het stond als achtste vakje in het raster van twee kolommen en was daarin
+   * niet van een bliksemronde te onderscheiden — terwijl het het enige is op
+   * deze pagina waar een kind iets aan overhoudt.
+   *
+   * **En het licht op zonder kleur.** De verleiding is het accent, en dat mag
+   * hier juist niet: het accent zegt "dit heb jij gekozen" (`accent.test.ts`),
+   * en een tegel die er altijd mee opgloeit, leert een kind die betekenis af.
+   * Wat het onderscheid draagt zijn drie dingen die geen hue zijn, zoals §A
+   * vraagt: hij staat over de volle breedte waar de rest in twee kolommen
+   * staat, hij staat op papier met de rand van een bediening — twee pixels, in
+   * de kleur die een knop ook draagt — in plaats van op de kaart met een
+   * haarlijn, en hij draagt zijn eigen regel — wat de toets vraagt — waar
+   * de andere tegels alleen hun naam dragen. De gekozen staat blijft daarna
+   * precies die van elke andere tegel. */
+  .tk-tegel-diploma {
+    align-items: flex-start;
+    width: 100%;
+    margin-block-start: 12px;
+    border-width: var(--stroke-active);
+    border-color: var(--rand-bediening);
+    background: var(--papier);
+  }
+  .tk-tegel-diploma:not([aria-pressed='true']) {
+    /* De dikkere rand kost een pixel padding terug, zoals bij een gekozen
+     * tegel, zodat de rij eronder niet opschuift. */
+    padding: 19px;
+  }
+  .tk-tegel-diploma .tk-plaat {
+    background: var(--kaart);
+  }
+  .tk-tegel-diploma:not([aria-pressed='true']):hover {
+    background: var(--kaart);
+    border-color: var(--inkt);
+  }
+  .tk-tegel-diploma .tk-hulp {
+    font-weight: 400;
+  }
+
   /* Premium (ADR-111): what will need an account, said on the tile before there
    * is one. The quiet badge's look — ink on paper, a rule round it — at a
    * label's size, so it reads as a fact about the tile and not as one more
@@ -3210,15 +3222,26 @@
   .tk-brand:hover {
     background: var(--vlak-hover);
   }
-  /* The lying logo in the bar: 32 on a phone, 40 from 768 (ADR-154). */
+  /* Het liggende logo in de balk: 28 op een telefoon, 32 vanaf 768 (ADR-154,
+   * bijgesteld in ADR-168).
+   *
+   * Het stond op 32 en 40, en dat is in beide maten precies te groot: 40 hoog
+   * in een balk van 64 is 181 pixels breed, en dan is het merk niet het eerste
+   * wat je ziet maar het enige. **De helft van de balkhoogte** is de maat die
+   * het wel doet — 28 in 56, 32 in 64 — want dan staat er boven en onder het
+   * merk evenveel lucht als naast de knoppen ernaast, en lijnt de onderkant van
+   * het woordbeeld op met de onderkant van de bestemmingen (`.tk-navbar-item`).
+   *
+   * Eén verhouding voor beide maten en niet twee losse getallen: een balk die
+   * later een andere hoogte krijgt, houdt dan dezelfde verdeling. */
   .tk-logo {
     display: block;
     width: auto;
-    height: 32px;
+    height: 28px;
   }
   @media (min-width: 768px) {
     .tk-logo {
-      height: 40px;
+      height: 32px;
     }
   }
 
@@ -3308,6 +3331,34 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  /* De voorletter is de avatar van de telefoon, en daar een schijf in plaats van
+   * een losse hoofdletter: een letter zonder vlak eronder leest als het begin
+   * van een woord dat is afgekapt. Vanaf 768 staat de naam er, en dan staat hij
+   * er alleen (ADR-168) — de letter is daar dezelfde informatie een tweede keer. */
+  .tk-profiel-letter {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pil);
+    background: var(--papier);
+    color: var(--tekst-secundair);
+    font-size: var(--type-knop);
+    line-height: 1;
+    font-weight: 600;
+  }
+  @media (min-width: 768px) {
+    .tk-profiel-letter {
+      display: none;
+    }
+    /* Zonder de letter hangt de naam niet meer aan een schijf, dus staat er
+     * links evenveel lucht als rechts. */
+    .tk-profiel {
+      padding: 0 16px;
+    }
   }
   @media (max-width: 767px) {
     .tk-profiel {
@@ -4135,12 +4186,27 @@
     gap: 4px 16px;
   }
   /* Eén doel. Dezelfde indeling als een lijstrij, maar geen knop: er valt niets
-   * te openen, en de enige knop erin is die ene om hem weg te halen. */
+   * te openen, en de enige knop erin is die ene om hem weg te halen.
+   *
+   * **Het plaatje staat op de titelregel** (ADR-168). Deze rij is drie regels
+   * hoog — de zin, de balk, de stand — en met `center` hing het teken op de
+   * hoogte van de voortgangsbalk, dus onder het woord waar het bij hoort. Dat
+   * is wat er "niet mooi uitgelijnd" aan was. Nu staat het bovenaan, optisch
+   * gecentreerd op de eerste regel: de helft van het verschil tussen de
+   * regelhoogte en het vlak, zodat het meebeweegt als een van de twee ooit
+   * verandert. Het kruisje krijgt dezelfde behandeling, want het hoort bij
+   * dezelfde regel. */
   .tk-weekdoel-rij {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     padding: 8px 0;
+  }
+  .tk-weekdoel-rij > .tk-plaat {
+    margin-block-start: calc((var(--type-knop-lh) - 36px) / 2);
+  }
+  .tk-weekdoel-rij > .tk-weekdoel-weg {
+    margin-block-start: calc((var(--type-knop-lh) - var(--raak)) / 2);
   }
   .tk-weekdoel-rij .tk-lijstrij-tekst {
     gap: 4px;
@@ -4171,6 +4237,22 @@
     background: var(--papier);
     color: var(--inkt);
   }
+  /* De diplomakeuze: alles wat er te halen valt, per vak (ADR-168). Het is de
+   * langste lijst in de app en hij staat midden in een kaart, dus krijgt hij
+   * een eigen hoogte met een rand eromheen — anders duwt hij de knoppen van het
+   * blok een half scherm naar beneden en lijkt de kaart stuk. De hoogte is in
+   * `svh`, want op een telefoon is dat de hoogte die er echt is. */
+  .tk-doel-keuze {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: min(56svh, 520px);
+    overflow-y: auto;
+    padding: 4px;
+    margin: -4px;
+    overscroll-behavior: contain;
+  }
+
   /* De knop en de uitweg ernaast, en onder elkaar zodra er geen ruimte is: op
    * een telefoon is "Ander doel kiezen" naast een knop van 56 hoog een regel
    * die tegen de rand aan loopt. */

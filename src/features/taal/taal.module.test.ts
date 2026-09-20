@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type { ItemState } from '@/game-core';
 import { formsFor, offeredForms, toetsVormVan } from '@/features/module/forms';
 import {
   asTaalMode,
@@ -22,8 +21,8 @@ import { gespeld, KAART_VOLGORDE, kaartVan, spellingRegel, werkwoordRegelZin } f
  */
 
 const taal = MODULES.find((module) => module.id === 'woorden') as Module;
-const per = (deel: string, known?: ReadonlyMap<string, ItemState>) =>
-  onderwerpenVan('woorden', known)
+const per = (deel: string) =>
+  onderwerpenVan('woorden')
     .filter((vak) => vak.regio === deel)
     .map((vak) => vak.id);
 
@@ -65,22 +64,9 @@ describe('the page', () => {
     expect(vak?.sets.every((deel) => deel.kortNaam !== null)).toBe(true);
   });
 
-  it('adds "Oefen je fouten" to a part once five of its items were wrong', () => {
-    const fout = (id: string): [string, ItemState] => [
-      id,
-      {
-        itemId: id,
-        box: 1,
-        laatsteReview: '2026-09-01T00:00:00.000Z',
-        volgendeReview: '2026-09-02T00:00:00.000Z',
-        goedCount: 0,
-        foutCount: 1,
-      },
-    ];
-    const ids = ['trein', 'klein', 'plein', 'geit', 'reis'].map((w) => `taal-sp-eiij-${w}`);
-    expect(per('spelling', new Map(ids.map(fout)))).toContain('taal-sp-fouten');
-    expect(per('spelling', new Map(ids.slice(0, 4).map(fout)))).not.toContain('taal-sp-fouten');
-    expect(per('werkwoorden', new Map(ids.map(fout)))).not.toContain('taal-ww-fouten');
+  it('houdt de foutenlijst uit de onderwerpen: dat is sinds ADR-168 een spelvorm', () => {
+    expect(per('spelling')).not.toContain('taal-sp-fouten');
+    expect(per('werkwoorden')).not.toContain('taal-ww-fouten');
   });
 
   it('has one card among the five a new child starts with: ei or ij, by choosing', () => {
@@ -113,12 +99,14 @@ describe('the ways of practising', () => {
       'taal-flitsdictee',
       'ontdekken',
       'overleven',
+      'taal-diploma',
     ]);
     expect(tegels('spelling', 'taal-sp-eiij')).toEqual([
       'taal-letters',
       'taal-flitsdictee',
       'ontdekken',
       'overleven',
+      'taal-diploma',
     ]);
   });
 
@@ -132,6 +120,7 @@ describe('the ways of practising', () => {
       'taal-vorm-typen',
       'ontdekken',
       'overleven',
+      'taal-diploma',
     ]);
   });
 

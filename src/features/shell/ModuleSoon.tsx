@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
@@ -26,11 +25,9 @@ import { BUILT_MODULES, type Module } from './modules';
 export function ModuleSoon({
   module,
   onOpen,
-  aside,
 }: {
   readonly module: Module;
   readonly onOpen: (id: Module['id']) => void;
-  readonly aside: ReactNode;
 }) {
   const ModuleIcon = MODULE_ICON[module.id];
 
@@ -79,8 +76,6 @@ export function ModuleSoon({
           </ul>
         </section>
       </div>
-
-      {aside}
     </div>
   );
 }

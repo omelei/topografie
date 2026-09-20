@@ -223,10 +223,14 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
     await blok.getByRole('button', { name: 'Een diploma halen', exact: true }).click();
   };
 
+  // Sinds ADR-168 is élk diploma te kiezen, dus gaat deze test over de drie
+  // die bovenaan voorgesteld worden: dát is wat de groep stuurt. De rest staat
+  // eronder per vak en hoort er voor elke groep te staan.
   await voorstellen();
-  await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toBeVisible();
-  await expect(blok.getByRole('button', { name: /Tafel van 1 / })).toHaveCount(0);
-  await expect(blok.getByRole('button', { name: /Tafel van 2 / })).toHaveCount(0);
+  const dichtbij = blok.getByRole('region', { name: 'Dichtbij' });
+  await expect(dichtbij.getByRole('button', { name: /Landen van Europa/ })).toBeVisible();
+  await expect(dichtbij.getByRole('button', { name: /Tafel van 1 / })).toHaveCount(0);
+  await expect(dichtbij.getByRole('button', { name: /Tafel van 2 / })).toHaveCount(0);
   await blok.scrollIntoViewIfNeeded();
   await foto(page, project, 'doel-groep-8');
 
@@ -235,8 +239,9 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
   await wisselGroep(page, 'Fenna', 'Groep 3');
   await page.goto('/');
   await voorstellen();
-  await expect(blok.getByRole('button', { name: /Hele uren/ })).toBeVisible();
-  await expect(blok.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
+  const dichtbij3 = blok.getByRole('region', { name: 'Dichtbij' });
+  await expect(dichtbij3.getByRole('button', { name: /Hele uren/ })).toBeVisible();
+  await expect(dichtbij3.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
 
   // De knop onderaan het blok: naar Jij, met de kast in beeld — precies wat
   // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar

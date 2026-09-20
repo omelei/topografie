@@ -28,13 +28,43 @@ export interface RewardSnapshot {
   readonly correct: number;
 }
 
-/** The four ways of sitting a diploma, one per module that has them. */
+/**
+ * De manieren om een diploma af te leggen: zes, en elk vak heeft er een
+ * (ADR-168).
+ *
+ * **Een nieuwe erbij raakt zes plekken**, en die staan hier zodat niemand er
+ * een hoeft te zoeken:
+ *
+ * 1. `ModeId` in `types.ts`, en de modelijst van de module in `onderdelen.ts`.
+ * 2. De ronderegel van de module (`*_ROUND_RULE`), met typen en toetsstand aan.
+ * 3. Een `*DiplomaFor` hieronder, en een veld in `RoundOutcome`.
+ * 4. `doelwitVan` en `behaaldDiploma` in `features/home/doel.ts`.
+ * 5. Een tegel in `features/module/forms.ts`, met `geldtVoor` en `vasteLengte`.
+ * 6. `mode.<id>` en `way.<id>` in de teksten, en de muur op de modulepagina.
+ */
 export const DIPLOMA_VORMEN: readonly string[] = [
   'tafeldiploma',
+  'reken-diploma',
   'vlag-diploma',
   'klok-diploma',
   'topo-diploma',
+  'taal-diploma',
 ];
+
+/**
+ * Hoeveel vragen een diploma stelt dat niet over één tafel gaat, en hoeveel er
+ * goed moeten (`diplomaDrempel`).
+ *
+ * Twintig, of de hele set waar die kleiner is. Het was al de maat van het
+ * vlaggen- en het topodiploma; sinds ADR-168 is het de maat van elk diploma
+ * behalve het tafeldiploma, want anders vraagt hetzelfde woord op vijf
+ * pagina's vijf verschillende dingen.
+ */
+export const DIPLOMA_VRAGEN = 20;
+
+export function diplomaVragen(onderdelen: number): number {
+  return Math.min(DIPLOMA_VRAGEN, onderdelen);
+}
 
 export function isDiplomaVorm(mode: string): boolean {
   return DIPLOMA_VORMEN.includes(mode);
@@ -64,10 +94,17 @@ export function tableOfDiploma(id: string): number | null {
 // ---------------------------------------------------------------------------
 
 /**
- * The werelddelen a vlaggendiploma is sat for (ADR-104). Six: the world is not
- * a werelddeel, and the provinces are home rather than a part of the world.
+ * Waar een vlaggendiploma over gaat (ADR-104, ADR-168).
+ *
+ * Zes werelddelen — de wereld is er geen — en **de provincies**. Die stonden er
+ * niet bij, met het argument dat thuis geen deel van de wereld is. Dat klopt en
+ * het is geen reden: de twaalf provincievlaggen zijn het enige onderwerp op de
+ * hele vlaggenpagina onder Nederland, en dat was daarmee de enige pagina in de
+ * app waar niets te halen viel. Ze zijn een set van zichzelf, ze worden op
+ * school geleerd, en twaalf vlaggen zijn precies de maat van een toets.
  */
 export const DIPLOMA_WERELDDELEN = [
+  'nederland',
   'afrika',
   'azie',
   'europa',
@@ -90,6 +127,9 @@ function alsDiplomaWerelddeel(deel: string | undefined): DiplomaWerelddeel | nul
  * a certificate for the easy half.
  */
 export function diplomaWerelddeelVanSet(setId: string): DiplomaWerelddeel | null {
+  // De provincies zijn hun eigen hele set: er is geen `vlag-nederland-alle`,
+  // want er is niets anders onder Nederland om "alle" van te onderscheiden.
+  if (setId === 'vlag-nederland-provincies') return 'nederland';
   return alsDiplomaWerelddeel(/^vlag-(.+)-alle$/.exec(setId)?.[1]);
 }
 
@@ -137,6 +177,17 @@ export function vlagDiplomaFor(snapshot: RewardSnapshot): string | null {
   if (deel === null || !snapshot.completeRound) return null;
   if (snapshot.correct < vlagdiplomaDrempel(vlagdiplomaVragen(snapshot.setSize))) return null;
   return `diploma-vlag-${deel}`;
+}
+
+/**
+ * De set waarop het diploma van dit werelddeel wordt afgelegd.
+ *
+ * De omgekeerde weg van `diplomaWerelddeelVanSet`, want een wand kent het
+ * werelddeel en de pagina heeft de set nodig. Nederland is de uitzondering
+ * waarvoor deze functie bestaat: daar heet de set naar wat erin zit.
+ */
+export function vlagDiplomaSet(deel: DiplomaWerelddeel): string {
+  return deel === 'nederland' ? 'vlag-nederland-provincies' : `vlag-${deel}-alle`;
 }
 
 /** Which werelddeel a stored vlaggendiploma is for, or null if the row is not one. */
@@ -201,6 +252,12 @@ export const TOPO_DIPLOMA_SETS = [
   'noord-amerika-landen',
   'zuid-amerika-landen',
   'oceanie-landen',
+  // De wereld erbij (ADR-168). Het argument ertegen was dat twintig van de
+  // honderdzevenenzestig een loterij is, en dat argument is waar — dus gaat
+  // niet het diploma eruit maar het getal omhoog (`topodiplomaVragen`). Wat er
+  // stond, was de enige kaart in het product waar een kind alles van kon leren
+  // en niets voor kon krijgen.
+  'wereld-landen',
 ] as const;
 
 export type TopoDiplomaSet = (typeof TOPO_DIPLOMA_SETS)[number];
@@ -214,8 +271,19 @@ export function alsTopoDiplomaSet(setId: string | undefined): TopoDiplomaSet | n
 /** Twenty places, or the whole map where it has fewer: the vlaggendiploma's rule. */
 export const TOPODIPLOMA_VRAGEN = 20;
 
+/**
+ * Hoeveel plekken het diploma van een kaart vraagt.
+ *
+ * Twintig, of de hele kaart waar die kleiner is — en **minstens een kwart van
+ * de kaart** waar die groter is. Dat laatste is er voor precies één kaart, en
+ * hardop: op de wereld zijn twintig van de honderdzevenenzestig landen geen
+ * toets maar een loting, en dat was de reden dat de wereld hier niet stond. Een
+ * kwart is tweeënveertig landen, en dat is een toets die je niet haalt door
+ * geluk te hebben. Elke andere kaart blijft op twintig, want elke andere kaart
+ * is kleiner dan tachtig.
+ */
 export function topodiplomaVragen(plekken: number): number {
-  return Math.min(TOPODIPLOMA_VRAGEN, plekken);
+  return Math.min(plekken, Math.max(TOPODIPLOMA_VRAGEN, Math.ceil(plekken / 4)));
 }
 
 /**
@@ -235,4 +303,90 @@ export function topoDiplomaFor(snapshot: RewardSnapshot): string | null {
 /** Which map a stored topodiploma is for, or null if the row is not one. */
 export function kaartVanDiploma(id: string): TopoDiplomaSet | null {
   return alsTopoDiplomaSet(/^diploma-topo-(.+)$/.exec(id)?.[1]);
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Het rekendiploma (ADR-168): één per soort som en bereik — plussommen tot 20,
+ * deelsommen tot 100, halveren tot 1000.
+ *
+ * **Waarom het niet het tafeldiploma is.** Een tafel is tien feiten die een
+ * kind opzegt, en het tafeldiploma is daarom foutloos: dat is wat de juf
+ * uitdeelt en het is de reden dat dat diploma gratis is (ADR-122). "Plussommen
+ * tot 100" zijn vijfenveertig sommen waarvan er twintig gevraagd worden; dat is
+ * een toets, en een Nederlandse toets haal je met een cijfer. Dus dezelfde lat
+ * als de vlaggen, de klok en de kaart: negen op de tien.
+ *
+ * **En niet op een mix.** De Rekenmix is elke andere soort som nog een keer;
+ * een certificaat voor "alles door elkaar" certificeert niets in het
+ * bijzonder, en het telt bij het onthouden ook nergens mee (`onderdelen`).
+ */
+const REKEN_DIPLOMA_SOORTEN = [
+  'keer',
+  'delen',
+  'plus',
+  'min',
+  'splitsen',
+  'halveren',
+  'verdubbelen',
+] as const;
+
+/** Of deze set een rekendiploma kent: een soort som met een bereik erachter. */
+export function isRekenDiplomaSet(setId: string): boolean {
+  const match = /^([a-z]+)-(\d+)$/.exec(setId);
+  if (!match) return false;
+  return (REKEN_DIPLOMA_SOORTEN as readonly string[]).includes(match[1] ?? '');
+}
+
+export function rekenDiplomaFor(snapshot: RewardSnapshot): string | null {
+  if (snapshot.mode !== 'reken-diploma') return null;
+  if (!isRekenDiplomaSet(snapshot.setId) || !snapshot.completeRound) return null;
+  if (snapshot.correct < diplomaDrempel(diplomaVragen(snapshot.setSize))) return null;
+  return `diploma-${snapshot.setId}`;
+}
+
+/** Welke rekenset een bewaard rekendiploma is, of null. */
+export function rekenSetVanDiploma(id: string): string | null {
+  const setId = /^diploma-(.+)$/.exec(id)?.[1] ?? '';
+  return isRekenDiplomaSet(setId) ? setId : null;
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Het taaldiploma (ADR-168): één per set van Taal — ei of ij, d of t, de
+ * tegenwoordige tijd.
+ *
+ * **Hier stond dat het niet kon.** `forms.ts` schreef dat geen school een
+ * spellingdiploma uitdeelt en dat het verzinnen ervan een verzonnen certificaat
+ * is. Dat argument gold ook voor de klok en voor de kaart, en ADR-117 heeft het
+ * daar al omgedraaid met de reden die hier net zo goed geldt: een diploma in
+ * dit product is de toets aan het eind van het oefenen, en een kind dat twintig
+ * woorden met ei en ij zonder hulp goed schrijft, heeft iets waar een naam bij
+ * hoort. Wat er stond was dat Taal het enige vak was waar niets te halen viel.
+ *
+ * Hij wordt afgelegd zoals de oefentoets van dat deel vraagt — het flitsdictee
+ * bij spelling, de vorm getypt bij werkwoorden — en met dezelfde lat als de
+ * rest: negen op de tien.
+ *
+ * Niet op een mix, en niet op een eigen lijst: die laatste is wat een ouder
+ * gisteravond intypte en morgen anders noemt, en een diploma hoort bij de stof
+ * van het product.
+ */
+export function isTaalDiplomaSet(setId: string): boolean {
+  return /^taal-(sp|ww)-/.test(setId) && !/-(mix|fouten)$/.test(setId);
+}
+
+export function taalDiplomaFor(snapshot: RewardSnapshot): string | null {
+  if (snapshot.mode !== 'taal-diploma') return null;
+  if (!isTaalDiplomaSet(snapshot.setId) || !snapshot.completeRound) return null;
+  if (snapshot.correct < diplomaDrempel(diplomaVragen(snapshot.setSize))) return null;
+  return `diploma-${snapshot.setId}`;
+}
+
+/** Welke taalset een bewaard taaldiploma is, of null. */
+export function taalSetVanDiploma(id: string): string | null {
+  const setId = /^diploma-(.+)$/.exec(id)?.[1] ?? '';
+  return isTaalDiplomaSet(setId) ? setId : null;
 }

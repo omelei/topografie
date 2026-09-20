@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { t } from '@/i18n';
 import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
@@ -30,7 +30,6 @@ import { Jaaroverzicht } from '@/features/toren/Jaaroverzicht';
  */
 export function ProfileScreen({
   profile,
-  aside,
   onOuder,
   onOefen,
   onToets,
@@ -38,7 +37,6 @@ export function ProfileScreen({
   onKastGezien,
 }: {
   readonly profile: ProfileRecord;
-  readonly aside: ReactNode;
   readonly onOuder: () => void;
   readonly onOefen: (deel: Onderdeel) => void;
   readonly onToets: (deel: Onderdeel, mode: ModeId) => void;
@@ -101,8 +99,6 @@ export function ProfileScreen({
 
         <Jaaroverzicht />
       </div>
-
-      {aside}
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import {
   alleenDeze,
   beoordeelWoord,
+  isDiplomaVorm,
   composeRound,
   gatLetters,
   letterOpties,
@@ -88,8 +89,10 @@ export function useTaalRound(
     moduleId: 'woorden',
     mode,
     basisRegel: TAAL_ROUND_RULE[mode],
-    aantal,
-    toetsstand,
+    // Een diploma heeft zijn eigen lengte en zegt niets tot het eind: het is
+    // de toets aan het eind van het oefenen (ADR-168).
+    aantal: isDiplomaVorm(mode) ? null : aantal,
+    toetsstand: toetsstand || isDiplomaVorm(mode),
     itemVan,
     stel: (states, rule) => {
       const set = loadTaalSet(setId);

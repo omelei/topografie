@@ -167,6 +167,10 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
   const blok = blokVan(page);
   await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
   await blok.getByRole('button', { name: 'Een diploma halen', exact: true }).click();
+  // Elk diploma is te kiezen (ADR-168): de drie dichtstbijzijnde bovenaan, en
+  // daaronder alles per vak. Wat bovenaan staat, staat er maar één keer.
+  await expect(blok.getByRole('region', { name: 'Dichtbij' })).toBeVisible();
+  await expect(blok.getByRole('region', { name: 'Topo' })).toBeVisible();
   await blok.getByRole('button', { name: 'Het diploma Tafel van 1 halen', exact: true }).click();
 
   await expect(blok).toContainText('Het diploma Tafel van 1 halen');

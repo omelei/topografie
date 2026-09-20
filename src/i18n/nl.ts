@@ -87,6 +87,7 @@ export const nl = {
   'weekdoel.vol': 'Drie doelen is genoeg voor één week.',
   'weekdoel.wegVan': 'Weghalen: {doel}',
   'weekdoel.geenDiplomas': 'Er is nu geen diploma om deze week voor te gaan.',
+  'weekdoel.diplomaDichtbij': 'Dichtbij',
   // Onderaan het blok: naar het hele raster op Voor ouders, ook wat nog te
   // halen is (ADR-153).
   'weekdoel.alleDiplomas': 'Bekijk alle diploma’s',
@@ -116,8 +117,6 @@ export const nl = {
 
   // Waar je zelf steeds naar teruggaat, in één tik. Geen aanbeveling en geen
   // algoritme: het is wat je het vaakst gekozen hebt.
-  'home.favouritesTitle': 'Jouw favorieten',
-  'home.favouritesNone': 'Nog geen favorieten. Wat je vaak oefent, komt hier te staan.',
 
   // De weekkaart (ADR-149), waar de reeks stond. Dagen tellen, reeksen niet:
   // er staat nergens "op rij" of "gemist", en een lege dag haalt niets weg.
@@ -516,6 +515,8 @@ export const nl = {
   // die een toets niet heeft. "Zelf typen" staat er bewust niet in: dat is de
   // naam van de tegel ernaast, en twee tegels die zo heten zijn er één te veel.
   'choose.testMode': 'Oefentoets',
+  'choose.fouten': 'Je fouten',
+  'choose.foutenWhy': 'Alleen de {aantal} die je eerder fout had',
   'choose.testModeWhy':
     'Je typt zonder hulp. Aan het eind zie je wat goed was en krijg je een cijfer.',
   'choose.startTest': '{wat} · oefentoets',
@@ -866,9 +867,22 @@ export const nl = {
   // instellingenpagina staat dat haast het onthouden niet helpt, en dat zetten
   // we niet uit voor de ene oefening waar een kind het het meest zou voelen.
   'mode.tafeldiploma': 'Tafeldiploma',
+  // Het diploma van elke andere soort som (ADR-168). "Rekendiploma" en niet
+  // "Plusdiploma": de naam van de soort staat al in de startbalk en op de
+  // tegel ernaast, en één woord voor zeven soorten houdt de pagina's gelijk.
+  'mode.reken-diploma': 'Rekendiploma',
   'sums.diplomaStop': 'Bekijk je poging',
   'sums.diplomaEarned': 'Diploma gehaald: tafel van {tafel}',
   'sums.diplomaMissed': 'Nog geen diploma. Alle tien goed, dan is hij van jou.',
+  'sums.rekendiplomaEarned': 'Diploma gehaald: {naam}',
+  'sums.rekendiplomaMissed': 'Nog geen diploma. Negen van de tien goed is genoeg.',
+  'rekenen.somdiplomasTitle': 'Jouw rekendiploma’s',
+  // De wand die zijn namen uit de sets zelf haalt (ADR-168): rekenen buiten de
+  // tafels, en Taal. "Plussommen tot 20: diploma gehaald" — het woord van de
+  // set, en er niets omheen verzonnen.
+  'diploma.muurCount': '{aantal} van de {totaal} gehaald',
+  'diploma.muurHave': '{naam}: diploma gehaald',
+  'diploma.muurWant': '{naam}: nog geen diploma',
   'rekenen.diplomasTitle': 'Jouw tafeldiploma’s',
   'rekenen.diplomasCount': '{aantal} van de {totaal} gehaald',
   'rekenen.diplomaHave': 'Tafel van {tafel}: diploma gehaald',
@@ -876,6 +890,7 @@ export const nl = {
   'way.som-typen': 'Zeg het antwoord zelf — zo weet je of je de tafel kent',
   'way.som-meerkeuze': 'Kies uit vier getallen — de instap naar typen',
   'way.tafeldiploma': 'De hele tafel foutloos — één fout en je begint opnieuw',
+  'way.reken-diploma': 'De toets: twintig sommen typen, negen van de tien goed',
 
   // Klokkijken. De klok zelf staat op het toneel waar bij topografie de kaart
   // staat en bij rekenen de som: het ding waar de vraag over gaat.
@@ -978,7 +993,7 @@ export const nl = {
   'set.oceanie-fouten': 'Jouw fouten in Oceanië',
   'set.wereld-fouten': 'Jouw fouten op de wereldkaart',
   'set.klok-fouten': 'Jouw fouten met de klok',
-  // De naam van een set: wat de startbalk, de kaarten en de favorieten tonen.
+  // De naam van een set: wat de startbalk en de kaarten tonen.
   'vlag.regio.wereld': 'de wereld',
   'vlag.set.bekend': 'Bekende vlaggen van {regio}',
   'vlag.set.alle': 'Alle vlaggen van {regio}',
@@ -1065,7 +1080,7 @@ export const nl = {
   'onderwerp.taal.werkwoordmix': 'Werkwoordmix',
   'onderwerp.taal.werkwoordmix.uitleg': 'Alle werkwoorden door elkaar',
   'onderwerp.taal.werkwoorden.fouten.uitleg': 'De werkwoorden die je eerder fout had',
-  // De naam van een set: wat de startbalk, de kaarten en de favorieten tonen.
+  // De naam van een set: wat de startbalk en de kaarten tonen.
   // Het korte woord staat op het knopje als de set een van meer is.
   'set.taal-sp-eiij': 'Ei of ij',
   'set.taal-sp-eiij.kort': 'ei / ij',
@@ -1099,10 +1114,17 @@ export const nl = {
   'mode.taal-flitsdictee': 'Flitsdictee',
   'mode.taal-vorm-kiezen': 'Kies de vorm',
   'mode.taal-vorm-typen': 'Typ de vorm',
+  // En het diploma (ADR-168): één woord voor allebei de delen, want het is op
+  // allebei dezelfde toets — twintig keer zelf schrijven, negen op de tien goed.
+  'mode.taal-diploma': 'Taaldiploma',
   'way.taal-letters': 'Kies de letters die in het woord horen — de instap naar schrijven',
   'way.taal-flitsdictee': 'Kijk drie tellen, en schrijf het woord dan zelf — zoals een dictee',
   'way.taal-vorm-kiezen': 'Kies uit drie vormen — de instap naar typen',
   'way.taal-vorm-typen': 'Schrijf de vorm zelf op — voor de toets',
+  'way.taal-diploma': 'De toets: twintig keer zelf schrijven, negen van de tien goed',
+  'taal.diplomaEarned': 'Diploma gehaald: {naam}',
+  'taal.diplomaMissed': 'Nog geen diploma. Negen van de tien goed is genoeg.',
+  'taal.diplomasTitle': 'Jouw taaldiploma’s',
   // De ronde. Geen voorleesknop: die zou het woord zeggen dat je moet spellen.
   'taal.loading': 'Woorden worden geladen…',
   'taal.failed': 'De woorden konden niet geladen worden.',
@@ -1550,6 +1572,8 @@ export const nl = {
   'diploma.gehaaldKop': 'Gehaald!',
   'diploma.verder': 'Verder',
   'diploma.soortTafel': 'Tafeldiploma',
+  'diploma.soortReken': 'Rekendiploma',
+  'diploma.soortTaal': 'Taaldiploma',
   'diploma.soortVlag': 'Vlaggendiploma',
   'diploma.soortKlok': 'Klokdiploma',
   'diploma.soortTopo': 'Topodiploma',

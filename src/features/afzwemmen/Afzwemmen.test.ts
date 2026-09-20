@@ -35,8 +35,11 @@ describe('wat een diploma vraagt', () => {
     expect(eisenVan('klok-diploma', 4)).toEqual({ vragen: 4, drempel: 4 });
   });
 
-  it('topografie: hoogstens twintig', () => {
-    expect(eisenVan('topo-diploma', 167)).toEqual({ vragen: 20, drempel: 18 });
+  it('topografie: twintig, en een kwart van een kaart die groter is', () => {
+    // ADR-168: de wereldkaart heeft een diploma, en twintig van de
+    // honderdzevenenzestig zou een loting zijn.
+    expect(eisenVan('topo-diploma', 167)).toEqual({ vragen: 42, drempel: 38 });
+    expect(eisenVan('topo-diploma', 46)).toEqual({ vragen: 20, drempel: 18 });
     expect(eisenVan('topo-diploma', 12)).toEqual({ vragen: 12, drempel: 11 });
   });
 

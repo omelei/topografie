@@ -3,6 +3,8 @@ import {
   countMastered,
   diplomaDrempel,
   diplomaWerelddeelVanSet,
+  isRekenDiplomaSet,
+  isTaalDiplomaSet,
   KLOK_DIPLOMA_SETS,
   tableOfDiploma,
   type Groep,
@@ -24,16 +26,18 @@ import type { RoundOutcome } from '@/store/rewardStore';
  * begrijpt is een diploma: "ik ga voor de tafel van 7." Dat is zijn eigen zin,
  * en hij is te halen.
  *
- * **Het doel is een diploma en niets anders.** De 33 diploma's die er al zijn —
- * twaalf tafels, zes werelddelen aan vlaggen, vier stappen van de klok, elf
- * kaarten — zijn de enige mijlpalen in dit product die een kind zelf als doel
- * zou noemen. Er is geen nieuwe beloning bij verzonnen — er stonden er al twaalf
- * in dit product, en ADR-130 haalde er twee weg omdat niets ze ooit las.
+ * **Het doel is een diploma en niets anders.** Elk onderwerp dat een eigen set
+ * is, heeft er sinds ADR-168 een — de twaalf tafels en de andere soorten som,
+ * de vlaggen per werelddeel en de provincievlaggen, de vier stappen van de
+ * klok, elke kaart, en elke set van Taal. Dat zijn de enige mijlpalen in dit
+ * product die een kind zelf als doel zou noemen, en er is nooit een beloning
+ * bij verzonnen: ADR-130 haalde er juist twee weg omdat niets ze ooit las. Een
+ * mix heeft er geen — dat is elk ander onderwerp van zijn vak nog een keer.
  *
  * **Alleen een diploma dat dit kind ook kan halen.** Zonder code is het
  * tafeldiploma het enige vrije diploma (ADR-122), dus staan de twaalf tafels in
- * de lijst en de andere eenentwintig niet. Dat is `vormVoor`'s regel, hardop:
- * een plan dat naar de betaalpagina leidt is geen plan.
+ * de lijst en de rest niet. Dat is `vormVoor`'s regel, hardop: een plan dat naar
+ * de betaalpagina leidt is geen plan.
  *
  * **De voortgang is eerlijk en niet gemaakt.** Een diploma is geslaagd of niet
  * geslaagd: er bestaat geen "60% van een diploma". Wat er wél is, is hoeveel van
@@ -81,10 +85,19 @@ export function doelwitVan(deel: Onderdeel): Doelwit | null {
   if (kaart !== null) {
     return { id: `diploma-topo-${kaart}`, mode: 'topo-diploma', deel };
   }
+  // Rekenen buiten de tafels, en Taal (ADR-168). Allebei onder hun eigen
+  // set-id, want een som en een woord hebben geen tweede naam zoals een
+  // werelddeel of een kaart die heeft.
+  if (isRekenDiplomaSet(setId)) {
+    return { id: `diploma-${setId}`, mode: 'reken-diploma', deel };
+  }
+  if (isTaalDiplomaSet(setId)) {
+    return { id: `diploma-${setId}`, mode: 'taal-diploma', deel };
+  }
   return null;
 }
 
-/** Elk diploma dat dit kind mag doen: alle 33, of de twaalf tafels zonder code. */
+/** Elk diploma dat dit kind mag doen: alle, of de twaalf tafels zonder code. */
 export function doelwitten(alles: readonly Onderdeel[], premium: boolean): readonly Doelwit[] {
   const uit: Doelwit[] = [];
   for (const deel of alles) {
@@ -290,5 +303,7 @@ export function behaaldDiploma(reward: RoundOutcome | null): string | null {
   if (reward.vlagDiploma !== null) return `diploma-vlag-${reward.vlagDiploma}`;
   if (reward.klokDiploma !== null) return `diploma-${reward.klokDiploma}`;
   if (reward.topoDiploma !== null) return `diploma-topo-${reward.topoDiploma}`;
+  if (reward.rekenDiploma !== null) return `diploma-${reward.rekenDiploma}`;
+  if (reward.taalDiploma !== null) return `diploma-${reward.taalDiploma}`;
   return null;
 }

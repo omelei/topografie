@@ -11,7 +11,11 @@ import {
 } from '@/components/Icon';
 import type { Groep, ItemState } from '@/game-core';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
+import { isPremiumVorm, metPremium } from '@/features/module/premium';
+import { PremiumLabel } from '@/features/module/PremiumLabel';
+import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
+import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { groepVanActiefKind } from '@/store/children';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
@@ -50,6 +54,15 @@ import { standen, weekZin, type DoelStand } from './weekdoel';
  *
  * **Drie is het maximum.** Een week met vijf doelen is een lijst met klusjes.
  *
+ * **En elk diploma is te kiezen** (ADR-168). Het blok stelde er drie voor — de
+ * drie die het dichtst bij waren — en dat wás de hele lijst: wie de tafel van 8
+ * wilde en 12, 11 en 9 kreeg voorgesteld, kon niets anders kiezen. Drie
+ * voorstellen zijn een goede eerste regel en een slecht menu. Dus staan ze er
+ * nog, bovenaan onder "Dichtbij", en daaronder staat per vak alles wat er te
+ * halen valt. Ook wat een code vraagt: die rij is dan geen doel maar de vraag
+ * aan de ouders (ADR-163), net als elke andere premiumtegel in de app —
+ * weglaten liet een kind denken dat het diploma niet bestond.
+ *
  * **En het mag leeg blijven.** "Ik wil geen doelen" zet het blok weg, en het
  * vraagt daarna niet elke maandag opnieuw. Aanzetten kan op Voor ouders, waar
  * de instellingen staan (ADR-143) — dus op de voordeur is het uit ook echt uit,
@@ -64,7 +77,7 @@ import { standen, weekZin, type DoelStand } from './weekdoel';
 const RONDES_KEUZE: readonly number[] = [2, 3, 5, 8, 10];
 const DAGEN_KEUZE: readonly number[] = [2, 3, 4, 5, 7];
 
-/** Hoeveel diploma's er voorgesteld worden om uit te kiezen. */
+/** Hoeveel diploma's er bovenaan voorgesteld worden. De rest staat eronder. */
 const DIPLOMA_KEUZE = 3;
 
 type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
@@ -164,7 +177,38 @@ export function WeekdoelenBlok({
 
   const lijst = standen(stand.doelen, afgemaakt, behaald, now);
   const vol = stand.doelen.length >= MAX_DOELEN;
-  const alle = doelwitten(startbareOnderdelen(), actief);
+  // Alle 33, ook de premiumdiploma's. Die worden niet weggelaten maar gemerkt:
+  // een kind dat de vlaggen van Europa wil, hoort te zien dát dat bestaat. En
+  // een doel dat de ouder op Voor ouders zette, houdt zo zijn naam ook op de
+  // voordeur van een kind zonder code — met `actief` stond daar "Dit diploma
+  // bestaat niet meer".
+  const alle = doelwitten(startbareOnderdelen(), true);
+  // Wat nog open staat: niet gehaald, en niet al een doel van deze week.
+  const openDoelwitten = alle.filter(
+    (doelwit) => !behaald.has(doelwit.id) && !gekozen(stand.doelen, doelwit.id),
+  );
+  // Voorgesteld wordt alleen wat dit kind vandaag ook kan doen: een voorstel
+  // dat op een slot uitloopt is geen voorstel. In de lijst eronder staat het
+  // wel, met het slot erbij.
+  const dichtbij = suggesties(
+    openDoelwitten.filter((doelwit) => actief || !isPremiumVorm(doelwit.mode)),
+    new Set<string>(),
+    states,
+    now,
+    DIPLOMA_KEUZE,
+    groep,
+  ).map((suggestie) => suggestie.doelwit);
+  // Elk diploma staat precies één keer in de lijst: wat bovenaan bij "Dichtbij"
+  // staat, staat niet nog eens onder zijn vak. Een keuzelijst waarin dezelfde
+  // regel twee keer voorkomt, is een lijst die je twee keer moet lezen om te
+  // weten of het er echt twee zijn.
+  const dichtbijIds = new Set(dichtbij.map((doelwit) => doelwit.id));
+  const perVak = MODULES.map((module) => ({
+    module,
+    doelen: openDoelwitten.filter(
+      (doelwit) => doelwit.deel.moduleId === module.id && !dichtbijIds.has(doelwit.id),
+    ),
+  })).filter((rij) => rij.doelen.length > 0);
 
   return (
     <section className="tk-doel" aria-label={titel}>
@@ -202,9 +246,9 @@ export function WeekdoelenBlok({
           onSoort={setNieuw}
           onKies={voegToe}
           onAnnuleer={() => setNieuw(null)}
-          diplomas={suggesties(alle, behaald, states, now, DIPLOMA_KEUZE, groep)
-            .map((suggestie) => suggestie.doelwit)
-            .filter((doelwit) => !gekozen(stand.doelen, doelwit.id))}
+          dichtbij={dichtbij}
+          perVak={perVak}
+          premium={actief}
         />
       ) : (
         <div className="tk-doel-knoppen">
@@ -312,16 +356,27 @@ function Rij({
  * wisselen één druk is en niet eerst terug. Chips en geen `select`: elke keuze
  * is het zien waard, en een menu op een aanraakscherm dekt af waar je naar keek
  * — dezelfde redenering als op Onthouden.
+ *
+ * Bij "een diploma" staat eerst wat dichtbij is en daaronder alles, per vak
+ * (ADR-168). De lijst is lang — drieëndertig regels — en dat is precies wat er
+ * gevraagd werd: elk diploma moet te kiezen zijn. Wat de lengte draagt is de
+ * kop per vak en de volgorde van `MODULES`, dezelfde als in de rail.
  */
 function Toevoegen({
   soort,
-  diplomas,
+  dichtbij,
+  perVak,
+  premium,
   onSoort,
   onKies,
   onAnnuleer,
 }: {
   readonly soort: WeekdoelSoort;
-  readonly diplomas: readonly Doelwit[];
+  /** De drie die het dichtst bij zijn, bovenaan. Leeg als er niets open staat. */
+  readonly dichtbij: readonly Doelwit[];
+  /** Alles wat open staat, per vak, in de volgorde van de rail. */
+  readonly perVak: readonly { readonly module: Module; readonly doelen: readonly Doelwit[] }[];
+  readonly premium: boolean;
   readonly onSoort: (soort: WeekdoelSoort) => void;
   readonly onKies: (doel: Weekdoel) => void;
   readonly onAnnuleer: () => void;
@@ -352,37 +407,29 @@ function Toevoegen({
       </div>
 
       {soort === 'diploma' ? (
-        diplomas.length === 0 ? (
+        perVak.length === 0 && dichtbij.length === 0 ? (
           <p className="text-tekst-secundair">{t('weekdoel.geenDiplomas')}</p>
         ) : (
-          <ul className="tk-lijst" aria-label={t('weekdoel.welkDiploma')}>
-            {diplomas.map((doelwit) => (
-              <li key={doelwit.id}>
-                <button
-                  type="button"
-                  data-module={doelwit.deel.moduleId}
-                  className="tk-lijstrij"
-                  onClick={() =>
-                    onKies({
-                      id: crypto.randomUUID(),
-                      soort: 'diploma',
-                      aantal: 1,
-                      diplomaId: doelwit.id,
-                    })
-                  }
-                >
-                  <span className="tk-plaat tk-plaat-klein">
-                    <DiplomaIcon size={20} />
-                  </span>
-                  <span className="tk-lijstrij-tekst">
-                    <span className="tk-lijstrij-titel">
-                      {t('weekdoel.diplomaDoel', { naam: naamVan(doelwit.deel) })}
-                    </span>
-                  </span>
-                </button>
-              </li>
+          <div className="tk-doel-keuze">
+            {dichtbij.length > 0 ? (
+              <DiplomaLijst
+                titel={t('weekdoel.diplomaDichtbij')}
+                doelen={dichtbij}
+                premium={premium}
+                onKies={onKies}
+              />
+            ) : null}
+
+            {perVak.map(({ module, doelen }) => (
+              <DiplomaLijst
+                key={module.id}
+                titel={t(module.name)}
+                doelen={doelen}
+                premium={premium}
+                onKies={onKies}
+              />
             ))}
-          </ul>
+          </div>
         )
       ) : (
         <div className="tk-keuzes" role="group" aria-label={t('weekdoel.hoeveel')}>
@@ -408,5 +455,69 @@ function Toevoegen({
         {t('weekdoel.annuleer')}
       </button>
     </div>
+  );
+}
+
+/**
+ * Eén kop met de diploma's eronder: "Dichtbij", of de naam van een vak.
+ *
+ * Zonder code is een rij geen doel maar de vraag aan de ouders (ADR-163). Dat
+ * is niet weggelaten en niet uitgeschakeld: uitschakelen laat een kind met een
+ * grijze regel achter waar niemand iets van leert, en weglaten laat het denken
+ * dat het diploma niet bestaat.
+ */
+function DiplomaLijst({
+  titel,
+  doelen,
+  premium,
+  onKies,
+}: {
+  readonly titel: string;
+  readonly doelen: readonly Doelwit[];
+  readonly premium: boolean;
+  readonly onKies: (doel: Weekdoel) => void;
+}) {
+  return (
+    <section className="flex flex-col gap-2" aria-label={titel}>
+      <h3 className="tk-sectie tk-sectie-klein">{titel}</h3>
+
+      <ul className="tk-lijst">
+        {doelen.map((doelwit) => {
+          const naam = t('weekdoel.diplomaDoel', { naam: naamVan(doelwit.deel) });
+          const opSlot = !premium && isPremiumVorm(doelwit.mode);
+
+          return (
+            <li key={doelwit.id}>
+              <button
+                type="button"
+                data-module={doelwit.deel.moduleId}
+                className="tk-lijstrij"
+                aria-label={metPremium(naam, isPremiumVorm(doelwit.mode), premium)}
+                onClick={() => {
+                  if (opSlot) {
+                    vraagOuders();
+                    return;
+                  }
+                  onKies({
+                    id: crypto.randomUUID(),
+                    soort: 'diploma',
+                    aantal: 1,
+                    diplomaId: doelwit.id,
+                  });
+                }}
+              >
+                <span className="tk-plaat tk-plaat-klein">
+                  <DiplomaIcon size={20} />
+                </span>
+                <span className="tk-lijstrij-tekst">
+                  <span className="tk-lijstrij-titel">{naam}</span>
+                </span>
+                {isPremiumVorm(doelwit.mode) ? <PremiumLabel /> : null}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }

@@ -1,9 +1,11 @@
-import { useEffect, useId, useState, type ReactNode } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { Button } from '@/components/Button';
-import { CorrectIcon, GoIcon, PaperIcon } from '@/components/Icon';
+import { CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
 import {
   aanDeBeurt,
   countMastered,
+  isDiplomaVorm,
+  vlagDiplomaSet,
   opGroep,
   roundPreview,
   vooruitblik,
@@ -18,6 +20,8 @@ import { groepVanActiefKind } from '@/store/children';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 
+import { Setdiplomas } from '@/features/badges/Setdiplomas';
+import { doelwitVan } from '@/features/home/doel';
 import { Tafeldiplomas } from './Tafeldiplomas';
 import { TopoDiplomas } from './TopoDiplomas';
 import { VlagDiplomas } from '@/features/vlaggen/VlagDiplomas';
@@ -25,7 +29,10 @@ import { KlokDiplomas } from '@/features/klok/KlokDiplomas';
 import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import {
+  fouteItems,
+  isMixOnderwerp,
   itemsVan,
+  MIN_FOUTEN,
   naamVan,
   onderwerpenVan,
   onderwerpVan,
@@ -104,7 +111,6 @@ export function ModuleScreen({
   regio: adresRegio = null,
   onSet,
   onStart,
-  aside,
 }: {
   readonly module: Module;
   /** Whose page this is. The heading asks them by name. */
@@ -120,9 +126,9 @@ export function ModuleScreen({
     mode: ModeId,
     aantal: number | null,
     toetsstand: boolean,
+    /** Alleen deze onderdelen, voor "Je fouten" (ADR-168). Null is de hele set. */
+    alleen: readonly string[] | null,
   ) => void;
-  /** The child's own column, the same one the front door carries. */
-  readonly aside: ReactNode;
 }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
@@ -138,6 +144,8 @@ export function ModuleScreen({
   const [aantal, setAantal] = useState<number | null>(null);
   /** Whether the round should keep its answers until the end (ADR-085). */
   const [toetsstand, setToetsstand] = useState(false);
+  /** Of de ronde alleen vraagt wat dit kind fout had (ADR-168). */
+  const [foutenstand, setFoutenstand] = useState(false);
   const kleinScherm = useSmallScreen();
   const nogId = useId();
   // Wat een premiumtegel zonder code doet: hij vraagt het even aan de ouders in
@@ -152,7 +160,7 @@ export function ModuleScreen({
   const known = states ?? new Map<string, ItemState>();
   const now = new Date();
 
-  const alleOnderwerpen = onderwerpenVan(module.id, known);
+  const alleOnderwerpen = onderwerpenVan(module.id);
   const alleSets = alleOnderwerpen.flatMap((vak) => vak.sets);
 
   // Only the address chooses a set. One that names a set nobody has heard of
@@ -174,7 +182,12 @@ export function ModuleScreen({
   // groep is dit de volgorde van altijd. Welke tafel of welk bereik eronder
   // staat, blijft in zijn eigen volgorde: een toetsenbord van twaalf tafels
   // op groep gesorteerd is geen toetsenbord meer.
-  const onderwerpen = opGroep(opKaart, (vak) => indelingVanOnderwerp(vak, groep));
+  // En de mix altijd achteraan (ADR-168). Een mix is elk ander onderwerp van
+  // deze rij nog een keer, dus is hij nooit waar je begint — op elk vak. Na
+  // `opGroep`, want anders zet de groep hem er weer tussen: een mix hoort bij
+  // geen enkele groep in het bijzonder en zou dan als "neutraal" boven de stof
+  // van volgend jaar uitkomen.
+  const onderwerpen = mixAchteraan(opGroep(opKaart, (vak) => indelingVanOnderwerp(vak, groep)));
 
   // The subject is the address's, or the one pressed while its set is still to
   // choose — and only while it is on the map the page shows. A set in Europe is
@@ -197,13 +210,6 @@ export function ModuleScreen({
     hoe: (keuzeStap === 0 ? watStap : keuzeStap) + 1,
   };
 
-  /**
-   * Rekenen's subjects are kinds of sum — tafels, delen, plus, min — and the
-   * handoff asks that as a row of words, with the keypad under it. The other
-   * two modules' subjects are things on a map or a face, and those are tiles.
-   */
-  const onderwerpAlsChips = module.id === 'tafels';
-
   // A map of a hundred and sixty-seven countries is not something a child can
   // point at, and on a phone neither is a map of forty-six. Where that is true
   // the way in becomes multiple choice (ADR-087). Pointing is still on the
@@ -216,8 +222,12 @@ export function ModuleScreen({
   // vanish from under a finger the moment the child picks the Keersommen.
   const forms = chosen ? aangeboden : aangeboden.filter((kandidaat) => !kandidaat.geldtVoor);
   // The ways that are tiles. A way only the oefentoets asks in is reached by
-  // pressing the oefentoets, and never offered beside it (ADR-102).
+  // pressing the oefentoets, and never offered beside it (ADR-102). Het
+  // diploma staat apart, want het staat als laatste en het staat groter
+  // (ADR-168).
   const tegels = forms.filter((candidate) => !candidate.alleenToets);
+  const gewoneTegels = tegels.filter((candidate) => !isDiplomaVorm(candidate.id));
+  const diplomaVorm = tegels.find((candidate) => isDiplomaVorm(candidate.id)) ?? null;
   // No way until one is pressed (ADR-111).
   const gekozenManier = tegels.find((candidate) => candidate.id === formId) ?? null;
   // The oefentoets is a way of its own (ADR-100). It answers the way a test
@@ -229,7 +239,34 @@ export function ModuleScreen({
 
   const ModuleIcon = MODULE_ICON[module.id];
 
-  const setSize = chosen?.items.length ?? 0;
+  /**
+   * De sets waarvan de wand onderaan het diploma toont (ADR-168).
+   *
+   * Rekenen: de bereiken van de gekozen soort som — niet de tafels, die hebben
+   * hun eigen wand van twaalf. Taal: alles van het deel dat gekozen is, want
+   * daar is het deel wat de soort som bij rekenen is.
+   */
+  const setdiplomas =
+    module.id === 'woorden'
+      ? alleOnderwerpen
+          .filter((vak) => vak.regio === hier)
+          .flatMap((vak) => vak.sets)
+          .filter((deel) => doelwitVan(deel)?.mode === 'taal-diploma')
+      : module.id === 'tafels' && onderwerp !== null && onderwerp.id !== 'tafels'
+        ? onderwerp.sets.filter((deel) => doelwitVan(deel)?.mode === 'reken-diploma')
+        : [];
+
+  // "Je fouten": de onderdelen van de gekozen set die dit kind wel eens fout
+  // had (ADR-168). Het is een spelvorm en geen onderwerp — wát je oefent is in
+  // stap 2 al gezegd, en dit zegt hoe: alleen de stukken die niet zaten.
+  const fouteIds = chosen === null ? [] : fouteItems(chosen, known);
+  const kanFouten = fouteIds.length >= MIN_FOUTEN;
+  const alsFouten = foutenstand && kanFouten;
+
+  const heleSet = chosen?.items.length ?? 0;
+  // Met "Je fouten" is de set zo groot als de foutenlijst: de schatting naast
+  // Start en de rij "Hoeveel vragen?" horen over de ronde te gaan die volgt.
+  const setSize = alsFouten ? fouteIds.length : heleSet;
   const lengtes = form === null ? [] : questionChoices(form, setSize);
   // A length that no longer fits — twenty-five questions of the table of seven,
   // after the child moved from the Rekenmix to a table — falls back to the
@@ -271,7 +308,17 @@ export function ModuleScreen({
    */
   const vooraf =
     klaar && chosen !== null && vragen !== null && form?.rule?.kind === 'fixed'
-      ? roundPreview({ items: chosen.items, states: known, size: vragen, now: new Date() })
+      ? roundPreview({
+          // Met "Je fouten" gaat de ronde over die onderdelen, dus gaat deze
+          // zin daar ook over: "3 van de 3 eerder gehad" is bij een foutenlijst
+          // geen verrassing maar de definitie.
+          items: alsFouten
+            ? chosen.items.filter((item) => fouteIds.includes(item.id))
+            : chosen.items,
+          states: known,
+          size: vragen,
+          now: new Date(),
+        })
       : null;
   const eerderZin =
     vooraf !== null && vooraf.seen > 0
@@ -283,7 +330,7 @@ export function ModuleScreen({
     ...(onderwerp
       ? [
           {
-            label: t(onderwerpAlsChips ? 'start.som' : 'start.onderwerp'),
+            label: t(module.id === 'tafels' ? 'start.som' : 'start.onderwerp'),
             waarde: t(onderwerp.naam),
           },
         ]
@@ -294,6 +341,7 @@ export function ModuleScreen({
     ...(form ? [{ label: t('start.manier'), waarde: t(form.name) }] : []),
     ...(ronde ? [{ label: t('start.ronde'), waarde: ronde }] : []),
     ...(alsToets ? [{ label: t('start.stand'), waarde: t('choose.testMode') }] : []),
+    ...(alsFouten ? [{ label: t('start.stand'), waarde: t('choose.fouten') }] : []),
   ];
 
   /** A set chosen from outside its own subject's row: the map follows the set. */
@@ -313,7 +361,8 @@ export function ModuleScreen({
       aria-label={klaar ? t('choose.goLabel', { wat: zin }) : undefined}
       aria-describedby={klaar ? undefined : nogId}
       onClick={() => {
-        if (chosen && form) onStart(chosen, form.id, gekozen, alsToets);
+        if (chosen && form)
+          onStart(chosen, form.id, gekozen, alsToets, alsFouten ? fouteIds : null);
       }}
     >
       {t('choose.go')}
@@ -395,7 +444,13 @@ export function ModuleScreen({
         <section className="tk-kies" aria-label={t('choose.stepWhat')}>
           <Stap nummer={stap.wat} label={t('choose.stepWhat')} />
 
-          <div className={onderwerpAlsChips ? 'tk-keuzes' : 'tk-tegels'}>
+          {/* Tegels, op elk vak (ADR-168). Rekenen tekende zijn onderwerpen als
+              chips en de andere vier als tegels, en dat maakte dezelfde vraag —
+              "wat wil je oefenen?" — op twee pagina's twee verschillende
+              dingen: een rij woorden om te lezen, of een raster om aan te
+              wijzen. Een kind dat op /topografie geleerd heeft waar het antwoord
+              op stap 2 staat, vindt het op /rekenen op dezelfde plek terug. */}
+          <div className="tk-tegels">
             {onderwerpen.map((vak) => {
               const open = vak.id === onderwerp?.id;
               const VakIcon = onderwerpIcon(vak.id);
@@ -406,7 +461,7 @@ export function ModuleScreen({
                 <button
                   key={vak.id}
                   type="button"
-                  className={onderwerpAlsChips ? 'tk-keuze' : 'tk-tegel'}
+                  className="tk-tegel"
                   // How the subject is going is not on the face of it; it is in
                   // its name, and in the child's own column (ADR-089).
                   aria-label={metPremium(
@@ -438,13 +493,9 @@ export function ModuleScreen({
                     }
                   }}
                 >
-                  {onderwerpAlsChips ? (
-                    <VakIcon size={20} />
-                  ) : (
-                    <span className="tk-plaat">
-                      <VakIcon size={24} />
-                    </span>
-                  )}
+                  <span className="tk-plaat">
+                    <VakIcon size={24} />
+                  </span>
                   <span className="min-w-0">
                     {t(vak.naam)}
                     {buitenGroep !== null ? (
@@ -454,7 +505,7 @@ export function ModuleScreen({
                     ) : null}
                   </span>
                   {premium ? <PremiumLabel /> : null}
-                  {!onderwerpAlsChips && open ? vink : null}
+                  {open ? vink : null}
                 </button>
               );
             })}
@@ -509,11 +560,19 @@ export function ModuleScreen({
         <section className="tk-kies" aria-label={t('choose.stepHow')}>
           {/* The order of the ways is the argument, and the tile is the name.
               What each is for is in its label, so tabbing through them never
-              costs a child the thing that tells them apart (ADR-061). */}
+              costs a child the thing that tells them apart (ADR-061).
+
+              Eén volgorde op elk vak (ADR-168): eerst de manieren die leren —
+              zoeken, kiezen, typen, ontdekken — dan de twee die druk zetten op
+              wat er al zit, dan de twee standen op wat je al koos (je fouten,
+              de oefentoets), en als laatste het diploma. Dat is niet de
+              volgorde van `forms.ts` maar die van deze sectie: het diploma
+              stond daar al achteraan en werd hier alsnog door de oefentoets
+              ingehaald. */}
           <Stap nummer={stap.hoe} label={t('choose.stepHow')} />
 
           <div className="tk-tegels">
-            {tegels.map((candidate) => {
+            {gewoneTegels.map((candidate) => {
               const FormIcon = candidate.icon;
               const gekozenVorm = !alsToets && candidate.id === form?.id;
               const premium = isPremiumVorm(candidate.id);
@@ -548,11 +607,54 @@ export function ModuleScreen({
               );
             })}
 
-            {/* The oefentoets, last among the ways and one of them: pressing it
-                un-presses the others, because it chooses how you answer too.
-                It used to be a switch on whichever way was chosen (ADR-085),
-                which asked a child to pick a way a test never asks for
-                (ADR-100). */}
+            {/* "Je fouten": een stand op de manier die gekozen is, zoals de
+                oefentoets er een is (ADR-168). Het was een onderwerp — een
+                tegel tussen Provincies en Steden — en dat is het niet: waar de
+                ronde over gaat, staat in stap 2, en dit zegt welk deel ervan
+                gevraagd wordt. Alleen als er iets in zit (`MIN_FOUTEN`), want
+                een knop die "0 fouten" oefent, oefent niets.
+
+                Premium blijft het, en om de reden die `premium.ts` geeft: wat
+                je fout had is een administratie over rondes heen. De poort
+                staat hier en niet in `beginRonde`, want deze stand bestaat
+                alleen op deze pagina — een favoriet of een openstaande ronde
+                kan hem niet meedragen. */}
+            {kanFouten ? (
+              <button
+                type="button"
+                className="tk-tegel"
+                aria-label={metPremium(
+                  `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`,
+                  true,
+                  actief,
+                )}
+                aria-pressed={alsFouten}
+                onClick={() => {
+                  if (!actief) {
+                    vraagOuders();
+                    return;
+                  }
+                  // Een diploma over de helft van een set is geen diploma, en
+                  // een oefentoets over je eigen fouten is geen toets: allebei
+                  // gaan ze uit zodra dit aangaat.
+                  setToetsstand(false);
+                  if (form !== null && isDiplomaVorm(form.id)) setFormId(null);
+                  setFoutenstand(!alsFouten);
+                }}
+              >
+                <span className="tk-plaat">
+                  <WrongIcon size={24} />
+                </span>
+                <span className="min-w-0">{t('choose.fouten')}</span>
+                <PremiumLabel />
+                {alsFouten ? vink : null}
+              </button>
+            ) : null}
+
+            {/* The oefentoets, one of the ways: pressing it un-presses the
+                others, because it chooses how you answer too. It used to be a
+                switch on whichever way was chosen (ADR-085), which asked a
+                child to pick a way a test never asks for (ADR-100). */}
             {toetsVorm ? (
               <button
                 type="button"
@@ -565,7 +667,14 @@ export function ModuleScreen({
                   actief,
                 )}
                 aria-pressed={alsToets}
-                onClick={() => (actief ? setToetsstand(true) : vraagOuders())}
+                onClick={() => {
+                  if (!actief) {
+                    vraagOuders();
+                    return;
+                  }
+                  setFoutenstand(false);
+                  setToetsstand(true);
+                }}
               >
                 <span className="tk-plaat">
                   <PaperIcon size={24} />
@@ -576,6 +685,47 @@ export function ModuleScreen({
               </button>
             ) : null}
           </div>
+
+          {/* Het diploma, altijd als laatste en altijd uitgelicht (ADR-168).
+              Het stond als achtste tegel in hetzelfde raster en was daarin niet
+              van een bliksemronde te onderscheiden, terwijl het het enige is op
+              deze pagina waar een kind iets aan overhoudt. Eén tegel over de
+              volle breedte, in de kleur van het vak, met eronder waar hij over
+              gaat — en de reden ervan hardop, want een toets waarvan je de lat
+              niet kent, is een toets die je niet durft te doen. */}
+          {diplomaVorm ? (
+            <button
+              type="button"
+              className="tk-tegel tk-tegel-diploma"
+              aria-label={metPremium(
+                `${t(diplomaVorm.name)}. ${t(diplomaVorm.reason)}`,
+                isPremiumVorm(diplomaVorm.id),
+                actief,
+              )}
+              aria-pressed={!alsToets && diplomaVorm.id === form?.id}
+              onClick={() => {
+                if (isPremiumVorm(diplomaVorm.id) && !actief) {
+                  vraagOuders();
+                  return;
+                }
+                setToetsstand(false);
+                setFoutenstand(false);
+                setFormId(diplomaVorm.id);
+              }}
+            >
+              <span className="tk-plaat">
+                <diplomaVorm.icon size={24} />
+              </span>
+              <span className="min-w-0">
+                {t(diplomaVorm.name)}
+                <span className="tk-hulp block" aria-hidden="true">
+                  {t(diplomaVorm.reason)}
+                </span>
+              </span>
+              {isPremiumVorm(diplomaVorm.id) ? <PremiumLabel /> : null}
+              {!alsToets && diplomaVorm.id === form?.id ? vink : null}
+            </button>
+          ) : null}
         </section>
 
         {/* How long, as a step of its own — and only after a way that has a
@@ -660,7 +810,7 @@ export function ModuleScreen({
         {module.id === 'vlaggen' ? (
           <VlagDiplomas
             onKies={(deel) => {
-              kiesElders(`vlag-${deel}-alle`);
+              kiesElders(vlagDiplomaSet(deel));
               setFormId('vlag-diploma');
               setToetsstand(false);
             }}
@@ -689,9 +839,29 @@ export function ModuleScreen({
             }}
           />
         ) : null}
-      </div>
 
-      {aside}
+        {/* En de twee vakken die er geen hadden (ADR-168): de soorten som
+            buiten de tafels, en Taal. Dezelfde wand, met de namen uit de sets
+            zelf — "Plussommen tot 20", "Tegenwoordige tijd".
+
+            Ze volgen wat er gekozen is en niet de hele module, zoals de
+            tafelwand dat ook doet: eenendertig rekendiploma's onder elkaar is
+            geen wand maar een catalogus. Wie Plussommen kiest, ziet de drie
+            bereiken van plussommen. */}
+        {setdiplomas.length > 0 ? (
+          <Setdiplomas
+            moduleId={module.id}
+            titel={t(module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle')}
+            sets={setdiplomas}
+            onKies={(setId) => {
+              kiesElders(setId);
+              setFormId(module.id === 'woorden' ? 'taal-diploma' : 'reken-diploma');
+              setToetsstand(false);
+              setFoutenstand(false);
+            }}
+          />
+        ) : null}
+      </div>
 
       {/* On a phone: the sentence and the way on, stuck to the foot of the
           screen. After the child's own column, as the last thing in the page, so
@@ -740,6 +910,22 @@ export function ModuleScreen({
  */
 function groepLabel(indeling: Indeling): string | null {
   return indeling === 'later' ? t('groep.later') : null;
+}
+
+/**
+ * De mix achteraan, de rest in de volgorde waarin hij binnenkwam (ADR-168).
+ *
+ * Stabiel, dus binnen elke helft verandert er niets: wat `opGroep` net gezet
+ * heeft, blijft staan. Op elke module dezelfde regel — de Rekenmix, de Topomix,
+ * de Klokmix, de Spellingmix en de Werkwoordmix staan alle vijf achteraan om
+ * dezelfde reden, en die stond hiervoor nergens opgeschreven: ze waren het
+ * toevallig, doordat ze toevallig onderaan hun lijst stonden.
+ */
+function mixAchteraan(vakken: readonly Onderwerp[]): Onderwerp[] {
+  return [
+    ...vakken.filter((vak) => !isMixOnderwerp(vak)),
+    ...vakken.filter((vak) => isMixOnderwerp(vak)),
+  ];
 }
 
 /** A subject whose sets are a second question: the tables before the table. */

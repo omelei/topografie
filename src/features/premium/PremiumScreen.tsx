@@ -134,7 +134,7 @@ export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
   const bijnaAf = actief && verlooptBinnenkort(stand, now);
 
   return (
-    <div className="tk-page tk-page-enkel">
+    <div className="tk-page">
       <div className="tk-page-main">
         <div className="flex flex-col gap-2">
           <h1 className="tk-titel">{t('premium.titel')}</h1>

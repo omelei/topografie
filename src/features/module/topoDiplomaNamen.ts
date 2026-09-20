@@ -19,4 +19,5 @@ export const KAART_NAAM: Record<TopoDiplomaSet, TranslationKey> = {
   'noord-amerika-landen': 'regio.noord-amerika',
   'zuid-amerika-landen': 'regio.zuid-amerika',
   'oceanie-landen': 'regio.oceanie',
+  'wereld-landen': 'regio.wereld',
 };

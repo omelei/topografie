@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type { ItemState } from '@/game-core';
 import {
   formsFor,
   offeredForms,
@@ -26,8 +25,8 @@ import { vlagSetNaam } from './vlagNamen';
  */
 
 const vlaggen = MODULES.find((module) => module.id === 'vlaggen') as Module;
-const per = (regio: string, known?: ReadonlyMap<string, ItemState>) =>
-  onderwerpenVan('vlaggen', known)
+const per = (regio: string) =>
+  onderwerpenVan('vlaggen')
     .filter((vak) => vak.regio === regio)
     .map((vak) => vak.naam);
 
@@ -63,31 +62,9 @@ describe('the page', () => {
     expect(onderwerpenVan('vlaggen')[0]?.sets[0]?.setId).toBe('vlag-nederland-provincies');
   });
 
-  it('adds "Oefen je fouten" to a region once five of its flags were wrong', () => {
-    const fout = (id: string): [string, ItemState] => [
-      id,
-      {
-        itemId: id,
-        box: 1,
-        laatsteReview: '2026-09-01T00:00:00.000Z',
-        volgendeReview: '2026-09-02T00:00:00.000Z',
-        goedCount: 0,
-        foutCount: 1,
-      },
-    ];
-    const known = new Map(['vlag-be', 'vlag-de', 'vlag-fr', 'vlag-it', 'vlag-nl'].map(fout));
-
-    expect(per('europa', known)).toContain('onderwerp.fouten');
-    expect(per('afrika', known)).not.toContain('onderwerp.fouten');
-
-    const vak = onderwerpenVan('vlaggen', known).find(
-      (kandidaat) => kandidaat.regio === 'europa' && kandidaat.naam === 'onderwerp.fouten',
-    );
-    expect(vak?.sets[0]?.items).toHaveLength(5);
-
-    // Four is a list rather than a subject (MIN_FOUTEN).
-    const vier = new Map(['vlag-be', 'vlag-de', 'vlag-fr', 'vlag-it'].map(fout));
-    expect(per('europa', vier)).not.toContain('onderwerp.fouten');
+  it('houdt de foutenlijst uit de onderwerpen: dat is sinds ADR-168 een spelvorm', () => {
+    expect(per('europa')).not.toContain('onderwerp.fouten');
+    expect(onderwerpenVan('vlaggen').map((vak) => vak.naam)).not.toContain('onderwerp.fouten');
   });
 
   it('counts every flag once toward progress, and no set twice', () => {

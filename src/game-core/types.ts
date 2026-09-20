@@ -101,6 +101,10 @@ export type ModeId =
   | 'som-typen'
   | 'som-meerkeuze'
   | 'tafeldiploma'
+  // Het diploma van elke andere soort som (ADR-168): plussommen tot 20,
+  // deelsommen tot 100. Twintig sommen, negen op de tien goed — de lat van
+  // elk diploma dat geen tafel is.
+  | 'reken-diploma'
   // Klokkijken asks in both directions, which neither of the first two modules
   // does: from the face to the time, and from the time back to a face. That is
   // why "welke klok" is a mode of its own rather than multiple choice with the
@@ -122,8 +126,11 @@ export type ModeId =
   | 'topo-diploma'
   // Taal (ADR-118). Spelling chooses the letters of a gap or types the whole
   // word after seeing it for three seconds; werkwoorden choose or type the
-  // form a sentence asks for. No bliksemronde and no diploma for either.
+  // form a sentence asks for. No bliksemronde.
   | 'taal-letters'
   | 'taal-flitsdictee'
   | 'taal-vorm-kiezen'
-  | 'taal-vorm-typen';
+  | 'taal-vorm-typen'
+  // En het taaldiploma (ADR-168), afgelegd zoals de oefentoets van dat deel
+  // vraagt: het flitsdictee bij spelling, de vorm getypt bij werkwoorden.
+  | 'taal-diploma';

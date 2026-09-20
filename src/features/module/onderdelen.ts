@@ -85,9 +85,6 @@ export const SET_NAME_KEY: Record<SetId, TranslationKey> = {
  */
 export const ROUND_SIZE = { topo: 15, tafels: 10, klok: 10, vlaggen: 10, taal: 10 } as const;
 
-/** How many favourites the column on the right holds. */
-export const FAVOURITES_SHOWN = 4;
-
 /**
  * How many cards the front door's "meest geoefend" row holds: five, which is
  * what the handoff draws in a row that scrolls rather than wraps (ADR-094).
@@ -119,14 +116,45 @@ const STARTERS: readonly { readonly setId: string; readonly mode: ModeId }[] = [
 ];
 
 /**
- * How many sums a child has to have got wrong before "oefen je fouten" appears.
+ * Hoeveel fouten er in één set moeten staan voordat "Je fouten" aangeboden
+ * wordt.
  *
- * Below this it is not a subject, it is a list — and a card offering three sums
- * is a card that is finished in twenty seconds and then sits there empty. It
- * also spares a child their very first mistake being turned into a heading
- * about them.
+ * Het stond op vijf, en dat was de goede lat voor wat het toen was: een
+ * onderwerp over een hele module — elke fout in rekenen, elke fout op een
+ * kaart. Sinds ADR-168 is het een spelvorm op de set die er al gekozen is, en
+ * daar is dezelfde vijf te hoog: een tafel heeft tien sommen, en wie er vijf
+ * van fout heeft, heeft de tafel niet. Drie is wat er overblijft van dezelfde
+ * redenering op de nieuwe maat — onder drie is het geen ronde maar een lijstje,
+ * en het spaart een kind nog steeds zijn allereerste fout als kop boven een
+ * knop.
  */
-export const MIN_FOUTEN = 5;
+export const MIN_FOUTEN = 3;
+
+/**
+ * De onderdelen van deze set die dit kind wel eens fout had.
+ *
+ * Eén regel, op één plek, want elke module stelt hem: `foutCount` is wat er van
+ * een fout bewaard wordt (`leitner.ts`) en het is nooit iets anders geweest.
+ */
+export function fouteItems(
+  deel: Onderdeel,
+  known: ReadonlyMap<string, ItemState>,
+): readonly string[] {
+  return deel.items.filter((item) => (known.get(item.id)?.foutCount ?? 0) > 0).map((i) => i.id);
+}
+
+/**
+ * Of dit onderwerp een mix van de andere is.
+ *
+ * Afgeleid en niet nog eens opgeschreven: een set weet zelf al of hij een mix
+ * is (`Onderdeel.mix`), en een onderwerp is er een als al zijn sets dat zijn.
+ * Zo kan de Keersommen — die één mix onder zich heeft, `keer-10` — nooit per
+ * ongeluk achteraan belanden, en hoeft er bij een nieuw vak niets onthouden te
+ * worden.
+ */
+export function isMixOnderwerp(vak: Onderwerp): boolean {
+  return vak.sets.length > 0 && vak.sets.every((deel) => deel.mix);
+}
 
 export interface Onderdeel {
   readonly moduleId: Module['id'];
@@ -257,32 +285,6 @@ function topoFoutenOnderdeel(id: FoutenSetId): Onderdeel {
       .flatMap((deel) => deel.items),
     roundSize: ROUND_SIZE.topo,
   };
-}
-
-/**
- * "Oefen je fouten" on the map (ADR-103): under each region, once this child
- * has got five of its places wrong, holding exactly those — the subject the
- * tables have had since ADR-078. Last in its row, after the mix: it is not a
- * subject of the content but a list about this child.
- */
-function topoFouten(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
-  return FOUTEN_SET_IDS.flatMap((id): Onderwerp[] => {
-    const alles = topoFoutenOnderdeel(id);
-    const fout = alles.items.filter((item) => (known.get(item.id)?.foutCount ?? 0) > 0);
-    if (fout.length < MIN_FOUTEN) return [];
-
-    return [
-      {
-        moduleId: 'topo',
-        id,
-        naam: 'onderwerp.fouten',
-        uitleg: 'onderwerp.topo.fouten.uitleg',
-        keuze: null,
-        regio: id === 'nl-fouten' ? 'nederland' : id.replace(/-fouten$/, ''),
-        sets: [{ ...alles, items: fout }],
-      },
-    ];
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -423,7 +425,7 @@ function klokMix(): Onderdeel | null {
  * No regions, so the page draws no region row and numbers its steps from one —
  * which is what `ModuleScreen` works out for itself rather than being told.
  */
-function klokOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+function klokOnderwerpen(): Onderwerp[] {
   const sets = klokOnderdelen();
   const van = (id: string) => sets.filter((deel) => deel.setId === id);
   const mix = klokMix();
@@ -477,32 +479,7 @@ function klokOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
   ];
 
   // A subject with nothing in it is a card that opens onto nothing.
-  return [...vakken.filter((vak) => vak.sets.length > 0), ...klokFouten(known)];
-}
-
-/**
- * "Oefen je fouten" on the clock (ADR-103): every face this child has had
- * wrong, whichever step it came from, once there are five. A sixth tile at
- * most, which is the ceiling a page holds.
- */
-function klokFouten(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
-  const alles = loadKlokSet(KLOK_FOUTEN_ID);
-  if (!alles) return [];
-
-  const fout = alles.items.filter((tijd) => (known.get(tijd.id)?.foutCount ?? 0) > 0);
-  if (fout.length < MIN_FOUTEN) return [];
-
-  return [
-    {
-      moduleId: 'klok',
-      id: KLOK_FOUTEN_ID,
-      naam: 'onderwerp.fouten',
-      uitleg: 'onderwerp.klok.fouten.uitleg',
-      keuze: null,
-      regio: null,
-      sets: [{ ...klokOnderdeel(alles), items: fout }],
-    },
-  ];
+  return vakken.filter((vak) => vak.sets.length > 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -559,26 +536,13 @@ const VLAG_ONDERWERP: Record<VlagOnderwerp, { naam: TranslationKey; uitleg: Tran
  * "Oefen je fouten" appears in a region once this child has got five of its
  * flags wrong, the way it appears under rekenen (ADR-078).
  */
-function vlagOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+function vlagOnderwerpen(): Onderwerp[] {
   return loadVlagSets().flatMap((set): Onderwerp[] => {
     const tekst = VLAG_ONDERWERP[set.onderwerp];
     const deel = vlagOnderdeel(set);
 
-    if (set.onderwerp === 'fouten') {
-      const fout = set.items.filter((vlag) => (known.get(vlag.id)?.foutCount ?? 0) > 0);
-      if (fout.length < MIN_FOUTEN) return [];
-      return [
-        {
-          moduleId: 'vlaggen',
-          id: set.id,
-          naam: tekst.naam,
-          uitleg: tekst.uitleg,
-          keuze: null,
-          regio: set.regio,
-          sets: [{ ...deel, items: fout }],
-        },
-      ];
-    }
+    // De eigen foutenlijst is geen onderwerp meer maar een spelvorm (ADR-168).
+    if (set.onderwerp === 'fouten') return [];
 
     return [
       {
@@ -788,13 +752,7 @@ const TAAL_VAKKEN: readonly TaalVak[] = [
   },
 ];
 
-/** What "Oefen je fouten" says under its name, per part. */
-const TAAL_FOUTEN_UITLEG: Record<TaalDeel, TranslationKey> = {
-  spelling: 'onderwerp.taal.fouten.uitleg',
-  werkwoorden: 'onderwerp.taal.werkwoorden.fouten.uitleg',
-};
-
-function taalOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+function taalOnderwerpen(): Onderwerp[] {
   const sets = [...taalOnderdelen(), ...taalSamengesteld(TAAL_MIX)];
   const vakken = TAAL_VAKKEN.map((vak): Onderwerp => ({
     moduleId: 'woorden',
@@ -808,11 +766,7 @@ function taalOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
 
   // A subject with nothing in it is a card that opens onto nothing: a set not
   // written yet takes its subject with it.
-  return [
-    ...vakken.filter((vak) => vak.sets.length > 0),
-    ...eigenOnderwerp(),
-    ...taalFouten(known),
-  ];
+  return [...vakken.filter((vak) => vak.sets.length > 0), ...eigenOnderwerp()];
 }
 
 /**
@@ -842,32 +796,6 @@ function eigenOnderwerp(): Onderwerp[] {
       sets,
     },
   ];
-}
-
-/**
- * "Oefen je fouten" in each part of Taal, once five of its words or verbs were
- * wrong — the subject every module has had since ADR-103. Last in its row.
- */
-function taalFouten(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
-  return (Object.keys(TAAL_FOUTEN) as TaalDeel[]).flatMap((deel): Onderwerp[] => {
-    const alles = loadTaalSet(TAAL_FOUTEN[deel]);
-    if (!alles) return [];
-    const items: readonly Schedulable[] = alles.items;
-    const fout = items.filter((item) => (known.get(item.id)?.foutCount ?? 0) > 0);
-    if (fout.length < MIN_FOUTEN) return [];
-
-    return [
-      {
-        moduleId: 'woorden',
-        id: alles.id,
-        naam: 'onderwerp.fouten',
-        uitleg: TAAL_FOUTEN_UITLEG[deel],
-        keuze: null,
-        regio: deel,
-        sets: [{ ...taalOnderdeel(alles), items: fout }],
-      },
-    ];
-  });
 }
 
 // ---------------------------------------------------------------------------
@@ -921,14 +849,11 @@ export function startbareOnderdelen(): Onderdeel[] {
  * topography has rather than the shape rekenen has. Taal is two parts of five
  * subjects and the mistakes, under the row topography asks where on (ADR-118).
  */
-export function onderwerpenVan(
-  moduleId: Module['id'],
-  known: ReadonlyMap<string, ItemState> = new Map(),
-): Onderwerp[] {
-  if (moduleId === 'topo') return topoOnderwerpen(known);
-  if (moduleId === 'klok') return klokOnderwerpen(known);
-  if (moduleId === 'vlaggen') return vlagOnderwerpen(known);
-  if (moduleId === 'woorden') return taalOnderwerpen(known);
+export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
+  if (moduleId === 'topo') return topoOnderwerpen();
+  if (moduleId === 'klok') return klokOnderwerpen();
+  if (moduleId === 'vlaggen') return vlagOnderwerpen();
+  if (moduleId === 'woorden') return taalOnderwerpen();
 
   if (moduleId !== 'tafels') return [];
 
@@ -1033,10 +958,6 @@ export function onderwerpenVan(
         ...mixMet('rekenmix'),
       ],
     },
-    // Last, and only when there is something in it. It is not a kind of sum —
-    // it is this child's own list, and it belongs after the four kinds and the
-    // mix rather than competing with them for the way in (ADR-078).
-    ...foutenOnderwerp(known),
   ];
 }
 
@@ -1054,7 +975,7 @@ export function onderwerpenVan(
  * the eighty cities are the same question at two sizes, and a child who wants
  * "steden" should not have to know which of two cards means which.
  */
-function topoOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
+function topoOnderwerpen(): Onderwerp[] {
   const sets = topoOnderdelen();
   const van = (id: string) => sets.filter((deel) => deel.setId === id);
 
@@ -1185,39 +1106,7 @@ function topoOnderwerpen(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
   // A subject with nothing in it is a card that opens onto nothing. Only the
   // mix is guaranteed to hold something; the rest depend on the content files
   // being there.
-  return [...vakken.filter((vak) => vak.sets.length > 0), ...topoFouten(known)];
-}
-
-/**
- * "Oefen je fouten": the sums this child has got wrong, as a subject.
- *
- * The Leitner scheduler has always put what a child keeps missing at the front
- * of a round. What it could not do is be asked: a child who knows perfectly
- * well which sums they keep getting wrong had no way to say so. This is that
- * button, and it is the only subject in the product that is different for every
- * child.
- *
- * Absent rather than empty when there is nothing in it, and absent until the
- * boxes have been read — a card that says "0 sommen" is a card about nothing.
- */
-function foutenOnderwerp(known: ReadonlyMap<string, ItemState>): Onderwerp[] {
-  const alles = rekenOnderdeel('fouten');
-  if (!alles) return [];
-
-  const fout = alles.items.filter((item) => (known.get(item.id)?.foutCount ?? 0) > 0);
-  if (fout.length < MIN_FOUTEN) return [];
-
-  return [
-    {
-      moduleId: 'tafels',
-      id: 'fouten',
-      naam: 'onderwerp.fouten',
-      uitleg: 'onderwerp.fouten.uitleg',
-      keuze: null,
-      regio: null,
-      sets: [{ ...alles, items: fout }],
-    },
-  ];
+  return vakken.filter((vak) => vak.sets.length > 0);
 }
 
 /** Which subject a set belongs to, so an address for a set opens the right card. */
@@ -1227,6 +1116,19 @@ export function onderwerpVan(onderwerpen: readonly Onderwerp[], setId: string): 
 
 export function naamVan(deel: Onderdeel): string {
   return deel.naam ? t(deel.naam) : (deel.literalNaam ?? '');
+}
+
+/**
+ * De naam van een set, op zijn id.
+ *
+ * Voor een uitslagscherm dat alleen de id in handen heeft: het diploma van een
+ * rekenset of een taalset heet naar de set, en dat moet hetzelfde woord zijn
+ * als in de startbalk stond. Leeg voor een id die niet bestaat, want een naam
+ * verzinnen is erger dan er geen tonen.
+ */
+export function naamVanSet(setId: string): string {
+  const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
+  return deel ? naamVan(deel) : '';
 }
 
 /** When this set was last answered, or null. Decides what "verder" means. */
@@ -1286,50 +1188,13 @@ export function geplaatst(rondes: readonly PlayedRound[], alles: readonly Onderd
 }
 
 /**
- * What a child keeps going back to: one entry per set and way of answering, the
- * ones chosen most often first.
- *
- * "Favourite" as in chosen, not as in recommended. There is no model here and
- * there is not going to be one — a child's own front door should not be a thing
- * that has opinions about them.
- */
-export interface Favoriet {
-  readonly deel: Onderdeel;
-  readonly mode: ModeId;
-  readonly keer: number;
-  readonly at: string;
-}
-
-export function favorieten(gespeeld: readonly Gespeeld[]): Favoriet[] {
-  const byKey = new Map<string, Favoriet>();
-
-  for (const { deel, ronde } of gespeeld) {
-    const key = `${deel.setId}|${ronde.mode}`;
-    const seen = byKey.get(key);
-    byKey.set(key, {
-      deel,
-      mode: ronde.mode,
-      keer: (seen?.keer ?? 0) + 1,
-      // The list arrives newest first, so the first sighting is the latest one.
-      at: seen?.at ?? ronde.at,
-    });
-  }
-
-  return [...byKey.values()]
-    .sort((a, b) => b.keer - a.keer || b.at.localeCompare(a.at))
-    .slice(0, FAVOURITES_SHOWN);
-}
-
-/**
  * The exercises this child goes back to most, with how often.
  *
  * One entry per set rather than per set and way — which is the difference
- * between this and `favorieten`, and the reason both exist. The column on the
- * right is a shortcut back into exactly what you did: provincies *aanwijzen*
- * and provincies *typen* are two shortcuts, because they are two different
- * afternoons. A tile on the front door is about the exercise, so the twelve
- * provinces are one tile however they were answered, and the way in is
- * whichever way this child chose most.
+ * between this and de rij die hiervoor per manier telde. Een tegel op de
+ * voordeur gaat over de oefening, dus zijn de twaalf provincies één tegel hoe
+ * ze ook beantwoord zijn, en de weg erin is de manier die dit kind het vaakst
+ * koos.
  *
  * The count is over this device and nothing else, and it is the honest one:
  * every round that was placed, mixes included.
@@ -1431,6 +1296,7 @@ const SUM_MODES: readonly ModeId[] = [
   'bliksemronde',
   'overleven',
   'tafeldiploma',
+  'reken-diploma',
 ];
 const KLOK_MODES: readonly ModeId[] = [
   'klok-meerkeuze',
@@ -1472,6 +1338,7 @@ const TAAL_MODES: readonly ModeId[] = [
   'taal-vorm-kiezen',
   'taal-vorm-typen',
   'overleven',
+  'taal-diploma',
 ];
 
 /** Taal's ways, falling back to the way the set's part chooses in (ADR-118). */

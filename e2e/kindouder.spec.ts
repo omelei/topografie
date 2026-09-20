@@ -30,12 +30,13 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   await expect(kast).toBeVisible();
 
-  // Eén vak open en de rest als regel: twaalf kaarten in beeld en niet
-  // drieëndertig. Het bezwaar van ADR-158 ging over stapelen — "vier lege
+  // Eén vak open en de rest als regel: de kaarten van één vak in beeld en niet
+  // die van alle vijf. Het bezwaar van ADR-158 ging over stapelen — "vier lege
   // wanden met een kop erboven" — en dit is de ingreep. Wat een kind zonder
   // code ziet, staat in premium.spec.
   await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
-  await expect(kast.locator('.tk-diploma')).toHaveCount(12);
+  // Tweeëndertig sinds ADR-168: de twaalf tafels en de twintig andere rekensets.
+  await expect(kast.locator('.tk-diploma')).toHaveCount(32);
   await expect(kast.getByRole('button', { name: /^Vlaggen / })).toBeVisible();
 
   // En nergens een telling die nul is. Een kop die de afwezigheid uitrekent, is
@@ -46,7 +47,7 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   // De regel staat er één keer en niet op elke kaart: twaalf keer dezelfde zin
   // onder elkaar is geen uitleg maar een muur waarin de kaarten verdwijnen.
   await expect(kast.getByText(/Een onderdeel telt mee als je het drie keer/)).toHaveCount(1);
-  await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(12);
+  await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(32);
 });
 
 test('de kast staat op Jij en niet meer bij de ouder, met één vak open', async ({ page }) => {
@@ -67,7 +68,8 @@ test('de kast staat op Jij en niet meer bij de ouder, met één vak open', async
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   await expect(kast).toBeVisible();
   await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
-  await expect(kast.locator('.tk-diploma')).toHaveCount(12);
+  // Tweeëndertig sinds ADR-168: de twaalf tafels en de twintig andere rekensets.
+  await expect(kast.locator('.tk-diploma')).toHaveCount(32);
 });
 
 test('Jij toont de toren en het schooljaar van dit kind', async ({ page }) => {
@@ -96,15 +98,13 @@ test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/ouder');
 
-  // Het cijfer en de favorieten van het kind horen op de pagina's van het kind
-  // en staan hier dus niet. Hoe de toren eruitziet wel: dat stelt een ouder in
-  // (ADR-158).
+  // Het cijfer van het kind hoort op de pagina's van het kind en staat hier dus
+  // niet. Hoe de toren eruitziet wel: dat stelt een ouder in (ADR-158).
   await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Hoe de toren eruitziet' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // Er staat helemaal geen kolom meer naast deze pagina (ADR-162): wat erin
-  // stond voor de ouder waren de toetsen, en die zijn weg.
+  // Er staat helemaal geen kolom meer naast een pagina, hier niet en nergens
+  // (ADR-162, ADR-168).
   await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
   // De doelen van deze week staan hier wél: een ouder mag er een bij zetten,

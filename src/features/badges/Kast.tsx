@@ -15,9 +15,13 @@ import { kaartStandVan, vulling, type KaartStand, type Voortgang } from './voort
 
 const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
   tafeldiploma: 'diploma.soortTafel',
+  // Zes sinds ADR-168: elk vak heeft een diploma. Wie er een toevoegt, komt
+  // hier langs — `DIPLOMA_VORMEN` in `rewards.ts` noemt deze plek.
+  'reken-diploma': 'diploma.soortReken',
   'vlag-diploma': 'diploma.soortVlag',
   'klok-diploma': 'diploma.soortKlok',
   'topo-diploma': 'diploma.soortTopo',
+  'taal-diploma': 'diploma.soortTaal',
 } as Readonly<Record<ModeId, TranslationKey>>;
 
 /**
