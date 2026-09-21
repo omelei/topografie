@@ -39,7 +39,10 @@ async function wisselGroep(page: Page, knop: string) {
  */
 function groepRij(page: Page) {
   const rij = page.getByRole('button', { name: /^Je groep/ });
-  return page.getByRole('region', { name: 'Instellingen' }).getByRole('listitem').filter({ has: rij });
+  return page
+    .getByRole('region', { name: 'Instellingen' })
+    .getByRole('listitem')
+    .filter({ has: rij });
 }
 
 /** De rij openen, en teruggeven wat erin staat. */

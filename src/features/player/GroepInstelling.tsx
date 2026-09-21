@@ -61,9 +61,7 @@ export function GroepInstelling() {
         <span className="tk-lijstrij-tekst">
           <span className="tk-lijstrij-titel">{t('groep.jijTitel')}</span>
           <span className="tk-lijstrij-regel">
-            {kind.groep === undefined
-              ? t('groep.rijGeen')
-              : t('groep.knop', { groep: kind.groep })}
+            {kind.groep === undefined ? t('groep.rijGeen') : t('groep.knop', { groep: kind.groep })}
           </span>
         </span>
         <span className="tk-lijstrij-pijl">

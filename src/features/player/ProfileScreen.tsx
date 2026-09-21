@@ -106,9 +106,7 @@ export function ProfileScreen({
             (ADR-172). */}
         <header className="tk-etalage">
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
-          <p className="tk-etalage-tekst text-lopend">
-            {t('you.intro', { naam: profile.naam })}
-          </p>
+          <p className="tk-etalage-tekst text-lopend">{t('you.intro', { naam: profile.naam })}</p>
         </header>
 
         <Children active={profile} />
@@ -344,10 +342,7 @@ function Naam({ profile }: { readonly profile: ProfileRecord }) {
       </button>
 
       {open ? (
-        <form
-          className="flex flex-col gap-3 px-4 pb-4"
-          onSubmit={(event) => void bewaar(event)}
-        >
+        <form className="flex flex-col gap-3 px-4 pb-4" onSubmit={(event) => void bewaar(event)}>
           <label htmlFor={veld} className="tk-label">
             {t('you.naamLabel')}
           </label>
