@@ -69,6 +69,9 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // genomen. Wachten op de rij waar een kind mee begint: die is het eerste blok
   // van de pagina en staat er pas als de geschiedenis gelezen is (ADR-162).
   await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
+  // En op de doelen, die hun eigen lezingen doen en anders net na de foto
+  // verschijnen.
+  await expect(page.getByRole('region', { name: 'Je doelen voor deze week' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
   await page.goto('/topografie');
@@ -130,6 +133,39 @@ test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   await shoot(page, size, '07-resultaat');
+});
+
+/**
+ * Een doel en de ring, met iets erin (ADR-171). Een kind zonder doelen en
+ * zonder rondes laat alleen de lege zinnen zien, en juist de rij van een doel
+ * en de ring onder "Je geheugen" zijn wat die feedbackronde veranderde.
+ */
+test('a goal in the list, and the ring with something in it', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+
+  await signIn(page, 'Mirre');
+  const doelen = page.getByRole('region', { name: 'Je doelen voor deze week' });
+  await doelen.getByRole('button', { name: 'Doel toevoegen' }).click();
+  await doelen.getByRole('button', { name: '2 rondes doen', exact: true }).click();
+  await expect(doelen).toContainText('2 rondes doen');
+
+  await chooseAndStart(page, /Aanwijzen/);
+  await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible(READY);
+  await page.getByRole('button', { name: 'Limburg' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+
+  await page.goto('/');
+  await expect(doelen).toContainText('van de 2');
+  await doelen.scrollIntoViewIfNeeded();
+  await shoot(page, size, '18-doelen');
+
+  await page.goto('/jij');
+  const geheugen = page.getByRole('region', { name: 'Je geheugen' });
+  await expect(geheugen).toContainText('van de 1 die je geoefend hebt');
+  await geheugen.scrollIntoViewIfNeeded();
+  await shoot(page, size, '19-geheugen');
 });
 
 /**

@@ -127,21 +127,25 @@ export function Statistieken() {
  * vouwen; een uitklap is voor de tabel, die lang is.
  */
 function Regels() {
+  // De kop boven de kaart, zoals elk ander blok op Jij (ADR-171). Hij stond
+  // klein in de kaart, als label — het laatste blok op de pagina dat zo was.
   return (
-    <section className="tk-card tk-regelkaart" aria-label={t('retention.regelsTitel')}>
-      <h2 className="tk-label">{t('retention.regelsTitel')}</h2>
-      <ol className="tk-regelkaart-lijst">
-        {REGELS.map((regel, nummer) => (
-          <li key={regel} className="tk-regelrij">
-            {/* Het nummer is de volgorde die de tekst al heeft; een schermlezer
-                telt de lijst zelf. */}
-            <span className="tk-regelnummer" aria-hidden="true">
-              {nummer + 1}
-            </span>
-            <span className="text-lopend">{t(regel)}</span>
-          </li>
-        ))}
-      </ol>
+    <section className="flex flex-col gap-3" aria-label={t('retention.regelsTitel')}>
+      <h2 className="tk-sectie">{t('retention.regelsTitel')}</h2>
+      <div className="tk-card">
+        <ol className="tk-regelkaart-lijst">
+          {REGELS.map((regel, nummer) => (
+            <li key={regel} className="tk-regelrij">
+              {/* Het nummer is de volgorde die de tekst al heeft; een schermlezer
+                  telt de lijst zelf. */}
+              <span className="tk-regelnummer" aria-hidden="true">
+                {nummer + 1}
+              </span>
+              <span className="text-lopend">{t(regel)}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   );
 }

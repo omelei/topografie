@@ -10071,6 +10071,9 @@ daarvan, en onder de ring staan de tegels van Alles in één blik
 losse woorden. Over alle vakken, dus buiten het `data-module` van Per onderwerp:
 in de kleur van leer.nu zelf.
 
+**"Wanneer onthoud je iets?" heeft zijn kop ook boven de kaart**, als laatste
+blok op Jij dat hem nog klein in de kaart had.
+
 **De regels zijn herschreven**, in de volgorde waarin een kind ze tegenkomt:
 wat onthouden is, wat meetelt, wat opfrissen is, wat een fout doet. Elke zin is
 nagelopen tegen `leitner.ts`:
@@ -10096,7 +10099,10 @@ nagelopen tegen `leitner.ts`:
 - **e2e:** `ouder.spec.ts` is `jij.spec.ts` geworden en toetst de indeling, de
   oude adressen, de navigatie en de doelenschakelaar. Elke spec die `/ouder` of
   `/onthouden` opende, opent nu `/jij` of `/premium`. De foto
-  `12-onthouden` heet `12-jij-cijfers`, en `groep-ouder` heet `groep-jij`.
+  `12-onthouden` heet `12-jij-cijfers`, en `groep-ouder` heet `groep-jij`. Er
+  zijn twee foto's bij, `18-doelen` en `19-geheugen`, van een kind met een doel
+  en één ronde: zonder die twee toonde geen enkele foto een doelrij of een
+  gevulde ring.
 - **Geen migratie en geen schemawijziging.** De schakelaar voor de doelen
   schrijft dezelfde `uit` in `weekdoelStore` die "Ik wil geen doelen" schrijft.
 
