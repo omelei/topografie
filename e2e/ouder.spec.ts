@@ -254,7 +254,7 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
 
   // De schatting mag hier staan, en zegt dat hij er een is. Op Jij is ze weg:
   // daar is de lezer acht en leest hij geen percentages (ADR-177).
-  await expect(blok).toContainText(/naar schatting nog ongeveer \d+% van\./);
+  await expect(blok).toContainText(/naar schatting nog \d+% van over\./);
 
   // Een tweede kind komt er los bij te staan, en niet erbij opgeteld.
   const kinderen = page.getByRole('region', { name: 'Je kinderen' });

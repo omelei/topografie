@@ -1311,7 +1311,7 @@ export const nl = {
   // naam erin, want wie je bent is het eerste wat Jij zegt (ADR-126), en in de
   // volgorde van de pagina eronder (ADR-172).
   'you.intro':
-    'Je oefent als {naam}. Hier stel je jezelf in, en staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
+    'Je oefent als {naam}. Hier stel je jezelf in. En hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
   // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
