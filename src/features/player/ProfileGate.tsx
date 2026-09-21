@@ -63,7 +63,16 @@ export function ProfileGate({
 
   async function kies(groep: Groep | undefined, naarOuder = false) {
     setBusy(true);
-    onReady(await createProfile(naam, groep), naarOuder);
+    const kind = await createProfile(naam, groep);
+    // Onbereikbaar: dit scherm staat er alleen als er nog geen kind is, en de
+    // grens van ADR-173 ligt op drie. Het vangnet staat er omdat `createChild`
+    // sinds die grens mag weigeren, en een scherm dat dat negeert loopt vast op
+    // een leeg profiel in plaats van op deze regel.
+    if (kind === null) {
+      setBusy(false);
+      return;
+    }
+    onReady(kind, naarOuder);
   }
 
   return (

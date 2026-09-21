@@ -4,10 +4,10 @@ import { expect, test, type Page, type Route } from '@playwright/test';
  * Inloggen is een aanbod en geen poort (ADR-155).
  *
  * Wat hier vastligt is niet het formulier maar de belofte eromheen. Het blok
- * staat onderaan Premium en nergens anders — sinds ADR-172, want een
- * e-mailadres en een wachtwoord zijn van de ouder, en de ouder komt op Premium
- * uit — de voordeur verandert niet, en zonder in te loggen werkt alles zoals
- * het werkte.
+ * staat op de ouderpagina en nergens anders — sinds ADR-173, want een
+ * e-mailadres en een wachtwoord zijn van de ouder, en de ouder heeft sinds die
+ * beslissing een eigen pagina achter een pincode — de voordeur verandert niet,
+ * en zonder in te loggen werkt alles zoals het werkte.
  *
  * Er is geen Supabase in een test, dus het adres uit `playwright.config.ts`
  * bestaat niet en `page.route` antwoordt ervoor — zoals `premium.spec.ts` dat
@@ -23,6 +23,23 @@ async function signIn(page: Page, naam: string) {
   // De groep is een tweede stap, altijd over te slaan (ADR-151).
   await page.getByRole('button', { name: 'Zeg ik niet' }).click();
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
+}
+
+/**
+ * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en
+ * een verse pincode (ADR-173). Op een leeg apparaat is er nog geen pincode, dus
+ * is "maken" ook meteen "opendoen".
+ */
+async function naarOuder(page: Page) {
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder', exact: false }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
 }
 
 const CORS = {
@@ -58,7 +75,7 @@ test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
   );
   await page.route(`${GEZIN}/auth/v1/logout`, (route) => antwoord(route, 204, {}));
 
-  await page.goto('/premium');
+  await naarOuder(page);
   const blok = page.getByRole('region', { name: 'Account' });
   await expect(blok).toBeVisible();
 
@@ -79,7 +96,7 @@ test('een fout wachtwoord zegt dat, en laat je het opnieuw proberen', async ({ p
     antwoord(route, 400, { error_code: 'invalid_credentials', msg: 'Invalid login credentials' }),
   );
 
-  await page.goto('/premium');
+  await naarOuder(page);
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
   await blok.getByLabel('Wachtwoord').fill('ietsanders');
@@ -102,7 +119,7 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
     return antwoord(route, 200, sessie('ouder@example.nl'));
   });
 
-  await page.goto('/premium');
+  await naarOuder(page);
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder.example.nl');
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
@@ -126,16 +143,18 @@ test('de voordeur van het kind verandert niet', async ({ page }) => {
   }
 });
 
-test('het account staat onderaan Premium, en niet op Jij', async ({ page }) => {
+test('het account staat op de ouderpagina, en niet op Jij of Premium', async ({ page }) => {
   await signIn(page, 'Sam');
-  await page.goto('/premium');
+  await naarOuder(page);
 
   // Met `expect(locator)`, niet met `allInnerTexts()`: dat leest de koppen van
   // vóór de eerste render van React en wacht nergens op (zie premium.spec).
-  const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
-  await expect(koppen.last()).toHaveText('Account');
+  await expect(page.getByRole('region', { name: 'Account' })).toBeVisible();
 
-  await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Inloggen' })).toHaveCount(0);
+  // En op geen van de twee pagina's die een kind kan openen (ADR-173).
+  for (const adres of ['/jij', '/premium']) {
+    await page.goto(adres);
+    await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Inloggen' })).toHaveCount(0);
+  }
 });

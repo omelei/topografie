@@ -422,6 +422,24 @@ export function ShieldIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
+ * Een hangslot: wat achter de pincode van de ouder zit (ADR-173).
+ *
+ * Niet het schild. Dat betekent in dit product "je wordt beschermd terwijl je
+ * het fout doet" — drie levens — en het staat ook bij "alles van dit apparaat
+ * halen". Een hangslot betekent één ding: hier kom je niet zomaar. Dat is het
+ * teken dat elk apparaat in een gezin voor een vergrendeld profiel gebruikt, en
+ * een kind dat het ziet weet meteen dat het niet aan hem is.
+ */
+export function SlotIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d="M8 10.5V7a4 4 0 018 0v3.5" strokeLinecap="round" />
+      <rect x="4.5" y="10.5" width="15" height="9.5" rx="2" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/**
  * The way on: a triangle pointing right, filled.
  *
  * Not `NextIcon`, which is an arrow and means "the next question in a round

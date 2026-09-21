@@ -10260,6 +10260,185 @@ dit apparaat" boven het wissen is weg: het blok zegt het zelf.
 
 ---
 
+## ADR-173 — De ouder is een profiel: een wisselaar in de balk, een pincode op het apparaat, en drie kinderen gratis
+
+**Status:** accepted. **Date:** 2026-09-21. Op verzoek van de eigenaar, na een
+voorstel (`docs/ouder-en-kind.md`) dat hij op alle vijf de open vragen
+goedkeurde. **Draait de aanname van ADR-171 om** ("ouders loggen niet in"),
+**neemt de premiumgrens op meer dan één kind van ADR-116 terug**, **versmalt de
+inlog van het kind uit ADR-155**, en **verplaatst het account uit ADR-172**.
+Verandert `leitner.ts`, `game-core`, de statistieken en wat er bewaard wordt
+niet. Dit is stap 1 van vier; de overname, het gezinsaccount en premium van het
+gezin staan in `docs/ouder-en-kind.md` §14 en zijn nog niet gebouwd.
+
+### Context
+
+De eigenaar stelde vast dat de verhouding tussen kind en ouder niet in elkaar
+steekt, en vroeg om een ouderpagina terug, met een wachtwoord, een wisselaar
+tussen maximaal drie kinderen en één ouder, premium dat de ouder koopt en voor
+alle kinderen geldt, en een weg voor het kind dat al oefent voordat er ooit een
+ouder bij was.
+
+Alles wat van de ouder is, is de afgelopen drie beslissingen heen en weer
+geschoven: naar Voor ouders (ADR-136), terug naar Jij (ADR-171), en daarna
+onderaan Premium (ADR-172). Niet de indeling was fout. De aanname eronder was
+fout, en hij staat letterlijk in ADR-171: _"Ouders loggen niet in, kinderen wel.
+Voor ouders was een pagina voor een lezer die in deze app niet bestaat."_
+
+Zeven dingen volgden daaruit, en de scherpste is er een van het soort dat pas
+zichtbaar wordt als je twee besluiten naast elkaar legt:
+
+1. **Meer dan één kind zat achter premium** (ADR-116), terwijl één code voor
+   alle kinderen zou moeten gelden. Een gezin moest dus betalen om te kunnen
+   zien wat er te betalen viel.
+2. **Er was geen ouder om iets aan te hangen.** Het accountblok tekende zonder
+   gezinsproject niets, en inloggen leverde geen pagina en geen rechten op.
+3. **Het codeveld stond in het kinderscherm**, met de bedoeling dat een ouder
+   meekeek (ADR-163) — en nergens anders.
+4. **Premium hing aan een apparaat**, dus een ouder die op zijn telefoon kocht,
+   deed daarmee niets op de iPad van zijn kind.
+5. **Het kind logde in en de ouder niet.** ADR-155 gaf een kind van acht een
+   code van acht tekens én een wachtwoord, elke keer als het wilde oefenen.
+6. **Er was geen weg van "kind oefent al" naar "ouder doet mee".** ADR-155
+   schreef met zoveel woorden "er komt geen migratie, en dat is een keuze",
+   omdat er toen nog geen kinderen waren.
+7. **Het kind kon "Alles van dit apparaat halen" indrukken**, onderaan zijn
+   eigen pagina, en daarmee de voortgang van zijn broer wissen.
+
+Squla (ouderaccount op e-mailadres, een knop "Wissel van profiel", en opnieuw je
+wachtwoord om erin te komen), Khan Academy (een Parent Dashboard waarvan "Add a
+Child" ook aan een bestaand kind koppelt), Duolingo (een code die je één keer
+inwisselt op een account), Netflix (een pincode van vier cijfers op een
+beschermd profiel) en de eis van Apple en Google dat commercie in een app voor
+kinderen achter een _parental gate_ staat, wijzen alle vijf dezelfde kant op.
+
+### Decision
+
+**De ouder is een profiel, geen instelling.** Naast de kinderen staat er één
+ouder op dit apparaat, in dezelfde lijst, want de vraag die je stelt als je die
+lijst opent is "wie zit hier achter het scherm".
+
+**De wisselaar staat in de balk.** De knop rechtsboven wees naar Jij — een
+tweede weg naar een pagina die al in de navigatie stond. Hij opent nu "Wie
+gebruikt de app?": de kinderen, "Nog een kind erbij" tot er drie zijn, en
+"Ouder" met een hangslot. Het blok "Wie oefent er?" verdwijnt daarmee van Jij.
+Een echte `<dialog>` met `showModal`, in de toplaag naast de app, om de reden
+die ADR-163 al gaf.
+
+**Een kind logt op het eigen apparaat niet in** (versmalt ADR-155). Tik op je
+naam en je oefent. De inlogcode van ADR-155 verdwijnt niet, maar wordt het
+**verhuisdocument** waarmee een kind zijn voortgang op een ánder apparaat opent
+— bij oma, op de laptop — en niet de dagelijkse poort. Op een gedeeld
+gezinsapparaat is de zwaarste poort van het product anders bedoeld voor de
+gebruiker die er het minst mee kan.
+
+De prijs is echt en is aanvaard: een broertje kan in het profiel van zijn zus
+oefenen en haar Leitner-dozen beïnvloeden. Dat is de goedkope kant — een
+verkeerd profiel kost één ronde, een wachtwoord bij elke start kost het oefenen
+zelf.
+
+**Twee sloten met twee taken, en in deze fase bestaat alleen het tweede.** Het
+wachtwoord van het gezinsaccount is de waarheid: het hoort bij het gezin, het
+staat in `auth.users` (ADR-155, ADR-156), en het is wat er nodig is om te kopen,
+op te zeggen en gegevens op te halen. De **pincode** is de deur op dít apparaat:
+vier cijfers, lokaal, zonder verbinding. Het account komt in stap 3; tot die tijd
+is de pincode het enige slot, en dat is precies wat een parental gate is.
+
+Dat wijkt af van wat de eigenaar vroeg — "elke keer een wachtwoord" — en de
+reden staat hier zodat niemand hem later hoeft te ontdekken: een ouder die tien
+keer per week veertien tekens op een schermtoetsenbord tikt, kiest binnen een
+maand een kort wachtwoord of plakt het op de iPad. Dan is het slot minder waard
+dan deze vier cijfers. Het is de vorm die Netflix, elke bank en Squla-in-de-app
+alle drie hebben.
+
+**De cijfers worden niet bewaard.** Wat er in `localStorage` staat is een
+PBKDF2-afleiding (SHA-256, 210.000 rondes) met een salt per apparaat. Vier
+cijfers zijn tienduizend mogelijkheden, dus die afleiding is niet de
+bescherming: **drie missers kosten een minuut** is dat, en de echte grens is dat
+er achter dit slot niets van een server te halen valt.
+
+**De sessie staat in `sessionStorage` en loopt na vijf minuten af.** Van profiel
+wisselen laadt de pagina opnieuw, dus een sessie die een herlaadbeurt niet
+overleeft is geen sessie; maar een iPad die op de ouderpagina blijft staan is
+een iPad zonder slot, dus hij moet verdwijnen als de app dichtgaat. Dat is
+letterlijk wat `sessionStorage` doet. Elke handeling op de pagina zet de klok
+terug op vijf.
+
+**Vergeten kan, en het levert niets op.** Er is met opzet geen weg die alleen
+het slot weghaalt — dat zou geen slot zijn. Wie de pincode kwijt is, houdt één
+uitweg: alles van dit apparaat halen. Die staat er als zin bij het slot en als
+blok op de pagina, en wie hem neemt houdt een leeg apparaat over.
+
+**`/ouder` is weer een adres** (neemt de omleiding van ADR-171 terug). Wie er
+zonder pincode komt, krijgt de deur en niet de pagina — in `App` en niet in de
+router, want een adres dat alleen bestaat als je er mag komen, laat de terugknop
+liegen.
+
+**Wat er op de ouderpagina staat**, in de volgorde van wat een ouder komt halen:
+**je kinderen** (naam en groep, ook van een kind dat nu niet aan de beurt is, en
+"Nog een kind erbij" tot drie); **premium** (het codeveld, tot wanneer het
+aanstaat, afmelden, en de weg naar de kassa en naar de etalage); **instellingen**
+(of de app doelen voor de week voorstelt); **het account** (dat zonder
+gezinsproject nog niets tekent); en **alles van dit apparaat halen**.
+
+**Drie kinderen zijn gratis** (neemt een regel van ADR-116 terug). Premium is
+een gezinsabonnement en telt geen kinderen. De grens van drie staat in
+`store/children.ts` en niet in een scherm: een knop verbergen is geen grens.
+Zodra er een gezinsaccount is, hoort dat getal bij het gezin en niet bij het
+apparaat — twee apparaten met elk drie zouden er zes zijn.
+
+**Het codeveld staat alleen achter de ouder.** Op de premiumpagina staat er nog
+één knop, "Ik ben de ouder", die bij het slot uitkomt; het veld zelf staat op de
+ouderpagina en in het venster dat een slot opent (ADR-163), dat een ouder
+invult. Dat is wat de opdracht vraagt en wat Apple en Google eisen. Het afmelden
+gaat mee: de premiumpagina zegt tot wanneer het aanstaat en verder niets.
+
+**Wat van het kind is, blijft van het kind.** Geluid, voorlezen en minder
+beweging blijven op Jij — die gaan over de kamer en over het kind dat de iPad
+vasthoudt, en ze achter een pincode zetten zou een kind dat het geluid uit wil
+naar zijn ouder sturen. Dat wijkt af van het voorstel, dat ze bij de ouder zette.
+Wat wél verhuist is **de doelenschakelaar** (of de app het kind ergens toe
+aanzet, is een besluit van de ouder en niet van wie aangezet wordt) en **het
+wissen** (punt 7 hierboven).
+
+### Consequences
+
+- **Jij is weer twee blokken korter.** "Wie oefent er?" is de knop in de balk
+  geworden en het wissen staat achter de pincode, dus de instellingen zijn nu
+  het laatste blok van de pagina.
+- **De knop in de balk heet anders.** Zijn toegankelijke naam is "Wissel van
+  profiel. Nu oefent Noor" in plaats van alleen de naam. Elke test die de balk
+  op een naam zocht, zoekt nu op die zin — de naam staat er nog in.
+- **`createChild` mag weigeren** en geeft `null` terug zodra er drie staan. Dat
+  raakt `createProfile` en `ProfileGate`, waar het onbereikbaar is maar wel
+  afgehandeld wordt: een scherm dat het negeert, loopt vast op een leeg profiel.
+- **Er is een teken bij**, `SlotIcon`: een hangslot. Niet het schild, want dat
+  betekent in dit product "je wordt beschermd terwijl je het fout doet".
+- **Er is geen migratie en geen schemawijziging.** De pincode en de sessie zijn
+  twee nieuwe sleutels in de opslag van het apparaat, naast die van premium, en
+  ze gaan nooit naar een server. `wisAlles` haalt ze er allebei af.
+- **Drie van de zeven punten uit de diagnose zijn hiermee niet opgelost**, en ze
+  staan in stap 3 en 4 van `docs/ouder-en-kind.md`: premium dat aan het gezin
+  hangt in plaats van aan het apparaat, de overname van een kind dat al oefende,
+  en de uitgebreide cijfers op de ouderpagina. De derde uitweg van een slot
+  ("stuur het naar mijn ouder") is stap 2.
+- **e2e:** `ouder.spec.ts` is nieuw en toetst de wisselaar, het slot, de deur op
+  `/ouder`, de blokken erachter, dat de sessie een adreswissel overleeft, dat de
+  cijfers niet leesbaar in de opslag staan, en dat een tweede kind zonder code
+  kan. `children.spec.ts` wisselt via de balk, `account.spec.ts` zoekt het
+  account bij de ouder, `premium.spec.ts` gaat voor een code langs de poort,
+  `jij.spec.ts` en `doel.spec.ts` volgen wat verhuisd is, en `a11y.spec.ts` en
+  `screens.spec.ts` hebben de twee nieuwe schermen erbij (`21-wisselaar`,
+  `22-ouderslot`, `23-ouder`).
+- **Eén test was al dubbelzinnig en viel nu om.** `app.spec.ts` zocht "Europa"
+  zonder te zeggen waar; dat woord staat ook op de diplomakast van dezelfde
+  pagina. Hij is gescoped op de vraag waar hij bij hoort.
+- **Op WebKit nog niet gedraaid.** De iPad-maten draaien op WebKit en dat staat
+  niet op deze machine; Chromium is op alle vier de maten groen. Het venster op
+  een telefoon is wel op de foto bekeken.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -22,6 +22,20 @@ const ACTIVE = 'actiefKind';
 /** Set once the pre-family rows have been copied across. */
 const COPIED = 'voortgangPerKind';
 
+/**
+ * Hoeveel kinderen er op dit apparaat kunnen staan (ADR-173).
+ *
+ * Drie, en het is een productkeuze en geen technische grens: een gezin met drie
+ * kinderen is wat één code dekt, en een wisselaar met acht namen erin is geen
+ * wisselaar meer. Zodra er een gezinsaccount is, hoort dit getal bij het gezin
+ * en niet bij het apparaat — twee apparaten met elk drie zouden er zes zijn, en
+ * dan betekent de grens niets. Tot die tijd is dit apparaat het gezin.
+ *
+ * Het staat hier en niet in een scherm, zodat het waar is en niet alleen
+ * getekend: een knop verbergen is geen grens.
+ */
+export const MAX_KINDEREN = 3;
+
 export async function listChildren(): Promise<ProfileRecord[]> {
   const db = await getDb();
   const rows = await db.getAll('profile');
@@ -54,15 +68,25 @@ export async function switchChild(id: string): Promise<void> {
   await setSetting(ACTIVE, id);
 }
 
+/** Of er nog een kind bij kan (ADR-173). */
+export async function magErKindBij(): Promise<boolean> {
+  return (await listChildren()).length < MAX_KINDEREN;
+}
+
 /**
  * A new child on this device.
  *
  * The first keeps the old singleton key so that everything already written
  * under it — a streak, a level, a set of boxes — belongs to them without being
  * moved. Everyone after that gets a uuid.
+ *
+ * `null` betekent: er is geen plek meer (ADR-173). Geen uitzondering, want de
+ * ouderpagina biedt de knop dan niet eens aan; dit is het vangnet eronder, en
+ * een vangnet dat gooit laat een scherm achter dat half is bijgewerkt.
  */
-export async function createChild(naam: string, groep?: Groep): Promise<ProfileRecord> {
+export async function createChild(naam: string, groep?: Groep): Promise<ProfileRecord | null> {
   const existing = await listChildren();
+  if (existing.length >= MAX_KINDEREN) return null;
   const now = new Date();
 
   const child: ProfileRecord = {

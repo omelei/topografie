@@ -1,3 +1,4 @@
+import { t } from '@/i18n';
 import type { ProfileRecord } from '@/store/db';
 
 /**
@@ -12,6 +13,12 @@ import type { ProfileRecord } from '@/store/db';
  * De groene premiumknop stond hier ook (ADR-126), als de enige vaste weg naar
  * premium. Die weg is nu een bestemming in de navigatie (ADR-171), en twee
  * knoppen naar dezelfde pagina naast elkaar is er één te veel.
+ *
+ * **En sinds ADR-173 is dit de wisselaar.** Hij wees naar Jij, wat een tweede
+ * weg was naar een pagina die al in de navigatie stond. Wat hij nu opent is de
+ * vraag die hoort bij de naam die erop staat: wie zit hier achter het scherm —
+ * dit kind, een broer of zus, of de ouder. De naam blijft de toegankelijke
+ * naam van de knop, want het is nog steeds de knop van wie er oefent.
  */
 export function TopBar({
   profile,
@@ -24,9 +31,14 @@ export function TopBar({
     <div className="ml-auto flex min-w-0 items-center gap-3">
       {/* The profile switch. It is the way to a sibling's turn (ADR-046), so it
           is a control and not a label. On a phone it is the avatar alone and
-          the name is said rather than shown — the button keeps it as its
-          accessible name, so it is still the child's own button. */}
-      <button type="button" className="tk-profiel" onClick={onProfile}>
+          the name is said rather than shown — the label below keeps the name in
+          the accessible name, so it is still the child's own button. */}
+      <button
+        type="button"
+        className="tk-profiel"
+        aria-label={t('wisselaar.knop', { naam: profile.naam })}
+        onClick={onProfile}
+      >
         {/* De voorletter is de avatar, en alleen daar waar de naam niet past:
             op een telefoon. Zodra de naam er staat, staat hij er alleen (ADR-168).
             Een letter naast dezelfde naam zegt niets wat de naam niet al zegt —

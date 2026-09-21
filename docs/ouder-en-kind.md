@@ -1,10 +1,13 @@
 # De ouder en het kind, opnieuw — voorstel
 
-**Status:** voorstel, ter goedkeuring. **Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9
-(na #101). **Opdracht van de eigenaar:** de verhouding tussen kind en ouder steekt niet goed in
-elkaar; er moet weer een ouderpagina komen, met een wachtwoord, profielwissel tussen maximaal drie
-kinderen en één ouder, premium dat de ouder koopt en voor alle kinderen geldt, en een weg voor het
-kind dat al oefent voor er ooit een ouder bij was. **Alle eerdere besluiten mogen los.**
+**Status:** goedgekeurd op alle vijf de vragen uit §16. Stap 1 van §14 is gebouwd als ADR-173
+(2026-09-21); stap 2 tot en met 4 staan nog open. Wat bij het bouwen anders uitviel, staat in §17.
+**Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9 (na #101).
+
+**Opdracht van de eigenaar:** de verhouding tussen kind en ouder steekt niet goed in elkaar; er moet
+weer een ouderpagina komen, met een wachtwoord, profielwissel tussen maximaal drie kinderen en één
+ouder, premium dat de ouder koopt en voor alle kinderen geldt, en een weg voor het kind dat al
+oefent voor er ooit een ouder bij was. **Alle eerdere besluiten mogen los.**
 
 Elke bewering draagt een label:
 
@@ -457,3 +460,22 @@ en leveren al het grootste deel van wat de brief vraagt.
    snelst, en het houdt de server buiten de eerste twee PR's.
 
 Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan stap 1.
+
+**Beantwoord op 2026-09-21:** alle vijf akkoord met de aanbeveling.
+
+## 17. Wat bij het bouwen van stap 1 anders uitviel
+
+- **De pincode is in deze fase het enige slot, niet een snelkoppeling naar het wachtwoord.** §5
+  beschrijft ze als een paar, maar er is nog geen account om het wachtwoord aan te hangen — dat is
+  stap 3. Tot die tijd is de pincode de hele deur.
+- **"Drie keer mis en de pin vervalt" (§5) kon niet.** Zonder account is er niets om op terug te
+  vallen, dus zou dat het apparaat onbruikbaar maken voor instellingen. Het is een **pauze van een
+  minuut** geworden. De echte grens blijft dat er achter dit slot niets van een server te halen is.
+- **Geluid, voorlezen en minder beweging blijven op Jij.** §10 zette alle schakelaars bij de ouder.
+  Die drie gaan over de kamer en over het kind dat de iPad vasthoudt; ze achter een pincode zetten
+  stuurt een kind dat het geluid uit wil naar zijn ouder. Alleen de doelenschakelaar is verhuisd.
+- **Een kind verwijderen zit er nog niet in.** Dat gooit elk diploma en elke doos eronder weg, en
+  verdient hetzelfde soort scherm als het wissen. Het hoort bij de gegevensknoppen van stap 3.
+- **De premiumpagina houdt "tot wanneer het aanstaat".** §7 en §10 zetten de hele premiumstand bij
+  de ouder; de datum is geen commercie en een kind mag hem zien. Alleen het codeveld en het
+  afmelden zijn verhuisd.

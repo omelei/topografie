@@ -26,8 +26,9 @@ export async function getProfile(): Promise<ProfileRecord | undefined> {
  * als het antwoord "Zeg ik niet" was, dus de voordeur vraagt het niet nog
  * eens. Een kind dat later op Jij wordt toegevoegd, krijgt de vraag wel.
  */
-export async function createProfile(naam: string, groep?: Groep): Promise<ProfileRecord> {
+export async function createProfile(naam: string, groep?: Groep): Promise<ProfileRecord | null> {
   const kind = await createChild(naam, groep);
+  if (kind === null) return null;
   await zetGroepGevraagd(kind.id);
   return kind;
 }

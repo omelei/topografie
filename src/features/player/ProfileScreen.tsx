@@ -3,29 +3,18 @@ import { t } from '@/i18n';
 import {
   ChevronDownIcon,
   ChevronUpIcon,
-  CorrectIcon,
-  FamilyIcon,
   type IconProps,
-  NextIcon,
   OogIcon,
   PupilIcon,
   SpeakIcon,
-  TodayIcon,
 } from '@/components/Icon';
 import { Uitklap } from '@/components/Uitklap';
-import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
+import { renameChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { Kast } from '@/features/badges/Kast';
-import { usePremium } from '@/features/premium/usePremium';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
 import { Statistieken } from '@/features/retention/Statistieken';
-import {
-  GEEN_DOELEN,
-  leesWeekdoelen,
-  schrijfWeekdoelen,
-  type Weekdoelen,
-} from '@/store/weekdoelStore';
 import { EigenLijsten } from './EigenLijsten';
 import { GroepInstelling } from './GroepInstelling';
 import { Jaaroverzicht } from './Jaaroverzicht';
@@ -36,7 +25,6 @@ import {
   zetRustig,
   type Preferences,
 } from './settings';
-import { Wissen } from './Wissen';
 
 /**
  * K10, "Jij": the child's own page (ADR-112), en sinds ADR-171 ook de pagina
@@ -109,8 +97,6 @@ export function ProfileScreen({
           <p className="tk-etalage-tekst text-lopend">{t('you.intro', { naam: profile.naam })}</p>
         </header>
 
-        <Children active={profile} />
-
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
             tekort meer maar een doel — en dan hoort het raster hier, want een
@@ -130,10 +116,6 @@ export function ProfileScreen({
         <Instellingen profile={profile} />
 
         <EigenLijsten />
-
-        {/* Onderaan, en als laatste: het enige op deze pagina dat niet terug te
-            draaien is (ADR-166). */}
-        <Wissen />
       </div>
     </div>
   );
@@ -159,15 +141,17 @@ function DiplomaUitleg() {
 }
 
 /**
- * De schakelaars van dit apparaat, en de doelen van de week (ADR-171).
+ * De schakelaars van dit apparaat (ADR-171, ADR-173).
  *
  * The switch moves after the write, not before it. Flipping it first and
  * writing afterwards reads a few milliseconds sooner and is a lie the moment
  * the write does not land. What the switch shows is what is stored.
  *
- * **De doelen staan erbij.** "Ik wil geen doelen" op Vandaag zet het blok weg,
- * en de weg terug stond op Voor ouders (ADR-162). Die pagina is er niet meer,
- * dus is het een schakelaar tussen de andere: iets wat de app wel of niet doet.
+ * **De doelen staan er niet meer bij** (ADR-173). Of de app doelen voor de week
+ * voorstelt, bepaalt of het kind ergens toe wordt aangezet, en dat is een
+ * besluit van de ouder en niet van wie aangezet wordt: die schakelaar staat op
+ * /ouder. Geluid, voorlezen en minder beweging blijven hier, want die gaan over
+ * de kamer en over het kind dat de iPad vasthoudt.
  *
  * **En je naam en je groep bovenaan de lijst** (ADR-172). Allebei waren ze een
  * eigen blok, en allebei verander je bijna nooit. Als rij zeggen ze wat ze nu
@@ -175,13 +159,11 @@ function DiplomaUitleg() {
  */
 function Instellingen({ profile }: { readonly profile: ProfileRecord }) {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
-  const [doelen, setDoelen] = useState<Weekdoelen | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    void Promise.all([loadPreferences(), leesWeekdoelen()]).then(([value, weekdoelen]) => {
+    void loadPreferences().then((value) => {
       setPrefs(value);
-      setDoelen(weekdoelen);
       setLoaded(true);
     });
   }, []);
@@ -192,12 +174,6 @@ function Instellingen({ profile }: { readonly profile: ProfileRecord }) {
       setPrefs(next);
       if (name === 'rustig') zetRustig(next.rustig);
     });
-  };
-
-  const toggleDoelen = () => {
-    const huidig = doelen ?? GEEN_DOELEN;
-    const next = { ...huidig, uit: !huidig.uit };
-    void schrijfWeekdoelen(next).then(() => setDoelen(next));
   };
 
   return (
@@ -231,15 +207,6 @@ function Instellingen({ profile }: { readonly profile: ProfileRecord }) {
             label={t('you.rustig')}
             why={t('you.rustigWhy')}
             onToggle={() => toggle('rustig')}
-          />
-        </li>
-        <li>
-          <Switch
-            icon={TodayIcon}
-            on={!(doelen?.uit ?? false)}
-            label={t('you.doelen')}
-            why={t('you.doelenWhy')}
-            onToggle={toggleDoelen}
           />
         </li>
       </ul>
@@ -373,119 +340,5 @@ function Naam({ profile }: { readonly profile: ProfileRecord }) {
         </form>
       ) : null}
     </li>
-  );
-}
-
-/**
- * The family on this device, ADR-046.
- *
- * A child here is a name and a set of boxes, not an account: no password, no
- * e-mail, nothing to sign in to. What it fixes is the failure that was already
- * in the schema — three children on one iPad were one learner as far as the
- * scheduler was concerned, and the youngest kept being asked the eldest's
- * provinces.
- *
- * Switching reloads the page. That is blunt and it is right: every screen holds
- * some of a child's work in React state, and the one thing this must never do
- * is show one child a number that belongs to another.
- */
-function Children({ active }: { readonly active: ProfileRecord }) {
-  const { actief } = usePremium();
-  const [children, setChildren] = useState<ProfileRecord[]>([]);
-  const [adding, setAdding] = useState(false);
-  const [naam, setNaam] = useState('');
-
-  useEffect(() => {
-    void listChildren().then(setChildren);
-  }, []);
-
-  // Meer dan één kind is premium (ADR-116). Zonder code staat deze sectie er
-  // niet meer (ADR-124): wie in zijn eentje oefent heeft geen wisselaar nodig,
-  // en het premiumblok onderaan deze pagina noemt het.
-  if (!actief) return null;
-
-  async function add(event: FormEvent) {
-    event.preventDefault();
-    if (naam.trim().length === 0) return;
-    await createChild(naam);
-    window.location.reload();
-  }
-
-  async function give(id: string) {
-    await switchChild(id);
-    window.location.reload();
-  }
-
-  return (
-    <section className="flex flex-col gap-3" aria-label={t('you.children')}>
-      <h2 className="tk-sectie">{t('you.children')}</h2>
-
-      {children.length > 0 ? (
-        <ul className="tk-lijst">
-          {children.map((child) => {
-            const actief = child.id === active.id;
-
-            return (
-              <li key={child.id}>
-                {/* The one practising cannot be handed the turn again: there is
-                    nothing to do, and a control that does nothing lies. */}
-                <button
-                  type="button"
-                  className="tk-lijstrij"
-                  aria-pressed={actief}
-                  disabled={actief}
-                  onClick={() => void give(child.id)}
-                >
-                  <span className="tk-plaat tk-plaat-neutraal">
-                    <PupilIcon size={24} />
-                  </span>
-                  <span className="tk-lijstrij-tekst">
-                    <span className="tk-lijstrij-titel">{child.naam}</span>
-                    <span className="tk-lijstrij-regel">
-                      {actief ? t('you.practisingNow') : t('you.switchTo', { naam: child.naam })}
-                    </span>
-                  </span>
-                  <span className="tk-lijstrij-pijl">
-                    {actief ? <CorrectIcon size={20} /> : <NextIcon size={20} />}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-
-      {adding ? (
-        <form onSubmit={add} className="flex flex-wrap items-center gap-3">
-          <label htmlFor="kind" className="tk-sr-only">
-            {t('you.childName')}
-          </label>
-          <input
-            id="kind"
-            className="tk-input max-w-xs"
-            value={naam}
-            onChange={(event) => setNaam(event.target.value)}
-            placeholder={t('you.childName')}
-            autoComplete="off"
-            maxLength={24}
-          />
-          <button type="submit" className="tk-button" disabled={naam.trim().length === 0}>
-            {t('you.add')}
-          </button>
-        </form>
-      ) : (
-        <button
-          type="button"
-          className="tk-button tk-button-secondary self-start"
-          onClick={() => setAdding(true)}
-        >
-          <FamilyIcon size={24} />
-          {t('you.addChild')}
-        </button>
-      )}
-
-      {/* Said once, where whoever adds the second child will read it. */}
-      <p className="tk-hulp">{t('you.childExplain')}</p>
-    </section>
   );
 }

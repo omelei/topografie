@@ -245,14 +245,21 @@ describe('the addresses', () => {
     expect(routeFor('/reeks')).toEqual({ name: 'home' });
   });
 
-  // Onthouden is een deel van Jij, en Voor ouders is opgegaan in Jij en
-  // Premium (ADR-171). Een bewaard adres komt uit waar het nu staat.
-  it('sends the two old addresses to where they went', () => {
+  // Onthouden is een deel van Jij (ADR-171). Een bewaard adres komt uit waar
+  // het nu staat, en de balk schrijft dan het nieuwe.
+  it('sends the old address of Onthouden to where it went', () => {
     expect(RETENTION_SLUG).toBe('onthouden');
     expect(routeFor('/onthouden')).toEqual({ name: 'you' });
-    expect(OUDER_SLUG).toBe('ouder');
-    expect(routeFor('/ouder')).toEqual({ name: 'premium' });
     expect(pathFor(routeFor('/onthouden'))).toBe('/jij');
-    expect(pathFor(routeFor('/ouder'))).toBe('/premium');
+  });
+
+  // En /ouder wijst weer naar zichzelf (ADR-173). ADR-171 liet het naar Premium
+  // wijzen, op de aanname dat ouders niet inloggen; die aanname is omgedraaid.
+  // Of je er ook mag komen, is een vraag van `App` en niet van de router: een
+  // adres dat alleen bestaat als je er mag komen, laat de terugknop liegen.
+  it('gives the parent page its own address back', () => {
+    expect(OUDER_SLUG).toBe('ouder');
+    expect(routeFor('/ouder')).toEqual({ name: 'ouder' });
+    expect(pathFor(routeFor('/ouder'))).toBe('/ouder');
   });
 });

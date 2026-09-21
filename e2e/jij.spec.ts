@@ -20,6 +20,23 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
+/**
+ * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en
+ * een verse pincode (ADR-173). Op een leeg apparaat is er nog geen pincode, dus
+ * is hem maken ook meteen hem opendoen.
+ */
+async function naarOuder(page: Page) {
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
+}
+
 test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgorde', async ({
   page,
 }) => {
@@ -33,7 +50,6 @@ test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgor
   );
 
   for (const blok of [
-    'Wie oefent er?',
     'Jouw diploma’s',
     'Je geheugen',
     'Hoe vaak oefen je?',
@@ -41,16 +57,21 @@ test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgor
     'Alles in één blik',
     'Instellingen',
     'Eigen woorden',
-    'Alles van dit apparaat halen',
   ]) {
     await expect(page.getByRole('region', { name: blok, exact: true })).toBeVisible();
+  }
+
+  // En wat naar de ouder is verhuisd, staat hier niet meer (ADR-173): wisselen
+  // is de knop in de balk geworden, en het wissen zit achter de pincode.
+  for (const weg of ['Wie oefent er?', 'Alles van dit apparaat halen']) {
+    await expect(page.getByRole('region', { name: weg, exact: true })).toHaveCount(0);
   }
 
   // Wat samengevoegd of verhuisd is, staat er niet meer als eigen blok
   // (ADR-172): de naam en de groep zijn rijen bij de instellingen, de regels
   // en de diploma-uitleg uitklappen, het schooljaar een printknop, het
-  // weekbericht weg, en het account op Premium. De reeks staat nergens bij het
-  // kind (ADR-169).
+  // weekbericht weg, en het account bij de ouder (ADR-173). De reeks staat
+  // nergens bij het kind (ADR-169).
   for (const weg of [
     'Jouw naam',
     'Wanneer onthoud je iets?',
@@ -66,15 +87,14 @@ test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgor
     await expect(page.getByRole('region', { name: weg, exact: true }), weg).toHaveCount(0);
   }
 
-  // Eerst wie er oefent, dan wat je gehaald hebt, dan of het blijft hangen, dan
-  // wat je instelt, en als laatste de uitweg (ADR-172).
+  // Eerst wat je gehaald hebt, dan of het blijft hangen, en als laatste wat je
+  // instelt (ADR-172). De uitweg stond eronder en staat sinds ADR-173 bij de
+  // ouder, dus de instellingen zijn nu het laatste blok van deze pagina.
   const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
   const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
-  expect(plek('Wie oefent er?')).toBeLessThan(plek('Jouw diploma’s'));
   expect(plek('Jouw diploma’s')).toBeLessThan(plek('Je geheugen'));
   expect(plek('Je geheugen')).toBeLessThan(plek('Instellingen'));
-  expect(plek('Instellingen')).toBeLessThan(plek('Alles van dit apparaat halen'));
-  expect(koppen.at(-1)).toBe('Alles van dit apparaat halen');
+  expect(koppen.at(0)).toBe('Jouw diploma’s');
 });
 
 /**
@@ -111,11 +131,15 @@ test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toBeVisible();
 
-  // Voor ouders is opgegaan in Jij en Premium; het adres opent Premium.
+  // En /ouder wijst weer naar zichzelf (ADR-173). Wie er zonder pincode komt,
+  // krijgt de deur en niet de pagina — en ook niet een omleiding, want een adres
+  // dat alleen bestaat als je er mag komen, laat de terugknop liegen.
   await page.goto('/ouder');
-  await expect(page).toHaveURL(/\/premium$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Voor ouders', level: 1 })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/ouder$/);
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Dit is de ouderpagina' }),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je kinderen' })).toHaveCount(0);
 });
 
 test('de navigatie gaat naar Vandaag, Jij en Premium', async ({ page }) => {
@@ -145,9 +169,10 @@ test('de navigatie gaat naar Vandaag, Jij en Premium', async ({ page }) => {
 
 /**
  * "Ik wil geen doelen" op Vandaag zet het blok weg (ADR-162). De weg terug
- * stond op Voor ouders; nu is het een schakelaar bij de instellingen op Jij.
+ * staat sinds ADR-173 bij de ouder: of de app het kind ergens toe aanzet, is
+ * een besluit van de ouder en niet van wie aangezet wordt.
  */
-test('de doelen gaan uit op Vandaag en weer aan op Jij', async ({ page }) => {
+test('de doelen gaan uit op Vandaag en weer aan bij de ouder', async ({ page }) => {
   await signIn(page, 'Mila');
 
   const doelen = page.getByRole('region', { name: 'Je doelen voor deze week' });
@@ -155,7 +180,7 @@ test('de doelen gaan uit op Vandaag en weer aan op Jij', async ({ page }) => {
   await doelen.getByRole('button', { name: 'Ik wil geen doelen' }).click();
   await expect(doelen).toHaveCount(0);
 
-  await page.goto('/jij');
+  await naarOuder(page);
   const schakelaar = page
     .getByRole('region', { name: 'Instellingen' })
     .getByRole('button', { name: /Doelen voor deze week/ });
@@ -177,7 +202,7 @@ test('de doelen gaan uit op Vandaag en weer aan op Jij', async ({ page }) => {
  */
 test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
   await signIn(page, 'Loes');
-  await page.goto('/jij');
+  await naarOuder(page);
 
   const blok = page.getByRole('region', { name: 'Alles van dit apparaat halen' });
   await expect(blok).toBeVisible();
@@ -193,8 +218,10 @@ test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toBeVisible();
 
-  // En dan echt.
-  await page.goto('/jij');
+  // En dan echt. De sessie van de ouder staat in `sessionStorage` en overleeft
+  // dus een adreswissel in hetzelfde tabblad (ADR-173): de deur hoeft niet nog
+  // een keer open.
+  await page.goto('/ouder');
   await blok.getByRole('button', { name: 'Alles wissen' }).click();
   await blok.getByRole('button', { name: 'Ja, haal alles weg' }).click();
 

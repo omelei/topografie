@@ -1268,14 +1268,25 @@ export const nl = {
   'you.nameSave': 'Bewaren',
   'you.nameCancel': 'Laat maar',
 
-  'you.children': 'Wie oefent er?',
-  'you.practisingNow': 'oefent nu',
-  'you.switchTo': 'Geef {naam} de beurt',
-  'you.addChild': 'Nog een kind erbij',
-  'you.childName': 'Naam van het kind',
-  'you.add': 'Toevoegen',
-  'you.childExplain':
-    'Ieder kind heeft een eigen voortgang. Wat de een oefent, telt niet mee voor de ander.',
+  // De profielwisselaar in de balk (ADR-173). "Wie oefent er?" stond als blok op
+  // Jij en achter premium; het is nu de knop rechtsboven, op elke pagina, met
+  // de ouder in dezelfde lijst. De vraag in de kop is de vraag die je stelt als
+  // je hem opent, en hij gaat over iedereen in huis — niet alleen over de
+  // kinderen.
+  'wisselaar.knop': 'Wissel van profiel. Nu oefent {naam}',
+  'wisselaar.titel': 'Wie gebruikt de app?',
+  'wisselaar.oefentNu': 'oefent nu',
+  'wisselaar.geefBeurt': 'Geef {naam} de beurt',
+  'wisselaar.nogEenKind': 'Nog een kind erbij',
+  'wisselaar.kindNaam': 'Naam van het kind',
+  'wisselaar.voegToe': 'Toevoegen',
+  'wisselaar.vol':
+    'Er kunnen {aantal} kinderen op dit apparaat. Haal er eerst een weg bij Ouder als er iemand bij moet.',
+  'wisselaar.ouder': 'Ouder',
+  'wisselaar.ouderRegel': 'Instellingen, premium en hoe het gaat',
+  'wisselaar.terugLijst': 'Terug naar de lijst',
+  'wisselaar.sluit': 'Sluiten',
+
   // Hoe vaak je oefent: deze week in vier tegels, en met premium de weken
   // ervoor (ADR-172). Geen voorspelling en geen vergelijking: wat er staat is
   // wat er gebeurd is — rondes, en waar ze op uitkwamen.
@@ -1338,6 +1349,74 @@ export const nl = {
   'module.terugVandaagEen': '1 komt hier vandaag terug.',
   'module.terugMorgen': 'Hier komt vandaag niets terug. Morgen {aantal}.',
   'module.terugNiets': 'Hier komt voorlopig niets terug.',
+
+  // De premiumpagina heeft het codeveld niet meer (ADR-173): een kind mag deze
+  // pagina zien en een kind koopt niets. Wat ervoor in de plaats staat is de
+  // weg naar de ouder, en die is één knop lang.
+  'premium.codeBijOuder': 'Heb je een code? Die vult je vader of moeder in, op de ouderpagina.',
+  'premium.ikBenOuder': 'Ik ben de ouder',
+  'premium.afmeldenBijOuder': 'De code van dit apparaat halen doe je op de ouderpagina.',
+
+  // De ouderpagina (ADR-173). De toon is die van een volwassene tegen een
+  // volwassene: geen uitroeptekens, geen "leuk", en geen woord over het kind
+  // dat het kind zelf niet zou mogen horen.
+  //
+  // De pincode wordt nergens een wachtwoord genoemd. Dat woord is van het
+  // account dat in F3 komt, en twee woorden voor twee verschillende sloten is
+  // precies wat er nodig is zodra ze allebei bestaan.
+  'ouder.titel': 'Voor de ouder',
+  'ouder.intro':
+    'Hier regel je wat er voor je kinderen aanstaat, en hier vul je de code in. Na vijf minuten zonder iets te doen staat de app weer op het kind.',
+  'ouder.terugNaarKind': 'Terug naar {naam}',
+
+  'ouder.kinderen': 'Je kinderen',
+  'ouder.kindNaam': 'Naam',
+  'ouder.kindToevoegen': 'Toevoegen',
+  'ouder.nogEenKind': 'Nog een kind erbij',
+  'ouder.naamBewaren': 'Naam bewaren',
+  'ouder.groepVan': 'De groep van {naam}',
+  'ouder.inGroep': 'groep {groep}',
+  'ouder.geenGroep': 'geen groep gekozen',
+  'ouder.kinderenUitleg':
+    'Ieder kind heeft een eigen voortgang. Wat de een oefent, telt niet mee voor de ander.',
+  'ouder.kinderenVol': 'Er kunnen {aantal} kinderen op dit apparaat.',
+
+  'ouder.premium': 'Premium',
+  'ouder.premiumUit':
+    'Premium staat uit. Heb je een code gekocht, vul hem dan hier in — hij geldt meteen voor al je kinderen.',
+  'ouder.premiumAlleKinderen': 'De code geldt voor alle kinderen op dit apparaat.',
+  'ouder.bekijkPremium': 'Wat zit er in premium?',
+
+  'ouder.instellingen': 'Instellingen',
+  'ouder.instellingenUitleg':
+    'Geluid, voorlezen en minder beweging staan bij het kind zelf, op Jij.',
+
+  // Het slot. De zin over vergeten staat er meteen bij, want hem pas noemen op
+  // het moment dat iemand hem kwijt is, is hem te laat noemen.
+  'ouder.maakTitel': 'Maak een ouderpagina',
+  'ouder.maakUitleg':
+    'Kies een pincode van vier cijfers. Daarmee kom je bij de instellingen, bij premium en bij hoe het met je kinderen gaat.',
+  'ouder.maakHulp':
+    'De pincode staat alleen op dit apparaat. Raak je hem kwijt, dan is alles van dit apparaat halen de enige weg terug — en dan ben je ook de voortgang kwijt.',
+  'ouder.slotTitel': 'Even je pincode',
+  'ouder.slotUitleg': 'Vier cijfers, en je bent er.',
+  'ouder.pin': 'Pincode',
+  'ouder.pinNieuw': 'Nieuwe pincode',
+  'ouder.pinHerhaal': 'Nog een keer',
+  'ouder.open': 'Verder',
+  'ouder.bewaarPin': 'Bewaren',
+  'ouder.vergeten':
+    'Pincode kwijt? Alles van dit apparaat halen is de enige weg terug, en dan gaat de voortgang mee.',
+  'ouder.fout.geenCijfers': 'Een pincode is vier cijfers.',
+  'ouder.fout.ongelijk': 'De twee keer waren niet hetzelfde. Probeer het nog eens.',
+  'ouder.fout.onjuist': 'Dat is niet de pincode van dit apparaat.',
+  'ouder.fout.teVaak': 'Drie keer mis. Probeer het over {seconden} seconden nog eens.',
+  'ouder.fout.geenKluis': 'Deze browser kan geen pincode bewaren.',
+
+  'ouder.poortTitel': 'Dit is de ouderpagina',
+  'ouder.poortUitleg':
+    'Hierachter staan de instellingen, premium en hoe het met je kinderen gaat. Er hoort een pincode bij.',
+  'ouder.poortKnop': 'Ik ben de ouder',
 
   // Het account (ADR-155), sinds ADR-172 op Premium: een e-mailadres en een
   // wachtwoord zijn van de ouder, en de ouder komt op Premium uit (ADR-171).
