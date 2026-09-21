@@ -254,6 +254,9 @@ test('without a code the premium page points at the kassa, and with one it does 
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
     'Heb je al een code?',
+    // Het account van de ouder, onderaan en met of zonder code (ADR-172). De
+    // e2e-bouw heeft een gezinsproject, dus het staat er.
+    'Account',
   ]);
   await expect(page.getByText('€ 24,95').first()).toBeVisible();
 

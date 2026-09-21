@@ -130,8 +130,10 @@ test('het account staat onderaan Premium, en niet op Jij', async ({ page }) => {
   await signIn(page, 'Sam');
   await page.goto('/premium');
 
-  const teksten = await page.locator('.tk-page-main h2').allInnerTexts();
-  expect(teksten.at(-1)).toBe('Account');
+  // Met `expect(locator)`, niet met `allInnerTexts()`: dat leest de koppen van
+  // vóór de eerste render van React en wacht nergens op (zie premium.spec).
+  const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
+  await expect(koppen.last()).toHaveText('Account');
 
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
