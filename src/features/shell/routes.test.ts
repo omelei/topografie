@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MODULE_SLUG, pathFor, routeFor, RETENTION_SLUG } from './routes';
+import { MODULE_SLUG, OUDER_SLUG, pathFor, routeFor, RETENTION_SLUG } from './routes';
 import { MODULES } from './modules';
 
 /**
@@ -95,7 +95,8 @@ describe('the addresses', () => {
 
   it('round-trips every route through its own path', () => {
     expect(routeFor(pathFor({ name: 'home' }))).toEqual({ name: 'home' });
-    expect(routeFor(pathFor({ name: 'retention' }))).toEqual({ name: 'retention' });
+    expect(routeFor(pathFor({ name: 'you' }))).toEqual({ name: 'you' });
+    expect(routeFor(pathFor({ name: 'premium' }))).toEqual({ name: 'premium' });
 
     for (const module of MODULES) {
       const route = module.built
@@ -244,8 +245,14 @@ describe('the addresses', () => {
     expect(routeFor('/reeks')).toEqual({ name: 'home' });
   });
 
-  it('keeps the retention screen at a word a child could type', () => {
+  // Onthouden is een deel van Jij, en Voor ouders is opgegaan in Jij en
+  // Premium (ADR-171). Een bewaard adres komt uit waar het nu staat.
+  it('sends the two old addresses to where they went', () => {
     expect(RETENTION_SLUG).toBe('onthouden');
-    expect(routeFor('/onthouden')).toEqual({ name: 'retention' });
+    expect(routeFor('/onthouden')).toEqual({ name: 'you' });
+    expect(OUDER_SLUG).toBe('ouder');
+    expect(routeFor('/ouder')).toEqual({ name: 'premium' });
+    expect(pathFor(routeFor('/onthouden'))).toBe('/jij');
+    expect(pathFor(routeFor('/ouder'))).toBe('/premium');
   });
 });

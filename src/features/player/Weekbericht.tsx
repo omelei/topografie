@@ -6,11 +6,14 @@ import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { loadItemStates } from '@/store/progress';
-import { useReeks } from './reeks';
 import { weekbericht, type BerichtSet } from './weekbericht';
 
 /**
- * Het weekbericht, op de enige pagina die een ouder opent (ADR-133).
+ * Het weekbericht (ADR-133), sinds ADR-171 op Jij tussen de andere cijfers.
+ *
+ * Het stond op Voor ouders, de enige pagina die een ouder opende. Die pagina is
+ * er niet meer: ouders loggen niet in, kinderen wel. De drie zinnen zijn
+ * feiten en geen oproep, dus ze lezen voor een kind net zo goed.
  *
  * Boven dit blok staan vier tegels met feiten over deze week. Dit blok leest ze:
  * is er geoefend, blijft het hangen, en wat wacht er. Die drie zinnen zijn waar
@@ -66,10 +69,8 @@ export function Weekbericht({
           <p className="text-lopend">{t('you.berichtOnthouden', { procent: bericht.onthouden })}</p>
         ) : null}
         <p className="text-lopend">{wachtZin(bericht.wankelt)}</p>
-        {/* De reeks, ook hier: de eigenaar wil dat er op gestuurd wordt, en de
-            ouder is degene die er iets mee kan (ADR-158). Een feit en geen
-            oproep — wat er moet gebeuren, weet een ouder zelf. */}
-        <ReeksZin />
+        {/* De reeks stond hier voor de ouder (ADR-158). Het kind ziet hem niet
+            (ADR-169), en dit blok staat nu bij het kind (ADR-171). */}
       </div>
     </section>
   );
@@ -100,18 +101,4 @@ function wachtZin(wankelt: ReturnType<typeof weekbericht<Onderdeel>>['wankelt'])
   if (wankelt.wacht === 0) return t('you.berichtWankeltVandaag', { set, aantal: wankelt.aantal });
   if (wankelt.aantal === 1) return t('you.berichtWankeltEen', { set, dagen: wankelt.wacht });
   return t('you.berichtWankelt', { set, aantal: wankelt.aantal, dagen: wankelt.wacht });
-}
-
-/** Hoe de reeks ervoor staat, in één regel voor de ouder (ADR-158). */
-function ReeksZin() {
-  const reeks = useReeks();
-  if (reeks === null || reeks.record === 0) return null;
-
-  return (
-    <p className="text-lopend">
-      {reeks.dagen === 0
-        ? t('reeks.ouderGeen', { record: reeks.record })
-        : t('reeks.ouderRegel', { aantal: reeks.dagen, record: reeks.record })}
-    </p>
-  );
 }

@@ -6,9 +6,10 @@ import { dayKey } from './kalender';
  * **Alle dagen tellen mee, ook het weekend, en één gemiste dag breekt hem.** Dat
  * is een keuze van de eigenaar, en een strenge: ADR-149 schrapte de reeks juist
  * omdat hij op elke lege dag breekt terwijl een lege dag is wat spreiden nodig
- * heeft. Hij staat daarom alleen nog op Voor ouders: voor een ouder is
- * volhouden informatie, voor een kind is een reeks die breekt een straf. Het
- * record blijft voor altijd staan.
+ * heeft. Hij stond daarom alleen nog op Voor ouders: voor een ouder is
+ * volhouden informatie, voor een kind is een reeks die breekt een straf. Sinds
+ * die pagina weg is (ADR-171) staat hij nergens; de rekensom blijft, voor als
+ * hij een plek krijgt die niet bij het kind is.
  *
  * **Niets hiervan wordt bewaard.** Het is af te leiden uit de afgemaakte rondes
  * (`dagenGeoefend`), en die gaan zo ver terug als het apparaat zelf. Twee

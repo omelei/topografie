@@ -39,18 +39,13 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-test('een code die bijna om is zegt dat, op Voor ouders en op de premiumpagina', async ({
-  page,
-}) => {
+// Op de premiumpagina, sinds ADR-171 de enige plek: het blok op Voor ouders
+// zei hetzelfde, en die pagina is weg.
+test('een code die bijna om is zegt dat, op de premiumpagina', async ({ page }) => {
   await signIn(page, 'Noor');
 
-  await page.goto('/ouder');
-  await zetCode(page, dag(10));
-
-  const blok = page.getByRole('region', { name: 'Premium' });
-  await expect(blok.getByText(/over 10 dagen/)).toBeVisible();
-
   await page.goto('/premium');
+  await zetCode(page, dag(10));
   await expect(page.getByText(/Verleng hem vóór die dag/)).toBeVisible();
 });
 
@@ -59,14 +54,8 @@ test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen 
 }) => {
   await signIn(page, 'Noor');
 
-  await page.goto('/ouder');
-  await zetCode(page, dag(-1));
-
-  const blok = page.getByRole('region', { name: 'Premium' });
-  await expect(blok.getByText(/Premium is afgelopen op/)).toBeVisible();
-  await expect(blok.getByRole('button', { name: 'Premium verlengen' })).toBeVisible();
-
   await page.goto('/premium');
+  await zetCode(page, dag(-1));
   await expect(page.getByText(/staat nog gewoon op dit apparaat/)).toBeVisible();
   // En het aanbod staat er weer onder: verlengen is kopen.
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();

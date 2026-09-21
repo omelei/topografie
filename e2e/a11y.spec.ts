@@ -143,10 +143,10 @@ test('the module pages have no violations, in each of their four shapes', async 
  * Jij draagt de diplomakast: het hele raster, de meeste kaarten nog niet
  * gehaald. Dat is waar de verleiding om "nog niet" met alleen een kleur te
  * zeggen het grootst is — de ring is een boog, en de zin eronder zegt
- * hetzelfde. Voor ouders is een scan waard om wat het draagt, en Onthouden
- * omdat het een tabel en een muur stippen is.
+ * hetzelfde. En sinds ADR-171 draagt Jij ook wat Onthouden was — een tabel en
+ * een muur stippen — en de instellingen van Voor ouders.
  */
-test('the Jij page and the Onthouden page have no violations', async ({ page }) => {
+test('the Jij page has no violations', async ({ page }) => {
   await signIn(page, 'Lieve');
 
   // Wachten tot de kast er is: die laadt zelf en zou anders buiten de scan
@@ -165,13 +165,9 @@ test('the Jij page and the Onthouden page have no violations', async ({ page }) 
   expect((await scan(page)).violations).toEqual([]);
   await page.keyboard.press('Escape');
 
-  // En de andere helft, sinds ADR-136 een pagina op zichzelf.
-  await page.goto('/ouder');
-  await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
-  expect((await scan(page)).violations).toEqual([]);
-
-  await page.goto('/onthouden');
-  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
+  // En met de tabel open: zes kolommen die op een telefoon zijwaarts scrollen.
+  await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
+  await expect(page.getByRole('table')).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
 
@@ -300,9 +296,9 @@ test.describe('zonder code', () => {
     expect((await scan(page)).violations).toEqual([]);
   });
 
-  test('the Onthouden page has no violations while showing its free preview', async ({ page }) => {
+  test('the Jij page has no violations while showing its free preview', async ({ page }) => {
     await signIn(page, 'Wout');
-    await page.goto('/onthouden');
+    await page.goto('/jij');
     await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });

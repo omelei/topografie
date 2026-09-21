@@ -1,8 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * De groep van een kind (ADR-151): gevraagd na de naam, te wijzigen op Voor
- * ouders, en wat bij de groep past staat bovenaan in Vandaag.
+ * De groep van een kind (ADR-151): gevraagd na de naam, te wijzigen op Jij
+ * (ADR-171), en wat bij de groep past staat bovenaan in Vandaag.
  *
  * Een voorstel en geen slot, dus wat hier wordt nagekeken is een volgorde. Twee
  * sets wachten precies even lang: drie provincies (groep 6 en 7) en één hele
@@ -19,17 +19,17 @@ async function foto(page: Page, project: string, naam: string) {
 }
 
 /**
- * De groep wisselen op Voor ouders, en wachten tot hij weg staat.
+ * De groep wisselen op Jij, en wachten tot hij weg staat.
  *
  * `GroepInstelling` schrijft in een promise waar de klik zelf niet op wacht, dus
  * een `goto` er meteen achteraan haalt die schrijfactie in: de voordeur leest
  * dan nog de oude groep en stelt het oude voor. De knop draagt `aria-pressed`
  * pas nadat `setGroep` terug is, dus dat is het teken dat de wissel rond is —
- * en het is hetzelfde teken dat de ouder op het scherm ziet.
+ * en het is hetzelfde teken dat het kind op het scherm ziet.
  */
-async function wisselGroep(page: Page, naam: string, knop: string) {
+async function wisselGroep(page: Page, knop: string) {
   const knoppen = page
-    .getByRole('region', { name: `Groep van ${naam}` })
+    .getByRole('region', { name: 'Je groep' })
     .getByRole('button', { name: knop, exact: true });
   await knoppen.click();
   await expect(knoppen).toHaveAttribute('aria-pressed', 'true');
@@ -79,7 +79,7 @@ async function provinciesEerst(page: Page): Promise<boolean> {
   return provincies < klok;
 }
 
-test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', async ({
+test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async ({
   page,
 }, testInfo) => {
   const project = testInfo.project.name;
@@ -103,33 +103,34 @@ test('nieuw kind kiest een groep, Vandaag volgt, en Voor ouders verandert het', 
   await page.reload();
   expect(await provinciesEerst(page)).toBe(false);
 
-  await page.goto('/ouder');
-  const instelling = page.getByRole('region', { name: 'Groep van Mees' });
+  await page.goto('/jij');
+  const instelling = page.getByRole('region', { name: 'Je groep' });
   await expect(instelling.getByRole('button', { name: 'Groep 3', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
-  await wisselGroep(page, 'Mees', 'Groep 6');
-  await expect(instelling.getByRole('status')).toHaveText('Mees zit in groep 6.');
+  await wisselGroep(page, 'Groep 6');
+  await expect(instelling.getByRole('status')).toHaveText('Je zit in groep 6.');
   await instelling.scrollIntoViewIfNeeded();
-  await foto(page, project, 'groep-ouder');
+  await foto(page, project, 'groep-jij');
 
   await page.goto('/');
   expect(await provinciesEerst(page)).toBe(true);
 
   // En terug naar geen groep: dan beslist weer alleen de grootte, zoals altijd.
-  await page.goto('/ouder');
-  await wisselGroep(page, 'Mees', 'Geen groep');
+  await page.goto('/jij');
+  await wisselGroep(page, 'Geen groep');
   await page.goto('/');
   expect(await provinciesEerst(page)).toBe(true);
 });
 
 /**
- * "Ik ben een ouder" op de eerste vraag (ADR-161): geen groep, en meteen Voor
- * ouders in plaats van de voordeur. Het profiel bestaat daarna wel — de app
- * heeft er overal een nodig — en de groep is daar alsnog te zetten.
+ * "Ik ben een ouder" op de eerste vraag (ADR-161): geen groep, en meteen de
+ * premiumpagina in plaats van de voordeur — Voor ouders is weg (ADR-171). Het
+ * profiel bestaat daarna wel — de app heeft er overal een nodig — en de groep
+ * is op Jij alsnog te zetten.
  */
-test('"Ik ben een ouder" maakt het profiel zonder groep en opent Voor ouders', async ({ page }) => {
+test('"Ik ben een ouder" maakt het profiel zonder groep en opent Premium', async ({ page }) => {
   await page.goto('/');
   await page.getByPlaceholder('Je naam').fill('Sanne');
   await page.getByRole('button', { name: 'Beginnen' }).click();
@@ -137,11 +138,12 @@ test('"Ik ben een ouder" maakt het profiel zonder groep en opent Voor ouders', a
   await expect(page.getByRole('heading', { name: 'In welke groep zit je?' })).toBeVisible();
   await page.getByRole('button', { name: 'Ik ben een ouder' }).click();
 
-  await expect(page).toHaveURL(/\/ouder$/);
-  await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
+  await expect(page).toHaveURL(/\/premium$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
-  // Geen groep gekozen, en de instelling zegt dat ook.
-  const instelling = page.getByRole('region', { name: 'Groep van Sanne' });
+  // Geen groep gekozen, en de instelling op Jij zegt dat ook.
+  await page.goto('/jij');
+  const instelling = page.getByRole('region', { name: 'Je groep' });
   await expect(instelling.getByRole('status')).toHaveText(
     'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
   );
@@ -234,9 +236,9 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
   await blok.scrollIntoViewIfNeeded();
   await foto(page, project, 'doel-groep-8');
 
-  // Groep 3 op Voor ouders: nu de klok, en geen landen meer.
-  await page.goto('/ouder');
-  await wisselGroep(page, 'Fenna', 'Groep 3');
+  // Groep 3 op Jij: nu de klok, en geen landen meer.
+  await page.goto('/jij');
+  await wisselGroep(page, 'Groep 3');
   await page.goto('/');
   await voorstellen();
   const dichtbij3 = blok.getByRole('region', { name: 'Dichtbij' });

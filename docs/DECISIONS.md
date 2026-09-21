@@ -9975,6 +9975,133 @@ sprak dat niet meer bestaat; alleen het tweede is herschreven.
 
 ---
 
+## ADR-171 — Drie pagina's: Vandaag, Jij en Premium
+
+**Status:** accepted. **Date:** 2026-09-21. Op verzoek van de eigenaar, na een
+feedbackronde op leer.nu. Neemt ADR-136 (Voor ouders als eigen pagina) en de
+eigen bestemming Onthouden van ADR-112 en ADR-148 terug, en de groene
+premiumknop in de balk van ADR-126. Raakt `leitner.ts`, de standen en wat er
+bewaard wordt niet.
+
+### Context
+
+Naast de oefeningen had de app vier pagina's: Vandaag, Onthouden, Jij en Voor
+ouders, en daarnaast Premium, te vinden via een slot of via de groene knop in
+de balk. De eigenaar stelde vast dat dat er twee te veel zijn, om twee redenen.
+
+**Ouders loggen niet in, kinderen wel.** Voor ouders was een pagina voor een
+lezer die in deze app niet bestaat. Wat erop stond — de schakelaars, de groep,
+de eigen woorden, het account, het weekbericht, het schooljaar, de uitleg over
+diploma's — is van het kind dat hier oefent, of van de rekening.
+
+**Onthouden en Jij beantwoordden dezelfde vraag.** "Wie ben ik en wat heb ik
+gehaald" en "hoe gaat het" zijn op een profielpagina één vraag. Een kind moest
+kiezen tussen twee bestemmingen voor zijn eigen cijfers.
+
+Daarnaast drie dingen op de pagina's zelf:
+
+- Het blok met de doelen van deze week op Vandaag was anders opgemaakt dan de
+  blokken eromheen: een kaart met de kop erin, rijen van een eigen soort met een
+  kleiner plaatje, en de knoppen in dezelfde kaart. #96 zette het plaatje
+  binnen de rij recht, maar niet op de lijn van dat in "Recent geoefend", en
+  voor de eigenaar leek die reparatie daarom niet doorgevoerd.
+- De zin onder de titel van Onthouden paste bij Onthouden, niet bij een pagina
+  die Jij heet.
+- De vier regels onder "Wanneer onthoud je iets?" waren niet logisch geordend
+  en niet overal correct Nederlands. Regel 2 zei "minstens een dag tussen de
+  eerste en de laatste keer", terwijl drie dagen twee nachten zijn.
+- De ring onder "Je geheugen" was het enige blok op de pagina met het label in
+  de kaart, een ring in inkt en een grijze balk met losse woorden, terwijl
+  "Alles in één blik" eronder dezelfde standen als tegels liet zien.
+
+### Decision
+
+**Drie bestemmingen: Vandaag, Jij en Premium.** `DESTINATIONS` heeft er nog
+drie gebouwd (Vrienden blijft ongebouwd). Premium is een bestemming met of
+zonder code, want daar staat ook tot wanneer het aanstaat en hoe je de code van
+het apparaat haalt. De groene knop in de balk is daarmee weg: twee knoppen naar
+dezelfde pagina naast elkaar is er één te veel (Shell: "nothing is offered
+twice").
+
+**Jij is de pagina met alles over het kind**, in deze volgorde: de kop met een
+nieuwe zin ("Alles over jou: wat je onthoudt, hoe het oefenen gaat en welke
+diploma's je hebt"), de naam en wie er oefent; dan alle cijfers, zoals ze op
+Onthouden stonden (de regels, Je geheugen, Deze week, het weekbericht, en met
+premium Per vak, Week na week, Per onderwerp en de tabel); dan de diplomakast
+met de uitleg over diploma's en het schooljaar eronder; dan de instellingen,
+de groep, de eigen woorden en het account; en onderaan het wissen.
+`RetentionScreen` is `Statistieken` geworden: geen pagina meer maar de blokken
+die Jij in het midden zet.
+
+**Voor ouders verdwijnt.** Wat van het kind was, staat op Jij, in de woorden van
+het kind: "Je groep" in plaats van "Groep van Noor", "Hoe haal je een diploma?"
+in plaats van de u-vorm, en het account gaat over wat jij oefent in plaats van
+over "je kinderen". Het premiumblok vervalt: de premiumpagina zegt hetzelfde,
+met de datum en het afmelden erbij. "Ik ben een ouder" op het eerste scherm
+opent Premium.
+
+**De weg terug na "Ik wil geen doelen"** stond op Voor ouders. Nu is het een
+schakelaar tussen de andere instellingen op Jij, "Doelen voor deze week". De
+oudervariant van het weekdoelenblok (`vanOuder`) is weg.
+
+**De reeks staat nergens meer.** ADR-169 haalde hem bij het kind weg omdat
+verlies als prikkel daar niet hoort, en zette hem bij de ouder. Die pagina is er
+niet meer. Hij staat dus ook niet in het weekbericht of in het schooljaar, nu
+die bij het kind staan. De rekensom in `game-core/reeks.ts` blijft staan; het
+lezen ervan (`features/player/reeks.ts`) en `ReeksBlok` zijn weg.
+
+**De oude adressen blijven werken.** `/onthouden` opent Jij en `/ouder` opent
+Premium, en de balk schrijft dan het nieuwe adres (`useRoute`). De route-namen
+`retention` en `ouder` bestaan niet meer.
+
+**Het weekdoelenblok is opgemaakt als "Recent geoefend".** De kop staat erboven
+op de haarlijn (`.tk-sectie`), met de datums aan het eind als
+`.tk-sectie-meta`. De doelen zijn een `.tk-lijst` met `.tk-lijstrij`-rijen: het
+plaatje van 40 in de kleur van het vak (bij een diplomadoel), de zin met de
+balk eronder, de stand aan het eind en het kruisje op de plek van de pijl. Het
+raakvlak van het kruisje loopt de padding van de rij in, zodat een doel even
+hoog is als een ronde. De knoppen staan onder de lijst, buiten de kaart, en het
+kiezen van een nieuw doel staat in een eigen kaart. `.tk-doel` en
+`.tk-weekdoel-kop` zijn weg.
+
+**"Je geheugen" is opgemaakt als "Alles in één blik".** De kop staat boven de
+kaart, de kaart is `.tk-vakkleur`, de ring loopt in `--module` op een tint
+daarvan, en onder de ring staan de tegels van Alles in één blik
+(`StandTegels`, nu één component voor beide kaarten) in plaats van de balk met
+losse woorden. Over alle vakken, dus buiten het `data-module` van Per onderwerp:
+in de kleur van leer.nu zelf.
+
+**De regels zijn herschreven**, in de volgorde waarin een kind ze tegenkomt:
+wat onthouden is, wat meetelt, wat opfrissen is, wat een fout doet. Elke zin is
+nagelopen tegen `leitner.ts`:
+
+1. Je onthoudt iets als je het drie keer goed hebt, op drie verschillende dagen.
+2. Een goed antwoord telt alleen als het onderdeel aan de beurt was. Heb je het
+   op dezelfde dag nog een keer goed, dan ben je aan het oefenen.
+3. Heb je iets dat je onthoudt lang niet gezien? Dan moet je het even opfrissen.
+   Eén goed antwoord is genoeg, en je onthoudt het weer.
+4. Heb je een onderdeel fout? Dan begin je daar weer opnieuw mee.
+
+### Consequences
+
+- **Jij is lang.** Het is nu de pagina met de meeste blokken van de app. De
+  volgorde draagt dat: eerst wie je bent, dan hoe het gaat, dan wat je gehaald
+  hebt, en de instellingen onderaan waar je ze zoekt.
+- **De reeks is voor niemand meer te zien.** Dat is een gevolg en geen doel: de
+  eigenaar wilde er op kunnen sturen (ADR-158). Hij terugzetten op Premium of
+  op Jij is één component; het besluit is aan de eigenaar.
+- **Onder "Hoe gaat het?" en bij het voorbeeldkind staat nog tekst die een
+  ouder aanspreekt** ("je eigen kind", "Er is geoefend op …"). Dat is
+  verkooptekst en een weekbericht dat feiten noemt; ze zijn niet herschreven.
+- **e2e:** `ouder.spec.ts` is `jij.spec.ts` geworden en toetst de indeling, de
+  oude adressen, de navigatie en de doelenschakelaar. Elke spec die `/ouder` of
+  `/onthouden` opende, opent nu `/jij` of `/premium`. De foto
+  `12-onthouden` heet `12-jij-cijfers`, en `groep-ouder` heet `groep-jij`.
+- **Geen migratie en geen schemawijziging.** De schakelaar voor de doelen
+  schrijft dezelfde `uit` in `weekdoelStore` die "Ik wil geen doelen" schrijft.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

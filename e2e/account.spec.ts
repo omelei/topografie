@@ -1,12 +1,12 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 
 /**
- * De ouder logt in, en het kind merkt er niets van (ADR-155).
+ * Inloggen is een aanbod en geen poort (ADR-155).
  *
- * Wat hier vastligt is niet het formulier maar de belofte eromheen: inloggen is
- * een aanbod en geen poort. Het blok staat op Voor ouders en nergens anders, de
- * voordeur van het kind verandert niet, en zonder in te loggen werkt alles zoals
- * het werkte.
+ * Wat hier vastligt is niet het formulier maar de belofte eromheen. Het blok
+ * staat bij de instellingen op Jij en nergens anders — sinds ADR-171, want
+ * ouders loggen niet in, kinderen wel — de voordeur verandert niet, en zonder
+ * in te loggen werkt alles zoals het werkte.
  *
  * Er is geen Supabase in een test, dus het adres uit `playwright.config.ts`
  * bestaat niet en `page.route` antwoordt ervoor — zoals `premium.spec.ts` dat
@@ -49,7 +49,7 @@ function sessie(email: string) {
   };
 }
 
-test('een ouder logt in, ziet dat, en logt weer uit', async ({ page }) => {
+test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
   await signIn(page, 'Noor');
 
   await page.route(`${GEZIN}/auth/v1/token**`, (route) =>
@@ -57,7 +57,7 @@ test('een ouder logt in, ziet dat, en logt weer uit', async ({ page }) => {
   );
   await page.route(`${GEZIN}/auth/v1/logout`, (route) => antwoord(route, 204, {}));
 
-  await page.goto('/ouder');
+  await page.goto('/jij');
   const blok = page.getByRole('region', { name: 'Account' });
   await expect(blok).toBeVisible();
 
@@ -78,7 +78,7 @@ test('een fout wachtwoord zegt dat, en laat je het opnieuw proberen', async ({ p
     antwoord(route, 400, { error_code: 'invalid_credentials', msg: 'Invalid login credentials' }),
   );
 
-  await page.goto('/ouder');
+  await page.goto('/jij');
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
   await blok.getByLabel('Wachtwoord').fill('ietsanders');
@@ -101,7 +101,7 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
     return antwoord(route, 200, sessie('ouder@example.nl'));
   });
 
-  await page.goto('/ouder');
+  await page.goto('/jij');
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder.example.nl');
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
@@ -112,9 +112,9 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
 });
 
 /**
- * De kern van ADR-152, als test: het kind merkt hier niets van. Geen inlogblok
- * op de voordeur, geen knop in de balk, en oefenen kan zonder dat er ook maar
- * iets gevraagd is.
+ * De kern van ADR-152, als test: de voordeur merkt hier niets van. Geen
+ * inlogblok op Vandaag, geen knop in de balk, en oefenen kan zonder dat er ook
+ * maar iets gevraagd is.
  */
 test('de voordeur van het kind verandert niet', async ({ page }) => {
   await signIn(page, 'Sam');
@@ -123,18 +123,13 @@ test('de voordeur van het kind verandert niet', async ({ page }) => {
   for (const woord of ['Inloggen', 'Account maken', 'E-mailadres']) {
     await expect(page.getByRole('button', { name: woord })).toHaveCount(0);
   }
-
-  await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
 });
 
-test('het account staat op Voor ouders, na premium', async ({ page }) => {
+test('het account staat op Jij, bij de instellingen', async ({ page }) => {
   await signIn(page, 'Sam');
-  await page.goto('/ouder');
+  await page.goto('/jij');
 
-  const koppen = page.locator('.tk-page-main h2');
-  await expect(koppen.first()).toHaveText('Premium');
-  const teksten = await koppen.allInnerTexts();
-  expect(teksten.indexOf('Premium')).toBeLessThan(teksten.indexOf('Account'));
-  expect(teksten.indexOf('Account')).toBeLessThan(teksten.indexOf('Instellingen'));
+  const teksten = await page.locator('.tk-page-main h2').allInnerTexts();
+  expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Account'));
+  expect(teksten.indexOf('Account')).toBeGreaterThan(-1);
 });

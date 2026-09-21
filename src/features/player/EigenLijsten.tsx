@@ -24,11 +24,12 @@ import {
 } from '@/store/woordlijsten';
 
 /**
- * Waar een ouder de oefenstof van school intypt of importeert (ADR-135,
+ * Waar de oefenstof van school ingetypt of geïmporteerd wordt (ADR-135,
  * ADR-145).
  *
- * Op "Voor ouders" en niet op een pagina van een kind: dit is invoerwerk voor
- * een volwassene, en het staat naast de instellingen omdat het daar thuishoort.
+ * Het stond op Voor ouders, als invoerwerk voor een volwassene. Die pagina is
+ * opgegaan in Jij en Premium (ADR-171): ouders loggen niet in, kinderen wel. Het
+ * staat nu op Jij, naast de instellingen, omdat het daar thuishoort.
  *
  * **Premium.** Dit is de functie waar het schoolwerk van deze week in gaat, en
  * daarmee de duidelijkste reden om te betalen. De ingebouwde spellingsets

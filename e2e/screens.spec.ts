@@ -83,9 +83,12 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
   await shoot(page, size, '04-jij');
 
-  await page.goto('/onthouden');
-  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
-  await shoot(page, size, '12-onthouden');
+  // Wat Onthouden was, staat sinds ADR-171 op Jij: de foto begint bij de
+  // cijfers, zodat de PR laat zien hoe "Je geheugen" eruitziet.
+  const geheugen = page.getByRole('region', { name: 'Je geheugen' });
+  await expect(geheugen).toBeVisible();
+  await geheugen.scrollIntoViewIfNeeded();
+  await shoot(page, size, '12-jij-cijfers');
 
   // Een modulepagina met een set gekozen zegt één ding over het leren: wat er
   // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.

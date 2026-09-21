@@ -48,8 +48,7 @@ export function groepsjaarVan(now: Date): number {
  * Een ouder die in oktober "groep 5" kiest, heeft in september daarna een kind
  * in groep 6, en hoort dat niet te hoeven onthouden. Na groep 8 is er geen
  * groep meer: dan valt hij weg en is alles weer neutraal. Een kind dat bleef
- * zitten, zet de ouder op Voor ouders terug; dat gebeurt minder vaak dan een
- * zomer.
+ * zitten, zet zijn groep op Jij terug; dat gebeurt minder vaak dan een zomer.
  */
 export function huidigeGroep(
   opgegeven: { readonly groep?: unknown; readonly groepSchooljaar?: unknown },

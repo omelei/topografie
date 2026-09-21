@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * De grens tussen kind en ouder, door het hele product (ADR-143).
+ * De grens tussen kind en ouder, door het hele product (ADR-143). Sinds ADR-171
+ * is er geen ouderpagina meer, en ligt de grens tussen Jij en Premium.
  *
  * ADR-136 trok die grens op één pagina. Deze test kijkt naar de plekken waar
  * hij daarna nog scheef lag: een prijzenkast die drieënveertig lege vakjes
@@ -50,48 +51,27 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(32);
 });
 
-test('de kast staat op Jij en niet meer bij de ouder, met één vak open', async ({ page }) => {
-  await signIn(page, 'Fien');
-
-  // Voor ouders draagt geen raster meer. ADR-158 zette het daar omdat een
-  // diploma een toets is en dus hoort bij wie hem afneemt; zodra het diploma
-  // zelf de beloning is keert die redenering om.
-  await page.goto('/ouder');
-  await expect(page.locator('.tk-diploma')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Laat zien wat er nog te halen is' })).toHaveCount(
-    0,
-  );
-
-  // Op Jij staat hij wél, met één vak open: het bezwaar van ADR-158 ging over
-  // stapelen, niet over een onverdiend vakje.
-  await page.goto('/jij');
-  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
-  await expect(kast).toBeVisible();
-  await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
-  // Tweeëndertig sinds ADR-168: de twaalf tafels en de twintig andere rekensets.
-  await expect(kast.locator('.tk-diploma')).toHaveCount(32);
-});
-
-test('Jij toont de diploma’s van dit kind, en het schooljaar staat bij de ouder', async ({
-  page,
-}) => {
+test('Jij toont de diploma’s van dit kind, en het schooljaar eronder', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
 
-  // Het schooljaar en de reeks staan hier niet meer: die zijn een vraag van de
-  // ouder, en een reeks bij het kind is verlies-als-prikkel.
-  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toHaveCount(0);
+  // Het schooljaar staat weer bij het kind, nu Voor ouders weg is (ADR-171).
+  // De reeks niet: een reeks bij het kind is verlies-als-prikkel (ADR-169).
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'De reeks' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).not.toContainText(
+    'De langste reeks',
+  );
 
   // Geen held meer, en geen badges (ADR-149).
   await expect(page.getByRole('region', { name: 'Jouw held' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Jouw badges' })).toHaveCount(0);
 });
 
-test('de tabel op Onthouden staat achter een knop', async ({ page }) => {
+test('de tabel op Jij staat achter een knop', async ({ page }) => {
   await signIn(page, 'Tess');
-  await page.goto('/onthouden');
+  await page.goto('/jij');
 
   // Het beeld staat er meteen; de tabel met percentages en de voorspelling niet.
   await expect(page.getByRole('heading', { name: 'Alles in één blik' })).toBeVisible();
@@ -101,24 +81,13 @@ test('de tabel op Onthouden staat achter een knop', async ({ page }) => {
   await expect(page.getByRole('table')).toBeVisible();
 });
 
-test('Voor ouders spreekt de ouder aan, niet het kind', async ({ page }) => {
+// "Voor ouders spreekt de ouder aan" stond hier. Die pagina is weg (ADR-171):
+// ouders loggen niet in, kinderen wel. Wat er nog van te toetsen valt — geen
+// kolom naast een pagina — staat hieronder.
+test('er staat nergens een kolom naast een pagina', async ({ page }) => {
   await signIn(page, 'Noor');
-  await page.goto('/ouder');
-
-  // Het cijfer van het kind hoort op de pagina's van het kind en staat hier dus
-  // niet.
-  await expect(page.getByRole('region', { name: 'Jouw week' })).toHaveCount(0);
-
-  // Er staat helemaal geen kolom meer naast een pagina, hier niet en nergens
-  // (ADR-162, ADR-168).
-  await expect(page.locator('.tk-home-aside')).toHaveCount(0);
-
-  // De doelen van deze week staan hier wél: een ouder mag er een bij zetten,
-  // en hij is degene die ze uit kan zetten (ADR-162).
-  await expect(page.getByRole('region', { name: 'Doelen van Noor voor deze week' })).toBeVisible();
-
-  // En er is een weg naar het detail, dat hiervoor alleen in het menu van het
-  // kind stond.
-  await page.getByRole('button', { name: /Bekijk wat je kind onthoudt/ }).click();
-  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
+  for (const pad of ['/', '/jij', '/premium']) {
+    await page.goto(pad);
+    await expect(page.locator('.tk-home-aside')).toHaveCount(0);
+  }
 });

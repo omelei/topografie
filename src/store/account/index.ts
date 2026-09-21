@@ -1,8 +1,8 @@
 /**
  * De voordeur van de accountlaag (ADR-155).
  *
- * Dit bestand is met opzet bijna leeg, en dat is de hele truc. Wie nooit op
- * "Voor ouders" komt, downloadt alleen dit: twee regels die naar
+ * Dit bestand is met opzet bijna leeg, en dat is de hele truc. Wie nooit bij
+ * het account op Jij komt, downloadt alleen dit: twee regels die naar
  * `import.meta.env` kijken. `supabaseAccount.ts` komt er pas bij zodra er
  * werkelijk iets met een account gedaan wordt.
  *

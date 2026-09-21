@@ -762,56 +762,6 @@
    * belofte: hier begint een ronde. Buiten een module is de accentkleur de
    * groene nadruk, en dat is precies de bedoeling: op de voordeur is dit de
    * enige plek waar die kleur staat. */
-  /* De premiumknop in de balk (ADR-126). De enige knop in de app die verkoopt,
-   * en dus de enige die om aandacht vraagt: wit op de groene nadruk. Niet
-   * `--accent` — dit is geen modulekleur en verandert nergens mee mee. Op een
-   * telefoon valt het woord weg en blijft de ster over, want daar vecht de balk
-   * al met de naam van het kind. */
-  .tk-premiumknop {
-    display: inline-flex;
-    flex-shrink: 0;
-    align-items: center;
-    gap: 6px;
-    min-height: 36px;
-    padding: 0 12px;
-    border: var(--stroke-hair) solid transparent;
-    border-radius: var(--radius-pil);
-    background: var(--nadruk);
-    color: var(--kaart);
-    font-family: var(--font-tekst);
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .tk-premiumknop:hover {
-    background: var(--nadruk-tekst);
-  }
-  /* Op een smal scherm staat het woord er niet, maar het is er wél: `display:
-   * none` haalde het ook uit de toegankelijke naam, en dan is de enige knop in
-   * de app die verkoopt voor een schermlezer "knop". Weggeklemd in plaats van
-   * weggehaald, zoals .tk-sr-only doet. */
-  .tk-premiumknop-woord {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
-  @media (min-width: 480px) {
-    .tk-premiumknop-woord {
-      position: static;
-      width: auto;
-      height: auto;
-      margin: 0;
-      overflow: visible;
-      clip: auto;
-    }
-  }
 
   .tk-vandaag {
     display: flex;
@@ -2267,12 +2217,12 @@
     color: var(--tekst-secundair);
   }
 
-  /* ---- Onthouden, over alles (ADR-148) -----------------------------------
-   * The card that opens the page: a ring with the three-week forecast, the
-   * count of what is remembered beside it, and one bar under both. All ink:
-   * remembering is a status, and a status is never green (.tk-status). The
-   * ring was the donut of "Goed beantwoord" in the column, grown to lead a page.
-   */
+  /* ---- Je geheugen, over alles (ADR-148, ADR-171) -----------------------
+   * A ring with the three-week forecast, the count of what is remembered
+   * beside it, and the tiles of Alles in één blik under both — in the card's
+   * colour, as that card is, and with the words in ink: remembering is a
+   * status, and a status is never green (.tk-status). Over every subject, so
+   * the colour is leer.nu's own and not one subject's. */
   .tk-geheugen {
     display: flex;
     flex-direction: column;
@@ -2293,7 +2243,10 @@
     width: 132px;
     height: 132px;
     border-radius: var(--radius-pil);
-    background: conic-gradient(var(--inkt) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%));
+    background: conic-gradient(
+      var(--module) 0 var(--vul, 0%),
+      color-mix(in srgb, var(--module) 16%, var(--kaart)) var(--vul, 0%)
+    );
   }
   .tk-ring::before {
     content: '';
@@ -2319,34 +2272,6 @@
     line-height: var(--type-bijschrift-lh);
     color: var(--tekst-secundair);
   }
-  /* Remembered, needs a refresher, still practising: the dot's own order,
-   * darkest first. The words and counts under it carry the same thing. */
-  .tk-standbalk {
-    display: flex;
-    gap: 3px;
-    height: 14px;
-    overflow: hidden;
-    border-radius: var(--radius-pil);
-  }
-  .tk-standbalk-deel {
-    flex-basis: 0;
-    min-width: 6px;
-  }
-  .tk-standbalk-deel[data-status='remembered'] {
-    background: var(--inkt);
-  }
-  .tk-standbalk-deel[data-status='refresh'] {
-    background: var(--tekst-tertiair);
-  }
-  .tk-standbalk-deel[data-status='practising'] {
-    background: var(--rand-sterk);
-  }
-  .tk-standbalk-aantal {
-    font-family: var(--font-kop);
-    font-weight: var(--type-kaartkop-weight);
-    font-variant-numeric: tabular-nums;
-  }
-
   /* ---- Per vak ----------------------------------------------------------
    * A row per subject with a bar under its words: remembered in the subject's
    * own colour, what is on its way in the subject's tint, the rest the empty
@@ -4082,65 +4007,32 @@
     }
   }
 
-  /* "Je doelen voor deze week" (ADR-141, ADR-162). Dezelfde kaart als "Vandaag
-   * herhalen", maar met een hairline rondom in plaats van de dikke band aan de
-   * voorkant: dat blok zegt wat er nú moet, dit zegt waar de week heen gaat.
-   * Twee keer dezelfde nadruk boven elkaar is geen nadruk meer. */
-  .tk-doel {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-  }
-  /* De kop en de datums van de week ernaast, en onder elkaar zodra het niet
-   * past: "29 september t/m 5 oktober" is te lang om naast een kop te blijven
-   * staan op een telefoon. */
-  .tk-weekdoel-kop {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 4px 16px;
-  }
-  /* Eén doel. Dezelfde indeling als een lijstrij, maar geen knop: er valt niets
-   * te openen, en de enige knop erin is die ene om hem weg te halen.
+  /* "Je doelen voor deze week" (ADR-141, ADR-162, ADR-171).
    *
-   * **Het plaatje staat op de titel en zijn balk** (ADR-168). Deze rij is drie
-   * regels hoog — de zin, de balk, de stand — en met `center` hing het teken op
-   * de hoogte van de voortgangsbalk, dus onder het woord waar het bij hoort.
+   * Opgemaakt als "Recent geoefend": een sectiekop op de haarlijn met de datums
+   * aan het eind (.tk-sectie-meta), en de doelen als rijen van een lijst
+   * (.tk-lijst, .tk-lijstrij). Het was een eigen kaart met de kop erin, een
+   * rij van een eigen soort en een kleiner plaatje — het enige blok op de
+   * voordeur dat er zo uitzag, en het plaatje stond daardoor nooit op dezelfde
+   * lijn als dat van de blokken erboven en eronder.
    *
-   * ADR-168 loste dat op door het teken omhoog te trekken tot het optisch op de
-   * titelregel stond: de helft van het verschil tussen de regelhoogte en het
-   * vlak. Die som klopt, maar hij trekt het vlak de bovenmarge van de rij in.
-   * Het kwam op 2px van de bovenrand te staan, en het kruisje — dat dezelfde
-   * behandeling kreeg maar zo groot is als de trefmaat — stak er 8px bovenuit,
-   * de rij erboven in.
-   *
-   * Er is geen verschuiving nodig. Het vlak is 36 hoog, en de titel met zijn
-   * balk eronder is dat ook: 24 regel, 4 tussenruimte, 8 balk. Zonder marge
-   * staat het teken dus precies naast die twee, binnen de padding van de rij —
-   * en het kruisje, dat nooit kleiner is dan 36, past daarmee ook binnen de
-   * rij in plaats van erboven. */
-  .tk-weekdoel-rij {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 8px 0;
-  }
+   * Wat hier nog staat, is wat een doel anders heeft dan een ronde: een balk
+   * onder de zin in plaats van een regel, en een kruisje waar de pijl staat. */
   .tk-weekdoel-rij .tk-lijstrij-tekst {
     gap: 4px;
   }
-  /* Gehaald staat in het woord eronder; dit zet de regel erboven er alleen
-   * zwaarder neer, zodat een blok van drie in één blik te lezen is. */
+  /* Gehaald staat in het woord ernaast; dit zet de zin er alleen zwaarder
+   * neer, zodat een lijst van drie in één blik te lezen is. */
   .tk-weekdoel-rij[data-gehaald] .tk-lijstrij-titel {
     color: var(--inkt);
   }
   /* Het kruisje dat een doel weghaalt. Een raakvlak van --raak, want het is het
    * kleinste doel op deze kaart, en secundair van kleur: weghalen is nooit waar
-   * de aandacht heen moet. */
+   * de aandacht heen moet.
+   *
+   * Het raakvlak loopt de padding van de rij in, en niet de rij groter: op een
+   * telefoon is --raak 56, en dan werd een doel 80 hoog naast rijen van 64. Het
+   * kruisje zelf staat zo op de plek van de pijl in "Recent geoefend". */
   .tk-weekdoel-weg {
     display: inline-flex;
     flex-shrink: 0;
@@ -4148,7 +4040,7 @@
     justify-content: center;
     width: var(--raak);
     min-height: var(--raak);
-    margin-left: auto;
+    margin: -12px -12px -12px 0;
     border: 0;
     border-radius: var(--radius-pil);
     background: transparent;

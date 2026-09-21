@@ -1,14 +1,17 @@
 /**
- * Het account van de ouder, op "Voor ouders" (ADR-155).
+ * Het account, bij de instellingen op Jij (ADR-155, ADR-171).
  *
  * Eén blok met drie standen: niet beschikbaar, niet ingelogd, ingelogd. Meer is
  * het niet, en meer hoort het in deze fase ook niet te zijn — het kind komt in
  * F3, de kinderen van deze ouder in F5.
  *
- * **Het staat op Voor ouders en niet op de voordeur.** Inloggen is een aanbod en
- * geen poort (ADR-152): zonder account werkt alles zoals het werkte, en een kind
- * dat de app opent hoort niet als eerste een inlogscherm te zien. Dit is de
- * pagina waar de volwassene toch al komt voor de code en de instellingen.
+ * **Het staat op Jij en niet op de voordeur.** Inloggen is een aanbod en geen
+ * poort (ADR-152): zonder account werkt alles zoals het werkte, en een kind dat
+ * de app opent hoort niet als eerste een inlogscherm te zien.
+ *
+ * Het stond op Voor ouders, als het account van de ouder. Maar ouders loggen
+ * niet in, kinderen wel (ADR-171): het account is van wie hier oefent, en dus
+ * staat het op de pagina van dat kind, bij de instellingen.
  *
  * Aanmelden zit erbij omdat inloggen zonder aanmelden niets is: er zou niemand
  * zijn om in te loggen. Wat er níét bij zit is een wachtwoord vergeten — dat

@@ -5,12 +5,12 @@ import { getActiveChild, setGroep } from '@/store/children';
 import { GroepKiezer } from './GroepKiezer';
 
 /**
- * De groep van het kind dat nu oefent, op Voor ouders (ADR-151).
+ * De groep van het kind dat nu oefent (ADR-151), bij de instellingen op Jij.
  *
- * Hier en niet op Jij: wat de app voorstelt is een instelling, en instellingen
- * staan bij de ouder (ADR-143). Zonder slot, zoals de rest van deze pagina
- * (ADR-136). Het kind kiest zijn groep één keer, bij het begin of op de
- * voordeur; daarna is het hier.
+ * Het stond op Voor ouders, omdat instellingen bij de ouder stonden (ADR-143).
+ * Die pagina is weg (ADR-171): ouders loggen niet in, kinderen wel. Het kind
+ * kiest zijn groep één keer, bij het begin of op de voordeur; daarna is het
+ * hier, tussen de andere instellingen.
  *
  * De knop die aanstaat, is de groep van nu: wie vorig schooljaar groep 5 koos,
  * ziet hier groep 6. Kiezen schrijft meteen weg, en Vandaag en elke vakpagina
@@ -43,13 +43,11 @@ export function GroepInstelling() {
   }
 
   return (
-    <section className="flex flex-col gap-3" aria-labelledby="groep-ouder">
-      <h2 id="groep-ouder" className="tk-sectie">
-        {t('groep.ouderTitel', { naam: kind.naam })}
+    <section className="flex flex-col gap-3" aria-labelledby="groep-jij">
+      <h2 id="groep-jij" className="tk-sectie">
+        {t('groep.jijTitel')}
       </h2>
-      <p className="text-lopend text-tekst-secundair">
-        {t('groep.ouderUitleg', { naam: kind.naam })}
-      </p>
+      <p className="text-lopend text-tekst-secundair">{t('groep.jijUitleg')}</p>
       <GroepKiezer
         gekozen={kind.groep}
         uitweg="groep.geen"
@@ -59,7 +57,7 @@ export function GroepInstelling() {
       <p className="tk-hulp" role="status">
         {kind.groep === undefined
           ? t('groep.nietGekozen')
-          : t('groep.gekozen', { naam: kind.naam, groep: kind.groep })}
+          : t('groep.gekozen', { groep: kind.groep })}
       </p>
     </section>
   );

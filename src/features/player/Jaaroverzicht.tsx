@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { schooljaarVan, type Reeks } from '@/game-core';
+import { schooljaarVan } from '@/game-core';
 import { doelwitten } from '@/features/home/doel';
 import { datumVan } from '@/features/badges/datums';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { t } from '@/i18n';
 import { getActiveChild } from '@/store/children';
 import { loadDiplomaRijen } from '@/store/rewardStore';
-import { leesReeks } from './reeks';
 
 interface Diploma {
   readonly naam: string;
@@ -17,7 +16,6 @@ interface Diploma {
 interface Overzicht {
   readonly naam: string;
   readonly schooljaar: number;
-  readonly reeks: Reeks;
   readonly diplomas: readonly Diploma[];
 }
 
@@ -26,8 +24,12 @@ interface Overzicht {
  *
  * Het stond op Jij en ging over de toren: stenen, verdiepingen en meters. Nu de
  * diploma's het beloningsprogramma zijn, is dat wat er te melden valt — welke
- * diploma's dit kind haalde en wanneer — en die vraag is van de ouder. Daarom
- * staat het hier en niet meer bij het kind.
+ * diploma's dit kind haalde en wanneer. Het ging daarvoor naar Voor ouders, en
+ * sinds ADR-171 staat het weer op Jij, onder de diploma's zelf: die pagina is
+ * weg, en wat een kind gehaald heeft is ook van het kind.
+ *
+ * De langste reeks stond er ook in. Die is eruit: het kind ziet de reeks niet
+ * (ADR-169), en dit overzicht staat nu bij het kind.
  *
  * **De datums doen het werk.** Een diploma draagt de dag waarop het gehaald is
  * (`rewardStore` schrijft hem één keer weg en laat hem daarna staan), dus dit
@@ -45,8 +47,8 @@ export function Jaaroverzicht() {
 
   useEffect(() => {
     let levend = true;
-    void Promise.all([getActiveChild(), leesReeks(), loadDiplomaRijen()]).then(
-      ([kind, reeks, rijen]) => {
+    void Promise.all([getActiveChild(), loadDiplomaRijen()]).then(
+      ([kind, rijen]) => {
         if (!levend) return;
         const jaar = schooljaarVan(new Date());
         const begin = new Date(jaar, 8, 1).toISOString();
@@ -55,7 +57,6 @@ export function Jaaroverzicht() {
         setOverzicht({
           naam: kind?.naam ?? '',
           schooljaar: jaar,
-          reeks,
           diplomas: rijen.flatMap((rij) => {
             const doelwit = witten.find((kandidaat) => kandidaat.id === rij.id);
             if (!doelwit) return [];
@@ -117,11 +118,6 @@ export function Jaaroverzicht() {
           </>
         ) : null}
 
-        {/* Geen nul afdrukken: bij nul staat het er niet, en het blok erboven
-            zegt al dat de reeks nog moet beginnen. */}
-        {overzicht.reeks.record > 0 ? (
-          <p>{t('jaar.reeks', { aantal: overzicht.reeks.record })}</p>
-        ) : null}
       </div>
       <button
         type="button"

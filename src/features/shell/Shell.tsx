@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from 'react';
 import { brand } from '@/config/brand';
 import { Wordmark } from '@/components/Wordmark';
-import { FamilyIcon, FreezerIcon, PupilIcon, TodayIcon, type IconProps } from '@/components/Icon';
+import { FamilyIcon, PupilIcon, StarIcon, TodayIcon, type IconProps } from '@/components/Icon';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import {
@@ -40,8 +40,8 @@ import { VakMenu } from './VakMenu';
  * e2e/shell.spec.ts asserts it from the outside.
  *
  * **En er staat een overslaan-link bovenaan** (ADR-166). Aan een bureau staan
- * er twaalf knoppen vóór de inhoud — het merk, vier bestemmingen, de
- * premiumknop, het kind, en zes vakken in de rail — en die staan op élke
+ * er twaalf knoppen vóór de inhoud — het merk, drie bestemmingen, het kind,
+ * en zes vakken in de rail — en die staan op élke
  * pagina. Wie met het toetsenbord werkt, liep ze elke keer opnieuw af. De link
  * is onzichtbaar tot hij focus krijgt en springt naar `main`, dat daarvoor een
  * id en `tabIndex={-1}` heeft: een doel dat geen focus kan krijgen, verplaatst
@@ -54,9 +54,9 @@ const INHOUD_ID = 'inhoud';
 /** A mark per destination, for the tab bar, where a row of words is read rather than recognised. */
 const DESTINATION_ICON: Record<Destination['id'], ComponentType<Omit<IconProps, 'children'>>> = {
   vandaag: TodayIcon,
-  onthouden: FreezerIcon,
   vrienden: FamilyIcon,
   jij: PupilIcon,
+  premium: StarIcon,
 };
 
 export interface ShellProps {

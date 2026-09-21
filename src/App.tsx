@@ -7,7 +7,6 @@ import { Gallery } from '@/design/Gallery';
 import { DiagnoseScherm } from '@/features/diagnose/DiagnoseScherm';
 import { Shell } from '@/features/shell/Shell';
 import { TopBar } from '@/features/shell/TopBar';
-import { RetentionScreen } from '@/features/retention/RetentionScreen';
 import { MODULES, type Destination, type Module } from '@/features/shell/modules';
 import { useRoute } from '@/features/shell/useRoute';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
@@ -32,7 +31,6 @@ import {
   type Onderdeel,
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
-import { ParentScreen } from '@/features/player/ParentScreen';
 import { loadPreferences, zetRustig } from '@/features/player/settings';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
@@ -69,7 +67,6 @@ import type { ProfileRecord } from '@/store/db';
 
 type Screen =
   | { name: 'home' }
-  | { name: 'retention' }
   | {
       name: 'practice';
       setId: RoundSetId;
@@ -144,8 +141,9 @@ export default function App() {
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
 
-  // The tab bar's four destinations, two of which exist. Mapping them here
-  // rather than inside the Shell keeps the frame ignorant of what a screen is.
+  // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
+  // them here rather than inside the Shell keeps the frame ignorant of what a
+  // screen is.
   const goHome = () => {
     go({ name: 'home' });
     setScreen({ name: 'home' });
@@ -165,11 +163,7 @@ export default function App() {
 
   const goTo = (id: Destination['id']) => {
     const next: Route =
-      id === 'onthouden'
-        ? { name: 'retention' }
-        : id === 'jij'
-          ? { name: 'you' }
-          : { name: 'home' };
+      id === 'jij' ? { name: 'you' } : id === 'premium' ? { name: 'premium' } : { name: 'home' };
     go(next);
     setScreen({ name: 'home' });
   };
@@ -389,7 +383,7 @@ export default function App() {
   }, []);
 
   // Minder beweging staat op het document, dus het wordt gezet voordat er een
-  // scherm beweegt, en niet pas wanneer iemand Voor ouders opent (ADR-145).
+  // scherm beweegt, en niet pas wanneer iemand de instellingen opent (ADR-145).
   useEffect(() => {
     void loadPreferences().then((prefs) => zetRustig(prefs.rustig));
   }, []);
@@ -418,13 +412,14 @@ export default function App() {
   if (boot.profile === null) {
     return (
       <ProfileGate
-        // "Ik ben een ouder" op de eerste vraag opent Voor ouders in plaats van
-        // de voordeur (ADR-161). Het profiel is er dan al — de app heeft er
-        // overal een nodig — en het draagt geen groep, precies als bij "Zeg ik
-        // niet". Alleen het adres is anders.
+        // "Ik ben een ouder" op de eerste vraag opent de premiumpagina in
+        // plaats van de voordeur (ADR-161, ADR-171): Voor ouders is weg, en wat
+        // een ouder komt doen — kijken wat het is, een code invullen — staat
+        // daar. Het profiel is er dan al — de app heeft er overal een nodig —
+        // en het draagt geen groep, precies als bij "Zeg ik niet".
         onReady={(profile, naarOuder) => {
           setBoot({ status: 'ready', profile });
-          if (naarOuder) go({ name: 'ouder' });
+          if (naarOuder) go({ name: 'premium' });
         }}
       />
     );
@@ -549,8 +544,6 @@ export default function App() {
     );
   }
 
-  const goOuder = () => go({ name: 'ouder' });
-  const goJij = () => go({ name: 'you' });
   // "Bekijk alle diploma's" opent Jij met de kast in beeld — precies wat
   // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
   // stond; nu het diploma zelf de beloning is, staat het raster weer bij het
@@ -569,10 +562,10 @@ export default function App() {
   };
 
   // What premium is and where the code goes (ADR-116). Reached from every
-  // lock and from Jij, by its address, and never from the tab bar.
+  // lock, and since ADR-171 one of the three destinations.
   if (route.name === 'premium') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} current="premium" onNavigate={goTo} onModule={goModule}>
         {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
             maar niemand komt hier om een toets te plannen, en de vergelijking
             tussen basis en premium heeft de breedte nodig. */}
@@ -642,32 +635,15 @@ export default function App() {
   if (route.name === 'you') {
     return (
       <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        {/* Zonder `aside`: de eigen kolom is weg (ADR-168). */}
+        {/* Zonder `aside`: de eigen kolom is weg (ADR-168). Met al je cijfers:
+            Onthouden is een deel van deze pagina (ADR-171). */}
         <ProfileScreen
           profile={boot.profile}
-          onOuder={goOuder}
           onOefen={goOefen}
           onToets={(deel, mode) => beginRonde(deel, mode)}
           kastOpen={diplomasOpen}
           onKastGezien={() => setDiplomasOpen(false)}
         />
-      </Shell>
-    );
-  }
-
-  // Wat van de ouder is, op een eigen adres (ADR-136).
-  if (route.name === 'ouder') {
-    return (
-      <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
-        <ParentScreen onJij={goJij} onOnthouden={() => go({ name: 'retention' })} />
-      </Shell>
-    );
-  }
-
-  if (route.name === 'retention' || screen.name === 'retention') {
-    return (
-      <Shell bar={bar} current="onthouden" onNavigate={goTo} onModule={goModule}>
-        <RetentionScreen />
       </Shell>
     );
   }

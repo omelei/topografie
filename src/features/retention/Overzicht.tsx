@@ -1,13 +1,14 @@
 import type { CSSProperties } from 'react';
+import { Dot } from '@/components/Dot';
 import { NextIcon } from '@/components/Icon';
-import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
+import { STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
 import { dayKey, formatGrade, grade } from '@/game-core';
 import { geplaatst, naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import type { PlayedRound } from '@/store/progress';
-import { geoefend, type Geheugen, type Stand, type VakStand, type WeekTelling } from './statistiek';
+import { geoefend, type Geheugen, type VakStand, type WeekTelling } from './statistiek';
 
 /**
  * De bovenkant van de Onthouden-pagina (ADR-148): wat je onthoudt over alles,
@@ -18,92 +19,125 @@ import { geoefend, type Geheugen, type Stand, type VakStand, type WeekTelling } 
  * en "Goed beantwoord" in de kolom naast elke pagina. Ze gaan allemaal over hoe
  * het oefenen gaat, en dat is de vraag die deze pagina beantwoordt.
  *
- * **Beelden eerst, binnen de huisstijl.** Een ring voor de voorspelling en een
- * balk voor de vier woorden, in inkt, want onthouden is een stand en geen goed
- * antwoord (`StatusLabel`). Per vak de kleur van het vak, die een vak mag
- * dragen in zijn balk. In de weekgrafiek wél groen en gearceerd rood: daar
- * staan antwoorden, en goed en fout zien er overal in het product zo uit.
+ * **Beelden eerst, binnen de huisstijl.** Een ring voor de voorspelling en
+ * tegels voor de standen, in de kleur van de kaart; de woorden blijven inkt,
+ * want onthouden is een stand en geen goed antwoord (`StatusLabel`). Per vak
+ * de kleur van het vak, die een vak mag dragen in zijn balk. In de weekgrafiek
+ * wél groen en gearceerd rood: daar staan antwoorden, en goed en fout zien er
+ * overal in het product zo uit.
  */
 
-/** De drie standen die iets hebben dat geoefend is, in de volgorde van de balk. */
-const STANDEN: readonly (readonly [ItemStatus, keyof Stand])[] = [
-  ['remembered', 'onthouden'],
-  ['refresh', 'opfrissen'],
-  ['practising', 'oefenen'],
-];
+/**
+ * The four statuses, strongest first: it is the order of the dot's own fill,
+ * and the first tile is the one the page is named after.
+ */
+const STATUSSEN: readonly ItemStatus[] = ['remembered', 'refresh', 'practising', 'new'];
 
-/** Wat je onthoudt, over elk vak: de ring, het getal, en de balk eronder. */
-export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
-  const totaal = geoefend(stand);
-  const procent = stand.overDrieWeken;
+/** De standen van wat minstens één keer beantwoord is: "Je geheugen" telt geen nieuw. */
+const GEOEFEND = STATUSSEN.filter((status) => status !== 'new');
 
+/** What each tile counts, in the words the page has always used for them. */
+const TEGEL_WOORD: Record<ItemStatus, TranslationKey> = {
+  remembered: 'retention.tegelOnthouden',
+  refresh: 'retention.tegelOpfrissen',
+  practising: 'retention.tegelOefenen',
+  new: 'retention.tegelNieuw',
+};
+
+/**
+ * De standen als tegels: het getal, en eronder de stip met zijn woord.
+ *
+ * Eén component voor twee kaarten (ADR-171): "Je geheugen" en "Alles in één
+ * blik" tellen dezelfde standen, en toen de ene een balk met losse labels had
+ * en de andere tegels, zag een kind twee manieren om hetzelfde te lezen onder
+ * elkaar op één pagina.
+ */
+export function StandTegels({
+  telling,
+  statussen = STATUSSEN,
+}: {
+  readonly telling: Readonly<Record<ItemStatus, number>>;
+  /** Welke tegels er staan. "Je geheugen" telt alleen wat geoefend is. */
+  readonly statussen?: readonly ItemStatus[];
+}) {
   return (
-    <section className="tk-card tk-geheugen" aria-label={t('retention.geheugenTitel')}>
-      <h2 className="tk-label">{t('retention.geheugenTitel')}</h2>
-
-      {totaal === 0 || procent === null ? (
-        <p className="text-lopend text-tekst-secundair">{t('retention.geheugenLeeg')}</p>
-      ) : (
-        <>
-          <div className="tk-geheugen-kop">
-            {/* Decoratief: de zin ernaast zegt hetzelfde in woorden. */}
-            <div
-              className="tk-ring"
-              style={{ '--vul': `${procent}%` } as CSSProperties}
-              aria-hidden="true"
-            >
-              <span className="tk-ring-getal">{t('retention.procent', { procent })}</span>
-              <span className="tk-ring-label">{t('retention.ringLabel')}</span>
-            </div>
-
-            <div className="flex min-w-0 flex-col gap-2">
-              <p className="tk-reeks-getal">
-                <span className="tk-reeks-aantal">{stand.onthouden}</span>
-                <span className="tk-reeks-zin">
-                  {stand.onthouden === 1 ? t('retention.geheugenEen') : t('retention.geheugenVeel')}
-                </span>
-              </p>
-              <p className="tk-hulp">{t('retention.geheugenVan', { aantal: totaal })}</p>
-              <p className="text-lopend">{t('retention.ringZin', { procent })}</p>
-            </div>
-          </div>
-
-          <StandBalk stand={stand} />
-        </>
-      )}
-    </section>
+    <ul className="tk-standtegels">
+      {statussen.map((status) => (
+        <li key={status} className="tk-standtegel" data-status={status}>
+          <span className="tk-standtegel-getal">{telling[status]}</span>
+          <span className="tk-standtegel-woord">
+            {/* Decoratief: het woord ernaast zegt hetzelfde. De stip in de
+                kleur van de kaart, zoals de muur op Alles in één blik. */}
+            <span className="tk-stip">
+              <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
+            </span>
+            {t(TEGEL_WOORD[status])}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 /**
- * Onthouden, even opfrissen en nog aan het oefenen, naast elkaar in één balk.
- * De balk is voor het oog; de lijst eronder zegt elk deel met zijn woord, zijn
- * stip en zijn aantal.
+ * Wat je onthoudt, over elk vak: de ring, het getal, en de tegels eronder.
+ *
+ * **Opgemaakt zoals Alles in één blik** (ADR-171): de kop boven de kaart en
+ * niet erin, en de kaart in de kleur van de pagina met de tegels die daar ook
+ * staan. Het was een kaart met een klein label bovenin, een ring in inkt en een
+ * grijze balk met losse woorden eronder — het enige blok op de pagina dat er
+ * zo uitzag. Over alle vakken, dus in de kleur van leer.nu zelf en niet die van
+ * een vak.
  */
-function StandBalk({ stand }: { readonly stand: Stand }) {
+export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
+  const totaal = geoefend(stand);
+  const procent = stand.overDrieWeken;
+  const telling = {
+    remembered: stand.onthouden,
+    refresh: stand.opfrissen,
+    practising: stand.oefenen,
+    new: 0,
+  } satisfies Record<ItemStatus, number>;
+
   return (
-    <div className="flex flex-col gap-3">
-      <div className="tk-standbalk" aria-hidden="true">
-        {STANDEN.map(([status, sleutel]) =>
-          stand[sleutel] === 0 ? null : (
-            <span
-              key={status}
-              className="tk-standbalk-deel"
-              data-status={status}
-              style={{ flexGrow: stand[sleutel] }}
-            />
-          ),
+    <section className="flex flex-col gap-3" aria-label={t('retention.geheugenTitel')}>
+      <h2 className="tk-sectie">{t('retention.geheugenTitel')}</h2>
+
+      <div className="tk-card tk-vakkleur tk-geheugen">
+        {totaal === 0 || procent === null ? (
+          <p className="text-lopend text-tekst-secundair">{t('retention.geheugenLeeg')}</p>
+        ) : (
+          <>
+            <div className="tk-geheugen-kop">
+              {/* Decoratief: de zin ernaast zegt hetzelfde in woorden. */}
+              <div
+                className="tk-ring"
+                style={{ '--vul': `${procent}%` } as CSSProperties}
+                aria-hidden="true"
+              >
+                <span className="tk-ring-getal">{t('retention.procent', { procent })}</span>
+                <span className="tk-ring-label">{t('retention.ringLabel')}</span>
+              </div>
+
+              <div className="flex min-w-0 flex-col gap-2">
+                <p className="tk-reeks-getal">
+                  <span className="tk-reeks-aantal">{stand.onthouden}</span>
+                  <span className="tk-reeks-zin">
+                    {stand.onthouden === 1
+                      ? t('retention.geheugenEen')
+                      : t('retention.geheugenVeel')}
+                  </span>
+                </p>
+                <p className="tk-hulp">{t('retention.geheugenVan', { aantal: totaal })}</p>
+                <p className="text-lopend">{t('retention.ringZin', { procent })}</p>
+              </div>
+            </div>
+
+            <StandTegels telling={telling} statussen={GEOEFEND} />
+          </>
         )}
       </div>
-      <ul className="flex flex-wrap gap-x-6 gap-y-2">
-        {STANDEN.map(([status, sleutel]) => (
-          <li key={status} className="flex items-center gap-2">
-            <StatusLabel status={status} />
-            <span className="tk-standbalk-aantal">{stand[sleutel]}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </section>
   );
 }
 

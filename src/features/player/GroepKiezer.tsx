@@ -6,7 +6,7 @@ import { t, type TranslationKey } from '@/i18n';
  * "Geen groep" (ADR-151, ADR-161).
  *
  * Dezelfde rij op drie plekken — na de naam, één keer op de voordeur, en op
- * Voor ouders — zodat een groep er overal hetzelfde uitziet. Het zijn de
+ * Jij — zodat een groep er overal hetzelfde uitziet. Het zijn de
  * keuzechips van een modulepagina (`tk-keuze`): een kort woord, meer op een
  * regel, en het gekozene draagt `aria-pressed`.
  *
@@ -16,7 +16,7 @@ import { t, type TranslationKey } from '@/i18n';
  * **En bij de eerste vraag staat er nog een knop naast** (ADR-161): "Ik ben een
  * ouder". Die is geen groep en kiest er ook geen — hij draagt daarom nooit
  * `aria-pressed`, want er valt niets aan te staan. Alleen de eerste vraag geeft
- * hem mee; op Voor ouders zou hij de ouder sturen naar de pagina waar hij al is.
+ * hem mee; op Jij is er niemand meer om hem voor te houden.
  */
 export function GroepKiezer({
   gekozen,

@@ -43,8 +43,8 @@ export function VlagDiplomas({
   // them has told a child they had none.
   if (behaald === null) return null;
   // Op Jij zwijgt een lege wand (ADR-158): een kop met "0 van de 12" erboven
-  // zegt een kind op dag een dat het niets heeft. Op Voor ouders staat hij wel,
-  // want daar is een gat iets om iets mee te doen.
+  // zegt een kind op dag een dat het niets heeft. Op een vakpagina staat hij
+  // wel, want daar is een gat iets om op te mikken.
   if (stilAlsLeeg && behaald.size === 0) return null;
 
   return (

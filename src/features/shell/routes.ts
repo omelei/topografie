@@ -242,10 +242,8 @@ function setIdFor(module: Module, slug: string): string | null {
 
 export type Route =
   | { readonly name: 'home' }
-  | { readonly name: 'retention' }
+  /** Jij: wie je bent, al je cijfers en je diploma's (ADR-171). */
   | { readonly name: 'you' }
-  /** Wat van de ouder is: de week, het gezin, de lijsten, premium (ADR-136). */
-  | { readonly name: 'ouder' }
   /** A module that exists, opened on one of its sets or on its own first. */
   | {
       readonly name: 'module';
@@ -261,17 +259,21 @@ export type Route =
   /** What premium is, and the one field that turns it on (ADR-116). */
   | { readonly name: 'premium' };
 
-/** The premium page. Reached from every lock and from Jij, never from the tab bar. */
+/** De premiumpagina: een van de drie bestemmingen, naast Vandaag en Jij (ADR-171). */
 export const PREMIUM_SLUG = 'premium';
 
-export const RETENTION_SLUG = 'onthouden';
 export const YOU_SLUG = 'jij';
+
 /**
- * De ouderpagina (ADR-136).
+ * Twee woorden die een pagina waren en nu naar een andere wijzen (ADR-171).
  *
- * Een eigen adres en niet een stuk van /jij, zodat een ouder hem kan bewaren —
- * en zodat "Jij" weer over het kind gaat.
+ * Onthouden is een deel van Jij geworden — Jij is waar je al je cijfers ziet —
+ * en Voor ouders is opgegaan in Jij en in Premium: ouders loggen niet in, dus
+ * een pagina die alleen voor hen was had geen lezer. Wie een van de twee
+ * adressen bewaard heeft, komt uit op de pagina waar het nu staat, en de balk
+ * schrijft dan dat adres.
  */
+export const RETENTION_SLUG = 'onthouden';
 export const OUDER_SLUG = 'ouder';
 /*
  * /voortgang (and the older /ontdekkingsreis) was the collection: the heroes,
@@ -321,10 +323,8 @@ function moduleRoute(module: Module, tail: string | undefined, regio: string | n
 export function routeFor(pathname: string): Route {
   const slug = withoutBase(pathname);
   if (slug === '') return { name: 'home' };
-  if (slug === RETENTION_SLUG) return { name: 'retention' };
-  if (slug === YOU_SLUG) return { name: 'you' };
-  if (slug === OUDER_SLUG) return { name: 'ouder' };
-  if (slug === PREMIUM_SLUG) return { name: 'premium' };
+  if (slug === YOU_SLUG || slug === RETENTION_SLUG) return { name: 'you' };
+  if (slug === PREMIUM_SLUG || slug === OUDER_SLUG) return { name: 'premium' };
 
   const [head = '', tail] = slug.split('/');
 
@@ -349,9 +349,7 @@ export function routeFor(pathname: string): Route {
 
 function slugFor(route: Route): string {
   if (route.name === 'home') return '';
-  if (route.name === 'retention') return RETENTION_SLUG;
   if (route.name === 'you') return YOU_SLUG;
-  if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];
