@@ -80,18 +80,28 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
 
   // Jij carries the diplomas, which since ADR-167 are the whole reward
   // programme — so it is the page that has to survive being mostly empty: a
-  // new child has none of them.
+  // new child has none of them. Since ADR-172 they are the first block under
+  // the heading, so this photo is them.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { name: 'Jij', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
   await shoot(page, size, '04-jij');
 
-  // Wat Onthouden was, staat sinds ADR-171 op Jij: de foto begint bij de
-  // cijfers, zodat de PR laat zien hoe "Je geheugen" eruitziet.
+  // Wat Onthouden was, staat sinds ADR-171 op Jij, onder de diploma's
+  // (ADR-172): de foto begint bij de cijfers, zodat de PR laat zien hoe "Je
+  // geheugen" eruitziet, met de regel erboven en de uitklap eronder.
   const geheugen = page.getByRole('region', { name: 'Je geheugen' });
   await expect(geheugen).toBeVisible();
   await geheugen.scrollIntoViewIfNeeded();
   await shoot(page, size, '12-jij-cijfers');
+
+  // De instellingen, met je naam en je groep als rij erbij (ADR-172), en de
+  // groep open: zo ziet een rij eruit die iets openklapt.
+  const instellingen = page.getByRole('region', { name: 'Instellingen' });
+  await instellingen.getByRole('button', { name: /^Je groep/ }).click();
+  await expect(instellingen.getByRole('group', { name: 'In welke groep zit je?' })).toBeVisible();
+  await instellingen.scrollIntoViewIfNeeded();
+  await shoot(page, size, '20-jij-instellingen');
 
   // Een modulepagina met een set gekozen zegt één ding over het leren: wat er
   // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.

@@ -10108,6 +10108,158 @@ nagelopen tegen `leitner.ts`:
 
 ---
 
+## ADR-172 — Jij opnieuw ingedeeld: de diploma's bovenaan, en achttien blokken worden er tien
+
+**Status:** accepted. **Date:** 2026-09-21. Op verzoek van de eigenaar, na een
+voorstel (`docs/jij-indeling.md`) dat hij goedkeurde. Verandert de volgorde van
+ADR-145 en ADR-171, de open regels van ADR-160, het blok van ADR-126, het
+weekbericht van ADR-133 en de plek van het account uit ADR-171. Raakt
+`leitner.ts`, `game-core`, `statistiek.ts`, `itemStatus.ts`, de rijpheid van
+een diploma en wat er bewaard wordt niet.
+
+### Context
+
+ADR-171 schoof drie pagina's in één, en noemde zelf het gevolg: "Jij is lang".
+Met premium stonden er achttien blokken, van de kop tot het wissen. Vijf dingen
+vielen op toen elk blok naast de andere werd gelegd:
+
+- **Eén regel stond drie keer op de pagina.** "Drie keer goed, op drie
+  verschillende dagen" stond in regel 1 van "Wanneer onthoud je iets?", in de
+  regel boven de kast, en in de eerste zin van "Hoe haal je een diploma?".
+- **Twee percentages over hetzelfde spraken elkaar tegen.** "Je geheugen" zegt
+  hoeveel je over drie weken nog weet; "Hoe gaat het?" zei twee blokken lager
+  hoeveel er nu blijft hangen. Twee getallen, voor een kind één vraag.
+- **Zonder premium vroeg de pagina vier keer om premium**: het slot van het
+  weekbericht, de etalage onder het voorbeeldkind, het slot bij de tabel en dat
+  van de eigen woorden. ADR-124 regel 2 is "één keer vragen per pagina".
+- **De diploma's stonden achter acht blokken cijfers.** Ze zijn sinds ADR-167
+  het hele beloningsprogramma, en op een telefoon begonnen ze pas op het zesde
+  scherm. Daarom moest "Bekijk alle diploma's" naar de kast scrollen.
+- **Blokken van een pagina die niet meer bestaat.** Het weekbericht was voor de
+  ouder geschreven ("Er is geoefend op …"). Het account vroeg een e-mailadres en
+  een wachtwoord, en die zijn volgens ADR-155 van de ouder. Het schooljaar
+  herhaalde de kast als lijst.
+
+### Decision
+
+**De vraag van Jij is "wat heb ik al bereikt, en blijft het hangen?"**, met
+daaronder wat van jou is en wat je instelt. Vandaag vraagt "wat doe ik nu?",
+Premium "wat krijg ik erbij, en tot wanneer?". Die zin is de maatstaf voor elk
+blok.
+
+**De volgorde is die van wat een kind hier komt halen:**
+
+1. de kop, met de naam erin: "Je oefent als Noor. Hier staan je diploma's, wat
+   je onthoudt en hoe vaak je oefent.";
+2. Wie oefent er? (premium);
+3. Jouw diploma's, met "Hoe haal je een diploma?" als uitklap en de printknop
+   voor het schooljaar erin;
+4. Je geheugen, met wat onthouden is open erboven en de andere drie regels als
+   uitklap eronder;
+5. Hoe vaak oefen je? — deze week in vier tegels, en met premium de grafiek van
+   acht weken en de totalen in één zin;
+6. Per vak (premium);
+7. Per onderwerp, met één kop in plaats van drie;
+8. Instellingen, met je naam en je groep als eerste twee rijen;
+9. Eigen woorden (premium);
+10. Alles van dit apparaat halen.
+
+Zonder premium zijn het 1, 3, 4, 5, 7, 8 en 10, en is de etalage onder het
+voorbeeldkind de enige vraag om premium.
+
+**Waarom de diploma's voor de cijfers.** Een profielpagina opent met wie je
+bent en hoe het gaat (ADR-145); dat was de volgorde van een Jij met vier
+blokken, toen de cijfers een eigen pagina hadden. Een kind van zes tot twaalf
+komt voor de diploma's: ze zijn de beloning, ze zijn het enige blok met een
+knop die iets oplevert (oefenen, de toets, printen), en de enige andere weg
+naar Jij met een doel, "Bekijk alle diploma's", gaat erheen. Wat de oude
+volgorde beschermde blijft staan: de definitie van onthouden staat bij het
+eerste getal dat hem telt (in de kast en in Je geheugen), en de eigen cijfers
+gaan voor het voorbeeldkind (ADR-165).
+
+**Binnen de cijfers eerst de twee samenvattingen, dan de zoom.** Je geheugen en
+Hoe vaak oefen je?, dan Per vak en Per onderwerp — die twee naast elkaar, want
+een druk op een vak kiest het in Per onderwerp. Hoe vaak staat boven Per vak en
+niet erna, omdat zonder premium Per onderwerp eindigt op het voorbeeldkind: een
+verzonnen kind hoort niet voor de week van het echte te staan.
+
+**De regels: één open, drie in een uitklap** (verandert ADR-160). ADR-160 haalde
+ze onder de tabel vandaan en uit een uitklap, omdat wie het woord niet kent
+getallen zonder eenheid leest. Dat blijft opgelost: "Je onthoudt iets als je
+het drie keer goed hebt, op drie verschillende dagen" staat open boven de ring.
+Wat meetelt, wat opfrissen is en wat een fout doet, leest een kind één keer; open
+kostten die drie bij elk bezoek een half scherm op een telefoon.
+
+**De naam staat in de kop, wijzigen is een rij** (verandert ADR-126). Met premium
+stond de naam drie keer op het eerste scherm. Veranderen doe je bijna nooit. Het
+label van het veld zei "Naam van het kind" tegen het kind zelf; nu "Je naam".
+
+**De groep is een rij die de knoppen opent.** Zeven knoppen en twee zinnen bij
+elk bezoek, voor iets wat je één keer kiest en dat op 1 augustus vanzelf
+doorschuift.
+
+**Het weekbericht is weg** (verandert ADR-133). Elke zin stond ergens anders al:
+of er geoefend is in de tegel "Dagen geoefend", wat blijft hangen in de ring (met
+een ander getal), en wat wacht in het dagplan op Vandaag, dat per ronde een knop
+heeft. Het enige wat het toevoegde, de noemer, gaat naar de tegel: "3 van 5"
+schooldagen. Dat is een feit over het eigen kind, dus gratis (ADR-124). Op
+Premium verdwijnt "Het weekbericht: hoe de week ging" uit de vergelijking.
+
+**Deze week en Week na week zijn één blok.** Twee rijen tegels boven elkaar —
+"Rondes" en "Rondes in totaal" — lazen als één rij die zichzelf tegensprak. De
+totalen zijn nu één zin onder de grafiek, en zonder één ronde is er geen grafiek
+van acht lege staven.
+
+**Eén vraag om premium.** Het slot bij de tabel gaat weg (verandert wat ADR-165
+liet staan): de etalage erboven noemt de tabel al, en ADR-124 regel 2 weegt
+zwaarder dan het onderscheid tussen de kaart en de tabel. Eigen woorden wordt
+zonder code niet getekend, zoals de wisselaar (ADR-124); de etalage noemt ze.
+
+**Het schooljaar is een printknop in de kast.** Het blad voor de printer
+bestaat alleen zolang er geprint wordt, en de knop staat er alleen als er iets
+gehaald is.
+
+**Het account staat onderaan Premium** (verandert ADR-171). Een e-mailadres en
+een wachtwoord zijn van de ouder, en de ouder komt op Premium uit: "Ik ben een
+ouder" opent die pagina. Zonder gezinsproject in de bouw staat er niets meer,
+in plaats van een kop met "Inloggen is nog niet beschikbaar." In F3 krijgt het
+kind een eigen inlogcode, en die hoort dan op Jij.
+
+**De tekst is van het kind.** "Dit wil je over je eigen kind zien" wordt "Wil je
+dit over jezelf zien?", met de ouders als wie de code heeft (ADR-163). De drie
+slotzinnen die "je kind" zeiden zijn weg met hun slot. "Wat je oefent blijft op
+dit apparaat" boven het wissen is weg: het blok zegt het zelf.
+
+### Consequences
+
+- **Van achttien blokken naar tien met premium en zeven zonder**, en van twintig
+  `h2`'s naar tien. Op een telefoon begint de kast op het eerste scherm.
+- **De cijfers staan een scherm lager.** Dat is de prijs, en hij is bewust: de
+  kast bekijkt een kind elke keer kort, de cijfers af en toe en dan lang.
+- **Premium heeft één regel minder in de vergelijking.** Het weekbericht was een
+  verkoopargument voor ouders; wat het beloofde, staat nu gratis in een tegel en
+  in premium op Vandaag.
+- **"3 van 5" is altijd "van 5"** zolang het product geen vakanties kent:
+  zeven dagen op rij bevatten altijd vijf werkdagen. `schooldagen.ts` neemt ze
+  mee voor de dag dat het ze wel kent.
+- `Weekbericht.tsx` en `weekbericht.ts` zijn weg; de schooldagen staan in
+  `retention/schooldagen.ts`. `DezeWeek` en `WeekNaWeek` zijn `HoeVaak`.
+  `Ikben` is `Naam`, een rij in `Instellingen`.
+- **e2e:** `jij.spec.ts` toetst de nieuwe volgorde, wat er niet meer als eigen
+  blok staat, en het wijzigen van je naam. `onthouden.spec.ts` de regel boven de
+  ring en de uitklap, één blok voor hoe vaak, "1 van 5" en geen grafiek op dag
+  één. `premium.spec.ts` telt één "Bekijk premium" op Jij. `groep.spec.ts` opent
+  de rij. `account.spec.ts` zoekt het account op Premium. `diplomas.spec.ts` en
+  `kindouder.spec.ts` toetsen de printknop en de uitleg in de kast.
+  `a11y.spec.ts` scant Jij met alles open. Er is een foto bij,
+  `20-jij-instellingen`.
+- **Geen migratie en geen schemawijziging.**
+- **Nog niet in een browser gezien.** De rijen die openklappen in de lijst van
+  de instellingen zijn nieuw; of een formulier en zeven knoppen binnen een
+  `tk-lijst` rustig ogen, is wat de foto's moeten laten zien.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

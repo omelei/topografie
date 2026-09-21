@@ -51,18 +51,23 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(32);
 });
 
-test('Jij toont de diploma’s van dit kind, en het schooljaar eronder', async ({ page }) => {
+test('Jij toont de diploma’s van dit kind, met de uitleg erbij', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/jij');
-  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  await expect(kast).toBeVisible();
 
-  // Het schooljaar staat weer bij het kind, nu Voor ouders weg is (ADR-171).
-  // De reeks niet: een reeks bij het kind is verlies-als-prikkel (ADR-169).
-  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toBeVisible();
+  // Hoe je een diploma haalt, staat in de kast, één druk verder (ADR-172).
+  await expect(kast).not.toContainText('Is de ring om een diploma vol, dan doe je de toets.');
+  await kast.getByRole('button', { name: 'Hoe haal je een diploma?' }).click();
+  await expect(kast).toContainText('Is de ring om een diploma vol, dan doe je de toets.');
+
+  // Het schooljaar is een printknop in de kast, en pas als er iets gehaald is:
+  // op dag één is er geen blad om te printen (ADR-172). De reeks staat nergens
+  // bij het kind: dat is verlies-als-prikkel (ADR-169).
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toHaveCount(0);
+  await expect(kast.getByRole('button', { name: /Print je diploma’s/ })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'De reeks' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Het schooljaar' })).not.toContainText(
-    'De langste reeks',
-  );
 
   // Geen held meer, en geen badges (ADR-149).
   await expect(page.getByRole('region', { name: 'Jouw held' })).toHaveCount(0);
@@ -74,7 +79,7 @@ test('de tabel op Jij staat achter een knop', async ({ page }) => {
   await page.goto('/jij');
 
   // Het beeld staat er meteen; de tabel met percentages en de voorspelling niet.
-  await expect(page.getByRole('heading', { name: 'Alles in één blik' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Alles in één blik' })).toBeVisible();
   await expect(page.getByRole('table')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();

@@ -4,9 +4,10 @@ import { expect, test, type Page, type Route } from '@playwright/test';
  * Inloggen is een aanbod en geen poort (ADR-155).
  *
  * Wat hier vastligt is niet het formulier maar de belofte eromheen. Het blok
- * staat bij de instellingen op Jij en nergens anders — sinds ADR-171, want
- * ouders loggen niet in, kinderen wel — de voordeur verandert niet, en zonder
- * in te loggen werkt alles zoals het werkte.
+ * staat onderaan Premium en nergens anders — sinds ADR-172, want een
+ * e-mailadres en een wachtwoord zijn van de ouder, en de ouder komt op Premium
+ * uit — de voordeur verandert niet, en zonder in te loggen werkt alles zoals
+ * het werkte.
  *
  * Er is geen Supabase in een test, dus het adres uit `playwright.config.ts`
  * bestaat niet en `page.route` antwoordt ervoor — zoals `premium.spec.ts` dat
@@ -57,7 +58,7 @@ test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
   );
   await page.route(`${GEZIN}/auth/v1/logout`, (route) => antwoord(route, 204, {}));
 
-  await page.goto('/jij');
+  await page.goto('/premium');
   const blok = page.getByRole('region', { name: 'Account' });
   await expect(blok).toBeVisible();
 
@@ -78,7 +79,7 @@ test('een fout wachtwoord zegt dat, en laat je het opnieuw proberen', async ({ p
     antwoord(route, 400, { error_code: 'invalid_credentials', msg: 'Invalid login credentials' }),
   );
 
-  await page.goto('/jij');
+  await page.goto('/premium');
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
   await blok.getByLabel('Wachtwoord').fill('ietsanders');
@@ -101,7 +102,7 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
     return antwoord(route, 200, sessie('ouder@example.nl'));
   });
 
-  await page.goto('/jij');
+  await page.goto('/premium');
   const blok = page.getByRole('region', { name: 'Account' });
   await blok.getByLabel('E-mailadres').fill('ouder.example.nl');
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
@@ -125,11 +126,14 @@ test('de voordeur van het kind verandert niet', async ({ page }) => {
   }
 });
 
-test('het account staat op Jij, bij de instellingen', async ({ page }) => {
+test('het account staat onderaan Premium, en niet op Jij', async ({ page }) => {
   await signIn(page, 'Sam');
-  await page.goto('/jij');
+  await page.goto('/premium');
 
   const teksten = await page.locator('.tk-page-main h2').allInnerTexts();
-  expect(teksten.indexOf('Instellingen')).toBeLessThan(teksten.indexOf('Account'));
-  expect(teksten.indexOf('Account')).toBeGreaterThan(-1);
+  expect(teksten.at(-1)).toBe('Account');
+
+  await page.goto('/jij');
+  await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Inloggen' })).toHaveCount(0);
 });

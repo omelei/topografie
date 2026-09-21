@@ -28,11 +28,26 @@ async function foto(page: Page, project: string, naam: string) {
  * en het is hetzelfde teken dat het kind op het scherm ziet.
  */
 async function wisselGroep(page: Page, knop: string) {
-  const knoppen = page
-    .getByRole('region', { name: 'Je groep' })
-    .getByRole('button', { name: knop, exact: true });
+  const knoppen = groepRij(page).getByRole('button', { name: knop, exact: true });
   await knoppen.click();
   await expect(knoppen).toHaveAttribute('aria-pressed', 'true');
+}
+
+/**
+ * De groep op Jij is een rij bij de instellingen die de knoppen opent
+ * (ADR-172). Dit is die rij, met wat erin opengaat.
+ */
+function groepRij(page: Page) {
+  const rij = page.getByRole('button', { name: /^Je groep/ });
+  return page.getByRole('region', { name: 'Instellingen' }).getByRole('listitem').filter({ has: rij });
+}
+
+/** De rij openen, en teruggeven wat erin staat. */
+async function openGroep(page: Page) {
+  const rij = groepRij(page);
+  await rij.getByRole('button', { name: /^Je groep/ }).click();
+  await expect(rij.getByRole('status')).toBeVisible();
+  return rij;
 }
 
 /** Vier onderdelen die een week geleden aan de beurt kwamen, en een lege dag. */
@@ -104,7 +119,9 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
   expect(await provinciesEerst(page)).toBe(false);
 
   await page.goto('/jij');
-  const instelling = page.getByRole('region', { name: 'Je groep' });
+  // De rij zegt de groep al voor hij open is.
+  await expect(groepRij(page).getByRole('button', { name: /^Je groep/ })).toContainText('Groep 3');
+  const instelling = await openGroep(page);
   await expect(instelling.getByRole('button', { name: 'Groep 3', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -119,6 +136,7 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
 
   // En terug naar geen groep: dan beslist weer alleen de grootte, zoals altijd.
   await page.goto('/jij');
+  await openGroep(page);
   await wisselGroep(page, 'Geen groep');
   await page.goto('/');
   expect(await provinciesEerst(page)).toBe(true);
@@ -143,7 +161,10 @@ test('"Ik ben een ouder" maakt het profiel zonder groep en opent Premium', async
 
   // Geen groep gekozen, en de instelling op Jij zegt dat ook.
   await page.goto('/jij');
-  const instelling = page.getByRole('region', { name: 'Je groep' });
+  await expect(groepRij(page).getByRole('button', { name: /^Je groep/ })).toContainText(
+    'Geen groep gekozen',
+  );
+  const instelling = await openGroep(page);
   await expect(instelling.getByRole('status')).toHaveText(
     'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
   );
@@ -238,6 +259,7 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
 
   // Groep 3 op Jij: nu de klok, en geen landen meer.
   await page.goto('/jij');
+  await openGroep(page);
   await wisselGroep(page, 'Groep 3');
   await page.goto('/');
   await voorstellen();

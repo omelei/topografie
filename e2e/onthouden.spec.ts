@@ -1,13 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * De getallen over het oefenen, op Jij (ADR-148, ADR-171).
+ * De getallen over het oefenen, op Jij (ADR-148, ADR-171, ADR-172).
  *
- * Wat deze test vastlegt is de samenhang: wat je onthoudt en deze week, met
- * premium per vak en week na week, en die getallen staan op één plek. Dat was
- * de pagina Onthouden; sinds ADR-171 is die een deel van Jij, en het oude
- * adres komt daar uit. Premium staat aan via de `storageState` van
- * playwright.config.
+ * Wat deze test vastlegt is de samenhang: wat je onthoudt, hoe vaak je oefent
+ * — deze week, en met premium de weken ervoor — en per vak, en die getallen
+ * staan op één plek. Dat was de pagina Onthouden; sinds ADR-171 is die een
+ * deel van Jij, en het oude adres komt daar uit. Premium staat aan via de
+ * `storageState` van playwright.config.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -51,15 +51,24 @@ test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({ 
   await signIn(page, 'Mila');
   await page.goto('/jij');
 
-  await expect(page.getByRole('region', { name: 'Je geheugen' })).toContainText(
-    'Je hebt nog niets geoefend',
+  const geheugen = page.getByRole('region', { name: 'Je geheugen' });
+  await expect(geheugen).toContainText('Je hebt nog niets geoefend');
+  // Wat onthouden is, staat open boven de ring; de rest van de regels één druk
+  // verder (ADR-172).
+  await expect(geheugen).toContainText(
+    'Je onthoudt iets als je het drie keer goed hebt, op drie verschillende dagen.',
   );
-  await expect(page.getByRole('region', { name: 'Deze week' })).toContainText(
-    'Deze week nog niet geoefend.',
-  );
+  await expect(geheugen).not.toContainText('Dan begin je daar weer opnieuw mee.');
+  await geheugen.getByRole('button', { name: 'Hoe werkt onthouden?' }).click();
+  await expect(geheugen).toContainText('Dan begin je daar weer opnieuw mee.');
+
+  const vaak = page.getByRole('region', { name: 'Hoe vaak oefen je?' });
+  await expect(vaak).toContainText('Deze week nog niet geoefend.');
+  // Geen grafiek van acht lege staven voor wie nog niets deed.
+  await expect(vaak.getByRole('list', { name: 'Vragen per week' })).toHaveCount(0);
 });
 
-test('na één ronde staan het geheugen, deze week, per vak en week na week er', async ({ page }) => {
+test('na één ronde staan het geheugen, hoe vaak je oefent en per vak er', async ({ page }) => {
   await signIn(page, 'Jip');
   await eenProvincieEnStop(page);
   await page.goto('/jij');
@@ -67,17 +76,30 @@ test('na één ronde staan het geheugen, deze week, per vak en week na week er',
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toContainText(
     'van de 1 die je geoefend hebt',
   );
-  await expect(tegel(page, 'Deze week', 'Rondes')).toHaveText('1');
-  await expect(tegel(page, 'Deze week', 'Vragen beantwoord')).toHaveText('1');
+
+  // Deze week en de weken ervoor zijn één blok, met één rij tegels (ADR-172).
+  const vaak = 'Hoe vaak oefen je?';
+  await expect(tegel(page, vaak, 'Rondes')).toHaveText('1');
+  await expect(tegel(page, vaak, 'Vragen beantwoord')).toHaveText('1');
+  // Tegen schooldagen: zeven dagen op rij zijn er altijd vijf.
+  await expect(tegel(page, vaak, 'Dagen geoefend')).toHaveText('1 van 5');
+
+  const verloop = page.getByRole('region', { name: vaak });
+  const weken = verloop.getByRole('list', { name: 'Vragen per week' }).getByRole('listitem');
+  await expect(weken).toHaveCount(8);
+  await expect(weken.last()).toContainText(/Deze week: [01] van de 1 vragen goed\./);
+  await expect(verloop).toContainText('1 keer geoefend en 1 vragen beantwoord');
+  await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
 
   const vakken = page.getByRole('region', { name: 'Per vak' });
   await expect(vakken.getByRole('button', { name: /^Topo/ })).toContainText('1 geoefend');
 
-  const verloop = page.getByRole('region', { name: 'Week na week' });
-  await expect(tegel(page, 'Week na week', 'Vragen in totaal')).toHaveText('1');
-  const weken = verloop.getByRole('list', { name: 'Vragen per week' }).getByRole('listitem');
-  await expect(weken).toHaveCount(8);
-  await expect(weken.last()).toContainText(/Deze week: [01] van de 1 vragen goed\./);
+  // Eerst de twee samenvattingen, dan de zoom: per vak, dan per onderwerp.
+  const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
+  const plek = (kop: string) => koppen.indexOf(kop);
+  expect(plek('Je geheugen')).toBeLessThan(plek(vaak));
+  expect(plek(vaak)).toBeLessThan(plek('Per vak'));
+  expect(plek('Per vak')).toBeLessThan(plek('Per onderwerp'));
 
   // Een vak aanwijzen kiest het hieronder.
   await vakken.getByRole('button', { name: /^Topo/ }).click();
@@ -94,7 +116,7 @@ test('de getallen over het oefenen staan alleen op Jij', async ({ page }) => {
   // Niet op Premium, waar het adres van Voor ouders nu uitkomt (ADR-171).
   await page.goto('/premium');
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Deze week', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
 
   // De weekkaart is met het album vervallen (ADR-158), dus haar adres en dat

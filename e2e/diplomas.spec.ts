@@ -162,3 +162,50 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ 
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(kast).toBeVisible();
 });
+
+/**
+ * Het schooljaar is één knop onder de kast (ADR-172), en pas als er iets
+ * gehaald is. Het blad voor de printer staat niet op het scherm: de kast laat
+ * dezelfde diploma's al zien.
+ */
+test('met een gehaald diploma staat de printknop voor het schooljaar in de kast', async ({
+  page,
+}) => {
+  await signIn(page, 'Otto');
+  await page.goto('/jij');
+  const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  const printen = kast.getByRole('button', { name: 'Print je diploma’s van dit schooljaar' });
+  await expect(kast).toBeVisible();
+  await expect(printen).toHaveCount(0);
+
+  // Een tafeldiploma, zoals `rewardStore` het wegschrijft na een geslaagde
+  // toets: het kind, het diploma en de dag.
+  await page.evaluate(async () => {
+    await new Promise<void>((klaar, mis) => {
+      const open = indexedDB.open('leernu');
+      open.onerror = () => mis(open.error);
+      open.onsuccess = () => {
+        const db = open.result;
+        const tx = db.transaction(['profile', 'kindBadges'], 'readwrite');
+        tx.objectStore('profile').getAll().onsuccess = (event) => {
+          const [kind] = (event.target as IDBRequest).result as { id: string }[];
+          tx.objectStore('kindBadges').put({
+            kindId: kind?.id,
+            badgeId: 'diploma-tafel-7',
+            behaaldOp: new Date().toISOString(),
+          });
+        };
+        tx.oncomplete = () => {
+          db.close();
+          klaar();
+        };
+        tx.onerror = () => mis(tx.error);
+      };
+    });
+  });
+
+  await page.reload();
+  await expect(kast).toContainText(/1 van de \d+ gehaald\./);
+  await expect(printen).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Het schooljaar' })).toHaveCount(0);
+});
