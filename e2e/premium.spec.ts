@@ -502,13 +502,17 @@ test.describe('doorsturen naar de ouder', () => {
     }
   });
 
-  test('zonder deelknop staat de link er om te kopiëren', async ({ page, context }) => {
-    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
-    });
-
-    await signIn(page, 'Joep');
+  /**
+   * Zonder deelknop, met het klembord als tweede weg.
+   *
+   * Allebei de takken worden hier afgedwongen in plaats van overgelaten aan wat
+   * een engine toevallig toestaat: `grantPermissions` met `clipboard-read` is
+   * Chromium-only en gooit op WebKit, en of `writeText` mag hangt op elk toestel
+   * van iets anders af. Wat vastligt is de belofte: op een druk gebeurt er
+   * altijd iets, en het is altijd aangekondigd.
+   */
+  async function naarDoorsturen(page: Page, naam: string) {
+    await signIn(page, naam);
     await page.goto('/topografie');
     await page
       .getByRole('region', { name: /Kies een onderwerp/ })
@@ -521,6 +525,19 @@ test.describe('doorsturen naar de ouder', () => {
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
     await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    return venster;
+  }
+
+  test('zonder deelknop gaat het naar het klembord', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: () => Promise.resolve() },
+      });
+    });
+
+    const venster = await naarDoorsturen(page, 'Joep');
 
     // De mail staat er hoe dan ook, ook op een laptop zonder deelknop.
     await expect(venster.getByRole('link', { name: 'Of mail het ze' })).toHaveAttribute(
@@ -529,6 +546,24 @@ test.describe('doorsturen naar de ouder', () => {
     );
 
     await venster.getByRole('button', { name: 'Versturen' }).click();
-    await expect(venster.getByRole('status')).toBeVisible();
+    await expect(venster.getByRole('status')).toContainText('plakken');
+  });
+
+  test('mag het klembord ook niet, dan staat het adres er om vast te pakken', async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: () => Promise.reject(new Error('geweigerd')) },
+      });
+    });
+
+    const venster = await naarDoorsturen(page, 'Wies');
+    await venster.getByRole('button', { name: 'Versturen' }).click();
+
+    // Aangekondigd, en met het adres erbij: een doodlopende weg is geen uitweg.
+    const melding = venster.getByRole('status');
+    await expect(melding).toContainText('lukt niet op dit apparaat');
+    await expect(melding.locator('.tk-adres')).toContainText('/premium');
   });
 });

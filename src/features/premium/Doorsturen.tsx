@@ -109,12 +109,16 @@ export function Doorsturen() {
       )}
 
       {/* Het adres zelf, als delen én kopiëren niets deden. Geen veld maar
-          tekst: er valt niets in te typen, en een veld zou suggereren van wel. */}
+          tekst: er valt niets in te typen, en een veld zou suggereren van wel.
+          Met `role="status"`, net als de twee meldingen hierboven: op een druk
+          verandert de pagina, en alle drie de uitkomsten horen hetzelfde
+          aangekondigd te worden. Zonder dat hoort wie niet kijkt alleen dat de
+          knop weg is. */}
       {stand.soort === 'handmatig' ? (
-        <>
+        <div role="status" className="flex flex-col gap-3">
           <p className="text-lopend">{t('doorsturen.zelf')}</p>
           <p className="tk-adres">{adres}</p>
-        </>
+        </div>
       ) : null}
 
       {/* De mail staat er altijd bij, als tweede weg en niet als vangnet. Een
