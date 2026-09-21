@@ -2298,11 +2298,6 @@
    * Vier zinnen die zeggen wat elk getal op deze pagina telt. Ze stonden
    * onderaan achter een uitklap; een eenheid hoort vóór de getallen.
    */
-  .tk-regelkaart {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
   .tk-regelkaart-lijst {
     display: flex;
     flex-direction: column;
