@@ -104,8 +104,15 @@ test('without a code the premium parts are labelled once, and say what they do',
 
   const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await expect(venster).toBeVisible();
-  await expect(venster.getByLabel('Typ de code')).toBeVisible();
   await expect(page).toHaveURL(/\/topografie\/provincies$/);
+
+  // Het codeveld staat er niet meteen in (ADR-174): eerst de vraag of er iemand
+  // bij je is. Voor een kind dat alleen zit, is een veld dat het niet kan
+  // invullen een dichte deur met een formulier ervoor.
+  await expect(venster.getByLabel('Typ de code')).toHaveCount(0);
+  await venster.getByRole('button', { name: 'Mijn vader of moeder is erbij' }).click();
+  await expect(venster.getByLabel('Typ de code')).toBeVisible();
+  await venster.getByRole('button', { name: 'Terug', exact: true }).click();
 
   // Wegklikken zet je terug waar je was, en de manier is niet gekozen.
   await venster.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
@@ -434,3 +441,94 @@ async function zetStandenTerug(page: Page) {
     });
   });
 }
+
+/**
+ * De derde uitweg: stuur het naar je ouders (ADR-174).
+ *
+ * Dit is het geval waar de opdracht van de eigenaar om vroeg en waar ADR-163
+ * geen antwoord op had: een kind dat alleen oefent, drukt op een slot en er is
+ * niemand in de kamer. Wat hier vastligt is dat er dan iets te doen valt, en
+ * dat er niets meegaat dan het adres.
+ */
+test.describe('doorsturen naar de ouder', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('stuurt de premiumpagina door met de deelknop van het toestel', async ({ page }) => {
+    // `navigator.share` bestaat niet in een kale browser, dus hij wordt hier
+    // nagebouwd — en tegelijk is dit de enige manier om te zien wát er precies
+    // de deur uit gaat.
+    await page.addInitScript(() => {
+      const gedeeld: unknown[] = [];
+      (window as unknown as { gedeeld: unknown[] }).gedeeld = gedeeld;
+      Object.defineProperty(navigator, 'share', {
+        configurable: true,
+        value: (data: unknown) => {
+          gedeeld.push(data);
+          return Promise.resolve();
+        },
+      });
+    });
+
+    await signIn(page, 'Fenna');
+    await page.goto('/topografie');
+    await page
+      .getByRole('region', { name: /Kies een onderwerp/ })
+      .getByRole('button', { name: /^Provincies/ })
+      .click();
+    await page
+      .getByRole('region', { name: /Hoe wil je/ })
+      .getByRole('button', { name: /^Bliksemronde/ })
+      .click();
+
+    const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await venster.getByRole('button', { name: 'Versturen' }).click();
+    await expect(venster.getByRole('status')).toContainText('Verstuurd');
+
+    const gedeeld = (await page.evaluate(
+      () => (window as unknown as { gedeeld: { url?: string; text?: string }[] }).gedeeld,
+    )) as { url?: string; text?: string }[];
+    expect(gedeeld).toHaveLength(1);
+
+    // Naar de premiumpagina en niet naar de kassa: wie een link koud
+    // binnenkrijgt, heeft eerst de uitleg nodig en niet een betaalformulier.
+    expect(gedeeld[0]?.url).toMatch(/\/premium$/);
+
+    // En er gaat niets mee dan het adres: geen naam, geen voortgang, en ook
+    // niet welke oefening het kind wilde doen.
+    const alles = JSON.stringify(gedeeld[0]);
+    for (const geheim of ['Fenna', 'provincies', 'bliksem']) {
+      expect(alles.toLowerCase(), geheim).not.toContain(geheim.toLowerCase());
+    }
+  });
+
+  test('zonder deelknop staat de link er om te kopiëren', async ({ page, context }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
+    });
+
+    await signIn(page, 'Joep');
+    await page.goto('/topografie');
+    await page
+      .getByRole('region', { name: /Kies een onderwerp/ })
+      .getByRole('button', { name: /^Provincies/ })
+      .click();
+    await page
+      .getByRole('region', { name: /Hoe wil je/ })
+      .getByRole('button', { name: /^Bliksemronde/ })
+      .click();
+
+    const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+
+    // De mail staat er hoe dan ook, ook op een laptop zonder deelknop.
+    await expect(venster.getByRole('link', { name: 'Of mail het ze' })).toHaveAttribute(
+      'href',
+      /^mailto:/,
+    );
+
+    await venster.getByRole('button', { name: 'Versturen' }).click();
+    await expect(venster.getByRole('status')).toBeVisible();
+  });
+});

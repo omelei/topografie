@@ -123,6 +123,40 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
  * gefotografeerd worden, en waarvan het venster op een telefoon tegen de
  * onderrand staat — precies waar ADR-163 al op wees.
  */
+/**
+ * Het venster dat een slot opent (ADR-163, ADR-174). Op een telefoon staat het
+ * tegen de onderrand, en de drie uitwegen moeten daar naast elkaar leesbaar
+ * blijven — dat is wat deze foto's laten zien.
+ */
+test.describe('zonder code', () => {
+  // De rest van dit bestand draait mét code (`playwright.config.ts`), en dan
+  // start de bliksemronde gewoon. Het slot is wat een kind zonder code ziet.
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('the parent question, and sending it on', async ({ page }, testInfo) => {
+    const size = testInfo.project.name;
+    await signIn(page, 'Sanne');
+
+    await page.goto('/topografie');
+    await page
+      .getByRole('region', { name: /Kies een onderwerp/ })
+      .getByRole('button', { name: /^Provincies/ })
+      .click();
+    await page
+      .getByRole('region', { name: /Hoe wil je/ })
+      .getByRole('button', { name: /^Bliksemronde/ })
+      .click();
+
+    const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+    await expect(venster).toBeVisible(READY);
+    await shoot(page, size, '24-ouder-vraag');
+
+    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible(READY);
+    await shoot(page, size, '25-doorsturen');
+  });
+});
+
 test('the switcher and the parent page', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
   await signIn(page, 'Noor');

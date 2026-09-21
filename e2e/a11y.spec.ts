@@ -284,6 +284,40 @@ test('explore has no violations, empty or with something chosen', async ({ page 
  * ouder een e-mailadres en geld achterlaat.
  */
 /**
+ * Het venster dat een slot opent, in alle drie zijn standen (ADR-174).
+ *
+ * Het is een `<dialog>` die van inhoud verandert zonder dicht te gaan, en dat
+ * is precies waar een naam stil kan wegvallen: de kop staat alleen in de eerste
+ * stand. Deze scan zou dat hebben gezien, en ziet het voortaan.
+ */
+test.describe('het slot zonder code', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('the parent question has no violations, in each of its three states', async ({ page }) => {
+    await signIn(page, 'Sanne');
+    await page.goto('/topografie');
+    await kiesOnderwerp(page, [/^Provincies/]);
+    await page
+      .getByRole('region', { name: /Hoe wil je/ })
+      .getByRole('button', { name: /^Bliksemronde/ })
+      .click();
+
+    const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+    await expect(venster).toBeVisible();
+    expect((await scan(page)).violations).toEqual([]);
+
+    await venster.getByRole('button', { name: 'Mijn vader of moeder is erbij' }).click();
+    await expect(venster.getByLabel('Typ de code')).toBeVisible();
+    expect((await scan(page)).violations).toEqual([]);
+
+    await venster.getByRole('button', { name: 'Terug', exact: true }).click();
+    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible();
+    expect((await scan(page)).violations).toEqual([]);
+  });
+});
+
+/**
  * De ouderpagina en de wisselaar (ADR-173).
  *
  * Twee dingen die alleen hier staan en precies het soort ding zijn dat stil
