@@ -45,9 +45,10 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   await expect(page.getByText('0 van de 12 gehaald')).toHaveCount(0);
   await expect(kast).toContainText('Hier komen je diploma’s te hangen.');
 
-  // De regel staat er één keer en niet op elke kaart: twaalf keer dezelfde zin
-  // onder elkaar is geen uitleg maar een muur waarin de kaarten verdwijnen.
-  await expect(kast.getByText(/Een onderdeel telt mee als je het drie keer/)).toHaveCount(1);
+  // De regel die hier stond, staat sinds ADR-177 in de uitleg één druk verder:
+  // hij legde één voorwaarde uit op de plek waar een kind zijn stand komt
+  // lezen, terwijl de uitleg die de vraag beantwoordt eronder stond.
+  await expect(kast.getByText(/telt mee als je het drie keer/)).toHaveCount(0);
   await expect(kast.getByText('Nog niet', { exact: true })).toHaveCount(32);
 });
 
@@ -57,10 +58,14 @@ test('Jij toont de diploma’s van dit kind, met de uitleg erbij', async ({ page
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   await expect(kast).toBeVisible();
 
-  // Hoe je een diploma haalt, staat in de kast, één druk verder (ADR-172).
-  await expect(kast).not.toContainText('Is de ring om een diploma vol, dan doe je de toets.');
+  // Hoe je een diploma haalt, staat in de kast, één druk verder (ADR-172), en
+  // sinds ADR-177 in vijf stappen die de vraag in de titel beantwoorden: van
+  // kiezen tot printen, en niet beginnend bij de uitzondering.
+  await expect(kast).not.toContainText('Is de ring helemaal vol?');
   await kast.getByRole('button', { name: 'Hoe haal je een diploma?' }).click();
-  await expect(kast).toContainText('Is de ring om een diploma vol, dan doe je de toets.');
+  await expect(kast).toContainText('Kies een diploma. Bijvoorbeeld de tafel van 6.');
+  await expect(kast).toContainText('Is de ring helemaal vol? Dan mag je de toets doen.');
+  await expect(kast).toContainText('Dan is het diploma van jou.');
 
   // Het schooljaar is een printknop in de kast, en pas als er iets gehaald is:
   // op dag één is er geen blad om te printen (ADR-172). De reeks staat nergens

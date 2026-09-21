@@ -207,16 +207,15 @@ export const nl = {
   // van Jij zegt wat er op de pagina staat.
   // De bovenkant van de pagina (ADR-148): alles bij elkaar, over elk vak.
   'retention.geheugenTitel': 'Je geheugen',
-  'retention.geheugenEen': 'onderdeel onthoud je',
-  'retention.geheugenVeel': 'onderdelen onthoud je',
+  // Zonder het woord "onderdeel" (ADR-177). Dat woord wordt nergens in dit
+  // product uitgelegd, en de eigenaar las het — terecht — als "goede
+  // antwoorden", wat iets heel anders is: dat telt `Hoe vaak oefen je`. Hier
+  // staat nu helemaal geen zelfstandig naamwoord, want de bijzin draagt het
+  // al: "8 — weet je goed — van de 30 die je geoefend hebt".
+  'retention.geheugenGoed': 'weet je goed',
   'retention.geheugenVan': 'van de {aantal} die je geoefend hebt',
   'retention.geheugenLeeg':
     'Je hebt nog niets geoefend. Na je eerste ronde zie je hier wat je onthoudt.',
-  // In de ring staat het getal met deze twee woorden eronder; de zin ernaast
-  // zegt het voluit, en dat is ook wat een schermlezer hoort.
-  'retention.ringLabel': 'over 3 weken',
-  'retention.ringZin': 'Over drie weken weet je van alles wat je geoefend hebt nog {procent}%.',
-  'retention.vakTitel': 'Per vak',
   'retention.vakRegel': '{onthouden} onthoud je, {geoefend} geoefend, {totaal} in totaal',
   'retention.vakLeeg': 'Nog niet geoefend, {totaal} in totaal',
   // Alles wat er ooit geoefend is, en de laatste acht weken, onder de tegels van
@@ -233,7 +232,11 @@ export const nl = {
   'retention.grafiekDezeZin': 'Deze week: {goed} van de {totaal} vragen goed.',
   'retention.grafiekGoed': 'goed',
   'retention.grafiekFout': 'niet goed',
-  'retention.onderwerpTitel': 'Per onderwerp',
+  // "Per onderwerp" was een eigen kop met een eigen blok en is weg (ADR-177):
+  // het onderwerp is de zoom binnen Je geheugen geworden, en drie koppen voor
+  // ver, middel en dichtbij lazen als drie onderwerpen. Wat overblijft zijn de
+  // vragen die een kind beantwoordt door te drukken, en die staan er zichtbaar
+  // boven in plaats van alleen als naam voor een schermlezer.
   'retention.welkVak': 'Welk vak?',
   'retention.welkOnderwerp': 'Welk onderwerp?',
   'retention.welkeSom': 'Welke sommen?',
@@ -261,13 +264,9 @@ export const nl = {
   // De gratis voorproef (ADR-124): de pagina zegt welk onderwerp ze laat zien.
   // Dat er meer is, zegt de etalage onder het voorbeeld: één keer vragen per
   // pagina (ADR-172).
-  'retention.voorproef': 'Je ziet hier {onderwerp}.',
   // Het voorbeeldkind (ADR-165). Het woord "voorbeeld" staat er twee keer — in
   // de pil en in de zin — omdat dit het enige op deze pagina is wat niet over
   // dit kind gaat, en één merkje is er dan één te weinig.
-  'retention.voorbeeldLabel': 'Voorbeeld',
-  'retention.voorbeeldUitleg':
-    'Dit zijn niet jouw cijfers. Zo ziet het eruit bij een kind dat hier een paar weken mee oefent.',
   // De muur en de kaart van het voorbeeld heten anders dan die van het kind
   // zelf. Twee dingen met dezelfde naam op één pagina zijn voor een schermlezer
   // één ding dat twee keer staat.
@@ -275,8 +274,6 @@ export const nl = {
   // En geen naam waar de echte naam ín zit: wie "Alles in één blik" zoekt,
   // vindt "Alles in één blik, als voorbeeld" er gewoon bij — dat is hoe een
   // toegankelijke naam gezocht wordt, op een stuk van het geheel.
-  'retention.voorbeeldStippen': 'Het voorbeeld, in één blik',
-  'retention.voorbeeldKaart': 'Voorbeeldkaart van {wat}, met per plek hoe het ervoor staat.',
   // De vraag zelf, de enige op Jij (ADR-172), in woorden die zeggen wat je
   // erbij krijgt in plaats van dat er iets op slot zit — en in de stem van het
   // kind, met de ouder als wie de code heeft (ADR-163).
@@ -299,11 +296,14 @@ export const nl = {
   'retention.regelsTitel': 'Hoe werkt onthouden?',
   'retention.regel1':
     'Je onthoudt iets als je het drie keer goed hebt, op drie verschillende dagen.',
+  // Zonder "onderdeel" en zonder "aan de beurt" (ADR-177). Dat laatste is het
+  // woord van het schema en niet van het kind: wat het betekent is dat één dag
+  // één keer telt, en dát is wat hier nu staat.
   'retention.regel2':
-    'Een goed antwoord telt alleen als het onderdeel aan de beurt was. Heb je het op dezelfde dag nog een keer goed, dan ben je aan het oefenen.',
+    'Op één dag telt één goed antwoord. Heb je het diezelfde dag nog een keer goed, dan telt dat niet extra. Daarom zijn het drie verschillende dagen.',
   'retention.regel3':
     'Heb je iets dat je onthoudt lang niet gezien? Dan moet je het even opfrissen. Eén goed antwoord is genoeg, en je onthoudt het weer.',
-  'retention.regel4': 'Heb je een onderdeel fout? Dan begin je daar weer opnieuw mee.',
+  'retention.regel4': 'Heb je iets fout? Dan begin je daarmee weer opnieuw.',
 
   // Het toetsblok is weg (ADR-162). Het vroeg een datum en een vak, en gaf
   // daar een voorspelling voor terug; wat het niet gaf was een reden om een
@@ -569,8 +569,14 @@ export const nl = {
   // nergens uitkomt is de snelste manier om een ouder kwijt te raken die net
   // betaald heeft.
   'premium.usp.zicht': 'Uitgebreide statistieken over je kind',
+  // Zonder de voorspelling over drie weken (ADR-177). Die stond hier als
+  // premiumbelofte en klopte op twee manieren niet meer: hij staat niet meer
+  // bij de statistieken, en waar hij wél staat — na een ronde — is hij gratis
+  // (`premium.regel.voorspelling`). Een belofte die nergens uitkomt is de
+  // snelste manier om een ouder kwijt te raken die net betaald heeft, en dat
+  // staat al sinds ADR-164 boven deze sleutel.
   'premium.usp.zichtUit':
-    'Per vak, per onderwerp en per som: wat je kind al kent, wat opgefrist moet worden, hoe het oefenen week na week gaat, en hoeveel het er over drie weken nog van weet.',
+    'Tot op de som en het woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
   'premium.usp.zelf': 'Je kind overhoort zichzelf',
   'premium.usp.zelfUit':
     'Met de oefentoets test je kind zelf of het de stof kent: zonder hulp, met een cijfer aan het eind. Jij hoeft niet meer te overhoren.',
@@ -599,19 +605,35 @@ export const nl = {
   'premium.groep.uitdagen': 'Uitdagen',
   'premium.groep.ouders': 'Voor ouders',
   'premium.regel.vakken': 'Alle vakken en alle onderwerpen',
-  'premium.regel.blijfthangen': 'Zien wat er blijft hangen, vak voor vak',
+  // Sinds ADR-177 is dit waar. Het stond hier als "Basis" terwijl een kind
+  // zonder code één onderwerp van één vak zag — de provincies van Nederland,
+  // niet als keuze maar als lot. Nu kan het elk van zijn eigen vakken en
+  // onderwerpen aanwijzen.
+  'premium.regel.blijfthangen': 'Per vak en per onderwerp zien wat blijft hangen',
   'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
-  'premium.regel.voorspelling': 'Na elke ronde zien hoeveel je er over drie weken nog van weet',
+  // "Een schatting" en niet "zien" (ADR-177): het is een vergeetcurve met een
+  // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
+  'premium.regel.voorspelling':
+    'Na elke ronde een schatting van hoeveel je er over drie weken nog van weet',
   'premium.regel.tafeldiploma': 'De twaalf tafeldiploma’s',
-  'premium.regel.diplomas': 'Diploma’s voor vlaggen, klok en topografie',
+  // Alle vijf de vakken, en het getal erbij (ADR-177). Er stond "vlaggen, klok
+  // en topografie": Taal ontbrak, en de twintig rekendiploma's naast de tafels
+  // ook. Dat is zesenvijftig van de achtenzestig, en de regel noemde er drie
+  // soorten van. Een tabel die minder belooft dan het product geeft, is net zo
+  // fout als een die meer belooft — `kast.test.ts` bewaakt de aantallen.
+  'premium.regel.diplomas': 'De andere 56 diploma’s: rekenen, topografie, taal, klok en vlaggen',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
-  'premium.regel.onthouden': 'Per vak en per onderwerp zien wat je kind onthoudt, week na week',
+  // Wat premium hier écht toevoegt sinds ADR-177: de diepte en de tijd. Per
+  // vak en per onderwerp kijken is gratis geworden, en deze regel zei nog dat
+  // je dat kocht.
+  'premium.regel.onthouden': 'Per som en per woord zien hoe het gaat, en het verloop week na week',
   'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
   'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
   'premium.regel.bliksem': 'De bliksemronde en overleven',
   'premium.regel.lijsten': 'Oefenstof van school intypen of importeren',
-  'premium.regel.gezin': 'Meer kinderen, op maximaal drie apparaten',
+  'premium.regel.kinderen': 'Tot drie kinderen op dit apparaat',
+  'premium.regel.gezin': 'Eén code voor al je kinderen, op maximaal drie apparaten',
 
   // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen, en
   // alle vier controleerbaar, want dat is het punt. Sinds ADR-145 een kop en
@@ -1271,7 +1293,12 @@ export const nl = {
   // de voordeur, want het is dezelfde som: wat er over is als je niets doet.
   // Geen knop ernaast naar premium — een kind een slot voorhouden op de pagina
   // waar het net iets goed deed, is precies wat PremiumSlot niet doet.
-  'result.onthoud': '{procent}% weet je hier over drie weken nog van.',
+  // Een schatting, en de zin zegt dat nu ook (ADR-177). `retention.ts` schrijft
+  // over zichzelf: "It is a forecast, not a measurement, and the copy around it
+  // must never imply otherwise" — en de oude zin deed precies dat. De ring op
+  // Jij die hetzelfde getal als kop droeg, is weg; hier blijft het staan, want
+  // hier is het één regel na een ronde en heeft het iets om voor te pleiten.
+  'result.onthoud': 'Doe je niets, dan weet je hier over drie weken nog ongeveer {procent}% van.',
   'result.again': 'Nog een ronde',
   // Alleen wat er in deze ronde fout ging, meteen nog een keer (ADR-111).
   'result.herhaalFouten': 'Herhaal je fouten',
@@ -1284,9 +1311,25 @@ export const nl = {
   // naam erin, want wie je bent is het eerste wat Jij zegt (ADR-126), en in de
   // volgorde van de pagina eronder (ADR-172).
   'you.intro':
-    'Je oefent als {naam}. Hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
+    'Je oefent als {naam}. Hier stel je jezelf in, en staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
+  // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
+  // bezet: groen is "goed", gearceerd rood is "fout", koraal is het merk en de
+  // zes vakkleuren zeggen welk vak je voor je hebt. De echte tekeningen komen
+  // later; de namen hieronder blijven dan staan.
+  'you.avatar': 'Je avatar',
+  'you.avatarGeen': 'Nog niet gekozen',
+  'you.avatarKies': 'Kies je avatar',
+  'avatar.zon': 'Zon',
+  'avatar.wolk': 'Wolk',
+  'avatar.bloem': 'Bloem',
+  'avatar.vis': 'Vis',
+  'avatar.raket': 'Raket',
+  'avatar.kat': 'Kat',
+  'avatar.robot': 'Robot',
+  'avatar.boot': 'Boot',
+
   'you.naam': 'Je naam',
   'you.naamLabel': 'Je naam',
   'you.nameChange': 'wijzigen',
@@ -1316,12 +1359,22 @@ export const nl = {
   // ervoor (ADR-172). Geen voorspelling en geen vergelijking: wat er staat is
   // wat er gebeurd is — rondes, en waar ze op uitkwamen.
   'you.week': 'Hoe vaak oefen je?',
-  'you.weekTegels': 'Deze week',
-  'you.weekNone': 'Deze week nog niet geoefend.',
-  // Vier tegels (ADR-112). Een streepje waar
-  // nog geen cijfer is: nul zou een cijfer zijn.
+  // De strook van zeven dagen (ADR-177). "Deze week" stond boven een venster
+  // dat op woensdag bij vorige week donderdag begint — het zijn de laatste
+  // zeven dagen, en dat staat er nu ook.
+  'you.weekStrook': 'De laatste 7 dagen',
+  'you.weekDagLeeg': 'Op {dag} niet geoefend.',
+  'you.weekDagRondes': 'Op {dag} {rondes} keer geoefend.',
+  'you.weekDagVandaag': 'Dat is vandaag.',
+  'you.weekNone': 'De laatste zeven dagen nog niet geoefend.',
+  'you.weekDagen': 'Je hebt op {dagen} schooldagen geoefend.',
+  // Wie op méér dagen oefende dan er schooldagen waren, krijgt geen breuk:
+  // "6 van 5" is er geen (`dagenTekst`), en dan klopt "schooldagen" ook niet.
+  'you.weekDagenLos': 'Je hebt op {dagen} dagen geoefend.',
+  // Drie tegels (ADR-112, ADR-177). "Dagen geoefend" stond er als vierde en is
+  // de strook erboven geworden: een breuk is geen beeld. Een streepje waar nog
+  // geen cijfer is: nul zou een cijfer zijn.
   'you.tegelRondes': 'Rondes',
-  'you.tegelDagen': 'Dagen geoefend',
   // Tegen schooldagen afgezet, zoals het weekbericht deed (ADR-133, ADR-172).
   'you.dagenVan': '{dagen} van {schooldagen}',
   'you.tegelVragen': 'Vragen beantwoord',
@@ -1405,6 +1458,23 @@ export const nl = {
   'ouder.kinderenUitleg':
     'Ieder kind heeft een eigen voortgang. Wat de een oefent, telt niet mee voor de ander.',
   'ouder.kinderenVol': 'Er kunnen {aantal} kinderen op dit apparaat.',
+
+  // Hoe het met je kinderen gaat (ADR-177). Dit stond op vier plekken beloofd
+  // — in de poort, in de volwassenencheck, bij het zetten van de pincode en in
+  // de rij van de wisselaar — en was er nergens. Per kind, want twee kinderen
+  // optellen geeft een getal dat over niemand gaat.
+  'ouder.hoeGaatHet': 'Hoe gaat het?',
+  'ouder.hoeGaatHetUitleg':
+    'Per kind, over alle vakken bij elkaar. Wat je kind zelf ziet, staat op Jij; per som en per woord kijken zit in premium.',
+  'ouder.kindNogNiets': '{naam} heeft nog niets geoefend.',
+  'ouder.kindDagEen': 'Op 1 van de laatste 7 dagen geoefend.',
+  'ouder.kindDagen': 'Op {dagen} van de laatste 7 dagen geoefend.',
+  // "Naar schatting", en de voorwaarde erbij. Het is een vergeetcurve met een
+  // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
+  // Op Jij is dit getal weg omdat een percentage groep 7-stof is; hier is de
+  // lezer volwassen, en dit is de plek die ADR-177 ervoor aanwees.
+  'ouder.kindSchatting':
+    'Zonder oefenen is daar over drie weken naar schatting nog {procent}% van over.',
 
   'ouder.premium': 'Premium',
   'ouder.premiumUit':
@@ -1528,23 +1598,39 @@ export const nl = {
   'diploma.soortKlok': 'Klokdiploma',
   'diploma.soortTopo': 'Topodiploma',
 
-  // Hoe een diploma verdiend wordt, in een uitklap onder de kast (ADR-172). De
-  // regel zelf staat al boven het raster (`kast.regel`); dit is wat een kind
-  // zoekt dat alles goed had en toch geen diploma kreeg.
+  // Hoe een diploma verdiend wordt, in een uitklap onder de kast (ADR-177).
+  //
+  // Vijf stappen, en dat is de hele verandering. Er stonden twee lopende
+  // alinea's die begonnen bij de uitzondering ("een goed antwoord telt alleen
+  // als het onderdeel aan de beurt was") en het woord "onderdeel" gebruikten
+  // dat nergens in dit product wordt uitgelegd. Wie de vraag stelt — hoe haal
+  // ik er een — krijgt nu de volgorde waarin het gebeurt, van kiezen tot
+  // printen, met per stap één zin.
+  //
+  // Elke zin is nagelopen tegen `leitner.ts` en `voortgang.ts`: drie keer goed
+  // op drie verschillende dagen (INTERVAL_DAYS), de ring leest `isBewezen` en
+  // kan dus niet teruglopen, en de toets staat open zodra `rijp` waar is.
   'you.diplomaTitel': 'Hoe haal je een diploma?',
-  'you.diplomaUitleg':
-    'Een goed antwoord telt alleen als het onderdeel aan de beurt was. Eén keer goed telt nog niet mee: dat is het verschil tussen iets kennen en iets onthouden. Is de ring om een diploma vol, dan doe je de toets.',
-  'you.diplomaTempo':
-    'Hoe beter je de stof kent, hoe sneller je het diploma haalt. Wat je onthoudt, blijft meetellen, en de ring om een diploma loopt nooit terug.',
+  'you.diplomaStap1': 'Kies een diploma. Bijvoorbeeld de tafel van 6.',
+  'you.diplomaStap2':
+    'Ga oefenen. Je weet iets pas goed als je het drie keer goed had, op drie verschillende dagen.',
+  'you.diplomaStap3':
+    'De ring om het diploma laat zien hoe ver je bent. Die ring loopt nooit terug, ook niet als je een keer iets fout hebt.',
+  'you.diplomaStap4': 'Is de ring helemaal vol? Dan mag je de toets doen.',
+  'you.diplomaStap5':
+    'Haal je de toets? Dan is het diploma van jou. Het blijft altijd van jou, en je kunt het uitprinten.',
 
   // De diplomakast op Jij: alle diploma's, één vak open en de rest als regel.
   'kast.titel': 'Jouw diploma’s',
   'kast.stand': '{aantal} van de {totaal} gehaald.',
   'kast.leeg': 'Hier komen je diploma’s te hangen. Druk op een diploma om eraan te beginnen.',
-  // De regel, één keer boven het raster in plaats van op elke kaart.
-  'kast.regel':
-    'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen.',
   'kast.vakAantal': '{aantal} diploma’s',
+  // Een vak waar dit apparaat geen code voor heeft (ADR-177). Het vak staat er
+  // wél, want anders bestaat het niet voor een kind zonder code; de diploma's
+  // erachter worden niet getekend, want dat verbiedt ADR-116.
+  'kast.vakOpSlot': 'Hier zijn ook diploma’s',
+  'kast.vakOpSlotUitleg':
+    'Voor de diploma’s van {vak} hebben je ouders een code nodig. Druk hier om te kijken wat dat is.',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet

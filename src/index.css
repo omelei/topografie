@@ -2412,6 +2412,59 @@
     background: color-mix(in srgb, var(--module) 5%, var(--kaart));
   }
 
+  /* ---- De laatste zeven dagen -------------------------------------------
+   * Zeven hokjes onder "Hoe vaak oefen je?", vandaag rechts (ADR-177). Het
+   * blok was vier getallen op papier, en het getal dat een kind het meest
+   * aangaat stond erin als een breuk: "3 van 5".
+   *
+   * Een geoefende dag draagt de kleur van leer.nu, het aantal rondes en een
+   * zwaardere letter — drie signalen, zodat kleur nooit het enige is. Geen
+   * groen: een geoefende dag is een feit en geen goed antwoord (HUISSTIJL §8).
+   * Vandaag krijgt een rand, ook als er niet geoefend is. */
+  .tk-weekstrook {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-weekdag {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 2px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-chip);
+    background: var(--papier);
+  }
+  .tk-weekdag[data-geoefend='ja'] {
+    background: color-mix(in srgb, var(--module) 16%, var(--kaart));
+  }
+  .tk-weekdag[data-vandaag='ja'] {
+    border-color: var(--module);
+  }
+  .tk-weekdag-naam {
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    color: var(--tekst-secundair);
+  }
+  .tk-weekdag[data-geoefend='ja'] .tk-weekdag-naam {
+    font-weight: 600;
+    color: var(--inkt);
+  }
+  .tk-weekdag-getal {
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-variant-numeric: tabular-nums;
+    color: var(--tekst-secundair);
+  }
+  .tk-weekdag[data-geoefend='ja'] .tk-weekdag-getal {
+    color: var(--inkt);
+  }
+
   /* ---- Week na week -----------------------------------------------------
    * The questions of the last eight weeks as bars, right at the foot of each
    * bar and wrong above it: green and hatched red, the way an answer looks

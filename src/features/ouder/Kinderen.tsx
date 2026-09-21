@@ -26,8 +26,13 @@ import type { ProfileRecord } from '@/store/db';
  * scherm als "alles van dit apparaat halen" — met de vraag wat er weggaat en
  * een knop die zegt wat hij doet. Het hoort bij de gegevensknoppen van F3, waar
  * ook het meenemen van de gegevens van een kind komt.
+ *
+ * **`onVeranderd` zegt het tegen de rest van de pagina** (ADR-177). Dit blok
+ * houdt zijn eigen lijst bij, en sinds er een tweede blok op deze pagina staat
+ * dat dezelfde kinderen leest — `HoeGaatHet` — liepen die twee uit elkaar: een
+ * kind erbij verscheen hier meteen en daar pas na herladen.
  */
-export function Kinderen() {
+export function Kinderen({ onVeranderd }: { readonly onVeranderd?: () => void }) {
   const [kinderen, setKinderen] = useState<ProfileRecord[] | null>(null);
   const [erbij, setErbij] = useState(false);
   const [naam, setNaam] = useState('');
@@ -47,6 +52,7 @@ export function Kinderen() {
     setNaam('');
     setErbij(false);
     setBezig(false);
+    onVeranderd?.();
   }
 
   const vol = (kinderen?.length ?? 0) >= MAX_KINDEREN;
@@ -60,11 +66,12 @@ export function Kinderen() {
           <Kind
             key={kind.id}
             kind={kind}
-            onGewijzigd={(bijgewerkt) =>
+            onGewijzigd={(bijgewerkt) => {
               setKinderen((rijen) =>
                 (rijen ?? []).map((rij) => (rij.id === bijgewerkt.id ? bijgewerkt : rij)),
-              )
-            }
+              );
+              onVeranderd?.();
+            }}
           />
         ))}
       </ul>

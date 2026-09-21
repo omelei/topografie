@@ -180,6 +180,14 @@ test('the Jij page has no violations', async ({ page }) => {
   await instellingen.getByRole('button', { name: /^Je groep/ }).click();
   await expect(instellingen.getByRole('group', { name: 'In welke groep zit je?' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
+
+  // En met de avatarkiezer open (ADR-177): acht knoppen die alleen in vorm
+  // verschillen, met hun naam ernaast. Dat laatste is de hele reden dat dit
+  // hier gescand wordt — acht tekeningen zonder woord zouden voor een
+  // schermlezer acht keer niets zijn.
+  await instellingen.getByRole('button', { name: /^Je avatar/ }).click();
+  await expect(instellingen.getByRole('group', { name: 'Kies je avatar' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
 });
 
 test('the map has no violations while asking, and none while showing the answer', async ({

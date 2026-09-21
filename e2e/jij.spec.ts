@@ -39,7 +39,7 @@ async function naarOuder(page: Page) {
   await expect(page).toHaveURL(/\/ouder$/);
 }
 
-test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgorde', async ({
+test('Jij draagt je instellingen, je diploma’s en al je cijfers, in die volgorde', async ({
   page,
 }) => {
   await signIn(page, 'Noor');
@@ -48,16 +48,15 @@ test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgor
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   // De zin onder de titel zegt wie er oefent en wat er op de pagina staat.
   await expect(page.locator('.tk-etalage-tekst').first()).toHaveText(
-    'Je oefent als Noor. Hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
+    'Je oefent als Noor. Hier stel je jezelf in, en staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
   );
 
   for (const blok of [
+    'Instellingen',
     'Jouw diploma’s',
     'Je geheugen',
     'Hoe vaak oefen je?',
-    'Per vak',
     'Alles in één blik',
-    'Instellingen',
     'Eigen woorden',
   ]) {
     await expect(page.getByRole('region', { name: blok, exact: true })).toBeVisible();
@@ -85,18 +84,24 @@ test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgor
     'Account',
     'Premium',
     'De reeks',
+    // Per vak en Per onderwerp zijn de zoom binnen Je geheugen geworden
+    // (ADR-177): drie koppen voor ver, middel en dichtbij lazen als drie
+    // onderwerpen.
+    'Per vak',
+    'Per onderwerp',
   ]) {
     await expect(page.getByRole('region', { name: weg, exact: true }), weg).toHaveCount(0);
   }
 
-  // Eerst wat je gehaald hebt, dan of het blijft hangen, en als laatste wat je
-  // instelt (ADR-172). De uitweg stond eronder en staat sinds ADR-173 bij de
-  // ouder, dus de instellingen zijn nu het laatste blok van deze pagina.
+  // Wie je bent, dan wat je gehaald hebt, dan of het blijft hangen (ADR-177).
+  // De instellingen stonden onderaan sinds ADR-172, met acht blokken tussen de
+  // naam en de diploma's als reden; het zijn er nu twee, en er is een avatar
+  // bij gekomen die op een pagina die "Jij" heet bovenaan hoort.
   const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
   const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
+  expect(plek('Instellingen')).toBeLessThan(plek('Jouw diploma’s'));
   expect(plek('Jouw diploma’s')).toBeLessThan(plek('Je geheugen'));
-  expect(plek('Je geheugen')).toBeLessThan(plek('Instellingen'));
-  expect(koppen.at(0)).toBe('Jouw diploma’s');
+  expect(koppen.at(0)).toBe('Instellingen');
 });
 
 /**

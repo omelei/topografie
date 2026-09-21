@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Dot } from '@/components/Dot';
 import { NextIcon } from '@/components/Icon';
 import { STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
@@ -9,7 +9,14 @@ import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import type { PlayedRound } from '@/store/progress';
 import { schooldagen } from './schooldagen';
-import { geoefend, type Geheugen, type VakStand, type WeekTelling } from './statistiek';
+import {
+  geoefend,
+  perDag,
+  type DagTelling,
+  type Geheugen,
+  type VakStand,
+  type WeekTelling,
+} from './statistiek';
 
 /**
  * De cijfers op Jij (ADR-148, ADR-171, ADR-172): wat je onthoudt over alles,
@@ -93,20 +100,48 @@ export function StandTegels({
  * **Met de uitleg erbij** (ADR-172). "Wanneer onthoud je iets?" was een eigen
  * blok bovenaan, open, met vier regels (ADR-160). De reden daarvoor blijft: wie
  * het woord niet kent, leest getallen zonder eenheid. Dus staat de eerste regel
- * — wat onthouden is — open boven de ring die het telt. De andere drie gaan over
- * uitzonderingen die een kind één keer leest, en staan in een uitklap eronder;
- * open kostten ze bij elk bezoek een half scherm op een telefoon.
+ * — wat onthouden is — open boven het getal dat het telt. De andere drie gaan
+ * over uitzonderingen die een kind één keer leest, en staan in een uitklap
+ * eronder; open kostten ze bij elk bezoek een half scherm op een telefoon.
+ *
+ * **De ring met de voorspelling is weg** (ADR-177), en dat was het grootste
+ * ding op de kaart. Twee redenen, en ze wijzen dezelfde kant op.
+ *
+ * Ten eerste was het geen meting maar een model: een vergeetcurve met een
+ * gekozen constante (`retention.ts` — negen tiende blijft staan na één stap van
+ * de doos). Dat bestand schrijft over zichzelf dat de tekst eromheen nooit mag
+ * suggereren dat het een meting is, en de zin eronder deed precies dat: "Over
+ * drie weken weet je nog 67%." Niet bijna, niet ongeveer.
+ *
+ * Ten tweede is een percentage in Nederland stof van groep 7 en 8, en dit
+ * product begint bij zes jaar. Het kind voor wie deze pagina geschreven is, kan
+ * het grootste getal erop niet lezen — en het getal dat het wél kan lezen,
+ * hoeveel het er goed weet, stond ernaast in kleiner.
+ *
+ * Wat ervoor in de plaats komt is niets: de tegel "Even opfrissen" telt al wat
+ * er te doen is, en handelen hoort op Vandaag (ADR-172). De voorspelling zelf
+ * blijft bestaan — hij stuurt het schema en staat na een ronde op `RondeKlaar`,
+ * waar hij één regel is met iets om voor te pleiten in plaats van een kop.
  */
 export function GeheugenKaart({
   stand,
   uitleg,
+  zoom,
 }: {
   readonly stand: Geheugen;
   /** De regels, ingeklapt onder de kaart (ADR-172). */
   readonly uitleg?: ReactNode;
+  /**
+   * Eén vak en één onderwerp, in dezelfde sectie (ADR-177).
+   *
+   * "Per vak" en "Per onderwerp" stonden hieronder als twee eigen koppen, en
+   * dat was vreemd op de manier die de eigenaar benoemde: het zijn niet drie
+   * onderwerpen maar één, van ver naar dichtbij. Alles bij elkaar, dan één vak,
+   * dan één onderwerp — dus één regio met één naam, en de zoom erin.
+   */
+  readonly zoom?: ReactNode;
 }) {
   const totaal = geoefend(stand);
-  const procent = stand.overDrieWeken;
   const telling = {
     remembered: stand.onthouden,
     refresh: stand.opfrissen,
@@ -122,40 +157,22 @@ export function GeheugenKaart({
       <p className="text-lopend">{t('retention.regel1')}</p>
 
       <div className="tk-card tk-vakkleur tk-geheugen">
-        {totaal === 0 || procent === null ? (
+        {totaal === 0 ? (
           <p className="text-lopend text-tekst-secundair">{t('retention.geheugenLeeg')}</p>
         ) : (
           <>
-            <div className="tk-geheugen-kop">
-              {/* Decoratief: de zin ernaast zegt hetzelfde in woorden. */}
-              <div
-                className="tk-ring"
-                style={{ '--vul': `${procent}%` } as CSSProperties}
-                aria-hidden="true"
-              >
-                <span className="tk-ring-getal">{t('retention.procent', { procent })}</span>
-                <span className="tk-ring-label">{t('retention.ringLabel')}</span>
-              </div>
-
-              <div className="flex min-w-0 flex-col gap-2">
-                <p className="tk-reeks-getal">
-                  <span className="tk-reeks-aantal">{stand.onthouden}</span>
-                  <span className="tk-reeks-zin">
-                    {stand.onthouden === 1
-                      ? t('retention.geheugenEen')
-                      : t('retention.geheugenVeel')}
-                  </span>
-                </p>
-                <p className="tk-hulp">{t('retention.geheugenVan', { aantal: totaal })}</p>
-                <p className="text-lopend">{t('retention.ringZin', { procent })}</p>
-              </div>
-            </div>
+            <p className="tk-reeks-getal">
+              <span className="tk-reeks-aantal">{stand.onthouden}</span>
+              <span className="tk-reeks-zin">{t('retention.geheugenGoed')}</span>
+            </p>
+            <p className="tk-hulp">{t('retention.geheugenVan', { aantal: totaal })}</p>
 
             <StandTegels telling={telling} statussen={GEOEFEND} />
           </>
         )}
       </div>
       {uitleg}
+      {zoom}
     </section>
   );
 }
@@ -214,15 +231,17 @@ export function HoeVaak({
   const meest = [...perSet.entries()].sort((a, b) => b[1] - a[1])[0] ?? null;
 
   // Een zaterdag telt mee als er geoefend is (`kalender.ts`). Wie op meer dagen
-  // oefende dan er schooldagen waren, ziet alleen het getal: "6 van 5" is geen
-  // breuk.
-  const breuk = school > 0;
-  const dagenTekst =
-    breuk && dagen <= school ? t('you.dagenVan', { dagen, schooldagen: school }) : String(dagen);
+  // oefende dan er schooldagen waren, krijgt geen breuk — "6 van 5" is er geen
+  // — en dan klopt het woord "schooldagen" ook niet meer, dus die zin is een
+  // andere (`you.weekDagenLos`).
+  //
+  // `school !== 0` en niet `school > 0`: de copy-toets zoekt tekst tussen een
+  // `>` en een `<`, en leest `school > 0 && dagen <= school` als een zichtbare
+  // string.
+  const breuk = school !== 0 && dagen <= school;
 
   const tegels = [
     [t('you.tegelRondes'), String(deze.length)],
-    [t('you.tegelDagen'), dagenTekst],
     [t('you.tegelVragen'), String(beantwoord)],
     [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer)],
   ] as const;
@@ -230,11 +249,21 @@ export function HoeVaak({
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.week')}>
       <h2 className="tk-sectie">{t('you.week')}</h2>
-      {deze.length === 0 ? (
-        <p className="text-tekst-secundair">{t('you.weekNone')}</p>
-      ) : (
+
+      {/* De strook staat er ook in een week zonder rondes, en dat is met opzet:
+          zeven lege hokjes met vandaag aangewezen zijn de uitnodiging, en een
+          zin die zegt dat er niets was, is er alleen de mededeling van. */}
+      <Weekstrook dagen={perDag(rondes, now)} />
+      <p className="text-tekst-secundair">
+        {deze.length === 0
+          ? t('you.weekNone')
+          : breuk
+            ? t('you.weekDagen', { dagen: t('you.dagenVan', { dagen, schooldagen: school }) })
+            : t('you.weekDagenLos', { dagen })}
+      </p>
+
+      {deze.length === 0 ? null : (
         <>
-          <p className="tk-label">{t('you.weekTegels')}</p>
           <dl className="tk-cijfers">
             {tegels.map(([label, waarde]) => (
               <div key={label} className="tk-cijfer">
@@ -256,6 +285,57 @@ export function HoeVaak({
   );
 }
 
+/**
+ * De laatste zeven dagen als hokjes, vandaag rechts (ADR-177).
+ *
+ * **Waarom dit er staat.** "Hoe vaak oefen je?" was vier getallen op een grijze
+ * ondergrond, en het getal dat een kind het meest aangaat — heb ik vandaag al
+ * geoefend? — stond erin als "Dagen geoefend: 3 van 5". Dat is een breuk, en
+ * een breuk is geen beeld. Zeven hokjes zijn dat wel: je ziet in één oogopslag
+ * welke dagen je gehaald hebt, welke niet, en dat de laatste vandaag is.
+ *
+ * **Drie signalen, niet één.** Een gevuld hokje draagt de vakkleur én het
+ * aantal rondes én een zwaardere letter; een leeg hokje een liggend streepje.
+ * Kleur alleen zou dit onleesbaar maken voor een kind dat kleuren niet
+ * onderscheidt, en dat is precies de helft van de huisstijl die telt.
+ *
+ * **Geen groen.** Een geoefende dag is een feit en geen goed antwoord, en groen
+ * en gearceerd rood zijn in dit product voorbehouden aan antwoorden
+ * (`StatusLabel`, HUISSTIJL §8). Dus de kleur van leer.nu zelf, zoals de tegels
+ * van Je geheugen.
+ */
+function Weekstrook({ dagen }: { readonly dagen: readonly DagTelling[] }) {
+  return (
+    <ol className="tk-weekstrook" aria-label={t('you.weekStrook')}>
+      {dagen.map((dag) => (
+        <li
+          key={dag.sleutel}
+          className="tk-weekdag"
+          data-geoefend={dag.rondes > 0 ? 'ja' : undefined}
+          data-vandaag={dag.vandaag ? 'ja' : undefined}
+        >
+          <span className="tk-weekdag-naam" aria-hidden="true">
+            {dag.kort}
+          </span>
+          <span className="tk-weekdag-getal" aria-hidden="true">
+            {dag.rondes > 0 ? dag.rondes : '–'}
+          </span>
+          {/* Wat er te zien is, in één zin per dag: een schermlezer leest de
+              lijst af en hoort per hokje de dag, of er geoefend is, en of het
+              vandaag is. */}
+          <span className="tk-sr-only">
+            {t(dag.rondes === 0 ? 'you.weekDagLeeg' : 'you.weekDagRondes', {
+              dag: dag.voluit,
+              rondes: dag.rondes,
+            })}
+            {dag.vandaag ? ` ${t('you.weekDagVandaag')}` : ''}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /** Een deel van een balk als percentage. Wat er is, krijgt in de CSS een minimum. */
 function breedte(deel: number, totaal: number): string {
   return `${totaal === 0 ? 0 : (deel / totaal) * 100}%`;
@@ -264,20 +344,40 @@ function breedte(deel: number, totaal: number): string {
 /**
  * Elk vak op één regel: hoeveel je onthoudt, hoeveel je geoefend hebt, en van
  * hoeveel, met een balk in de kleur van het vak. Een druk op de regel kiest dat
- * vak hieronder, bij Per onderwerp.
+ * vak, en wat eronder staat gaat mee.
+ *
+ * **Sinds ADR-177 is dit de keuze zelf, en staat hij er zonder code.** Twee
+ * dingen die allebei fout waren, met één oorzaak. De rij stond achter premium,
+ * en de chips eronder ook, dus een kind zonder code kreeg altijd en alleen het
+ * eerste onderwerp van het eerste vak te zien: de provincies van Nederland.
+ * Niet als keuze maar als lot — en dat terwijl oefenen volledig gratis is
+ * (`premium.ts`), dus dat kind heeft óók klokgekeken, woorden gedaan en vlaggen
+ * geraden. Het zag cijfers over één van de vijf dingen die het deed.
+ *
+ * Wat premium blijft, is het bijhouden: de tabel per onderdeel en de weken
+ * achter elkaar. Wat gratis wordt, is welk van je eigen vakken je bekijkt. Dat
+ * is dezelfde grens als ADR-133 trok toen de noemer van de weekdagen gratis
+ * werd — een feit over het eigen kind — en het maakt de voorproef van ADR-124
+ * eindelijk een voorproef van iets: de eigen cijfers van dit kind, over het vak
+ * dat het zelf aanwijst.
  */
 export function PerVak({
   vakken,
   modules,
+  gekozen,
   onKies,
 }: {
   readonly vakken: readonly VakStand<Module['id']>[];
   readonly modules: readonly Module[];
+  /** Het vak waar de kaart eronder over gaat. */
+  readonly gekozen: Module['id'];
   readonly onKies: (moduleId: Module['id']) => void;
 }) {
   return (
-    <section className="flex flex-col gap-3" aria-label={t('retention.vakTitel')}>
-      <h2 className="tk-sectie">{t('retention.vakTitel')}</h2>
+    <div className="flex flex-col gap-3">
+      {/* De vraag, niet de categorie: "Per vak" was de naam van een blok dat
+          je las, en dit is een rij die je aanwijst. */}
+      <h3 className="tk-sectie">{t('retention.welkVak')}</h3>
       <ul className="tk-lijst">
         {vakken.map((vak) => {
           const module = modules.find((kandidaat) => kandidaat.id === vak.moduleId);
@@ -291,6 +391,7 @@ export function PerVak({
                 type="button"
                 className="tk-lijstrij"
                 data-module={vak.moduleId}
+                aria-pressed={vak.moduleId === gekozen}
                 onClick={() => onKies(vak.moduleId)}
               >
                 <span className="tk-plaat">
@@ -330,7 +431,7 @@ export function PerVak({
           );
         })}
       </ul>
-    </section>
+    </div>
   );
 }
 

@@ -1,4 +1,6 @@
 import { t } from '@/i18n';
+import { AvatarTeken } from '@/features/player/avatars';
+import { AVATAR_SLEUTEL } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 
 /**
@@ -39,14 +41,17 @@ export function TopBar({
         aria-label={t('wisselaar.knop', { naam: profile.naam })}
         onClick={onProfile}
       >
-        {/* De voorletter is de avatar, en alleen daar waar de naam niet past:
-            op een telefoon. Zodra de naam er staat, staat hij er alleen (ADR-168).
-            Een letter naast dezelfde naam zegt niets wat de naam niet al zegt —
-            het is dezelfde informatie, twee keer, in de smalste balk van de app.
-            Onder 768 is er geen naam om te lezen, en dan is de letter wél het
-            enige wat twee kinderen op één apparaat uit elkaar houdt. */}
+        {/* Het teken staat er alleen waar de naam niet past: op een telefoon.
+            Zodra de naam er staat, staat hij er alleen (ADR-168) — dezelfde
+            informatie twee keer is er één te veel in de smalste balk van de
+            app. Onder 768 is er geen naam om te lezen, en dan is dit wél het
+            enige wat twee kinderen op één apparaat uit elkaar houdt.
+
+            Sinds ADR-177 is dat de avatar die het kind koos, met de voorletter
+            als terugval. Die voorletter deed dit werk niet goed genoeg: twee
+            broers die allebei met een S beginnen, waren hetzelfde rondje. */}
         <span className="tk-profiel-letter" aria-hidden="true">
-          {profile.naam.slice(0, 1).toLocaleUpperCase('nl-NL')}
+          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={20} />
         </span>
         <span className="tk-profiel-naam">{profile.naam}</span>
       </button>

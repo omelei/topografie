@@ -10773,6 +10773,216 @@ achter een pincode, en het kind niet` meldde zich aan als kind en zette de
 
 ---
 
+## ADR-177 — Drie pagina's nagelopen op de lezer die er staat, en op wat waar is
+
+**Status:** accepted. **Date:** 2026-09-21. **Herziet ADR-172** (de indeling van
+Jij), **ADR-165** (het voorbeeldkind), **ADR-160** (de ring met de voorspelling)
+en **ADR-124** (wat de voorproef laat zien). Raakt `leitner.ts` en wat een kind
+oefent niet.
+
+De eigenaar vroeg om één toets op Jij — _"is de uitleg begrijpbaar voor een kind
+van 8 jaar uit Nederland?"_ — en daarna om dezelfde ronde over Premium en
+Ouder. Het zijn drie pagina's en één besluit, want de fouten hangen aan elkaar:
+de premiumtabel klopte niet meer **doordat** Jij veranderde, en het blok op de
+ouderpagina bestaat **omdat** de voorspelling van Jij af ging.
+
+### Context
+
+De eigenaar liep Jij na met de vraag die deze pagina nooit expliciet gesteld
+had: _"is de uitleg begrijpbaar voor een kind van 8 jaar uit Nederland?"_ Tien
+punten kwamen eruit. Ze wijzen niet tien kanten op maar drie, en dat is wat deze
+beslissing bruikbaar maakt.
+
+**Eén: de pagina sprak haar eigen taal niet.** "Je geheugen" telde
+**onderdelen** — een woord dat nergens in dit product wordt uitgelegd en dat de
+eigenaar las als "goede antwoorden". Dat is niet hetzelfde: goede antwoorden
+staan één blok lager, onder "Hoe vaak oefen je?". Twee getallen over twee
+verschillende dingen, en het woord dat ze uit elkaar moest houden was jargon.
+Bij de diploma's stond dezelfde soort tekst: een uitleg die begon bij de
+uitzondering ("een goed antwoord telt alleen als het onderdeel aan de beurt
+was") en de vraag in de titel — hoe haal je er een — nergens beantwoordde.
+
+**Twee: er stond een voorspelling die zich voordeed als een meting.** Boven alles
+stond een ring: _"Over drie weken weet je van alles wat je geoefend hebt nog
+67%."_ De eigenaar vroeg waar dat op gebaseerd was. Het antwoord: op een
+vergeetcurve met een gekozen constante — negen tiende blijft staan na één stap
+van de Leitner-doos — en `game-core/retention.ts` schrijft over zichzelf, in
+zoveel woorden, dat de tekst eromheen nooit mag suggereren dat het een meting
+is. De zin deed precies dat. Niet "ongeveer", niet "als je niets doet".
+
+Daar komt een tweede bezwaar bij dat op zichzelf al genoeg is: **procenten zijn
+in Nederland stof van groep 7 en 8**, en dit product begint bij zes jaar. Het
+grootste getal op de pagina was het enige dat de lezer niet kon lezen.
+
+**Drie: wie geen code had, zag het product niet.** Dit is het punt met de meeste
+gevolgen, en het zat op twee plekken met dezelfde oorzaak.
+
+De **diplomakast** filterde elk vak weg dat zonder code geen diploma's
+overhoudt. Een kind zonder code zag dus alleen Tafels en las daaruit dat dit
+product twaalf diploma's heeft. Het zijn er achtenzestig.
+
+**Per onderwerp** deed hetzelfde met de cijfers. De keuzeknoppen stonden achter
+premium, dus viel de pagina terug op het eerste onderwerp van het eerste vak: de
+provincies van Nederland. Niet als keuze maar als lot — en oefenen is in dit
+product **volledig gratis** (`premium.ts`: de grens ligt tussen oefenen en
+onthouden). Dat kind had dus ook klokgekeken, woorden gedaan en vlaggen geraden,
+en kreeg cijfers over één van de vijf dingen die het deed. Eronder stond dan een
+**verzonnen kind** (ADR-165) om te laten zien hoe het eruit zou zien. Op een
+pagina die "Jij" heet.
+
+### Decision
+
+**Het woord "onderdeel" is weg van deze pagina**, en er komt geen ander woord
+voor in de plaats: de bijzin draagt het al. "**8** — weet je goed — van de 30
+die je geoefend hebt." Dezelfde behandeling voor de regels eronder: "aan de
+beurt" is het woord van het schema en niet van het kind, en wat het betekent is
+dat één dag één keer telt.
+
+**"Hoe haal je een diploma?" beantwoordt zijn eigen titel**, in vijf genummerde
+stappen: kies er een, oefen, kijk naar de ring, doe de toets, en dan is hij van
+jou. De regel die boven het raster stond (`kast.regel`) is stap 2 geworden en
+staat niet meer op de plek waar een kind zijn stand komt lezen.
+
+**De ring met de voorspelling gaat van Jij af.** De som blijft bestaan — hij
+stuurt het schema, en na een ronde staat hij op `RondeKlaar`, waar hij één regel
+is met iets om voor te pleiten in plaats van een kop. Díé zin zegt nu wat hij
+is: _"Doe je niets, dan weet je hier over drie weken nog ongeveer 67% van."_ Er
+komt niets voor de ring in de plaats: de tegel "Even opfrissen" telt al wat er
+te doen is, en handelen hoort op Vandaag (ADR-172).
+
+**"Per vak" en "Per onderwerp" zijn opgegaan in "Je geheugen".** Het waren drie
+koppen voor één onderwerp — alles bij elkaar, dan één vak, dan één onderwerp,
+van ver naar dichtbij — en drie koppen lezen als drie onderwerpen. Nu is er één
+sectie met de zoom erin, en "Per vak" is de keuze zelf geworden: een rij per
+vak, met een balk, die aanwijst waar de kaart eronder over gaat.
+
+**Die keuze staat er zonder code, en de onderwerpkeuze ook.** Wat premium blijft
+is het bijhouden: de tabel per onderdeel en de weken achter elkaar. Wat gratis
+wordt, is wélk van je eigen vakken je bekijkt. Dat is dezelfde grens die ADR-133
+trok toen de noemer van de weekdagen gratis werd — een feit over het eigen kind
+— en het maakt de voorproef van ADR-124 eindelijk een voorproef van iets.
+
+**Het voorbeeldkind is weg** (herziet ADR-165). Het bestond omdat je zonder code
+maar één onderwerp zag en dat er vaak leeg bij lag; nu je elk van je eigen
+vakken kunt aanwijzen, is het overbodig. De etalage eronder blijft: ADR-124 wil
+dat een ouder kan zien wat hij koopt, en dat doet hij nu aan de echte cijfers
+van zijn eigen kind.
+
+**De vakken zonder code staan wél in de diplomakast**, als regel en zonder
+raster erachter. Dat laatste is geen detail: ADR-116 verbiedt het tekenen van
+een beloning die een kind niet kan krijgen, en twaalf grijze topodiploma's zijn
+precies de kleine wreedheid die daar bedoeld wordt. Er staat de naam van het vak
+en één zin. Het verschil is dat tussen "dit bestaat ook" en "dit heb jij niet".
+
+**"Hoe vaak oefen je?" is een beeld geworden.** Vier kale getallen, waarvan het
+getal dat een kind het meest aangaat — heb ik vandaag al geoefend? — erin stond
+als de breuk "3 van 5". Er staat nu een strook van zeven hokjes, vandaag rechts,
+met per dag het aantal rondes. Een gevulde dag draagt de kleur van leer.nu, het
+aantal én een zwaardere letter, zodat kleur nooit het enige signaal is. Geen
+groen: een geoefende dag is een feit en geen goed antwoord (HUISSTIJL §8). De
+kop zegt ook niet meer "Deze week" maar "De laatste 7 dagen", want dat is wat er
+geteld wordt — op woensdag begon "deze week" bij vorige week donderdag.
+
+**De instellingen staan bovenaan, met een avatar erbij.** Dat draait ADR-172
+terug naar waar ADR-145 en ADR-171 het hadden. ADR-172 had gelijk met zijn
+reden — er stonden acht blokken tussen de naam en de diploma's — en die reden is
+er niet meer: het blok is er één, met vijf rijen. En er is iets bij gekomen wat
+wél bovenaan hoort.
+
+**De avatar is een vorm en geen kleur.** Het palet van dit product is bezet:
+groen zegt "goed", gearceerd rood zegt "fout", koraal is het merk en mag niets
+zijn wat een kind indrukt (ADR-159), en de zes vakkleuren zeggen welk vak je
+voor je hebt. Acht silhouetten doen hetzelfde werk en werken ook voor een kind
+dat kleuren niet onderscheidt. Ze staan in `avatarConfig` op het profiel — het
+veld dat daar sinds de eerste versie voor stond en nooit geschreven is — dus ze
+wisselen mee met het profiel, wat de hele reden is om er een te hebben.
+
+De tekeningen zijn tijdelijk; de eigenaar levert ze later aan. Dat is één
+wijziging in `avatars.tsx`, want de ids beschrijven de vorm en niet de volgorde:
+`avatar-3` zou bij de eerste herschikking de verkeerde tekening worden voor een
+kind dat allang gekozen had.
+
+### Consequences
+
+- **De voorproef verandert van vorm, niet van prijs.** Eén willekeurig onderwerp
+  plus een verzonnen kind wordt: elk eigen onderwerp, eigen cijfers, dezelfde
+  diepte. De tabel en de weekgrafiek blijven premium. Als advertentie is dit
+  strikt beter — een ouder ziet zijn eigen kind — en dat is precies wat ADR-124
+  wilde. Het is wel een verschuiving in wat gratis is, en de eigenaar kan hem
+  terugdraaien door de chips en de vakrij weer achter `premium` te zetten.
+- **`Geheugen` heeft geen `overDrieWeken` meer.** Een getal dat nergens getoond
+  wordt is een getal dat niemand nakijkt. `setRetention` in `game-core` blijft,
+  met zijn eigen toetsen.
+- **`voorbeeld.ts` is weg**, en met hem `retention.voorproef` en de vier
+  `voorbeeld*`-sleutels. `retention.onderwerpTitel` en `retention.vakTitel` ook:
+  de koppen zijn vragen geworden ("Welk vak?"), want je beantwoordt ze door te
+  drukken.
+- **`setSticker` heet `setAvatar`** en schrijft `avatarConfig.avatar`. Het veld
+  is nooit geschreven en de functie had geen aanroepers, dus er valt niets te
+  migreren — en één woord voor één ding is nu het goedkoopst.
+- **De chips staan niet meer in `Onthouden`** maar op modulehoogte. Een
+  component die in een ander component gedefinieerd wordt, is bij elke render
+  een nieuw type; wie met het toetsenbord op een chip stond, stond daarna
+  bovenaan de pagina. Hun vraag staat er nu ook zichtbaar boven in plaats van
+  alleen als `aria-label` — een onzichtbaar label is voor een kind van acht geen
+  label.
+- **Twee nieuwe `tk-`families**: `.tk-weekstrook`/`.tk-weekdag`. De ring
+  (`.tk-ring`) wordt op Jij niet meer gebruikt en blijft staan voor de
+  ouderpagina.
+
+### De premiumpagina: vier dingen die niet meer waar waren
+
+Dezelfde vraag, andere lezer. Hier is het geen begrijpelijkheid maar
+**juistheid**: dit is de pagina waarop iemand geld uitgeeft, en elke regel is
+een belofte.
+
+- **"Diploma's voor vlaggen, klok en topografie"** — Taal ontbrak, en de twintig
+  rekendiploma's naast de tafels ook. Het gaat om **zesenvijftig** van de
+  achtenzestig, en de tabel noemde er drie soorten van. Een verkooptekst die
+  minder belooft dan het product geeft, is net zo fout als een die meer belooft.
+  Het getal staat er nu, en `kast.test.ts` bindt het aan `doelwitten()`, zodat
+  een set erbij de tabel meeneemt.
+- **"Meer kinderen, op maximaal drie apparaten" stond onder Premium.** Sinds
+  ADR-173 zijn drie kinderen **gratis** en die tabel zei nog van niet. Het zijn
+  twee regels geworden, want het zijn twee dingen: hoeveel kinderen er op dit
+  apparaat kunnen (gratis), en hoeveel apparaten één code opent (premium).
+- **De statistiekbelofte eindigde op de voorspelling**, en die staat sinds deze
+  ADR niet meer bij de statistieken — en waar hij wél staat, na een ronde, is
+  hij gratis. Een belofte die nergens uitkomt is de snelste manier om een ouder
+  kwijt te raken die net betaald heeft; dat stond al sinds ADR-164 boven die
+  sleutel.
+- **"Zien wat er blijft hangen, vak voor vak" stond als Basis** en was dat niet:
+  zonder code zag je één onderwerp van één vak. Die regel is door deze ADR waar
+  geworden in plaats van geschrapt — en de premiumregel eronder zei hetzelfde,
+  dus die zegt nu wat premium écht toevoegt: de diepte en de tijd.
+
+### De ouderpagina: een belofte die er vier keer stond en nergens achter zat
+
+De ouderpagina zei op **vier plekken** dat je er zou vinden "hoe het met je
+kinderen gaat": in de poort, in de volwassenencheck, bij het zetten van de
+pincode, en in de rij van de wisselaar. Erachter stonden de naam van je kind,
+een codeveld en één schakelaar. Een ouder deed een volwassenencheck, koos een
+pincode, kwam binnen, en vond geen enkel getal.
+
+Er staat nu `HoeGaatHet`: **per kind** — want twee kinderen optellen geeft een
+getal dat over niemand gaat — hoeveel het er goed weet, van hoeveel, op hoeveel
+van de laatste zeven dagen het oefende, en de schatting over drie weken. Dat
+laatste is de plek die hierboven voor de ring werd aangewezen: de bezwaren tegen
+het tonen van een percentage vervallen hier, want de lezer is volwassen en de
+zin zegt dat het een schatting is.
+
+Kort, en de diepte blijft premium: feiten over het eigen kind zijn gratis
+(ADR-133), per som en per woord kijken is wat je koopt.
+
+**Eén bug kwam hierbij boven.** `Kinderen` en `HoeGaatHet` lezen allebei
+dezelfde kinderen en hielden allebei hun eigen kopie, dus een kind erbij
+verscheen in het ene blok meteen en in het andere pas na herladen. `Kinderen`
+meldt het nu (`onVeranderd`). Om dat mogelijk te maken nemen `loadItemStates` en
+`loadPlayedRounds` een kind mee; weglaten blijft "wie er nu oefent", dus geen
+enkel scherm dat vandaag niets meegeeft, verandert van gedrag.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

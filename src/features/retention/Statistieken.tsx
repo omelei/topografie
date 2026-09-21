@@ -19,7 +19,6 @@ import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onder
 import { regiosVan } from '@/features/module/regios';
 import { heeftKaart, StandKaart } from './StandKaart';
 import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
-import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import {
@@ -31,7 +30,6 @@ import {
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
 import { GeheugenKaart, HoeVaak, PerVak, StandTegels } from './Overzicht';
 import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
-import { voorbeeldStanden } from './voorbeeld';
 
 /**
  * K9, "Wat je onthoudt": the part of the product that answers the question it
@@ -151,6 +149,61 @@ function Regels() {
   );
 }
 
+/** Eén keuze in een rij chips. */
+interface Keuze {
+  readonly sleutel: string;
+  readonly naam: string;
+  /**
+   * Wat er te lezen staat als dat korter is dan de naam — "6" voor de tafel van
+   * zes. De naam blijft de toegankelijke naam, dus een schermlezer hoort waar
+   * een chip over gaat en niet één cijfer.
+   */
+  readonly kort?: string;
+  readonly aan: boolean;
+  readonly kies: () => void;
+}
+
+/**
+ * Eén rij chips, met dezelfde vorm voor het soort som, het deel en het
+ * onderwerp.
+ *
+ * Op modulehoogte en niet binnen `Onthouden`, hoe verleidelijk dat ook was met
+ * al die state binnen handbereik: een component die in een ander component
+ * gedefinieerd wordt, is bij elke render een nieuw type, en React hangt dan de
+ * hele rij opnieuw op. Wie met het toetsenbord op een chip stond, staat daarna
+ * bovenaan de pagina.
+ */
+function Chips({ label, keuzes }: { readonly label: string; readonly keuzes: readonly Keuze[] }) {
+  const kop = useId();
+  if (keuzes.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* De vraag staat er zichtbaar boven, en is ook de naam van de groep.
+          Hij stond er alleen als `aria-label`, dus wie kijkt zag een rij
+          knoppen zonder te lezen wat er gekozen wordt — en dit is een pagina
+          voor een kind van acht. */}
+      <p id={kop} className="tk-label">
+        {label}
+      </p>
+      <div className="tk-keuzes" role="group" aria-labelledby={kop}>
+        {keuzes.map((keuze) => (
+          <button
+            key={keuze.sleutel}
+            type="button"
+            className="tk-keuze"
+            aria-label={keuze.kort === undefined ? undefined : keuze.naam}
+            aria-pressed={keuze.aan}
+            onClick={keuze.kies}
+          >
+            {keuze.kort === undefined ? keuze.naam : <span aria-hidden="true">{keuze.kort}</span>}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Onthouden({ premium }: { readonly premium: boolean }) {
   const [states, setStates] = useState<Map<string, ItemState> | null>(null);
   const [rondes, setRondes] = useState<readonly PlayedRound[] | null>(null);
@@ -224,10 +277,105 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
 
   return (
     <>
-      {/* Over alle vakken, dus in de kleur van geen enkel vak: de ring en de
-          tegels staan in de kleur van leer.nu zelf, en pas bij Per onderwerp
-          hieronder neemt de pagina de kleur aan van het vak dat je kiest. */}
-      <GeheugenKaart stand={geheugen(states, now)} uitleg={<Regels />} />
+      {/* Alles bij elkaar staat in de kleur van geen enkel vak — die van
+          leer.nu zelf — en de zoom eronder neemt de kleur aan van het vak dat
+          je aanwijst. Sinds ADR-177 is dat één sectie in plaats van drie:
+          "Je geheugen", "Per vak" en "Per onderwerp" waren drie koppen voor
+          hetzelfde onderwerp, van ver naar dichtbij. */}
+      <GeheugenKaart
+        stand={geheugen(states, now)}
+        uitleg={<Regels />}
+        zoom={
+          /* `contents`: de vakkleur geldt voor alles hieronder, en de blokken
+             houden de tussenruimte van de pagina. */
+          <div className="contents" data-module={moduleId} data-accent="module">
+            <PerVak vakken={vakken} modules={modules} gekozen={moduleId} onKies={kiesVak} />
+
+            {/* Welk onderwerp binnen dat vak. Chips en geen keuzelijst: elke
+                optie is het bekijken waard, en een keuzelijst op een
+                aanraakscherm is een menu dat gaat staan waar je net naar keek.
+
+                Sinds ADR-177 staan ze er zonder code. Ze stonden achter
+                premium, en dat betekende niet "minder zien" maar "altijd
+                hetzelfde zien": het eerste onderwerp van het eerste vak, de
+                provincies van Nederland, ook voor het kind dat alleen maar
+                klokgekeken had. */}
+            <div id={ONDERWERP_ID} tabIndex={-1} className="flex flex-col gap-3">
+              <Chips
+                label={t('retention.welkeSom')}
+                keuzes={soorten.map((vak) => ({
+                  sleutel: vak.id,
+                  naam: t(vak.naam),
+                  aan: vak.id === soort?.id,
+                  kies: () => {
+                    setSoortId(vak.id);
+                    setSetId(null);
+                  },
+                }))}
+              />
+              <Chips
+                label={t('deel.title')}
+                keuzes={delen.map((kandidaat) => ({
+                  sleutel: kandidaat.id,
+                  naam: t(kandidaat.naam),
+                  aan: kandidaat.id === deelKeuze?.id,
+                  kies: () => {
+                    setSoortId(kandidaat.id);
+                    setSetId(null);
+                  },
+                }))}
+              />
+              <Chips
+                label={t('retention.welkOnderwerp')}
+                keuzes={sets.map((kandidaat) => ({
+                  sleutel: kandidaat.setId,
+                  naam: naamVan(kandidaat),
+                  ...(moduleId === 'tafels' && kandidaat.kortNaam != null
+                    ? { kort: kandidaat.kortNaam }
+                    : {}),
+                  aan: kandidaat.setId === deel?.setId,
+                  kies: () => setSetId(kandidaat.setId),
+                }))}
+              />
+            </div>
+
+            {/* Alles in één blik, in één kaart en in de kleur van het vak
+                (ADR-160): vier tegels die tellen én de legenda zijn, de kaart
+                waar er een is, en de stippen. Zonder eigen kop sinds ADR-172;
+                de naam blijft, voor wie met een schermlezer van regio naar
+                regio gaat. */}
+            <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
+              <Blik
+                moduleId={moduleId}
+                deel={deel}
+                items={items}
+                states={states}
+                telling={telling}
+                now={now}
+              />
+            </section>
+
+            {/* De tabel is het bijhouden, en dat is wat premium koopt
+                (ADR-124). Een stop in de tabvolgorde met een eigen naam: op een
+                telefoon is de tabel breder dan het scherm en schuift hij binnen
+                zijn kaart, en een gebied dat schuift moet ook met het
+                toetsenbord te bereiken zijn (axe,
+                scrollable-region-focusable). */}
+            {premium ? (
+              <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
+                <div
+                  className="tk-tabelkaart tk-vakkleur"
+                  role="group"
+                  aria-label={t('retention.detail')}
+                  tabIndex={0}
+                >
+                  <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
+                </div>
+              </Uitklap>
+            ) : null}
+          </div>
+        }
+      />
 
       <HoeVaak
         rondes={rondes}
@@ -243,174 +391,45 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
         }
       />
 
-      {/* `contents`: de vakkleur geldt voor alles hieronder, en de blokken
-          houden de tussenruimte van de pagina. */}
-      <div className="contents" data-module={moduleId} data-accent="module">
-        {premium ? <PerVak vakken={vakken} modules={modules} onKies={kiesVak} /> : null}
-
-        <h2 id={ONDERWERP_ID} className="tk-sectie" tabIndex={-1}>
-          {t('retention.onderwerpTitel')}
-        </h2>
-
-        {/* Which subject: the module, then the set. Chips rather than a
-            select: every option is worth seeing, and a select on a touch
-            screen is a menu that covers the thing you were looking at.
-            Zonder code staan ze er niet (ADR-124): de pagina laat dan één
-            onderwerp zien en zegt welk. Dat er meer is, zegt de etalage onder
-            het voorbeeld — de enige vraag om premium op Jij (ADR-172). */}
-        {!premium ? (
-          <p className="text-tekst-secundair">
-            {t('retention.voorproef', { onderwerp: deel ? naamVan(deel) : '' })}
-          </p>
-        ) : null}
-        {/* Niet met `hidden`: dat verliest van Tailwinds `display: flex` op
-            hetzelfde element, en dan staat de keuze er alsnog. */}
-        {premium ? (
-          <div className="flex flex-col gap-3">
-            <div className="tk-keuzes" role="group" aria-label={t('retention.welkVak')}>
-              {modules.map((module) => {
-                const ModuleIcon = MODULE_ICON[module.id];
-
-                return (
-                  <button
-                    key={module.id}
-                    type="button"
-                    className="tk-keuze"
-                    aria-pressed={module.id === moduleId}
-                    onClick={() => {
-                      setModuleId(module.id);
-                      setSoortId(null);
-                      setSetId(null);
-                    }}
-                  >
-                    <ModuleIcon size={20} />
-                    {t(module.name)}
-                  </button>
-                );
-              })}
-            </div>
-
-            {soorten.length > 0 ? (
-              <div className="tk-keuzes" role="group" aria-label={t('retention.welkeSom')}>
-                {soorten.map((vak) => (
-                  <button
-                    key={vak.id}
-                    type="button"
-                    className="tk-keuze"
-                    aria-pressed={vak.id === soort?.id}
-                    onClick={() => {
-                      setSoortId(vak.id);
-                      setSetId(null);
-                    }}
-                  >
-                    {t(vak.naam)}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {delen.length > 0 ? (
-              <div className="tk-keuzes" role="group" aria-label={t('deel.title')}>
-                {delen.map((kandidaat) => (
-                  <button
-                    key={kandidaat.id}
-                    type="button"
-                    className="tk-keuze"
-                    aria-pressed={kandidaat.id === deelKeuze?.id}
-                    onClick={() => {
-                      setSoortId(kandidaat.id);
-                      setSetId(null);
-                    }}
-                  >
-                    {t(kandidaat.naam)}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            <div className="tk-keuzes" role="group" aria-label={t('retention.welkOnderwerp')}>
-              {sets.map((kandidaat) => (
-                <button
-                  key={kandidaat.setId}
-                  type="button"
-                  className="tk-keuze"
-                  aria-label={naamVan(kandidaat)}
-                  aria-pressed={kandidaat.setId === deel?.setId}
-                  onClick={() => setSetId(kandidaat.setId)}
-                >
-                  <span aria-hidden="true">
-                    {moduleId === 'tafels'
-                      ? (kandidaat.kortNaam ?? naamVan(kandidaat))
-                      : naamVan(kandidaat)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
-        {/* Alles in één blik, in één kaart en in de kleur van het vak
-            (ADR-160). De vier getallen stonden als grijze tegels boven deze
-            kaart en de legenda eronder zei dezelfde vier woorden nog een keer;
-            nu zijn het vier tegels die tellen én de legenda zijn, in vier
-            sterktes van de kleur die dit vak overal draagt — dezelfde taal als
-            de balk op Per vak. De stip erop is de stip van de tabel en van de
-            muur eronder, dus de kleur zegt niets wat de vorm niet ook zegt.
-
-            Zonder eigen kop sinds ADR-172: "Per onderwerp", "Alles in één
-            blik" en "Per onderdeel" waren drie koppen voor één ding. De naam
-            blijft, voor wie met een schermlezer van regio naar regio gaat. */}
-        <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
-          <Blik
-            moduleId={moduleId}
-            deel={deel}
-            items={items}
-            states={states}
-            telling={telling}
-            now={now}
-          />
-
-          {/* En zonder code een tweede kaart eronder: hoe het eruitziet bij een
-              kind dat een paar weken oefent (ADR-165). Eronder en nooit
-              ervoor, en gemerkt in woorden — een voorbeeld dat voor de echte
-              cijfers van een kind langs gaat staan, is een leugen. */}
-          {!premium ? <Voorbeeld moduleId={moduleId} deel={deel} items={items} now={now} /> : null}
-        </section>
-
-        {/* De tabel staat er nog, maar niet vooraan (ADR-143), en alleen met
-            premium. Zonder code stond hier een slot, het derde van vier op Jij;
-            de etalage erboven noemt de tabel al (ADR-172).
-
-            A stop in the tab order with a name of its own: on a phone the
-            table is wider than the screen and scrolls sideways inside its
-            card, and a region that scrolls has to be reachable from the
-            keyboard too (axe, scrollable-region-focusable) — as the rows on
-            the front door are (ScrollRij). */}
-        {premium ? (
-          <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
-            <div
-              className="tk-tabelkaart tk-vakkleur"
-              role="group"
-              aria-label={t('retention.detail')}
-              tabIndex={0}
-            >
-              <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
-            </div>
-          </Uitklap>
-        ) : null}
-      </div>
+      {premium ? null : <Etalage />}
     </>
+  );
+}
+
+/**
+ * De vraag om premium, één keer op Jij (ADR-124, ADR-172, ADR-177).
+ *
+ * Hij stond onder het voorbeeldkind en hoorde erbij: eerst een verzonnen kind,
+ * dan de vraag of je dit over jezelf wilt zien. Het voorbeeld is weg en de
+ * vraag blijft, want ADR-124 wil dat een ouder kan zien wat hij koopt — alleen
+ * staat er nu het echte kind boven in plaats van een gemaakt exemplaar, en dan
+ * is "wil je dit over jezelf zien" ook niet meer de goede zin.
+ */
+function Etalage() {
+  const naarPremium = useNaarPremium();
+
+  return (
+    <div className="tk-etalage">
+      <h2 className="tk-etalage-kop">{t('retention.verkoopKop')}</h2>
+      <p className="tk-etalage-tekst">{t('retention.verkoopTekst')}</p>
+      <div className="tk-etalage-knoppen">
+        <button type="button" className="tk-button tk-knop-licht" onClick={naarPremium}>
+          {t('retention.verkoopKnop')}
+        </button>
+      </div>
+    </div>
   );
 }
 
 /**
  * "Alles in één blik": vier tegels, de kaart waar er een is, en de stippen.
  *
- * Eén component sinds ADR-165, omdat hij twee keer getekend wordt: één keer met
- * de standen van dit kind, en zonder code nog een keer met die van een
- * verzonnen kind. Twee kopieën van deze kaart zouden op de dag van de eerste
- * wijziging uit elkaar lopen, en dan laat het voorbeeld iets anders zien dan
- * het ding waar het een voorbeeld van is.
+ * Eén keer getekend sinds ADR-177, met de standen van dit kind. ADR-165 zette
+ * er zonder code een tweede onder, met die van een verzonnen kind, omdat je dan
+ * maar één onderwerp zag en dat er vaak leeg bij lag. Nu je elk van je eigen
+ * vakken kunt aanwijzen, is het voorbeeld overbodig — en verzonnen cijfers op
+ * een pagina die "Jij" heet, zijn het soort ding dat de rest van de pagina
+ * minder geloofwaardig maakt.
  */
 function Blik({
   moduleId,
@@ -419,7 +438,6 @@ function Blik({
   states,
   telling,
   now,
-  voorbeeld = false,
 }: {
   readonly moduleId: Module['id'];
   readonly deel: Onderdeel | null;
@@ -427,12 +445,6 @@ function Blik({
   readonly states: ReadonlyMap<string, ItemState>;
   readonly telling: Record<ItemStatus, number>;
   readonly now: Date;
-  /**
-   * De kaart van het voorbeeldkind. Alleen de namen veranderen ervan, en dat
-   * is geen detail: twee kaarten op één pagina met dezelfde naam zijn voor een
-   * schermlezer één ding dat twee keer staat, en voor een test onvindbaar.
-   */
-  readonly voorbeeld?: boolean;
 }) {
   return (
     <div className="tk-card tk-vakkleur flex flex-col gap-4">
@@ -446,11 +458,7 @@ function Blik({
           items={items}
           states={states}
           now={now}
-          label={
-            voorbeeld
-              ? t('retention.voorbeeldKaart', { wat: naamVan(deel) })
-              : t('retention.kaartLabel', { wat: naamVan(deel) })
-          }
+          label={t('retention.kaartLabel', { wat: naamVan(deel) })}
         />
       ) : null}
       <Heatmap
@@ -458,78 +466,9 @@ function Blik({
         items={items}
         states={states}
         now={now}
-        label={voorbeeld ? t('retention.voorbeeldStippen') : t('retention.glance')}
+        label={t('retention.glance')}
       />
     </div>
-  );
-}
-
-/**
- * Dezelfde kaart, met de stand van een kind dat er al een paar weken mee bezig
- * is (ADR-165), en daaronder wat premium ermee doet.
- *
- * **Waarom hij er staat.** Wie deze pagina voor het eerst opent, heeft nog
- * niets geoefend: dan zijn de vier getallen vier nullen en is de muur een muur
- * van lege stippen. Dat is eerlijk, en het laat precies niets zien van waar dit
- * product over gaat. Hier staat wat het wordt.
- *
- * **En de knop eronder zegt het hardop.** Er stond een `PremiumSlot` bij de
- * tabel, halverwege de pagina, met dezelfde toon als elk ander slot in de app.
- * Dit is de pagina die de hele propositie ís — als er ergens één zin mag staan
- * die het vraagt, is het hier. Sinds ADR-172 is het ook de enige op Jij: het
- * slot bij de tabel, dat van het weekbericht en dat van de eigen woorden zijn
- * weg, want ADR-124 vraagt één keer per pagina.
- */
-function Voorbeeld({
-  moduleId,
-  deel,
-  items,
-  now,
-}: {
-  readonly moduleId: Module['id'];
-  readonly deel: Onderdeel | null;
-  readonly items: readonly Schedulable[];
-  readonly now: Date;
-}) {
-  const naarPremium = useNaarPremium();
-  const kop = useId();
-  const states = voorbeeldStanden(items, now);
-
-  const telling = { new: 0, practising: 0, remembered: 0, refresh: 0 } satisfies Record<
-    ItemStatus,
-    number
-  >;
-  for (const item of items) telling[statusOf(states.get(item.id), now)] += 1;
-
-  return (
-    <section className="flex flex-col gap-3" aria-labelledby={kop}>
-      <p className="flex flex-wrap items-center gap-3">
-        <span className="tk-pil">{t('retention.voorbeeldLabel')}</span>
-        <span id={kop} className="text-tekst-secundair">
-          {t('retention.voorbeeldUitleg')}
-        </span>
-      </p>
-
-      <Blik
-        moduleId={moduleId}
-        deel={deel}
-        items={items}
-        states={states}
-        telling={telling}
-        now={now}
-        voorbeeld
-      />
-
-      <div className="tk-etalage">
-        <h3 className="tk-etalage-kop">{t('retention.verkoopKop')}</h3>
-        <p className="tk-etalage-tekst">{t('retention.verkoopTekst')}</p>
-        <div className="tk-etalage-knoppen">
-          <button type="button" className="tk-button tk-knop-licht" onClick={naarPremium}>
-            {t('retention.verkoopKnop')}
-          </button>
-        </div>
-      </div>
-    </section>
   );
 }
 

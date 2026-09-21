@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { doelwitten } from '@/features/home/doel';
+import { nl } from '@/i18n/nl';
 import { onderdelen, startbareOnderdelen } from '@/features/module/onderdelen';
 
 /**
@@ -48,6 +49,38 @@ describe('welke diploma’s de kast kan tonen', () => {
     const gratis = doelwitten(startbareOnderdelen(), false);
     expect(gratis).toHaveLength(12);
     expect(gratis.every((doelwit) => doelwit.mode === 'tafeldiploma')).toBe(true);
+  });
+
+  it('en vier vakken houden zonder code niets over, maar bestaan wel', () => {
+    // De aanname waar `VakOpSlot` op staat (ADR-177). De kast filterde een vak
+    // zonder beschikbare diploma's weg, en dus zag een kind zonder code één
+    // vak en las het dat dit product twaalf diploma's heeft. Nu staan die vier
+    // er als regel — zonder het raster erachter, want ADR-116 verbiedt het
+    // tekenen van een beloning die een kind niet kan krijgen.
+    const vakVan = (premium: boolean) =>
+      new Set(doelwitten(startbareOnderdelen(), premium).map((doelwit) => doelwit.deel.moduleId));
+
+    const gratis = vakVan(false);
+    const alles = vakVan(true);
+    expect([...gratis]).toEqual(['tafels']);
+    expect([...alles].filter((vak) => !gratis.has(vak)).sort()).toEqual([
+      'klok',
+      'topo',
+      'vlaggen',
+      'woorden',
+    ]);
+  });
+
+  it('en de premiumtabel noemt datzelfde aantal', () => {
+    // `premium.regel.diplomas` staat een getal in de verkooptekst, en een getal
+    // in copy verloopt stil (ADR-177): er stond "vlaggen, klok en topografie",
+    // en Taal en twintig rekendiploma's stonden er niet bij. Deze toets bindt
+    // de zin aan de lijst, zodat een set erbij of eraf de tabel meeneemt.
+    const alles = doelwitten(startbareOnderdelen(), true).length;
+    const gratis = doelwitten(startbareOnderdelen(), false).length;
+    expect(nl['premium.regel.diplomas']).toContain(String(alles - gratis));
+    expect(nl['premium.regel.tafeldiploma']).toContain('twaalf');
+    expect(gratis).toBe(12);
   });
 
   it('elk diploma komt precies één keer voor', () => {
