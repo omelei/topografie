@@ -3988,6 +3988,22 @@
     background: var(--papier);
     color: var(--inkt);
   }
+  /* Een adres om over te tikken of vast te pakken, als delen en kopiëren
+   * allebei niet mochten (ADR-174). Geen invoerveld: er valt niets in te typen,
+   * en een veld zou suggereren van wel. Wel `break-all`, want een adres heeft
+   * geen spaties en loopt anders de kaart uit op een telefoon. */
+  .tk-adres {
+    padding: 8px 12px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--papier);
+    font-size: 0.9rem;
+    /* Een adres heeft geen spaties en loopt anders de kaart uit op een
+     * telefoon. `user-select: all` maakt er één ding van om vast te pakken,
+     * zodat overtikken niet nodig is als kopiëren net niet mocht. */
+    word-break: break-all;
+    user-select: all;
+  }
   @media (max-width: 640px) {
     /* Op een telefoon onderaan, over de volle breedte: daar is de duim. */
     .tk-venster {

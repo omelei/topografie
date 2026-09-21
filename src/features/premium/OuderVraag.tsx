@@ -1,8 +1,9 @@
-import { useEffect, useId, useRef } from 'react';
-import { FamilyIcon } from '@/components/Icon';
+import { useEffect, useRef, useState } from 'react';
+import { FamilyIcon, NextIcon, OogIcon, SlotIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { isTeKoop } from '@/store/premium';
 import { CodeVeld } from './CodeVeld';
+import { Doorsturen } from './Doorsturen';
 import { sluitOuderVraag, useOuderVraag } from './ouderVraag';
 import { naarPremium, usePremium } from './usePremium';
 
@@ -52,7 +53,6 @@ export function OuderVraag() {
   const open = useOuderVraag();
   const { actief } = usePremium();
   const venster = useRef<HTMLDialogElement>(null);
-  const kop = useId();
 
   // Openen en sluiten via de methodes, niet via het `open`-attribuut: alleen
   // `showModal` geeft de focusval, de Escape en de ::backdrop.
@@ -73,10 +73,12 @@ export function OuderVraag() {
     <dialog
       ref={venster}
       className="tk-venster"
-      // Alleen als er een kop is om naar te wijzen: dicht is dit venster leeg,
-      // en een `aria-labelledby` naar een id dat niet bestaat is een kapot
-      // attribuut in plaats van een naam.
-      aria-labelledby={open ? kop : undefined}
+      // Een `aria-label` en geen `aria-labelledby` (ADR-174). Het venster heeft
+      // drie standen en de kop staat alleen in de eerste; een verwijzing naar
+      // een id dat in de tweede niet meer bestaat, laat het venster zonder naam
+      // achter — precies op het moment dat een schermlezer hem het hardst
+      // nodig heeft. De naam is de vraag, en die blijft in alle drie dezelfde.
+      aria-label={open ? t('ouderVraag.titel') : undefined}
       // Escape en de klik op de achtergrond sluiten het venster zelf; dit houdt
       // onze schakelaar gelijk aan wat de browser deed.
       onClose={sluitOuderVraag}
@@ -84,47 +86,12 @@ export function OuderVraag() {
         if (event.target === venster.current) sluitOuderVraag();
       }}
     >
-      {/* Alleen als hij openstaat: zie hierboven. */}
+      {/* Alleen als hij openstaat: zie hierboven. Met een `key` op het openen,
+          zodat elke keer bij de vraag begint en niet bij het antwoord van de
+          vorige keer. */}
       {open ? (
         <>
-          <div className="tk-venster-body">
-            <p className="tk-kaartteken">
-              <FamilyIcon size={24} />
-            </p>
-            <h2 id={kop} className="tk-titel">
-              {t('ouderVraag.titel')}
-            </h2>
-            <p className="text-lopend">{t('ouderVraag.uitleg')}</p>
-            <p className="text-lopend text-tekst-secundair">{t('ouderVraag.watPremium')}</p>
-
-            <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
-
-            <div className="tk-venster-knoppen">
-              {isTeKoop() ? (
-                <a className="tk-button tk-button-secondary" href={KASSA_PAD}>
-                  {t('premium.kopenKnop')}
-                </a>
-              ) : null}
-              <button
-                type="button"
-                className="tk-button tk-button-tertiary"
-                onClick={() => {
-                  sluitOuderVraag();
-                  naarPremium();
-                }}
-              >
-                {t('ouderVraag.bekijken')}
-              </button>
-            </div>
-
-            {/* De uitweg als laatste en als gewone knop: wie niets wil, hoort
-                niet te hoeven zoeken hoe hij terugkomt. Het kruisje rechtsboven
-                doet hetzelfde en staat er voor wie het daar zoekt. */}
-            <button type="button" className="tk-doel-ander self-start" onClick={sluitOuderVraag}>
-              {t('ouderVraag.terug')}
-            </button>
-          </div>
-
+          <Inhoud />
           <button
             type="button"
             className="tk-venster-sluit"
@@ -136,5 +103,125 @@ export function OuderVraag() {
         </>
       ) : null}
     </dialog>
+  );
+}
+
+/**
+ * De drie uitwegen (ADR-174).
+ *
+ * De eerste vraag is niet "heb je een code" maar **"is er iemand bij je?"**,
+ * want dat is het enige wat het kind op dit moment weet en het bepaalt alle
+ * drie de antwoorden. Daarom staat het codeveld niet meer meteen in beeld
+ * (ADR-163 zette het daar): voor een kind dat alleen zit, is een veld dat het
+ * niet kan invullen een dichte deur met een formulier ervoor.
+ */
+type Uitweg = 'vraag' | 'code' | 'sturen';
+
+function Inhoud() {
+  const [uitweg, setUitweg] = useState<Uitweg>('vraag');
+
+  if (uitweg === 'code') {
+    return (
+      <div className="tk-venster-body">
+        <h2 className="tk-titel">{t('ouderVraag.codeTitel')}</h2>
+        <p className="text-lopend">{t('ouderVraag.codeUitleg')}</p>
+        <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
+        {isTeKoop() ? (
+          <div className="tk-venster-knoppen">
+            <a className="tk-button tk-button-secondary" href={KASSA_PAD}>
+              {t('premium.kopenKnop')}
+            </a>
+          </div>
+        ) : null}
+        <Terug onTerug={() => setUitweg('vraag')} />
+      </div>
+    );
+  }
+
+  if (uitweg === 'sturen') {
+    return (
+      <div className="tk-venster-body">
+        <Doorsturen />
+        <Terug onTerug={() => setUitweg('vraag')} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="tk-venster-body">
+      <p className="tk-kaartteken">
+        <FamilyIcon size={24} />
+      </p>
+      <h2 className="tk-titel">{t('ouderVraag.titel')}</h2>
+      <p className="text-lopend">{t('ouderVraag.uitleg')}</p>
+
+      <ul className="tk-lijst">
+        <Keuze
+          teken={<SlotIcon size={24} />}
+          titel={t('ouderVraag.erbij')}
+          regel={t('ouderVraag.erbijRegel')}
+          onKies={() => setUitweg('code')}
+        />
+        {/* De nieuwe, en de enige die iets oplost voor een kind dat alleen is. */}
+        <Keuze
+          teken={<FamilyIcon size={24} />}
+          titel={t('ouderVraag.sturen')}
+          regel={t('ouderVraag.sturenRegel')}
+          onKies={() => setUitweg('sturen')}
+        />
+        <Keuze
+          teken={<OogIcon size={24} />}
+          titel={t('ouderVraag.bekijken')}
+          regel={t('ouderVraag.bekijkenRegel')}
+          onKies={() => {
+            sluitOuderVraag();
+            naarPremium();
+          }}
+        />
+      </ul>
+
+      {/* De uitweg als laatste en als gewone knop: wie niets wil, hoort niet te
+          hoeven zoeken hoe hij terugkomt. Het kruisje rechtsboven doet hetzelfde
+          en staat er voor wie het daar zoekt. */}
+      <button type="button" className="tk-doel-ander self-start" onClick={sluitOuderVraag}>
+        {t('ouderVraag.terug')}
+      </button>
+    </div>
+  );
+}
+
+function Keuze({
+  teken,
+  titel,
+  regel,
+  onKies,
+}: {
+  readonly teken: React.ReactNode;
+  readonly titel: string;
+  readonly regel: string;
+  readonly onKies: () => void;
+}) {
+  return (
+    <li>
+      <button type="button" className="tk-lijstrij" onClick={onKies}>
+        <span className="tk-plaat tk-plaat-neutraal">{teken}</span>
+        <span className="tk-lijstrij-tekst">
+          <span className="tk-lijstrij-titel">{titel}</span>
+          <span className="tk-lijstrij-regel">{regel}</span>
+        </span>
+        <span className="tk-lijstrij-pijl">
+          <NextIcon size={20} />
+        </span>
+      </button>
+    </li>
+  );
+}
+
+/** Terug naar de drie, en niet naar de pagina: die vraag staat nog open. */
+function Terug({ onTerug }: { readonly onTerug: () => void }) {
+  return (
+    <button type="button" className="tk-doel-ander self-start" onClick={onTerug}>
+      {t('ouderVraag.terugVraag')}
+    </button>
   );
 }

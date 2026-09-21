@@ -1,8 +1,8 @@
 # De ouder en het kind, opnieuw — voorstel
 
-**Status:** goedgekeurd op alle vijf de vragen uit §16. Stap 1 van §14 is gebouwd als ADR-173
-(2026-09-21); stap 2 tot en met 4 staan nog open. Wat bij het bouwen anders uitviel, staat in §17.
-**Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9 (na #101).
+**Status:** goedgekeurd op alle vijf de vragen uit §16. Stap 1 van §14 is gebouwd als ADR-173 en
+stap 2 als ADR-174 (2026-09-21); stap 3 en 4 staan nog open. Wat bij het bouwen anders uitviel,
+staat in §17. **Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9 (na #101).
 
 **Opdracht van de eigenaar:** de verhouding tussen kind en ouder steekt niet goed in elkaar; er moet
 weer een ouderpagina komen, met een wachtwoord, profielwissel tussen maximaal drie kinderen en één
@@ -463,7 +463,9 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
 
 **Beantwoord op 2026-09-21:** alle vijf akkoord met de aanbeveling.
 
-## 17. Wat bij het bouwen van stap 1 anders uitviel
+## 17. Wat bij het bouwen anders uitviel
+
+### Stap 1 (ADR-173)
 
 - **De pincode is in deze fase het enige slot, niet een snelkoppeling naar het wachtwoord.** §5
   beschrijft ze als een paar, maar er is nog geen account om het wachtwoord aan te hangen — dat is
@@ -479,3 +481,15 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
 - **De premiumpagina houdt "tot wanneer het aanstaat".** §7 en §10 zetten de hele premiumstand bij
   de ouder; de datum is geen commercie en een kind mag hem zien. Alleen het codeveld en het
   afmelden zijn verhuisd.
+
+### Stap 2 (ADR-174)
+
+- **Het codeveld staat niet meer meteen in het venster.** §8 liet het staan waar ADR-163 het zette.
+  Met drie uitwegen eronder werd dat een muur op een telefoon, en voor een kind dat alleen zit is
+  een veld dat het niet kan invullen de vraag nog een keer stellen. Het komt nu achter de eerste
+  uitweg vandaan.
+- **De link wijst naar de premiumpagina en niet naar de kassa.** §8 zei "een link naar de kassa".
+  Wie een link koud binnenkrijgt, heeft eerst de uitleg nodig en niet een betaalformulier; de
+  kassaknop staat daar één druk verder.
+- **Er is een vierde weg bijgekomen die §8 niet noemde:** een gewone mailknop, altijd zichtbaar.
+  `navigator.share` bestaat niet op een laptop, en daar is de mail de kortste route.

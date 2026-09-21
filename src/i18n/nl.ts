@@ -677,13 +677,38 @@ export const nl = {
   // op de pagina erachter, en een bedrag in een venster voor een kind van acht
   // is een getal zonder betekenis.
   'ouderVraag.titel': 'Vraag het even aan je ouders',
-  'ouderVraag.uitleg':
-    'Dit onderdeel hoort bij premium. Je ouders hebben er een code voor nodig — haal er even iemand bij.',
-  'ouderVraag.watPremium':
-    'Met premium zet leer.nu elke dag klaar wat je bijna vergeet, en kun je zien wat je onthoudt.',
+  'ouderVraag.uitleg': 'Dit onderdeel hoort bij premium. Daar is een code voor nodig.',
+
+  // Drie uitwegen, en de eerste vraag is niet "heb je een code" maar "is er
+  // iemand bij je" (ADR-174). Dat is het enige wat het kind op dit moment weet,
+  // en het bepaalt alle drie de antwoorden.
+  'ouderVraag.erbij': 'Mijn vader of moeder is erbij',
+  'ouderVraag.erbijRegel': 'Dan kan de code er nu in',
+  'ouderVraag.sturen': 'Stuur het naar mijn vader of moeder',
+  'ouderVraag.sturenRegel': 'Dan kunnen ze er later naar kijken',
   'ouderVraag.bekijken': 'Wat is premium?',
+  'ouderVraag.bekijkenRegel': 'Lees eerst wat je ermee kunt',
+  'ouderVraag.codeTitel': 'De code',
+  'ouderVraag.codeUitleg': 'Geef het apparaat even aan je vader of moeder.',
+  'ouderVraag.terugVraag': 'Terug',
   'ouderVraag.terug': 'Nee, ik doe iets anders',
   'ouderVraag.sluit': 'Sluiten',
+
+  // Doorsturen (ADR-174). Het bericht is in de stem van het kind, want het kind
+  // drukt op de knop — en het vraagt om te kijken en niet om te kopen. Er gaat
+  // niets mee dan het adres: geen naam, geen voortgang, en ook niet welke
+  // oefening het wilde doen. Zo'n bericht reist via de telefoon van iemand
+  // anders.
+  'doorsturen.titel': 'Stuur het naar je ouders',
+  'doorsturen.uitleg': 'Ze krijgen een link. Daar staat wat premium is en wat het kost.',
+  'doorsturen.onderwerp': 'Iets van leer.nu',
+  'doorsturen.bericht': 'Ik wil dit graag op leer.nu. Kijk je even?',
+  'doorsturen.knop': 'Versturen',
+  'doorsturen.bezig': 'Even wachten…',
+  'doorsturen.verstuurd': 'Verstuurd. Je ouders kunnen er nu naar kijken.',
+  'doorsturen.gekopieerd': 'De link staat klaar om te plakken. Zet hem in een bericht aan ze.',
+  'doorsturen.zelf': 'Versturen lukt niet op dit apparaat. Dit is de link:',
+  'doorsturen.mail': 'Of mail het ze',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
 

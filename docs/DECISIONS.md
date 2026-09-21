@@ -10439,6 +10439,114 @@ wissen** (punt 7 hierboven).
 
 ---
 
+## ADR-174 — Een slot heeft drie uitwegen, en de derde is voor het kind dat alleen is
+
+**Status:** accepted. **Date:** 2026-09-21. Stap 2 van het voorstel in
+`docs/ouder-en-kind.md`, na ADR-173. **Verandert ADR-163** (wat er in het
+venster staat) en laat de rest ervan staan. Raakt `leitner.ts`, `game-core`, de
+statistieken en wat er bewaard wordt niet.
+
+### Context
+
+ADR-163 verving de premiumpagina door een venster zodra een kind op een slot
+drukt, en dat was de goede zet: een etalage met een prijs is geen antwoord op
+een tegel die een kind net aanraakte. Wat erin stond was een codeveld, een knop
+naar de kassa en een knop naar de premiumpagina.
+
+Dat venster heeft één lezer aangenomen die er niet altijd is. De opdracht van
+de eigenaar noemt hem met zoveel woorden: **"het kan ook zo zijn dat een kind
+start met oefenen zonder dat de ouder hierbij betrokken is, maar dat er later
+een ouder bij betrokken moet worden om de code aan te kopen."**
+
+Voor dat kind is het venster van ADR-163 een dichte deur met een formulier
+ervoor. Het drukt om vier uur op de bliksemronde, er is niemand in de kamer, en
+het enige wat het kan doen is wegklikken. De beslissing die genomen moet worden
+ligt bij iemand die er op dat moment niet is, en er was geen enkele manier om
+hem daarheen te krijgen.
+
+### Decision
+
+**De eerste vraag is niet "heb je een code" maar "is er iemand bij je".** Dat
+is het enige wat het kind op dit moment weet, en het bepaalt alle drie de
+antwoorden. Het venster toont daarom drie uitwegen in plaats van een formulier:
+
+1. **"Mijn vader of moeder is erbij"** — dan komt het codeveld tevoorschijn,
+   met de kassaknop eronder. Dit is het geval van ADR-163, ongewijzigd: er
+   kijkt iemand over de schouder mee, en het is één handeling.
+2. **"Stuur het naar mijn vader of moeder"** — de nieuwe, en de enige die iets
+   oplost voor een kind dat alleen is.
+3. **"Wat is premium?"** — de premiumpagina, die sinds ADR-173 geen codeveld
+   meer heeft en die een kind dus gewoon mag lezen.
+
+**Het codeveld staat niet meer meteen in beeld** (verandert ADR-163). Voor een
+kind dat alleen zit is een veld dat het niet kan invullen erger dan geen veld:
+het is de vraag nog een keer stellen. Het kost het geval waar er wél iemand
+staat één druk, en dat is de goedkope kant.
+
+**Doorsturen is een link en verder niets.** De deelknop van het toestel
+(`navigator.share`) als die er is — op een telefoon is dat precies wat een kind
+kent: WhatsApp, Berichten, de mail van zijn ouder. Anders de link op het
+klembord. En als kopiëren ook niet mag — `clipboard` vraagt een beveiligde
+context en mag geweigerd worden — staat het adres er gewoon, om vast te pakken.
+De mail staat er altijd bij, als tweede weg en niet als vangnet: op een laptop
+zonder deelknop is dat de kortste route.
+
+**De link wijst naar de premiumpagina en niet naar de kassa.** Wie een link koud
+binnenkrijgt, heeft eerst de uitleg nodig en niet een betaalformulier. De
+kassaknop staat op die pagina, één druk verder. Dat is een afwijking van §8 van
+het voorstel, dat "een link naar de kassa" zei.
+
+**Er gaat niets mee dan het adres.** Geen naam, geen voortgang, geen
+apparaatnummer, en ook niet welke oefening het kind wilde doen. Dat laatste was
+verleidelijk — het maakt de pagina van de ouder persoonlijker — en het gaat
+niet mee, om twee redenen: het is het soort gegeven dat dit product juist niet
+de deur uit doet, en zo'n bericht reist via WhatsApp of de mail van iemand
+anders. `premium.spec.ts` toetst het door te kijken wat er in de deelaanroep
+terechtkomt.
+
+**Het bericht is in de stem van het kind**, want het kind drukt op de knop: "Ik
+wil dit graag op leer.nu. Kijk je even?" Het vraagt om te kijken en niet om te
+kopen. De prijs staat er nog steeds niet in het venster, om de reden die
+ADR-163 al gaf.
+
+**Het venster houdt één naam.** Het verandert van inhoud zonder dicht te gaan,
+en de kop staat alleen in de eerste stand. Met `aria-labelledby` naar die kop
+verloor het venster zijn naam zodra je een stap dieper ging — precies op het
+moment dat een schermlezer hem het hardst nodig heeft. Het is een `aria-label`
+geworden: de naam is de vraag, en die blijft in alle drie de standen dezelfde.
+
+### Consequences
+
+- **`Doorsturen.tsx` is nieuw** en staat naast `CodeVeld`: allebei zijn ze een
+  uitweg uit hetzelfde venster, en allebei worden ze ergens anders ook gebruikt
+  of kunnen dat worden.
+- **`.tk-adres` is erbij**, voor het adres dat je vastpakt als delen en kopiëren
+  allebei niet mochten. **Zonder eigen lettertype**: de huisstijl kent er twee
+  en `huisstijl.test.ts` bewaakt dat. Een monospace voor één regel is een derde
+  lettertype voor een randgeval, en `word-break` en `user-select: all` doen het
+  echte werk.
+- **`ouderVraag.watPremium` is weg.** De zin stond onder de uitleg en zei wat
+  premium doet; dat is nu de derde uitweg, die ernaartoe gaat. `copy.test.ts`
+  laat geen sleutel staan die niets leest.
+- **De kassaknop staat achter de eerste uitweg** in plaats van altijd in beeld.
+  Wie niet bij zijn ouder staat, heeft niets aan een knop naar een
+  betaalformulier.
+- **e2e:** `premium.spec.ts` toetst dat het codeveld pas na de eerste uitweg
+  verschijnt, en heeft twee tests erbij voor het doorsturen — één met een
+  nagebouwde `navigator.share` die kijkt wát er wordt gedeeld, en één zonder
+  deelknop voor de laptop. `a11y.spec.ts` scant het venster in alle drie zijn
+  standen; die scan zou de verdwenen naam hierboven gezien hebben.
+  `screens.spec.ts` heeft er twee foto's bij, `24-ouder-vraag` en
+  `25-doorsturen`, op elke maat.
+- **Geen migratie, geen schemawijziging, en geen verzoek naar wie dan ook.**
+  Doorsturen gebeurt volledig op het apparaat; wat de deelknop ermee doet, is
+  aan het toestel.
+- **Nog niet bij een echt gezin geprobeerd.** Of een kind van acht deze drie
+  regels leest en de goede kiest, is een [hypothese]. De foto's op telefoonmaat
+  laten zien dat ze passen; ze laten niet zien dat ze begrepen worden.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
