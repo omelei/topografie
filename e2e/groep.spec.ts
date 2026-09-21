@@ -209,8 +209,10 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
 
   // Het werkt zoals voorheen: de voordeur, en de rij om mee te beginnen in de
   // volgorde van altijd.
+  // De knop in de balk is sinds ADR-173 de wisselaar, en draagt de naam van wie
+  // er oefent in zijn toegankelijke naam.
   await expect(
-    page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true }),
+    page.getByRole('banner').getByRole('button', { name: /Nu oefent Oud/ }),
   ).toBeVisible();
   const begin = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
   await expect(begin.getByRole('button').first()).toContainText('Provincies van Nederland');
@@ -222,8 +224,10 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
   await expect(vraag).toHaveCount(0);
 
   await page.reload();
+  // De knop in de balk is sinds ADR-173 de wisselaar, en draagt de naam van wie
+  // er oefent in zijn toegankelijke naam.
   await expect(
-    page.getByRole('banner').getByRole('button', { name: 'Oud', exact: true }),
+    page.getByRole('banner').getByRole('button', { name: /Nu oefent Oud/ }),
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });

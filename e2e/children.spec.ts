@@ -12,6 +12,10 @@ import { expect, test, type Page } from '@playwright/test';
  * So what is worth asserting is separation, not the buttons: one child's answer
  * must not appear in the other's progress, and one child's streak must not keep
  * the other's going.
+ *
+ * **Sinds ADR-173 gaat het wisselen via de balk** in plaats van via een blok op
+ * Jij, en het zit niet meer achter premium: drie kinderen zijn gratis. Wat deze
+ * test vastlegt verandert daar niet door — alleen waar je drukt.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -54,15 +58,20 @@ async function answerOne(page: Page) {
   await expect(page.getByRole('region', { name: 'Hoe de ronde ging' })).toBeVisible();
 }
 
+/** De wisselaar in de balk: de ene plek waar je van profiel wisselt (ADR-173). */
+function wisselaar(page: Page) {
+  return page.getByRole('button', { name: /Wissel van profiel/ });
+}
+
 async function addChild(page: Page, naam: string) {
-  await page.goto('/jij');
+  await wisselaar(page).click();
   await page.getByRole('button', { name: 'Nog een kind erbij' }).click();
-  await page.getByPlaceholder('Naam van het kind').fill(naam);
+  await page.getByLabel('Naam van het kind').fill(naam);
   await page.getByRole('button', { name: 'Toevoegen', exact: true }).click();
 
   // Adding reloads, on purpose: every screen holds some of a child's work in
   // React state and none of it may survive the handover.
-  await expect(page.getByText(`Je oefent als ${naam}.`)).toBeVisible();
+  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
 test('a second child starts with nothing, and the first keeps everything', async ({ page }) => {
@@ -90,22 +99,23 @@ test('a second child starts with nothing, and the first keeps everything', async
   await expect(page.getByRole('table').getByText('nog niet onthouden')).toHaveCount(0);
 
   // And handing the device back gives Anne hers, unchanged.
-  await page.goto('/jij');
+  await wisselaar(page).click();
   await page.getByRole('button', { name: /Geef Anne de beurt/ }).click();
-  await expect(page.getByText('Je oefent als Anne.')).toBeVisible();
+  await expect(page.getByRole('banner').getByRole('button', { name: 'Anne' })).toBeVisible();
 
   await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table').getByText('nog niet onthouden').first()).toBeVisible();
 });
 
-test('the child practising is the one the screen says', async ({ page }) => {
+test('the child practising is the one the switcher says', async ({ page }) => {
   await signIn(page, 'Iris');
   await addChild(page, 'Tijn');
 
-  const lijst = page.getByRole('region', { name: 'Wie oefent er?' });
-  const tijn = lijst.getByRole('button', { name: /Tijn/ });
-  const iris = lijst.getByRole('button', { name: /Iris/ });
+  await wisselaar(page).click();
+  const venster = page.getByRole('dialog');
+  const tijn = venster.getByRole('button', { name: /Tijn/ });
+  const iris = venster.getByRole('button', { name: /Iris/ });
 
   await expect(tijn).toHaveAttribute('aria-pressed', 'true');
   await expect(iris).toHaveAttribute('aria-pressed', 'false');
@@ -113,4 +123,19 @@ test('the child practising is the one the screen says', async ({ page }) => {
   // The one practising cannot be handed the turn again: there is nothing to do
   // and a control that does nothing is a control that lies.
   await expect(tijn).toBeDisabled();
+});
+
+/**
+ * Drie kinderen per apparaat, en dat is een grens in de opslag en niet alleen
+ * een knop die verdwijnt (ADR-173).
+ */
+test('er kunnen drie kinderen op een apparaat, en daarna zegt het dat', async ({ page }) => {
+  await signIn(page, 'Een');
+  await addChild(page, 'Twee');
+  await addChild(page, 'Drie');
+
+  await wisselaar(page).click();
+  const venster = page.getByRole('dialog');
+  await expect(venster.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
+  await expect(venster).toContainText('Er kunnen 3 kinderen op dit apparaat');
 });

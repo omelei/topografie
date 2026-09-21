@@ -284,6 +284,50 @@ test('explore has no violations, empty or with something chosen', async ({ page 
  * ouder een e-mailadres en geld achterlaat.
  */
 /**
+ * De ouderpagina en de wisselaar (ADR-173).
+ *
+ * Twee dingen die alleen hier staan en precies het soort ding zijn dat stil
+ * kapotgaat: een `<dialog>` met een lijst en een formulier erin, en een pagina
+ * met een pincodeveld dat een foutmelding kan dragen. Allebei worden ze
+ * gescand mét de foutmelding, want een rode zin in een venster is waar een
+ * kleurcontrast het eerst onderuitgaat.
+ */
+test('the switcher and the parent page have no violations', async ({ page }) => {
+  await signIn(page, 'Fenna');
+
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await expect(page.getByRole('heading', { name: 'Wie gebruikt de app?' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // Het slot, met de twee velden.
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // En met een melding erbij: twee keer iets anders tikken.
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('4321');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // En dan de pagina erachter, met een kind opengeklapt: een formulier en zeven
+  // knoppen binnen een lijst.
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible();
+  await page
+    .getByRole('region', { name: 'Je kinderen' })
+    .getByRole('button', { name: /^Fenna/ })
+    .click();
+  expect((await scan(page)).violations).toEqual([]);
+});
+
+/**
  * De premiumpagina heeft sinds ADR-124 twee gezichten, en ze moeten allebei
  * gemeten worden: met een code is het een statusregel, zonder code een
  * verkooppagina met koppen, een lijst van twee niveaus, een prijs en een link

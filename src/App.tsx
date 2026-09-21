@@ -35,6 +35,9 @@ import { loadPreferences, zetRustig } from '@/features/player/settings';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
+import { OuderPoort, OuderScherm } from '@/features/ouder/OuderScherm';
+import { useOuder } from '@/features/ouder/useOuder';
+import { openWisselaar } from '@/features/ouder/wisselaar';
 import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
@@ -140,6 +143,10 @@ export default function App() {
   const [diplomasOpen, setDiplomasOpen] = useState(false);
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
+  // Of de ouder aan zet is (ADR-173). Hier en niet in de ouderpagina zelf: als
+  // de sessie afloopt terwijl die pagina openstaat, moet de deur weer dicht, en
+  // dat is een keuze van de router en niet van het scherm erachter.
+  const { ouder } = useOuder();
 
   // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
   // them here rather than inside the Shell keeps the frame ignorant of what a
@@ -158,7 +165,7 @@ export default function App() {
 
   const bar =
     boot.status === 'ready' && boot.profile ? (
-      <TopBar profile={boot.profile} onProfile={() => go({ name: 'you' })} />
+      <TopBar profile={boot.profile} onProfile={() => openWisselaar()} />
     ) : null;
 
   const goTo = (id: Destination['id']) => {
@@ -570,6 +577,23 @@ export default function App() {
             maar niemand komt hier om een toets te plannen, en de vergelijking
             tussen basis en premium heeft de breedte nodig. */}
         <PremiumScreen />
+      </Shell>
+    );
+  }
+
+  // De ouderpagina, achter de pincode van dit apparaat (ADR-173). De deur staat
+  // hier en niet in de router: een adres dat alleen bestaat als je er mag komen,
+  // zou de terugknop laten liegen, en wie de sessie ziet aflopen terwijl deze
+  // pagina openstaat, hoort de deur weer dicht te zien gaan in plaats van een
+  // pagina die blijft staan.
+  if (route.name === 'ouder') {
+    return (
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+        {ouder ? (
+          <OuderScherm naam={boot.profile.naam} />
+        ) : (
+          <OuderPoort onOpen={() => openWisselaar('slot')} />
+        )}
       </Shell>
     );
   }

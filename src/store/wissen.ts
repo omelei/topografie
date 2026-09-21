@@ -1,4 +1,5 @@
 import { DB_NAME, getDb, vergeetDb } from './db';
+import { vergeetOuder } from './ouder';
 import { meldAf, PREMIUM_SLEUTEL } from './premium';
 
 /**
@@ -70,4 +71,9 @@ export async function wisAlles(): Promise<void> {
       // Een browser die niets wil bewaren, heeft ook niets te wissen.
     }
   }
+
+  // En de ouder van dit apparaat: de pincode, de pauze en de sessie (ADR-173).
+  // Dit is ook de enige weg terug voor wie zijn pincode kwijt is, en daarom
+  // levert hij niets op: wie hem neemt, houdt een leeg apparaat over.
+  vergeetOuder();
 }

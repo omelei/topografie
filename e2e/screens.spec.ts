@@ -118,6 +118,33 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
  * K3 and K4 in one pass, because the point of K4 is that nothing moves except
  * the words — and two pictures taken a second apart are how you see that.
  */
+/**
+ * De ouderpagina en de wisselaar (ADR-173): twee schermen die nergens anders
+ * gefotografeerd worden, en waarvan het venster op een telefoon tegen de
+ * onderrand staat — precies waar ADR-163 al op wees.
+ */
+test('the switcher and the parent page', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+  await signIn(page, 'Noor');
+
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await expect(page.getByRole('heading', { name: 'Wie gebruikt de app?' })).toBeVisible(READY);
+  await shoot(page, size, '21-wisselaar');
+
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible(READY);
+  await shoot(page, size, '22-ouderslot');
+
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible(READY);
+  await shoot(page, size, '23-ouder');
+});
+
 test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 

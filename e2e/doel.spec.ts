@@ -19,6 +19,22 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
+/**
+ * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en
+ * een verse pincode (ADR-173).
+ */
+async function naarOuder(page: Page) {
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
+}
+
 const blokVan = (page: Page) => page.getByRole('region', { name: 'Je doelen voor deze week' });
 
 /** De tafel van 1 spelen, tien sommen lang, alles goed. */
@@ -101,7 +117,7 @@ test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ 
 
 /**
  * Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
- * opnieuw gevraagd. Aanzetten kan bij de instellingen op Jij (ADR-171).
+ * opnieuw gevraagd. Aanzetten kan bij de instellingen van de ouder (ADR-173).
  */
 test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async ({ page }) => {
   await signIn(page, 'Sep');
@@ -112,8 +128,8 @@ test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async 
   await page.reload();
   await expect(blokVan(page)).toHaveCount(0);
 
-  // Op Jij staat de weg terug, als schakelaar bij de instellingen.
-  await page.goto('/jij');
+  // Bij de ouder staat de weg terug, als schakelaar bij de instellingen.
+  await naarOuder(page);
   const schakelaar = page
     .getByRole('region', { name: 'Instellingen' })
     .getByRole('button', { name: /Doelen voor deze week/ });

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { Foutscherm } from './features/shell/Foutscherm';
 import { OuderVraag } from './features/premium/OuderVraag';
+import { Profielwisselaar } from './features/ouder/Profielwisselaar';
 import { brand } from './config/brand';
 import './index.css';
 import './design/kleuren.css';
@@ -28,5 +29,10 @@ ReactDOM.createRoot(rootElement).render(
         toch niets aan van waar hij in het document staat. Zo is er één, en
         staat hij nooit half achter iets anders. */}
     <OuderVraag />
+    {/* "Wie gebruikt de app?" (ADR-173). Hier om dezelfde reden als hierboven:
+        de knop staat in de balk, diep in de Shell, en het venster hoort in de
+        toplaag te staan zodat er één van is in plaats van één per tak van
+        `App`. */}
+    <Profielwisselaar />
   </React.StrictMode>,
 );

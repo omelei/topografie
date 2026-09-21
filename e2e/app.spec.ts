@@ -198,7 +198,13 @@ test('a round of Europe draws Europe, not the Netherlands', async ({ page }) => 
   await signIn(page, 'Mees');
   await page.goto('/topografie');
 
-  await page.getByRole('button', { name: /^Europa/ }).click();
+  // Gescoped op de vraag waar hij bij hoort: "Europa" staat ook op de
+  // diplomakast onderaan dezelfde pagina, en welke van de twee er het eerst
+  // staat hangt af van hoe snel dat blok laadt.
+  await page
+    .getByRole('region', { name: 'Waar op de kaart?' })
+    .getByRole('button', { name: /^Europa/ })
+    .click();
 
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
   await expect(wat.getByRole('button', { name: /^Landen/ })).toBeVisible();

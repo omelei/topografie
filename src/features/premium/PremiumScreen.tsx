@@ -7,13 +7,13 @@ import {
   OogIcon,
   PupilIcon,
   ShieldIcon,
+  SlotIcon,
   StarIcon,
   TodayIcon,
 } from '@/components/Icon';
-import { AccountBlok } from '@/features/account/AccountBlok';
+import { openWisselaar } from '@/features/ouder/wisselaar';
 import { t, type TranslationKey } from '@/i18n';
-import { isTeKoop, isVerlopen, meldAf, verlooptBinnenkort } from '@/store/premium';
-import { CodeVeld } from './CodeVeld';
+import { isTeKoop, isVerlopen, verlooptBinnenkort } from '@/store/premium';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
@@ -161,11 +161,6 @@ export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
         ) : null}
 
         {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
-
-        {/* Het account van de ouder, met of zonder code (ADR-172). Een
-            e-mailadres en een wachtwoord zijn van de ouder (ADR-155), en de
-            ouder komt hier uit: "Ik ben een ouder" opent deze pagina (ADR-171). */}
-        <AccountBlok />
       </div>
     </div>
   );
@@ -181,14 +176,7 @@ function Aan({ tot }: { readonly tot: string }) {
           <CorrectIcon size={24} />
           {t('premium.aan', { datum: leesbareDatum(tot) })}
         </p>
-        <button
-          type="button"
-          className="tk-button tk-button-secondary self-start"
-          onClick={() => void meldAf()}
-        >
-          {t('premium.afmelden')}
-        </button>
-        <p className="tk-hulp">{t('premium.afmeldenUitleg')}</p>
+        <p className="tk-hulp">{t('premium.afmeldenBijOuder')}</p>
       </div>
     </section>
   );
@@ -237,7 +225,7 @@ function Aanbod() {
         </ul>
       </section>
 
-      <Code />
+      <NaarOuder />
     </>
   );
 }
@@ -407,17 +395,36 @@ function Cel({ ja }: { readonly ja: boolean }) {
 }
 
 /**
- * Het veld, onderaan en klein. Het is de laatste stap van een reis die ergens
- * anders begon: je hebt betaald, je hebt een mail, je typt hem over.
+ * De weg naar de code, in plaats van de code zelf (ADR-173).
  *
- * Het veld zelf staat in `CodeVeld`, want sinds ADR-163 staat het ook in de
- * pop-up die een kind bij een slot krijgt.
+ * Hier stond het veld waar de code in ging: de laatste stap van een reis die
+ * ergens anders begon — je hebt betaald, je hebt een mail, je typt hem over.
+ * Het veld zelf staat nog steeds in `CodeVeld`, want het staat op twee plekken
+ * (ADR-163), maar allebei zijn ze nu van de ouder: de ouderpagina, en de pop-up
+ * die een kind bij een slot krijgt en die een ouder invult.
+ *
+ * Hier stond het codeveld. Deze pagina is een etalage en een kind mag hem zien
+ * — een slot brengt je hier, en de vergelijking legt uit wat premium doet —
+ * maar een kind koopt niets en vult geen code in. Apple en Google eisen voor
+ * een app voor kinderen bovendien dat alles wat met kopen te maken heeft achter
+ * een poort staat, en dit is de deur ernaartoe: één knop, en daarachter de
+ * pincode van de ouder.
  */
-function Code() {
+function NaarOuder() {
   return (
     <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
       <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
-      <CodeVeld />
+      <div className="tk-card flex flex-col gap-3">
+        <p className="text-lopend">{t('premium.codeBijOuder')}</p>
+        <button
+          type="button"
+          className="tk-button self-start"
+          onClick={() => openWisselaar('slot')}
+        >
+          <SlotIcon size={24} />
+          {t('premium.ikBenOuder')}
+        </button>
+      </div>
     </section>
   );
 }

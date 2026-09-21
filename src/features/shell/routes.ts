@@ -257,7 +257,9 @@ export type Route =
   /** A word a parent looks for, holding more than one module. */
   | { readonly name: 'category'; readonly category: Category }
   /** What premium is, and the one field that turns it on (ADR-116). */
-  | { readonly name: 'premium' };
+  | { readonly name: 'premium' }
+  /** De ouderpagina, achter de pincode van dit apparaat (ADR-173). */
+  | { readonly name: 'ouder' };
 
 /** De premiumpagina: een van de drie bestemmingen, naast Vandaag en Jij (ADR-171). */
 export const PREMIUM_SLUG = 'premium';
@@ -265,15 +267,21 @@ export const PREMIUM_SLUG = 'premium';
 export const YOU_SLUG = 'jij';
 
 /**
- * Twee woorden die een pagina waren en nu naar een andere wijzen (ADR-171).
- *
- * Onthouden is een deel van Jij geworden — Jij is waar je al je cijfers ziet —
- * en Voor ouders is opgegaan in Jij en in Premium: ouders loggen niet in, dus
- * een pagina die alleen voor hen was had geen lezer. Wie een van de twee
- * adressen bewaard heeft, komt uit op de pagina waar het nu staat, en de balk
- * schrijft dan dat adres.
+ * Onthouden was een pagina en is een deel van Jij geworden (ADR-171): Jij is
+ * waar je al je cijfers ziet. Wie dat adres bewaard heeft, komt daar uit, en de
+ * balk schrijft dan het nieuwe adres.
  */
 export const RETENTION_SLUG = 'onthouden';
+
+/**
+ * En /ouder wijst weer naar zichzelf (ADR-173).
+ *
+ * ADR-171 liet het naar Premium wijzen, op de aanname dat ouders niet inloggen.
+ * Die aanname is omgedraaid: de ouder is een profiel met een eigen pagina, en
+ * dit is het adres ervan. Wie er zonder de pincode komt, krijgt het slot —
+ * dat is `App`, niet de router: een adres dat alleen bestaat als je er mag
+ * komen, zou de terugknop laten liegen.
+ */
 export const OUDER_SLUG = 'ouder';
 /*
  * /voortgang (and the older /ontdekkingsreis) was the collection: the heroes,
@@ -324,7 +332,8 @@ export function routeFor(pathname: string): Route {
   const slug = withoutBase(pathname);
   if (slug === '') return { name: 'home' };
   if (slug === YOU_SLUG || slug === RETENTION_SLUG) return { name: 'you' };
-  if (slug === PREMIUM_SLUG || slug === OUDER_SLUG) return { name: 'premium' };
+  if (slug === PREMIUM_SLUG) return { name: 'premium' };
+  if (slug === OUDER_SLUG) return { name: 'ouder' };
 
   const [head = '', tail] = slug.split('/');
 
@@ -351,6 +360,7 @@ function slugFor(route: Route): string {
   if (route.name === 'home') return '';
   if (route.name === 'you') return YOU_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
+  if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];
 

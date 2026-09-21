@@ -253,10 +253,11 @@ test('without a code the premium page points at the kassa, and with one it does 
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
+    // Het codeveld stond hier en staat sinds ADR-173 bij de ouder: een kind mag
+    // deze pagina zien en een kind koopt niets. Wat er nog staat is de weg
+    // ernaartoe, onder dezelfde kop. Het account staat er niet meer; dat is ook
+    // van de ouder.
     'Heb je al een code?',
-    // Het account van de ouder, onderaan en met of zonder code (ADR-172). De
-    // e2e-bouw heeft een gezinsproject, dus het staat er.
-    'Account',
   ]);
   await expect(page.getByText('€ 24,95').first()).toBeVisible();
 
@@ -312,7 +313,15 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   });
 
   await signIn(page, 'Mees');
+
+  // Het veld staat bij de ouder (ADR-173), en de premiumpagina heeft er één
+  // knop naartoe. Die knop is de parental gate die Apple en Google eisen.
   await page.goto('/premium');
+  await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
 
   const veld = page.getByLabel('Typ de code');
   await veld.fill('LEER-2222-2222');
