@@ -258,13 +258,18 @@ export function WeekdoelenBlok({
           <button type="button" className="tk-doel-ander" onClick={zetUit}>
             {t('weekdoel.uitZetten')}
           </button>
-          {onDiplomas ? (
-            <button type="button" className="tk-doel-ander" onClick={onDiplomas}>
-              {t('weekdoel.alleDiplomas')}
-            </button>
-          ) : null}
         </div>
       )}
+
+      {/* Altijd, ook terwijl er een doel gekozen wordt: dan is het overzicht
+          juist het nuttigst. */}
+      {onDiplomas ? (
+        <p>
+          <button type="button" className="tk-doel-ander" onClick={onDiplomas}>
+            {t('weekdoel.alleDiplomas')}
+          </button>
+        </p>
+      ) : null}
     </section>
   );
 }
