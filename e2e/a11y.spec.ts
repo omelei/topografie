@@ -337,7 +337,19 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
   expect((await scan(page)).violations).toEqual([]);
 
   // Het slot, met de twee velden.
+  // De volwassenencheck staat er sinds ADR-176 vóór, en die is een eigen scherm
+  // met een eigen foutmelding.
   await page.getByRole('button', { name: 'Ouder' }).click();
+  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  await page.getByLabel('In welk jaar ben je geboren?').fill('2020');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 

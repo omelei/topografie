@@ -31,6 +31,8 @@ function wisselaar(page: Page) {
 async function maakOuder(page: Page, pin = '1234') {
   await wisselaar(page).click();
   await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await page.getByLabel('Nieuwe pincode').fill(pin);
   await page.getByLabel('Nog een keer').fill(pin);
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
@@ -56,7 +58,11 @@ test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
   await wisselaar(page).click();
   await page.getByRole('button', { name: 'Ouder' }).click();
 
-  // Eerst maken, want dit apparaat heeft er nog geen.
+  // Eerst de volwassenencheck, en dán pas een pincode maken (ADR-176).
+  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible();
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
   await page.getByLabel('Nieuwe pincode').fill('4821');
   await page.getByLabel('Nog een keer').fill('4821');
@@ -94,6 +100,76 @@ test('een verkeerde pincode komt er niet in, en de goede wel', async ({ page }) 
   await venster.getByLabel('Pincode', { exact: true }).fill('4821');
   await venster.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page).toHaveURL(/\/ouder$/);
+});
+
+/**
+ * Het gat dat ADR-173 openliet, als test (ADR-176).
+ *
+ * Een kind meldt zich aan, opent de wisselaar en kon de pincode van de ouder
+ * zetten — systematisch, want het kind opent de app als eerste. Daarmee gaf het
+ * zichzelf de instellingen, werd de parental gate een poort waarvan het kind de
+ * sleutel uitdeelde, en kon het zijn ouder buitensluiten.
+ */
+test('een kind komt niet langs de check en kan de pincode dus niet zetten', async ({ page }) => {
+  await signIn(page, 'Daan');
+
+  await wisselaar(page).click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+
+  // Er staat geen pincodeveld: eerst de check.
+  await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
+
+  // Een jaartal van een kind komt er niet door, en ook niet eentje van net
+  // geen achttien.
+  for (const jaar of ['2020', String(new Date().getFullYear() - 17)]) {
+    await page.getByLabel('In welk jaar ben je geboren?').fill(jaar);
+    await page.getByRole('button', { name: 'Verder', exact: true }).click();
+    await expect(page.getByRole('alert')).toContainText('Dat klopt niet');
+    await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
+  }
+
+  // En het jaartal blijft nergens staan: het wordt gecontroleerd en weggegooid.
+  const opslag = await page.evaluate(() => JSON.stringify(window.localStorage));
+  expect(opslag).not.toContain('2020');
+});
+
+/**
+ * Een vergeten pincode was een val (ADR-176).
+ *
+ * ADR-173 liet de pincode met opzet niet resetten — "een weg die alleen het slot
+ * weghaalt zou geen slot zijn" — en dat klopte alleen zolang de ouder degene was
+ * die hem zette. De enige uitweg was het hele apparaat wissen, en dat is geen
+ * herstel maar verlies.
+ */
+test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ page }) => {
+  await signIn(page, 'Roos');
+  await maakOuder(page, '4821');
+  await page.getByRole('button', { name: /Terug naar Roos/ }).click();
+
+  await wisselaar(page).click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
+
+  // Ook hier staat de check ervoor, en die is de hele bescherming.
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1357');
+  await page.getByLabel('Nog een keer').fill('1357');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+
+  await expect(page).toHaveURL(/\/ouder$/);
+
+  // Het kind staat er nog: er is niets gewist om erbij te komen.
+  await expect(page.getByRole('region', { name: 'Je kinderen' })).toContainText('Roos');
+
+  // En de oude code werkt niet meer.
+  await page.getByRole('button', { name: /Terug naar Roos/ }).click();
+  await wisselaar(page).click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  const venster = page.getByRole('dialog');
+  await venster.getByLabel('Pincode', { exact: true }).fill('4821');
+  await venster.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(venster.getByRole('alert')).toContainText('niet de pincode van dit apparaat');
 });
 
 test('wie zonder pincode op /ouder komt, krijgt de deur en niet de pagina', async ({ page }) => {
@@ -161,6 +237,8 @@ test.describe('zonder code', () => {
     await expect(page.getByRole('button', { name: 'Code gebruiken' })).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
+    await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+    await page.getByRole('button', { name: 'Verder', exact: true }).click();
     await page.getByLabel('Nieuwe pincode').fill('1234');
     await page.getByLabel('Nog een keer').fill('1234');
     await page.getByRole('button', { name: 'Bewaren', exact: true }).click();

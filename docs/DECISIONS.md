@@ -10547,6 +10547,232 @@ geworden: de naam is de vraag, en die blijft in alle drie de standen dezelfde.
 
 ---
 
+## ADR-175 — Wat waar moet zijn voordat een kind het apparaat uit kan: een uuid, een moment, en één vertaling
+
+**Status:** accepted. **Date:** 2026-09-21. Het eerste deel van stap 3 uit
+`docs/ouder-en-kind.md`, na ADR-173 en ADR-174. **Voert uit wat ADR-155 als
+voorwaarde stelde** ("de lokale migratie gaat vóór het netwerk") en **maakt de
+belofte van `docs/DATAMODEL.md` waar** dat de hernoeming tussen deel A en deel C
+de enige vertaling is. Verandert `leitner.ts`, `game-core`, de statistieken en
+wat een kind ziet niet. De overname zelf — het account, het opnemen van een kind
+dat al oefende — is het tweede deel en staat hier nog niet in.
+
+### Context
+
+ADR-155 schreef twee dingen op die vooraf moesten gaan aan elke synchronisatie,
+en beide stonden er sindsdien niet:
+
+> De lokale migratie gaat vóór het netwerk, net zoals ADR-050 dat voor
+> `progress` eiste: `attempts` krijgt een uuid als sleutel en een instelling
+> gaat bijhouden wanneer hij geschreven is. Dat kan op zichzelf, zonder dat er
+> iemand inlogt.
+
+Het waarom is in allebei de gevallen hetzelfde, en het is geen netheid.
+
+**De sleutel van een poging werd uitgedeeld door IndexedDB zelf**, oplopend
+vanaf één, per apparaat. Dat werkt zolang er één apparaat is. Zodra hetzelfde
+kind op de iPad én op de laptop oefent, bestaat poging 7 twee keer, voor twee
+verschillende antwoorden — en bij de eerste sync wint er willekeurig één. Het
+andere verdwijnt, zonder fout, zonder melding, en zonder dat iemand het merkt.
+`pogingen` is bovendien de grondstof waar alles uit gerekend wordt, tot de stand
+van een doelstelling aan toe (ADR-155 C3).
+
+**Een instelling wist niet wanneer hij geschreven was.** Van `weekdoel:`,
+`doel:` en `bijhouden:` wint bij het samenvoegen de jongste schrijver, en zonder
+moment is er niets om jong of oud aan af te meten.
+
+En er was een derde ding, dat `docs/DATAMODEL.md` sinds de eerste versie
+belooft: veldnamen zijn camelCase op het apparaat en snake_case in Postgres, en
+"die hernoeming is de enige vertaling … geschreven in één mappingfunctie op de
+dag dat accounts arriveren, en niet vast door de code heen in afwachting van een
+vorm die nog niemand nodig had". Die dag is deze.
+
+### Decision
+
+**De sleutel van een poging wordt een uuid.** `recordAttempt` deelt hem zelf
+uit; `store/sleutels.ts` schrijft om wat er al ligt.
+
+**Zonder nieuwe `DB_VERSION`.** De opslag hoeft niet te veranderen:
+`autoIncrement` vult alleen aan waar geen sleutel staat, dus een rij die zelf een
+uuid meebrengt krijgt die gewoon. Wat er verandert zijn de rijen die er al
+liggen.
+
+**En niet in een versietransactie.** Dat is de regel die `db.ts` zelf stelt en
+die `ensureProgressPerChild` al volgt: een migratie die tijdens een `upgrade`
+stukgaat, laat de voortgang van een kind onbereikbaar achter zonder dat er
+ergens een fout verschijnt, en ze is vanaf deze machine niet te beproeven. Deze
+draait in een gewone transactie, per rij, is opnieuw te draaien, en mag
+mislukken — dan gebeurt het de volgende keer.
+
+Eén keer per apparaat bij het openen van de app, en niet bij het lezen van de
+dozen zoals `ensureProgressPerChild`: dit loopt over élk gegeven antwoord, en
+dat hoort niet in het pad van een scherm dat opengaat.
+
+**Een instelling draagt `gewijzigdOp`.** Geschreven door `setSetting`, zodat
+elke schrijver hem meekrijgt zonder het te weten — ook de schrijvers die er
+vandaag al zijn. Optioneel, want elke rij die er vóór deze beslissing stond
+heeft hem niet, en die is dan per definitie ouder dan een rij die hem wél heeft.
+Ook daarvoor is geen migratie nodig.
+
+**De vertaling staat in `store/gezin/rijen.ts`, en is puur.** Wat een rij wordt
+is te toetsen zonder browser en zonder netwerk; dát het aankomt is iets voor de
+e2e-bouw. Drie dingen legt hij vast die anders verspreid zouden raken:
+
+- **Een ronde die nog loopt gaat niet mee.** Die hoort bij het apparaat waar hij
+  openstaat (ADR-155), en `pogingen.sessie_id` dwingt het af: een poging uit een
+  lopende ronde mag dan evenmin mee.
+- **Een poging met een genummerde sleutel gaat niet mee.** De migratie hierboven
+  draait bij het openen, dus het hoort niet voor te komen — en als het toch zo
+  is, is overslaan beter dan het antwoord van iemand anders overschrijven.
+- **Van de instellingen gaat alleen wat de database kent.** Letterlijk de lijst
+  uit de `check` in `0001_gezin.sql`. `dagstand:` en `actiefKind` zijn wat dít
+  apparaat vandaag doet en horen nergens anders te zijn; een sleutel die de
+  database weigert, zou de hele overname laten stranden op iets wat hier te zien
+  was.
+
+**Een kind heeft twee identiteiten, en die worden niet gelijkgetrokken.** Op de
+server is het zijn auth-uuid; op dit apparaat is het eerste kind `me` en elk
+volgend kind een lokale uuid. `Eigenaar` draagt ze allebei.
+
+Dat wijkt af van §9 van het voorstel, dat schreef: "Lokaal wordt de oude `kindId`
+omgezet, niet gekopieerd." Bij het bouwen bleek dat de duurste regel van het hele
+plan: de lokale sleutel omschrijven raakt `profile`, `progress`, `kindBadges`,
+`sessions`, `attempts` én elke instellingssleutel tegelijk, en een migratie die
+halverwege breekt laat de dozen van een kind achter onder twee sleutels — precies
+de fout die ADR-046 opruimde, opnieuw en nu met echte kinderen erin.
+
+De prijs van twee identiteiten is twee velden en de vertaling die er toch al was.
+Dat is goedkoper, en het is bovendien wat `SINGLETON_KEY` al doet: alles wat
+onder `me` geschreven is, blijft van dat kind zonder te verhuizen.
+
+### Consequences
+
+- **`AttemptRecord.id` is `string | number`**, en niet alleen `string`. Een
+  apparaat dat de migratie nog niet gedraaid heeft, draagt allebei; het type
+  liegt daar niet over.
+- **De migratie is eenmalig en dat is te zien**: een vlag in `settings`. Wie hem
+  weghaalt, laat hem opnieuw draaien, en dat is precies wat de e2e-test doet om
+  de toestand van vóór deze versie na te bootsen.
+- **Nog niets verstuurt iets.** Deze beslissing voegt geen enkel verzoek toe.
+  `rijen.ts` maakt rijen en er is nog niemand die ze opstuurt; dat is het tweede
+  deel van stap 3. `e2e/network.spec.ts` verandert dus niet.
+- **e2e:** `sleutels.spec.ts` is nieuw en zet met de hand een poging van de oude
+  vorm neer, herlaadt, en kijkt wat ervan geworden is — dezelfde techniek als
+  `groep.spec.ts` met een profiel van vóór de groep. Met opzet geen unit test:
+  wat bewezen moet worden is gedrag van IndexedDB zelf, en een nagebouwde
+  IndexedDB bewijst dat over zichzelf en niet over de browser waar een kind in
+  oefent.
+- **`rijen.test.ts` toetst wat er níét vertrekt**, en dat is het deel dat ertoe
+  doet: geen `dagstand:`, geen `actiefKind`, geen instelling van een ander kind,
+  geen poging zonder uuid, geen ronde die nog loopt.
+- **Nog niet tegen een echt project gedraaid.** Er is geen Supabase-project en
+  er zijn geen sleutels in CI (ADR-155, `docs/SUPABASE.md`). Dat `rijen.ts` de
+  kolommen van `0001_gezin.sql` raakt, is nagelezen en niet uitgeprobeerd.
+
+---
+
+## ADR-176 — Een volwassenencheck vóór de pincode, en een vergeten pincode is geen val
+
+**Status:** accepted. **Date:** 2026-09-21. **Herstelt een gat in ADR-173**, dat
+de eigenaar vond door zich als kind aan te melden. Raakt `leitner.ts`,
+`game-core`, de statistieken en wat een kind oefent niet.
+
+### Context
+
+ADR-173 zette het ouderprofiel achter een pincode van vier cijfers en beschreef
+dat slot als een parental gate. Wat het niet beschreef, is wie die pincode mag
+zetten — en het antwoord was: iedereen die als eerste bij de wisselaar komt.
+
+De eigenaar testte het en meldde het in één zin: _"Ik heb me aangemeld als kind.
+Ik kan nu zelf een ouder account aanmaken door enkel een pincode op te geven."_
+
+De aanname eronder was dat de ouder de eerste zou zijn. Die aanname is niet
+alleen fout maar **systematisch fout: het kind opent de app als eerste.** Dat is
+precies het geval waar `docs/ouder-en-kind.md` over gaat — "een kind start met
+oefenen zonder dat de ouder hierbij betrokken is" — dus het is geen randgeval
+maar de hoofdweg.
+
+Drie dingen kostte dat, en het derde is het ergste:
+
+1. **Een kind kon zichzelf de instellingen geven**: de doelen uit, de code
+   eraf, en "alles van dit apparaat halen" binnen bereik. Precies wat ADR-173
+   als diagnose 7 wilde wegnemen, terug op zijn plek en nu achter vier cijfers
+   die het kind zelf koos.
+2. **De parental gate betekende niets.** Apple en Google eisen dat commercie
+   achter een poort staat. Een poort waarvan het kind de sleutel uitdeelt, is
+   die poort niet.
+3. **De ouder kon buitengesloten worden.** ADR-173 schreef: "Wie de pincode
+   kwijt is, houdt één uitweg: alles van dit apparaat halen." Dat was bedoeld
+   als strengheid en werkte als val: de enige weg naar je eigen instellingen
+   liep langs het weggooien van de voortgang van je kinderen.
+
+### Decision
+
+**Er staat een volwassenencheck vóór het zetten van de pincode**, en vóór het
+opnieuw zetten ervan.
+
+**Geen rekensom.** Dat is de gebruikelijke poort in apps voor kinderen en hier
+de slechtst denkbare: dit product leert kinderen tafels. We zouden de poort
+bouwen die de app zelf traint om te openen, en hem elke week een beetje zwakker
+maken.
+
+**Het is een geboortejaar**, en het moet minstens achttien jaar geleden zijn.
+Eén veld, één vraag, en het is wat Apple zelf als voorbeeld van een parental
+gate noemt.
+
+**Het jaartal wordt gecontroleerd en weggegooid.** Het staat in de state van dat
+formulier en verdwijnt ermee: geen `setSetting`, geen verzoek, niets in de
+opslag. Dat is geen detail maar de enige reden dat deze vraag te verenigen is
+met ADR-050, dat zegt dat dit product nooit een geboortedatum vraagt. Die regel
+gaat over het kind; dit is een vraag aan de volwassene waarvan het antwoord niet
+blijft bestaan. De hulpregel eronder zegt dat ook, want een ouder die dit
+product om zijn privacy koos, hoort niet te moeten raden.
+
+**En een vergeten pincode is te vervangen** (neemt de strengheid van ADR-173
+terug). "Pincode vergeten?" leidt naar dezelfde check en daarna naar een nieuwe
+code. Dat verzwakt het slot niet: de check is wat beschermt, en hij staat vóór
+allebei de wegen. Wat het weghaalt is de val — een ouder hoeft zijn apparaat
+niet meer te wissen om bij zijn eigen instellingen te komen.
+
+**Wat er niet bij komt: de check nog een keer vóór het wissen.** Dat stond in
+het eerste voorstel, als extra slot op het enige onomkeerbare. Met de check op
+het zetten én het resetten is de pincode zelf weer betrouwbaar, en dan is een
+tweede check alleen wrijving voor een ouder die iets legitiems doet.
+
+**Het blijft een hek en geen kluis.** Een twaalfjarige die het doorheeft, tikt
+een jaartal in, en met de ontwikkelaarsgereedschappen kom je er sowieso langs —
+dat schreef ADR-116 al op over de premiumcode. Wat dit koopt is dat de
+zevenjarige er niet in wandelt, dat de ouder de deur houdt, en dat het product
+niet liegt over wat het slot is.
+
+### Consequences
+
+- **Drie sporten in plaats van twee**, elk met meer erachter: de check mag de
+  pincode zetten of vervangen; de pincode is de dagelijkse deur; en het
+  accountwachtwoord — als het er is, in een volgende beslissing — bewaakt geld,
+  gegevens en andere apparaten. ADR-173 beschreef de onderste twee; deze voegt
+  de bodem toe.
+- **Eén extra scherm op de weg naar de ouderpagina**, en alleen de eerste keer
+  per apparaat en bij vergeten. De dagelijkse weg is nog steeds vier cijfers.
+- **`ouder.vergeten` is weg** en `ouder.vergetenKnop` ervoor in de plaats: de
+  uitweg was een zin die uitlegde dat er geen uitweg was, en is een knop
+  geworden. `ouder.maakHulp` loog sindsdien ook en is herschreven.
+- **e2e:** twee tests leggen het gat zelf vast — een kind komt niet langs de
+  check (ook niet met een jaartal van net geen achttien, en het jaartal staat
+  daarna nergens in de opslag), en een vergeten pincode is te vervangen zonder
+  dat er iets gewist wordt, waarna de oude code niet meer werkt. Elke andere
+  spec die de ouderpagina opent, doet de check onderweg. `a11y.spec.ts` scant
+  het nieuwe scherm mét foutmelding; `screens.spec.ts` fotografeert het als
+  `22-volwassenencheck`.
+- **Gevonden door te proberen, niet door te lezen.** Dit gat stond in een ADR
+  die zichzelf een parental gate noemde, in code die door de hele suite groen
+  kwam, en in een e2e-test die de fout letterlijk uitvoert — `de ouder zit
+achter een pincode, en het kind niet` meldde zich aan als kind en zette de
+  pincode. De test codeerde het gat in plaats van het te vangen. Dat is het
+  soort fout dat alleen iemand vindt die het product gebruikt.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

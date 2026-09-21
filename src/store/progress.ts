@@ -240,9 +240,18 @@ export async function loadAntwoorden(): Promise<{ tijdstip: string; correct: boo
     .map((attempt) => ({ tijdstip: attempt.tijdstip, correct: attempt.correct }));
 }
 
+/**
+ * Een gegeven antwoord, met een sleutel die het apparaat uit is te tillen
+ * (ADR-175).
+ *
+ * De sleutel komt niet meer van IndexedDB's teller maar van hier. Die teller
+ * loopt per apparaat, dus twee apparaten van hetzelfde kind deelden hetzelfde
+ * nummer uit aan twee verschillende antwoorden — en bij de eerste sync won er
+ * dan één. `store/sleutels.ts` schrijft om wat er al lag.
+ */
 export async function recordAttempt(attempt: Omit<AttemptRecord, 'id'>): Promise<void> {
   const db = await getDb();
-  await db.add('attempts', attempt as AttemptRecord);
+  await db.add('attempts', { ...attempt, id: crypto.randomUUID() });
 }
 
 /**

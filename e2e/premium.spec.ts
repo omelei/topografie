@@ -325,6 +325,8 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   // knop naartoe. Die knop is de parental gate die Apple en Google eisen.
   await page.goto('/premium');
   await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();

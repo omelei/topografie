@@ -1422,7 +1422,7 @@ export const nl = {
   'ouder.maakUitleg':
     'Kies een pincode van vier cijfers. Daarmee kom je bij de instellingen, bij premium en bij hoe het met je kinderen gaat.',
   'ouder.maakHulp':
-    'De pincode staat alleen op dit apparaat. Raak je hem kwijt, dan is alles van dit apparaat halen de enige weg terug — en dan ben je ook de voortgang kwijt.',
+    'De pincode staat alleen op dit apparaat en gaat nergens heen. Raak je hem kwijt, dan kun je hier een nieuwe zetten.',
   'ouder.slotTitel': 'Even je pincode',
   'ouder.slotUitleg': 'Vier cijfers, en je bent er.',
   'ouder.pin': 'Pincode',
@@ -1430,8 +1430,21 @@ export const nl = {
   'ouder.pinHerhaal': 'Nog een keer',
   'ouder.open': 'Verder',
   'ouder.bewaarPin': 'Bewaren',
-  'ouder.vergeten':
-    'Pincode kwijt? Alles van dit apparaat halen is de enige weg terug, en dan gaat de voortgang mee.',
+  'ouder.vergetenKnop': 'Pincode vergeten?',
+
+  // De volwassenencheck vóór het zetten of resetten van de pincode (ADR-176).
+  // Geen rekensom: dit product leert kinderen tafels, dus dat zou de poort zijn
+  // die de app zelf traint om te openen. Het jaartal wordt gecontroleerd en
+  // weggegooid, en de hulpregel zegt dat — een ouder die dit product om zijn
+  // privacy koos, hoort niet te moeten raden.
+  'ouder.checkTitel': 'Ben je een volwassene?',
+  'ouder.checkUitleg':
+    'Hierachter staan de instellingen, premium en hoe het met je kinderen gaat. Dat is niet voor kinderen.',
+  'ouder.checkVraag': 'In welk jaar ben je geboren?',
+  'ouder.checkKnop': 'Verder',
+  'ouder.checkFout': 'Dat klopt niet. Haal er even je vader of moeder bij.',
+  'ouder.checkHulp':
+    'We kijken er alleen naar. Je jaartal wordt nergens bewaard en gaat nergens heen.',
   'ouder.fout.geenCijfers': 'Een pincode is vier cijfers.',
   'ouder.fout.ongelijk': 'De twee keer waren niet hetzelfde. Probeer het nog eens.',
   'ouder.fout.onjuist': 'Dat is niet de pincode van dit apparaat.',

@@ -1,8 +1,8 @@
 # De ouder en het kind, opnieuw — voorstel
 
-**Status:** goedgekeurd op alle vijf de vragen uit §16. Stap 1 van §14 is gebouwd als ADR-173 en
-stap 2 als ADR-174 (2026-09-21); stap 3 en 4 staan nog open. Wat bij het bouwen anders uitviel,
-staat in §17. **Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9 (na #101).
+**Status:** goedgekeurd op alle vijf de vragen uit §16. Stap 1 van §14 is gebouwd als ADR-173,
+stap 2 als ADR-174 en het eerste deel van stap 3 als ADR-175 (2026-09-21); de overname zelf en
+stap 4 staan nog open. Wat bij het bouwen anders uitviel, staat in §17. **Datum:** 2026-09-21. **Codebasis:** `origin/main` 38cace9 (na #101).
 
 **Opdracht van de eigenaar:** de verhouding tussen kind en ouder steekt niet goed in elkaar; er moet
 weer een ouderpagina komen, met een wachtwoord, profielwissel tussen maximaal drie kinderen en één
@@ -482,6 +482,11 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   de ouder; de datum is geen commercie en een kind mag hem zien. Alleen het codeveld en het
   afmelden zijn verhuisd.
 
+- **Wie de pincode mocht zetten, stond er niet bij — en dat was een gat** (hersteld in ADR-176).
+  ADR-173 nam aan dat de ouder de eerste zou zijn die bij de wisselaar komt. Dat is systematisch
+  fout: het kind opent de app als eerste, en dat is juist het geval waar dit hele voorstel over
+  gaat. Er staat nu een volwassenencheck vóór het zetten en het resetten van de pincode.
+
 ### Stap 2 (ADR-174)
 
 - **Het codeveld staat niet meer meteen in het venster.** §8 liet het staan waar ADR-163 het zette.
@@ -493,3 +498,15 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   kassaknop staat daar één druk verder.
 - **Er is een vierde weg bijgekomen die §8 niet noemde:** een gewone mailknop, altijd zichtbaar.
   `navigator.share` bestaat niet op een laptop, en daar is de mail de kortste route.
+
+### Stap 3, eerste deel (ADR-175)
+
+- **Stap 3 valt uiteen in twee stukken.** §14 noemde "het account en de overname" als één stap.
+  Bij het bouwen bleek de helft ervan geen netwerk nodig te hebben en er wel aan vooraf te moeten
+  gaan: de uuid-sleutels, het moment op een instelling, en de vertaling tussen het apparaat en de
+  server. Dat is ADR-175. De overname zelf — aanmelden, kinderen opnemen, versturen — is het
+  tweede stuk.
+- **De lokale sleutel van een kind wordt niet omgezet.** §9 stap 4 zei van wel: "Lokaal wordt de
+  oude `kindId` omgezet, niet gekopieerd." Dat raakt elke winkel tegelijk, en een migratie die
+  halverwege breekt laat de dozen van een kind achter onder twee sleutels — de fout van ADR-046,
+  opnieuw. Een kind heeft nu twee identiteiten, en `Eigenaar` draagt ze allebei.

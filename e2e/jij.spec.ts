@@ -31,6 +31,8 @@ async function naarOuder(page: Page) {
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
   await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();

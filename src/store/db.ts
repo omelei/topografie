@@ -115,7 +115,21 @@ export interface SessionRecord {
 }
 
 export interface AttemptRecord {
-  id?: number;
+  /**
+   * Een uuid sinds ADR-175, en op oudere rijen een oplopend nummer.
+   *
+   * Dat nummer werd door IndexedDB zelf uitgedeeld en is per apparaat. Twee
+   * apparaten van hetzelfde kind maken daarmee hetzelfde nummer voor een ánder
+   * antwoord, en bij de eerste sync wint er dan willekeurig één — een gegeven
+   * antwoord dat verdwijnt zonder dat iemand het merkt. ADR-155 noemde deze
+   * migratie daarom een voorwaarde voor het netwerk, en niet iets wat erbij
+   * hoort.
+   *
+   * `store/sleutels.ts` schrijft de oude nummers om; `recordAttempt` deelt
+   * sindsdien zelf een uuid uit. De opslag hoefde er niet voor te veranderen:
+   * `autoIncrement` vult alleen aan waar niets staat.
+   */
+  id?: string | number;
   sessionId: string;
   /** Whose answer it was. Absent on rows written before ADR-046. */
   kindId?: string;
@@ -189,6 +203,17 @@ export interface StampRecord {
 export interface SettingRecord {
   key: string;
   value: string;
+  /**
+   * Wanneer deze instelling voor het laatst geschreven is, als ISO-moment
+   * (ADR-155, ADR-175).
+   *
+   * Zonder dit kunnen twee apparaten niet zien welke van twee waarden de
+   * nieuwste is, en dat is precies wat `weekdoel:`, `doel:` en `bijhouden:`
+   * bij het samenvoegen nodig hebben. Optioneel, want elke rij die er vóór
+   * deze beslissing stond heeft hem niet — en die is dan per definitie ouder
+   * dan een rij die hem wél heeft.
+   */
+  gewijzigdOp?: string;
 }
 
 interface TopoDB extends DBSchema {
@@ -202,7 +227,7 @@ interface TopoDB extends DBSchema {
   kindBadges: { key: [string, string]; value: ChildBadgeRecord };
   sessions: { key: string; value: SessionRecord };
   attempts: {
-    key: number;
+    key: string | number;
     value: AttemptRecord;
     indexes: { 'by-session': string; 'by-item': string };
   };

@@ -192,6 +192,44 @@ export function isPinGezet(): boolean {
   return leesSlot() !== null;
 }
 
+/**
+ * De volwassenencheck vóór het zetten of resetten van de pincode (ADR-176).
+ *
+ * **Waarom hij er is.** ADR-173 liet iedereen die als eerste bij de wisselaar
+ * kwam de pincode zetten, op de aanname dat dat de ouder zou zijn. Die aanname
+ * was niet alleen fout maar systematisch fout: het kind opent de app als eerste
+ * — dat is precies het geval waar dit hele project over gaat. Een kind kon
+ * daarmee zichzelf de instellingen geven, van de parental gate een poort maken
+ * waarvan het zelf de sleutel uitdeelde, en de ouder buitensluiten met het
+ * wissen van het apparaat als enige uitweg.
+ *
+ * **Waarom geen rekensom.** Dat is de gebruikelijke poort in apps voor
+ * kinderen, en hier de slechtst denkbare: dit product leert kinderen tafels. We
+ * zouden de poort bouwen die de app zelf traint om te openen.
+ *
+ * **Het jaar wordt gecontroleerd en weggegooid.** Het wordt nergens geschreven,
+ * niet in de opslag en niet in een verzoek. Dat is geen detail maar de enige
+ * reden dat dit te verenigen is met ADR-050, dat zegt dat dit product nooit een
+ * geboortedatum vraagt: die regel gaat over het kind, en dit is een vraag aan de
+ * volwassene waarvan het antwoord niet blijft bestaan.
+ *
+ * **En het blijft een hek en geen kluis.** Een twaalfjarige die het doorheeft,
+ * tikt een jaartal in. Wat dit koopt is dat de zevenjarige er niet in wandelt,
+ * dat de ouder niet buitengesloten raakt, en dat het product niet liegt over
+ * wat het slot is — dezelfde eerlijkheid die ADR-116 over de premiumcode
+ * opschreef.
+ */
+export const VOLWASSEN_VANAF = 18;
+/** Ouder dan dit is geen antwoord maar een typefout. */
+const OUDSTE = 120;
+
+export function isVolwassenJaar(invoer: string, now: Date = new Date()): boolean {
+  if (!/^\d{4}$/.test(invoer)) return false;
+  const jaar = Number(invoer);
+  const dit = now.getFullYear();
+  return jaar <= dit - VOLWASSEN_VANAF && jaar >= dit - OUDSTE;
+}
+
 /** Vier cijfers, en niets anders. Geen spaties weghalen: dan zou 1 2 3 4 lukken. */
 export function isGeldigePin(pin: string): boolean {
   return new RegExp(`^\\d{${PIN_LENGTE}}$`).test(pin);
@@ -377,9 +415,13 @@ export async function probeer(pin: string, now: Date = new Date()): Promise<Oude
 /**
  * Alles van de ouder van dit apparaat halen: de pincode, de pauze, de sessie.
  *
- * Hoort bij `wisAlles` en bij niets anders. Er is met opzet geen weg waarmee
- * een vergeten pincode alleen het slot weghaalt: dat zou geen slot zijn. Wie
- * hem kwijt is, houdt één uitweg, en die geeft niets — hij wist dit apparaat.
+ * Hoort bij `wisAlles`, en sinds ADR-176 ook bij het vergeten van de pincode.
+ * ADR-173 liet dat laatste met opzet niet toe — "een weg die alleen het slot
+ * weghaalt zou geen slot zijn" — maar dat klopte alleen zolang de ouder degene
+ * was die de pincode zette. Nu de volwassenencheck ervóór staat, is die check
+ * de bescherming en niet het niet-kunnen-resetten. Een ouder die zijn code
+ * kwijt is, hoefde daarvoor het apparaat te wissen; dat was geen slot maar een
+ * val.
  */
 export function vergeetOuder(): void {
   schrijf(lokaal(), OUDER_SLEUTEL, null);
