@@ -90,8 +90,8 @@ describe('the shell', () => {
 
   it('marks where you are, in one place only', () => {
     render(
-      <Shell modules={MODULES} destinations={DESTINATIONS} current="onthouden">
-        <p>onthouden</p>
+      <Shell modules={MODULES} destinations={DESTINATIONS} current="jij">
+        <p>jij</p>
       </Shell>,
     );
 
@@ -101,7 +101,7 @@ describe('the shell', () => {
     for (const bar of screen.getAllByRole('navigation', { name: 'Waar je heen kunt' })) {
       const current = [...bar.querySelectorAll('[aria-current="page"]')];
       expect(current).toHaveLength(1);
-      expect(current[0]).toHaveTextContent('Onthouden');
+      expect(current[0]).toHaveTextContent('Jij');
     }
   });
 

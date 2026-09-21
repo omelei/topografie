@@ -80,22 +80,28 @@ export const CATEGORIES: readonly Category[] = [
 ];
 
 /**
- * The four places the tab bar goes on a phone.
+ * The places the tab bar goes on a phone.
  *
- * Same rule as the rail: a destination that does not exist is not offered. Two
- * of these need the friend layer and a backend (ADR-015), and one is step 6.
+ * Same rule as the rail: a destination that does not exist is not offered.
+ * Vrienden needs the friend layer and a backend (ADR-015).
+ *
+ * **Drie pagina's naast de oefeningen** (ADR-171): Vandaag, Jij en Premium.
+ * Onthouden is een deel van Jij geworden, want Jij is waar je al je cijfers
+ * ziet, en Voor ouders is weg: ouders loggen niet in, kinderen wel. Premium was
+ * alleen te vinden via een slot of de groene knop in de balk; nu is het een
+ * bestemming, met of zonder code, want daar staat ook tot wanneer het aanstaat.
  */
 export interface Destination {
-  readonly id: 'vandaag' | 'onthouden' | 'vrienden' | 'jij';
+  readonly id: 'vandaag' | 'vrienden' | 'jij' | 'premium';
   readonly name: TranslationKey;
   readonly built: boolean;
 }
 
 export const DESTINATIONS: readonly Destination[] = [
   { id: 'vandaag', name: 'nav.vandaag', built: true },
-  { id: 'onthouden', name: 'nav.onthouden', built: true },
   { id: 'vrienden', name: 'nav.vrienden', built: false },
   { id: 'jij', name: 'nav.jij', built: true },
+  { id: 'premium', name: 'nav.premium', built: true },
 ];
 
 export const BUILT_DESTINATIONS = DESTINATIONS.filter((destination) => destination.built);

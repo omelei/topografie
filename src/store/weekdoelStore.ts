@@ -10,14 +10,13 @@ import { getSetting, setSetting } from './settings';
  * voorneemt, met de datums erbij, zodat "gehaald" iets is wat op zondag vaststaat
  * en niet iets wat ooit een keer gebeurt.
  *
- * **Ze worden zelf gemaakt**, door het kind op de voordeur of door de ouder op
- * Voor ouders. Er wordt niets voorgesteld dat er dan al staat: een doel dat de
- * app zelf stelt is een opdracht, en dit blok gaat er juist over dat je hem zelf
- * geeft.
+ * **Ze worden zelf gemaakt**, door het kind op de voordeur. Er wordt niets
+ * voorgesteld dat er dan al staat: een doel dat de app zelf stelt is een
+ * opdracht, en dit blok gaat er juist over dat je hem zelf geeft.
  *
  * **En ze mogen er niet zijn.** `uit` zet het hele blok weg. Niet elk gezin wil
  * doelen, en een blok dat elke maandag opnieuw vraagt of je er een wilt, is een
- * zeurpiet. Aanzetten kan op Voor ouders, waar de instellingen staan (ADR-143).
+ * zeurpiet. Aanzetten kan bij de instellingen op Jij (ADR-171).
  *
  * **Wat er bewaard wordt, is alleen de bedoeling.** Hoeveel rondes je deze week
  * deed, op hoeveel dagen, en welk diploma je hebt: dat staat al in `progress` en

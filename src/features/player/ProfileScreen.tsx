@@ -1,26 +1,61 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type ComponentType, type FormEvent } from 'react';
 import { t } from '@/i18n';
-import { CorrectIcon, FamilyIcon, NextIcon, PupilIcon, SpeakIcon } from '@/components/Icon';
+import {
+  CorrectIcon,
+  FamilyIcon,
+  type IconProps,
+  NextIcon,
+  OogIcon,
+  PupilIcon,
+  SpeakIcon,
+  TodayIcon,
+} from '@/components/Icon';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { Kast } from '@/features/badges/Kast';
 import { usePremium } from '@/features/premium/usePremium';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
+import { AccountBlok } from '@/features/account/AccountBlok';
+import { Statistieken } from '@/features/retention/Statistieken';
+import {
+  GEEN_DOELEN,
+  leesWeekdoelen,
+  schrijfWeekdoelen,
+  type Weekdoelen,
+} from '@/store/weekdoelStore';
+import { EigenLijsten } from './EigenLijsten';
+import { GroepInstelling } from './GroepInstelling';
+import { Jaaroverzicht } from './Jaaroverzicht';
+import {
+  DEFAULT_PREFERENCES,
+  loadPreferences,
+  savePreference,
+  zetRustig,
+  type Preferences,
+} from './settings';
+import { Wissen } from './Wissen';
 
 /**
- * K10, "Jij": the child's own page (ADR-112).
+ * K10, "Jij": the child's own page (ADR-112), en sinds ADR-171 ook de pagina
+ * waar al je cijfers staan.
  *
- * In the order of a profile page (ADR-145): **who you are** — the name and who
- * is practising — then **where the settings are**, then **what you have
- * made**: the diplomas, which since ADR-167 are the whole reward programme.
- * A hero, then badges, then an album stood here before them.
+ * **Drie pagina's naast de oefeningen**: Vandaag, Jij en Premium. Onthouden was
+ * een vierde en Voor ouders een vijfde, en allebei zijn ze hierin opgegaan.
+ * Onthouden, omdat "wie ben ik" en "hoe gaat het" op deze pagina één vraag zijn.
+ * Voor ouders, omdat ouders niet inloggen en kinderen wel: een pagina die
+ * alleen voor een ouder was, had in deze app geen lezer — en wat erop stond,
+ * de schakelaars, de groep, de lijsten van school, het account, is van het kind
+ * dat hier oefent. Wat van de rekening is, staat op Premium.
  *
- * Most of what the design draws here needs something that does not exist yet.
- * The avatar set, the group, the friend code all belong to the parent account
- * of ADR-046 or to the friend layer, and none of it is built — so none of it is
- * drawn. A settings screen full of controls that do nothing is worse than a
- * short one that works.
+ * In the order of a profile page (ADR-145): **who you are**, then **how it is
+ * going** — every number the product keeps, from what you remember to the
+ * weeks behind you — then **what you have made**: the diplomas, which since
+ * ADR-167 are the whole reward programme. Then **the settings**, and last the
+ * way to take it all off this device (ADR-166).
+ *
+ * De reeks staat er niet (ADR-169): verlies als prikkel hoort niet bij het kind,
+ * en de ouder die hem wél zag heeft geen eigen pagina meer.
  *
  * School and place of residence are not here and never will be. They are the
  * two fields that would turn a name on a device into a child somebody could
@@ -28,14 +63,12 @@ import type { Onderdeel } from '@/features/module/onderdelen';
  */
 export function ProfileScreen({
   profile,
-  onOuder,
   onOefen,
   onToets,
   kastOpen = false,
   onKastGezien,
 }: {
   readonly profile: ProfileRecord;
-  readonly onOuder: () => void;
   readonly onOefen: (deel: Onderdeel) => void;
   readonly onToets: (deel: Onderdeel, mode: ModeId) => void;
   /** Binnengekomen via "Bekijk alle diploma's": de kast in beeld (ADR-153). */
@@ -55,45 +88,191 @@ export function ProfileScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        {/* De kop als de etalage van premium (ADR-150). */}
+        {/* De kop als de etalage van premium (ADR-150). De zin eronder zegt
+            wat er op de pagina staat, nu dat meer is dan een naam (ADR-171). */}
         <header className="tk-etalage">
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
           <p className="tk-etalage-tekst text-lopend">{t('you.intro')}</p>
         </header>
 
-        {/* De volgorde van een profielpagina (ADR-145): eerst wie je bent, dan
-            de instellingen, dan wat je gemaakt hebt. ADR-143 zette de
-            prijzenkast bovenaan; de eigenaar vroeg om deze volgorde, op Jij en
-            op Voor ouders hetzelfde, zodat de twee pagina's één patroon delen. */}
         <Ikben profile={profile} />
 
         <Children active={profile} />
 
-        {/* De instellingen zelf staan op Voor ouders (ADR-136): het zijn
-            schakelaars van het apparaat. Hier staat waar je ze vindt, op de
-            plek waar je ze zoekt. */}
-        <section className="flex flex-col gap-3" aria-label={t('you.settings')}>
-          <h2 className="tk-sectie">{t('you.settings')}</h2>
-          <div className="tk-card tk-kaartrij">
-            <span className="tk-kaartteken">
-              <SpeakIcon size={24} />
-            </span>
-            <p className="tk-kaartrij-tekst text-lopend">{t('you.settingsBijOuder')}</p>
-            <button type="button" className="tk-button tk-button-secondary" onClick={onOuder}>
-              {t('ouder.naar')}
-            </button>
-          </div>
-        </section>
+        {/* Hoe het gaat: wat je onthoudt, deze week, per vak, week na week en
+            per onderwerp (ADR-171). Dit was de Onthouden-pagina. */}
+        <Statistieken />
 
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
-            tekort meer maar een doel — en dan hoort het raster hier en niet bij
-            de ouder, want een kind kan erop mikken (ADR-064). */}
+            tekort meer maar een doel — en dan hoort het raster hier, want een
+            kind kan erop mikken (ADR-064). */}
         <div ref={kast}>
           <Kast onOefen={onOefen} onToets={onToets} />
         </div>
+
+        <DiplomaUitleg />
+
+        <Jaaroverzicht />
+
+        {/* De instellingen, hier en niet meer op Voor ouders (ADR-171). */}
+        <Instellingen />
+
+        <GroepInstelling />
+
+        <EigenLijsten />
+
+        <AccountBlok />
+
+        {/* Onderaan, en als laatste: de belofte hierboven — het blijft op dit
+            apparaat — is pas iets waard als je er ook bij kunt (ADR-166). */}
+        <div className="flex flex-col gap-4">
+          <p className="tk-hulp">{t('you.stays')}</p>
+          <Wissen />
+        </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Hoe een diploma verdiend wordt, onder de kast (ADR-171).
+ *
+ * Het stond op Voor ouders, als de uitleg die een ouder nodig had om thuis het
+ * goede te zeggen. Nu die pagina weg is, staat het bij het kind, in zijn eigen
+ * woorden, direct onder de diploma's waar het over gaat: een kind dat alles
+ * goed had en toch geen diploma kreeg, leest hier waarom.
+ */
+function DiplomaUitleg() {
+  return (
+    <section className="flex flex-col gap-3" aria-labelledby="diploma-uitleg">
+      <h2 id="diploma-uitleg" className="tk-sectie">
+        {t('you.diplomaTitel')}
+      </h2>
+      <div className="tk-card flex flex-col gap-2">
+        <p className="text-lopend">{t('you.diplomaUitleg')}</p>
+        <p className="text-lopend">{t('you.diplomaTempo')}</p>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * De schakelaars van dit apparaat, en de doelen van de week (ADR-171).
+ *
+ * The switch moves after the write, not before it. Flipping it first and
+ * writing afterwards reads a few milliseconds sooner and is a lie the moment
+ * the write does not land. What the switch shows is what is stored.
+ *
+ * **De doelen staan erbij.** "Ik wil geen doelen" op Vandaag zet het blok weg,
+ * en de weg terug stond op Voor ouders (ADR-162). Die pagina is er niet meer,
+ * dus is het een schakelaar tussen de andere: iets wat de app wel of niet doet.
+ */
+function Instellingen() {
+  const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
+  const [doelen, setDoelen] = useState<Weekdoelen | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    void Promise.all([loadPreferences(), leesWeekdoelen()]).then(([value, weekdoelen]) => {
+      setPrefs(value);
+      setDoelen(weekdoelen);
+      setLoaded(true);
+    });
+  }, []);
+
+  const toggle = (name: keyof Preferences) => {
+    const next = { ...prefs, [name]: !prefs[name] };
+    void savePreference(name, next[name]).then(() => {
+      setPrefs(next);
+      if (name === 'rustig') zetRustig(next.rustig);
+    });
+  };
+
+  const toggleDoelen = () => {
+    const huidig = doelen ?? GEEN_DOELEN;
+    const next = { ...huidig, uit: !huidig.uit };
+    void schrijfWeekdoelen(next).then(() => setDoelen(next));
+  };
+
+  return (
+    <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
+      <h2 className="tk-sectie">{t('you.settings')}</h2>
+      <ul className="tk-lijst">
+        <li>
+          <Switch
+            icon={SpeakIcon}
+            on={prefs.readAloud}
+            label={t('you.readAloud')}
+            why={t('you.readAloudWhy')}
+            onToggle={() => toggle('readAloud')}
+          />
+        </li>
+        <li>
+          <Switch
+            icon={SpeakIcon}
+            on={prefs.geluid}
+            label={t('you.geluid')}
+            why={t('you.geluidWhy')}
+            onToggle={() => toggle('geluid')}
+          />
+        </li>
+        <li>
+          <Switch
+            icon={OogIcon}
+            on={prefs.rustig}
+            label={t('you.rustig')}
+            why={t('you.rustigWhy')}
+            onToggle={() => toggle('rustig')}
+          />
+        </li>
+        <li>
+          <Switch
+            icon={TodayIcon}
+            on={!(doelen?.uit ?? false)}
+            label={t('you.doelen')}
+            why={t('you.doelenWhy')}
+            onToggle={toggleDoelen}
+          />
+        </li>
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * A setting as a row of the list: what it does, why, and a switch that shows
+ * its state as a shape and in a word — "aan" and "uit" survive being colour
+ * blind, and aria-pressed carries it to a screen reader without either.
+ */
+function Switch({
+  icon: Teken,
+  on,
+  label,
+  why,
+  onToggle,
+}: {
+  /** Wat de schakelaar raakt. */
+  readonly icon: ComponentType<Omit<IconProps, 'children'>>;
+  readonly on: boolean;
+  readonly label: string;
+  readonly why: string;
+  readonly onToggle: () => void;
+}) {
+  return (
+    <button type="button" className="tk-lijstrij" aria-pressed={on} onClick={onToggle}>
+      <span className="tk-plaat tk-plaat-neutraal">
+        <Teken size={24} />
+      </span>
+      <span className="tk-lijstrij-tekst">
+        <span className="tk-lijstrij-titel">{label}</span>
+        <span className="tk-lijstrij-regel">{why}</span>
+      </span>
+      <span className="tk-lijstrij-pijl">
+        <span className="tk-schakelaar" aria-hidden="true" />
+        <span className="tk-label">{on ? t('you.on') : t('you.off')}</span>
+      </span>
+    </button>
   );
 }
 

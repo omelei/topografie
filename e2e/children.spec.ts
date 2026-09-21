@@ -73,7 +73,7 @@ test('a second child starts with nothing, and the first keeps everything', async
   // what this test is about; the streak is keyed the same way and is not
   // asserted here because the app bar drops it on a phone, and a check that
   // only runs at three of the six sizes is worse than one that says less.
-  await page.goto('/onthouden');
+  await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table').getByText('nog niet onthouden').first()).toBeVisible();
 
@@ -83,7 +83,7 @@ test('a second child starts with nothing, and the first keeps everything', async
   await page.goto('/');
   await expect(page.getByRole('banner').getByRole('button', { name: 'Bram' })).toBeVisible();
 
-  await page.goto('/onthouden');
+  await page.goto('/jij');
   // De tabel open, anders bewijst "nul rijen" niets: zonder knop staat er
   // sowieso geen tabel (ADR-143).
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
@@ -94,7 +94,7 @@ test('a second child starts with nothing, and the first keeps everything', async
   await page.getByRole('button', { name: /Geef Anne de beurt/ }).click();
   await expect(page.getByText('Je oefent als Anne.')).toBeVisible();
 
-  await page.goto('/onthouden');
+  await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table').getByText('nog niet onthouden').first()).toBeVisible();
 });

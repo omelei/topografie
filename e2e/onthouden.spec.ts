@@ -1,12 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * Onthouden als de pagina met de getallen (ADR-148).
+ * De getallen over het oefenen, op Jij (ADR-148, ADR-171).
  *
- * Wat deze test vastlegt is de samenhang: de pagina opent op wat je onthoudt
- * en op deze week, met premium per vak en week na week, en de getallen die
- * hiervoor op Voor ouders en op de reekspagina stonden, staan daar niet meer.
- * Premium staat aan via de `storageState` van playwright.config.
+ * Wat deze test vastlegt is de samenhang: wat je onthoudt en deze week, met
+ * premium per vak en week na week, en die getallen staan op één plek. Dat was
+ * de pagina Onthouden; sinds ADR-171 is die een deel van Jij, en het oude
+ * adres komt daar uit. Premium staat aan via de `storageState` van
+ * playwright.config.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -46,11 +47,9 @@ function tegel(page: Page, regio: string, label: string) {
     .locator('.tk-cijfer-getal');
 }
 
-test('Onthouden opent op je geheugen, en zegt het eerlijk als er nog niets is', async ({
-  page,
-}) => {
+test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({ page }) => {
   await signIn(page, 'Mila');
-  await page.goto('/onthouden');
+  await page.goto('/jij');
 
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toContainText(
     'Je hebt nog niets geoefend',
@@ -63,7 +62,7 @@ test('Onthouden opent op je geheugen, en zegt het eerlijk als er nog niets is', 
 test('na één ronde staan het geheugen, deze week, per vak en week na week er', async ({ page }) => {
   await signIn(page, 'Jip');
   await eenProvincieEnStop(page);
-  await page.goto('/onthouden');
+  await page.goto('/jij');
 
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toContainText(
     'van de 1 die je geoefend hebt',
@@ -88,15 +87,15 @@ test('na één ronde staan het geheugen, deze week, per vak en week na week er',
   ).toHaveAttribute('aria-pressed', 'true');
 });
 
-test('de getallen over het oefenen staan alleen op Onthouden', async ({ page }) => {
+test('de getallen over het oefenen staan alleen op Jij', async ({ page }) => {
   await signIn(page, 'Ties');
   await eenProvincieEnStop(page);
 
-  await page.goto('/ouder');
-  await expect(page.getByRole('heading', { name: 'Voor ouders' })).toBeVisible();
-  // Exact, sinds ADR-162: "Doelen van Ties voor deze week" staat hier wél, en
-  // een naam die niet exact is, vindt die ook.
+  // Niet op Premium, waar het adres van Voor ouders nu uitkomt (ADR-171).
+  await page.goto('/premium');
+  await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Deze week', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
 
   // De weekkaart is met het album vervallen (ADR-158), dus haar adres en dat
   // van de oude reeks komen op de voordeur uit in plaats van op een leeg

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * De lijst van school, ingetypt door een ouder (ADR-135).
+ * De lijst van school, zelf ingetypt (ADR-135), bij de instellingen op Jij (ADR-171).
  *
  * De hele belofte is dat zo'n lijst een gewone set wordt: dat hij op de
  * taalpagina staat, dat er een ronde op te spelen is, en dat die ronde daarna
@@ -19,7 +19,7 @@ async function signIn(page: Page, naam: string) {
 }
 
 async function maakLijst(page: Page, naam: string, woorden: readonly string[]) {
-  await page.goto('/ouder');
+  await page.goto('/jij');
   const blok = page.getByRole('region', { name: 'Eigen woorden' });
 
   await blok.getByLabel('Naam van de lijst').fill(naam);
@@ -136,7 +136,7 @@ test('met twee lijsten draagt elke chip de naam die de ouder typte', async ({ pa
  */
 test('een CSV-bestand zet de woorden in de lijsten die erin staan', async ({ page }) => {
   await signIn(page, 'Lotte');
-  await page.goto('/ouder');
+  await page.goto('/jij');
 
   const blok = page.getByRole('region', { name: 'Eigen woorden' });
   await blok.getByLabel('Bestand importeren').setInputFiles({

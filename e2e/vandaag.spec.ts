@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
- * The front door's "Maak af" (ADR-115) and the Onthouden table (ADR-114).
+ * The front door's "Maak af" (ADR-115) and the table on Jij that was Onthouden's
+ * (ADR-114, ADR-171).
  *
  * A round stopped halfway waits on the front door, says how far it got, and
  * picks up with only the questions it had not asked yet. And the table says
@@ -61,13 +62,13 @@ test('a round stopped halfway waits under Maak af, and asks only what was left',
   await expect(page.getByText('Je stopte na 0 van de 11 vragen.')).toBeVisible();
 });
 
-test('the Onthouden table counts the answers, the share right, and the days since', async ({
+test('the table on Jij counts the answers, the share right, and the days since', async ({
   page,
 }) => {
   await signIn(page, 'Siem');
   await eenProvincieEnStop(page);
 
-  await page.goto('/onthouden');
+  await page.goto('/jij');
   // De tabel staat sinds ADR-143 achter een knop: wat de pagina opent is het
   // beeld, en dit is de test over de tabel.
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
@@ -80,7 +81,10 @@ test('the Onthouden table counts the answers, the share right, and the days sinc
   // One province answered today, the other eleven never.
   await expect(tabel.getByRole('cell', { name: 'vandaag', exact: true })).toHaveCount(1);
 
-  // The four tiles are the four statuses; "Vandaag op de rol" is gone.
+  // The four tiles are the four statuses; "Vandaag op de rol" is gone. In the
+  // one subject's card: "Je geheugen" above it carries the same tiles since
+  // ADR-171, over every subject.
+  const blik = page.getByRole('region', { name: 'Alles in één blik' });
   await expect(page.getByText('Vandaag op de rol')).toHaveCount(0);
-  await expect(page.getByText('Even opfrissen', { exact: true })).toBeVisible();
+  await expect(blik.getByText('Even opfrissen', { exact: true })).toBeVisible();
 });

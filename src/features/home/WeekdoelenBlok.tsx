@@ -1,5 +1,4 @@
 import { useEffect, useState, type ComponentType } from 'react';
-import { Button } from '@/components/Button';
 import { ProgressBar } from '@/components/ProgressBar';
 import {
   DiplomaIcon,
@@ -42,9 +41,8 @@ import { standen, weekZin, type DoelStand } from './weekdoel';
  * niets.
  *
  * Dit blok heeft wél een einde, en dat staat erbij: de datums van maandag tot
- * en met zondag. Wat er staat, is zelf gemaakt — door het kind hier of door de
- * ouder op Voor ouders — want een doel dat de app stelt is een opdracht, en dan
- * is het het dagplan nog een keer.
+ * en met zondag. Wat er staat, heeft het kind zelf gemaakt, want een doel dat de
+ * app stelt is een opdracht, en dan is het het dagplan nog een keer.
  *
  * **Drie soorten, alle drie op zondag na te rekenen.** Een aantal rondes, een
  * aantal dagen waarop geoefend is, of één diploma. Er is niets bij verzonnen
@@ -64,9 +62,18 @@ import { standen, weekZin, type DoelStand } from './weekdoel';
  * weglaten liet een kind denken dat het diploma niet bestond.
  *
  * **En het mag leeg blijven.** "Ik wil geen doelen" zet het blok weg, en het
- * vraagt daarna niet elke maandag opnieuw. Aanzetten kan op Voor ouders, waar
- * de instellingen staan (ADR-143) — dus op de voordeur is het uit ook echt uit,
- * en niet een dichtgeklapt blok dat nog een regel kost.
+ * vraagt daarna niet elke maandag opnieuw. Aanzetten kan bij de instellingen op
+ * Jij (ADR-171) — dus op de voordeur is het uit ook echt uit, en niet een
+ * dichtgeklapt blok dat nog een regel kost.
+ *
+ * **Opgemaakt als "Recent geoefend"** (ADR-171). Het was een kaart met de kop
+ * erin, rijen van een eigen soort met een kleiner plaatje, en de knoppen
+ * onderin dezelfde kaart — het enige blok op de voordeur dat er zo uitzag. Nu
+ * staat de kop erboven op de haarlijn, met de datums aan het eind zoals een
+ * sectie zijn telling draagt, en zijn de doelen een lijst: dezelfde kaart,
+ * dezelfde rij, hetzelfde plaatje en het kruisje waar bij Recent de pijl staat.
+ * De knoppen staan eronder, buiten de kaart, zoals "Nog een kind erbij" onder
+ * de lijst op Jij.
  *
  * **Niets tot het bekend is**, zoals `VandaagBlok`: een blok dat eerst "nog
  * geen doel" zegt en daarna van gedachten verandert heeft iets verteld wat niet
@@ -89,19 +96,12 @@ const SOORT_TEKEN: Record<WeekdoelSoort, Pictogram> = {
 };
 
 export function WeekdoelenBlok({
-  vanOuder = false,
-  naam,
   onDiplomas,
   now = new Date(),
 }: {
-  /** Op Voor ouders: daar staat ook de schakelaar die het blok weer aanzet. */
-  readonly vanOuder?: boolean;
-  /** Van wie de doelen zijn. Alleen op Voor ouders, waar "je" de ouder is. */
-  readonly naam?: string | undefined;
   /**
-   * Naar alle diploma's (ADR-153). Onderaan het blok, want een diploma is een
-   * van de drie soorten doelen en drie voorstellen zijn geen overzicht. Op Voor
-   * ouders staat het hele raster al op de pagina zelf, dus daar niet.
+   * Naar alle diploma's (ADR-153). Onder het blok, want een diploma is een van
+   * de drie soorten doelen en drie voorstellen zijn geen overzicht.
    */
   readonly onDiplomas?: (() => void) | undefined;
   readonly now?: Date;
@@ -140,8 +140,8 @@ export function WeekdoelenBlok({
     setStand(volgende);
   }
 
-  function zetUit(uit: boolean) {
-    void bewaar({ ...(stand ?? GEEN_DOELEN), uit });
+  function zetUit() {
+    void bewaar({ ...(stand ?? GEEN_DOELEN), uit: true });
     setNieuw(null);
   }
 
@@ -157,31 +157,18 @@ export function WeekdoelenBlok({
     void bewaar({ ...huidig, doelen: huidig.doelen.filter((doel) => doel.id !== id) });
   }
 
-  const titel = vanOuder && naam ? t('weekdoel.ouderTitel', { naam }) : t('weekdoel.titel');
+  const titel = t('weekdoel.titel');
 
   // Uit. Op de voordeur is dat niets — het kind koos ervoor en hoort er niet
-  // elke dag een regel over te lezen. Op Voor ouders staat de weg terug.
-  if (stand.uit) {
-    if (!vanOuder) return null;
-
-    return (
-      <section className="tk-doel" aria-label={titel}>
-        <h2 className="tk-sectie">{titel}</h2>
-        <p className="text-lopend text-tekst-secundair">{t('weekdoel.uitUitleg')}</p>
-        <Button variant="secondary" className="self-start" onClick={() => zetUit(false)}>
-          {t('weekdoel.aanZetten')}
-        </Button>
-      </section>
-    );
-  }
+  // elke dag een regel over te lezen. De weg terug staat op Jij (ADR-171).
+  if (stand.uit) return null;
 
   const lijst = standen(stand.doelen, afgemaakt, behaald, now);
   const vol = stand.doelen.length >= MAX_DOELEN;
   // Alle 33, ook de premiumdiploma's. Die worden niet weggelaten maar gemerkt:
   // een kind dat de vlaggen van Europa wil, hoort te zien dát dat bestaat. En
-  // een doel dat de ouder op Voor ouders zette, houdt zo zijn naam ook op de
-  // voordeur van een kind zonder code — met `actief` stond daar "Dit diploma
-  // bestaat niet meer".
+  // een doel dat met een code gezet is, houdt zo zijn naam ook als de code om
+  // is — met `actief` stond daar "Dit diploma bestaat niet meer".
   const alle = doelwitten(startbareOnderdelen(), true);
   // Wat nog open staat: niet gehaald, en niet al een doel van deze week.
   const openDoelwitten = alle.filter(
@@ -211,19 +198,18 @@ export function WeekdoelenBlok({
   })).filter((rij) => rij.doelen.length > 0);
 
   return (
-    <section className="tk-doel" aria-label={titel}>
-      <div className="tk-weekdoel-kop">
-        <h2 className="tk-sectie">{titel}</h2>
-        {/* De datums, want "deze week" heeft een einde en dat hoort te zien
-            zijn: op donderdag is het verschil tussen drie dagen en nul dagen
-            precies wat je wilt weten. */}
-        <p className="tk-hulp">{weekZin(now)}</p>
+    <section className="flex flex-col gap-3" aria-label={titel}>
+      {/* De kop op de haarlijn, en de datums aan het eind zoals een sectie zijn
+          telling draagt: "deze week" heeft een einde en dat hoort te zien zijn —
+          op donderdag is het verschil tussen drie dagen en nul dagen precies
+          wat je wilt weten. */}
+      <div className="tk-sectie">
+        <h2>{titel}</h2>
+        <span className="tk-sectie-meta">{weekZin(now)}</span>
       </div>
 
       {lijst.length === 0 && nieuw === null ? (
-        <p className="text-lopend text-tekst-secundair">
-          {vanOuder ? t('weekdoel.leegOuder') : t('weekdoel.leeg')}
-        </p>
+        <p className="text-tekst-secundair">{t('weekdoel.leeg')}</p>
       ) : null}
 
       {lijst.length > 0 ? (
@@ -233,6 +219,7 @@ export function WeekdoelenBlok({
               <Rij
                 stand={doelstand}
                 omschrijving={omschrijf(doelstand.doel, alle)}
+                moduleId={moduleVan(doelstand.doel, alle)}
                 onWeg={() => haalWeg(doelstand.doel.id)}
               />
             </li>
@@ -268,12 +255,14 @@ export function WeekdoelenBlok({
               {t('weekdoel.toevoegen')}
             </button>
           )}
-          <button type="button" className="tk-doel-ander" onClick={() => zetUit(true)}>
-            {vanOuder ? t('weekdoel.uitZettenOuder') : t('weekdoel.uitZetten')}
+          <button type="button" className="tk-doel-ander" onClick={zetUit}>
+            {t('weekdoel.uitZetten')}
           </button>
         </div>
       )}
 
+      {/* Altijd, ook terwijl er een doel gekozen wordt: dan is het overzicht
+          juist het nuttigst. */}
       {onDiplomas ? (
         <p>
           <button type="button" className="tk-doel-ander" onClick={onDiplomas}>
@@ -288,6 +277,16 @@ export function WeekdoelenBlok({
 /** Staat dit diploma al als doel? Dan hoeft het niet nog eens voorgesteld. */
 function gekozen(doelen: readonly Weekdoel[], diplomaId: string): boolean {
   return doelen.some((doel) => doel.diplomaId === diplomaId);
+}
+
+/**
+ * Het vak van een diplomadoel, voor de kleur van zijn plaatje — zoals een rij
+ * in "Recent geoefend" de kleur van zijn vak draagt. Rondes en dagen horen bij
+ * geen vak en houden de kleur van de voordeur.
+ */
+function moduleVan(doel: Weekdoel, alle: readonly Doelwit[]): Module['id'] | undefined {
+  if (doel.soort !== 'diploma') return undefined;
+  return doelwitMet(alle, doel.diplomaId)?.deel.moduleId;
 }
 
 /** Wat het doel is, in één regel: de zin die het kind zelf koos. */
@@ -305,17 +304,23 @@ function omschrijf(doel: Weekdoel, alle: readonly Doelwit[]): string {
 /**
  * Eén doel: wat het is, hoe ver het is, en de weg eruit.
  *
+ * Een rij van de lijst, zoals in "Recent geoefend": het plaatje, de zin met
+ * de balk eronder, de stand aan het eind en het kruisje waar daar de pijl
+ * staat. Op een telefoon gaat de stand onder de balk, zoals daar het cijfer.
+ *
  * Geen knop om de hele rij: er valt niets te openen. De balk is decoratief
- * genoemd noch stil — hij draagt de stand in woorden, en de regel eronder zegt
+ * genoemd noch stil — hij draagt de stand in woorden, en de stand ernaast zegt
  * hetzelfde, want een balk alleen is geen zin.
  */
 function Rij({
   stand,
   omschrijving,
+  moduleId,
   onWeg,
 }: {
   readonly stand: DoelStand;
   readonly omschrijving: string;
+  readonly moduleId: Module['id'] | undefined;
   readonly onWeg: () => void;
 }) {
   const Teken = SOORT_TEKEN[stand.doel.soort];
@@ -324,9 +329,13 @@ function Rij({
     : t('weekdoel.balk', { gedaan: stand.gedaan, nodig: stand.nodig });
 
   return (
-    <div className="tk-weekdoel-rij" data-gehaald={stand.gehaald ? '' : undefined}>
-      <span className="tk-plaat tk-plaat-klein">
-        <Teken size={20} />
+    <div
+      className="tk-lijstrij tk-weekdoel-rij"
+      data-module={moduleId}
+      data-gehaald={stand.gehaald ? '' : undefined}
+    >
+      <span className="tk-plaat">
+        <Teken size={24} />
       </span>
       <span className="tk-lijstrij-tekst">
         <span className="tk-lijstrij-titel">{omschrijving}</span>
@@ -335,16 +344,18 @@ function Rij({
           showDot={false}
           label={`${omschrijving}: ${regel}`}
         />
-        <span className="tk-lijstrij-regel">{regel}</span>
       </span>
-      <button
-        type="button"
-        className="tk-weekdoel-weg"
-        aria-label={t('weekdoel.wegVan', { doel: omschrijving })}
-        onClick={onWeg}
-      >
-        <WrongIcon size={20} />
-      </button>
+      <span className="tk-lijstrij-stand">{regel}</span>
+      <span className="tk-lijstrij-pijl">
+        <button
+          type="button"
+          className="tk-weekdoel-weg"
+          aria-label={t('weekdoel.wegVan', { doel: omschrijving })}
+          onClick={onWeg}
+        >
+          <WrongIcon size={20} />
+        </button>
+      </span>
     </div>
   );
 }
@@ -384,7 +395,9 @@ function Toevoegen({
   const aantallen = soort === 'dagen' ? DAGEN_KEUZE : RONDES_KEUZE;
 
   return (
-    <div className="flex flex-col gap-3">
+    // In een kaart, want de sectie zelf is er geen meer: de keuze hoort als één
+    // ding onder de lijst te staan en niet los op de voordeur.
+    <div className="tk-card flex flex-col gap-3">
       <p className="text-tekst-secundair">{t('weekdoel.vraag')}</p>
 
       <div className="tk-keuzes" role="group" aria-label={t('weekdoel.vraag')}>

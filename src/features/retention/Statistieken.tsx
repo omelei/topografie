@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { Uitklap } from '@/components/Uitklap';
 import { Dot } from '@/components/Dot';
-import { StatusLabel, STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
+import { StatusLabel, type ItemStatus } from '@/components/StatusLabel';
 import {
   sumText,
   type Item,
@@ -30,14 +30,21 @@ import {
   type PlayedRound,
 } from '@/store/progress';
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
-import { DezeWeek, GeheugenKaart, PerVak, WeekNaWeek } from './Overzicht';
+import { DezeWeek, GeheugenKaart, PerVak, StandTegels, WeekNaWeek } from './Overzicht';
 import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
 import { voorbeeldStanden } from './voorbeeld';
+import { Weekbericht } from '@/features/player/Weekbericht';
 
 /**
- * K9, "Wat je onthoudt": the one screen that answers the question the product
+ * K9, "Wat je onthoudt": the part of the product that answers the question it
  * is named after (ADR-112, ADR-114), and since ADR-148 also the one that says
  * how the practising goes.
+ *
+ * **Sinds ADR-171 geen eigen pagina meer, maar het midden van Jij.** Jij is
+ * waar je al je cijfers ziet, en een tweede bestemming met alleen de cijfers
+ * liet een kind kiezen tussen "wie ben ik" en "hoe gaat het" — twee vragen met
+ * één antwoord. Dit bestand tekent dus geen kop en geen pagina: het geeft de
+ * blokken, en `ProfileScreen` zet ze tussen de naam en de diploma's.
  *
  * **It opens on the whole of it** (`Overzicht.tsx`): what you remember over
  * every subject, with the three-week forecast as a ring; this week in four
@@ -91,20 +98,6 @@ import { voorbeeldStanden } from './voorbeeld';
  * Het is de eigen voortgang van dat kind, in het klein.
  */
 
-/**
- * The four statuses, strongest first: it is the order of the dot's own fill,
- * and the first tile is the one the page is named after.
- */
-const STATUSSEN: readonly ItemStatus[] = ['remembered', 'refresh', 'practising', 'new'];
-
-/** What each tile counts, in the words the page has always used for them. */
-const TEGEL_WOORD: Record<ItemStatus, TranslationKey> = {
-  remembered: 'retention.tegelOnthouden',
-  refresh: 'retention.tegelOpfrissen',
-  practising: 'retention.tegelOefenen',
-  new: 'retention.tegelNieuw',
-};
-
 /** How many weeks the chart looks back: two months, and this week last. */
 const WEKEN = 8;
 
@@ -119,19 +112,9 @@ const REGELS: readonly TranslationKey[] = [
 /** Where a subject row in Per vak takes you. */
 const ONDERWERP_ID = 'onthouden-onderwerp';
 
-export function RetentionScreen() {
+export function Statistieken() {
   const { actief } = usePremium();
   return <Onthouden premium={actief} />;
-}
-
-/** De kop van de pagina, als de etalage van premium (ADR-150). */
-function Kop({ intro = true }: { readonly intro?: boolean }) {
-  return (
-    <header className="tk-etalage">
-      <h1 className="tk-etalage-kop">{t('retention.title')}</h1>
-      {intro ? <p className="tk-etalage-tekst text-lopend">{t('retention.intro')}</p> : null}
-    </header>
-  );
 }
 
 /**
@@ -186,12 +169,9 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
 
   if (states === null || rondes === null) {
     return (
-      <div className="tk-page" aria-busy="true">
-        <div className="tk-page-main">
-          <Kop intro={false} />
-          <p className="text-tekst-secundair">{t('practice.loading')}</p>
-        </div>
-      </div>
+      <p className="text-tekst-secundair" aria-busy="true">
+        {t('practice.loading')}
+      </p>
     );
   }
 
@@ -238,16 +218,23 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
   }
 
   return (
-    <div className="tk-page">
-      <div className="tk-page-main" data-module={moduleId} data-accent="module">
-        <Kop />
+    <>
+      <Regels />
 
-        <Regels />
+      {/* Over alle vakken, dus in de kleur van geen enkel vak: de ring en de
+          tegels staan in de kleur van leer.nu zelf, en pas bij Per onderwerp
+          hieronder neemt de pagina de kleur aan van het vak dat je kiest. */}
+      <GeheugenKaart stand={geheugen(states, now)} />
 
-        <GeheugenKaart stand={geheugen(states, now)} />
+      <DezeWeek rondes={rondes} now={now} />
 
-        <DezeWeek rondes={rondes} now={now} />
+      {/* De lezing van de week (ADR-133): stond op Voor ouders, en is een
+          cijfer over het oefenen zoals de rest hier (ADR-171). */}
+      <Weekbericht afgemaakt={rondes.map((ronde) => ronde.at)} now={now} />
 
+      {/* `contents`: de vakkleur geldt voor alles hieronder, en de blokken
+          houden de tussenruimte van de pagina. */}
+      <div className="contents" data-module={moduleId} data-accent="module">
         {premium ? (
           <>
             <PerVak vakken={vakken} modules={modules} onKies={kiesVak} />
@@ -411,7 +398,7 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
           ) : null}
         </section>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -448,21 +435,7 @@ function Blik({
 }) {
   return (
     <div className="tk-card tk-vakkleur flex flex-col gap-4">
-      <ul className="tk-standtegels">
-        {STATUSSEN.map((status) => (
-          <li key={status} className="tk-standtegel" data-status={status}>
-            <span className="tk-standtegel-getal">{telling[status]}</span>
-            <span className="tk-standtegel-woord">
-              {/* Decoratief: het woord ernaast zegt hetzelfde. De stip in de
-                  kleur van het vak, zoals de muur eronder. */}
-              <span className="tk-stip">
-                <Dot size={24} fill={STATUS_FILL[status]} tone="inherit" />
-              </span>
-              {t(TEGEL_WOORD[status])}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <StandTegels telling={telling} />
       {/* De kaart van topografie hoort hier, en niet meer bij een beloning
           (ADR-158): dezelfde vier statussen als de stippen en de tabel, op de
           plek waar de dingen liggen. */}

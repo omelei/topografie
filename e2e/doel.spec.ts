@@ -101,7 +101,7 @@ test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ 
 
 /**
  * Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
- * opnieuw gevraagd. De ouder kan het weer aanzetten.
+ * opnieuw gevraagd. Aanzetten kan bij de instellingen op Jij (ADR-171).
  */
 test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async ({ page }) => {
   await signIn(page, 'Sep');
@@ -112,11 +112,14 @@ test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async 
   await page.reload();
   await expect(blokVan(page)).toHaveCount(0);
 
-  // Op Voor ouders staat de weg terug.
-  await page.goto('/ouder');
-  const bijOuder = page.getByRole('region', { name: 'Doelen van Sep voor deze week' });
-  await expect(bijOuder).toContainText('Doelen staan uit.');
-  await bijOuder.getByRole('button', { name: 'Doelen aanzetten' }).click();
+  // Op Jij staat de weg terug, als schakelaar bij de instellingen.
+  await page.goto('/jij');
+  const schakelaar = page
+    .getByRole('region', { name: 'Instellingen' })
+    .getByRole('button', { name: /Doelen voor deze week/ });
+  await expect(schakelaar).toHaveAttribute('aria-pressed', 'false');
+  await schakelaar.click();
+  await expect(schakelaar).toHaveAttribute('aria-pressed', 'true');
 
   await page.goto('/');
   await expect(blokVan(page)).toBeVisible();

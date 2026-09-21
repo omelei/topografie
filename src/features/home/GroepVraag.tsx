@@ -10,7 +10,7 @@ import { activeChildId, groepAlGevraagd, setGroep, zetGroepGevraagd } from '@/st
  * Een kind van vóór die vraag heeft het eerste scherm allang gehad. Het krijgt
  * hem hier, onder Vandaag: het plan staat er eerst en blijft bruikbaar, en de
  * vraag houdt niemand tegen. Een groep kiezen of "Niet nu" zet hem weg, voor
- * altijd; daarna is Voor ouders de plek.
+ * altijd; daarna staat hij bij de instellingen op Jij (ADR-171).
  *
  * **Niets tot het bekend is**, zoals `VandaagBlok`: een vraag die even
  * verschijnt en dan verdwijnt omdat hij al beantwoord was, is een knop onder

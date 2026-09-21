@@ -30,8 +30,9 @@ import { GroepKiezer } from './GroepKiezer';
  * allereerste wat iemand van leer.nu ziet, en dat is vaak niet het kind maar de
  * volwassene die de app opzoekt. Die werd hier gedwongen een groep te kiezen om
  * ergens te komen. Nu maakt die knop het profiel aan zonder groep — de naam is
- * al getypt en de groep is toch altijd over te slaan — en opent Voor ouders,
- * waar staat wat leer.nu doet en waar de groep van het kind alsnog gezet wordt.
+ * al getypt en de groep is toch altijd over te slaan — en opent Premium, waar
+ * staat wat leer.nu doet en wat het kost. Dat was Voor ouders, tot die pagina
+ * opging in Jij en Premium (ADR-171); de groep zet het kind zelf op Jij.
  *
  * Twee stappen op één kaart, en het kind bestaat pas na de tweede. Wie bij de
  * groep terug wil naar de naam, is nog niemand.
@@ -40,7 +41,7 @@ export function ProfileGate({
   onReady,
 }: {
   /**
-   * Het profiel bestaat. `naarOuder` zegt of de app op Voor ouders moet openen
+   * Het profiel bestaat. `naarOuder` zegt of de app op Premium moet openen
    * in plaats van op de voordeur: dat is geen eigenschap van het profiel, dus
    * het reist ernaast mee en wordt nergens bewaard.
    */

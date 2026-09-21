@@ -318,7 +318,7 @@ export function Gallery() {
       </div>
 
       <div className="tk-tabbar mt-3">
-        {['Vandaag', 'Onthouden', 'Vrienden', 'Jij'].map((item, index) => (
+        {['Vandaag', 'Jij', 'Premium'].map((item, index) => (
           <button
             key={item}
             type="button"

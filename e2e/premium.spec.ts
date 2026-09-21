@@ -46,11 +46,12 @@ test('without a code the premium parts are labelled once, and say what they do',
 }) => {
   await signIn(page, 'Noor');
 
-  // De Onthouden-pagina laat sinds ADR-124 zien wat ze zou laten zien: de vier
-  // tegels en de stippen voor het onderwerp waar ze op opent. Wat premium is:
-  // elk ander onderwerp, en de tabel per onderdeel.
-  await page.goto('/onthouden');
-  await expect(page.getByRole('heading', { name: 'Wat je onthoudt' })).toBeVisible();
+  // Wat Onthouden was, staat op Jij (ADR-171), en laat sinds ADR-124 zien wat
+  // het zou laten zien: de vier tegels en de stippen voor het onderwerp waar
+  // het op opent. Wat premium is: elk ander onderwerp, en de tabel per
+  // onderdeel.
+  await page.goto('/jij');
+  await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   await expect(page.getByText('Je ziet hier Provincies van Nederland')).toBeVisible();
   await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
   await expect(page.getByRole('table')).toHaveCount(0);
@@ -137,12 +138,6 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(kast.getByRole('button', { name: /^Vlaggen / })).toHaveCount(0);
   await expect(kast.getByRole('button', { name: /^Klok / })).toHaveCount(0);
   await expect(kast.getByRole('button', { name: /^Topo / })).toHaveCount(0);
-
-  // En op de ouderpagina: één premiumblok in plaats van vijf (ADR-124, ADR-136).
-  await page.goto('/ouder');
-  await expect(page.getByRole('region', { name: 'Premium' })).toContainText(
-    'Premium plant het herhalen',
-  );
 });
 
 /**
@@ -157,7 +152,7 @@ test('without a code the premium parts are labelled once, and say what they do',
 test('without a code the column beside every page carries no lock at all', async ({ page }) => {
   await signIn(page, 'Sep');
 
-  for (const pad of ['/', '/premium', '/onthouden', '/rekenen']) {
+  for (const pad of ['/', '/premium', '/jij', '/rekenen']) {
     await page.goto(pad);
     await expect(page.getByText('Goed beantwoord'), pad).toHaveCount(0);
   }
@@ -322,7 +317,7 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   expect(gevraagd.at(-1)?.p_code).toBe(GOEDE_CODE);
   expect(Object.keys(gevraagd.at(-1) ?? {}).sort()).toEqual(['p_apparaat', 'p_code']);
 
-  await page.goto('/onthouden');
+  await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table')).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Laatst geoefend' })).toBeVisible();
@@ -364,12 +359,16 @@ test('the day plan says how much without a code, and is the plan with one', asyn
   const slot = await vandaag.boundingBox();
   expect(slot?.y ?? -1).toBeGreaterThan(recent?.y ?? Infinity);
 
-  // En de premiumknop staat in de balk, op elke pagina, zolang er geen code is.
-  // Exact, want "Bekijk premium" in het blok hierboven bevat hetzelfde woord.
-  const inDeBalk = page.getByRole('banner').getByRole('button', { name: 'Premium', exact: true });
-  await expect(inDeBalk).toBeVisible();
-  await page.goto('/onthouden');
-  await expect(inDeBalk).toBeVisible();
+  // En Premium staat in de navigatie, op elke pagina: sinds ADR-171 een van de
+  // drie bestemmingen, in plaats van een groene knop in de balk. Exact, want
+  // "Bekijk premium" in het blok hierboven bevat hetzelfde woord.
+  const inDeNavigatie = page
+    .getByRole('navigation', { name: 'Waar je heen kunt' })
+    .filter({ visible: true })
+    .getByRole('button', { name: 'Premium', exact: true });
+  await expect(inDeNavigatie).toBeVisible();
+  await page.goto('/jij');
+  await expect(inDeNavigatie).toBeVisible();
 });
 
 /** Een ronde tafel van 1, getypt: elk antwoord is de vermenigvuldiger zelf. */
