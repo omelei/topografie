@@ -10981,6 +10981,30 @@ meldt het nu (`onVeranderd`). Om dat mogelijk te maken nemen `loadItemStates` en
 `loadPlayedRounds` een kind mee; weglaten blijft "wie er nu oefent", dus geen
 enkel scherm dat vandaag niets meegeeft, verandert van gedrag.
 
+### En één die alleen een iPad kon vinden
+
+De instellingen naar boven zetten legde iets bloot dat er al jaren stond. Op een
+scherm smaller dan 1200 hangt het vakmenu als plakbalk op `top: 0`; wat je
+eronder scrollt, valt eronder. Zolang daar de diplomakast stond, viel er niets
+op: een half bedekte diplomakaart is nog steeds een groot aanraakdoel. Een half
+bedekte rij uit een lijst is dat niet — axe mat er een van **744 bij 16** en
+noemde hem, terecht, te klein (WCAG 2.5.8).
+
+Alleen: die rij lag achter een **open diplomavenster**. En dat venster zei met
+`aria-modal="true"` dat alles erachter niet meetelde, zonder dat waar te maken.
+`aria-modal` is een belofte aan hulpsoftware en verder niets: de knoppen eronder
+bleven bereikbaar voor de zoekfunctie van de browser, voor een schermlezer die
+per aanraking verkent, en voor elke toetsenbordroute die geen Tab is — de
+ronddraaiende Tab die het venster zelf regelde, dekte precies één van die drie.
+
+Dus is de pagina er nu echt `inert` achter, en hangt het venster in een portal
+aan de `body` (anders zou `inert` op een voorouder het venster meenemen). De
+Tab-val blijft staan als tweede slot voor een browser zonder `inert`.
+
+Dit is de soort vondst die het geld van de zes maten waard is: drie Chromium-
+maten en twee andere kwamen groen door, en alleen de iPad staand liep het
+scrollpad af dat de rij half onder de balk legde.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

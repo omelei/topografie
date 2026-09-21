@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { t } from '@/i18n';
 import { GrootDiploma, type DiplomaBeeld } from './GrootDiploma';
 
@@ -20,6 +21,20 @@ import { GrootDiploma, type DiplomaBeeld } from './GrootDiploma';
  * - Tab loopt rond binnen de dialoog in plaats van erachter de pagina in.
  * - De kast eronder scrollt niet: de pagina wordt vastgezet zolang dit open
  *   staat, dus je komt terug waar je was.
+ * - **En de pagina erachter is `inert`** (ADR-177). Dat stond er niet, en
+ *   `aria-modal="true"` beloofde het wel. Het verschil is niet theoretisch: een
+ *   schermlezer die per aanraking verkent, de zoekfunctie van de browser en een
+ *   toetsenbordroute die niet Tab is, kwamen allemaal nog bij de knoppen van de
+ *   pagina eronder. De ronddraaiende Tab hierboven blijft staan als tweede slot
+ *   voor een browser zonder `inert`.
+ *
+ *   Daarvoor hangt dit venster in een portal aan de `body`: `inert` zetten op
+ *   een voorouder van de dialoog zelf zou de dialoog meenemen.
+ *
+ *   Het kwam boven doordat de instellingen op Jij naar boven verhuisden en
+ *   daarmee onder de plakbalk van het vakmenu konden komen: axe rekende die
+ *   half bedekte rijen als aanraakdoelen van 744 bij 16, en gelijk had het —
+ *   het waren doelen die er niet hoorden te zijn.
  */
 export function DiplomaDialoog({
   beeld,
@@ -43,8 +58,14 @@ export function DiplomaDialoog({
   // met een toetsenbord merkt.
   useEffect(() => {
     const opener = document.activeElement;
+    const pagina = document.getElementById('root');
+    // De volgorde in de opruiming telt: `inert` moet eraf vóór de focus
+    // teruggaat, want focus op iets binnen een inert blok doet niets en dan
+    // staat de focus stil op de body.
+    pagina?.setAttribute('inert', '');
     venster.current?.querySelector<HTMLElement>('button, [href], [tabindex]')?.focus();
     return () => {
+      pagina?.removeAttribute('inert');
       if (opener instanceof HTMLElement) opener.focus();
     };
   }, []);
@@ -84,7 +105,7 @@ export function DiplomaDialoog({
     }
   };
 
-  return (
+  return createPortal(
     <div
       className="tk-diplomavenster"
       role="dialog"
@@ -104,6 +125,7 @@ export function DiplomaDialoog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
