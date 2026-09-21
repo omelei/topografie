@@ -10671,6 +10671,108 @@ onder `me` geschreven is, blijft van dat kind zonder te verhuizen.
 
 ---
 
+## ADR-176 — Een volwassenencheck vóór de pincode, en een vergeten pincode is geen val
+
+**Status:** accepted. **Date:** 2026-09-21. **Herstelt een gat in ADR-173**, dat
+de eigenaar vond door zich als kind aan te melden. Raakt `leitner.ts`,
+`game-core`, de statistieken en wat een kind oefent niet.
+
+### Context
+
+ADR-173 zette het ouderprofiel achter een pincode van vier cijfers en beschreef
+dat slot als een parental gate. Wat het niet beschreef, is wie die pincode mag
+zetten — en het antwoord was: iedereen die als eerste bij de wisselaar komt.
+
+De eigenaar testte het en meldde het in één zin: _"Ik heb me aangemeld als kind.
+Ik kan nu zelf een ouder account aanmaken door enkel een pincode op te geven."_
+
+De aanname eronder was dat de ouder de eerste zou zijn. Die aanname is niet
+alleen fout maar **systematisch fout: het kind opent de app als eerste.** Dat is
+precies het geval waar `docs/ouder-en-kind.md` over gaat — "een kind start met
+oefenen zonder dat de ouder hierbij betrokken is" — dus het is geen randgeval
+maar de hoofdweg.
+
+Drie dingen kostte dat, en het derde is het ergste:
+
+1. **Een kind kon zichzelf de instellingen geven**: de doelen uit, de code
+   eraf, en "alles van dit apparaat halen" binnen bereik. Precies wat ADR-173
+   als diagnose 7 wilde wegnemen, terug op zijn plek en nu achter vier cijfers
+   die het kind zelf koos.
+2. **De parental gate betekende niets.** Apple en Google eisen dat commercie
+   achter een poort staat. Een poort waarvan het kind de sleutel uitdeelt, is
+   die poort niet.
+3. **De ouder kon buitengesloten worden.** ADR-173 schreef: "Wie de pincode
+   kwijt is, houdt één uitweg: alles van dit apparaat halen." Dat was bedoeld
+   als strengheid en werkte als val: de enige weg naar je eigen instellingen
+   liep langs het weggooien van de voortgang van je kinderen.
+
+### Decision
+
+**Er staat een volwassenencheck vóór het zetten van de pincode**, en vóór het
+opnieuw zetten ervan.
+
+**Geen rekensom.** Dat is de gebruikelijke poort in apps voor kinderen en hier
+de slechtst denkbare: dit product leert kinderen tafels. We zouden de poort
+bouwen die de app zelf traint om te openen, en hem elke week een beetje zwakker
+maken.
+
+**Het is een geboortejaar**, en het moet minstens achttien jaar geleden zijn.
+Eén veld, één vraag, en het is wat Apple zelf als voorbeeld van een parental
+gate noemt.
+
+**Het jaartal wordt gecontroleerd en weggegooid.** Het staat in de state van dat
+formulier en verdwijnt ermee: geen `setSetting`, geen verzoek, niets in de
+opslag. Dat is geen detail maar de enige reden dat deze vraag te verenigen is
+met ADR-050, dat zegt dat dit product nooit een geboortedatum vraagt. Die regel
+gaat over het kind; dit is een vraag aan de volwassene waarvan het antwoord niet
+blijft bestaan. De hulpregel eronder zegt dat ook, want een ouder die dit
+product om zijn privacy koos, hoort niet te moeten raden.
+
+**En een vergeten pincode is te vervangen** (neemt de strengheid van ADR-173
+terug). "Pincode vergeten?" leidt naar dezelfde check en daarna naar een nieuwe
+code. Dat verzwakt het slot niet: de check is wat beschermt, en hij staat vóór
+allebei de wegen. Wat het weghaalt is de val — een ouder hoeft zijn apparaat
+niet meer te wissen om bij zijn eigen instellingen te komen.
+
+**Wat er niet bij komt: de check nog een keer vóór het wissen.** Dat stond in
+het eerste voorstel, als extra slot op het enige onomkeerbare. Met de check op
+het zetten én het resetten is de pincode zelf weer betrouwbaar, en dan is een
+tweede check alleen wrijving voor een ouder die iets legitiems doet.
+
+**Het blijft een hek en geen kluis.** Een twaalfjarige die het doorheeft, tikt
+een jaartal in, en met de ontwikkelaarsgereedschappen kom je er sowieso langs —
+dat schreef ADR-116 al op over de premiumcode. Wat dit koopt is dat de
+zevenjarige er niet in wandelt, dat de ouder de deur houdt, en dat het product
+niet liegt over wat het slot is.
+
+### Consequences
+
+- **Drie sporten in plaats van twee**, elk met meer erachter: de check mag de
+  pincode zetten of vervangen; de pincode is de dagelijkse deur; en het
+  accountwachtwoord — als het er is, in een volgende beslissing — bewaakt geld,
+  gegevens en andere apparaten. ADR-173 beschreef de onderste twee; deze voegt
+  de bodem toe.
+- **Eén extra scherm op de weg naar de ouderpagina**, en alleen de eerste keer
+  per apparaat en bij vergeten. De dagelijkse weg is nog steeds vier cijfers.
+- **`ouder.vergeten` is weg** en `ouder.vergetenKnop` ervoor in de plaats: de
+  uitweg was een zin die uitlegde dat er geen uitweg was, en is een knop
+  geworden. `ouder.maakHulp` loog sindsdien ook en is herschreven.
+- **e2e:** twee tests leggen het gat zelf vast — een kind komt niet langs de
+  check (ook niet met een jaartal van net geen achttien, en het jaartal staat
+  daarna nergens in de opslag), en een vergeten pincode is te vervangen zonder
+  dat er iets gewist wordt, waarna de oude code niet meer werkt. Elke andere
+  spec die de ouderpagina opent, doet de check onderweg. `a11y.spec.ts` scant
+  het nieuwe scherm mét foutmelding; `screens.spec.ts` fotografeert het als
+  `22-volwassenencheck`.
+- **Gevonden door te proberen, niet door te lezen.** Dit gat stond in een ADR
+  die zichzelf een parental gate noemde, in code die door de hele suite groen
+  kwam, en in een e2e-test die de fout letterlijk uitvoert — `de ouder zit
+achter een pincode, en het kind niet` meldde zich aan als kind en zette de
+  pincode. De test codeerde het gat in plaats van het te vangen. Dat is het
+  soort fout dat alleen iemand vindt die het product gebruikt.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

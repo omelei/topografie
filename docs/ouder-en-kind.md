@@ -482,6 +482,11 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   de ouder; de datum is geen commercie en een kind mag hem zien. Alleen het codeveld en het
   afmelden zijn verhuisd.
 
+- **Wie de pincode mocht zetten, stond er niet bij — en dat was een gat** (hersteld in ADR-176).
+  ADR-173 nam aan dat de ouder de eerste zou zijn die bij de wisselaar komt. Dat is systematisch
+  fout: het kind opent de app als eerste, en dat is juist het geval waar dit hele voorstel over
+  gaat. Er staat nu een volwassenencheck vóór het zetten en het resetten van de pincode.
+
 ### Stap 2 (ADR-174)
 
 - **Het codeveld staat niet meer meteen in het venster.** §8 liet het staan waar ADR-163 het zette.

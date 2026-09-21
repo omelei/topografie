@@ -3,6 +3,7 @@ import { SlotIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { isGeldigePin, PIN_LENGTE, probeer, zetPin, type OuderFout } from '@/store/ouder';
 import { useOuder } from './useOuder';
+import { Volwassenencheck } from './Volwassenencheck';
 
 /**
  * De deur naar de ouderpagina (ADR-173).
@@ -26,10 +27,16 @@ import { useOuder } from './useOuder';
  * precies zo zwaar als het hoort te zijn: hierachter zit geen kluis maar de
  * instellingen van dit apparaat.
  *
- * **Vergeten kan, en het levert niets op.** Er is met opzet geen weg die alleen
- * het slot weghaalt — dat zou geen slot zijn. Wie de pincode kwijt is, houdt
- * één uitweg: alles van dit apparaat halen. Die staat op de ouderpagina zelf en
- * hier als zin, want wie hem neemt, houdt een leeg apparaat over.
+ * **Er staat een volwassenencheck vóór het zetten** (ADR-176). Zonder die check
+ * mocht iedereen die als eerste bij de wisselaar kwam de pincode kiezen, en dat
+ * is systematisch het kind: het kind opent de app als eerste. Zie
+ * `Volwassenencheck.tsx` voor wat die check wel en niet is.
+ *
+ * **En vergeten kan.** ADR-173 liet dat met opzet niet toe — "een weg die alleen
+ * het slot weghaalt zou geen slot zijn" — en dat klopte alleen zolang de ouder
+ * degene was die de pincode zette. Nu de check ervóór staat, is die check de
+ * bescherming, en is niet-kunnen-resetten geen slot meer maar een val: een ouder
+ * die zijn code kwijt was, moest het hele apparaat wissen om erbij te komen.
  */
 
 const FOUT: Record<OuderFout, TranslationKey> = {
@@ -40,8 +47,34 @@ const FOUT: Record<OuderFout, TranslationKey> = {
   'geen-kluis': 'ouder.fout.geenKluis',
 };
 
+/**
+ * De drie standen van de deur.
+ *
+ * `openen` is de dagelijkse: er is een pincode en die wordt gevraagd. `check`
+ * en `zetten` horen bij elkaar en komen twee keer langs — als dit apparaat nog
+ * geen ouder heeft, en als iemand zijn code kwijt is.
+ */
+type Stand = 'openen' | 'check' | 'zetten';
+
 export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
   const { pinGezet } = useOuder();
+  const [stand, setStand] = useState<Stand>(pinGezet ? 'openen' : 'check');
+
+  if (stand === 'check') return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+
+  return <Veld zetten={stand === 'zetten'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
+}
+
+function Veld({
+  zetten,
+  onOpen,
+  onVergeten,
+}: {
+  /** Een nieuwe pincode kiezen (de check is net gedaan) of de bestaande geven. */
+  readonly zetten: boolean;
+  readonly onOpen: () => void;
+  readonly onVergeten: () => void;
+}) {
   const [pin, setPin] = useState('');
   const [herhaling, setHerhaling] = useState('');
   const [bezig, setBezig] = useState(false);
@@ -57,7 +90,7 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
     setBezig(true);
     setFout(null);
 
-    const uitkomst = pinGezet ? await probeer(pin) : await zetPin(pin, herhaling);
+    const uitkomst = zetten ? await zetPin(pin, herhaling) : await probeer(pin);
     setBezig(false);
 
     if (!uitkomst.ok) {
@@ -71,24 +104,24 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
     // Een verse pincode opent de deur niet vanzelf: `zetPin` zet het slot en
     // `probeer` doet open. Meteen daarna proberen zou de ouder vragen om wat
     // hij net getypt heeft, dus dat gebeurt hier met dezelfde cijfers.
-    if (!pinGezet) await probeer(pin);
+    if (zetten) await probeer(pin);
     setPin('');
     setHerhaling('');
     onOpen();
   }
 
-  const klaar = isGeldigePin(pin) && (pinGezet || isGeldigePin(herhaling));
+  const klaar = isGeldigePin(pin) && (!zetten || isGeldigePin(herhaling));
 
   return (
     <form className="flex flex-col gap-3" onSubmit={(event) => void verstuur(event)}>
       <p className="tk-kaartteken">
         <SlotIcon size={24} />
       </p>
-      <h2 className="tk-titel">{pinGezet ? t('ouder.slotTitel') : t('ouder.maakTitel')}</h2>
-      <p className="text-lopend">{pinGezet ? t('ouder.slotUitleg') : t('ouder.maakUitleg')}</p>
+      <h2 className="tk-titel">{zetten ? t('ouder.maakTitel') : t('ouder.slotTitel')}</h2>
+      <p className="text-lopend">{zetten ? t('ouder.maakUitleg') : t('ouder.slotUitleg')}</p>
 
       <label htmlFor={pinVeld} className="tk-label">
-        {pinGezet ? t('ouder.pin') : t('ouder.pinNieuw')}
+        {zetten ? t('ouder.pinNieuw') : t('ouder.pin')}
       </label>
       {/*
         `inputMode="numeric"` geeft een telefoon het cijferbord zonder dat het
@@ -111,7 +144,7 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
         autoFocus
       />
 
-      {pinGezet ? null : (
+      {zetten ? (
         <>
           <label htmlFor={herhaalVeld} className="tk-label">
             {t('ouder.pinHerhaal')}
@@ -128,10 +161,10 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
             aria-describedby={fout ? melding : undefined}
           />
         </>
-      )}
+      ) : null}
 
       <button type="submit" className="tk-button self-start" disabled={bezig || !klaar}>
-        {pinGezet ? t('ouder.open') : t('ouder.bewaarPin')}
+        {zetten ? t('ouder.bewaarPin') : t('ouder.open')}
       </button>
 
       {fout ? (
@@ -140,7 +173,16 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
         </p>
       ) : null}
 
-      <p className="tk-hulp">{pinGezet ? t('ouder.vergeten') : t('ouder.maakHulp')}</p>
+      {zetten ? (
+        <p className="tk-hulp">{t('ouder.maakHulp')}</p>
+      ) : (
+        /* De uitweg is een knop en geen zin meer (ADR-176): wie zijn code kwijt
+           is, moest het apparaat wissen om erbij te komen, en dat was geen slot
+           maar een val. De check ervóór is wat hem beschermt. */
+        <button type="button" className="tk-doel-ander self-start" onClick={onVergeten}>
+          {t('ouder.vergetenKnop')}
+        </button>
+      )}
     </form>
   );
 }

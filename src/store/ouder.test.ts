@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   isGeldigePin,
+  isVolwassenJaar,
   isOuder,
   isPinGezet,
   leesSlot,
@@ -31,6 +32,39 @@ const NU = new Date('2026-09-21T12:00:00');
 afterEach(() => {
   window.localStorage.clear();
   window.sessionStorage.clear();
+});
+
+describe('de volwassenencheck', () => {
+  const NU_JAAR = new Date('2026-09-21T12:00:00');
+
+  it('laat een jaartal van achttien jaar of langer geleden door', () => {
+    expect(isVolwassenJaar('2008', NU_JAAR)).toBe(true);
+    expect(isVolwassenJaar('1980', NU_JAAR)).toBe(true);
+  });
+
+  it('houdt een kind tegen, ook eentje dat bijna achttien is', () => {
+    expect(isVolwassenJaar('2009', NU_JAAR)).toBe(false);
+    expect(isVolwassenJaar('2016', NU_JAAR)).toBe(false);
+    expect(isVolwassenJaar('2026', NU_JAAR)).toBe(false);
+  });
+
+  it('weigert wat geen jaartal is', () => {
+    expect(isVolwassenJaar('', NU_JAAR)).toBe(false);
+    expect(isVolwassenJaar('08', NU_JAAR)).toBe(false);
+    expect(isVolwassenJaar('19800', NU_JAAR)).toBe(false);
+    expect(isVolwassenJaar('19a0', NU_JAAR)).toBe(false);
+  });
+
+  it('weigert een jaartal dat een typefout moet zijn', () => {
+    // Honderdtwintig jaar is geen antwoord; wie 1080 tikt bedoelde 1980.
+    expect(isVolwassenJaar('1080', NU_JAAR)).toBe(false);
+  });
+
+  it('schuift mee met het jaar', () => {
+    // Wie in 2008 geboren is, is in 2026 volwassen en in 2025 nog niet.
+    expect(isVolwassenJaar('2008', new Date('2025-12-31T12:00:00'))).toBe(false);
+    expect(isVolwassenJaar('2008', new Date('2026-01-01T12:00:00'))).toBe(true);
+  });
 });
 
 describe('een pincode', () => {

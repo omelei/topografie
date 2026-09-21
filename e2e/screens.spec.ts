@@ -169,8 +169,13 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
   await shoot(page, size, '21-wisselaar');
 
   await page.getByRole('button', { name: 'Ouder' }).click();
+  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible(READY);
+  await shoot(page, size, '22-volwassenencheck');
+
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible(READY);
-  await shoot(page, size, '22-ouderslot');
+  await shoot(page, size, '22b-ouderslot');
 
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
