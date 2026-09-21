@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Dot } from '@/components/Dot';
 import { NextIcon } from '@/components/Icon';
 import { STATUS_FILL, type ItemStatus } from '@/components/StatusLabel';
@@ -8,11 +8,12 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import type { PlayedRound } from '@/store/progress';
+import { schooldagen } from './schooldagen';
 import { geoefend, type Geheugen, type VakStand, type WeekTelling } from './statistiek';
 
 /**
- * De bovenkant van de Onthouden-pagina (ADR-148): wat je onthoudt over alles,
- * hoe deze week ging, per vak, en week na week.
+ * De cijfers op Jij (ADR-148, ADR-171, ADR-172): wat je onthoudt over alles,
+ * hoe vaak je oefent — deze week, en met premium de weken ervoor — en per vak.
  *
  * Elk getal hier staat op één plek in het product. De vier tegels over deze
  * week stonden op Voor ouders, het aantal rondes en vragen op de reekspagina,
@@ -88,8 +89,22 @@ export function StandTegels({
  * grijze balk met losse woorden eronder — het enige blok op de pagina dat er
  * zo uitzag. Over alle vakken, dus in de kleur van leer.nu zelf en niet die van
  * een vak.
+ *
+ * **Met de uitleg erbij** (ADR-172). "Wanneer onthoud je iets?" was een eigen
+ * blok bovenaan, open, met vier regels (ADR-160). De reden daarvoor blijft: wie
+ * het woord niet kent, leest getallen zonder eenheid. Dus staat de eerste regel
+ * — wat onthouden is — open boven de ring die het telt. De andere drie gaan over
+ * uitzonderingen die een kind één keer leest, en staan in een uitklap eronder;
+ * open kostten ze bij elk bezoek een half scherm op een telefoon.
  */
-export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
+export function GeheugenKaart({
+  stand,
+  uitleg,
+}: {
+  readonly stand: Geheugen;
+  /** De regels, ingeklapt onder de kaart (ADR-172). */
+  readonly uitleg?: ReactNode;
+}) {
   const totaal = geoefend(stand);
   const procent = stand.overDrieWeken;
   const telling = {
@@ -102,6 +117,9 @@ export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
   return (
     <section className="flex flex-col gap-3" aria-label={t('retention.geheugenTitel')}>
       <h2 className="tk-sectie">{t('retention.geheugenTitel')}</h2>
+      {/* Wat onthouden is, open en boven het getal dat het telt (ADR-160). De
+          andere drie regels staan eronder, ingeklapt (ADR-172). */}
+      <p className="text-lopend">{t('retention.regel1')}</p>
 
       <div className="tk-card tk-vakkleur tk-geheugen">
         {totaal === 0 || procent === null ? (
@@ -137,23 +155,47 @@ export function GeheugenKaart({ stand }: { readonly stand: Geheugen }) {
           </>
         )}
       </div>
+      {uitleg}
     </section>
   );
 }
 
+/** Het verloop over de weken: alleen met premium. */
+export interface Verloop {
+  readonly weken: readonly WeekTelling[];
+  readonly procentGoed: number | null;
+  readonly vragen: number;
+}
+
 /**
- * Deze week, in vier tegels: rondes, dagen, vragen en het cijfer waar ze op
- * uitkwamen, en wat het meest geoefend is (ADR-079). Van Voor ouders hierheen
- * gekomen (ADR-148); daar staat de lezing ervan, het weekbericht.
+ * Hoe vaak je oefent (ADR-172): deze week in vier tegels — rondes, dagen,
+ * vragen en het cijfer waar ze op uitkwamen — en wat het meest geoefend is
+ * (ADR-079). Met premium eronder de vragen van de laatste weken als staven, en
+ * alles bij elkaar in één zin.
  *
- * Gratis, zoals het daar was: het zijn feiten over het eigen kind (ADR-124).
+ * **Twee blokken werden er één.** "Deze week" en "Week na week" stonden los,
+ * met twee rijen tegels boven elkaar: "Rondes" en "Rondes in totaal", "Vragen
+ * beantwoord" en "Vragen in totaal". Dat las als één rij die zichzelf
+ * tegensprak. Nu is er één rij tegels, over deze week, en is het totaal een zin.
+ *
+ * **En de dagen tellen tegen schooldagen**, zoals het weekbericht dat deed
+ * (ADR-133): "3 van 5". Het weekbericht zelf is weg (ADR-172) — elke zin ervan
+ * stond ergens anders al, en die over wat blijft hangen noemde een ander getal
+ * dan de ring erboven. De noemer was het enige wat het toevoegde, en het is een
+ * feit over het eigen kind, dus gratis (ADR-124).
+ *
+ * De tegels zijn gratis, zoals ze op Voor ouders waren. Het verloop is premium:
+ * dat is het bijhouden (ADR-124).
  */
-export function DezeWeek({
+export function HoeVaak({
   rondes,
   now,
+  verloop,
 }: {
   readonly rondes: readonly PlayedRound[];
   readonly now: Date;
+  /** Null zonder premium: dan staan alleen de tegels er. */
+  readonly verloop: Verloop | null;
 }) {
   const grens = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 6));
   const deze = rondes.filter((ronde) => dayKey(new Date(ronde.at)) >= grens);
@@ -161,18 +203,26 @@ export function DezeWeek({
   const beantwoord = deze.reduce((samen, ronde) => samen + ronde.answered, 0);
   const goed = deze.reduce((samen, ronde) => samen + ronde.correct, 0);
   const dagen = new Set(deze.map((ronde) => dayKey(new Date(ronde.at)))).size;
+  const school = schooldagen(now);
   const cijfer = grade(goed, beantwoord);
 
-  // Wat het meest geoefend is: de zin die een ouder herhaalt.
+  // Wat het meest geoefend is: welke set deze week de meeste vragen kreeg.
   const perSet = new Map<string, number>();
   for (const { deel, ronde } of geplaatst(deze, startbareOnderdelen())) {
     perSet.set(naamVan(deel), (perSet.get(naamVan(deel)) ?? 0) + ronde.answered);
   }
   const meest = [...perSet.entries()].sort((a, b) => b[1] - a[1])[0] ?? null;
 
+  // Een zaterdag telt mee als er geoefend is (`kalender.ts`). Wie op meer dagen
+  // oefende dan er schooldagen waren, ziet alleen het getal: "6 van 5" is geen
+  // breuk.
+  const breuk = school > 0;
+  const dagenTekst =
+    breuk && dagen <= school ? t('you.dagenVan', { dagen, schooldagen: school }) : String(dagen);
+
   const tegels = [
     [t('you.tegelRondes'), String(deze.length)],
-    [t('you.tegelDagen'), String(dagen)],
+    [t('you.tegelDagen'), dagenTekst],
     [t('you.tegelVragen'), String(beantwoord)],
     [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer)],
   ] as const;
@@ -184,6 +234,7 @@ export function DezeWeek({
         <p className="text-tekst-secundair">{t('you.weekNone')}</p>
       ) : (
         <>
+          <p className="tk-label">{t('you.weekTegels')}</p>
           <dl className="tk-cijfers">
             {tegels.map(([label, waarde]) => (
               <div key={label} className="tk-cijfer">
@@ -197,6 +248,10 @@ export function DezeWeek({
           ) : null}
         </>
       )}
+
+      {/* Zonder één ronde geen grafiek: acht lege staven zeggen niets wat de
+          zin hierboven niet al zegt. */}
+      {verloop && rondes.length > 0 ? <Weken verloop={verloop} rondes={rondes.length} /> : null}
     </section>
   );
 }
@@ -280,50 +335,16 @@ export function PerVak({
 }
 
 /**
- * Week na week: drie getallen over al het oefenen, en de vragen van de laatste
- * weken als staven, goed onderin. "Foutloos op rij" en het record stonden er
- * ook; een reeks die één fout afpakt, is weg met de andere reeksen (ADR-149).
- *
- * Premium: dit is het bijhouden, en het cijfer over hoe het gaat was dat al in
- * de kolom (ADR-124).
+ * De vragen van de laatste weken als staven, goed onderin, en alles bij elkaar
+ * in één zin. "Foutloos op rij" en het record stonden er ook; een reeks die één
+ * fout afpakt, is weg met de andere reeksen (ADR-149).
  */
-export function WeekNaWeek({
-  weken,
-  procentGoed,
-  rondes,
-  vragen,
-}: {
-  readonly weken: readonly WeekTelling[];
-  readonly procentGoed: number | null;
-  readonly rondes: number;
-  readonly vragen: number;
-}) {
-  const tegels = [
-    [
-      t('retention.cijferGoed'),
-      procentGoed === null
-        ? t('retention.nooit')
-        : t('retention.procent', { procent: procentGoed }),
-    ],
-    [t('retention.cijferRondes'), String(rondes)],
-    [t('retention.cijferVragen'), String(vragen)],
-  ] as const;
-
+function Weken({ verloop, rondes }: { readonly verloop: Verloop; readonly rondes: number }) {
+  const { weken, procentGoed, vragen } = verloop;
   const hoogste = Math.max(1, ...weken.map((week) => week.goed + week.fout));
 
   return (
-    <section className="flex flex-col gap-3" aria-label={t('retention.verloopTitel')}>
-      <h2 className="tk-sectie">{t('retention.verloopTitel')}</h2>
-
-      <dl className="tk-cijfers">
-        {tegels.map(([label, waarde]) => (
-          <div key={label} className="tk-cijfer">
-            <dt className="tk-cijfer-label">{label}</dt>
-            <dd className="tk-cijfer-getal">{waarde}</dd>
-          </div>
-        ))}
-      </dl>
-
+    <>
       <figure className="tk-card tk-grafiek">
         <figcaption className="tk-label">{t('retention.grafiek')}</figcaption>
         <ol className="tk-grafiek-weken" aria-label={t('retention.grafiek')}>
@@ -379,6 +400,12 @@ export function WeekNaWeek({
           </li>
         </ul>
       </figure>
-    </section>
+
+      {procentGoed === null ? null : (
+        <p className="text-tekst-secundair">
+          {t('retention.totaal', { rondes, vragen, procent: procentGoed })}
+        </p>
+      )}
+    </>
   );
 }

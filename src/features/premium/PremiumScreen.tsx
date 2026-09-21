@@ -10,6 +10,7 @@ import {
   StarIcon,
   TodayIcon,
 } from '@/components/Icon';
+import { AccountBlok } from '@/features/account/AccountBlok';
 import { t, type TranslationKey } from '@/i18n';
 import { isTeKoop, isVerlopen, meldAf, verlooptBinnenkort } from '@/store/premium';
 import { CodeVeld } from './CodeVeld';
@@ -96,7 +97,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   [
     'premium.groep.ouders',
     [
-      { tekst: 'premium.regel.bericht', basis: false },
       { tekst: 'premium.regel.lijsten', basis: false },
       { tekst: 'premium.regel.gezin', basis: false },
     ],
@@ -161,6 +161,11 @@ export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
         ) : null}
 
         {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
+
+        {/* Het account van de ouder, met of zonder code (ADR-172). Een
+            e-mailadres en een wachtwoord zijn van de ouder (ADR-155), en de
+            ouder komt hier uit: "Ik ben een ouder" opent deze pagina (ADR-171). */}
+        <AccountBlok />
       </div>
     </div>
   );

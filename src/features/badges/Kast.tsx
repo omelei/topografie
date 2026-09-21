@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ModeId } from '@/game-core';
 import { doelwitten, type Doelwit } from '@/features/home/doel';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
@@ -45,6 +45,13 @@ const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
  * is wat "je hebt niets" letterlijk op het scherm zet. Bij nul staat er de
  * uitnodiging.
  *
+ * **Bovenaan Jij** (ADR-172), onder de kop en de wisselaar: het diploma is het
+ * hele beloningsprogramma (ADR-167), het is het enige blok op Jij met een knop
+ * die iets oplevert, en "Bekijk alle diploma's" op Vandaag komt hier uit. De
+ * uitleg over hoe je een diploma haalt en de printknop voor het schooljaar
+ * staan erin, als `children`: ze gaan over deze diploma's en nergens anders
+ * over.
+ *
  * De kast bouwt zichzelf uit `doelwitten()` en niet uit de vier wandcomponenten
  * van de modulepagina's: die geven een verzameling ids terug, en hier is per
  * diploma het onderdeel en de ronde nodig — anders kan de knop in het grote
@@ -53,11 +60,14 @@ const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
 export function Kast({
   onOefen,
   onToets,
+  children,
 }: {
   /** Naar dat vak, met de set gekozen. */
   readonly onOefen: (deel: Onderdeel) => void;
   /** Naar afzwemmen: de toets die bij dit diploma hoort. */
   readonly onToets: (deel: Onderdeel, mode: ModeId) => void;
+  /** Wat onder het raster hoort: de uitleg en het printen (ADR-172). */
+  readonly children?: ReactNode;
 }) {
   const { actief: premium } = usePremium();
   const stand = useDiplomaStand();
@@ -152,6 +162,8 @@ export function Kast({
           </section>
         );
       })}
+
+      {children}
 
       {gekozen ? (
         <Venster

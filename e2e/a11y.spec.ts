@@ -169,6 +169,17 @@ test('the Jij page has no violations', async ({ page }) => {
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   await expect(page.getByRole('table')).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
+
+  // En met alles open wat sinds ADR-172 één druk verder staat: de uitleg bij
+  // de diploma's en bij het geheugen, en de naam en de groep bij de
+  // instellingen — een formulier en een rij knoppen binnen een lijst.
+  await page.getByRole('button', { name: 'Hoe haal je een diploma?' }).click();
+  await page.getByRole('button', { name: 'Hoe werkt onthouden?' }).click();
+  const instellingen = page.getByRole('region', { name: 'Instellingen' });
+  await instellingen.getByRole('button', { name: /^Je naam/ }).click();
+  await instellingen.getByRole('button', { name: /^Je groep/ }).click();
+  await expect(instellingen.getByRole('group', { name: 'In welke groep zit je?' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
 });
 
 test('the map has no violations while asking, and none while showing the answer', async ({

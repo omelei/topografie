@@ -7,7 +7,6 @@ import {
   type FormEvent,
 } from 'react';
 import { t } from '@/i18n';
-import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import {
   abonneerLijsten,
@@ -34,6 +33,11 @@ import {
  * **Premium.** Dit is de functie waar het schoolwerk van deze week in gaat, en
  * daarmee de duidelijkste reden om te betalen. De ingebouwde spellingsets
  * blijven gratis, zoals alle inhoud gratis blijft (ADR-124).
+ *
+ * **Zonder code staat het er niet** (ADR-172), zoals de wisselaar van de
+ * kinderen (ADR-124). Er stond een slot, het vierde op Jij: één keer vragen per
+ * pagina is de etalage onder het voorbeeldkind, en die noemt de woorden van
+ * school ook.
  */
 export function EigenLijsten() {
   const { actief } = usePremium();
@@ -41,14 +45,7 @@ export function EigenLijsten() {
 
   const zet = useCallback((volgende: readonly Woordlijst[]) => schrijfLijsten(volgende), []);
 
-  if (!actief) {
-    return (
-      <section className="flex flex-col gap-3" aria-label={t('you.lijstenTitel')}>
-        <h2 className="tk-sectie">{t('you.lijstenTitel')}</h2>
-        <PremiumSlot wat="premium.wat.lijsten" />
-      </section>
-    );
-  }
+  if (!actief) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.lijstenTitel')}>

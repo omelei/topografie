@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState, type ComponentType, type FormEvent } from 'react';
 import { t } from '@/i18n';
 import {
+  ChevronDownIcon,
+  ChevronUpIcon,
   CorrectIcon,
   FamilyIcon,
   type IconProps,
@@ -10,13 +12,13 @@ import {
   SpeakIcon,
   TodayIcon,
 } from '@/components/Icon';
+import { Uitklap } from '@/components/Uitklap';
 import { createChild, listChildren, renameChild, switchChild } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
 import { Kast } from '@/features/badges/Kast';
 import { usePremium } from '@/features/premium/usePremium';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
-import { AccountBlok } from '@/features/account/AccountBlok';
 import { Statistieken } from '@/features/retention/Statistieken';
 import {
   GEEN_DOELEN,
@@ -40,19 +42,28 @@ import { Wissen } from './Wissen';
  * K10, "Jij": the child's own page (ADR-112), en sinds ADR-171 ook de pagina
  * waar al je cijfers staan.
  *
- * **Drie pagina's naast de oefeningen**: Vandaag, Jij en Premium. Onthouden was
- * een vierde en Voor ouders een vijfde, en allebei zijn ze hierin opgegaan.
- * Onthouden, omdat "wie ben ik" en "hoe gaat het" op deze pagina één vraag zijn.
- * Voor ouders, omdat ouders niet inloggen en kinderen wel: een pagina die
- * alleen voor een ouder was, had in deze app geen lezer — en wat erop stond,
- * de schakelaars, de groep, de lijsten van school, het account, is van het kind
- * dat hier oefent. Wat van de rekening is, staat op Premium.
+ * **Drie pagina's naast de oefeningen**: Vandaag, Jij en Premium. Vandaag
+ * beantwoordt "wat doe ik nu?", Premium "wat krijg ik erbij, en tot wanneer?",
+ * en Jij **"wat heb ik al bereikt, en blijft het hangen?"** — met daaronder wat
+ * van jou is en wat je zelf instelt. Wat vooruitkijkt hoort op Vandaag, wat van
+ * de rekening of van de ouder is op Premium (ADR-172).
  *
- * In the order of a profile page (ADR-145): **who you are**, then **how it is
- * going** — every number the product keeps, from what you remember to the
- * weeks behind you — then **what you have made**: the diplomas, which since
- * ADR-167 are the whole reward programme. Then **the settings**, and last the
- * way to take it all off this device (ADR-166).
+ * **In de volgorde van wat een kind hier komt halen** (ADR-172): wie er oefent,
+ * alleen als er iets te kiezen valt; dan **wat je gehaald hebt** — de
+ * diploma's, die sinds ADR-167 het hele beloningsprogramma zijn en het enige
+ * blok met een knop die iets oplevert; dan **of het blijft hangen**, alle
+ * cijfers; dan **wat je instelt**; en als laatste de weg om het er allemaal af
+ * te halen (ADR-166).
+ *
+ * ADR-145 en ADR-171 hadden een andere volgorde: wie je bent, hoe het gaat, wat
+ * je gehaald hebt. Dat was de volgorde van een profielpagina met vier blokken.
+ * Sinds de cijfers van Onthouden erbij kwamen, stonden er acht blokken tussen
+ * de naam en de diploma's, en begon de kast op een telefoon pas op het zesde
+ * scherm.
+ *
+ * **De naam staat in de kop**, en wijzigen is een rij bij de instellingen: iets
+ * wat je bijna nooit doet, en de naam stond met premium drie keer op het eerste
+ * scherm — in de balk, in "Jouw naam" en in "Wie oefent er?".
  *
  * De reeks staat er niet (ADR-169): verlies als prikkel hoort niet bij het kind,
  * en de ouder die hem wél zag heeft geen eigen pagina meer.
@@ -77,6 +88,8 @@ export function ProfileScreen({
 }) {
   const kast = useRef<HTMLDivElement>(null);
 
+  // Met premium staat "Wie oefent er?" boven de kast, dus is dit nog een sprong;
+  // zonder is het er een van niets.
   useEffect(() => {
     if (!kastOpen) return;
     kast.current?.scrollIntoView({ block: 'start' });
@@ -89,71 +102,59 @@ export function ProfileScreen({
     <div className="tk-page">
       <div className="tk-page-main">
         {/* De kop als de etalage van premium (ADR-150). De zin eronder zegt
-            wat er op de pagina staat, nu dat meer is dan een naam (ADR-171). */}
+            wie er oefent en wat er op de pagina staat, in die volgorde
+            (ADR-172). */}
         <header className="tk-etalage">
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
-          <p className="tk-etalage-tekst text-lopend">{t('you.intro')}</p>
+          <p className="tk-etalage-tekst text-lopend">{t('you.intro', { naam: profile.naam })}</p>
         </header>
 
-        <Ikben profile={profile} />
-
         <Children active={profile} />
-
-        {/* Hoe het gaat: wat je onthoudt, deze week, per vak, week na week en
-            per onderwerp (ADR-171). Dit was de Onthouden-pagina. */}
-        <Statistieken />
 
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
             tekort meer maar een doel — en dan hoort het raster hier, want een
-            kind kan erop mikken (ADR-064). */}
+            kind kan erop mikken (ADR-064). Bovenaan sinds ADR-172. */}
         <div ref={kast}>
-          <Kast onOefen={onOefen} onToets={onToets} />
+          <Kast onOefen={onOefen} onToets={onToets}>
+            <DiplomaUitleg />
+            <Jaaroverzicht />
+          </Kast>
         </div>
 
-        <DiplomaUitleg />
+        {/* Of het blijft hangen: wat je onthoudt, hoe vaak je oefent, per vak
+            en per onderwerp (ADR-171, ADR-172). Dit was de Onthouden-pagina. */}
+        <Statistieken />
 
-        <Jaaroverzicht />
-
-        {/* De instellingen, hier en niet meer op Voor ouders (ADR-171). */}
-        <Instellingen />
-
-        <GroepInstelling />
+        {/* Wat je instelt, met je naam en je groep erbij (ADR-172). */}
+        <Instellingen profile={profile} />
 
         <EigenLijsten />
 
-        <AccountBlok />
-
-        {/* Onderaan, en als laatste: de belofte hierboven — het blijft op dit
-            apparaat — is pas iets waard als je er ook bij kunt (ADR-166). */}
-        <div className="flex flex-col gap-4">
-          <p className="tk-hulp">{t('you.stays')}</p>
-          <Wissen />
-        </div>
+        {/* Onderaan, en als laatste: het enige op deze pagina dat niet terug te
+            draaien is (ADR-166). */}
+        <Wissen />
       </div>
     </div>
   );
 }
 
 /**
- * Hoe een diploma verdiend wordt, onder de kast (ADR-171).
+ * Hoe een diploma verdiend wordt, in een uitklap onder de kast (ADR-172).
  *
- * Het stond op Voor ouders, als de uitleg die een ouder nodig had om thuis het
- * goede te zeggen. Nu die pagina weg is, staat het bij het kind, in zijn eigen
- * woorden, direct onder de diploma's waar het over gaat: een kind dat alles
- * goed had en toch geen diploma kreeg, leest hier waarom.
+ * Het stond op Voor ouders, en daarna als eigen blok onder de kast (ADR-171),
+ * met als eerste zin de regel die boven het raster al stond. Het antwoord is
+ * voor een kind dat alles goed had en toch geen diploma kreeg: dat zoekt bij de
+ * diploma's, en daar staat het, één druk verder.
  */
 function DiplomaUitleg() {
   return (
-    <section className="flex flex-col gap-3" aria-labelledby="diploma-uitleg">
-      <h2 id="diploma-uitleg" className="tk-sectie">
-        {t('you.diplomaTitel')}
-      </h2>
+    <Uitklap open={t('you.diplomaTitel')} titel={t('uitklap.uitlegDicht')}>
       <div className="tk-card flex flex-col gap-2">
         <p className="text-lopend">{t('you.diplomaUitleg')}</p>
         <p className="text-lopend">{t('you.diplomaTempo')}</p>
       </div>
-    </section>
+    </Uitklap>
   );
 }
 
@@ -167,8 +168,12 @@ function DiplomaUitleg() {
  * **De doelen staan erbij.** "Ik wil geen doelen" op Vandaag zet het blok weg,
  * en de weg terug stond op Voor ouders (ADR-162). Die pagina is er niet meer,
  * dus is het een schakelaar tussen de andere: iets wat de app wel of niet doet.
+ *
+ * **En je naam en je groep bovenaan de lijst** (ADR-172). Allebei waren ze een
+ * eigen blok, en allebei verander je bijna nooit. Als rij zeggen ze wat ze nu
+ * zijn, en gaan ze open als je erop drukt.
  */
-function Instellingen() {
+function Instellingen({ profile }: { readonly profile: ProfileRecord }) {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
   const [doelen, setDoelen] = useState<Weekdoelen | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -199,6 +204,8 @@ function Instellingen() {
     <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
       <h2 className="tk-sectie">{t('you.settings')}</h2>
       <ul className="tk-lijst">
+        <Naam profile={profile} />
+        <GroepInstelling />
         <li>
           <Switch
             icon={SpeakIcon}
@@ -280,15 +287,17 @@ function Switch({
 const NAAM_MAX = 24;
 
 /**
- * Wie er oefent, en hoe die heet (ADR-126).
+ * Je naam, als rij bij de instellingen (ADR-126, ADR-172).
  *
  * De naam stond er als een regel tekst onder de titel — "Je oefent als Noor" —
- * en was nergens te veranderen. Hier staat hij, met één knop ernaast.
+ * en was nergens te veranderen; ADR-126 gaf hem een eigen blok met een knop.
+ * Nu staat die zin weer in de kop, en is veranderen een rij tussen de andere
+ * instellingen: iets wat je bijna nooit doet hoort niet bovenaan.
  *
  * Hernoemen raakt alleen de naam: het id blijft, dus elke Leitner-doos, elk
  * diploma en elke stempel op de weekkaart blijft bij dit kind horen.
  */
-function Ikben({ profile }: { readonly profile: ProfileRecord }) {
+function Naam({ profile }: { readonly profile: ProfileRecord }) {
   const [open, setOpen] = useState(false);
   const [naam, setNaam] = useState(profile.naam);
   const [bezig, setBezig] = useState(false);
@@ -309,13 +318,33 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
   }
 
   return (
-    <section className="flex flex-col gap-3" aria-label={t('you.who')}>
-      <h2 className="tk-sectie">{t('you.who')}</h2>
+    <li>
+      <button
+        type="button"
+        className="tk-lijstrij"
+        aria-expanded={open}
+        onClick={() => {
+          setNaam(profile.naam);
+          setOpen(!open);
+        }}
+      >
+        <span className="tk-plaat tk-plaat-neutraal">
+          <PupilIcon size={24} />
+        </span>
+        <span className="tk-lijstrij-tekst">
+          <span className="tk-lijstrij-titel">{t('you.naam')}</span>
+          <span className="tk-lijstrij-regel">{profile.naam}</span>
+        </span>
+        <span className="tk-lijstrij-pijl">
+          <span className="tk-label">{t('you.nameChange')}</span>
+          {open ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
+        </span>
+      </button>
 
       {open ? (
-        <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void bewaar(event)}>
+        <form className="flex flex-col gap-3 px-4 pb-4" onSubmit={(event) => void bewaar(event)}>
           <label htmlFor={veld} className="tk-label">
-            {t('you.childName')}
+            {t('you.naamLabel')}
           </label>
           <input
             id={veld}
@@ -342,22 +371,8 @@ function Ikben({ profile }: { readonly profile: ProfileRecord }) {
             </button>
           </div>
         </form>
-      ) : (
-        <div className="tk-card tk-kaartrij">
-          <span className="tk-kaartteken">
-            <PupilIcon size={24} />
-          </span>
-          <p className="tk-kaartrij-tekst text-lopend">{t('you.nameIs', { naam: profile.naam })}</p>
-          <button
-            type="button"
-            className="tk-button tk-button-secondary"
-            onClick={() => setOpen(true)}
-          >
-            {t('you.nameChange')}
-          </button>
-        </div>
-      )}
-    </section>
+      ) : null}
+    </li>
   );
 }
 
@@ -469,7 +484,7 @@ function Children({ active }: { readonly active: ProfileRecord }) {
         </button>
       )}
 
-      {/* Said once, where a parent adding the second child will read it. */}
+      {/* Said once, where whoever adds the second child will read it. */}
       <p className="tk-hulp">{t('you.childExplain')}</p>
     </section>
   );

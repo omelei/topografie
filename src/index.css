@@ -4184,6 +4184,13 @@
     line-height: var(--type-kaartkop-lh);
     font-weight: var(--type-kaartkop-weight);
   }
+  /* Een blad dat alleen voor de printer bestaat: het jaaroverzicht, dat op het
+   * scherm één knop onder de kast is (ADR-172). */
+  @media screen {
+    .tk-alleen-print {
+      display: none;
+    }
+  }
 
   /* ---- Ronde klaar (ADR-112, ADR-158) -----------------------------------
    * Drie regels, elk met een pictogram op de tint van de module, zodat een

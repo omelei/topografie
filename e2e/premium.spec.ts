@@ -56,22 +56,30 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
   await expect(page.getByRole('table')).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Welk vak?' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Wanneer onthoud je iets?' })).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Je geheugen' }).getByRole('button', {
+      name: 'Hoe werkt onthouden?',
+    }),
+  ).toBeVisible();
 
-  // Het slot zegt wat er achter de deur zit, niet dat er een deur is, en de
-  // knop gaat naar de uitleg in plaats van naar een codeveld.
-  await expect(page.getByText('Zie per vak en per onderdeel wat je kind onthoudt')).toBeVisible();
-  // De getallen over alles zijn gratis (ADR-148): wat je onthoudt en deze week.
-  // Per vak en week na week zijn het bijhouden, en staan er zonder code niet.
+  // De getallen over alles zijn gratis (ADR-148): wat je onthoudt en hoe vaak
+  // je oefent. Per vak en de weken ervoor zijn het bijhouden, en staan er
+  // zonder code niet.
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Deze week' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Per vak' })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
+  await expect(page.getByRole('list', { name: 'Vragen per week' })).toHaveCount(0);
 
   // En onder de eigen kaart het voorbeeldkind (ADR-165), gemerkt in woorden,
   // met de vraag eronder in plaats van een kaal slot.
   await expect(page.getByText('Dit zijn niet jouw cijfers.')).toBeVisible();
-  await expect(page.getByText('Dit wil je over je eigen kind zien')).toBeVisible();
+  await expect(page.getByText('Wil je dit over jezelf zien?')).toBeVisible();
+
+  // En dat is de enige vraag op de pagina (ADR-124, ADR-172): geen slot bij de
+  // tabel, geen weekbericht, en de eigen woorden staan er zonder code niet.
+  await expect(page.getByRole('button', { name: 'Bekijk premium' })).toHaveCount(1);
+  await expect(page.getByRole('region', { name: 'Hoe gaat het?' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Eigen woorden' })).toHaveCount(0);
 
   // De muur van het voorbeeld draagt een eigen naam, waar die van het kind
   // zelf niet in zit: twee dingen met dezelfde naam zijn er voor een
@@ -246,6 +254,9 @@ test('without a code the premium page points at the kassa, and with one it does 
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
     'Heb je al een code?',
+    // Het account van de ouder, onderaan en met of zonder code (ADR-172). De
+    // e2e-bouw heeft een gezinsproject, dus het staat er.
+    'Account',
   ]);
   await expect(page.getByText('€ 24,95').first()).toBeVisible();
 

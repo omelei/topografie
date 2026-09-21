@@ -20,7 +20,7 @@ interface Overzicht {
 }
 
 /**
- * Het schooljaar, om te laten zien of te printen.
+ * Het schooljaar, om te printen: één knop onder de kast (ADR-172).
  *
  * Het stond op Jij en ging over de toren: stenen, verdiepingen en meters. Nu de
  * diploma's het beloningsprogramma zijn, is dat wat er te melden valt — welke
@@ -39,11 +39,20 @@ interface Overzicht {
  *
  * Geen cijfer en geen vergelijking — dit is wat er gehaald is, geen rapport.
  *
+ * **Op het scherm alleen een knop** (ADR-172). Het was een eigen blok met de
+ * lijst erin, en die lijst stond er al: de kast laat dezelfde diploma's zien,
+ * en het venster van elk diploma zijn datum. Wat dit blok toevoegde was het
+ * blad voor de printer. Dus staat er één knop, en alleen als er iets gehaald
+ * is — op dag één stond er een knop om een leeg blad te printen.
+ *
  * Printen gebruikt de printer van de browser. Alleen dit overzicht komt op
- * papier (`data-print`), zonder de rest van de pagina.
+ * papier (`data-print`), zonder de rest van de pagina. Het blad bestaat pas
+ * zolang er geprint wordt. Met `data-print` altijd in de pagina stond het ook
+ * klaar voor de printer als je vanuit het venster één diploma printte.
  */
 export function Jaaroverzicht() {
   const [overzicht, setOverzicht] = useState<Overzicht | null>(null);
+  const [printen, setPrinten] = useState(false);
 
   useEffect(() => {
     let levend = true;
@@ -74,55 +83,65 @@ export function Jaaroverzicht() {
     };
   }, []);
 
-  if (overzicht === null) return null;
+  useEffect(() => {
+    if (!printen) return;
+    const klaar = () => setPrinten(false);
+    window.addEventListener('afterprint', klaar);
+    window.print();
+    return () => window.removeEventListener('afterprint', klaar);
+  }, [printen]);
+
+  if (overzicht === null || overzicht.diplomas.length === 0) return null;
 
   const ditJaar = overzicht.diplomas.filter((diploma) => diploma.ditJaar);
   const eerder = overzicht.diplomas.filter((diploma) => !diploma.ditJaar);
 
   return (
-    <section className="flex flex-col gap-3" aria-label={t('jaar.titel')}>
-      <h2 className="tk-sectie">{t('jaar.titel')}</h2>
-      <div className="tk-card tk-jaaroverzicht" data-print="ja">
-        <p className="tk-jaaroverzicht-kop">
-          {t('jaar.kop', {
-            naam: overzicht.naam,
-            van: overzicht.schooljaar,
-            tot: overzicht.schooljaar + 1,
-          })}
-        </p>
+    <>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={() => setPrinten(true)}
+      >
+        {t('jaar.print')}
+      </button>
 
-        {ditJaar.length === 0 ? (
-          <p>{t('jaar.geenDiplomas')}</p>
-        ) : (
-          <ul className="tk-regels">
-            {ditJaar.map((diploma) => (
-              <li key={diploma.naam}>
-                {t('jaar.diploma', { naam: diploma.naam, datum: diploma.datum })}
-              </li>
-            ))}
-          </ul>
-        )}
+      {printen ? (
+        <div className="tk-jaaroverzicht tk-alleen-print" data-print="ja">
+          <p className="tk-jaaroverzicht-kop">
+            {t('jaar.kop', {
+              naam: overzicht.naam,
+              van: overzicht.schooljaar,
+              tot: overzicht.schooljaar + 1,
+            })}
+          </p>
 
-        {eerder.length > 0 ? (
-          <>
-            <p className="tk-lijstrij-titel">{t('jaar.eerder')}</p>
+          {ditJaar.length === 0 ? (
+            <p>{t('jaar.geenDiplomas')}</p>
+          ) : (
             <ul className="tk-regels">
-              {eerder.map((diploma) => (
+              {ditJaar.map((diploma) => (
                 <li key={diploma.naam}>
                   {t('jaar.diploma', { naam: diploma.naam, datum: diploma.datum })}
                 </li>
               ))}
             </ul>
-          </>
-        ) : null}
-      </div>
-      <button
-        type="button"
-        className="tk-button tk-button-secondary self-start"
-        onClick={() => window.print()}
-      >
-        {t('jaar.print')}
-      </button>
-    </section>
+          )}
+
+          {eerder.length > 0 ? (
+            <>
+              <p className="tk-lijstrij-titel">{t('jaar.eerder')}</p>
+              <ul className="tk-regels">
+                {eerder.map((diploma) => (
+                  <li key={diploma.naam}>
+                    {t('jaar.diploma', { naam: diploma.naam, datum: diploma.datum })}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </div>
+      ) : null}
+    </>
   );
 }

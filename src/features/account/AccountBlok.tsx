@@ -1,17 +1,23 @@
 /**
- * Het account, bij de instellingen op Jij (ADR-155, ADR-171).
+ * Het account, onderaan Premium (ADR-155, ADR-172).
  *
- * Eén blok met drie standen: niet beschikbaar, niet ingelogd, ingelogd. Meer is
- * het niet, en meer hoort het in deze fase ook niet te zijn — het kind komt in
- * F3, de kinderen van deze ouder in F5.
+ * Twee standen: niet ingelogd en ingelogd. Meer is het niet, en meer hoort het
+ * in deze fase ook niet te zijn — het kind komt in F3, de kinderen van deze
+ * ouder in F5.
  *
- * **Het staat op Jij en niet op de voordeur.** Inloggen is een aanbod en geen
- * poort (ADR-152): zonder account werkt alles zoals het werkte, en een kind dat
- * de app opent hoort niet als eerste een inlogscherm te zien.
+ * **Het staat niet op de voordeur.** Inloggen is een aanbod en geen poort
+ * (ADR-152): zonder account werkt alles zoals het werkte, en een kind dat de
+ * app opent hoort niet als eerste een inlogscherm te zien.
  *
- * Het stond op Voor ouders, als het account van de ouder. Maar ouders loggen
- * niet in, kinderen wel (ADR-171): het account is van wie hier oefent, en dus
- * staat het op de pagina van dat kind, bij de instellingen.
+ * **En niet meer op Jij.** ADR-171 zette het daar, als het account van wie hier
+ * oefent. Maar een e-mailadres en een wachtwoord zijn van de ouder (ADR-155),
+ * en een kind van zes vragen om allebei is in de stem van het kind iets tegen
+ * een ouder zeggen. De ouder komt op Premium uit — "Ik ben een ouder" opent die
+ * pagina (ADR-171) — dus daar staat het. Het kind krijgt in F3 zijn eigen
+ * inlogcode, en die hoort dan wel op Jij.
+ *
+ * **Zonder gezinsproject staat er niets** (ADR-172). Het was één regel, "Inloggen
+ * is nog niet beschikbaar", onder een kop: een blok zonder iets om te doen.
  *
  * Aanmelden zit erbij omdat inloggen zonder aanmelden niets is: er zou niemand
  * zijn om in te loggen. Wat er níét bij zit is een wachtwoord vergeten — dat
@@ -40,12 +46,12 @@ type Modus = 'inloggen' | 'aanmelden';
 export function AccountBlok() {
   const { sessie, ingesteld, inloggen, aanmelden, uitloggen } = useAccount();
 
+  if (!ingesteld) return null;
+
   return (
     <section className="flex flex-col gap-3" aria-label={t('account.titel')}>
       <h2 className="tk-sectie">{t('account.titel')}</h2>
-      {!ingesteld ? (
-        <p className="text-lopend text-tekst-secundair">{t('account.fout.niet-ingesteld')}</p>
-      ) : sessie === null ? (
+      {sessie === null ? (
         <Formulier onInloggen={inloggen} onAanmelden={aanmelden} />
       ) : (
         <Ingelogd email={sessie.email} onUitloggen={uitloggen} />

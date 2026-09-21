@@ -18,7 +18,6 @@ import { klokVoluit } from '@/features/klok/klokTaal';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
 import { regiosVan } from '@/features/module/regios';
 import { heeftKaart, StandKaart } from './StandKaart';
-import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
@@ -30,10 +29,9 @@ import {
   type PlayedRound,
 } from '@/store/progress';
 import { aantalAntwoorden, dagenGeleden, procentGoed, retentionOf, statusOf } from './itemStatus';
-import { DezeWeek, GeheugenKaart, PerVak, StandTegels, WeekNaWeek } from './Overzicht';
+import { GeheugenKaart, HoeVaak, PerVak, StandTegels } from './Overzicht';
 import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './statistiek';
 import { voorbeeldStanden } from './voorbeeld';
-import { Weekbericht } from '@/features/player/Weekbericht';
 
 /**
  * K9, "Wat je onthoudt": the part of the product that answers the question it
@@ -44,17 +42,20 @@ import { Weekbericht } from '@/features/player/Weekbericht';
  * waar je al je cijfers ziet, en een tweede bestemming met alleen de cijfers
  * liet een kind kiezen tussen "wie ben ik" en "hoe gaat het" — twee vragen met
  * één antwoord. Dit bestand tekent dus geen kop en geen pagina: het geeft de
- * blokken, en `ProfileScreen` zet ze tussen de naam en de diploma's.
+ * blokken, en `ProfileScreen` zet ze onder de diploma's (ADR-172).
  *
- * **It opens on the whole of it** (`Overzicht.tsx`): what you remember over
- * every subject, with the three-week forecast as a ring; this week in four
- * tiles; and, with premium, each subject as a bar and the questions of the last
- * eight weeks as a chart. Every number about practising that stood elsewhere —
- * the week on Voor ouders, the rounds and questions on the streak page, "Goed
- * beantwoord" in the column — stands here now and nowhere else.
+ * **Eerst de twee samenvattingen, dan de zoom** (ADR-172): what you remember
+ * over every subject, with the three-week forecast as a ring; how often you
+ * practise, this week in four tiles and with premium the weeks before it; then,
+ * with premium, each subject as a bar, and one subject in full. Per vak and Per
+ * onderwerp stand next to each other because a press on a subject row chooses
+ * that subject below. And "Hoe vaak" stands above them rather than after,
+ * because without premium Per onderwerp ends on the example child: a child's
+ * own numbers go first, all of them (ADR-165).
  *
- * **De uitleg staat bovenaan en open** (ADR-160). Alles op deze pagina telt
- * één woord, en wie dat woord niet kent leest getallen zonder eenheid.
+ * **De uitleg staat bij het getal** (ADR-160, ADR-172). Alles hier telt één
+ * woord, en wie dat woord niet kent leest getallen zonder eenheid. De eerste
+ * regel staat daarom open boven de ring, de andere drie in een uitklap eronder.
  *
  * **Then one subject**, as before: which subject as chips — the module first, then the set, the chosen one
  * in the module's colour — then one card that is the whole set at a glance:
@@ -101,9 +102,11 @@ import { Weekbericht } from '@/features/player/Weekbericht';
 /** How many weeks the chart looks back: two months, and this week last. */
 const WEKEN = 8;
 
-/** What remembering means, in the order a child meets it. */
+/**
+ * What remembering means, after the first rule: that one stands open above the
+ * ring (`GeheugenKaart`), and these are the exceptions to it.
+ */
 const REGELS: readonly TranslationKey[] = [
-  'retention.regel1',
   'retention.regel2',
   'retention.regel3',
   'retention.regel4',
@@ -118,20 +121,18 @@ export function Statistieken() {
 }
 
 /**
- * Wat onthouden betekent, bovenaan de pagina en open (ADR-160).
+ * Hoe onthouden werkt, in een uitklap onder "Je geheugen" (ADR-172).
  *
- * Het stond onderaan, achter een uitklap, en dat is de verkeerde volgorde voor
- * de ene zin die deze pagina leesbaar maakt: alles erboven — de ring, de
- * tegels, de stippen — telt één woord, en wie dat woord niet kent leest
- * getallen zonder eenheid. Vier regels zijn ook kort genoeg om niet op te
- * vouwen; een uitklap is voor de tabel, die lang is.
+ * ADR-160 zette de vier regels bovenaan en open, omdat ze onderaan achter de
+ * tabel stonden, dichtgevouwen, en wie het woord niet kent leest getallen
+ * zonder eenheid. Dat eerste blijft zo: wat onthouden is staat open boven de
+ * ring. Wat hier ingeklapt staat, zijn de uitzonderingen — wat meetelt, wat
+ * opfrissen is, wat een fout doet — die een kind één keer leest en die op een
+ * telefoon bij elk bezoek een half scherm kostten.
  */
 function Regels() {
-  // De kop boven de kaart, zoals elk ander blok op Jij (ADR-171). Hij stond
-  // klein in de kaart, als label — het laatste blok op de pagina dat zo was.
   return (
-    <section className="flex flex-col gap-3" aria-label={t('retention.regelsTitel')}>
-      <h2 className="tk-sectie">{t('retention.regelsTitel')}</h2>
+    <Uitklap open={t('retention.regelsTitel')} titel={t('uitklap.uitlegDicht')}>
       <div className="tk-card">
         <ol className="tk-regelkaart-lijst">
           {REGELS.map((regel, nummer) => (
@@ -146,7 +147,7 @@ function Regels() {
           ))}
         </ol>
       </div>
-    </section>
+    </Uitklap>
   );
 }
 
@@ -223,33 +224,29 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
 
   return (
     <>
-      <Regels />
-
       {/* Over alle vakken, dus in de kleur van geen enkel vak: de ring en de
           tegels staan in de kleur van leer.nu zelf, en pas bij Per onderwerp
           hieronder neemt de pagina de kleur aan van het vak dat je kiest. */}
-      <GeheugenKaart stand={geheugen(states, now)} />
+      <GeheugenKaart stand={geheugen(states, now)} uitleg={<Regels />} />
 
-      <DezeWeek rondes={rondes} now={now} />
-
-      {/* De lezing van de week (ADR-133): stond op Voor ouders, en is een
-          cijfer over het oefenen zoals de rest hier (ADR-171). */}
-      <Weekbericht afgemaakt={rondes.map((ronde) => ronde.at)} now={now} />
+      <HoeVaak
+        rondes={rondes}
+        now={now}
+        verloop={
+          premium
+            ? {
+                weken: perWeek(antwoorden, now, WEKEN),
+                procentGoed: procentGoedVan(antwoorden),
+                vragen: antwoorden.length,
+              }
+            : null
+        }
+      />
 
       {/* `contents`: de vakkleur geldt voor alles hieronder, en de blokken
           houden de tussenruimte van de pagina. */}
       <div className="contents" data-module={moduleId} data-accent="module">
-        {premium ? (
-          <>
-            <PerVak vakken={vakken} modules={modules} onKies={kiesVak} />
-            <WeekNaWeek
-              weken={perWeek(antwoorden, now, WEKEN)}
-              procentGoed={procentGoedVan(antwoorden)}
-              rondes={rondes.length}
-              vragen={antwoorden.length}
-            />
-          </>
-        ) : null}
+        {premium ? <PerVak vakken={vakken} modules={modules} onKies={kiesVak} /> : null}
 
         <h2 id={ONDERWERP_ID} className="tk-sectie" tabIndex={-1}>
           {t('retention.onderwerpTitel')}
@@ -259,7 +256,8 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
             select: every option is worth seeing, and a select on a touch
             screen is a menu that covers the thing you were looking at.
             Zonder code staan ze er niet (ADR-124): de pagina laat dan één
-            onderwerp zien en zegt welk. */}
+            onderwerp zien en zegt welk. Dat er meer is, zegt de etalage onder
+            het voorbeeld — de enige vraag om premium op Jij (ADR-172). */}
         {!premium ? (
           <p className="text-tekst-secundair">
             {t('retention.voorproef', { onderwerp: deel ? naamVan(deel) : '' })}
@@ -357,9 +355,12 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
             nu zijn het vier tegels die tellen én de legenda zijn, in vier
             sterktes van de kleur die dit vak overal draagt — dezelfde taal als
             de balk op Per vak. De stip erop is de stip van de tabel en van de
-            muur eronder, dus de kleur zegt niets wat de vorm niet ook zegt. */}
+            muur eronder, dus de kleur zegt niets wat de vorm niet ook zegt.
+
+            Zonder eigen kop sinds ADR-172: "Per onderwerp", "Alles in één
+            blik" en "Per onderdeel" waren drie koppen voor één ding. De naam
+            blijft, voor wie met een schermlezer van regio naar regio gaat. */}
         <section className="flex flex-col gap-3" aria-label={t('retention.glance')}>
-          <h2 className="tk-sectie">{t('retention.glance')}</h2>
           <Blik
             moduleId={moduleId}
             deel={deel}
@@ -376,31 +377,27 @@ function Onthouden({ premium }: { readonly premium: boolean }) {
           {!premium ? <Voorbeeld moduleId={moduleId} deel={deel} items={items} now={now} /> : null}
         </section>
 
-        {/* De tabel staat er nog, maar niet vooraan (ADR-143). Zes kolommen
-            met een percentage en een voorspelling over drie weken zijn voor de
-            volwassene in de kamer; een kind dat deze pagina opent ziet het
-            beeld erboven. */}
-        <section className="flex flex-col gap-3" aria-label={t('retention.detail')}>
-          <h2 className="tk-sectie">{t('retention.detail')}</h2>
-          {!premium ? <PremiumSlot wat="premium.wat.onthouden" /> : null}
-          {/* A stop in the tab order with a name of its own: on a phone the
-              table is wider than the screen and scrolls sideways inside its
-              card, and a region that scrolls has to be reachable from the
-              keyboard too (axe, scrollable-region-focusable) — as the rows on
-              the front door are (ScrollRij). */}
-          {premium ? (
-            <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
-              <div
-                className="tk-tabelkaart tk-vakkleur"
-                role="group"
-                aria-label={t('retention.detail')}
-                tabIndex={0}
-              >
-                <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
-              </div>
-            </Uitklap>
-          ) : null}
-        </section>
+        {/* De tabel staat er nog, maar niet vooraan (ADR-143), en alleen met
+            premium. Zonder code stond hier een slot, het derde van vier op Jij;
+            de etalage erboven noemt de tabel al (ADR-172).
+
+            A stop in the tab order with a name of its own: on a phone the
+            table is wider than the screen and scrolls sideways inside its
+            card, and a region that scrolls has to be reachable from the
+            keyboard too (axe, scrollable-region-focusable) — as the rows on
+            the front door are (ScrollRij). */}
+        {premium ? (
+          <Uitklap open={t('uitklap.tabel')} titel={t('uitklap.tabelDicht')}>
+            <div
+              className="tk-tabelkaart tk-vakkleur"
+              role="group"
+              aria-label={t('retention.detail')}
+              tabIndex={0}
+            >
+              <RetentionTable moduleId={moduleId} items={items} states={states} now={now} />
+            </div>
+          </Uitklap>
+        ) : null}
       </div>
     </>
   );
@@ -479,7 +476,9 @@ function Blik({
  * **En de knop eronder zegt het hardop.** Er stond een `PremiumSlot` bij de
  * tabel, halverwege de pagina, met dezelfde toon als elk ander slot in de app.
  * Dit is de pagina die de hele propositie ís — als er ergens één zin mag staan
- * die het vraagt, is het hier.
+ * die het vraagt, is het hier. Sinds ADR-172 is het ook de enige op Jij: het
+ * slot bij de tabel, dat van het weekbericht en dat van de eigen woorden zijn
+ * weg, want ADR-124 vraagt één keer per pagina.
  */
 function Voorbeeld({
   moduleId,

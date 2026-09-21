@@ -5,10 +5,10 @@ import { expect, test, type Page } from '@playwright/test';
  *
  * Onthouden is een deel van Jij geworden, want Jij is waar je al je cijfers
  * ziet. Voor ouders is weg: ouders loggen niet in, kinderen wel. Wat erop stond
- * en van het kind is — de schakelaars, de groep, de eigen woorden, het account,
- * het schooljaar — staat op Jij, en wat van de rekening is op Premium. Wat deze
- * test vastlegt, is die indeling: waar alles staat, en waar de oude adressen
- * heen gaan.
+ * en van het kind is — de schakelaars, de groep, de eigen woorden — staat op
+ * Jij, en wat van de rekening of van de ouder is, met het account, op Premium
+ * (ADR-172). Wat deze test vastlegt, is die indeling: waar alles staat, in
+ * welke volgorde, en waar de oude adressen heen gaan.
  */
 
 async function signIn(page: Page, naam: string) {
@@ -20,48 +20,86 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-test('Jij draagt wie je bent, al je cijfers, je diploma’s en de instellingen', async ({ page }) => {
+test('Jij draagt je diploma’s, al je cijfers en de instellingen, in die volgorde', async ({
+  page,
+}) => {
   await signIn(page, 'Noor');
   await page.goto('/jij');
 
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
-  // De zin onder de titel zegt wat er op de pagina staat.
+  // De zin onder de titel zegt wie er oefent en wat er op de pagina staat.
   await expect(page.locator('.tk-etalage-tekst').first()).toHaveText(
-    'Alles over jou: wat je onthoudt, hoe het oefenen gaat en welke diploma’s je hebt.',
+    'Je oefent als Noor. Hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
   );
 
   for (const blok of [
-    'Jouw naam',
-    'Wanneer onthoud je iets?',
-    'Je geheugen',
-    'Deze week',
-    'Hoe gaat het?',
-    'Alles in één blik',
+    'Wie oefent er?',
     'Jouw diploma’s',
-    'Hoe haal je een diploma?',
-    'Het schooljaar',
+    'Je geheugen',
+    'Hoe vaak oefen je?',
+    'Per vak',
+    'Alles in één blik',
     'Instellingen',
-    'Je groep',
     'Eigen woorden',
-    'Account',
     'Alles van dit apparaat halen',
   ]) {
     await expect(page.getByRole('region', { name: blok, exact: true })).toBeVisible();
   }
 
-  // Wat van de rekening is, staat op Premium en niet hier. En de reeks staat
-  // nergens bij het kind (ADR-169).
-  await expect(page.getByRole('region', { name: 'Premium', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'De reeks' })).toHaveCount(0);
+  // Wat samengevoegd of verhuisd is, staat er niet meer als eigen blok
+  // (ADR-172): de naam en de groep zijn rijen bij de instellingen, de regels
+  // en de diploma-uitleg uitklappen, het schooljaar een printknop, het
+  // weekbericht weg, en het account op Premium. De reeks staat nergens bij het
+  // kind (ADR-169).
+  for (const weg of [
+    'Jouw naam',
+    'Wanneer onthoud je iets?',
+    'Hoe gaat het?',
+    'Week na week',
+    'Hoe haal je een diploma?',
+    'Het schooljaar',
+    'Je groep',
+    'Account',
+    'Premium',
+    'De reeks',
+  ]) {
+    await expect(page.getByRole('region', { name: weg, exact: true }), weg).toHaveCount(0);
+  }
 
-  // Eerst wie je bent, dan hoe het gaat, dan wat je gehaald hebt, en dan pas
-  // de instellingen (ADR-145, ADR-171).
+  // Eerst wie er oefent, dan wat je gehaald hebt, dan of het blijft hangen, dan
+  // wat je instelt, en als laatste de uitweg (ADR-172).
   const koppen = await page.locator('.tk-page-main h2').allInnerTexts();
   const plek = (kop: string) => koppen.findIndex((tekst) => tekst.startsWith(kop));
-  expect(plek('Jouw naam')).toBeLessThan(plek('Je geheugen'));
-  expect(plek('Je geheugen')).toBeLessThan(plek('Jouw diploma’s'));
-  expect(plek('Jouw diploma’s')).toBeLessThan(plek('Instellingen'));
+  expect(plek('Wie oefent er?')).toBeLessThan(plek('Jouw diploma’s'));
+  expect(plek('Jouw diploma’s')).toBeLessThan(plek('Je geheugen'));
+  expect(plek('Je geheugen')).toBeLessThan(plek('Instellingen'));
   expect(plek('Instellingen')).toBeLessThan(plek('Alles van dit apparaat halen'));
+  expect(koppen.at(-1)).toBe('Alles van dit apparaat halen');
+});
+
+/**
+ * Je naam wijzigen is een rij bij de instellingen (ADR-172). De naam zelf
+ * staat in de kop; de rij zegt hem ook, en gaat open als je erop drukt.
+ */
+test('je naam wijzig je bij de instellingen', async ({ page }) => {
+  await signIn(page, 'Fleur');
+  await page.goto('/jij');
+
+  const instellingen = page.getByRole('region', { name: 'Instellingen' });
+  const rij = instellingen.getByRole('button', { name: /^Je naam/ });
+  await expect(rij).toContainText('Fleur');
+  await expect(rij).toHaveAttribute('aria-expanded', 'false');
+
+  await rij.click();
+  await expect(rij).toHaveAttribute('aria-expanded', 'true');
+  const veld = instellingen.getByLabel('Je naam', { exact: true });
+  await expect(veld).toBeFocused();
+  await veld.fill('Floor');
+  await instellingen.getByRole('button', { name: 'Bewaren' }).click();
+
+  // Opnieuw geladen, en nergens staat de oude naam nog.
+  await expect(page.getByRole('banner').getByRole('button', { name: 'Floor' })).toBeVisible();
+  await expect(page.locator('.tk-etalage-tekst').first()).toContainText('Je oefent als Floor.');
 });
 
 test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
