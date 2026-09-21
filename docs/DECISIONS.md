@@ -10547,6 +10547,130 @@ geworden: de naam is de vraag, en die blijft in alle drie de standen dezelfde.
 
 ---
 
+## ADR-175 — Wat waar moet zijn voordat een kind het apparaat uit kan: een uuid, een moment, en één vertaling
+
+**Status:** accepted. **Date:** 2026-09-21. Het eerste deel van stap 3 uit
+`docs/ouder-en-kind.md`, na ADR-173 en ADR-174. **Voert uit wat ADR-155 als
+voorwaarde stelde** ("de lokale migratie gaat vóór het netwerk") en **maakt de
+belofte van `docs/DATAMODEL.md` waar** dat de hernoeming tussen deel A en deel C
+de enige vertaling is. Verandert `leitner.ts`, `game-core`, de statistieken en
+wat een kind ziet niet. De overname zelf — het account, het opnemen van een kind
+dat al oefende — is het tweede deel en staat hier nog niet in.
+
+### Context
+
+ADR-155 schreef twee dingen op die vooraf moesten gaan aan elke synchronisatie,
+en beide stonden er sindsdien niet:
+
+> De lokale migratie gaat vóór het netwerk, net zoals ADR-050 dat voor
+> `progress` eiste: `attempts` krijgt een uuid als sleutel en een instelling
+> gaat bijhouden wanneer hij geschreven is. Dat kan op zichzelf, zonder dat er
+> iemand inlogt.
+
+Het waarom is in allebei de gevallen hetzelfde, en het is geen netheid.
+
+**De sleutel van een poging werd uitgedeeld door IndexedDB zelf**, oplopend
+vanaf één, per apparaat. Dat werkt zolang er één apparaat is. Zodra hetzelfde
+kind op de iPad én op de laptop oefent, bestaat poging 7 twee keer, voor twee
+verschillende antwoorden — en bij de eerste sync wint er willekeurig één. Het
+andere verdwijnt, zonder fout, zonder melding, en zonder dat iemand het merkt.
+`pogingen` is bovendien de grondstof waar alles uit gerekend wordt, tot de stand
+van een doelstelling aan toe (ADR-155 C3).
+
+**Een instelling wist niet wanneer hij geschreven was.** Van `weekdoel:`,
+`doel:` en `bijhouden:` wint bij het samenvoegen de jongste schrijver, en zonder
+moment is er niets om jong of oud aan af te meten.
+
+En er was een derde ding, dat `docs/DATAMODEL.md` sinds de eerste versie
+belooft: veldnamen zijn camelCase op het apparaat en snake_case in Postgres, en
+"die hernoeming is de enige vertaling … geschreven in één mappingfunctie op de
+dag dat accounts arriveren, en niet vast door de code heen in afwachting van een
+vorm die nog niemand nodig had". Die dag is deze.
+
+### Decision
+
+**De sleutel van een poging wordt een uuid.** `recordAttempt` deelt hem zelf
+uit; `store/sleutels.ts` schrijft om wat er al ligt.
+
+**Zonder nieuwe `DB_VERSION`.** De opslag hoeft niet te veranderen:
+`autoIncrement` vult alleen aan waar geen sleutel staat, dus een rij die zelf een
+uuid meebrengt krijgt die gewoon. Wat er verandert zijn de rijen die er al
+liggen.
+
+**En niet in een versietransactie.** Dat is de regel die `db.ts` zelf stelt en
+die `ensureProgressPerChild` al volgt: een migratie die tijdens een `upgrade`
+stukgaat, laat de voortgang van een kind onbereikbaar achter zonder dat er
+ergens een fout verschijnt, en ze is vanaf deze machine niet te beproeven. Deze
+draait in een gewone transactie, per rij, is opnieuw te draaien, en mag
+mislukken — dan gebeurt het de volgende keer.
+
+Eén keer per apparaat bij het openen van de app, en niet bij het lezen van de
+dozen zoals `ensureProgressPerChild`: dit loopt over élk gegeven antwoord, en
+dat hoort niet in het pad van een scherm dat opengaat.
+
+**Een instelling draagt `gewijzigdOp`.** Geschreven door `setSetting`, zodat
+elke schrijver hem meekrijgt zonder het te weten — ook de schrijvers die er
+vandaag al zijn. Optioneel, want elke rij die er vóór deze beslissing stond
+heeft hem niet, en die is dan per definitie ouder dan een rij die hem wél heeft.
+Ook daarvoor is geen migratie nodig.
+
+**De vertaling staat in `store/gezin/rijen.ts`, en is puur.** Wat een rij wordt
+is te toetsen zonder browser en zonder netwerk; dát het aankomt is iets voor de
+e2e-bouw. Drie dingen legt hij vast die anders verspreid zouden raken:
+
+- **Een ronde die nog loopt gaat niet mee.** Die hoort bij het apparaat waar hij
+  openstaat (ADR-155), en `pogingen.sessie_id` dwingt het af: een poging uit een
+  lopende ronde mag dan evenmin mee.
+- **Een poging met een genummerde sleutel gaat niet mee.** De migratie hierboven
+  draait bij het openen, dus het hoort niet voor te komen — en als het toch zo
+  is, is overslaan beter dan het antwoord van iemand anders overschrijven.
+- **Van de instellingen gaat alleen wat de database kent.** Letterlijk de lijst
+  uit de `check` in `0001_gezin.sql`. `dagstand:` en `actiefKind` zijn wat dít
+  apparaat vandaag doet en horen nergens anders te zijn; een sleutel die de
+  database weigert, zou de hele overname laten stranden op iets wat hier te zien
+  was.
+
+**Een kind heeft twee identiteiten, en die worden niet gelijkgetrokken.** Op de
+server is het zijn auth-uuid; op dit apparaat is het eerste kind `me` en elk
+volgend kind een lokale uuid. `Eigenaar` draagt ze allebei.
+
+Dat wijkt af van §9 van het voorstel, dat schreef: "Lokaal wordt de oude `kindId`
+omgezet, niet gekopieerd." Bij het bouwen bleek dat de duurste regel van het hele
+plan: de lokale sleutel omschrijven raakt `profile`, `progress`, `kindBadges`,
+`sessions`, `attempts` én elke instellingssleutel tegelijk, en een migratie die
+halverwege breekt laat de dozen van een kind achter onder twee sleutels — precies
+de fout die ADR-046 opruimde, opnieuw en nu met echte kinderen erin.
+
+De prijs van twee identiteiten is twee velden en de vertaling die er toch al was.
+Dat is goedkoper, en het is bovendien wat `SINGLETON_KEY` al doet: alles wat
+onder `me` geschreven is, blijft van dat kind zonder te verhuizen.
+
+### Consequences
+
+- **`AttemptRecord.id` is `string | number`**, en niet alleen `string`. Een
+  apparaat dat de migratie nog niet gedraaid heeft, draagt allebei; het type
+  liegt daar niet over.
+- **De migratie is eenmalig en dat is te zien**: een vlag in `settings`. Wie hem
+  weghaalt, laat hem opnieuw draaien, en dat is precies wat de e2e-test doet om
+  de toestand van vóór deze versie na te bootsen.
+- **Nog niets verstuurt iets.** Deze beslissing voegt geen enkel verzoek toe.
+  `rijen.ts` maakt rijen en er is nog niemand die ze opstuurt; dat is het tweede
+  deel van stap 3. `e2e/network.spec.ts` verandert dus niet.
+- **e2e:** `sleutels.spec.ts` is nieuw en zet met de hand een poging van de oude
+  vorm neer, herlaadt, en kijkt wat ervan geworden is — dezelfde techniek als
+  `groep.spec.ts` met een profiel van vóór de groep. Met opzet geen unit test:
+  wat bewezen moet worden is gedrag van IndexedDB zelf, en een nagebouwde
+  IndexedDB bewijst dat over zichzelf en niet over de browser waar een kind in
+  oefent.
+- **`rijen.test.ts` toetst wat er níét vertrekt**, en dat is het deel dat ertoe
+  doet: geen `dagstand:`, geen `actiefKind`, geen instelling van een ander kind,
+  geen poging zonder uuid, geen ronde die nog loopt.
+- **Nog niet tegen een echt project gedraaid.** Er is geen Supabase-project en
+  er zijn geen sleutels in CI (ADR-155, `docs/SUPABASE.md`). Dat `rijen.ts` de
+  kolommen van `0001_gezin.sql` raakt, is nagelezen en niet uitgeprobeerd.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
