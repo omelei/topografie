@@ -47,30 +47,28 @@ export function Jaaroverzicht() {
 
   useEffect(() => {
     let levend = true;
-    void Promise.all([getActiveChild(), loadDiplomaRijen()]).then(
-      ([kind, rijen]) => {
-        if (!levend) return;
-        const jaar = schooljaarVan(new Date());
-        const begin = new Date(jaar, 8, 1).toISOString();
-        const witten = doelwitten(startbareOnderdelen(), true);
+    void Promise.all([getActiveChild(), loadDiplomaRijen()]).then(([kind, rijen]) => {
+      if (!levend) return;
+      const jaar = schooljaarVan(new Date());
+      const begin = new Date(jaar, 8, 1).toISOString();
+      const witten = doelwitten(startbareOnderdelen(), true);
 
-        setOverzicht({
-          naam: kind?.naam ?? '',
-          schooljaar: jaar,
-          diplomas: rijen.flatMap((rij) => {
-            const doelwit = witten.find((kandidaat) => kandidaat.id === rij.id);
-            if (!doelwit) return [];
-            return [
-              {
-                naam: naamVan(doelwit.deel),
-                datum: datumVan(rij.behaaldOp),
-                ditJaar: rij.behaaldOp >= begin,
-              },
-            ];
-          }),
-        });
-      },
-    );
+      setOverzicht({
+        naam: kind?.naam ?? '',
+        schooljaar: jaar,
+        diplomas: rijen.flatMap((rij) => {
+          const doelwit = witten.find((kandidaat) => kandidaat.id === rij.id);
+          if (!doelwit) return [];
+          return [
+            {
+              naam: naamVan(doelwit.deel),
+              datum: datumVan(rij.behaaldOp),
+              ditJaar: rij.behaaldOp >= begin,
+            },
+          ];
+        }),
+      });
+    });
     return () => {
       levend = false;
     };
@@ -117,7 +115,6 @@ export function Jaaroverzicht() {
             </ul>
           </>
         ) : null}
-
       </div>
       <button
         type="button"

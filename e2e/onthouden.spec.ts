@@ -47,9 +47,7 @@ function tegel(page: Page, regio: string, label: string) {
     .locator('.tk-cijfer-getal');
 }
 
-test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({
-  page,
-}) => {
+test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({ page }) => {
   await signIn(page, 'Mila');
   await page.goto('/jij');
 

@@ -692,7 +692,6 @@ export const nl = {
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
 
-
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
   // twaalf kaarten ernaast, en elke andere soort drie bereiken (ADR-120).
@@ -1262,8 +1261,7 @@ export const nl = {
   // velden die een naam op een apparaat veranderen in een vindbaar kind.
   'you.title': 'Jij',
   // Onder de titel, in de kop die de etalage van premium is (ADR-150).
-  'you.intro':
-    'Alles over jou: wat je onthoudt, hoe het oefenen gaat en welke diploma’s je hebt.',
+  'you.intro': 'Alles over jou: wat je onthoudt, hoe het oefenen gaat en welke diploma’s je hebt.',
   'you.nameIs': 'Je oefent als {naam}.',
   // De persoon bovenaan Jij (ADR-126), met de naam die tot nu toe nergens te
   // veranderen was.
@@ -1360,8 +1358,7 @@ export const nl = {
   'account.bezig': 'Even kijken…',
   'account.ingelogd': 'Je bent ingelogd als {email}.',
   'account.uitloggen': 'Uitloggen',
-  'account.uitloggenUitleg':
-    'Wat je op dit apparaat hebt geoefend, blijft gewoon staan.',
+  'account.uitloggenUitleg': 'Wat je op dit apparaat hebt geoefend, blijft gewoon staan.',
   'account.gemaild': 'Er staat een mail voor je klaar. Klik op de link erin, dan kun je inloggen.',
   'account.fout.leeg': 'Vul allebei de velden in.',
   'account.fout.geen-email': 'Dit lijkt geen e-mailadres. Kijk of er een typefout in zit.',

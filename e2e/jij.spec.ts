@@ -20,9 +20,7 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-test('Jij draagt wie je bent, al je cijfers, je diploma’s en de instellingen', async ({
-  page,
-}) => {
+test('Jij draagt wie je bent, al je cijfers, je diploma’s en de instellingen', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/jij');
 
