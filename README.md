@@ -286,6 +286,7 @@ python -m http.server 8942
 | [beloning-diplomas.md](docs/beloning-diplomas.md) | The reward programme in full, from the rule to the words on screen                       |
 | [beloning-toren.md](docs/beloning-toren.md)       | The reward programme it replaced. History, kept because the diploma design cites it      |
 | [DATA_SOURCES.md](docs/DATA_SOURCES.md)           | Every geodata source with licence, URL and retrieval date                                |
+| [schermen-en-merk.md](docs/schermen-en-merk.md)   | Design proposal: the screens, the navigation, the component inventory and the mark       |
 
 ## Still to come
 
