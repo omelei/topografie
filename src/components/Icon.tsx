@@ -455,50 +455,6 @@ export function DiplomaIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
- * A rank: three chevrons, the mark every game a child plays uses for a tier.
- *
- * It is drawn once and coloured by the material it stands for, which is the
- * same trick the animal grid uses: five rungs are five values of one variable
- * rather than five drawings. Chevrons rather than a medal because the set
- * already has three circles in it — the clock, the stamp and the diploma — and
- * §E's rule is that no two silhouettes may be alike.
- *
- * Stacked, so the drawing itself says "one above the other". A single chevron
- * would be an arrow, and this set already has two of those.
- */
-export function RankIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M5 9l7-5 7 5" strokeLinejoin="round" />
-      <path d="M5 14l7-5 7 5" strokeLinejoin="round" />
-      <path d="M5 19l7-5 7 5" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/**
- * What is still wrapped up: a parcel with a band and a bow.
- *
- * The collection used to name everything in it — "vos in zwart, vanaf niveau
- * 7" — which told a child the whole of what was coming and left them nothing
- * to open. This is the mark that takes that back (ADR-081). It stands in for
- * every animal that has not been earned, so which one it turns out to be is
- * the surprise, and the level under it is still exactly what it costs.
- *
- * A parcel and not a padlock. A lock says "you may not"; a parcel says "not
- * yet opened", and those are two different sentences to say to a child.
- */
-export function MysteryIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <rect x="3" y="8.5" width="18" height="12.5" rx="2" />
-      <path d="M3 13.5h18M12 8.5V21" />
-      <path d="M12 8.5L8 4.5M12 8.5l4-4" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/**
  * A region on the globe: a circle with a meridian and a parallel through it.
  *
  * Topography's first step asks where on the map before it asks what, and that
@@ -1104,39 +1060,6 @@ export function KlaarIcon(props: Omit<IconProps, 'children'>) {
     <Icon {...props}>
       <path d="M8 12h13M16 8v8" />
       <circle cx="5" cy="12" r="3" fill="currentColor" />
-    </Icon>
-  );
-}
-
-/**
- * Even opfrissen (ADR-149): twee pijlen die in een rechthoek rondgaan.
- *
- * Recht en niet rond, want de primitieven zijn recht. Het is het teken op een
- * plaatje dat te lang niet gezien is, en het zegt "nog een keer", niet "kwijt".
- */
-export function OpfrissenIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M4 11V6h13" />
-      <path d="M14 3l3 3-3 3" strokeLinejoin="round" />
-      <path d="M20 13v5H7" />
-      <path d="M10 21l-3-3 3-3" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/**
- * Lastig (ADR-149): een pleister, schuin, met het kussentje in het midden.
- *
- * Een pleister zegt dat er iets beter moet worden en dat het goed komt. Een
- * kruis of een uitroepteken zou zeggen dat er iets fout is, en de kleur van het
- * plaatje blijft juist staan.
- */
-export function PleisterIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M3.5 15.5l12-12 5 5-12 12z" strokeLinejoin="round" />
-      <path d="M9.5 12l2.5-2.5 2.5 2.5-2.5 2.5z" strokeLinejoin="round" />
     </Icon>
   );
 }

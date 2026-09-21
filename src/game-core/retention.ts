@@ -1,4 +1,4 @@
-import { isOnthouden } from './leitner';
+import { isBewezen, isOnthouden } from './leitner';
 import type { ItemState, LeitnerBox } from './types';
 
 /**
@@ -134,11 +134,12 @@ export function retentionAfterRound(
 
 /**
  * How many items in a set are remembered — "8 van de 12 onthoud je" — by the
- * one definition the product has (ADR-114, `isOnthouden`): box four or five.
+ * one definition the product has (ADR-114, `isOnthouden`): box four or five,
+ * and not so long unseen that it needs a refresher.
  *
- * With `now`, an item that has gone so long unseen that it needs a refresher is
- * left out, which is what the Onthouden page and the module page show. Without
- * it, what was proven, which is what a round's rewards count.
+ * This is what the Onthouden page, the module page and the diploma's bar all
+ * show. What a reward counts is a different number and a different question —
+ * `countBewezen`.
  */
 export function countMastered(
   states: ReadonlyMap<string, ItemState>,
@@ -148,6 +149,25 @@ export function countMastered(
   let count = 0;
   for (const id of itemIds) {
     if (isOnthouden(states.get(id), now)) count++;
+  }
+  return count;
+}
+
+/**
+ * How many items in a set were ever proven: `isBewezen`, so the highest box
+ * this child ever reached and not the one the item sits in now.
+ *
+ * The progress ring on a diploma reads this and nothing else (ADR-167). It is
+ * the promise the whole reward programme rests on — nothing is ever taken away
+ * — and it is the one number in the product that cannot fall.
+ */
+export function countBewezen(
+  states: ReadonlyMap<string, ItemState>,
+  itemIds: readonly string[],
+): number {
+  let count = 0;
+  for (const id of itemIds) {
+    if (isBewezen(states.get(id))) count++;
   }
   return count;
 }

@@ -48,12 +48,40 @@ export const ONTHOUDEN_BOX: LeitnerBox = 4;
 
 /**
  * Remembered: in box four or five, and not so long unseen that it needs a
- * refresher. Without `now` the second half is not asked, which is what the
- * rewards want — they count what was proven, not what is fresh.
+ * refresher. Without `now` the second half is not asked.
+ *
+ * This is about the item as it stands today, so it can fall: a wrong answer
+ * sends the item back to box one. What a reward counts may not fall, and that
+ * is a different question — `isBewezen`.
  */
 export function isOnthouden(state: ItemState | undefined, now?: Date): boolean {
   if (!state || state.laatsteReview === null || state.box < ONTHOUDEN_BOX) return false;
   return now === undefined || !isStale(state, now);
+}
+
+/**
+ * De hoogste doos die dit item ooit haalde.
+ *
+ * `hoogsteDoos` ontbreekt op rijen van vóór ADR-149, en dan is de huidige doos
+ * het enige wat we weten: die is de ondergrens, nooit een overschatting. Nul
+ * voor een item dat nog nooit beantwoord is.
+ */
+export function hoogsteDoosVan(state: ItemState | undefined): number {
+  if (!state || state.laatsteReview === null) return 0;
+  return Math.max(state.hoogsteDoos ?? 1, state.box);
+}
+
+/**
+ * Bewezen: dit item haalde ooit doos vier, ook als het daarna is teruggezet.
+ *
+ * Het verschil met `isOnthouden` is de tijd, en dat verschil is het ontwerp van
+ * het beloningsprogramma (ADR-167). Wat een kind bewees, gaat er niet meer af:
+ * niet door een fout, die het item naar doos één stuurt, en niet door twee
+ * weken ziek zijn. Wat een toets aanbiedt is een andere vraag — die stelt
+ * `isOnthouden` mét `now`, en die mag wél zakken.
+ */
+export function isBewezen(state: ItemState | undefined): boolean {
+  return hoogsteDoosVan(state) >= ONTHOUDEN_BOX;
 }
 
 /**
@@ -120,12 +148,7 @@ export function review(state: ItemState, correct: boolean, now: Date): ItemState
   }
 
   const box = nextBox(state.box, correct);
-  const eerder = state.laatsteReview === null ? 0 : Math.max(state.hoogsteDoos ?? 1, state.box);
-  const hoogsteDoos = Math.max(eerder, box) as LeitnerBox;
-  const stempels =
-    correct && state.laatsteReview !== null && state.box === MAX_BOX
-      ? [...(state.stempels ?? []), now.toISOString()]
-      : state.stempels;
+  const hoogsteDoos = Math.max(hoogsteDoosVan(state), box) as LeitnerBox;
 
   return {
     itemId: state.itemId,
@@ -135,7 +158,6 @@ export function review(state: ItemState, correct: boolean, now: Date): ItemState
     goedCount: state.goedCount + (correct ? 1 : 0),
     foutCount: state.foutCount + (correct ? 0 : 1),
     hoogsteDoos,
-    ...(stempels && stempels.length > 0 ? { stempels } : {}),
   };
 }
 

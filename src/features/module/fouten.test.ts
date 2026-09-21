@@ -44,8 +44,6 @@ const setVan = (moduleId: Module['id'], setId: string): Onderdeel =>
 describe('de fouten staan niet meer bij de onderwerpen', () => {
   it('biedt op geen enkel vak nog een onderwerp met fouten aan', () => {
     for (const moduleId of ['topo', 'tafels', 'klok', 'vlaggen', 'woorden'] as const) {
-      const namen = onderwerpenVan(moduleId).map((vak) => vak.naam);
-      expect(namen, moduleId).not.toContain('onderwerp.fouten');
       const ids = onderwerpenVan(moduleId).map((vak) => vak.id);
       expect(
         ids.filter((id) => id === 'fouten' || id.endsWith('-fouten')),

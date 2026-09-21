@@ -72,17 +72,12 @@ export interface ItemState {
   readonly goedCount: number;
   readonly foutCount: number;
   /**
-   * De hoogste doos die dit item ooit bereikte (ADR-149). De voortgangsring op
-   * een diploma leest die, niet de huidige: wat een kind verdiende, gaat er bij
-   * een fout niet af. Ontbreekt op oudere rijen; lees hem met `hoogsteDoosVan`.
+   * De hoogste doos die dit item ooit bereikte (ADR-149, ADR-167). De
+   * voortgangsring op een diploma leest die, niet de huidige: wat een kind
+   * verdiende, gaat er bij een fout niet af. Ontbreekt op oudere rijen, dus lees
+   * hem met `hoogsteDoosVan` en nooit rechtstreeks.
    */
   readonly hoogsteDoos?: LeitnerBox;
-  /**
-   * Elk goed antwoord in doos vijf dat aan de beurt was, als ISO-moment: de
-   * stempels op de achterkant van het plaatje (ADR-149). Hooguit één per
-   * interval, dus niet te verdienen door vaker te oefenen.
-   */
-  readonly stempels?: readonly string[];
 }
 
 /**

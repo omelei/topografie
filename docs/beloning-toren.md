@@ -1,7 +1,14 @@
 # De toren — het beloningsprogramma van leer.nu
 
-**Status:** ontwerp. **Datum:** 2026-09-19. Op verzoek van de eigenaar.
-Vervangt het album (ADR-149). Vastgelegd als ADR-1nn.
+**Status:** historie. **Datum:** 2026-09-19. Op verzoek van de eigenaar.
+Verving het album (ADR-149) en werd vastgelegd als ADR-158.
+
+**Dit programma bestaat niet meer.** ADR-167 nam het beloningsprogramma over
+door de diploma's, ADR-169 sloopte de toren zelf en ADR-170 haalde het laatste
+stuk van het album weg. Wat er nu geldt staat in `docs/beloning-diplomas.md`.
+Dit document blijft staan omdat dat ontwerp eruit citeert: het is de meting en
+het bezwaar waar de diploma's uit voortkomen, en die redenering weggooien zou de
+volgende versie dezelfde fout laten maken.
 
 Dit document beschrijft één beloningssysteem, van de regel tot de tekst op het
 scherm. Het is geschreven om te bouwen, niet om te overtuigen: wat hier staat is

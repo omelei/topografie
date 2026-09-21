@@ -63,8 +63,8 @@ describe('the page', () => {
   });
 
   it('houdt de foutenlijst uit de onderwerpen: dat is sinds ADR-168 een spelvorm', () => {
-    expect(per('europa')).not.toContain('onderwerp.fouten');
-    expect(onderwerpenVan('vlaggen').map((vak) => vak.naam)).not.toContain('onderwerp.fouten');
+    const ids = onderwerpenVan('vlaggen').map((vak) => vak.id);
+    expect(ids.filter((id) => id.endsWith('-fouten'))).toEqual([]);
   });
 
   it('counts every flag once toward progress, and no set twice', () => {

@@ -67,11 +67,6 @@ export function setIdVan(lijstId: string): string {
   return `taal-eigen-${lijstId}`;
 }
 
-/** Of dit setId van een eigen lijst is. */
-export function isEigenSet(setId: string): boolean {
-  return setId.startsWith('taal-eigen-');
-}
-
 /**
  * Wat er in de rij staat, veilig gemaakt.
  *

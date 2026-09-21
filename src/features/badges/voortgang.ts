@@ -1,4 +1,4 @@
-import { countMastered } from '@/game-core';
+import { countBewezen } from '@/game-core';
 import { nodigVoor, standVan, type Doelwit } from '@/features/home/doel';
 import type { ItemState } from '@/game-core';
 
@@ -8,12 +8,12 @@ import type { ItemState } from '@/game-core';
  * Twee getallen die met opzet niet hetzelfde meten, en het verschil is het hele
  * ontwerp:
  *
- * - **`bewezen`** telt elk onderdeel dat óóit doos vier haalde. Dat is
- *   `countMastered` **zonder `now`**, en `leitner.ts` schrijft er zelf bij
- *   waarom dat de beloningen toekomt: "they count what was proven, not what is
- *   fresh." Daardoor kan de ring nooit teruglopen. Een kind dat twee weken ziek
- *   is, komt terug bij een ring die staat waar hij stond, en er gaat in dit
- *   beloningsprogramma nooit iets af.
+ * - **`bewezen`** telt elk onderdeel dat óóit doos vier haalde: `countBewezen`,
+ *   dat de hoogste doos leest en niet de doos van vandaag. Daardoor kan de ring
+ *   nooit teruglopen. Een kind dat twee weken ziek is, komt terug bij een ring
+ *   die staat waar hij stond; een kind dat er één fout maakt ook, want een fout
+ *   zet het item terug naar doos één en dát is precies wat hier niet meetelt.
+ *   Er gaat in dit beloningsprogramma nooit iets af.
  * - **`rijp`** is de lat van ADR-141, ongewijzigd, en die telt wél met `now`:
  *   een diploma waarvan je de helft weer kwijt bent, is geen diploma dat bijna
  *   af is.
@@ -42,7 +42,7 @@ export function voortgangVan(
   const ids = doelwit.deel.items.map((item) => item.id);
   const totaal = ids.length;
   return {
-    bewezen: countMastered(states, ids),
+    bewezen: countBewezen(states, ids),
     totaal,
     nodig: nodigVoor(doelwit, totaal),
     rijp: standVan(doelwit, states, now).rijp,

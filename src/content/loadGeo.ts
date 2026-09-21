@@ -125,13 +125,3 @@ export function loadPointSet(onderwerp: string, regio = 'nl'): Promise<PointSet>
   pointCache.set(url, request);
   return request;
 }
-
-export function vormById(geo: GeoSet, id: string): Vorm | undefined {
-  return geo.vormen.find((vorm) => vorm.id === id);
-}
-
-/** Test seam, and the way to force a reload after a content rebuild. */
-export function clearGeoCache(): void {
-  cache.clear();
-  pointCache.clear();
-}

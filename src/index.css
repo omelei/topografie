@@ -1596,29 +1596,23 @@
   }
 
   /* ---- The page inside the shell ----------------------------------------
-   * One column of work, and from 1200 the child's own column of 320 beside it
-   * with 48 between (ADR-094). Below 1200 nothing stands beside anything, and
-   * the child's column is not drawn at all — the front door keeps its tests
-   * above the rows (ADR-119). `HomeScreen` and `SideColumn` decide that in
-   * React, so what is not drawn is not read out either.
-   *
-   * The front door and a module page are one shape and share every number
-   * here. They keep two names because the front door's middle holds rows and a
-   * module page's holds a chooser, and that is the whole difference.
-   */
-  /* Eén kolom, op elke maat (ADR-168).
+   * Eén kolom, op elke maat (ADR-168).
    *
    * Hier stond een raster van twee: de pagina en de eigen kolom van het kind
-   * ernaast, vanaf 1200. Die kolom droeg sinds ADR-162 nog één blok en is nu
-   * helemaal weg, dus is de tweede kolom een lege kolom — en een lege kolom van
-   * 344 breed duwt de pagina naar links en laat een derde van het scherm leeg.
+   * ernaast, vanaf 1200 (ADR-094, ADR-119). Die kolom droeg sinds ADR-162 nog
+   * één blok en is nu helemaal weg, dus zou de tweede kolom een lege kolom zijn
+   * — en een lege kolom van 344 breed duwt de pagina naar links en laat een
+   * derde van het scherm leeg.
    *
-   * De maat is die van `.tk-page-enkel`, dat de premiumpagina hier al had
-   * (ADR-145): 1080 in plaats van 1400. Dat is ongeveer de breedte die de
-   * hoofdkolom naast de eigen kolom ook had, dus de regellengte en het raster
-   * van twee tegels blijven wat ze waren. Zonder die begrenzing zou elke pagina
-   * op een breed scherm ineens veertienhonderd pixels tekst worden, en dat
-   * leest niemand. */
+   * De maat is die van de premiumpagina (ADR-145): 1080 in plaats van 1400. Dat
+   * is ongeveer de breedte die de hoofdkolom naast de eigen kolom ook had, dus
+   * de regellengte en het raster van twee tegels blijven wat ze waren. Zonder
+   * die begrenzing zou elke pagina op een breed scherm ineens veertienhonderd
+   * pixels tekst worden, en dat leest niemand.
+   *
+   * De voordeur en een modulepagina zijn één vorm en delen elk getal hieronder.
+   * Ze houden twee namen omdat het midden van de voordeur rijen draagt en dat
+   * van een modulepagina een keuze, en dat is het hele verschil. */
   .tk-page,
   .tk-home {
     display: flex;
