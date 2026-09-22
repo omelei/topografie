@@ -14,6 +14,7 @@
  * staat achter deze functie.
  */
 
+import { leesAntwoord } from '../_gezin/antwoord.ts';
 import { inloggen, type Diensten, type Sessie } from './inloggen.ts';
 
 function nodig(naam: string): string {
@@ -56,8 +57,7 @@ async function rpc(naam: string, body: unknown): Promise<unknown> {
     },
     body: JSON.stringify(body),
   });
-  if (!reactie.ok) throw new Error(`${naam} gaf ${reactie.status}`);
-  return reactie.json();
+  return leesAntwoord(reactie, naam);
 }
 
 /**

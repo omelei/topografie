@@ -18,6 +18,7 @@
  * van déze ouder is.
  */
 
+import { leesAntwoord } from '../_gezin/antwoord.ts';
 import { BeheerProbleem, behandel, type Diensten } from './beheer.ts';
 
 function nodig(naam: string): string {
@@ -62,9 +63,7 @@ async function vanSupabase(pad: string, opties: Opties = {}): Promise<unknown> {
     ...opties,
     headers: dienstKoppen(),
   });
-  if (!reactie.ok) throw new Error(`${pad} gaf ${reactie.status}`);
-  if (reactie.status === 204 || reactie.headers.get('content-length') === '0') return null;
-  return reactie.json();
+  return leesAntwoord(reactie, pad);
 }
 
 function veld(bron: unknown, naam: string): string | null {
