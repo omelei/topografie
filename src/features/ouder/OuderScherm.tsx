@@ -13,6 +13,7 @@ import {
   schrijfWeekdoelen,
   type Weekdoelen,
 } from '@/store/weekdoelStore';
+import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
 
 /**
@@ -26,6 +27,8 @@ import { Kinderen } from './Kinderen';
  *
  * **De vraag van deze pagina is "gaat het goed, en wat kost het?"** Vandaag
  * vraagt "wat doe ik nu?", Jij "wat heb ik bereikt, en blijft het hangen?".
+ * Sinds ADR-177 beantwoordt hij de eerste helft ook echt: `HoeGaatHet` stond
+ * op vier plekken beloofd en bestond niet.
  * Dat is de maatstaf voor elk blok hier, en de reden dat de schakelaars voor
  * geluid en rust op Jij blijven staan: die gaan over de kamer en over het kind
  * dat de iPad vasthoudt, en ze achter een pincode zetten is wrijving zonder
@@ -46,6 +49,12 @@ import { Kinderen } from './Kinderen';
  * zolang hij openstaat, is een pagina zonder slot.
  */
 export function OuderScherm({ naam }: { readonly naam: string }) {
+  // Wat `Kinderen` verandert, moet `HoeGaatHet` opnieuw laten lezen: allebei
+  // lezen ze dezelfde kinderen, en allebei houden ze hun eigen kopie. Een
+  // teller als sleutel is hier goedkoper dan een winkel met abonnees, want er
+  // zijn precies twee lezers en ze staan naast elkaar op één pagina.
+  const [versie, zetVersie] = useState(0);
+
   return (
     <div className="tk-page" onClickCapture={() => verleng()} onKeyDownCapture={() => verleng()}>
       <div className="tk-page-main">
@@ -54,7 +63,13 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
           <p className="text-lopend text-tekst-secundair">{t('ouder.intro')}</p>
         </header>
 
-        <Kinderen />
+        <Kinderen onVeranderd={() => zetVersie((vorige) => vorige + 1)} />
+
+        {/* Waar de poort, de volwassenencheck en de wisselaar het allemaal over
+            hadden (ADR-177). Boven premium, want dit is waar een ouder voor
+            komt; wat het kost is de vraag daarna. */}
+        <HoeGaatHet key={versie} />
+
         <Premium />
         <Gezinsinstellingen />
 

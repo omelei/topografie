@@ -677,6 +677,10 @@ export default function App() {
           onToets={(deel, mode) => beginRonde(deel, mode)}
           kastOpen={diplomasOpen}
           onKastGezien={() => setDiplomasOpen(false)}
+          // De avatar staat ook in de balk, en die leest `boot.profile`
+          // (ADR-177). Zonder dit zou elke keuze een herlaadbeurt kosten,
+          // zoals hernoemen dat doet — en een kind probeert er een paar.
+          onProfiel={(gewijzigd) => setBoot({ status: 'ready', profile: gewijzigd })}
         />
       </Shell>
     );

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ModeId } from '@/game-core';
 import { doelwitten, type Doelwit } from '@/features/home/doel';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
-import { usePremium } from '@/features/premium/usePremium';
+import { PremiumLabel } from '@/features/module/PremiumLabel';
+import { useNaarPremium, usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { getActiveChild } from '@/store/children';
@@ -37,9 +38,12 @@ const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
  * **Eén vak open, de rest als regel.** Het bezwaar van ADR-158 ging over
  * stapelen — "vier lege wanden met een kop erboven" — en niet over een
  * onverdiend vakje. Dus staat er één vak open, standaard dat van de laatste
- * ronde, en de andere als regels die opengaan als je erop drukt. Voor een kind
- * zonder code verandert dat niets: dat heeft maar één vak, want de andere drie
- * zijn premium.
+ * ronde, en de andere als regels die opengaan als je erop drukt.
+ *
+ * **Sinds ADR-177 staan de vakken zonder code er ook**, als regel en zonder
+ * raster erachter (`VakOpSlot`). Een kind zonder code zag hier alleen Tafels —
+ * de andere vier vielen uit de lijst — en las dus dat dit product twaalf
+ * diploma's heeft in plaats van achtenzestig.
  *
  * **En nergens een telling die nul is.** Een kop die de afwezigheid uitrekent,
  * is wat "je hebt niets" letterlijk op het scherm zet. Bij nul staat er de
@@ -88,11 +92,16 @@ export function Kast({
   }, []);
 
   const vakken = useMemo(() => {
-    const alle = doelwitten(startbareOnderdelen(), premium);
-    return MODULES.map((module) => ({
-      module,
-      doelen: alle.filter((doelwit) => doelwit.deel.moduleId === module.id),
-    })).filter((rij) => rij.doelen.length > 0);
+    const delen = startbareOnderdelen();
+    const beschikbaar = doelwitten(delen, premium);
+    // Wat er met een code zou zijn, alleen om te weten wélk vak op slot zit.
+    // Er wordt niets uit getekend (zie de kop van dit bestand).
+    const alles = premium ? beschikbaar : doelwitten(delen, true);
+    return MODULES.map((module) => {
+      const doelen = beschikbaar.filter((doelwit) => doelwit.deel.moduleId === module.id);
+      const bestaat = alles.some((doelwit) => doelwit.deel.moduleId === module.id);
+      return { module, doelen, opSlot: doelen.length === 0 && bestaat };
+    }).filter((rij) => rij.doelen.length > 0 || rij.opSlot);
   }, [premium]);
 
   const gehaaldTotaal = vakken.reduce(
@@ -103,9 +112,11 @@ export function Kast({
 
   // Het vak van je laatste ronde staat open. Zonder ronde: tafels, want dat is
   // het enige vak dat zonder code diploma's heeft, en het is het diploma dat een
-  // Nederlands kind al wil voordat het deze app kent (ADR-122).
-  const heeftTafels = vakken.some((rij) => rij.module.id === 'tafels');
-  const openVak = open ?? laatsteVak ?? (heeftTafels ? 'tafels' : (vakken[0]?.module.id ?? null));
+  // Nederlands kind al wil voordat het deze app kent (ADR-122). Een vak op slot
+  // gaat nooit open: daar valt niets te tonen.
+  const teOpenen = vakken.filter((rij) => !rij.opSlot);
+  const heeftTafels = teOpenen.some((rij) => rij.module.id === 'tafels');
+  const openVak = open ?? laatsteVak ?? (heeftTafels ? 'tafels' : (teOpenen[0]?.module.id ?? null));
 
   return (
     <section className="flex flex-col gap-4" aria-label={t('kast.titel')}>
@@ -116,13 +127,15 @@ export function Kast({
             ? t('kast.leeg')
             : t('kast.stand', { aantal: gehaaldTotaal, totaal: alleTotaal })}
         </p>
-        {/* De regel, één keer. Op elke kaart zou het twaalf keer dezelfde zin
-            zijn, en dan leest niemand hem meer. */}
-        <p className="tk-hulp">{t('kast.regel')}</p>
+        {/* De regel die hier stond, staat sinds ADR-177 als stap 2 in "Hoe haal
+            je een diploma?" — zie `DiplomaUitleg`. Hij legde één voorwaarde uit
+            op de plek waar een kind de stand komt lezen, en de uitleg die de
+            vraag wél beantwoordt stond één druk verder. */}
       </div>
 
-      {vakken.map(({ module, doelen }) => {
+      {vakken.map(({ module, doelen, opSlot }) => {
         const naam = t(module.name);
+        if (opSlot) return <VakOpSlot key={module.id} naam={naam} />;
         if (module.id !== openVak) {
           return (
             <button
@@ -177,6 +190,39 @@ export function Kast({
         />
       ) : null}
     </section>
+  );
+}
+
+/**
+ * Een vak waar dit apparaat geen code voor heeft (ADR-177).
+ *
+ * **Waarom het er staat.** Tot nu toe viel zo'n vak uit de lijst: een kind
+ * zonder code zag alleen Tafels, en dat er ook diploma's voor Topo, Taal, Klok
+ * en Vlaggen bestaan, stond nergens op deze pagina. Dat is de kast van ADR-064
+ * op zijn kop — een gat waar je op kunt mikken, veranderde in een leegte die je
+ * niet kunt zien.
+ *
+ * **Waarom er geen diploma's in staan.** ADR-116 verbiedt het tekenen van een
+ * beloning die een kind niet kan krijgen, en die regel blijft staan: twaalf
+ * grijze topodiploma's zijn precies de kleine wreedheid die daar bedoeld wordt.
+ * Dus staat er de naam van het vak en één zin, en niet het raster erachter. Het
+ * verschil is dat tussen "dit bestaat ook" en "dit heb jij niet".
+ *
+ * De weg wijst naar de premiumpagina en niet naar een codeveld: wie dit leest
+ * heeft de code niet, en heeft eerst de uitleg nodig (ADR-124, ADR-174).
+ */
+function VakOpSlot({ naam }: { readonly naam: string }) {
+  const naarPremium = useNaarPremium();
+
+  return (
+    <button type="button" className="tk-vakrij" onClick={naarPremium}>
+      <span className="tk-vakrij-naam">{naam}</span>
+      <span className="tk-vakrij-meta">
+        <PremiumLabel hoorbaar />
+        {t('kast.vakOpSlot')}
+      </span>
+      <span className="tk-sr-only">{t('kast.vakOpSlotUitleg', { vak: naam })}</span>
+    </button>
   );
 }
 

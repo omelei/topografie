@@ -1,4 +1,5 @@
-import { setRetention, weekKey, type ItemState } from '@/game-core';
+import { dayKey, weekKey, type ItemState } from '@/game-core';
+import { WEEK_DAGEN } from './schooldagen';
 import { statusOf } from './itemStatus';
 
 /**
@@ -36,28 +37,20 @@ function tel(ids: Iterable<string>, states: ReadonlyMap<string, ItemState>, now:
   return { stand, gezien };
 }
 
-/** De horizon van elke voorspelling in het product: drie weken. */
-const DRIE_WEKEN_MS = 21 * 86_400_000;
+/**
+ * Over alles wat dit kind ooit beantwoordde, in elk vak.
+ *
+ * **Zonder de voorspelling over drie weken** (ADR-177). Die stond hier als
+ * `overDrieWeken` en werd op Jij de ring boven alles; waarom hij daar weg is,
+ * staat bij `GeheugenKaart`. De som zelf bestaat nog — `setRetention` in
+ * `game-core` — en wordt na een ronde gebruikt. Hier niet meer, en dan hoort
+ * hij hier ook niet berekend te worden: een getal dat nergens getoond wordt,
+ * is een getal dat niemand meer nakijkt.
+ */
+export type Geheugen = Stand;
 
-export interface Geheugen extends Stand {
-  /**
-   * Wat er over drie weken naar verwachting nog van over is, over alles wat
-   * geoefend is, 0-100. Null zolang er niets geoefend is: een voorspelling over
-   * niets is geen nul procent.
-   */
-  readonly overDrieWeken: number | null;
-}
-
-/** Over alles wat dit kind ooit beantwoordde, in elk vak. */
 export function geheugen(states: ReadonlyMap<string, ItemState>, now: Date): Geheugen {
-  const { stand, gezien } = tel(states.keys(), states, now);
-  return {
-    ...stand,
-    overDrieWeken:
-      gezien.length === 0
-        ? null
-        : setRetention(states, gezien, new Date(now.getTime() + DRIE_WEKEN_MS)),
-  };
+  return tel(states.keys(), states, now).stand;
 }
 
 export interface VakStand<M extends string> extends Stand {
@@ -90,6 +83,63 @@ export function perVak<M extends string>(
     totaal: ids.size,
     ...tel(ids, states, now).stand,
   }));
+}
+
+/** Eén dag in de strook onder "Hoe vaak oefen je?" (ADR-177). */
+export interface DagTelling {
+  /** `dayKey` van die dag: uniek, en de sleutel van de lijst. */
+  readonly sleutel: string;
+  /** "ma", "di" — wat er in het hokje staat. */
+  readonly kort: string;
+  /** "maandag 15 september" — wat een schermlezer hoort. */
+  readonly voluit: string;
+  readonly rondes: number;
+  readonly vandaag: boolean;
+}
+
+/**
+ * De laatste zeven dagen, oudste eerst en vandaag als laatste.
+ *
+ * **Rollend en niet maandag tot zondag**, want dat is wat de tegels erboven al
+ * telden (`grens` in `HoeVaak`) en wat de zin eronder bedoelt. De kop zegt dat
+ * sinds ADR-177 ook: er stond "Deze week" boven een venster dat op woensdag bij
+ * vorige week donderdag begint.
+ *
+ * De namen komen uit `Intl` en niet uit `nl.ts`: het zijn zeven woorden die
+ * niemand ooit anders zou willen schrijven, en de browser heeft ze al.
+ */
+export function perDag(
+  rondes: readonly { readonly at: string }[],
+  now: Date,
+  dagen: number = WEEK_DAGEN,
+): DagTelling[] {
+  const telling = new Map<string, number>();
+  for (const ronde of rondes) {
+    const sleutel = dayKey(new Date(ronde.at));
+    telling.set(sleutel, (telling.get(sleutel) ?? 0) + 1);
+  }
+
+  const kort = new Intl.DateTimeFormat('nl-NL', { weekday: 'short' });
+  const voluit = new Intl.DateTimeFormat('nl-NL', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+  const vandaag = dayKey(now);
+
+  return Array.from({ length: dagen }, (_, index) => {
+    const dag = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (dagen - 1 - index));
+    const sleutel = dayKey(dag);
+    return {
+      sleutel,
+      // `short` geeft "ma." met een punt; die hoort niet in een hokje van twee
+      // tekens.
+      kort: kort.format(dag).replace('.', ''),
+      voluit: voluit.format(dag),
+      rondes: telling.get(sleutel) ?? 0,
+      vandaag: sleutel === vandaag,
+    };
+  });
 }
 
 /** Eén antwoord, zoals het op het apparaat staat. */

@@ -13,14 +13,20 @@ import { activeChildId, ensureProgressPerChild } from './children';
  * Which child is answering is resolved here and not by the caller. Every screen
  * asks for "the boxes" and gets the ones belonging to whoever is practising,
  * which is the only version of this that cannot be got wrong by forgetting.
+ *
+ * **Op één plek is dat niet genoeg**, en daar mag een kind meegegeven worden:
+ * de ouderpagina, die per kind laat zien hoe het gaat (ADR-177). Die pagina
+ * staat achter een pincode en een volwassenencheck, en het gaat om de kinderen
+ * van dit apparaat en van dit gezin. Weglaten blijft "wie er nu oefent", dus
+ * geen enkel scherm dat vandaag niets meegeeft, verandert van gedrag.
  */
 
-export async function loadItemStates(): Promise<Map<string, ItemState>> {
+export async function loadItemStates(kindId?: string): Promise<Map<string, ItemState>> {
   await ensureProgressPerChild();
 
   const db = await getDb();
-  const kindId = await activeChildId();
-  const rows = await db.getAll('progress', IDBKeyRange.bound([kindId], [kindId, []]));
+  const wie = kindId ?? (await activeChildId());
+  const rows = await db.getAll('progress', IDBKeyRange.bound([wie], [wie, []]));
   return new Map(rows.map((row) => [row.itemId, row]));
 }
 
@@ -91,16 +97,16 @@ export interface PlayedRound {
  * slice of it — the last three, or the most-played four. Cutting it here would
  * mean cutting it twice.
  */
-export async function loadPlayedRounds(): Promise<PlayedRound[]> {
+export async function loadPlayedRounds(kindId?: string): Promise<PlayedRound[]> {
   const db = await getDb();
-  const kindId = await activeChildId();
+  const wie = kindId ?? (await activeChildId());
 
   const played: PlayedRound[] = [];
 
   for (const session of await db.getAll('sessions')) {
     // Rows written before ADR-046 carry no child at all, and they belong to
     // the first one — the same fallback activeChildId() makes.
-    if ((session.kindId ?? SINGLETON_KEY) !== kindId) continue;
+    if ((session.kindId ?? SINGLETON_KEY) !== wie) continue;
     if (session.geeindigd === null || session.score === null) continue;
 
     const itemIds: readonly string[] = Array.isArray(session.itemSet)

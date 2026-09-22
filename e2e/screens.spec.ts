@@ -95,13 +95,23 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await geheugen.scrollIntoViewIfNeeded();
   await shoot(page, size, '12-jij-cijfers');
 
-  // De instellingen, met je naam en je groep als rij erbij (ADR-172), en de
-  // groep open: zo ziet een rij eruit die iets openklapt.
+  // De instellingen, met je naam en je groep als rij erbij (ADR-172) en sinds
+  // ADR-177 bovenaan, en de groep open: zo ziet een rij eruit die iets
+  // openklapt.
   const instellingen = page.getByRole('region', { name: 'Instellingen' });
   await instellingen.getByRole('button', { name: /^Je groep/ }).click();
   await expect(instellingen.getByRole('group', { name: 'In welke groep zit je?' })).toBeVisible();
   await instellingen.scrollIntoViewIfNeeded();
   await shoot(page, size, '20-jij-instellingen');
+
+  // En de avatarkiezer open (ADR-177): acht vormen, want de kleuren van dit
+  // product zijn bezet. De echte tekeningen komen later; deze foto is waar ze
+  // terechtkomen.
+  await instellingen.getByRole('button', { name: /^Je groep/ }).click();
+  await instellingen.getByRole('button', { name: /^Je avatar/ }).click();
+  await expect(instellingen.getByRole('group', { name: 'Kies je avatar' })).toBeVisible();
+  await instellingen.scrollIntoViewIfNeeded();
+  await shoot(page, size, '26-avatar');
 
   // Een modulepagina met een set gekozen zegt één ding over het leren: wat er
   // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.

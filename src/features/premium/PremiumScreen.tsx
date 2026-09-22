@@ -74,7 +74,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   [
     'premium.groep.belonen',
     [
-      { tekst: 'premium.regel.blijfthangen', basis: true },
       { tekst: 'premium.regel.tafeldiploma', basis: true },
       { tekst: 'premium.regel.diplomas', basis: false },
     ],
@@ -82,6 +81,11 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
   [
     'premium.groep.onthouden',
     [
+      // "Zien wat blijft hangen" stond onder Belonen, naast de diploma's
+      // (ADR-177). Het hoort hier: het is de enige gratis regel in deze groep,
+      // en dat is precies wat de grens van ADR-122 zegt — het inzicht is
+      // gratis, het bijhouden is betaald.
+      { tekst: 'premium.regel.blijfthangen', basis: true },
       { tekst: 'premium.regel.plan', basis: false },
       { tekst: 'premium.regel.onthouden', basis: false },
       { tekst: 'premium.regel.fouten', basis: false },
@@ -98,6 +102,11 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
     'premium.groep.ouders',
     [
       { tekst: 'premium.regel.lijsten', basis: false },
+      // Drie kinderen zijn gratis sinds ADR-173, en deze tabel zei nog van
+      // niet (ADR-177). Het zijn twee regels geworden, want het zijn twee
+      // dingen: hoeveel kinderen er op dít apparaat kunnen, en hoeveel
+      // apparaten één code opent.
+      { tekst: 'premium.regel.kinderen', basis: true },
       { tekst: 'premium.regel.gezin', basis: false },
     ],
   ],

@@ -162,8 +162,17 @@ test('the Jij page has no violations', async ({ page }) => {
     .first()
     .click();
   await expect(page.getByRole('dialog')).toBeVisible();
+
+  // De pagina erachter is `inert` zolang het venster openstaat (ADR-177). Het
+  // venster beloofde dat met `aria-modal="true"` en deed het niet, dus bleven
+  // de knoppen eronder bereikbaar — voor de zoekfunctie van de browser, voor
+  // een schermlezer die per aanraking verkent, en voor axe, dat een rij die
+  // half onder de plakbalk van het vakmenu lag als een aanraakdoel van 744 bij
+  // 16 telde. Het venster hangt daarvoor in een portal aan de body.
+  await expect(page.locator('#root')).toHaveAttribute('inert', '');
   expect((await scan(page)).violations).toEqual([]);
   await page.keyboard.press('Escape');
+  await expect(page.locator('#root')).not.toHaveAttribute('inert', '');
 
   // En met de tabel open: zes kolommen die op een telefoon zijwaarts scrollen.
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
@@ -179,6 +188,14 @@ test('the Jij page has no violations', async ({ page }) => {
   await instellingen.getByRole('button', { name: /^Je naam/ }).click();
   await instellingen.getByRole('button', { name: /^Je groep/ }).click();
   await expect(instellingen.getByRole('group', { name: 'In welke groep zit je?' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // En met de avatarkiezer open (ADR-177): acht knoppen die alleen in vorm
+  // verschillen, met hun naam ernaast. Dat laatste is de hele reden dat dit
+  // hier gescand wordt — acht tekeningen zonder woord zouden voor een
+  // schermlezer acht keer niets zijn.
+  await instellingen.getByRole('button', { name: /^Je avatar/ }).click();
+  await expect(instellingen.getByRole('group', { name: 'Kies je avatar' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
 

@@ -190,26 +190,33 @@ export async function renameChild(id: string, naam: string): Promise<ProfileReco
   return hernoemd;
 }
 
+/** Waar de keuze van het kind in `avatarConfig` staat. */
+export const AVATAR_SLEUTEL = 'avatar';
+
 /**
- * The sticker this child chose, written where the schema already had a place
- * for it.
+ * De avatar die dit kind koos, geschreven waar het schema er al een plek voor
+ * had (ADR-177).
  *
- * `avatarConfig` has been on `ProfileRecord` since the first version and has
- * been an empty object ever since. This is what it is for: how a child wants to
- * be shown, kept beside the name they typed and going nowhere else.
+ * `avatarConfig` staat sinds de eerste versie op `ProfileRecord` en was sindsdien
+ * altijd een leeg object. Dit is waar het voor is: hoe een kind getoond wil
+ * worden, naast de naam die het typte en verder nergens heen.
  *
- * It belongs to the child rather than to the device, which is why it is here
- * and not in `settings`. Two children on one iPad are two animals; that is
- * nearly the whole point of letting them choose.
+ * Het hoort bij het kind en niet bij het apparaat, en daarom staat het hier en
+ * niet in `settings`. Twee kinderen op één iPad zijn twee avatars; dat is zo
+ * ongeveer de hele reden om ze te laten kiezen.
+ *
+ * Er stond hier `setSticker`, met dezelfde vorm en zonder één aanroeper. Het
+ * veld is nooit geschreven, dus er valt niets te migreren — en één woord voor
+ * één ding is de goedkoopste tijd om dat recht te zetten.
  */
-export async function setSticker(sticker: string): Promise<ProfileRecord | undefined> {
+export async function setAvatar(avatar: string): Promise<ProfileRecord | undefined> {
   const db = await getDb();
   const profile = await getActiveChild();
   if (!profile) return undefined;
 
   const updated: ProfileRecord = {
     ...profile,
-    avatarConfig: { ...profile.avatarConfig, sticker },
+    avatarConfig: { ...profile.avatarConfig, [AVATAR_SLEUTEL]: avatar },
   };
   await db.put('profile', updated);
   return updated;

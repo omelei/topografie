@@ -195,7 +195,13 @@ test('de ouderpagina draagt de kinderen, premium, de instellingen en het wissen'
   await signIn(page, 'Iris');
   await maakOuder(page);
 
-  for (const blok of ['Je kinderen', 'Premium', 'Instellingen', 'Alles van dit apparaat halen']) {
+  for (const blok of [
+    'Je kinderen',
+    'Hoe gaat het?',
+    'Premium',
+    'Instellingen',
+    'Alles van dit apparaat halen',
+  ]) {
     await expect(page.getByRole('region', { name: blok, exact: true })).toBeVisible();
   }
 
@@ -206,6 +212,58 @@ test('de ouderpagina draagt de kinderen, premium, de instellingen en het wissen'
   await expect(rij).toContainText('geen groep gekozen');
   await rij.click();
   await expect(kinderen.getByRole('button', { name: 'Groep 5' })).toBeVisible();
+});
+
+/**
+ * Wat de poort belooft, staat erachter (ADR-177).
+ *
+ * Deze pagina zei op vier plekken "hierachter staat hoe het met je kinderen
+ * gaat" — in de poort, in de volwassenencheck, bij het zetten van de pincode en
+ * in de rij van de wisselaar — en had geen enkel getal. Deze test is die vier
+ * zinnen, als toets.
+ */
+test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async ({ page }) => {
+  await signIn(page, 'Fenna');
+
+  // Eén ronde, zodat er iets te melden valt.
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+  await page.getByRole('button', { name: 'Limburg' }).click();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+
+  // Terug naar de app: het uitslagscherm draagt de balk niet, en de wisselaar
+  // zit in de balk.
+  await page.goto('/');
+  await maakOuder(page);
+  const blok = page.getByRole('region', { name: 'Hoe gaat het?' });
+
+  // Per kind een eigen kaart met zijn naam erboven: twee kinderen optellen
+  // geeft een getal dat over niemand gaat.
+  await expect(blok.getByRole('heading', { name: 'Fenna' })).toBeVisible();
+  await expect(blok).toContainText('van de 1 die je geoefend hebt');
+  await expect(blok).toContainText('Op 1 van de laatste 7 dagen geoefend.');
+
+  // De schatting mag hier staan, en zegt dat hij er een is. Op Jij is ze weg:
+  // daar is de lezer acht en leest hij geen percentages (ADR-177).
+  await expect(blok).toContainText(/naar schatting nog \d+% van over\./);
+
+  // Een tweede kind komt er los bij te staan, en niet erbij opgeteld.
+  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  await kinderen.getByRole('button', { name: 'Nog een kind erbij' }).click();
+  await kinderen.getByLabel('Naam').fill('Joep');
+  await kinderen.getByRole('button', { name: 'Toevoegen' }).click();
+
+  await expect(blok.getByRole('heading', { name: 'Joep' })).toBeVisible();
+  await expect(blok).toContainText('Joep heeft nog niets geoefend.');
 });
 
 test('de sessie van de ouder overleeft een adreswissel in hetzelfde tabblad', async ({ page }) => {
