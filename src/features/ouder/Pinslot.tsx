@@ -2,6 +2,8 @@ import { useId, useState, type FormEvent } from 'react';
 import { SlotIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { isGeldigePin, PIN_LENGTE, probeer, zetPin, type OuderFout } from '@/store/ouder';
+import { useAccount } from '@/features/account/useAccount';
+import { Accountcheck } from './Accountcheck';
 import { useOuder } from './useOuder';
 import { Volwassenencheck } from './Volwassenencheck';
 
@@ -27,10 +29,19 @@ import { Volwassenencheck } from './Volwassenencheck';
  * precies zo zwaar als het hoort te zijn: hierachter zit geen kluis maar de
  * instellingen van dit apparaat.
  *
- * **Er staat een volwassenencheck vóór het zetten** (ADR-176). Zonder die check
+ * **Er staat een poort vóór het zetten** (ADR-176, ADR-178). Zonder die poort
  * mocht iedereen die als eerste bij de wisselaar kwam de pincode kiezen, en dat
- * is systematisch het kind: het kind opent de app als eerste. Zie
- * `Volwassenencheck.tsx` voor wat die check wel en niet is.
+ * is systematisch het kind: het kind opent de app als eerste.
+ *
+ * Welke poort, hangt af van wat de bouw heeft. Met een gezinsproject is het het
+ * **account**, en dan is een bevestigd mailadres de voorwaarde
+ * (`Accountcheck.tsx`). Zonder project is het het **geboortejaar**
+ * (`Volwassenencheck.tsx`) — zwakker, en de enige goede terugval voor een
+ * apparaat dat nergens iets kan navragen.
+ *
+ * **De poort staat er elke keer, ook voor wie al ingelogd is.** Een sessie zegt
+ * dat hier ooit een ouder is binnengekomen, niet dat er nu een staat; zie
+ * `Accountcheck.tsx` voor waarom dat verschil het hele slot is.
  *
  * **En vergeten kan.** ADR-173 liet dat met opzet niet toe — "een weg die alleen
  * het slot weghaalt zou geen slot zijn" — en dat klopte alleen zolang de ouder
@@ -58,11 +69,26 @@ type Stand = 'openen' | 'check' | 'zetten';
 
 export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
   const { pinGezet } = useOuder();
+  const { ingesteld } = useAccount();
   const [stand, setStand] = useState<Stand>(pinGezet ? 'openen' : 'check');
 
-  if (stand === 'check') return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+  if (stand === 'check') {
+    // Met een gezinsproject is het account de poort (ADR-178), en dan is een
+    // bevestigd mailadres de voorwaarde: Supabase geeft bij aanmelden zonder
+    // die klik in de mail een gebruiker zónder tokens terug, dus geen sessie.
+    //
+    // Let op wat er níet staat: een bestaande sessie slaat deze poort niet
+    // over. Die sessie blijft maandenlang in `localStorage` staan, en dit is
+    // een gedeeld apparaat — dat is de hele reden dat er een pincode is.
+    // `Accountcheck` vraagt dan om het wachtwoord, en dat is het verschil
+    // tussen "er is hier ooit een ouder ingelogd" en "er staat er nu een".
+    if (ingesteld) return <Accountcheck onGoed={() => setStand('zetten')} />;
+    return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+  }
 
-  return <Veld zetten={stand === 'zetten'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
+  // De poort is gepasseerd. Geen aparte stand ervoor — wie erdoor is, hoort
+  // niet nog een knop te krijgen.
+  return <Veld zetten={stand !== 'openen'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
 }
 
 function Veld({

@@ -1,7 +1,8 @@
-import { expect, test, type Page, type Route } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { antwoord, GEZIN, sessie, stubGezin } from './gezin';
 
 /**
- * Inloggen is een aanbod en geen poort (ADR-155).
+ * Inloggen was een aanbod en is sinds ADR-178 ook de poort.
  *
  * Wat hier vastligt is niet het formulier maar de belofte eromheen. Het blok
  * staat op de ouderpagina en nergens anders — sinds ADR-173, want een
@@ -9,12 +10,19 @@ import { expect, test, type Page, type Route } from '@playwright/test';
  * beslissing een eigen pagina achter een pincode — de voordeur verandert niet,
  * en zonder in te loggen werkt alles zoals het werkte.
  *
+ * **Wat ADR-178 eraan veranderde.** Op een bouw mét gezinsproject staat
+ * hetzelfde blok ook vóór de pincode, als de poort die het geboortejaar
+ * vervangt. Deze suite draait op zo'n bouw, dus de eerste keer dat een ouder
+ * dit formulier ziet, is daar. Wat het formulier doet — een adres met een
+ * typefout tegenhouden, een fout wachtwoord benoemen — wordt daarom ook daar
+ * getoetst: dat is de plek waar een ouder het meemaakt, en het scheelt een
+ * reis door een poort om te kunnen toetsen wat de poort zelf al doet.
+ *
  * Er is geen Supabase in een test, dus het adres uit `playwright.config.ts`
  * bestaat niet en `page.route` antwoordt ervoor — zoals `premium.spec.ts` dat
- * voor de premiumserver doet.
+ * voor de premiumserver doet. Het gedeelde antwoordapparaat staat in
+ * `e2e/gezin.ts`.
  */
-
-const GEZIN = 'https://gezin.leer.test';
 
 async function signIn(page: Page, naam: string) {
   await page.goto('/');
@@ -25,70 +33,60 @@ async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
-/**
- * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en
- * een verse pincode (ADR-173). Op een leeg apparaat is er nog geen pincode, dus
- * is "maken" ook meteen "opendoen".
- */
-async function naarOuder(page: Page) {
+/** Tot vóór de poort: de wisselaar in de balk en de rij met het hangslot. */
+async function naarDePoort(page: Page) {
   await page
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
   await page.getByRole('button', { name: 'Ouder', exact: false }).click();
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  return page.getByRole('region', { name: 'Account' });
+}
+
+/**
+ * De ouderpagina openen: langs de poort en een verse pincode (ADR-173,
+ * ADR-178). Op een leeg apparaat is er nog geen pincode, dus is "maken" ook
+ * meteen "opendoen".
+ */
+async function naarOuder(page: Page, email = 'ouder@example.nl') {
+  const blok = await naarDePoort(page);
+  await blok.getByLabel('E-mailadres').fill(email);
+  await blok.getByLabel('Wachtwoord').fill('geheimwoord');
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
+
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
   await expect(page).toHaveURL(/\/ouder$/);
 }
 
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'apikey, authorization, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
-async function antwoord(route: Route, status: number, body: unknown) {
-  if (route.request().method() === 'OPTIONS') {
-    await route.fulfill({ status: 204, headers: CORS });
-    return;
-  }
-  await route.fulfill({ status, headers: CORS, json: body });
-}
-
-/** Een sessie zoals Supabase er een teruggeeft. */
-function sessie(email: string) {
-  return {
-    access_token: 'token-e2e',
-    refresh_token: 'vernieuw-e2e',
-    expires_in: 3600,
-    token_type: 'bearer',
-    user: { id: 'ouder-e2e', email },
-  };
-}
-
+/**
+ * Inloggen aan de poort, en uitloggen op de pagina erachter.
+ *
+ * De twee horen bij elkaar en staan sinds ADR-178 op twee schermen: je komt
+ * binnen bij de poort, en het blok op de ouderpagina is waar je er weer uit
+ * kunt. Wie uitlogt, houdt zijn pincode — anders zou uitloggen een ouder
+ * buitensluiten van zijn eigen apparaat.
+ */
 test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
+  await stubGezin(page);
   await signIn(page, 'Noor');
-
-  await page.route(`${GEZIN}/auth/v1/token**`, (route) =>
-    antwoord(route, 200, sessie('ouder@example.nl')),
-  );
-  await page.route(`${GEZIN}/auth/v1/logout`, (route) => antwoord(route, 204, {}));
-
   await naarOuder(page);
+
   const blok = page.getByRole('region', { name: 'Account' });
-  await expect(blok).toBeVisible();
-
-  await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
-  await blok.getByLabel('Wachtwoord').fill('geheimwoord');
-  await blok.getByRole('button', { name: 'Inloggen' }).click();
-
   await expect(blok).toContainText('Je bent ingelogd als ouder@example.nl');
 
   await blok.getByRole('button', { name: 'Uitloggen' }).click();
   await expect(blok.getByLabel('E-mailadres')).toBeVisible();
+
+  // En de pincode staat er nog: uitloggen is geen wissen.
+  await page.goto('/');
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder', exact: false }).click();
+  await expect(page.getByLabel('Pincode')).toBeVisible();
 });
 
 test('een fout wachtwoord zegt dat, en laat je het opnieuw proberen', async ({ page }) => {
@@ -98,14 +96,15 @@ test('een fout wachtwoord zegt dat, en laat je het opnieuw proberen', async ({ p
     antwoord(route, 400, { error_code: 'invalid_credentials', msg: 'Invalid login credentials' }),
   );
 
-  await naarOuder(page);
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = await naarDePoort(page);
   await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
   await blok.getByLabel('Wachtwoord').fill('ietsanders');
-  await blok.getByRole('button', { name: 'Inloggen' }).click();
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
 
   await expect(blok.getByRole('alert')).toContainText('horen niet bij elkaar');
   await expect(blok.getByLabel('E-mailadres')).toHaveValue('ouder@example.nl');
+  // En de poort blijft dicht.
+  await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
 });
 
 /**
@@ -121,11 +120,10 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
     return antwoord(route, 200, sessie('ouder@example.nl'));
   });
 
-  await naarOuder(page);
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = await naarDePoort(page);
   await blok.getByLabel('E-mailadres').fill('ouder.example.nl');
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
-  await blok.getByRole('button', { name: 'Inloggen' }).click();
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
 
   await expect(blok.getByRole('alert')).toContainText('lijkt geen e-mailadres');
   expect(gevraagd, 'er ging een verzoek uit voor een adres dat geen adres is').toBe(0);
@@ -146,6 +144,7 @@ test('de voordeur van het kind verandert niet', async ({ page }) => {
 });
 
 test('het account staat op de ouderpagina, en niet op Jij of Premium', async ({ page }) => {
+  await stubGezin(page);
   await signIn(page, 'Sam');
   await naarOuder(page);
 

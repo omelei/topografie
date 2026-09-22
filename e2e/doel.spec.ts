@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
+import { langsDePoort, stubGezin } from './gezin';
 
 /**
  * Je doelen voor deze week (ADR-162).
@@ -24,13 +25,13 @@ async function signIn(page: Page, naam: string) {
  * een verse pincode (ADR-173).
  */
 async function naarOuder(page: Page) {
+  await stubGezin(page);
   await page
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
   await page.getByRole('button', { name: 'Ouder' }).click();
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
