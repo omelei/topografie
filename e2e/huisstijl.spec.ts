@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
  * The house style in the running app (ADR-109).
  *
  * The unit tests hold the tokens to the styleguide's values; this holds that
- * the page actually uses them: the ground is papier, headings are Archivo, and
+ * the page actually uses them: the ground is room, headings are Baloo 2, and
  * a round stays on that paper with its controls at 56 on every size (ADR-112).
  */
 
@@ -31,20 +31,20 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
-test('stands on the styleguide’s ground and sets its headings in Archivo', async ({ page }) => {
+test('stands on the guide’s room and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(ground).toBe('rgb(244, 240, 238)');
+  expect(ground).toBe('rgb(255, 243, 230)');
 
   const heading = page.getByRole('heading', { name: /^Welkom / });
   await expect(heading).toBeVisible();
-  expect(await heading.evaluate((el) => getComputedStyle(el).fontFamily)).toContain('Archivo');
-  expect(await heading.evaluate((el) => getComputedStyle(el).fontWeight)).toBe('700');
+  expect(await heading.evaluate((el) => getComputedStyle(el).fontFamily)).toContain('Baloo 2');
+  expect(await heading.evaluate((el) => getComputedStyle(el).fontWeight)).toBe('800');
 
-  // Running text is Public Sans.
+  // Running text is Atkinson Hyperlegible.
   expect(await page.evaluate(() => getComputedStyle(document.body).fontFamily)).toContain(
-    'Public Sans',
+    'Atkinson Hyperlegible',
   );
 });
 
@@ -58,7 +58,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(244, 240, 238)',
+    'rgb(255, 243, 230)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();

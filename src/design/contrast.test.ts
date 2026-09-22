@@ -105,22 +105,20 @@ describe('contrast', () => {
     ['inkt', 'papier'],
     ['tekst-secundair', 'kaart'],
     ['tekst-secundair', 'papier'],
-    // The third ink is a text colour, and it is one: 5.28 on a card and 4.67 on
-    // the ground. The styleguide's own #6a7385 reaches 4.22 there, which is why
-    // index.css carries it two steps darker.
+    // The third ink is a text colour, and it is one: 6.96 on a card and 6.37 on
+    // the ground.
     ['tekst-tertiair', 'kaart'],
     ['tekst-tertiair', 'papier'],
     // The primary button, and the tick on the one solid fill there is.
     ['kaart', 'inkt'],
     ['kaart', 'nadruk'],
-    // Green as text on a card, 5.17. On the ground it is 4.58 — still over the
+    // Green as text on a card, 5.40. On the ground it is 4.95 — still over the
     // line, and nadruk-tekst, which is measured on both, is the safer one.
     ['nadruk', 'kaart'],
     ['nadruk-tekst', 'nadruk-vlak'],
     ['nadruk-tekst', 'papier'],
     ['accent-text', 'accent-tint'],
-    // Wrong as text sits on a card (5.76); on the ground it is 5.09 and is only
-    // ever an edge there, measured below.
+    // Wrong as text sits on a card (6.41); on the ground it is 5.86.
     ['fout', 'kaart'],
     ['fout-tekst', 'fout-arcering-grond'],
     ['inkt', 'vlak-hover'],
@@ -149,6 +147,25 @@ describe('contrast', () => {
     ['tekst-tertiair', 'kaart'],
   ])('%s on %s clears 3:1 as a non-text indicator', (foreground, background) => {
     expect(ratio(foreground, background)).toBeGreaterThanOrEqual(3);
+  });
+
+  /**
+   * Koraal as the button (ADR-179). White on it is 3.98, which is AA for large
+   * text and not for anything smaller — huisstijl.test.ts holds a button's
+   * words at 20px Baloo 700 for that reason. Its lower edge and its words on
+   * the light tint are real text colours.
+   */
+  it('lets a button be koraal', () => {
+    expect(ratio('kaart', 'actie'), 'large text on the button').toBeGreaterThanOrEqual(3);
+    expect(ratio('actie', 'kaart'), 'the button on a card').toBeGreaterThanOrEqual(3);
+    expect(ratio('actie', 'papier'), 'the button on the ground').toBeGreaterThanOrEqual(3);
+    expect(ratio('kaart', 'actie-hover')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio('actie-tekst', 'actie-tint')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio('actie-tekst', 'kaart')).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('carries every word on a page’s koraal panel in cacao', () => {
+    expect(ratio('inkt', 'koraal')).toBeGreaterThanOrEqual(4.5);
   });
 
   it('is light in a round too: a round redefines no colour', () => {

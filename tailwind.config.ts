@@ -64,7 +64,7 @@ export default {
         vlak: 'var(--fout-vlak)',
         tekst: 'var(--fout-tekst)',
       },
-      // What is chosen, done or being asked about: the handoff's green, by the
+      // What is chosen, done or being asked about: the guide's teal, by the
       // name the accent rule (accent.test.ts) guards.
       accent: {
         DEFAULT: 'var(--accent)',
@@ -73,9 +73,9 @@ export default {
       },
     },
     fontFamily: {
-      // Archivo 600 and 700: headings, numbers, the labels of cards.
+      // Baloo 2 700 and 800: headings, the question, buttons, numbers.
       kop: 'var(--font-kop)',
-      // Public Sans 400 and 600: running text, buttons, tables.
+      // Atkinson Hyperlegible 400 and 700: running text, help, labels, tables.
       tekst: 'var(--font-tekst)',
     },
     // The handoff's type scale. The weight belongs to the role, so it travels
@@ -121,7 +121,10 @@ export default {
         { lineHeight: 'var(--type-getal-groot-lh)', fontWeight: 'var(--type-getal-groot-weight)' },
       ],
       lopend: ['var(--type-lopend)', { lineHeight: 'var(--type-lopend-lh)' }],
-      knop: ['var(--type-knop)', { lineHeight: 'var(--type-knop-lh)' }],
+      knop: [
+        'var(--type-knop)',
+        { lineHeight: 'var(--type-knop-lh)', fontWeight: 'var(--type-knop-weight)' },
+      ],
       vlaklabel: [
         'var(--type-vlaklabel)',
         {

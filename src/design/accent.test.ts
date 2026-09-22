@@ -5,11 +5,12 @@ import { describe, expect, it } from 'vitest';
 /**
  * The accent colours what is chosen, and nothing else.
  *
- * The accent is the action colour now: indigo, everywhere, in every module
- * (index.css, styleguide §02). A module's own colour is `--module` and is not
- * an accent — it denotes a subject on its tile and in its bar, and a subject is
- * not a state. Neither of them ever touches the mark: the dot is ink on paper
- * or paper on ink in every module.
+ * The accent is the guide's teal, everywhere, in every module (index.css,
+ * ADR-179): the colour of what is chosen, which is not koraal, the colour of
+ * what you press. A module's own colour is `--module` and is not an accent —
+ * it denotes a subject on its tile and in its bar, and a subject is not a
+ * state. Neither of them ever touches the mark: the dot is ink on paper or
+ * paper on ink in every module.
  *
  * The reason it is worth enforcing rather than agreeing is that an accent is
  * always the tempting colour. It is the one that looks like the brand, so it
