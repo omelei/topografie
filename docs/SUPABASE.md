@@ -87,21 +87,21 @@ where n.nspname = 'public' and proname like 'gezin\_%' order by 1;
 
 ### 3. De twee edge functions
 
-Met de [Supabase CLI](https://supabase.com/docs/guides/cli):
+Er is geen laptop voor nodig. De functies gaan via GitHub Actions naar Supabase,
+en hun geheimen zet je in het dashboard — twee plekken, en allebei met een reden.
 
-```bash
-supabase link --project-ref <project-ref>
-supabase functions deploy kind-inloggen
-supabase functions deploy kind-beheer
-```
+#### 3a. De geheimen, in het dashboard
 
-Zet daarna hun geheimen. `SUPABASE_URL` en `SUPABASE_SERVICE_ROLE_KEY` zet
-Supabase zelf al klaar; deze twee niet:
+Doe deze eerst. Een functie die draait zonder `GEZIN_PEPER` gooit bij het eerste
+verzoek `De omgevingsvariabele GEZIN_PEPER ontbreekt.`
 
-```bash
-supabase secrets set GEZIN_PEPER="$(openssl rand -hex 32)"
-supabase secrets set GEZIN_HERKOMST=https://www.leer.nu
-```
+Onder **Project Settings → Edge Functions → Secrets** (`SUPABASE_URL` en
+`SUPABASE_SERVICE_ROLE_KEY` zet Supabase zelf al klaar; deze twee niet):
+
+| Naam             | Waarde                                    |
+| ---------------- | ----------------------------------------- |
+| `GEZIN_PEPER`    | 64 willekeurige hextekens — zie hieronder |
+| `GEZIN_HERKOMST` | `https://www.leer.nu`                     |
 
 - **`GEZIN_PEPER`** gaat door de digest van de inlogcode en van het IP-adres in
   de snelheidsbegrenzer. Zonder peper is een IPv4-adres uit een kale hash in
@@ -109,9 +109,65 @@ supabase secrets set GEZIN_HERKOMST=https://www.leer.nu
   van niet — en zou de tabel met mislukte pogingen een lijst zijn om codes mee
   te raden. Hij hoeft nergens bewaard te worden: wie hem verzet, zet alleen de
   lopende begrenzing op nul.
+
+  Hij hoort ook nergens anders te belanden, en dat is de reden dat hij hier in
+  het dashboard staat en niet in een workflow: dan gaat hij van je browser
+  rechtstreeks naar Supabase en komt hij in geen enkele logregel, chat of
+  build langs. Maak hem in de console van je browser met
+  `crypto.randomUUID().replaceAll('-','') + crypto.randomUUID().replaceAll('-','')`,
+  of op een machine die je toch al open hebt met `openssl rand -hex 32`.
+
 - **`GEZIN_HERKOMST`** is het enige adres dat deze functies mag aanroepen.
   Zonder deze regel staat er `*`, en dan mag elke pagina op het internet een
   inlogpoging namens een bezoeker doen.
+
+#### 3b. De functies, via GitHub Actions
+
+`.github/workflows/gezin-functions.yml` doet wat de CLI op een laptop zou doen,
+maar dan met wat er in `main` staat in plaats van met wat er op iemands schijf
+stond. Dat is hier geen detail: allebei de functies importeren
+`../_gezin/code.ts`, en dat gedeelde bestand is precies wat niet mag verlopen —
+`inloggen.test.ts` houdt vast dat het alfabet van de inlogcode op alle drie de
+plekken hetzelfde is. De CLI bundelt die import mee; de editor in het dashboard
+zou hem twee keer laten plakken, en dan bewaakt die toets iets anders dan wat er
+draait.
+
+Twee dingen instellen in GitHub, en let op welke van de twee waar hoort:
+
+| Waar                                                       | Naam                    | Wat                                     |
+| ---------------------------------------------------------- | ----------------------- | --------------------------------------- |
+| Settings → Secrets and variables → Actions → **Variables** | `GEZIN_PROJECT_REF`     | de project-ref (staat ook in de URL)    |
+| Settings → Secrets and variables → Actions → **Secrets**   | `SUPABASE_ACCESS_TOKEN` | een token uit je Supabase-accountpagina |
+
+De ref is geen geheim — hij staat in `https://<project-ref>.supabase.co`, en dus
+straks in `GEZIN_URL`. Het token is dat wél, en meer dan dat: voor zover bekend
+zijn de tokens van Supabase aan je **account** gekoppeld en niet aan één project,
+dus dit token kan ook bij het premiumproject. Bied Supabase je een nauwer token
+aan, neem dat dan. Zet hem hoe dan ook bij Secrets en nooit bij Variables:
+variabelen zijn leesbaar voor iedereen die de Actions-logboeken mag zien.
+
+Daarna: **Actions → Gezin functions → Run workflow**. Zonder
+`GEZIN_PROJECT_REF` slaat hij zichzelf over en is hij groen — net als
+`premium-wakker.yml` voordat premium bestond.
+
+Vanaf dan gaat het vanzelf: een wijziging in `kind-inloggen`, `kind-beheer` of
+`_gezin` die `main` bereikt, zet zichzelf opnieuw neer. Dat is dezelfde afspraak
+als voor de site — een merge naar `main` is de deploy — en het voorkomt de stand
+waarin de code in de repo en de functie op de server uit elkaar gelopen zijn
+zonder dat iemand het weet.
+
+> **`kind-inloggen` gaat met `--no-verify-jwt` de deur uit, en dat hoort zo.**
+> Een kind dat inlogt heeft nog geen token; er valt niets te verifiëren. Met de
+> standaardinstelling wijst de poort van Supabase het verzoek met 401 af vóórdat
+> de functie het ziet, en dan is de enige deur waarlangs een kind binnenkomt
+> dicht. Wat die functie beschermt, beschermt ze zelf: `gezin_inlog_mag`
+> begrenst per code en per gepeperd IP-adres, en een fout antwoord kost met
+> opzet een halve seconde.
+>
+> `kind-beheer` houdt de controle wél, want daar hoort een token van een ouder
+> in. Strandt de CORS-preflight van de browser daarop — een `OPTIONS` zonder
+> token, afgewezen met 401 — dan is dat geen instelling om stil om te zetten
+> maar een ADR waard.
 
 ### 4. Inloggen aanzetten zoals het hoort
 
