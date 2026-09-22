@@ -148,6 +148,20 @@ test('the module pages have no violations, in each of their four shapes', async 
  * een muur stippen — en de instellingen van Voor ouders.
  */
 test('the Jij page has no violations', async ({ page }) => {
+  // Vijf volledige axe-scans in één toets, over een pagina die met ADR-172 en
+  // ADR-177 flink voller is geworden: de kast met alle vijf de vakken, de
+  // tabel, de weekstrook en acht avatars. Het standaardbudget van dertig
+  // seconden is er een voor een toets die één ding doet, en op WebKit in CI —
+  // waar een iPad nagebootst wordt op een gedeelde machine — is dat te krap.
+  //
+  // Dat is precies wat er gebeurde: drie pogingen, drie keer "timeout of
+  // 30000ms exceeded", nooit een schending. Niet het product en niet de
+  // machine, maar deze toets die over zijn eigen klok heen groeide.
+  //
+  // `test.slow()` verdrievoudigt het budget en slaat niets over: alle vijf de
+  // scans draaien, en één schending laat hem nog steeds vallen. Een snelle run
+  // gebruikt de extra tijd niet.
+  test.slow();
   await signIn(page, 'Lieve');
 
   // Wachten tot de kast er is: die laadt zelf en zou anders buiten de scan
