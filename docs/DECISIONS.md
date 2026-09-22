@@ -11136,6 +11136,91 @@ omweg, daarna vier cijfers.
   scherm. Hem weghalen zou de bouw zonder project onbruikbaar maken voor de
   ouder, en dat is precies de bouw die vandaag draait.
 
+## ADR-179 — De Merk en stijlgids: koraal is de knop, Baloo 2 en Atkinson de letters
+
+**Status:** accepted. **Date:** 2026-09-22. **Vervangt** de kleur van ADR-144 en
+ADR-159 en de letters van ADR-109. Laat vorm, ruimte, trefmaten, de zes vakkleuren
+en het logo (ADR-154) voorlopig staan.
+
+### Context
+
+Er is een nieuwe merk- en stijlgids, `docs/leer.nu Merk en stijlgids.dc.html`:
+room als ondergrond, koraal als energie, Baloo 2 en Atkinson Hyperlegible als
+letters, harde onderkanten op knoppen en tegels, een Denker met zeven
+uitdrukkingen, en een bewegingstaal met een rustige variant voor elke animatie.
+De eigenaar koos ervoor die door te voeren, en koos daarbij uitdrukkelijk voor
+koraal als de kleur van de knop.
+
+Dat laatste draait ADR-159 terug. Die hield koraal buiten alles wat je indrukt,
+omdat het acht graden tint van het rood van "fout" lag. De gids verschuift fout
+naar framboos (349°) en bijna naar mandarijn (27°); koraal (10°) ligt daar nu
+twintig en zeventien graden van af. Dat is meer dan acht, maar niet "ver". Wat
+het verschil draagt is dus niet de tint maar de vorm: fout is gearceerd en
+gekruist, en dat was het al (HUISSTIJL §8).
+
+### Besluit
+
+Dit is de eerste van vier stappen; deze zet kleur en letters.
+
+- **Koraal is de knop.** `--actie` is koraal knop `#e34a2c`, de hover en de
+  woorden op de lichte tint zijn de onderrand van de gids `#a8331d`. Wit op
+  koraal knop haalt 3,98: AA voor grote tekst en niet daaronder. De woorden van
+  een knop staan daarom in Baloo 700 op 20 px (19 in VO), en
+  `huisstijl.test.ts` faalt op een kleinere.
+- **Koraal is ook het vlak waar een pagina begint** (`tk-etalage`, ADR-150),
+  als `--koraal` `#ff6a4d` met cacao erop (5,72). Wit haalt daar 2,9.
+- **Koraal is verder niets.** Geen antwoord, geen voortgang, geen vak en niet
+  wat gekozen is; `huisstijl.test.ts` houdt elk van die tokens buiten de
+  koraalfamilie.
+- **Wat gekozen is, is teal** (`--teal` `#0b7468`, `--teal-tint` `#ddf6f1`), de
+  kleur van de gekozen tegel, de gekozen chip en de voortgangsring in de gids.
+  De kleur waarop je drukt is niet de kleur van wat je al hebt gekozen. De
+  voortgang op de voordeur, waar geen vak is, is ook teal.
+- **Contrast gaat vóór de gids.** Waar een paar uit de gids AA niet haalt, neemt
+  de diepere tint uit de gids zelf de plaats in:
+  - goed is `#147a3f` (de rand van de gids), niet `#1e9e55`: wit erop 5,40 in
+    plaats van 3,46;
+  - fout is `#b81d3b`, niet framboos `#e03553`: als tekst 6,41 in plaats van
+    4,37;
+  - teal is `#0b7468`, niet `#12b3a0`: dat haalt 2,63 onder wit;
+  - de arcering van fout is `#ee7489`, niet de `#fbd0d8` van de gids, die
+    nauwelijks zichtbaar is; de arcering draagt de betekenis;
+  - de rand van een bediening blijft de derde inkt, niet de lichte regel van de
+    gids (1,33, onder de 3 van WCAG 1.4.11).
+- **De neutralen zijn die van de gids:** room `#fff3e6`, cacao `#2a1e17`, cacao
+  zacht `#5e4a3e`, bijschrift `#6b5548`, regel `#f0dcc8`.
+- **Letters:** Baloo 2 (variabel, 400–800) voor koppen, vraag, knop en getal;
+  Atkinson Hyperlegible 400 en 700 voor al het andere. Zelf gehost, alleen
+  latin, samen 68 kB tegen 62 kB voor Archivo en Public Sans. De typeschaal is
+  die van de gids: paginatitel 44 (telefoon 34), vraag 36 (28), sectie 28 (24),
+  tegel en knop 20, lopend 18 op 1,5, hulp 15, label 13.
+- **Topografie had de actiekleur als vakkleur.** Het blok
+  `[data-module='topo']` wees naar `--actie`, zodat de voortgang in topografie
+  indigo was. Met koraal als actie zou dat koraal worden; het wijst nu naar de
+  eigen `--topo`-waarden, zoals de andere vijf.
+
+### Wat nog komt
+
+- **Vorm:** knoppen met harde onderkant, radius 18–28, tegels, chips, de
+  antwoordstaat bijna, zon voor premium. De regel "geen schaduw" wordt dan
+  "alleen de harde onderkant, als token".
+- **Beweging:** de drie easings van de gids, `data-calm` naast
+  `prefers-reduced-motion`, en de bewegingstabel.
+- **Denker en de vakkleuren van de gids** wachten op `leer.js` en op een
+  logolevering v2. De huidige levering (ADR-154) verbiedt een mond, armen,
+  kleurverlopen en nieuwe uitdrukkingen, en die zitten juist in de nieuwe
+  Denker. De room van de levering (`#fff7ef`) en die van de gids (`#fff3e6`)
+  verschillen; de app volgt de gids, de levering blijft onaangeroerd.
+
+### Gevolgen
+
+- `huisstijl.test.ts`, `contrast.test.ts`, `accent.test.ts` en
+  `e2e/huisstijl.spec.ts` meten de nieuwe waarden; de oude regel "koraal blijft
+  van het logo" is vervangen door "koraal is het merk en de knop, en verder
+  niets".
+- VO mag pas aan als de woorden van een knop daar groot genoeg blijven voor wit
+  op koraal; de token staat er al op 19 px.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

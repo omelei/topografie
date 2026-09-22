@@ -1,6 +1,7 @@
 /*
- * The house style, from design_handoff_leernu/README.md (ADR-109). The
- * handoff's tokens are definitive — colour, type, space, radius, hit targets —
+ * The house style, from design_handoff_leernu/README.md (ADR-109), with colour
+ * and type from docs/leer.nu Merk en stijlgids.dc.html since ADR-179. The
+ * tokens are definitive — colour, type, space, radius, hit targets —
  * and this is the one file that holds them. docs/HUISSTIJL.md says how to
  * build a new screen with them; src/design/huisstijl.test.ts fails a build
  * that steps outside them.
@@ -15,22 +16,31 @@
  * the thing this product exists not to do.
  */
 
-/* Archivo 600 and 700: headings, numbers, the labels of cards. Public Sans 400
- * and 600: running text, buttons, tables. One variable file per family,
- * carrying exactly those weights. */
+/* Baloo 2, one variable file from 400 to 800: headings, the question,
+ * buttons, numbers. Atkinson
+ * Hyperlegible 400 and 700: running text, help and labels (ADR-179, docs/leer.nu
+ * Merk en stijlgids.dc.html §03). Baloo is one variable file; Atkinson has no
+ * variable cut, so it is two static ones. Latin only, as before. */
 @font-face {
-  font-family: 'Archivo';
+  font-family: 'Baloo 2';
   font-style: normal;
-  font-weight: 600 700;
+  font-weight: 400 800;
   font-display: swap;
-  src: url('/fonts/archivo-latin-wght.woff2') format('woff2');
+  src: url('/fonts/baloo-2-latin-wght.woff2') format('woff2');
 }
 @font-face {
-  font-family: 'Public Sans';
+  font-family: 'Atkinson Hyperlegible';
   font-style: normal;
-  font-weight: 400 600;
+  font-weight: 400;
   font-display: swap;
-  src: url('/fonts/public-sans-latin-wght.woff2') format('woff2');
+  src: url('/fonts/atkinson-hyperlegible-latin-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/atkinson-hyperlegible-latin-700.woff2') format('woff2');
 }
 
 @tailwind base;
@@ -44,97 +54,79 @@
    * huisstijl.test.ts holds every value of the handoff's table to the letter.
    */
   :root {
-    /* ---- Colour, light: the styleguide's table ---------------------------
-     * "Leisteen" (docs/leer.nu Styleguide - Leisteen.dc.html §01-02), turned warm to
-     * meet the logo (ADR-159). One clean ground under clean white cards: the
-     * page-wide subject tint is gone, and saturated colour is kept for three
-     * things — the action button, progress, and good/wrong.
+    /* ---- Colour: the Merk en stijlgids (ADR-179) ------------------------
+     * docs/leer.nu Merk en stijlgids.dc.html §02. Room is the ground, white is
+     * the card, cacao is the ink, and koraal is the energy: the brand's own
+     * surface and the button you press. Leisteen's indigo (ADR-144) and its
+     * cool-turned-warm ladder (ADR-159) are gone.
      *
-     * The neutrals are the styleguide's own ladder with the hue moved from its
-     * cool 264 to cacao's 52, so every lightness — and with it every ratio
-     * below — is the one the styleguide measured, and the ground under a white
-     * card is the warmth of the logo rather than an argument with it. Ink is
-     * cacao itself, the delivery's #2A1E17, which lands within .005 of the
-     * lightness Leisteen gave it.
-     *
-     * The styleguide writes its colours in oklch. They are written here as the
-     * sRGB a browser resolves them to, so this file keeps one notation and
-     * contrast.test.ts can measure every one of them; the oklch stands in the
-     * comment beside the value it came from.
+     * Where a pair from the guide does not reach WCAG AA, the guide's own
+     * deeper tone takes its place, and the comment says so. The guide measures
+     * its colours as swatches; this file measures them as they are used.
      *
      * Ratios as text, on kaart / on papier.
      */
-    --canvas: #eee5e0; /* oklch(.928 .012 52): outside the screen, one step under */
-    --papier: #f4f0ee; /* oklch(.958 .005 52): the ground of every screen */
+    --canvas: #f3e6d8; /* the guide's dashed rule: outside the screen, one step under */
+    --papier: #fff3e6; /* room, the ground of every screen */
     --kaart: #ffffff; /* card and panel, and the frame round the page */
-    --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.30 */
-    --tekst-secundair: #715e52; /* oklch(.497 .031 52)              6.13 / 5.41 */
-    /* The styleguide's caption ink is the one place its ladder is deliberately
-     * not followed: it measures that tone on a card (4.77) and not on the
-     * ground, where it reaches 4.22 and fails AA. This is the same step two
-     * darker, warmed with the rest. */
-    --tekst-tertiair: #7b675c; /* oklch(.530 .031 52)               5.33 / 4.71 */
-    --rand-licht: #e7dfdb; /* 1px, carries no text                   1.31 on kaart */
-    --rand-sterk: #e2d9d4; /* the screen's frame                      1.39 on kaart */
+    --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.82 */
+    --tekst-secundair: #5e4a3e; /* cacao zacht                       8.32 / 7.61 */
+    --tekst-tertiair: #6b5548; /* the guide's caption ink           6.96 / 6.37 */
+    --rand-licht: #f0dcc8; /* the guide's rule, carries no text       1.33 on kaart */
+    --rand-sterk: #e6d6c6; /* the screen's frame                      1.47 on kaart */
 
-    /* ---- The action colour, §02 -------------------------------------------
-     * Indigo is the only colour that means "here you press". It is deliberately
-     * none of the six subject hues, so a button can never be mistaken for a
-     * subject — the green premium button beside the green Rekenen icon is the
-     * mistake this replaces.
+    /* ---- Koraal ----------------------------------------------------------
+     * The brand's colour, and since ADR-179 the colour you press. It is
+     * allowed three places and no more: the primary button (actie), a page's
+     * opening panel (koraal, with cacao on it) and the logo. It is never an
+     * answer, never progress and never a subject — fout is framboos, hatched
+     * and crossed, so what separates the two is shape and not hue alone
+     * (koraal 10°, framboos 349°, mandarijn 27°). huisstijl.test.ts holds it.
      */
-    --actie: #385db8; /* oklch(.50 .15 265)      white on it 6.13 — 6.13 on kaart */
-    --actie-hover: #264698; /* oklch(.42 .14 265)                white on it 8.71 */
-    --actie-tint: #e2ebff; /* oklch(.94 .035 265): the fill behind a label */
-    --actie-tekst: #264698; /* oklch(.42 .14 265)            7.28 on actie-tint */
+    --koraal: #ff6a4d; /* a page's opening panel, cacao on it      5.72 */
+    /* Koraal knop. White on it is 3.98: enough for large text only, so a
+     * button's words are Baloo 700 at 20px or more (--type-knop), and
+     * huisstijl.test.ts fails a smaller one. */
+    --actie: #e34a2c; /* white on it 3.98 (large text) */
+    --actie-hover: #a8331d; /* the button's lower edge            white on it 6.65 */
+    --actie-tint: #ffe9e1; /* the fill behind a label */
+    --actie-tekst: #a8331d; /* koraal as text                  5.70 on actie-tint */
 
-    /* ---- Where the mark's colour is not -----------------------------------
-     * There was a --merk token here, pointing at the action colour, from when
-     * the wordmark was drawn in code and set "nu" in it (ADR-147). The logo is
-     * a picture now (ADR-154) and draws its own colours, so the token had
-     * stopped meaning anything and is gone.
-     *
-     * Koraal does not come back in its place. It is the colour the brand is
-     * drawn in — Denker's body, the app icon, the share card — and it enters
-     * the app only through the delivery's own file, src/design/kleuren.css,
-     * which logo.test.ts holds to the designer's byte for byte. It is eight
-     * degrees of hue from the red that means wrong, so it may not become
-     * something a child presses, something that says how a subject is going, or
-     * anything near an answer (ADR-159). This stylesheet therefore names no
-     * --leernu- colour at all, and huisstijl.test.ts keeps it that way.
+    /* ---- Good, §02 ---------------------------------------------------------
+     * Green is a status and nothing else: it says "onthouden", never "press
+     * here". The guide's Goed (#1e9e55) is 3.46 under white, so the solid fill
+     * with its tick is the guide's deeper edge green.
      */
-
-    /* ---- Good, §05 ---------------------------------------------------------
-     * Green is a status and nothing else now that the action colour has the
-     * buttons: it says "onthouden", never "press here".
-     */
-    --nadruk: #0a7e3a; /* oklch(.52 .14 150)                      5.17 / 4.57 */
-    --nadruk-vlak: #d1f2d7; /* oklch(.93 .05 150) */
-    --nadruk-tekst: #005724; /* oklch(.40 .12 150)             7.28 on nadruk-vlak */
+    --nadruk: #147a3f; /* white on it 5.40                        5.40 / 4.95 */
+    --nadruk-vlak: #dcf5e6;
+    --nadruk-tekst: #0f5e30; /* goed diep                   6.85 on nadruk-vlak */
 
     /* ---- Roles the table leaves to the screens ---------------------------
      * Each is one of the colours above put to a named use, or a value read off
-     * the styleguide's components where the table is silent. A round uses them
-     * as they are: it is light like the rest of the app since ADR-112, and the
-     * styleguide's dark set (§08) is not carried.
+     * the guide's components where the table is silent. A round uses them as
+     * they are: it is light like the rest of the app since ADR-112.
      */
-    /* The edge of a control. The screens draw every field, option and
-     * secondary button in the tertiary ink — 5.33:1, where the light rule's
-     * 1.31 would fail WCAG 1.4.11 for the one line that says "press here". */
+    /* The edge of a control. The guide draws fields and secondary buttons in
+     * its light rule, which is 1.33 on a card and would fail WCAG 1.4.11 for
+     * the one line that says "press here"; this stays the tertiary ink. */
     --rand-bediening: var(--tekst-tertiair);
     /* What a control turns to under the pointer, and the fill of a chosen row. */
     --vlak-hover: var(--papier);
     /* The empty part of a bar, an empty dot, and a switched-off button: the
-     * styleguide's own track, one step darker than the light rule (§06). */
-    --balk-leeg: #f0e8e4;
-    /* Wrong, §05. Wrong is a hatched area and a cross; this is the colour that
-     * goes with the shape, never the shape itself. Text in this red stands on a
-     * card: 5.76 there, 5.08 on the ground. */
-    --fout: #ba3535; /* oklch(.53 .17 25) */
-    --fout-vlak: #ffe4e1; /* oklch(.94 .04 25) */
-    --fout-tekst: var(--inkt); /* on the hatching                13.45 on fout-vlak */
+     * guide's own empty dot. */
+    --balk-leeg: #efe2d4;
+    /* Wrong: framboos. Wrong is a hatched area and a cross; this is the colour
+     * that goes with the shape, never the shape itself. The guide's Framboos
+     * (#e03553) is 4.37 as text, so the red that is read is its deeper edge:
+     * 6.41 on a card, 5.86 on the ground. */
+    --fout: #b81d3b;
+    --fout-vlak: #fde2e7;
+    --fout-tekst: var(--inkt); /* on the hatching                13.27 on fout-vlak */
     --fout-arcering-grond: var(--fout-vlak);
-    --fout-arcering-streep: #eb827b; /* oklch(.72 .13 25) */
+    /* The guide's stripe (#fbd0d8) all but vanishes, and the hatch is what
+     * carries the meaning; this is framboos light enough that ink on it still
+     * reads (5.78). */
+    --fout-arcering-streep: #ee7489;
     /* The same on the map, where the round has a pair of its own. */
     --fout-kaart-rand: var(--fout);
     --fout-kaart-grond: var(--fout-arcering-grond);
@@ -148,14 +140,17 @@
     --map-grens: var(--inkt);
     /* Behind a dialog: the ink's own channels. */
     --scrim: rgb(42 30 23 / 45%);
-    /* What is chosen, done, or being asked about. Outside a module this is the
-     * action colour: the styleguide keeps green for "goed" and gives indigo
-     * everything a child presses. Inside a module it becomes the module's own
-     * colour (data-accent below, ADR-112); the accent rule (accent.test.ts)
-     * still says where it may go at all. */
-    --accent: var(--actie);
-    --accent-text: var(--actie-tekst);
-    --accent-tint: var(--actie-tint);
+    /* What is chosen, done, or being asked about: the guide's teal, from its
+     * chosen tile, its chosen chip and its progress ring. Not koraal: the
+     * colour you press is not the colour of what you have already pressed.
+     * The guide's fill (#12b3a0) is 2.63 under white and on a card, so the
+     * rule and the words are its deep edge. accent.test.ts says where it may
+     * go at all. */
+    --teal: #0b7468; /* 5.66 on kaart, 5.18 on papier */
+    --teal-tint: #ddf6f1; /* teal on it 4.99 */
+    --accent: var(--teal);
+    --accent-text: var(--teal);
+    --accent-tint: var(--teal-tint);
 
     /* ---- The six subjects, §03 ---------------------------------------------
      * One hue each, and equal lightness and chroma across all six, so none of
@@ -186,13 +181,13 @@
     --vlaggen: #008287; /* oklch(.55 .14 200)             white on it 4.62 */
     --vlaggen-text: #00585c; /* oklch(.42 .12 200)              on tint 6.42 */
     --vlaggen-tint: #b7edf0; /* oklch(.91 .055 200) */
-    /* What a module's colour is where no module is named: the action colour
-     * rather than the first module's, so a bar on the front door is the brand's
-     * own blue and never "topografie" by accident. data-module below points
-     * these at a real subject. */
-    --module: var(--actie);
-    --module-tekst: var(--actie-tekst);
-    --module-tint: var(--actie-tint);
+    /* What a module's colour is where no module is named: the guide's teal
+     * rather than the first module's, so a bar on the front door is progress and
+     * never "topografie" by accident — and never koraal, which is not
+     * progress (ADR-179). data-module below points these at a real subject. */
+    --module: var(--teal);
+    --module-tekst: var(--teal);
+    --module-tint: var(--teal-tint);
     --module-grond: var(--papier);
 
     /* ---- The ground a page stands on --------------------------------------
@@ -214,47 +209,51 @@
     --vandaag-grond: var(--papier);
 
     /* ---- Typefaces (see @font-face) --------------------------------------- */
-    --font-kop: 'Archivo', system-ui, sans-serif; /* 600 and 700 */
-    --font-tekst: 'Public Sans', system-ui, sans-serif; /* 400 and 600 */
+    --font-kop: 'Baloo 2', system-ui, sans-serif; /* 700 and 800 */
+    --font-tekst: 'Atkinson Hyperlegible', system-ui, sans-serif; /* 400 and 700 */
 
     /* ---- Type scale, PO ----------------------------------------------------
-     * In rem for the reason given at the html rule below; the README's px are
-     * in the comments. Paginakop to getal-groot are set in --font-kop, lopend
-     * to bijschrift in --font-tekst. On a phone and in VO the values move
-     * underneath (below), so a component names the role and never the size.
+     * The guide's scale (§03), in rem for the reason given at the html rule
+     * below; the px are in the comments. Paginakop to getal-groot and the
+     * button are set in --font-kop, lopend to bijschrift in --font-tekst. On a
+     * phone and in VO the values move underneath (below), so a component names
+     * the role and never the size.
      */
-    --type-paginakop: 2.5rem; /* 40px */
-    --type-paginakop-lh: 2.75rem; /* 44px */
-    --type-paginakop-ls: -0.015em;
-    --type-paginakop-weight: 700;
+    --type-paginakop: 2.75rem; /* 44px */
+    --type-paginakop-lh: 3rem; /* 48px */
+    --type-paginakop-ls: -0.01em;
+    --type-paginakop-weight: 800;
     --type-sectiekop: 1.75rem; /* 28px */
-    --type-sectiekop-lh: 2.125rem; /* 34px */
-    --type-sectiekop-ls: -0.01em;
+    --type-sectiekop-lh: 2rem; /* 32px */
+    --type-sectiekop-ls: 0em;
     --type-sectiekop-weight: 700;
-    --type-kaartkop: 1.25rem; /* 20px */
+    --type-kaartkop: 1.25rem; /* 20px, a card, a tile */
     --type-kaartkop-lh: 1.625rem; /* 26px */
-    --type-kaartkop-weight: 600;
-    --type-vraag: 2rem; /* 32px, the question in a round */
-    --type-vraag-lh: 2.25rem; /* 36px */
-    --type-vraag-ls: -0.015em;
-    --type-vraag-weight: 700;
-    /* Clock, counter, percentage: the README allows 44 or 48, so both. */
+    --type-kaartkop-weight: 700;
+    --type-vraag: 2.25rem; /* 36px, the question in a round */
+    --type-vraag-lh: 2.5rem; /* 40px */
+    --type-vraag-ls: -0.01em;
+    --type-vraag-weight: 800;
+    /* Clock, counter, percentage. */
     --type-getal: 2.75rem; /* 44px */
     --type-getal-lh: 2.75rem; /* 44px */
-    --type-getal-weight: 700;
+    --type-getal-weight: 800;
     --type-getal-groot: 3rem; /* 48px */
     --type-getal-groot-lh: 3rem; /* 48px */
-    --type-getal-groot-weight: 700;
-    --type-lopend: 1rem; /* 16px, running text */
-    --type-lopend-lh: 1.625rem; /* 26px */
-    --type-knop: 1.0625rem; /* 17px, a button's words */
+    --type-getal-groot-weight: 800;
+    --type-lopend: 1.125rem; /* 18px, running text, line 1.5 */
+    --type-lopend-lh: 1.6875rem; /* 27px */
+    /* A button's words: Baloo 700 at 20, which is large text — the only size
+     * at which white on koraal (3.98) is allowed. */
+    --type-knop: 1.25rem; /* 20px */
     --type-knop-lh: 1.5rem; /* 24px */
+    --type-knop-weight: 700;
     --type-vlaklabel: 0.8125rem; /* 13px, the label above an area, uppercase */
     --type-vlaklabel-lh: 1rem; /* 16px */
     --type-vlaklabel-ls: 0.08em;
-    --type-vlaklabel-weight: 600;
-    --type-bijschrift: 0.875rem; /* 14px */
-    --type-bijschrift-lh: 1.25rem; /* 20px */
+    --type-vlaklabel-weight: 700;
+    --type-bijschrift: 0.9375rem; /* 15px, help */
+    --type-bijschrift-lh: 1.375rem; /* 22px */
 
     /* ---- Radius ------------------------------------------------------------ */
     --radius-chip: 6px; /* a chip, an option, a plate */
@@ -340,13 +339,13 @@
       --kaart-radius: var(--radius-kaart-telefoon);
       --kaart-padding: var(--padding-kaart-telefoon);
       --padding-scherm: 16px;
-      --type-paginakop: 1.5rem; /* 24px */
-      --type-paginakop-lh: 1.875rem; /* 30px */
+      --type-paginakop: 2.125rem; /* 34px, the guide's "tel" */
+      --type-paginakop-lh: 2.5rem; /* 40px */
       --type-paginakop-ls: -0.01em;
-      --type-sectiekop: 1.25rem; /* 20px */
-      --type-sectiekop-lh: 1.625rem; /* 26px */
-      --type-vraag: 1.5rem; /* 24px */
-      --type-vraag-lh: 1.875rem; /* 30px */
+      --type-sectiekop: 1.5rem; /* 24px */
+      --type-sectiekop-lh: 1.875rem; /* 30px */
+      --type-vraag: 1.75rem; /* 28px */
+      --type-vraag-lh: 2.125rem; /* 34px */
       --type-vraag-ls: -0.01em;
       --type-getal-groot: 2.75rem; /* 44px */
       --type-getal-groot-lh: 2.75rem; /* 44px */
@@ -372,8 +371,10 @@
     --type-getal-groot-lh: 1.75rem; /* 28px */
     --type-lopend: 0.9375rem; /* 15px */
     --type-lopend-lh: 1.375rem; /* 22px */
-    --type-knop: 0.9375rem; /* 15px */
-    --type-knop-lh: 1.375rem; /* 22px */
+    /* 19 rather than stap 11's 15: a button's words on koraal must stay large
+     * text (ADR-179). */
+    --type-knop: 1.1875rem; /* 19px */
+    --type-knop-lh: 1.5rem; /* 24px */
   }
 
   /* ---- A module names its colour as a set, for its plate -----------------
@@ -381,14 +382,10 @@
    * and one entry in the content, and touches no component.
    */
   [data-module='topo'] {
-    /* What a module's colour is where no module is named: the action colour
-     * rather than the first module's, so a bar on the front door is the brand's
-     * own blue and never "topografie" by accident. data-module below points
-     * these at a real subject. */
-    --module: var(--actie);
-    --module-tekst: var(--actie-tekst);
-    --module-tint: var(--actie-tint);
-    --module-grond: var(--papier);
+    --module: var(--topo);
+    --module-tekst: var(--topo-text);
+    --module-tint: var(--topo-tint);
+    --module-grond: var(--topo-grond);
   }
   [data-module='tafels'] {
     --module: var(--tafels);
@@ -423,9 +420,10 @@
 
   /* ADR-112 let a module take the accent over, so a chosen tile was blue on
    * topografie and orange on klokkijken. The styleguide takes that back in §02
-   * and §06: what you press is indigo, everywhere, precisely so a control is
-   * never mistaken for a subject — and the subject's own colour is kept for the
-   * two things that denote a subject, its tile and its bar. The attribute
+   * and §06: what you press is one colour everywhere (koraal since ADR-179),
+   * precisely so a control is never mistaken for a subject — and the subject's
+   * own colour is kept for the two things that denote a subject, its tile and
+   * its bar. The attribute
    * data-accent="module" is still written by the screens and no longer changes
    * anything; data-module is what names the subject. */
 
@@ -478,9 +476,9 @@
     overflow-wrap: break-word;
   }
 
-  /* Headings in Archivo: 700 for a page and a section, 600 for a card. The
+  /* Headings in Baloo 2: 800 for a page, 700 for a section and a card. The
    * size and the tracking come with the role's class (text-paginakop and so
-   * on), which is where the handoff defines them. */
+   * on), which is where the guide defines them. */
   h1,
   h2,
   h3 {
@@ -488,12 +486,14 @@
     font-family: var(--font-kop);
     color: var(--inkt);
   }
-  h1,
+  h1 {
+    font-weight: var(--type-paginakop-weight);
+  }
   h2 {
-    font-weight: 700;
+    font-weight: var(--type-sectiekop-weight);
   }
   h3 {
-    font-weight: 600;
+    font-weight: var(--type-kaartkop-weight);
   }
 
   /* Every running paragraph breaks its last line with some care. */
@@ -574,7 +574,7 @@
     font-family: var(--font-kop);
   }
 
-  /* The label above an area: Public Sans 600 at 13/16, tracked out and in
+  /* The label above an area: Atkinson Hyperlegible 700 at 13/16, tracked out and in
    * capitals, so it reads as a category and never competes with the question.
    * It grows with the reader's own text size, like everything on the scale, so
    * it wraps: at 200% it is 26 high, and a label that cannot break pushes the
@@ -591,7 +591,7 @@
 
   /* ---- A section of a page (ADR-112) -------------------------------------
    * One heading for every section of every page: the card title's size in
-   * Archivo, on a hairline. It sits one step under the page's title and one
+   * Baloo 2, on a hairline. It sits one step under the page's title and one
    * step over the text in the section, where the 13 of the label was two steps
    * down from a heading of 40 and the 28 of the section title fought it. What
    * the section counts — "3 van de 12 gehaald" — stands at its end as a
@@ -671,10 +671,10 @@
     border-radius: var(--radius-kaart);
     background: var(--actie);
     color: var(--kaart);
-    font-family: var(--font-tekst);
+    font-family: var(--font-kop);
     font-size: var(--type-knop);
     line-height: var(--type-knop-lh);
-    font-weight: 600;
+    font-weight: var(--type-knop-weight);
     text-align: center;
     cursor: pointer;
   }
@@ -1541,7 +1541,7 @@
     border-radius: var(--radius-pil);
     /* The bar carries the subject's colour and not the accent (§06): progress
      * through topografie is blue and through klokkijken orange, while what you
-     * press stays indigo either way. */
+     * press stays koraal either way. */
     background: var(--module);
   }
 
@@ -1639,9 +1639,10 @@
    * Begonnen als de premiumpagina: een kop in de actiekleur, kaarten met een
    * teken, twee plannen naast elkaar en een vergelijkingstabel. Sinds ADR-150
    * de vorm van Onthouden, Voor ouders en Jij ook: dezelfde kop, hetzelfde
-   * teken, dezelfde kaart. Binnen de huisstijl: indigo is wat je indrukt en
-   * waar een pagina begint, groen is premium (de knop in de balk), en er is
-   * geen schaduw — het verschil zit in vlak en rand.
+   * teken, dezelfde kaart. Sinds ADR-179 is het vlak koraal met cacao erop,
+   * het merkvlak uit de stijlgids ("Op koraal · cacao"): koraal is waar een
+   * pagina begint en de knop die je indrukt, groen is premium (de knop in de
+   * balk), en er is geen schaduw — het verschil zit in vlak en rand.
    */
   .tk-etalage {
     display: flex;
@@ -1650,19 +1651,19 @@
     gap: 16px;
     padding: 32px 24px;
     border-radius: var(--radius-rondevlak);
-    background: var(--actie);
-    color: var(--kaart);
+    background: var(--koraal);
+    color: var(--inkt);
   }
   @media (min-width: 768px) {
     .tk-etalage {
       padding: 48px;
     }
   }
-  /* Wit, en expliciet: de kop erft anders de inkt die elke kop krijgt, en inkt
-   * op indigo haalt 2,6. */
+  /* Cacao op koraal, 5,72. Wit haalt er 2,9 en is dus geen optie, ook niet
+   * voor de kop. */
   .tk-etalage-kop {
     max-width: 22ch;
-    color: var(--kaart);
+    color: var(--inkt);
     font-family: var(--font-kop);
     font-size: var(--type-paginakop);
     line-height: var(--type-paginakop-lh);
@@ -1671,7 +1672,7 @@
   }
   .tk-etalage-tekst {
     max-width: 60ch;
-    color: var(--actie-tint);
+    color: var(--inkt);
   }
   .tk-etalage-knoppen {
     display: flex;
@@ -1681,14 +1682,14 @@
     margin-top: 8px;
   }
   .tk-premium-etalage-prijs {
-    color: var(--actie-tint);
+    color: var(--inkt);
   }
   .tk-premium-etalage-prijs .tk-display {
     font-size: var(--type-sectiekop);
     line-height: var(--type-sectiekop-lh);
-    color: var(--kaart);
+    color: var(--inkt);
   }
-  /* Licht op indigo: indigo op indigo is geen knop. */
+  /* Licht op koraal: koraal op koraal is geen knop. */
   .tk-knop-licht {
     background: var(--kaart);
     color: var(--actie-tekst);
@@ -1696,9 +1697,6 @@
   .tk-knop-licht:hover,
   .tk-knop-licht:active {
     background: var(--actie-tint);
-  }
-  .tk-etalage :focus-visible {
-    outline-color: var(--kaart);
   }
   /* Het label van premium: wit op de groene nadruk, zoals de knop in de balk. */
   .tk-pil {

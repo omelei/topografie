@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<script src="leer.js"></script>
+<style>body{margin:0;background:#FFF3E6;color:#2A1E17;font-family:'Atkinson Hyperlegible',system-ui,sans-serif}a{color:#C8412A}a:hover{color:#2A1E17}*{box-sizing:border-box}:root{color-scheme:light}input{background:#fff;color:#2A1E17}</style>
+</helmet>
+<div style="min-height:100vh;background:#FFF3E6;overflow:hidden;position:relative">
+  <div style="position:absolute;width:520px;height:520px;border-radius:50%;background:#FFD9CF;top:-200px;right:-120px"></div>
+  <div style="position:absolute;width:280px;height:280px;border-radius:50%;background:#DDF6F1;top:420px;left:-120px"></div>
+
+  <header style="position:relative;max-width:1180px;margin:0 auto;padding:48px 32px 24px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-end;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <leer-logo variant="liggend" height="56"></leer-logo>
+      <h1 style="margin:0;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:56px;line-height:1;letter-spacing:-.5px">Merk, stijl en beweging</h1>
+      <p style="margin:0;font-size:19px;line-height:1.5;max-width:620px;color:#5E4A3E;text-wrap:pretty">De nieuwe identiteit van leer.nu voor kinderen van 6 tot 12. Denker wordt een mascotte met karakter, elk vak krijgt een eigen kleur en wereld, en de punt wordt het bewegingsidee van het merk.</p>
+    </div>
+    <div style="display:flex;gap:12px;align-items:center;background:#fff;border-radius:20px;padding:12px 16px 12px 20px;box-shadow:0 4px 0 #F0DCC8">
+      <span style="font-weight:700;font-size:17px;white-space:nowrap">Minder beweging</span>
+      <button onClick="{{ toggleCalm }}" aria-pressed="{{ calm }}" style="width:64px;height:40px;border-radius:20px;border:none;cursor:pointer;background:{{ calmTrack }};position:relative;padding:0">
+        <span style="position:absolute;top:4px;left:{{ calmKnob }};width:32px;height:32px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 2px 0 rgba(0,0,0,.15)"></span>
+      </button>
+      <span style="font-weight:700;font-size:15px;color:#5E4A3E;min-width:24px">{{ calmLabel }}</span>
+    </div>
+  </header>
+
+  <nav style="position:relative;max-width:1180px;margin:0 auto;padding:0 32px 32px;display:flex;flex-wrap:wrap;gap:8px">
+    <a href="#merk" style="padding:10px 18px;border-radius:999px;background:#fff;font-weight:700;text-decoration:none;color:#2A1E17">1 · Merkblad</a>
+    <a href="#kleur" style="padding:10px 18px;border-radius:999px;background:#fff;font-weight:700;text-decoration:none;color:#2A1E17">2 · Kleur</a>
+    <a href="#type" style="padding:10px 18px;border-radius:999px;background:#fff;font-weight:700;text-decoration:none;color:#2A1E17">3 · Typografie</a>
+    <a href="#vorm" style="padding:10px 18px;border-radius:999px;background:#fff;font-weight:700;text-decoration:none;color:#2A1E17">4 · Vormen</a>
+    <a href="#beweging" style="padding:10px 18px;border-radius:999px;background:#fff;font-weight:700;text-decoration:none;color:#2A1E17">5 · Beweging</a>
+    <a href="Prototype.dc.html" style="padding:10px 18px;border-radius:999px;background:#E34A2C;font-weight:700;text-decoration:none;color:#fff">Naar het prototype →</a>
+  </nav>
+
+  <main style="position:relative;max-width:1180px;margin:0 auto;padding:0 32px 96px;display:flex;flex-direction:column;gap:72px">
+
+    <!-- 1 MERK -->
+    <section id="merk" style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:#C8412A">01</span><h2 style="margin:0;font-family:'Baloo 2';font-weight:800;font-size:40px;line-height:1.1">Denker, de mascotte</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+        <div style="background:#fff;border-radius:28px;padding:32px;display:flex;flex-direction:column;gap:20px;align-items:center;justify-content:center;min-height:360px;position:relative">
+          <leer-denker expr="denken" size="220" volg="volg"></leer-denker>
+          <p style="margin:0;font-size:15px;color:#5E4A3E;text-align:center;max-width:320px">Beweeg of tik ergens: Denker kijkt mee. Hij knippert af en toe en de punt zweeft.</p>
+        </div>
+        <div style="background:#fff;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:16px">
+          <h3 style="margin:0;font-family:'Baloo 2';font-weight:700;font-size:24px">Wat blijft, wat erbij komt</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="background:#FFF3E6;border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px">
+              <svg viewBox="0 0 100 100" width="96" height="96"><path d="M46 18C68 18 80 32 80 55C80 78 66 94 43 94C20 94 6 80 6 57C6 33 22 18 46 18Z" fill="#FF6A4D"></path><path d="M52.782 43.377A5.4 7.8 -12 1 0 42.218 45.623A5.4 7.8 -12 1 0 52.782 43.377ZM69.782 41.377A5.4 7.8 -12 1 0 59.218 43.623A5.4 7.8 -12 1 0 69.782 41.377Z" fill="#2A1E17"></path><circle cx="86" cy="16" r="6.5" fill="#2A1E17"></circle></svg>
+              <span style="font-size:14px;font-weight:700">Oud</span>
+            </div>
+            <div style="background:#FFF3E6;border-radius:18px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:6px">
+              <leer-denker expr="denken" size="96"></leer-denker>
+              <span style="font-size:14px;font-weight:700">Nieuw</span>
+            </div>
+          </div>
+          <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.4">
+            <li style="display:flex;gap:10px"><span style="color:#147A3F;display:flex"><leer-icoon naam="goed" size="22"></leer-icoon></span><span><b>Blijft:</b> silhouet, koraal #FF6A4D, omhoogkijkende ogen, de losse punt.</span></li>
+            <li style="display:flex;gap:10px"><span style="color:#C8412A;display:flex"><leer-icoon naam="plus" size="22"></leer-icoon></span><span><b>Erbij:</b> glans in de ogen, wenkbrauwen, mond, wangen, zachte 3D-verloop, armpjes voor gebaren.</span></li>
+            <li style="display:flex;gap:10px"><span style="color:#C8412A;display:flex"><leer-icoon naam="min" size="22"></leer-icoon></span><span><b>Onder 36 px</b> vallen mond, wenkbrauwen en wangen weg; ogen en punt blijven.</span></li>
+          </ul>
+          <div style="display:flex;align-items:flex-end;gap:16px;padding-top:8px">
+            <leer-denker expr="denken" size="24"></leer-denker><leer-denker expr="denken" size="32"></leer-denker><leer-denker expr="denken" size="48"></leer-denker><leer-denker expr="blij" size="64"></leer-denker>
+            <span style="font-size:13px;color:#6B5548">24 · 32 · 48 · 64 px</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="margin:16px 0 0;font-family:'Baloo 2';font-weight:700;font-size:28px">Zeven uitdrukkingen</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px">
+        <sc-for list="{{ expressions }}" as="e" hint-placeholder-count="7">
+          <div style="background:#fff;border-radius:24px;padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+            <div style="width:110px;height:110px;border-radius:50%;background:{{ e.bg }};display:flex;align-items:center;justify-content:center"><leer-denker expr="{{ e.id }}" size="92"></leer-denker></div>
+            <span style="font-family:'Baloo 2';font-weight:700;font-size:20px;line-height:1.1">{{ e.naam }}</span>
+            <span style="font-size:14px;line-height:1.35;color:#6B5548">{{ e.waar }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <h3 style="margin:16px 0 0;font-family:'Baloo 2';font-weight:700;font-size:28px">Logo en app-icoon</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px">
+        <div style="background:#fff;border-radius:24px;padding:40px 32px;display:flex;flex-direction:column;gap:14px;justify-content:center"><leer-logo variant="liggend" height="72"></leer-logo><span style="font-size:14px;color:#6B5548">Liggend · kleur · op wit of room · min. 88 px breed</span></div>
+        <div style="background:#FF6A4D;border-radius:24px;padding:40px 32px;display:flex;flex-direction:column;gap:14px;justify-content:center"><leer-logo variant="liggend" kleur="cacao" height="72"></leer-logo><span style="font-size:14px;color:#2A1E17;font-weight:700">Op koraal · cacao</span></div>
+        <div style="background:#2A1E17;border-radius:24px;padding:40px 32px;display:flex;flex-direction:column;gap:14px;justify-content:center"><leer-logo variant="liggend" kleur="wit" height="72"></leer-logo><span style="font-size:14px;color:#F3E3D6">Op donker · wit</span></div>
+        <div style="background:#fff;border-radius:24px;padding:32px;display:flex;gap:28px;align-items:center;justify-content:center"><leer-logo variant="staand" height="150"></leer-logo><div style="display:flex;flex-direction:column;gap:10px;align-items:center"><leer-logo variant="beeldmerk" height="72"></leer-logo><span style="font-size:13px;color:#6B5548">Beeldmerk</span></div></div>
+        <div style="background:#fff;border-radius:24px;padding:32px;display:flex;gap:20px;align-items:flex-end;justify-content:center;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="border-radius:34px;box-shadow:0 8px 20px rgba(200,65,42,.25);line-height:0"><leer-logo variant="icoon" height="140"></leer-logo></div><span style="font-size:13px;color:#6B5548">App-icoon</span></div>
+          <leer-logo variant="icoon" height="64"></leer-logo><leer-logo variant="icoon" height="40"></leer-logo><leer-logo variant="icoon" height="24"></leer-logo>
+        </div>
+      </div>
+
+      <h3 style="margin:16px 0 0;font-family:'Baloo 2';font-weight:700;font-size:28px">De punt als signatuur</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+        <sc-for list="{{ puntRollen }}" as="p" hint-placeholder-count="4">
+          <div style="background:#fff;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:10px">
+            <div style="height:96px;border-radius:18px;background:#FFF3E6;display:flex;align-items:center;justify-content:center;gap:14px">
+              <leer-denker expr="{{ p.expr }}" size="72"></leer-denker>
+            </div>
+            <span style="font-family:'Baloo 2';font-weight:700;font-size:20px">{{ p.titel }}</span>
+            <span style="font-size:15px;line-height:1.4;color:#5E4A3E">{{ p.tekst }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- 2 KLEUR -->
+    <section id="kleur" style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:#C8412A">02</span><h2 style="margin:0;font-family:'Baloo 2';font-weight:800;font-size:40px;line-height:1.1">Kleur</h2></div>
+      <p style="margin:0;font-size:17px;line-height:1.5;max-width:760px;color:#5E4A3E">Koraal is de energie. Elk vak heeft een heldere vulkleur voor vlakken en iconen en een diepe variant voor tekst. Goed, fout en bijna liggen bewust ver van koraal. Contrast is gemeten tegen wit (tekst) of met witte tekst erop (knoppen).</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+        <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="12">
+          <div style="background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="height:84px;background:{{ t.hex }};display:flex;align-items:flex-end;padding:10px 14px;gap:8px">
+              <span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:{{ t.on }}">Aa 17</span>
+            </div>
+            <div style="padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px">
+              <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">{{ t.rol }}</span>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-weight:700;font-size:16px">{{ t.naam }}</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ t.hex }}</span></div>
+              <span style="font-size:13px;color:#5E4A3E">{{ t.contrast }}</span>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <h3 style="margin:8px 0 0;font-family:'Baloo 2';font-weight:700;font-size:28px">Vakken en hun wereld</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px">
+        <sc-for list="{{ vakken }}" as="v" hint-placeholder-count="6">
+          <div style="border-radius:24px;background:{{ v.t }};padding:18px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;min-height:190px">
+            <div style="position:absolute;right:-30px;bottom:-30px;width:110px;height:110px;border-radius:50%;background:{{ v.f }};opacity:.25"></div>
+            <leer-vak vak="{{ v.id }}" size="56"></leer-vak>
+            <span style="font-family:'Baloo 2';font-weight:800;font-size:24px;color:{{ v.d }};line-height:1">{{ v.n }}</span>
+            <span style="font-size:14px;line-height:1.35;color:#2A1E17;position:relative">{{ v.wereld }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- 3 TYPE -->
+    <section id="type" style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:#C8412A">03</span><h2 style="margin:0;font-family:'Baloo 2';font-weight:800;font-size:40px;line-height:1.1">Typografie</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px">
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">display · Baloo 2 ExtraBold/Bold</span>
+          <span style="font-family:'Baloo 2';font-weight:800;font-size:64px;line-height:1">Waar ligt Italië?</span>
+          <span style="font-family:'Baloo 2';font-weight:800;font-size:72px;line-height:1;letter-spacing:2px;color:#1560B8">1 7 4 9 0</span>
+          <span style="font-size:15px;color:#5E4A3E;line-height:1.4">Rond en stevig, met een 1 die een vlag heeft en een 7 zonder: die haal je nooit door elkaar.</span>
+        </div>
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">tekst · Atkinson Hyperlegible</span>
+          <span style="font-size:22px;line-height:1.45">Kies een vak, doe een ronde en kijk wat je al onthoudt.</span>
+          <span style="font-size:40px;line-height:1;font-weight:700">Il1 7 O0 rn m</span>
+          <span style="font-size:15px;color:#5E4A3E;line-height:1.4">Ontworpen voor slechtzienden: elke letter heeft een eigen vorm. Ideaal voor kinderen die nog langzaam lezen.</span>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:24px;padding:12px 28px">
+        <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="8">
+          <div style="display:flex;align-items:baseline;gap:20px;padding:12px 0;border-bottom:2px dashed #F3E6D8;flex-wrap:wrap">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548;width:190px;flex:none">{{ t.rol }}</span>
+            <span style="font-family:{{ t.ff }};font-weight:{{ t.w }};font-size:{{ t.px }}px;line-height:1.15;flex:1;min-width:200px">{{ t.voorbeeld }}</span>
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">{{ t.maat }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- 4 VORMEN -->
+    <section id="vorm" style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:#C8412A">04</span><h2 style="margin:0;font-family:'Baloo 2';font-weight:800;font-size:40px;line-height:1.1">Vormen, knoppen, tegels</h2></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px">
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">knoppen · 56 px hoog · onderkant 5 px · druk ze in</span>
+          <div style="display:flex;flex-wrap:wrap;gap:14px">
+            <button style="height:56px;padding:0 28px;border:none;border-radius:18px;background:#E34A2C;color:#fff;font-family:'Baloo 2';font-weight:800;font-size:21px;box-shadow:0 5px 0 #A8331D;cursor:pointer;transition:transform .08s,box-shadow .08s" style-active="transform:translateY(5px);box-shadow:0 0 0 #A8331D">Start</button>
+            <button style="height:56px;padding:0 24px;border:3px solid #F0DCC8;border-radius:18px;background:#fff;color:#2A1E17;font-family:'Baloo 2';font-weight:700;font-size:20px;box-shadow:0 5px 0 #F0DCC8;cursor:pointer;transition:transform .08s,box-shadow .08s" style-active="transform:translateY(5px);box-shadow:0 0 0 #F0DCC8">Nog een ronde</button>
+            <button style="height:56px;padding:0 24px;border:none;border-radius:18px;background:#FFC93C;color:#2A1E17;font-family:'Baloo 2';font-weight:800;font-size:20px;box-shadow:0 5px 0 #D69A00;cursor:pointer;display:flex;align-items:center;gap:8px;transition:transform .08s,box-shadow .08s" style-active="transform:translateY(5px);box-shadow:0 0 0 #D69A00"><leer-icoon naam="kroon" size="22"></leer-icoon>Bekijk premium</button>
+            <button style="height:56px;padding:0 20px;border:none;border-radius:18px;background:transparent;color:#C8412A;font-family:'Baloo 2';font-weight:700;font-size:20px;cursor:pointer;text-decoration:underline;text-underline-offset:4px">Ik weet het niet</button>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px">
+            <span style="height:44px;padding:0 18px;border-radius:999px;background:#12B3A0;color:#fff;display:flex;align-items:center;font-weight:700;font-size:16px;box-shadow:0 3px 0 #0B7468">10 vragen</span>
+            <span style="height:44px;padding:0 18px;border-radius:999px;background:#fff;border:3px solid #F0DCC8;display:flex;align-items:center;font-weight:700;font-size:16px">25</span>
+            <span style="height:44px;padding:0 18px;border-radius:999px;background:#fff;border:3px solid #F0DCC8;display:flex;align-items:center;font-weight:700;font-size:16px">Alle 46</span>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">tegels · 24 px afronding · licht, gekozen, premium</span>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div style="border-radius:22px;background:#fff;border:3px solid #F0DCC8;box-shadow:0 5px 0 #F0DCC8;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .16s" style-hover="transform:translateY(-4px)"><span style="color:#0B7468"><leer-icoon naam="wijs" size="32"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:18px">Aanwijzen</span></div>
+            <div style="border-radius:22px;background:#DDF6F1;border:3px solid #12B3A0;box-shadow:0 5px 0 #0B7468;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative"><span style="position:absolute;top:-10px;right:-8px;width:28px;height:28px;border-radius:50%;background:#12B3A0;color:#fff;display:flex;align-items:center;justify-content:center"><leer-icoon naam="goed" size="18"></leer-icoon></span><span style="color:#0B7468"><leer-icoon naam="lijst" size="32"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:18px">Meerkeuze</span></div>
+            <div style="border-radius:22px;background:linear-gradient(160deg,#FFF4D1,#fff 70%);border:3px solid #FFC93C;box-shadow:0 5px 0 #E8B21C;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative"><span style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#FFC93C;color:#2A1E17;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;display:flex;gap:4px;align-items:center;white-space:nowrap"><leer-icoon naam="kroon" size="14"></leer-icoon>Premium</span><span style="color:#8A6300"><leer-icoon naam="bliksem" size="32"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:18px">Bliksem­ronde</span></div>
+          </div>
+          <span style="font-size:14px;color:#5E4A3E;line-height:1.4">Premium blijft goud en uitnodigend, nooit grijs. Tik opent "Vraag het even aan je ouders".</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px">
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">antwoordstaten · kleur + icoon + vorm</span>
+          <div style="display:flex;align-items:center;gap:12px;min-height:60px;border-radius:18px;padding:0 16px;background:#DCF5E6;border:3px solid #1E9E55"><span style="width:36px;height:36px;border-radius:50%;background:#1E9E55;color:#fff;display:flex;align-items:center;justify-content:center"><leer-icoon naam="goed" size="24"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:20px;color:#0F5E30">Italië — goed.</span></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:60px;border-radius:18px;padding:0 16px;background:repeating-linear-gradient(45deg,#FDE2E7 0 6px,#FBD0D8 6px 12px);border:3px dashed #E03553"><span style="width:36px;height:36px;border-radius:50%;background:#E03553;color:#fff;display:flex;align-items:center;justify-content:center"><leer-icoon naam="fout" size="24"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:20px;color:#9C1730">Jij zei 54.</span></div>
+          <div style="display:flex;align-items:center;gap:12px;min-height:60px;border-radius:18px;padding:0 16px;background:#FFEBD9;border:3px double #FF8B2B;border-width:5px"><span style="width:36px;height:36px;border-radius:50%;background:#FF8B2B;color:#2A1E17;display:flex;align-items:center;justify-content:center"><leer-icoon naam="bijna" size="24"></leer-icoon></span><span style="font-family:'Baloo 2';font-weight:700;font-size:20px;color:#8A4100">Bijna!</span></div>
+        </div>
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">diploma-embleem · ring = wat je onthoudt</span>
+          <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><leer-embleem vak="rekenen" status="gehaald" label="×7" size="88"></leer-embleem><span style="font-size:13px;font-weight:700">Gehaald</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><leer-embleem vak="topo" status="rijp" pct="92" label="EU" size="88"></leer-embleem><span style="font-size:13px;font-weight:700">Klaar om af te zwemmen</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><leer-embleem vak="topo" status="bezig" pct="45" label="NL" size="88"></leer-embleem><span style="font-size:13px;font-weight:700">Bezig</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><leer-embleem vak="vlaggen" status="niet" pct="0" label="AF" size="88"></leer-embleem><span style="font-size:13px;font-weight:700">Nog niet</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px">
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">avatars · 8 + eerste letter</span>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:12px">
+            <sc-for list="{{ avatars }}" as="a" hint-placeholder-count="9">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><leer-avatar kind="{{ a.id }}" letter="S" size="64"></leer-avatar><span style="font-size:14px;font-weight:700">{{ a.naam }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#6B5548">vakiconen · tegel en los</span>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:center;justify-items:center">
+            <sc-for list="{{ vakken }}" as="v" hint-placeholder-count="6"><leer-vak vak="{{ v.id }}" size="52"></leer-vak></sc-for>
+            <sc-for list="{{ vakken }}" as="v" hint-placeholder-count="6"><leer-vak vak="{{ v.id }}" vorm="glyph" size="36"></leer-vak></sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 BEWEGING -->
+    <section id="beweging" style="display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:baseline;gap:16px"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px;color:#C8412A">05</span><h2 style="margin:0;font-family:'Baloo 2';font-weight:800;font-size:40px;line-height:1.1">Beweging</h2></div>
+      <p style="margin:0;font-size:17px;line-height:1.5;max-width:760px;color:#5E4A3E">Eén regel: tijdens de vraag staat alles stil, na het antwoord mag het feest. Zet "Minder beweging" rechtsboven aan om elke demo in de rustige variant te zien.</p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px">
+        <!-- goed/fout demo -->
+        <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px">Goed en fout antwoord</span><button onClick="{{ resetQuiz }}" style="height:44px;padding:0 14px;border-radius:14px;border:3px solid #F0DCC8;background:#fff;font-weight:700;font-size:15px;cursor:pointer">Opnieuw</button></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <sc-for list="{{ quizDots }}" as="d" hint-placeholder-count="5"><span ref="{{ d.ref }}" style="width:{{ d.w }};height:16px;border-radius:8px;background:{{ d.bg }};transition:all .3s cubic-bezier(.3,1.6,.5,1);display:flex;align-items:center;justify-content:center;color:#fff">{{ d.icon }}</span></sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;min-height:88px">
+            <div ref="{{ quizDenkerRef }}" style="flex:none"><leer-denker expr="{{ quizExpr }}" size="80"></leer-denker></div>
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:15px;color:#6B5548;font-weight:700">Kies de naam</span>
+              <span style="font-family:'Baloo 2';font-weight:800;font-size:28px;line-height:1.1">{{ quizMsg }}</span>
+              <span style="font-size:15px;color:#5E4A3E">{{ quizSub }}</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <sc-for list="{{ quizOpts }}" as="o" hint-placeholder-count="4">
+              <button ref="{{ o.ref }}" onClick="{{ o.pick }}" style="min-height:60px;border-radius:18px;border:3px solid {{ o.border }};background:{{ o.bg }};box-shadow:0 5px 0 {{ o.edge }};font-family:'Baloo 2';font-weight:700;font-size:21px;color:{{ o.fg }};display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .08s,box-shadow .08s" style-active="transform:translateY(4px);box-shadow:0 1px 0 #F0DCC8"><span style="display:flex">{{ o.icon }}</span>{{ o.naam }}</button>
+            </sc-for>
+          </div>
+          <span style="font-size:14px;color:#6B5548">Tik Italië voor goed, iets anders voor fout.</span>
+        </div>
+
+        <!-- ronde klaar demo -->
+        <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px">Ronde klaar</span><button onClick="{{ playRonde }}" style="height:44px;padding:0 16px;border-radius:14px;border:none;background:#E34A2C;color:#fff;box-shadow:0 4px 0 #A8331D;font-weight:700;font-size:15px;cursor:pointer">Speel af</button></div>
+          <div ref="{{ rondeRef }}" style="border-radius:22px;background:linear-gradient(170deg,#DDF6F1,#fff 60%);padding:20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+            <div style="position:relative;width:120px;height:120px;flex:none">
+              <svg viewBox="0 0 120 120" width="120" height="120"><circle cx="60" cy="60" r="50" fill="none" stroke="#C7EFE7" stroke-width="12"></circle><circle cx="60" cy="60" r="50" fill="none" stroke="#12B3A0" stroke-width="12" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="314.16" stroke-dashoffset="{{ rondeOffset }}" style="transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)"></circle></svg>
+              <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:'Baloo 2';font-weight:800;font-size:34px;line-height:1;color:#0B7468">{{ rondePct }}%</span><span style="font-size:12px;font-weight:700;color:#0B7468">over 3 weken</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;min-width:140px">
+              <span style="font-family:'Baloo 2';font-weight:800;font-size:28px;line-height:1">Ronde klaar</span>
+              <span style="font-size:15px;color:#5E4A3E">Landen van Europa · Aanwijzen</span>
+              <span style="font-family:'Baloo 2';font-weight:700;font-size:22px">15 vragen, {{ rondeGoed }} goed</span>
+            </div>
+          </div>
+          <span style="font-size:14px;color:#6B5548">Kaart schuift op (400 ms), getallen tellen op (800 ms), ring loopt vol (1,1 s).</span>
+        </div>
+
+        <!-- diploma demo -->
+        <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px;overflow:hidden">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Baloo 2';font-weight:800;font-size:22px">Diploma gehaald</span><button onClick="{{ playDiploma }}" style="height:44px;padding:0 16px;border-radius:14px;border:none;background:#E34A2C;color:#fff;box-shadow:0 4px 0 #A8331D;font-weight:700;font-size:15px;cursor:pointer">Speel af</button></div>
+          <div style="border-radius:22px;background:#2A1E17;min-height:220px;display:flex;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden;padding:16px">
+            <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#5A3A26 0,transparent 70%)"></div>
+            <div ref="{{ dipDenkerRef }}" style="position:relative"><leer-denker expr="{{ dipExpr }}" size="96"></leer-denker></div>
+            <div ref="{{ dipRef }}" style="position:relative;background:#FFFBF3;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 8px 0 #C9A87A;border:3px solid #FFC93C">
+              <leer-embleem vak="rekenen" status="gehaald" label="×7" size="64"></leer-embleem>
+              <span style="font-family:'Baloo 2';font-weight:800;font-size:24px;line-height:1">Gehaald!</span>
+              <span style="font-size:13px;color:#5E4A3E">Tafeldiploma van 7</span>
+            </div>
+          </div>
+          <span style="font-size:14px;color:#6B5548">Diploma vliegt in met veer (700 ms), confetti uit de punt (2 s), Denker juicht.</span>
+        </div>
+
+        <!-- laden / idle -->
+        <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:16px">
+          <span style="font-family:'Baloo 2';font-weight:800;font-size:22px">Denker idle en laden</span>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="border-radius:20px;background:#FFF3E6;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px"><leer-denker expr="denken" size="84" volg="volg"></leer-denker><span style="font-size:14px;font-weight:700;text-align:center">Kaart wordt geladen…</span></div>
+            <div style="border-radius:20px;background:#E6E7FF;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px"><leer-denker expr="slapen" size="84"></leer-denker><span style="font-size:14px;font-weight:700;text-align:center">Pauze</span></div>
+            <div style="border-radius:20px;background:#DDEEFF;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px"><leer-denker expr="zwaaien" size="84"></leer-denker><span style="font-size:14px;font-weight:700;text-align:center">Welkom Sofie!</span></div>
+            <div style="border-radius:20px;background:#DCF5E6;padding:16px;display:flex;flex-direction:column;align-items:center;gap:8px"><leer-denker expr="bemoedigend" size="84"></leer-denker><span style="font-size:14px;font-weight:700;text-align:center">Fout: bemoedigend</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:24px;overflow:auto">
+        <div style="min-width:860px">
+          <div style="display:grid;grid-template-columns:1.2fr 1.3fr .8fr 1.1fr 1.6fr;gap:16px;padding:16px 22px;background:#2A1E17;color:#fff;font-weight:700;font-size:14px">
+            <span>Animatie</span><span>Trigger</span><span>Duur</span><span>Easing</span><span>Rustige variant</span>
+          </div>
+          <sc-for list="{{ motion }}" as="m" hint-placeholder-count="14">
+            <div style="display:grid;grid-template-columns:1.2fr 1.3fr .8fr 1.1fr 1.6fr;gap:16px;padding:14px 22px;border-top:2px solid #F6EADD;font-size:15px;line-height:1.4">
+              <span style="font-weight:700">{{ m.naam }}</span><span style="color:#5E4A3E">{{ m.trigger }}</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ m.duur }}</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px">{{ m.easing }}</span><span style="color:#5E4A3E">{{ m.kalm }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px">
+        <div style="background:#2A1E17;color:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFC93C">--ease-veer</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:14px">cubic-bezier(.3, 1.6, .5, 1)</span><span style="font-size:14px;color:#E8D8CB">Terugveren, ploppen, bolletjes</span></div>
+        <div style="background:#2A1E17;color:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFC93C">--ease-uit</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:14px">cubic-bezier(.2, .8, .2, 1)</span><span style="font-size:14px;color:#E8D8CB">Vullen, schuiven, overgangen</span></div>
+        <div style="background:#2A1E17;color:#fff;border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:6px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#FFC93C">--ease-golf</span><span style="font-family:ui-monospace,Menlo,monospace;font-size:14px">cubic-bezier(.45, 0, .55, 1)</span><span style="font-size:14px;color:#E8D8CB">Zweven, ademen, zwaaien (loops)</span></div>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { calm: document.documentElement.hasAttribute('data-calm'), pick: null, rondePct: 0, rondeGoed: 0, dipExpr: 'trots' };
+  quizDenker = React.createRef(); rondeRef = React.createRef(); dipRef = React.createRef(); dipDenker = React.createRef();
+  optRefs = [0, 1, 2, 3].map(() => React.createRef()); dotRefs = [0, 1, 2, 3, 4].map(() => React.createRef());
+  componentDidMount() { this.playRonde(); }
+  kalm() { return window.leerKalm ? window.leerKalm() : false; }
+  lum(hex) { const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; }
+  cr(a, b) { const x = this.lum(a), y = this.lum(b); return ((Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)).toFixed(1).replace('.', ','); }
+  count(key, to, ms) {
+    if (this.kalm()) { this.setState({ [key]: to }); return; }
+    const t0 = performance.now(); const step = (t) => { const k = Math.min(1, (t - t0) / ms); const e = 1 - Math.pow(1 - k, 3); this.setState({ [key]: Math.round(to * e) }); if (k < 1) requestAnimationFrame(step); }; requestAnimationFrame(step);
+  }
+  playRonde = () => {
+    this.setState({ rondePct: 0, rondeGoed: 0 });
+    const el = this.rondeRef.current; if (el && !this.kalm()) el.animate([{ transform: 'translateY(40px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 400, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    setTimeout(() => { this.count('rondePct', 78, 800); this.count('rondeGoed', 12, 800); }, this.kalm() ? 0 : 300);
+  };
+  playDiploma = () => {
+    this.setState({ dipExpr: 'juichen' });
+    const el = this.dipRef.current; if (el && !this.kalm()) el.animate([{ transform: 'translateY(-160px) rotate(-18deg) scale(.4)', opacity: 0 }, { transform: 'translateY(8px) rotate(3deg) scale(1.05)', opacity: 1, offset: 0.7 }, { transform: 'none' }], { duration: 700, easing: 'cubic-bezier(.3,1.3,.5,1)' });
+    setTimeout(() => window.leerFeest && window.leerFeest(this.dipDenker.current, { type: 'confetti', ox: 0.9, oy: 0.1 }), 350);
+    clearTimeout(this._dt); this._dt = setTimeout(() => this.setState({ dipExpr: 'trots' }), 2600);
+  };
+  pickQuiz(i) {
+    if (this.state.pick != null) return; this.setState({ pick: i });
+    const good = i === 1;
+    if (good) {
+      window.leerFeest && window.leerFeest(this.quizDenker.current, { type: 'sterren', ox: 0.85, oy: 0.12 });
+      window.leerVlieg && window.leerVlieg(this.quizDenker.current, this.dotRefs[1].current, { color: '#2A1E17', size: 12 });
+    } else if (!this.kalm()) {
+      const el = this.optRefs[i].current; el && el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-7px)' }, { transform: 'translateX(7px)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }], { duration: 400, easing: 'ease-in-out' });
+    }
+  }
+  renderVals() {
+    const calm = this.state.calm, pick = this.state.pick, names = ['Spanje', 'Italië', 'Griekenland', 'Kroatië'];
+    const I = (n, s) => React.createElement('leer-icoon', { naam: n, size: s || 22 });
+    const quizOpts = names.map((n, i) => {
+      let bg = '#fff', border = '#F0DCC8', edge = '#F0DCC8', fg = '#2A1E17', icon = null;
+      if (pick != null && i === 1) { bg = '#DCF5E6'; border = '#1E9E55'; edge = '#147A3F'; fg = '#0F5E30'; icon = I('goed'); }
+      else if (pick === i) { bg = '#FDE2E7'; border = '#E03553'; edge = '#B81D3B'; fg = '#9C1730'; icon = I('fout'); }
+      return { naam: n, bg, border, edge, fg, icon, ref: this.optRefs[i], pick: () => this.pickQuiz(i) };
+    });
+    const res = pick == null ? null : pick === 1 ? 'goed' : 'fout';
+    const quizDots = [0, 1, 2, 3, 4].map((i) => {
+      const done = i === 0 || (i === 1 && res); const cur = i === 1 && !res;
+      return { ref: this.dotRefs[i], w: cur ? '36px' : '16px', bg: i === 0 ? '#1E9E55' : i === 1 && res === 'goed' ? '#1E9E55' : i === 1 && res === 'fout' ? '#E03553' : cur ? '#12B3A0' : '#EFE2D4', icon: done ? I(i === 1 && res === 'fout' ? 'fout' : 'goed', 12) : null };
+    });
+    const vakken = [
+      { id: 'topo', wereld: 'Eilanden, kompas, stippellijnen en golven', ...window.LEER_VAK?.topo },
+      { id: 'rekenen', wereld: 'Blokjes, telramen en stapels die kloppen', ...window.LEER_VAK?.rekenen },
+      { id: 'taal', wereld: 'Letterblokken, tekstballonnen en krullen', ...window.LEER_VAK?.taal },
+      { id: 'klok', wereld: 'Zon en maan, tandwielen en wijzers', ...window.LEER_VAK?.klok },
+      { id: 'vlaggen', wereld: 'Wimpels, vlaggenlijnen en stoffen', ...window.LEER_VAK?.vlaggen },
+      { id: 'tijdvakken', wereld: 'Zandlopers, kastelen en tijdlijnen', ...window.LEER_VAK?.tijdvakken },
+    ];
+    const W = '#FFFFFF', K = '#2A1E17';
+    const tk = (rol, naam, hex, on, mode) => ({ rol, naam, hex, on, contrast: mode === 'on' ? `${on === W ? 'Wit' : 'Cacao'} erop ${this.cr(hex, on)}:1` : `Op wit ${this.cr(hex, W)}:1` + (mode === 'text' ? ' · voor tekst' : ' · alleen vlak/icoon') });
+    const tokens = [
+      tk('merk', 'Koraal', '#FF6A4D', K, 'on'), tk('merk-tekst', 'Koraal diep', '#C8412A', W, 'text'), tk('merk-knop', 'Koraal knop', '#E34A2C', W, 'on'),
+      tk('tekst', 'Cacao', '#2A1E17', W, 'text'), tk('tekst-zacht', 'Cacao zacht', '#5E4A3E', W, 'text'), tk('ondergrond', 'Room', '#FFF3E6', K, 'on'),
+      tk('kaart', 'Wit', '#FFFFFF', K, 'on'), tk('beloning', 'Zon', '#FFC93C', K, 'on'), tk('accent-koel', 'Hemel', '#2EB4E8', K, 'on'),
+      tk('succes', 'Goed', '#1E9E55', W, 'on'), tk('succes-tekst', 'Goed diep', '#0F5E30', W, 'text'), tk('fout', 'Framboos', '#E03553', W, 'on'),
+      tk('fout-tekst', 'Framboos diep', '#9C1730', W, 'text'), tk('bijna', 'Mandarijn', '#FF8B2B', K, 'on'), tk('bijna-tekst', 'Mandarijn diep', '#8A4100', W, 'text'),
+      ...vakken.map((v) => tk('vak-' + v.id, v.n, v.f, K, 'on')), ...vakken.map((v) => tk('vak-' + v.id + '-tekst', v.n + ' diep', v.d, W, 'text')),
+    ];
+    const B = "'Baloo 2'", A = "'Atkinson Hyperlegible'";
+    return {
+      calm, calmTrack: calm ? '#1E9E55' : '#E6D6C6', calmKnob: calm ? '28px' : '4px', calmLabel: calm ? 'aan' : 'uit',
+      toggleCalm: () => { const v = !calm; document.documentElement.toggleAttribute('data-calm', v); this.setState({ calm: v }); },
+      expressions: [
+        { id: 'denken', naam: 'Nieuwsgierig', waar: 'Standaard, tijdens de vraag, laden', bg: '#FFF3E6' },
+        { id: 'blij', naam: 'Blij', waar: 'Vandaag, lege staten', bg: '#DDEEFF' },
+        { id: 'juichen', naam: 'Juichen', waar: 'Goed antwoord, ronde klaar', bg: '#FFF4D1' },
+        { id: 'bemoedigend', naam: 'Bemoedigend', waar: 'Fout antwoord: "Dat komt nog"', bg: '#DCF5E6' },
+        { id: 'trots', naam: 'Trots', waar: 'Diploma, prijzenkast', bg: '#FFF4D1' },
+        { id: 'slapen', naam: 'Slapen', waar: 'Pauze, terugkomst, laat', bg: '#E6E7FF' },
+        { id: 'zwaaien', naam: 'Zwaaien', waar: 'Welkom, profiel wisselen', bg: '#FDE4F0' },
+      ],
+      puntRollen: [
+        { expr: 'denken', titel: 'Hij stuitert', tekst: 'Idle en tijdens laden zweeft de punt boven Denker: er wordt nagedacht.' },
+        { expr: 'juichen', titel: 'Hij wordt een ster', tekst: 'Bij succes springt de punt open tot een gouden ster.' },
+        { expr: 'blij', titel: 'Hij vliegt naar je voortgang', tekst: 'Na een goed antwoord vliegt de punt naar het bolletje en vult het.' },
+        { expr: 'zwaaien', titel: 'Hij wijst aan', tekst: 'In lege staten landt de punt op de knop waar je moet beginnen.' },
+      ],
+      vakken, tokens,
+      typeScale: [
+        { rol: 'feest · Baloo 800', ff: B, w: 800, px: 64, maat: '64 / tel 44', voorbeeld: 'Gehaald!' },
+        { rol: 'paginatitel · Baloo 800', ff: B, w: 800, px: 44, maat: '44 / tel 34', voorbeeld: 'Welkom Sofie!' },
+        { rol: 'vraag · Baloo 800', ff: B, w: 800, px: 36, maat: '36 / tel 28', voorbeeld: 'Waar ligt Italië?' },
+        { rol: 'sectie · Baloo 700', ff: B, w: 700, px: 28, maat: '28 / tel 24', voorbeeld: 'Je doelen voor deze week' },
+        { rol: 'tegel / knop · Baloo 700', ff: B, w: 700, px: 20, maat: '20', voorbeeld: 'Meerkeuze' },
+        { rol: 'lopend · Atkinson 400', ff: A, w: 400, px: 18, maat: '18 / regel 1,5', voorbeeld: 'Er staan 14 vragen klaar die je bijna vergeet.' },
+        { rol: 'hulp · Atkinson 700', ff: A, w: 700, px: 15, maat: '15', voorbeeld: '8 van de 12 onthoud je' },
+        { rol: 'label · Atkinson 700', ff: A, w: 700, px: 13, maat: '13 · kapitaal', voorbeeld: 'PREMIUM' },
+      ],
+      avatars: [...(window.LEER_AVATARS || []).map((id) => ({ id, naam: id[0].toUpperCase() + id.slice(1) })), { id: '', naam: 'Letter' }],
+      quizOpts, quizDots, quizDenkerRef: this.quizDenker,
+      quizExpr: res === 'goed' ? 'juichen' : res === 'fout' ? 'bemoedigend' : 'denken',
+      quizMsg: res === 'goed' ? 'Italië — goed.' : res === 'fout' ? 'Italië ligt hier.' : 'Hoe heet dit land?',
+      quizSub: res === 'goed' ? 'Italië lijkt op een laars.' : res === 'fout' ? `Je koos ${names[pick]}.` : 'De laars in het zuiden licht op.',
+      resetQuiz: () => this.setState({ pick: null }),
+      rondeRef: this.rondeRef, rondePct: this.state.rondePct, rondeGoed: this.state.rondeGoed, rondeOffset: (314.16 * (1 - this.state.rondePct / 100)).toFixed(1), playRonde: this.playRonde,
+      dipRef: this.dipRef, dipDenkerRef: this.dipDenker, dipExpr: this.state.dipExpr, playDiploma: this.playDiploma,
+      motion: [
+        { naam: 'Knop indrukken', trigger: 'pointerdown / loslaten', duur: '80 ms in · 180 ms uit', easing: 'ease-veer', kalm: 'Geen verplaatsing; onderkant wordt donkerder zolang je drukt' },
+        { naam: 'Tegel optillen', trigger: 'hover of tik', duur: '160 ms', easing: 'ease-uit', kalm: 'Rand wordt 3 px en donkerder' },
+        { naam: 'Keuze klikt', trigger: 'tik op optie/chip', duur: '220 ms · .96 → 1.03 → 1', easing: 'ease-veer', kalm: 'Direct gekozen staat met vinkje' },
+        { naam: 'Denker knippert', trigger: 'idle, elke ~5 s', duur: '150 ms', easing: 'ease-in-out', kalm: 'Ogen open, stil' },
+        { naam: 'Denker kijkt mee', trigger: 'pointer beweegt / tik', duur: '250 ms', easing: 'ease-uit', kalm: 'Uit: ogen kijken naar de punt' },
+        { naam: 'Punt zweeft', trigger: 'idle, laden', duur: '2,4 s loop · 4 px', easing: 'ease-golf', kalm: 'Stil' },
+        { naam: 'Goed antwoord', trigger: 'na nakijken (niet in toets)', duur: '≤ 900 ms: pop 200 · sterren 700 · punt vliegt 560', easing: 'ease-veer / ease-uit', kalm: 'Groen vlak + vinkje + bolletje direct gevuld' },
+        { naam: 'Fout antwoord', trigger: 'na nakijken (niet in toets)', duur: '400 ms schud · 3× 7 px', easing: 'ease-in-out', kalm: 'Geen schud; kruis + juiste antwoord met vinkje direct' },
+        { naam: 'Bijna', trigger: 'na nakijken, typen', duur: '300 ms kanteling 4°', easing: 'ease-veer', kalm: 'Pijl-icoon en dubbele rand' },
+        { naam: 'Voortgangsbalk / ring', trigger: 'scherm verschijnt', duur: '700 ms balk · 1,1 s ring', easing: 'ease-uit', kalm: 'Eindstand direct' },
+        { naam: 'Getal telt op', trigger: 'samenvatting', duur: '800 ms', easing: 'ease-uit (cubic)', kalm: 'Eindgetal direct' },
+        { naam: 'Ronde klaar', trigger: 'laatste antwoord', duur: '1,6 s totaal', easing: 'ease-uit', kalm: 'Alles staat meteen; Denker blij, stil' },
+        { naam: 'Diploma gehaald', trigger: 'diploma-ronde gehaald', duur: '2,4 s: invliegen 700 · confetti 2 s', easing: 'ease-veer', kalm: 'Diploma staat, Denker trots, geen confetti' },
+        { naam: 'Schermovergang', trigger: 'navigatie', duur: '240 ms · 24 px + fade', easing: 'ease-uit', kalm: 'Direct wisselen' },
+        { naam: 'Laden', trigger: 'kaart wordt geladen', duur: 'loop tot klaar', easing: 'ease-golf', kalm: 'Stille Denker + tekst' },
+        { naam: 'Toets / diplomaronde', trigger: 'antwoord gegeven', duur: '200 ms', easing: 'ease-uit', kalm: 'Zelfde: bolletje wordt neutraal cacao, nooit groen of rood' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
