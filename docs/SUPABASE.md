@@ -121,7 +121,7 @@ Onder **Project Settings → Edge Functions → Secrets** (`SUPABASE_URL` en
   Zonder deze regel staat er `*`, en dan mag elke pagina op het internet een
   inlogpoging namens een bezoeker doen.
 
-#### 3b. De functies, via GitHub Actions
+#### 3b. Twee instellingen in GitHub
 
 `.github/workflows/gezin-functions.yml` doet wat de CLI op een laptop zou doen,
 maar dan met wat er in `main` staat in plaats van met wat er op iemands schijf
@@ -132,42 +132,128 @@ plekken hetzelfde is. De CLI bundelt die import mee; de editor in het dashboard
 zou hem twee keer laten plakken, en dan bewaakt die toets iets anders dan wat er
 draait.
 
-Twee dingen instellen in GitHub, en let op welke van de twee waar hoort:
+**De project-ref.** Die staat in Supabase onder **Project Settings → General →
+Reference ID**, en ook gewoon in het adres van je dashboard: het stuk tussen
+`/project/` en de volgende schuine streep. Twintig kleine letters. Zet hem in
+GitHub onder **Settings → Secrets and variables → Actions → Variables** als
+`GEZIN_PROJECT_REF`.
 
-| Waar                                                       | Naam                    | Wat                                     |
-| ---------------------------------------------------------- | ----------------------- | --------------------------------------- |
-| Settings → Secrets and variables → Actions → **Variables** | `GEZIN_PROJECT_REF`     | de project-ref (staat ook in de URL)    |
-| Settings → Secrets and variables → Actions → **Secrets**   | `SUPABASE_ACCESS_TOKEN` | een token uit je Supabase-accountpagina |
+Bij Variables en niet bij Secrets, want geheim is hij niet: hij staat in
+`https://<project-ref>.supabase.co` en dus straks ook in `GEZIN_URL`. Een waarde
+als Secret bewaren die toch openbaar is, maakt de logboeken alleen maar
+onleesbaar — GitHub vervangt hem dan overal door `***`, ook in de regel waar je
+wil kunnen zien wélk project er is aangesproken.
 
-De ref is geen geheim — hij staat in `https://<project-ref>.supabase.co`, en dus
-straks in `GEZIN_URL`. Het token is dat wél, en meer dan dat: voor zover bekend
-zijn de tokens van Supabase aan je **account** gekoppeld en niet aan één project,
-dus dit token kan ook bij het premiumproject. Bied Supabase je een nauwer token
-aan, neem dat dan. Zet hem hoe dan ook bij Secrets en nooit bij Variables:
-variabelen zijn leesbaar voor iedereen die de Actions-logboeken mag zien.
+**Het token.** Maak er een aan op
+[supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens),
+onder **Account → Access Tokens**. Je krijgt hem **één keer** te zien; sla hem
+op in je wachtwoordkluis of plak hem meteen. Zet hem in GitHub onder **Settings
+→ Secrets and variables → Actions → Secrets** als `SUPABASE_ACCESS_TOKEN`.
 
-Daarna: **Actions → Gezin functions → Run workflow**. Zonder
-`GEZIN_PROJECT_REF` slaat hij zichzelf over en is hij groen — net als
-`premium-wakker.yml` voordat premium bestond.
+Hier wél bij Secrets, en met een waarschuwing erbij: voor zover bekend zijn deze
+tokens aan je **account** gekoppeld en niet aan één project. Dit token kan dus
+ook bij het premiumproject. Biedt Supabase inmiddels een token per project of
+per organisatie, neem dat — dat is strikt beter. En zet hem nooit bij Variables:
+die zijn leesbaar voor iedereen die de Actions-logboeken mag zien.
 
-Vanaf dan gaat het vanzelf: een wijziging in `kind-inloggen`, `kind-beheer` of
-`_gezin` die `main` bereikt, zet zichzelf opnieuw neer. Dat is dezelfde afspraak
-als voor de site — een merge naar `main` is de deploy — en het voorkomt de stand
+#### 3c. De workflow één keer met de hand draaien
+
+**Actions → Gezin functions → Run workflow → Branch: main → Run workflow.**
+
+Wat je hoort te zien: twee stappen, `Deploy kind-inloggen` en `Deploy
+kind-beheer`, allebei met een regel als `Deployed Functions on project
+<project-ref>`.
+
+Blijft de job grijs en staat er "skipped"? Dan is `GEZIN_PROJECT_REF` leeg of
+verkeerd gespeld. Dat is met opzet zo gebouwd — zonder project hoort deze
+workflow groen te zijn en niets te doen, zoals `premium-wakker.yml` dat deed
+voordat premium bestond — maar het betekent hier dus dat er niets gebeurd is.
+
+Vanaf nu gaat het vanzelf: een wijziging in `kind-inloggen`, `kind-beheer` of
+`_gezin` die `main` bereikt, zet zichzelf opnieuw neer. Dezelfde afspraak als
+voor de site — een merge naar `main` is de deploy — en het voorkomt de stand
 waarin de code in de repo en de functie op de server uit elkaar gelopen zijn
 zonder dat iemand het weet.
 
-> **`kind-inloggen` gaat met `--no-verify-jwt` de deur uit, en dat hoort zo.**
-> Een kind dat inlogt heeft nog geen token; er valt niets te verifiëren. Met de
-> standaardinstelling wijst de poort van Supabase het verzoek met 401 af vóórdat
-> de functie het ziet, en dan is de enige deur waarlangs een kind binnenkomt
-> dicht. Wat die functie beschermt, beschermt ze zelf: `gezin_inlog_mag`
-> begrenst per code en per gepeperd IP-adres, en een fout antwoord kost met
-> opzet een halve seconde.
->
-> `kind-beheer` houdt de controle wél, want daar hoort een token van een ouder
-> in. Strandt de CORS-preflight van de browser daarop — een `OPTIONS` zonder
-> token, afgewezen met 401 — dan is dat geen instelling om stil om te zetten
-> maar een ADR waard.
+#### 3d. Drie vragen, drie antwoorden
+
+Een groene workflow zegt dat de CLI klaar was, niet dat het werkt. Deze drie
+opdrachten zeggen dat wel. Zet eerst je ref in een variabele:
+
+```bash
+ref=<project-ref>
+```
+
+**Vraag 1: staat `kind-inloggen` open voor een kind?**
+
+```bash
+curl -s -w '\n%{http_code} in %{time_total}s\n' \
+  -X POST "https://$ref.supabase.co/functions/v1/kind-inloggen" \
+  -H 'content-type: application/json' \
+  -d '{"code":"KIND-AAAA-2345","wachtwoord":"konijn"}'
+```
+
+Goed antwoord: `{"fout":"onjuist"}`, **status 200**, en **minstens 0,6 seconde**.
+
+Alle drie betekenen iets. Een mislukte inlog is met opzet 200 en geen 401: er
+valt niets te herhalen met andere koppen, en een 401 laat een browser om een
+wachtwoord vragen op een plek waar dit product zijn eigen scherm heeft. En die
+0,6 seconde is `MINIMUM_MS` uit `inloggen.ts` — een code die niet bestaat kost
+evenveel tijd als een fout wachtwoord, zodat de klok niet verraadt welke van de
+twee het was.
+
+**Vraag 2: staat `kind-beheer` er, en houdt de poort hem dicht?**
+
+```bash
+curl -s -i -X POST "https://$ref.supabase.co/functions/v1/kind-beheer" \
+  -H 'content-type: application/json' -d '{"actie":"aanmaken"}'
+```
+
+Goed antwoord: **401** met een melding van Supabase zelf, iets in de trant van
+`Missing authorization header`. Dat is de poort die zijn werk doet.
+
+Krijg je in plaats daarvan `{"fout":"geen-ouder"}`, dan heeft het verzoek de
+functie zélf bereikt. Dat is niet onveilig — dat antwoord kómt juist doordat de
+functie het token nakijkt en niemand vindt — maar het betekent dat de controle
+van de poort uitstaat, en dat is niet wat de workflow neerzet.
+
+**Vraag 3: komt de preflight van een browser erdoor?**
+
+Dit is de open vraag uit ADR-155 en uit de PR, en hij is in tien seconden te
+beantwoorden in plaats van bij de eerste ouder die op _Bewaren_ drukt:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' \
+  -X OPTIONS "https://$ref.supabase.co/functions/v1/kind-beheer" \
+  -H 'origin: https://www.leer.nu' \
+  -H 'access-control-request-method: POST'
+```
+
+**204** betekent dat de functie zelf de preflight beantwoordt en dat er niets
+aan de hand is. **401** betekent dat de poort hem tegenhoudt vóórdat de functie
+hem ziet, en dan doet geen enkele browser ooit het echte `POST`.
+
+Gebeurt dat laatste, meld het dan en zet de instelling niet stil om: dan hoort
+`kind-beheer` ook met `--no-verify-jwt` de deur uit, en hoort erbij opgeschreven
+te worden dat de bescherming daarmee volledig bij de functie ligt — die het
+token bij Supabase navraagt en bij elk kind kijkt of het van déze ouder is. Dat
+is een ADR waard, geen regel die iemand een keer heeft aangepast.
+
+#### Als er iets misgaat
+
+| Wat je ziet                           | Wat er aan de hand is                                                |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| Job grijs, "skipped"                  | `GEZIN_PROJECT_REF` leeg of verkeerd gespeld — er is niets neergezet |
+| `Invalid access token` in de workflow | `SUPABASE_ACCESS_TOKEN` fout, verlopen of ingetrokken                |
+| `Project not found` in de workflow    | de ref klopt niet, of het token hoort bij een ander account          |
+| **500** op vraag 1                    | `GEZIN_PEPER` ontbreekt — stap 3a, en het kost geen nieuwe deploy    |
+| **401** op vraag 1                    | `kind-inloggen` staat met verificatie aan; draai de workflow opnieuw |
+| **404** op vraag 1 of 2               | die functie staat er niet; kijk in de logboeken van de workflow      |
+| `{"fout":"leeg"}`                     | de JSON in je `curl` kwam niet aan — let op de aanhalingstekens      |
+
+Geheimen worden bij elk verzoek gelezen en niet in de bouw gebakken, dus een
+geheim dat je ná de deploy zet, werkt meteen. Een fout in `GEZIN_PROJECT_REF` of
+in het token vraagt wél om de workflow opnieuw te draaien.
 
 ### 4. Inloggen aanzetten zoals het hoort
 
