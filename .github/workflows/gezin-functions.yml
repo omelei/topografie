@@ -1,0 +1,85 @@
+# Zet de edge functions van het gezinsproject op Supabase (ADR-155, stap 3 van
+# docs/SUPABASE.md).
+#
+# **Waarom dit een workflow is en geen opdracht op een laptop.** De twee
+# functies importeren allebei `../_gezin/code.ts`, en dat gedeelde bestand is
+# precies wat niet mag verlopen: `inloggen.test.ts` houdt vast dat het alfabet
+# van de inlogcode op alle drie de plekken hetzelfde is. De Supabase CLI bundelt
+# die import mee; de editor in het dashboard zou hem twee keer laten plakken, en
+# dan is de toets die ze gelijk houdt een toets over iets anders geworden.
+#
+# Wat hier draait is dus altijd wat er in `main` staat, en nooit wat er op
+# iemands schijf stond.
+#
+# **De kassa hoort hier niet bij.** Die staat in het premiumproject (ADR-123),
+# en ADR-116 zegt over die database dat er niets van een kind in staat. Twee
+# projecten, twee deploys, en deze kent alleen het gezin.
+#
+# Overgeslagen zolang de repositoryvariabele GEZIN_PROJECT_REF leeg is, zodat
+# hij groen is voordat het project bestaat — net als `premium-wakker.yml`.
+name: Gezin functions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/kind-inloggen/**'
+      - 'supabase/functions/kind-beheer/**'
+      - 'supabase/functions/_gezin/**'
+      - '.github/workflows/gezin-functions.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  # Twee deploys tegelijk naar hetzelfde project zouden om de beurt de laatste
+  # zijn, en welke er dan staat hangt van de volgorde af.
+  group: gezin-functions
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ vars.GEZIN_PROJECT_REF != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # `kind-inloggen` staat open, en dat moet ook: een kind dat inlogt heeft
+      # nog geen token, dus er is niets te verifiëren. Met de standaardinstelling
+      # zou de poort van Supabase het verzoek met 401 afwijzen vóórdat de functie
+      # het ziet — en dan is de enige deur waarlangs een kind binnenkomt dicht.
+      #
+      # Wat de functie beschermt, beschermt ze zelf: `gezin_inlog_mag` begrenst
+      # per code en per gepeperd IP-adres, en een fout antwoord kost met opzet
+      # een halve seconde zodat de tijd niet verraadt of een code bestaat.
+      - name: Deploy kind-inloggen
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy kind-inloggen \
+            --project-ref "${{ vars.GEZIN_PROJECT_REF }}" \
+            --no-verify-jwt
+
+      # `kind-beheer` houdt de standaardcontrole wél: hier hoort een token van
+      # een ouder in, dus laat de poort van Supabase meekijken. De functie
+      # controleert het daarna nog een keer zelf — ze draait met de
+      # service-sleutel en vraagt het token bij Supabase na — want een functie
+      # die alleen op de poort leunt, staat open zodra iemand die instelling
+      # omzet.
+      #
+      # Blijkt de CORS-preflight van de browser hierop te stranden (een OPTIONS
+      # zonder token, door de poort afgewezen met 401), dan is dat geen reden om
+      # deze regel stilletjes te wijzigen maar om het op te schrijven: de
+      # functie heeft een eigen OPTIONS-antwoord, en waarom dat nodig is hoort
+      # dan in een ADR.
+      - name: Deploy kind-beheer
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy kind-beheer \
+            --project-ref "${{ vars.GEZIN_PROJECT_REF }}"
