@@ -62,16 +62,28 @@ jobs:
               "❌ verificatie staat aan — draai Gezin functions opnieuw"
             fout=1
           elif [ "$status" = "500" ]; then
-            regel "1. kind-inloggen staat open" "200 + onjuist" "500" \
-              "❌ GEZIN_PEPER ontbreekt — stap 3a"
+            # `nodig()` in index.ts gooit voor elk van GEZIN_PEPER, SUPABASE_URL
+            # en SUPABASE_SERVICE_ROLE_KEY dezelfde fout. Welke het is, staat in
+            # de logs van de functie en niet in dit antwoord — dus raden we hier
+            # niet, we wijzen de weg.
+            regel "1. kind-inloggen staat open" "200 + onjuist" "500 + $lijf" \
+              "❌ de functie gooide — kijk in Supabase → Edge Functions → kind-inloggen → Logs, daar staat welke omgevingsvariabele ontbreekt"
             fout=1
           else
             regel "1. kind-inloggen staat open" "200 + onjuist" "$status + $lijf" "❌"
             fout=1
           fi
 
+          # Alleen te beoordelen als vraag 1 een geldig antwoord gaf. De
+          # vertraging zit in het antwoordpad van `inloggen.ts`; gooit de functie
+          # ervóór, dan is de gemeten tijd een koude start en zegt hij niets. Een
+          # groen vinkje op een getal dat nergens vandaan komt, is erger dan geen
+          # vinkje.
           traag=$(awk -v t="$tijd" 'BEGIN { print (t >= 0.6) ? "ja" : "nee" }')
-          if [ "$traag" = "ja" ]; then
+          if [ "$fout" != "0" ]; then
+            regel "1b. de vertraging die de klok stil houdt" "≥ 0,6 s" "${tijd} s" \
+              "— niet te beoordelen: vraag 1 gaf geen geldig antwoord"
+          elif [ "$traag" = "ja" ]; then
             regel "1b. de vertraging die de klok stil houdt" "≥ 0,6 s" "${tijd} s" "✅"
           else
             regel "1b. de vertraging die de klok stil houdt" "≥ 0,6 s" "${tijd} s" \
