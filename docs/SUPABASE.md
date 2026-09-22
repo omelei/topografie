@@ -178,7 +178,16 @@ zonder dat iemand het weet.
 #### 3d. Drie vragen, drie antwoorden
 
 Een groene workflow zegt dat de CLI klaar was, niet dat het werkt. Deze drie
-opdrachten zeggen dat wel. Zet eerst je ref in een variabele:
+vragen zeggen dat wel.
+
+**De makkelijke weg: Actions → Gezin nakijken → Run workflow.** Die stelt ze
+alle drie en zet de uitslag als tabel op de pagina van de run, met bij elke
+foute uitkomst wat hij betekent. Hij heeft geen sleutel nodig — alle drie de
+verzoeken gaan zonder token, want dat is precies wat ze toetsen. Draai hem na
+elke deploy, en bij twijfel nog een keer.
+
+Hieronder staat wat die workflow doet, voor wie het met de hand wil zien of wil
+weten waar de oordelen vandaan komen. Zet eerst je ref in een variabele:
 
 ```bash
 ref=<project-ref>

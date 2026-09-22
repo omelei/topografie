@@ -1,0 +1,129 @@
+# Kijkt na of de edge functions van het gezinsproject doen wat ze horen te doen
+# (ADR-155, stap 3d van docs/SUPABASE.md).
+#
+# **Waarom dit een workflow is.** Een groene deploy zegt dat de CLI klaar was,
+# niet dat het werkt. Het verschil tussen die twee is waar dit fout kan gaan, en
+# het is met drie verzoeken vast te stellen. Die stonden als `curl` in de
+# handleiding, maar dan moet iemand een terminal openen, de uitkomsten met de
+# hand vergelijken en weten wat 0,6 seconde betekent. Hier staat de uitslag als
+# tabel op de pagina van de run, met een oordeel erbij.
+#
+# Er gaat geen sleutel in om. Alle drie de verzoeken zijn zonder token, want dat
+# is precies wat ze toetsen: wie er zonder token binnenkomt en wie niet.
+#
+# Overgeslagen zolang GEZIN_PROJECT_REF leeg is, net als `gezin-functions.yml`.
+name: Gezin nakijken
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nakijken:
+    if: ${{ vars.GEZIN_PROJECT_REF != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: De drie vragen
+        env:
+          BASIS: https://${{ vars.GEZIN_PROJECT_REF }}.supabase.co/functions/v1
+          HERKOMST: https://www.leer.nu
+        run: |
+          fout=0
+          {
+            echo "## Gezin nakijken"
+            echo
+            echo "| Vraag | Verwacht | Gekregen | |"
+            echo "| --- | --- | --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          regel() {
+            echo "| $1 | $2 | $3 | $4 |" >> "$GITHUB_STEP_SUMMARY"
+          }
+
+          # 1. `kind-inloggen` hoort open te staan: een kind dat inlogt heeft nog
+          #    geen token. Een code die niet bestaat hoort 200 te geven met
+          #    `onjuist` erin — geen 401, want er valt niets te herhalen met
+          #    andere koppen — en minstens 0,6 seconde te duren, zodat de klok
+          #    niet verraadt of een code bestaat (MINIMUM_MS in inloggen.ts).
+          meting=$(curl -s -o /tmp/een -w '%{http_code} %{time_total}' \
+            --max-time 30 -X POST "$BASIS/kind-inloggen" \
+            -H 'content-type: application/json' \
+            -d '{"code":"KIND-AAAA-2345","wachtwoord":"konijn"}' || echo "000 0")
+          status=${meting%% *}
+          tijd=${meting##* }
+          lijf=$(head -c 200 /tmp/een 2>/dev/null || true)
+
+          if [ "$status" = "200" ] && [ "${lijf#*onjuist}" != "$lijf" ]; then
+            regel "1. kind-inloggen staat open" "200 + onjuist" "$status + $lijf" "✅"
+          elif [ "$status" = "401" ]; then
+            regel "1. kind-inloggen staat open" "200 + onjuist" "401" \
+              "❌ verificatie staat aan — draai Gezin functions opnieuw"
+            fout=1
+          elif [ "$status" = "500" ]; then
+            regel "1. kind-inloggen staat open" "200 + onjuist" "500" \
+              "❌ GEZIN_PEPER ontbreekt — stap 3a"
+            fout=1
+          else
+            regel "1. kind-inloggen staat open" "200 + onjuist" "$status + $lijf" "❌"
+            fout=1
+          fi
+
+          traag=$(awk -v t="$tijd" 'BEGIN { print (t >= 0.6) ? "ja" : "nee" }')
+          if [ "$traag" = "ja" ]; then
+            regel "1b. de vertraging die de klok stil houdt" "≥ 0,6 s" "${tijd} s" "✅"
+          else
+            regel "1b. de vertraging die de klok stil houdt" "≥ 0,6 s" "${tijd} s" \
+              "❌ de tijd verraadt of een code bestaat"
+            fout=1
+          fi
+
+          # 2. `kind-beheer` hoort dicht te zitten: hier hoort een token van een
+          #    ouder in. Komt `geen-ouder` terug, dan heeft het verzoek de functie
+          #    zelf bereikt — niet onveilig, want dát antwoord komt juist doordat
+          #    ze het token nakijkt, maar de poort van Supabase staat dan uit.
+          status=$(curl -s -o /tmp/twee -w '%{http_code}' --max-time 30 \
+            -X POST "$BASIS/kind-beheer" -H 'content-type: application/json' \
+            -d '{"actie":"aanmaken"}' || echo "000")
+          lijf=$(head -c 200 /tmp/twee 2>/dev/null || true)
+
+          if [ "$status" = "401" ] && [ "${lijf#*geen-ouder}" = "$lijf" ]; then
+            regel "2. kind-beheer zit dicht" "401 van Supabase" "$status" "✅"
+          elif [ "${lijf#*geen-ouder}" != "$lijf" ]; then
+            regel "2. kind-beheer zit dicht" "401 van Supabase" "geen-ouder" \
+              "⚠️ de functie antwoordde zelf — poortcontrole staat uit"
+            fout=1
+          else
+            regel "2. kind-beheer zit dicht" "401 van Supabase" "$status + $lijf" "❌"
+            fout=1
+          fi
+
+          # 3. De open vraag uit ADR-155: komt de preflight van een browser langs
+          #    de poort? Houdt die hem tegen, dan doet geen enkele browser ooit
+          #    het echte POST, en is dat een ADR waard en geen stille omzetting.
+          status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 \
+            -X OPTIONS "$BASIS/kind-beheer" \
+            -H "origin: $HERKOMST" \
+            -H 'access-control-request-method: POST' || echo "000")
+
+          if [ "$status" = "204" ]; then
+            regel "3. de CORS-preflight komt erdoor" "204" "$status" "✅"
+          elif [ "$status" = "401" ]; then
+            regel "3. de CORS-preflight komt erdoor" "204" "401" \
+              "❌ de poort houdt hem tegen — zie docs/SUPABASE.md 3d"
+            fout=1
+          else
+            regel "3. de CORS-preflight komt erdoor" "204" "$status" "❌"
+            fout=1
+          fi
+
+          echo >> "$GITHUB_STEP_SUMMARY"
+          if [ "$fout" = "0" ]; then
+            echo "Alles goed. De functies staan er en doen wat ze horen te doen." \
+              >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Er klopt iets niet. Wat elke uitkomst betekent, staat in" \
+              "\`docs/SUPABASE.md\` onder stap 3d." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$fout"

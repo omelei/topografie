@@ -113,6 +113,12 @@ async function zoekDeVlaggen(page: Page) {
 }
 
 test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', async ({ page }) => {
+  // Deze toets speelt twee hele rondes uit, vraag voor vraag. Dat duurt zo lang
+  // als het duurt, en op WebKit in CI valt dat buiten de dertig seconden die de
+  // standaard is voor een toets die één handeling doet. Zie de uitleg bij
+  // `the Jij page has no violations` in `a11y.spec.ts`: hetzelfde budget, wel
+  // alle stappen.
+  test.slow();
   await signIn(page, 'Anouk');
   await page.goto('/vlaggen');
 
