@@ -274,8 +274,13 @@ in het token vraagt wél om de workflow opnieuw te draaien.
 > vervangt, want een jaartal moest tenminste nog kloppen.
 >
 > De volgorde is dus geen nettigheid maar de werking zelf: de klik in de mail
-> ís de poort. Zet hem aan, controleer dat je zelf een bevestigingsmail krijgt,
-> en doe pas daarna stap 5.
+> ís de poort.
+>
+> **Maar testen kan hier nog niet.** Het gaat om de volgorde van de
+> _schakelaars_, niet van de proeven. Zolang `GEZIN_URL` leeg is, bestaat er
+> nergens in de app een aanmeldformulier — `isIngesteld()` is dan onwaar — dus
+> je kunt op dit punt geen account maken en geen wachtwoord resetten. Zet
+> `Confirm email` hier aan, doe stap 5, en test daarna (zie **4b** hieronder).
 
 Onder **Authentication → Providers → Email**:
 
@@ -292,6 +297,23 @@ het wordt aangemaakt door `kind-beheer` met de service-sleutel. Meldt iemand
 zich met de hand aan op een `@kind.invalid`-adres, dan maakt de trigger
 `gezin_nieuwe_gebruiker` daar géén ouder van, en zo iemand bezit dus geen enkele
 rij en kan nergens bij.
+
+#### 4b. De mailtest — na stap 5
+
+Deze hoort hier omdat hij bij stap 4 thuis is, maar hij kán pas na stap 5.
+
+Ga naar de ouderpagina op de live site en maak een account met je eigen adres.
+Twee dingen moeten kloppen: je krijgt een bevestigingsmail, en **zonder** op de
+link te klikken kom je er niet in.
+
+**Staat er al een pincode op dat apparaat, dan zie je de poort niet.** `Pinslot`
+begint dan in de stand "openen" — de poort staat vóór het _zetten_ van een
+pincode, niet vóór het openen ervan. Gebruik dan de knop **Pincode vergeten?**,
+of een privévenster waar nog geen pincode staat.
+
+Komt de mail niet aan, dan heb je eigen SMTP nodig (**Project Settings →
+Authentication → SMTP**). Tot dat werkt: haal de twee variabelen uit stap 5 weg
+en bouw opnieuw. Dan staat het geboortejaar er weer en is er niets kapot.
 
 ### 5. De variabelen voor de build
 
@@ -389,6 +411,25 @@ id) werkt zoals bedoeld. Gaat een van die twee niet op, dan is dat een nieuwe
 ADR en geen stille reparatie.
 
 ## Nog te doen
+
+### Een wachtwoord vergeten, voor de ouder
+
+`AccountBlok` doet aanmelden en inloggen, en met opzet geen wachtwoord vergeten:
+dat stond als "komt met de schermen van F5". Dat kon zolang het account een
+aanbod was. Sinds ADR-178 is het de poort, en dan is het een gat.
+
+De keten is nu: pincode vergeten → account → en dáár houdt het op. Een ouder die
+zijn accountwachtwoord kwijt is, kan op een bouw mét gezinsproject **geen nieuwe
+pincode meer zetten** — er is geen geboortejaar meer als terugval, en de enige
+uitweg is het apparaat wissen. Dat is precies de val die ADR-176 wegnam, één
+laag hoger terug.
+
+Het is niet onherstelbaar: Supabase kan zelf een herstelmail sturen, alleen kan
+de ouder dat niet vanuit de app vragen. Wat ontbreekt is één knop en één
+scherm — `/auth/v1/recover` bestaat al.
+
+**Dit hoort af te zijn voordat er gezinnen op leunen.** Zolang de eigenaar de
+enige gebruiker is, is het ongemak; daarna is het een ouder die buiten staat.
 
 ### Het project wakker houden
 
