@@ -257,6 +257,17 @@ in het token vraagt wél om de workflow opnieuw te draaien.
 
 ### 4. Inloggen aanzetten zoals het hoort
 
+> **Deze stap moet áf zijn vóór stap 5, zonder uitzondering.** Sinds ADR-178 is
+> het account de poort vóór de pincode, en stap 5 is de stap die die poort op de
+> live site aanzet. Staat **Confirm email** dan nog uit, dan geeft Supabase bij
+> aanmelden meteen een sessie terug — en dan is de poort "typ een willekeurig
+> adres en een wachtwoord". Dat is zwakker dan het geboortejaar dat hij
+> vervangt, want een jaartal moest tenminste nog kloppen.
+>
+> De volgorde is dus geen nettigheid maar de werking zelf: de klik in de mail
+> ís de poort. Zet hem aan, controleer dat je zelf een bevestigingsmail krijgt,
+> en doe pas daarna stap 5.
+
 Onder **Authentication → Providers → Email**:
 
 - **Confirm email: aan.** Een ouder die zich aanmeldt met het adres van een
@@ -294,10 +305,23 @@ Zet ze in GitHub bij **Settings → Secrets and variables → Actions → Variab
 | `GEZIN_URL` | de Project URL     |
 | `GEZIN_KEY` | de publishable key |
 
-De build gebruikt ze pas vanaf F2, wanneer de app zelf kan inloggen; tot dan
-staan ze klaar en verandert er niets. `ci.yml` geeft ze mee zodra die code er
-is — een variabele doorgeven die nog nergens gelezen wordt, is dode
-configuratie.
+**Let op: dit is een schakelaar en geen voorbereiding.** Hier stond tot ADR-178
+dat deze twee variabelen pas vanaf F2 gebruikt zouden worden en dat er tot dan
+niets verandert. Dat klopt niet meer. `ci.yml` geeft ze mee, en de app leest ze
+bij het opstarten: zodra ze gevuld zijn en er een nieuwe bouw live staat, is het
+account de poort vóór de pincode en is het geboortejaar van het scherm.
+
+Twee gevolgen die je wil kennen vóór je op _Add variable_ drukt:
+
+- **Stap 4 moet af zijn.** Zonder `Confirm email` is de poort van ADR-178 een
+  formulier dat iedereen invult. Zie de waarschuwing daar.
+- **Het gaat pas in bij de volgende bouw.** Vite bakt deze waarden in de
+  JavaScript; een variabele wijzigen doet niets aan wat er nu live staat. Draai
+  daarna de `CI`-workflow op `main` opnieuw, of merge iets kleins — dan pakt de
+  `deploy`-job ze mee.
+
+Terug kan altijd: haal je de twee variabelen weg en bouw je opnieuw, dan staat
+het geboortejaar er weer. Dat is de terugval van ADR-178 en die blijft bestaan.
 
 ## Wat waar staat
 
