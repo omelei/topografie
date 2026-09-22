@@ -1,4 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
+import { langsDePoort, stubGezin } from './gezin';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -344,14 +345,14 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
     );
   });
 
+  await stubGezin(page);
   await signIn(page, 'Mees');
 
   // Het veld staat bij de ouder (ADR-173), en de premiumpagina heeft er één
   // knop naartoe. Die knop is de parental gate die Apple en Google eisen.
   await page.goto('/premium');
   await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();

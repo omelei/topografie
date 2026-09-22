@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
+import { antwoord, GEZIN, stubGezin } from './gezin';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -346,6 +347,13 @@ test.describe('het slot zonder code', () => {
 test('the switcher and the parent page have no violations', async ({ page }) => {
   await signIn(page, 'Fenna');
 
+  // Eerst een server die nee zegt: een rode zin op een formulier is waar een
+  // kleurcontrast het eerst onderuitgaat, en die zin staat hier maar op één
+  // scherm. `stubGezin` hieronder legt er later een ja overheen.
+  await page.route(`${GEZIN}/auth/v1/token**`, (route) =>
+    antwoord(route, 400, { error_description: 'Invalid login credentials' }),
+  );
+
   await page
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
@@ -354,19 +362,24 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
   expect((await scan(page)).violations).toEqual([]);
 
   // Het slot, met de twee velden.
-  // De volwassenencheck staat er sinds ADR-176 vóór, en die is een eigen scherm
-  // met een eigen foutmelding.
+  // De poort staat er sinds ADR-176 vóór, en die is een eigen scherm met een
+  // eigen foutmelding. Deze bouw heeft een gezinsproject, dus het is het
+  // account (ADR-178) en niet het geboortejaar.
   await page.getByRole('button', { name: 'Ouder' }).click();
-  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  await page.getByLabel('In welk jaar ben je geboren?').fill('2020');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
-  await expect(page.getByRole('alert')).toBeVisible();
+  const blok = page.getByRole('region', { name: 'Account' });
+  await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
+  await blok.getByLabel('Wachtwoord').fill('geheimwoord');
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
+  await expect(blok.getByRole('alert')).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  // En dezelfde poging nog eens, nu met een server die ja zegt.
+  await stubGezin(page);
+  await blok.getByLabel('Wachtwoord').fill('geheimwoord');
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 

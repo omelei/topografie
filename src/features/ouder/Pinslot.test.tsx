@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { useAccount } from '@/features/account/useAccount';
 import { useOuder } from './useOuder';
 import { Pinslot } from './Pinslot';
@@ -6,21 +6,25 @@ import { Pinslot } from './Pinslot';
 /**
  * Welke poort er vóór de pincode staat (ADR-176, ADR-178).
  *
- * Dit is de enige plek waar dat te toetsen is. De e2e-suite draait op een bouw
- * zonder gezinsproject — `VITE_GEZIN_URL` is leeg in CI — en komt dus altijd
- * langs het geboortejaar. De tak die er sinds ADR-178 naast staat, zou daar
- * nooit aangeraakt worden, en een tak die niemand aanraakt is een tak die stil
- * verrot.
+ * Dit is de enige plek waar de tak zónder gezinsproject te toetsen is. De
+ * e2e-suite draait op een bouw mét project — `playwright.config.ts` geeft hem
+ * er een — en komt dus altijd langs het account. De terugval die ernaast staat
+ * zou daar nooit aangeraakt worden, en een tak die niemand aanraakt is een tak
+ * die stil verrot. Het is bovendien de tak die vandaag live staat.
  *
- * Wat de drie gevallen vastleggen is precies de beslissing:
+ * Wat de gevallen vastleggen is precies de beslissing:
  *
  * 1. Geen project → het geboortejaar. Zwakker, en de enige goede terugval voor
  *    een apparaat dat nergens iets kan navragen.
- * 2. Wel een project, geen sessie → het account. Hier zit ook "aangemeld maar
- *    de mail nog niet bevestigd" in: Supabase geeft dan een gebruiker terug
- *    zonder tokens, dus `sessie` blijft null en er komt niemand langs.
- * 3. Wel een project, wel een sessie → meteen de pincode zetten. Wie door de
- *    poort is, hoort er geen tweede te krijgen.
+ * 2. Wel een project → het account. Hier zit ook "aangemeld maar de mail nog
+ *    niet bevestigd" in: Supabase geeft dan een gebruiker terug zonder tokens,
+ *    dus `sessie` blijft null en er komt niemand langs.
+ * 3. Wel een project én een sessie → nog steeds het account, nu om het
+ *    wachtwoord. Dit is het geval dat ertoe doet: de sessie van een ouder staat
+ *    maanden in `localStorage` op een apparaat dat het hele gezin gebruikt.
+ *    Zou die sessie de poort openen, dan tikt het kind op "Pincode vergeten?"
+ *    en zet er zijn eigen code op.
+ * 4. Staat er een pincode, dan wordt die gevraagd — wat er ook ingesteld is.
  */
 
 vi.mock('./useOuder', () => ({ useOuder: vi.fn() }));
@@ -34,6 +38,8 @@ vi.mock('@/features/account/AccountBlok', () => ({
 
 const alsOuder = vi.mocked(useOuder);
 const alsAccount = vi.mocked(useAccount);
+
+const inloggen = vi.fn();
 
 function stand({
   pinGezet,
@@ -56,11 +62,13 @@ function stand({
           verlooptOp: '',
         }
       : null,
-    inloggen: vi.fn(),
+    inloggen,
     aanmelden: vi.fn(),
     uitloggen: vi.fn(),
   } as unknown as ReturnType<typeof useAccount>);
 }
+
+beforeEach(() => inloggen.mockReset());
 
 describe('de poort vóór de pincode', () => {
   it('vraagt zonder gezinsproject een geboortejaar', () => {
@@ -82,12 +90,44 @@ describe('de poort vóór de pincode', () => {
     expect(screen.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeInTheDocument();
   });
 
-  it('laat een ingelogde ouder meteen een pincode kiezen', () => {
+  it('laat een ingelogde ouder er niet zomaar langs, maar vraagt zijn wachtwoord', () => {
     stand({ pinGezet: false, ingesteld: true, sessie: true });
     render(<Pinslot onOpen={vi.fn()} />);
 
-    expect(screen.getByLabelText('Nieuwe pincode')).toBeInTheDocument();
-    expect(screen.queryByTestId('accountformulier')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Ben jij het?' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Je wachtwoord')).toBeInTheDocument();
+    // Geen pincodeveld: de sessie alleen is niet genoeg.
+    expect(screen.queryByLabelText('Nieuwe pincode')).toBeNull();
+    // En het adres staat er als tekst, niet als veld: de vraag is niet wie je
+    // bent maar of jij het bent.
+    expect(screen.queryByLabelText('E-mailadres')).toBeNull();
+    expect(screen.getByText(/ouder@example\.nl/)).toBeInTheDocument();
+  });
+
+  it('laat de pincode kiezen zodra het wachtwoord klopt', async () => {
+    inloggen.mockResolvedValue({ ok: true, sessie: null });
+    stand({ pinGezet: false, ingesteld: true, sessie: true });
+    render(<Pinslot onOpen={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText('Je wachtwoord'), { target: { value: 'geheimwoord' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Verder' }));
+
+    await waitFor(() => expect(screen.getByLabelText('Nieuwe pincode')).toBeInTheDocument());
+    expect(inloggen).toHaveBeenCalledWith('ouder@example.nl', 'geheimwoord');
+  });
+
+  it('houdt een fout wachtwoord tegen, en zegt waarom', async () => {
+    inloggen.mockResolvedValue({ ok: false, reden: 'onjuist' });
+    stand({ pinGezet: false, ingesteld: true, sessie: true });
+    render(<Pinslot onOpen={vi.fn()} />);
+
+    fireEvent.change(screen.getByLabelText('Je wachtwoord'), { target: { value: 'gegokt' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Verder' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent('horen niet bij elkaar'),
+    );
+    expect(screen.queryByLabelText('Nieuwe pincode')).toBeNull();
   });
 
   it('vraagt de bestaande pincode zodra er een staat, wat er ook ingesteld is', () => {

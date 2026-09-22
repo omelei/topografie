@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
 
 /**
  * De ouder en het kind (ADR-173).
@@ -29,10 +30,10 @@ function wisselaar(page: Page) {
 
 /** De eerste keer: er is nog geen pincode, dus hem maken is hem opendoen. */
 async function maakOuder(page: Page, pin = '1234') {
+  await stubGezin(page);
   await wisselaar(page).click();
   await page.getByRole('button', { name: 'Ouder' }).click();
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill(pin);
   await page.getByLabel('Nog een keer').fill(pin);
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
@@ -53,15 +54,16 @@ test('een kind tikt op zijn naam en oefent; er wordt niets gevraagd', async ({ p
 });
 
 test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
+  await stubGezin(page);
   await signIn(page, 'Sam');
 
   await wisselaar(page).click();
   await page.getByRole('button', { name: 'Ouder' }).click();
 
-  // Eerst de volwassenencheck, en dán pas een pincode maken (ADR-176).
-  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible();
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  // Eerst de poort, en dán pas een pincode maken (ADR-176, ADR-178). Deze bouw
+  // heeft een gezinsproject, dus de poort is het account.
+  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible();
+  await langsDePoort(page);
 
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
   await page.getByLabel('Nieuwe pincode').fill('4821');
@@ -110,27 +112,95 @@ test('een verkeerde pincode komt er niet in, en de goede wel', async ({ page }) 
  * zichzelf de instellingen, werd de parental gate een poort waarvan het kind de
  * sleutel uitdeelde, en kon het zijn ouder buitensluiten.
  */
-test('een kind komt niet langs de check en kan de pincode dus niet zetten', async ({ page }) => {
+/**
+ * Waar ADR-176 een hek zette, staat sinds ADR-178 een deur met een slot erop —
+ * zodra de bouw een gezinsproject heeft, en die van deze suite heeft er een.
+ *
+ * Het verschil zit hem erin wíe erover gaat. Het geboortejaar werd door dit
+ * apparaat beoordeeld, dus een twaalfjarige die het doorhad, tikte 1985. Of het
+ * account opengaat beslist de server, en die weet iets wat dit apparaat niet
+ * kan verzinnen: of er op een adres geklikt is. Wat hier vastligt is dat een
+ * "nee" van die server ook echt een nee is, en niet een scherm dat toch
+ * doorschuift.
+ */
+test('een kind komt niet langs de poort en kan de pincode dus niet zetten', async ({ page }) => {
   await signIn(page, 'Daan');
+
+  // De server zegt nee, want dit e-mailadres en dit wachtwoord horen niet bij
+  // elkaar — precies wat een kind te horen krijgt dat iets probeert.
+  await page.route(`${GEZIN}/auth/v1/token**`, (route) =>
+    antwoord(route, 400, { error_description: 'Invalid login credentials' }),
+  );
 
   await wisselaar(page).click();
   await page.getByRole('button', { name: 'Ouder' }).click();
 
-  // Er staat geen pincodeveld: eerst de check.
+  // Er staat geen pincodeveld: eerst de poort. En geen geboortejaar meer, want
+  // dat is de terugval voor een bouw zonder project (ADR-178).
+  await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
+  await expect(page.getByLabel('In welk jaar ben je geboren?')).toHaveCount(0);
+
+  const blok = page.getByRole('region', { name: 'Account' });
+  await blok.getByLabel('E-mailadres').fill('daan@example.nl');
+  await blok.getByLabel('Wachtwoord').fill('ietsgeprobeerd');
+  await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
+
+  await expect(blok.getByRole('alert')).toContainText('horen niet bij elkaar');
   await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
 
-  // Een jaartal van een kind komt er niet door, en ook niet eentje van net
-  // geen achttien.
-  for (const jaar of ['2020', String(new Date().getFullYear() - 17)]) {
-    await page.getByLabel('In welk jaar ben je geboren?').fill(jaar);
-    await page.getByRole('button', { name: 'Verder', exact: true }).click();
-    await expect(page.getByRole('alert')).toContainText('Dat klopt niet');
-    await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
-  }
-
-  // En het jaartal blijft nergens staan: het wordt gecontroleerd en weggegooid.
+  // En er is niets blijven hangen waarmee een volgende poging wél langskomt.
   const opslag = await page.evaluate(() => JSON.stringify(window.localStorage));
-  expect(opslag).not.toContain('2020');
+  expect(opslag).not.toContain('daan@example.nl');
+  expect(opslag).not.toContain('ietsgeprobeerd');
+});
+
+/**
+ * Het gat dat ADR-178 er bijna zelf in liet (ADR-179 in de maak: dit is de
+ * reden dat de poort niet naar de sessie kijkt).
+ *
+ * De sessie van een ouder staat in `localStorage` en blijft daar maanden
+ * staan — dat hoort ook, anders logt een ouder elke week opnieuw in. Maar dit
+ * is een gedeeld apparaat, en dát is de hele reden dat er een pincode is. Zou
+ * "is er een sessie?" de poort zijn, dan is de weg voor een kind: tik op
+ * _Pincode vergeten?_, loop naar binnen op de sessie van je vader, kies een
+ * nieuwe code, en je vader staat buiten. Dat is precies het gat dat ADR-176
+ * dichtte, één laag hoger terug.
+ */
+test('het kind komt met de sessie van zijn ouder de pincode niet opnieuw zetten', async ({
+  page,
+}) => {
+  await stubGezin(page);
+  await signIn(page, 'Roos');
+  await maakOuder(page, '4821');
+  await page.getByRole('button', { name: /Terug naar Roos/ }).click();
+
+  // Vanaf hier is het kind aan de beurt, op een apparaat waar de ouder
+  // ingelogd is gebleven.
+  await page.route(`${GEZIN}/auth/v1/token**`, (route) =>
+    antwoord(route, 400, { error_code: 'invalid_credentials', msg: 'Invalid login credentials' }),
+  );
+
+  await wisselaar(page).click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
+
+  // Geen pincodeveld: eerst het wachtwoord, ook al staat er een sessie.
+  await expect(page.getByRole('heading', { name: 'Ben jij het?' })).toBeVisible();
+  await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
+
+  await page.getByLabel('Je wachtwoord').fill('gegokt');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+
+  await expect(page.getByRole('alert')).toContainText('horen niet bij elkaar');
+  await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
+
+  // En de oude code doet het nog: er is niets weggehaald door te proberen.
+  await page.goto('/');
+  await wisselaar(page).click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByLabel('Pincode').fill('4821');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
 });
 
 /**
@@ -150,9 +220,10 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   await page.getByRole('button', { name: 'Ouder' }).click();
   await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
 
-  // Ook hier staat de check ervoor, en die is de hele bescherming.
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  // Ook hier staat de poort ervoor, en die is de hele bescherming. De sessie
+  // van net opent hem niet: die zegt dat hier ooit een ouder inlogde, niet dat
+  // er nu een staat (ADR-178).
+  await herbevestig(page);
   await page.getByLabel('Nieuwe pincode').fill('1357');
   await page.getByLabel('Nog een keer').fill('1357');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
@@ -288,6 +359,7 @@ test.describe('zonder code', () => {
    * premiumpagina belandt, vindt daar geen veld maar één knop naar de ouder.
    */
   test('het codeveld staat niet op de premiumpagina, maar erachter', async ({ page }) => {
+    await stubGezin(page);
     await signIn(page, 'Wout');
     await page.goto('/premium');
 
@@ -295,8 +367,7 @@ test.describe('zonder code', () => {
     await expect(page.getByRole('button', { name: 'Code gebruiken' })).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
-    await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-    await page.getByRole('button', { name: 'Verder', exact: true }).click();
+    await langsDePoort(page);
     await page.getByLabel('Nieuwe pincode').fill('1234');
     await page.getByLabel('Nog een keer').fill('1234');
     await page.getByRole('button', { name: 'Bewaren', exact: true }).click();

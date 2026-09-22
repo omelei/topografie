@@ -39,6 +39,10 @@ import { Volwassenencheck } from './Volwassenencheck';
  * (`Volwassenencheck.tsx`) — zwakker, en de enige goede terugval voor een
  * apparaat dat nergens iets kan navragen.
  *
+ * **De poort staat er elke keer, ook voor wie al ingelogd is.** Een sessie zegt
+ * dat hier ooit een ouder is binnengekomen, niet dat er nu een staat; zie
+ * `Accountcheck.tsx` voor waarom dat verschil het hele slot is.
+ *
  * **En vergeten kan.** ADR-173 liet dat met opzet niet toe — "een weg die alleen
  * het slot weghaalt zou geen slot zijn" — en dat klopte alleen zolang de ouder
  * degene was die de pincode zette. Nu de check ervóór staat, is die check de
@@ -65,19 +69,25 @@ type Stand = 'openen' | 'check' | 'zetten';
 
 export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
   const { pinGezet } = useOuder();
-  const { ingesteld, sessie } = useAccount();
+  const { ingesteld } = useAccount();
   const [stand, setStand] = useState<Stand>(pinGezet ? 'openen' : 'check');
 
-  if (stand === 'check' && !ingesteld) {
+  if (stand === 'check') {
+    // Met een gezinsproject is het account de poort (ADR-178), en dan is een
+    // bevestigd mailadres de voorwaarde: Supabase geeft bij aanmelden zonder
+    // die klik in de mail een gebruiker zónder tokens terug, dus geen sessie.
+    //
+    // Let op wat er níet staat: een bestaande sessie slaat deze poort niet
+    // over. Die sessie blijft maandenlang in `localStorage` staan, en dit is
+    // een gedeeld apparaat — dat is de hele reden dat er een pincode is.
+    // `Accountcheck` vraagt dan om het wachtwoord, en dat is het verschil
+    // tussen "er is hier ooit een ouder ingelogd" en "er staat er nu een".
+    if (ingesteld) return <Accountcheck onGoed={() => setStand('zetten')} />;
     return <Volwassenencheck onGoed={() => setStand('zetten')} />;
   }
-  // Met een gezinsproject is het account de poort. Geen sessie betekent hier
-  // ook: aangemeld maar de mail nog niet bevestigd — Supabase geeft dan een
-  // gebruiker zonder tokens terug, en dat is precies de bedoeling (ADR-178).
-  if (stand === 'check' && sessie === null) return <Accountcheck />;
 
-  // Ingelogd, of het geboortejaar is gegeven: de poort is gepasseerd. Geen
-  // aparte stand ervoor — wie erdoor is, hoort niet nog een knop te krijgen.
+  // De poort is gepasseerd. Geen aparte stand ervoor — wie erdoor is, hoort
+  // niet nog een knop te krijgen.
   return <Veld zetten={stand !== 'openen'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
 }
 

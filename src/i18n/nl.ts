@@ -1517,6 +1517,16 @@ export const nl = {
   'ouder.accountHulp':
     'Zo weten we dat er een volwassene meekijkt. En raak je later je pincode kwijt, dan kom je er met dit account overal weer in — niet alleen op dit apparaat.',
 
+  // Opnieuw om het wachtwoord vragen, ook als er al iemand ingelogd is
+  // (ADR-178). Een sessie blijft maanden staan op een apparaat dat het hele
+  // gezin gebruikt, en dan zegt hij niets meer over wie er nu voor staat.
+  'ouder.bevestigTitel': 'Ben jij het?',
+  'ouder.bevestigUitleg':
+    'Je bent ingelogd als {email}. Typ je wachtwoord nog een keer, dan weten we zeker dat jij het bent en niet iemand anders die deze tablet gebruikt.',
+  'ouder.bevestigVeld': 'Je wachtwoord',
+  'ouder.bevestigKnop': 'Verder',
+  'ouder.bevestigHulp': 'Dit vragen we alleen als je een pincode instelt of vervangt. Verder niet.',
+
   // De volwassenencheck vóór het zetten of resetten van de pincode (ADR-176).
   // Geen rekensom: dit product leert kinderen tafels, dus dat zou de poort zijn
   // die de app zelf traint om te openen. Het jaartal wordt gecontroleerd en

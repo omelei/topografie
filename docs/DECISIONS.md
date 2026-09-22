@@ -11065,6 +11065,29 @@ de enige goede terugval. Een ouder met een tablet zonder verbinding, of een
 bouw waarin `VITE_GEZIN_URL` leeg is, moet bij de instellingen van zijn eigen
 kind kunnen. Een poort die niet opengaat, is geen poort maar een muur.
 
+**Een sessie is geen bewijs; het wachtwoord wel.** De poort vraagt om het
+wachtwoord, ook — juist — als er al iemand ingelogd is.
+
+Dit stond er eerst niet in, en de e2e-suite kwam het halen. De eerste versie van
+dit besluit liet een bestaande sessie de poort openen: wie ingelogd was, mocht
+meteen een pincode kiezen. Dat leest als vriendelijk en het is precies het gat
+dat ADR-176 moest dichten, één laag hoger terug.
+
+De redenering die het fout maakt: de sessie van een ouder staat in
+`localStorage` en blijft daar maanden staan. Dat hóórt ook — een ouder die elke
+week opnieuw moet inloggen, logt na een maand niet meer in. Maar dit is een
+gedeeld apparaat, en dat is de hele reden dat er een pincode is. De weg voor een
+kind was dan: tik op _Pincode vergeten?_, loop naar binnen op de sessie van je
+vader, kies een nieuwe code, en je vader staat buiten zijn eigen ouderpagina.
+Een sessie zegt dat hier **ooit** een ouder is binnengekomen, niet dat er **nu**
+een staat.
+
+Dus: staat er een sessie, dan vraagt de poort alleen nog het wachtwoord, bij het
+adres dat er al staat — hetzelfde patroon als een besturingssysteem dat opnieuw
+om je wachtwoord vraagt vóór de instellingen. Dat kost een ouder een wachtwoord
+op de twee momenten dat hij een pincode zet: de eerste keer, en de keer dat hij
+hem kwijt is. Die prijs is laag naast een pincode die niets tegenhoudt.
+
 **De pincode blijft de dagelijkse deur.** ADR-173 legde uit waarom dat vier
 cijfers zijn en geen wachtwoord, en die redenering wordt door dit besluit alleen
 maar sterker: wie voor elke handeling een adres en een wachtwoord moet intikken
@@ -11073,12 +11096,12 @@ omweg, daarna vier cijfers.
 
 **Vier sporten dus, elk met meer erachter:**
 
-| Wat                                            | Slot                                                   |
-| ---------------------------------------------- | ------------------------------------------------------ |
-| Oefenen                                        | niets                                                  |
-| Dagelijks naar de ouderpagina                  | de pincode                                             |
-| De pincode voor het eerst zetten, of vervangen | **het account** (of, zonder project, het geboortejaar) |
-| Geld en gegevens van het apparaat af           | hetzelfde account                                      |
+| Wat                                            | Slot                                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------- |
+| Oefenen                                        | niets                                                                     |
+| Dagelijks naar de ouderpagina                  | de pincode                                                                |
+| De pincode voor het eerst zetten, of vervangen | **het wachtwoord van het account** (of, zonder project, het geboortejaar) |
+| Geld en gegevens van het apparaat af           | hetzelfde account                                                         |
 
 ### Consequences
 
@@ -11087,11 +11110,23 @@ omweg, daarna vier cijfers.
   hergebruikt in plaats van nagebouwd: twee formulieren die allebei een adres en
   een wachtwoord vragen, lopen uit elkaar op de dag van de eerste foutmelding.
   Wat erbij komt is `Accountcheck.tsx` — een kop, twee zinnen, en dat blok.
-- **De e2e-suite verandert niet.** CI heeft geen gezinsproject, dus daar staat
-  het geboortejaar en blijft elke bestaande test lopen zoals hij liep. De nieuwe
-  tak zou daar dus nooit aangeraakt worden, en daarom staat hij in
-  `Pinslot.test.tsx`: geen project, wel een project zonder sessie, wel een
-  project met sessie.
+- **De e2e-suite verandert wél, en dat was de eerste aanname die sneuvelde.**
+  `playwright.config.ts` geeft de bouw waar die suite op draait al sinds ADR-155
+  een gezinsproject — `VITE_GEZIN_URL` staat op een adres dat niet bestaat,
+  zodat `page.route` ervoor kan antwoorden. Tot nu toe raakte die variabele één
+  blok op één pagina; sinds dit besluit bepaalt hij de vórm van elke reis die
+  bij de ouderpagina uitkomt. Twaalf plekken in zeven bestanden liepen langs het
+  geboortejaar en lopen nu langs het account (`e2e/gezin.ts`).
+
+  Dat is geen ongeluk maar het product: zodra `GEZIN_URL` ingevuld is, is dít de
+  eerste keer die een ouder meemaakt. De suite hoort die reis te lopen en niet
+  de terugval.
+
+- **De terugval raakt zijn dekking niet kwijt, hij verhuist.** Welke poort er
+  bij welke bouw staat, ligt in `Pinslot.test.tsx` — geen project, wel een
+  project zonder sessie, wel een project mét sessie, en een fout wachtwoord. Wat
+  het geboortejaar afwijst, ligt in `Volwassenencheck.test.tsx`. Dat zijn takken
+  en geen reizen, en een tak toets je waar hij staat.
 - **Wat hier niet aan te tonen is**, en dat is dezelfde grens als `SUPABASE.md`
   al trekt: dat Supabase werkelijk een gebruiker zonder tokens teruggeeft bij
   `Confirm email: aan`, is ontwerp en pas feit als iemand het project één keer

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { langsDePoort, stubGezin } from './gezin';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -169,6 +170,7 @@ test.describe('zonder code', () => {
 
 test('the switcher and the parent page', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
+  await stubGezin(page);
   await signIn(page, 'Noor');
 
   await page
@@ -178,12 +180,13 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
   await expect(page.getByRole('heading', { name: 'Wie gebruikt de app?' })).toBeVisible(READY);
   await shoot(page, size, '21-wisselaar');
 
+  // De poort vóór de pincode. Deze bouw heeft een gezinsproject, dus het is het
+  // account (ADR-178); zonder project staat hier het geboortejaar.
   await page.getByRole('button', { name: 'Ouder' }).click();
-  await expect(page.getByRole('heading', { name: 'Ben je een volwassene?' })).toBeVisible(READY);
-  await shoot(page, size, '22-volwassenencheck');
+  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible(READY);
+  await shoot(page, size, '22-ouderpoort');
 
-  await page.getByLabel('In welk jaar ben je geboren?').fill('1985');
-  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await langsDePoort(page);
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible(READY);
   await shoot(page, size, '22b-ouderslot');
 
