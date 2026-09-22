@@ -387,3 +387,30 @@ feit: dat Supabase een adres op `.invalid` accepteert, en dat het aanmaken van
 een gebruiker in twee stappen (eerst een tijdelijk adres, dan het adres uit de
 id) werkt zoals bedoeld. Gaat een van die twee niet op, dan is dat een nieuwe
 ADR en geen stille reparatie.
+
+## Nog te doen
+
+### Het project wakker houden
+
+**Een gratis Supabase-project wordt gepauzeerd na een week waarin niemand er
+iets vraagt.** Voor de premiumdatabase is dat opgelost met
+`premium-wakker.yml`, die twee keer per week één kleine vraag stelt
+(`tools/premium/README.md`). Het gezinsproject heeft nog niets dat hetzelfde
+doet.
+
+Zolang er aan gebouwd wordt, valt dat niet op: elke deploy en elke controle is
+activiteit. Het gaat pas pijn doen als het een tijdje stil is — en dan betekent
+een gepauzeerd project dat **geen enkel kind kan inloggen en geen enkele ouder
+bij zijn pagina komt**, zonder dat er iets stuk is.
+
+De voorgestelde oplossing is één regel: een `schedule` op `Gezin nakijken`,
+twee keer per week. Die workflow vraagt de functies toch al iets, dus dan is de
+controle meteen het wakker houden — één ding dat twee dingen doet, in plaats van
+een tweede workflow die hetzelfde adres aanspreekt.
+
+Wat er dan bij hoort: een gefaalde geplande run moet te onderscheiden zijn van
+een gefaalde controle met de hand, anders wordt een rood kruisje op een dinsdag
+iets waar niemand meer naar kijkt.
+
+**Waarom het nog niet gebouwd is:** de eigenaar wil eerst stap 4 en 5 afmaken.
+Dit is een herinnering, geen achterstand.
