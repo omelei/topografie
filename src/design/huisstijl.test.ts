@@ -10,8 +10,8 @@ import { describe, expect, it } from 'vitest';
  *
  * Colour and type are the Merk en stijlgids's (docs/leer.nu Merk en
  * stijlgids.dc.html, ADR-179), with its deeper tone wherever its own pair
- * falls short of AA; the six subjects are still Leisteen's until the guide's
- * own set arrives, and the rest of the tokens are design_handoff_leernu's. This
+ * falls short of AA; the six subjects are leer.js's (ADR-180), and the rest
+ * of the tokens are design_handoff_leernu's. This
  * file is what makes that true for the next page as well as for this one: a new
  * screen that reaches for a literal colour, a shadow, a third typeface or one of
  * the old token names fails here, with the file and the line, before anyone has
@@ -83,41 +83,48 @@ describe('the tokens are the styleguide’s', () => {
     ['nadruk-tekst', '#0f5e30'],
     ['fout', '#b81d3b'],
     ['fout-vlak', '#fde2e7'],
-    ['teal', '#0b7468'],
-    ['teal-tint', '#ddf6f1'],
+    ['zon', '#ffc93c'],
+    ['zon-rand', '#d69a00'],
+    ['zon-tint', '#fff4d1'],
+    ['zon-tekst', '#8a6300'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
 
   /**
-   * The six subjects, §03: one hue each, at equal lightness and chroma, in
-   * three strengths — the light tile, the full colour and the dark tone that
-   * names the subject in words. The styleguide draws five and says a sixth
-   * belongs on hue 25 or 105; tijdvakken takes 105, because 25 is the red that
-   * means wrong.
+   * The six subjects, from the LEER_VAK table in docs/leer.js (ADR-180): the
+   * bright fill of the tile, the deep tone and the light tint. The words are
+   * the deep tone itself.
    */
   it.each([
-    ['topo-tint', '#c9e0ff'],
-    ['topo', '#3072c1'],
-    ['topo-text', '#004b96'],
-    ['tafels-tint', '#c9f0d5'],
-    ['tafels', '#00884d'],
-    ['tafels-text', '#005d33'],
-    ['klok-tint', '#ffddc7'],
-    ['klok', '#b75f0b'],
-    ['klok-text', '#834100'],
-    ['woorden-tint', '#edd8fd'],
-    ['woorden', '#8a57ae'],
-    ['woorden-text', '#643185'],
-    ['tijdvakken-tint', '#e9e7bd'],
-    ['tijdvakken', '#7c7400'],
-    ['tijdvakken-text', '#554f00'],
-    ['vlaggen-tint', '#b7edf0'],
-    ['vlaggen', '#008287'],
-    ['vlaggen-text', '#00585c'],
+    ['topo-vlak', '#12b3a0'],
+    ['topo', '#0b7468'],
+    ['topo-tint', '#ddf6f1'],
+    ['tafels-vlak', '#2e8bf2'],
+    ['tafels', '#1560b8'],
+    ['tafels-tint', '#ddeeff'],
+    ['klok-vlak', '#5c5fe6'],
+    ['klok', '#3d3fbf'],
+    ['klok-tint', '#e6e7ff'],
+    ['woorden-vlak', '#b15be6'],
+    ['woorden', '#7e2fb3'],
+    ['woorden-tint', '#f3e3fc'],
+    ['tijdvakken-vlak', '#ee5a9e'],
+    ['tijdvakken', '#b42468'],
+    ['tijdvakken-tint', '#fde4f0'],
+    ['vlaggen-vlak', '#f5a01a'],
+    ['vlaggen', '#935700'],
+    ['vlaggen-tint', '#fff0d6'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
+
+  it.each([['topo'], ['tafels'], ['klok'], ['woorden'], ['tijdvakken'], ['vlaggen']])(
+    'names %s in its own deep tone',
+    (name) => {
+      expect(rootValue(`${name}-text`)).toBe(`var(--${name})`);
+    },
+  );
 
   /**
    * And no page stands on a subject tint any more (§01, which takes ADR-120
@@ -165,12 +172,17 @@ describe('the tokens are the styleguide’s', () => {
     ['type-bijschrift', '0.9375rem'],
     ['type-bijschrift-lh', '1.375rem'],
     // Shape and space.
-    ['radius-chip', '6px'],
-    ['radius-chip-groot', '8px'],
-    ['radius-kaart-vo', '10px'],
-    ['radius-kaart', '12px'],
-    ['radius-kaart-telefoon', '14px'],
-    ['radius-rondevlak', '16px'],
+    ['radius-chip', '12px'],
+    ['radius-chip-groot', '14px'],
+    ['radius-kaart-vo', '16px'],
+    ['radius-knop', '18px'],
+    ['radius-tegel', '22px'],
+    ['radius-kaart', '24px'],
+    ['radius-kaart-telefoon', '20px'],
+    ['radius-rondevlak', '24px'],
+    ['onderkant', '5px'],
+    ['onderkant-klein', '3px'],
+    ['stroke-tegel', '3px'],
     ['padding-paneel', '32px'],
     ['padding-kaart', '24px'],
     ['padding-kaart-telefoon', '20px'],
@@ -248,8 +260,16 @@ describe('the stylesheet uses them and nothing else', () => {
     expect(lines).toEqual([]);
   });
 
-  it('draws no shadow except on a reward image', () => {
-    expect(cssCode).not.toMatch(/box-shadow/);
+  it('draws no shadow: only the hard lower edge of what you press, and the reward image', () => {
+    // The guide's edge (§04) is a shape, not a shadow: straight down, no blur,
+    // no spread, one of the edge tokens or nothing — and a colour by token.
+    const shadows = [...cssCode.matchAll(/box-shadow:\s*([^;]+);/g)].map((match) => match[1]);
+    expect(shadows.length).toBeGreaterThan(0);
+    for (const shadow of shadows) {
+      expect(shadow).toMatch(
+        /^(none|0 (0|var\(--onderkant(-klein)?\)|calc\([^)]*\)) 0 var\(--[a-z-]+\))$/,
+      );
+    }
     const filters = [...cssCode.matchAll(/drop-shadow\(([^;]*)\)/g)].map((match) => match[1]);
     for (const filter of filters) {
       // The flag's hairline is an edge that follows the flag's own outline,

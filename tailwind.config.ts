@@ -140,13 +140,16 @@ export default {
       chip: 'var(--radius-chip)',
       'chip-groot': 'var(--radius-chip-groot)',
       'kaart-vo': 'var(--radius-kaart-vo)',
+      knop: 'var(--radius-knop)',
+      tegel: 'var(--radius-tegel)',
       kaart: 'var(--radius-kaart)',
       'kaart-telefoon': 'var(--radius-kaart-telefoon)',
       rondevlak: 'var(--radius-rondevlak)',
       // A pill and the dot, which are round whatever their size.
       pil: 'var(--radius-pil)',
     },
-    // No shadow at all, anywhere, except on a reward image — and that one is a
+    // No soft shadow anywhere. What you press stands on a hard lower edge
+    // (ADR-180), drawn in index.css with its own colour; a reward image has a
     // filter, below, because it follows the drawing and not its box.
     boxShadow: {
       none: 'none',

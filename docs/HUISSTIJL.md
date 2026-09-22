@@ -8,14 +8,14 @@ eigen deel:
   de vier merkkleuren koraal, koraal diep, cacao en room. Niemand retoucheert
   daar iets; `logo.test.ts` houdt elke kopie in `public` er byte voor byte aan.
 - **Kleur en typografie** komen uit `docs/leer.nu Merk en stijlgids.dc.html`
-  (ADR-179). Room als ondergrond, witte kaarten, cacao als inkt, koraal voor de
-  knop en het merkvlak, teal voor wat gekozen is, en groen en framboos alleen
-  voor goed en fout. De zes vakkleuren zijn nog die van "Leisteen" (ADR-144),
-  tot de vakkleuren van de gids binnen zijn.
+  (ADR-179), met de vakkleuren, iconen en Denker uit `docs/leer.js` (ADR-180).
+  Room als ondergrond, witte kaarten, cacao als inkt, koraal voor de knop en
+  het merkvlak, de kleur van het vak voor wat gekozen is, zon voor premium, en
+  groen en framboos alleen voor goed en fout.
 - **Ruimte, vorm, iconen en trefmaten** komen uit de overdracht
   `design_handoff_leernu` (in `topo-prive`, README onder "Ontwerptokens") en de
-  styleguide die daarbij hoort, `docs/leer.nu Styleguide.dc.html`. Vorm en
-  beweging uit de nieuwe gids volgen in een volgende stap (ADR-179).
+  styleguide die daarbij hoort, `docs/leer.nu Styleguide.dc.html`; de vorm —
+  ronde hoeken en de harde onderkant — uit de nieuwe gids (ADR-180).
 
 Dit blad zegt hoe je een scherm bouwt dat erbij hoort; ADR-109 zegt waarom het
 zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft,
@@ -61,27 +61,33 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    voor al het andere. Het gewicht hoort bij de rol: zet er geen
    `font-semibold` of `font-bold` naast.
 
-3. **Vorm.** `rounded-kaart` (12) voor kaarten, knoppen en velden,
-   `rounded-chip` (6) voor een chip, optie of plaat, `rounded-pil` voor een pil.
-   Randen zijn 1 px (`border-hair`), 2 px (`border-active`) alleen bij nadruk of
-   een gekozen staat. Geen schaduw, behalve `drop-shadow-beloning` op een
-   beloningsafbeelding.
+3. **Vorm** (ADR-180). `rounded-kaart` (24) voor een kaart, `rounded-tegel`
+   (22) voor een tegel die je kiest, `rounded-knop` (18) voor een knop, veld
+   of antwoord, `rounded-chip` (12) voor een kleine optie en `rounded-pil` voor
+   een chip en een pil. Wat je indrukt staat op een harde onderkant van
+   `--onderkant` (5 px, een chip 3) in zijn eigen donkere kleur en zakt daarop
+   als je drukt; wat je niet kunt indrukken heeft er geen. Een tegel heeft een
+   rand van 3 px (`--stroke-tegel`). Verder geen schaduw, behalve
+   `drop-shadow-beloning` op een beloningsafbeelding.
 4. **Bouwstenen.** Een sectie is een `h2.tk-sectie` met eronder de inhoud; een
    lijst is `ul.tk-lijst` met `tk-lijstrij` per rij (plaat, titel, regel, stand,
    pijl); getallen zijn `dl.tk-cijfers` met een `tk-cijfer` per tegel; wat je
    kunt verdienen draagt een `Embleem`. Een pagina opent met `tk-etalage`: de
    titel als `h1.tk-etalage-kop` en de zin eronder als `tk-etalage-tekst`, in
-   indigo (ADR-150). Kaarten naast elkaar zijn `tk-kaarten` met een
+   cacao op koraal (ADR-150, ADR-179). Kaarten naast elkaar zijn `tk-kaarten` met een
    `tk-kaartje` per kaart; een kaart met een keuze is `tk-card tk-kaartrij`,
-   met een `tk-kaartteken` ervoor.
+   met een `tk-kaartteken` ervoor. Premium is zon: `tk-pil` in cacao op goud,
+   en een gouden rand om het plan dat de pagina aanraadt.
 5. **Trefmaten.** Een knop is `h-knop` (56 in PO, 44 in VO). Het kleinste dat
    iets indrukbaars mag zijn is `raak`: 44 onder een muis, 48 op een tablet, 56
    onder een duim en altijd 56 in een ronde. Nooit een vaste maat eronder.
-6. **De kleur van een vak.** Binnen een vak — de vakpagina, de ronde, de rail,
-   de uitslag — draagt de voortgang de kleur van dat vak: zet `data-module` op
-   de wortel. Wat gekozen is, is overal teal (`accent`), en wat je indrukt
-   overal koraal (`actie`). Goed is altijd groen en fout altijd framboos, in
-   welk vak ook.
+6. **De kleur van een vak** (ADR-180). Binnen een vak — de vakpagina, de
+   ronde, de rail, de uitslag — dragen de voortgang en wat gekozen is de kleur
+   van dat vak: zet `data-module` en `data-accent="module"` op de wortel.
+   Buiten een vak is dat cacao. De tegel van een vak (`tk-plaat`) is de heldere
+   `-vlak`-kleur met het pictogram in wit en staat altijd naast de naam van het
+   vak, die hem draagt. Wat je indrukt is overal koraal (`actie`). Goed is
+   altijd groen en fout altijd framboos, in welk vak ook.
 7. **Een ronde is licht.** Zet `data-thema="ronde"` op de wortel van een scherm
    waarin een kind antwoordt: dat zet de trefmaten op 56. De kleuren zijn die
    van de rest van de app (ADR-112); de vraag en de kaart staan elk op een

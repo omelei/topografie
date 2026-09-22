@@ -11221,6 +11221,75 @@ Dit is de eerste van vier stappen; deze zet kleur en letters.
 - VO mag pas aan als de woorden van een knop daar groot genoeg blijven voor wit
   op koraal; de token staat er al op 19 px.
 
+## ADR-180 — Stap 2 van de stijlgids: de vakken uit leer.js, en wat je indrukt staat op een harde onderkant
+
+**Status:** accepted. **Date:** 2026-09-22. **Volgt op** ADR-179. **Vervangt** de
+zes vakkleuren van ADR-144, geeft de accentregel van ADR-112 terug en vervangt
+"geen schaduw" (ADR-109) door "alleen de harde onderkant".
+
+### Context
+
+De eigenaar leverde `leer.js`, de componenten waarmee de Merk en stijlgids zich
+tekent: de vakkleuren (`LEER_VAK`), Denker, het logo, de vakiconen, de avatars,
+het embleem, de UI-iconen en de feest- en vliegfuncties. Het staat nu als
+`docs/leer.js` naast de gids, zodat die ook lokaal rendert, en is net als de
+logoscripts uitgesloten van Prettier en ESLint: het is een bron, geen code van de
+app.
+
+### Besluit
+
+- **Zes vakken uit `LEER_VAK`,** elk in vier sterktes: `-vlak` (de heldere
+  vulling van de tegel), de kale naam (de diepe tint: balk, gekozen rand,
+  onderkant), `-text` (dezelfde diepe tint als woorden) en `-tint`. De gids heet
+  rekenen wat hier tafels heet en taal wat hier woorden heet. Alle diepe tinten
+  halen AA: wit erop 5,66 tot 7,89, op hun tint 4,99 tot 6,48.
+- **De tegel van een vak is decoratie naast de naam.** De gids tekent een wit
+  pictogram op de heldere vulling, en die haalt het niet overal (vlaggen 2,12,
+  topo 2,63). De tegel staat op elke plek naast de naam van het vak, en de naam
+  draagt de betekenis; het pictogram is herkenning, geen informatie.
+- **Wat gekozen is, heeft weer de kleur van het vak.** De gids tekent de gekozen
+  tegel, de gekozen chip en de ring in de kleur van het vak waarin je bent.
+  `[data-accent='module']` zet het accent op de vakkleur, zoals ADR-112 deed en
+  Leisteen terugnam. Buiten een vak is het accent cacao; de teal van ADR-179 is
+  weg, want die is nu de kleur van topografie. "Vandaag", het ene dat te doen
+  is, heeft een koraalrand: het is een actie en geen keuze.
+- **Vorm.** Ronde hoeken per soort: kaart 24, tegel 22, knop, veld en antwoord
+  18, kleine optie 12, chip een pil. Wat je indrukt staat op een harde onderkant
+  (`--onderkant` 5 px, een chip en een vaktegel 3) in zijn eigen donkere kleur:
+  de koraalknop op `#a8331d`, een tegel op de lichte regel, een gekozen tegel op
+  de vakkleur, een vaktegel op de diepe tint. Ingedrukt zakt een knop op zijn
+  onderkant; waar beweging uit staat wordt de onderkant alleen donkerder. Een
+  tegel en een kaart die een deur is krijgen een rand van 3 px.
+  `huisstijl.test.ts` laat alleen die vorm toe: recht omlaag, geen blur, een
+  token als maat en als kleur.
+- **De secundaire knop volgt de gids:** de lichte regel en een lichte onderkant.
+  Een knop met woorden wordt door die woorden herkend; WCAG 1.4.11 vraagt dan
+  geen contrasterende rand. Velden en opties zonder woorden houden
+  `rand-bediening`.
+- **Premium is zon** (`#ffc93c`, cacao erop 10,55): het label, de gouden rand
+  van het aanbevolen plan en een zachte zonverloop erachter. Niet meer het groen
+  van "goed".
+- **De antwoordstaten blijven wat ze waren.** De gids heeft goed, fout en een
+  "bijna" in mandarijn met een dubbele rand; de app heeft vier vormen (goed,
+  bijna, fout, gemist) die `answerStates.test.ts` zonder kleur uit elkaar houdt,
+  en de dubbele rand is daar al "gemist". Mandarijn erbij zou een vijfde kleur
+  met een betekenis zijn, op een vorm die al iets anders zegt.
+
+### Risico's
+
+- **Tijdvakken en fout liggen dicht bij elkaar.** De diepe tint van tijdvakken
+  (`#b42468`) en fout (`#b81d3b`) verschillen weinig in tint. In een ronde
+  tijdvakken is de gekozen rand dus bijna de kleur van fout. De vorm draagt het
+  verschil (fout is gearceerd en gekruist, gekozen is dicht), maar dit is een
+  punt voor de ontwerper.
+- **Vlaggen en mandarijn** zijn allebei oranje. Zolang mandarijn niet gebruikt
+  wordt, speelt dat niet.
+
+### Wat nog komt
+
+Beweging (stap 3) en Denker, het logo, de vakiconen, de UI-iconen, de avatars en
+het embleem uit `leer.js` (stap 4).
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)
