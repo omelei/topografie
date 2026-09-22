@@ -933,15 +933,14 @@
     padding: 0 24px;
   }
 
-  /* ---- The emblem: what a badge and a diploma wear (ADR-112) ---------------
-   * One round shape for everything a child can earn. Earned, a closed circle
-   * in the module's colour — or the green, where it is about no one module —
-   * with the drawing on it. Not yet, a dashed ring round a quiet drawing: a
-   * shape says "nog niet", so it survives grey and colour blindness. */
+  /* ---- The emblem: what a badge and a diploma wear (ADR-112, ADR-182) -----
+   * One round shape for everything a child can earn. Earned, a gold disc — the
+   * guide's diploma emblem — in a ring of the module's colour, or of zon's own
+   * edge where it is about no one module, with the drawing on it in cacao.
+   * Not yet, a dashed ring round a quiet drawing: a shape says "nog niet", so
+   * it survives grey and colour blindness. */
   .tk-embleem {
-    --embleem: var(--nadruk);
-    --embleem-vlak: var(--nadruk-vlak);
-    --embleem-tekst: var(--nadruk-tekst);
+    --embleem: var(--zon-rand);
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -966,14 +965,12 @@
   }
   .tk-embleem[data-module] {
     --embleem: var(--module);
-    --embleem-vlak: var(--module-tint);
-    --embleem-tekst: var(--module-tekst);
   }
   .tk-embleem[data-gehaald] {
     border-style: solid;
     border-color: var(--embleem);
-    background: var(--embleem-vlak);
-    color: var(--embleem-tekst);
+    background: var(--zon);
+    color: var(--inkt);
   }
 
   /* De rand die meeloopt met wat je onthoudt (het diplomaprogramma).
@@ -4567,6 +4564,40 @@
     }
   }
 
+  /* ---- Denker (ADR-182) ----------------------------------------------------
+   * The mascot, drawn inline by Brandmark from the delivery's own drawings.
+   * The drawing overflows its box on purpose: the dot, the arms and the star
+   * reach past Denker's body, as they do in the guide. */
+  .tk-denker {
+    display: inline-block;
+    flex: none;
+    line-height: 0;
+    vertical-align: middle;
+  }
+  /* A page title with Denker beside it: the one expression on the screen. */
+  .tk-kop-denker {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  /* An avatar: the delivered picture, round (ADR-182). */
+  .tk-avatar-plaatje {
+    display: block;
+    border-radius: var(--radius-pil);
+  }
+  .tk-denker > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  /* Asleep, the z's stand still where motion is off. */
+  .tk-denker .z {
+    opacity: 1;
+  }
+
   /* ---- De bewegingslaag (ADR-142) ---------------------------------------
    * Drieduizend regels stijl en precies één transition: niets in dit product
    * reageerde op een aanraking. Een knop sprong een pixel en verder stond
@@ -4696,6 +4727,57 @@
         transform var(--beweeg-vlot) var(--beweeg-veer);
     }
 
+    /* Denker leeft (§05): hij knippert af en toe, de punt zweeft, en elke
+     * uitdrukking heeft haar eigen gebaar. Allemaal lussen op --beweeg-golf,
+     * en allemaal weg waar beweging uit staat. */
+    :root:not([data-beweging='rustig']) .tk-denker .eye {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tk-denker-knipper 5.2s infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .dot {
+      animation: tk-denker-zweef 2.4s var(--beweeg-golf) infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .sleepdot {
+      animation: none;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .wave {
+      transform-origin: 76px 50px;
+      animation: tk-denker-zwaai 1.8s var(--beweeg-golf) infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .armL {
+      transform-origin: 14px 50px;
+      animation: tk-denker-juich-links 0.9s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .armR {
+      transform-origin: 74px 46px;
+      animation: tk-denker-juich-rechts 0.9s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .star {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tk-denker-twinkel 1.8s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .thumb {
+      transform-origin: 78px 70px;
+      animation: tk-denker-duim 2.4s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .z {
+      opacity: 0;
+      animation: tk-denker-zz 3.6s ease-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .z2 {
+      animation-delay: 1.2s;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='juichen'] .lijf {
+      transform-origin: 44px 94px;
+      animation: tk-denker-hop 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='slapen'] .lijf {
+      transform-origin: 44px 94px;
+      animation: tk-denker-adem 3.6s ease-in-out infinite;
+    }
+
     /* Een scherm komt binnen: 24 px omhoog in 240 ms. Alleen verplaatsing en
      * geen vervaging, zodat een scherm nooit even half leesbaar is. */
     :root:not([data-beweging='rustig']) .tk-page {
@@ -4714,6 +4796,120 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+/* Denker (leer.js, ADR-182). Every loop begins and ends at rest. */
+@keyframes tk-denker-knipper {
+  0%,
+  93%,
+  100% {
+    transform: scaleY(1);
+  }
+  95.5% {
+    transform: scaleY(0.12);
+  }
+}
+@keyframes tk-denker-zweef {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes tk-denker-zwaai {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0);
+  }
+  12%,
+  36% {
+    transform: rotate(-26deg);
+  }
+  24%,
+  48% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes tk-denker-hop {
+  0%,
+  55%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  10% {
+    transform: translateY(0) scale(1.06, 0.92);
+  }
+  28% {
+    transform: translateY(-9px) scale(0.96, 1.05);
+  }
+  45% {
+    transform: translateY(0) scale(1.04, 0.96);
+  }
+}
+@keyframes tk-denker-juich-links {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(-14deg);
+  }
+}
+@keyframes tk-denker-juich-rechts {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+}
+@keyframes tk-denker-twinkel {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  50% {
+    transform: rotate(18deg) scale(1.12);
+  }
+}
+@keyframes tk-denker-duim {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0);
+  }
+  80% {
+    transform: rotate(-10deg);
+  }
+  90% {
+    transform: rotate(4deg);
+  }
+}
+@keyframes tk-denker-adem {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03, 0.98);
+  }
+}
+@keyframes tk-denker-zz {
+  0% {
+    opacity: 0;
+    transform: translate(0, 4px);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(6px, -10px);
   }
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Brandmark } from '@/components/Brandmark';
 import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
@@ -115,7 +116,10 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
   const kop = (
     <div className="tk-home-kop">
       <div className="tk-home-welkom">
-        <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
+        <div className="tk-kop-denker">
+          <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
+          <Brandmark size={56} uitdrukking="zwaaien" />
+        </div>
         <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
       </div>
     </div>

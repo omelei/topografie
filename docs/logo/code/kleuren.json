@@ -1,18 +1,7 @@
 {
-  "koraal": {
-    "waarde": "#FF6A4D",
-    "gebruik": "Lijf van Denker, app-icoon, accenten. Niet voor kleine tekst."
-  },
-  "koraal-diep": {
-    "waarde": "#C8412A",
-    "gebruik": "Alleen voor tekst en links op room of wit (contrast 4,7:1)."
-  },
-  "cacao": {
-    "waarde": "#2A1E17",
-    "gebruik": "Ogen, punt, woordbeeld en lopende tekst."
-  },
-  "room": {
-    "waarde": "#FFF7EF",
-    "gebruik": "Rustige achtergrond."
-  }
+  "koraal": "#FF6A4D",
+  "koraalDiep": "#C8412A",
+  "cacao": "#2A1E17",
+  "room": "#FFF3E6",
+  "zon": "#FFC93C"
 }

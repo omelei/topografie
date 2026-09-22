@@ -2,9 +2,6 @@
   --leernu-koraal: #FF6A4D;
   --leernu-koraal-diep: #C8412A;
   --leernu-cacao: #2A1E17;
-  --leernu-room: #FFF7EF;
-  /* Denker-sprite */
-  --denker-lijf: var(--leernu-koraal);
-  --denker-oog: var(--leernu-cacao);
-  --denker-punt: var(--leernu-cacao);
+  --leernu-room: #FFF3E6;
+  --leernu-zon: #FFC93C;
 }

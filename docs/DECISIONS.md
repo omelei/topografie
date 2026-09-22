@@ -11337,6 +11337,56 @@ Wat Denker doet (knipperen, meekijken, de punt die zweeft, vliegt en een ster
 wordt) en het feest van goed, ronde klaar en diploma horen bij Denker en komen
 in stap 4, met de tekeningen uit `leer.js`.
 
+## ADR-182 — Stap 4 van de stijlgids: Denker, het logo en de avatars uit leer.js
+
+**Status:** accepted. **Date:** 2026-09-22. **Volgt op** ADR-181. **Vervangt** de
+logolevering v1.0 van ADR-154 door v2.0, en de tijdelijke avatars van ADR-177
+door de geleverde.
+
+### Context
+
+De levering v1.0 in `docs/logo` verbood precies wat de Merk en stijlgids met
+Denker doet: een mond, armen, een kleurverloop en nieuwe uitdrukkingen. De
+eigenaar leverde met `leer.js` de tekeningen zelf, als web components.
+
+### Besluit
+
+- **De levering wordt getekend, niet overgetekend.** `tools/merk-uit-leer.mjs`
+  voert `docs/leer.js` uit tegen een nagebootste DOM, neemt de SVG die elke
+  component tekent en schrijft die weg: het logo (liggend, staand, woordbeeld,
+  in kleur, cacao en wit), Denker los, zijn zeven uitdrukkingen elk ook in de
+  eenvoudige versie onder 36 px, het app-icoon, de favicons, het manifest en de
+  og-image (PNG's via Chromium). Daarna kopieert het naar `public`,
+  `src/assets/denker` en `src/design/kleuren.css`. `logo.test.ts` houdt elke
+  kopie byte voor byte aan de levering, zoals voor v1.0. De LEESMIJ is v2.0.
+- **Denker staat inline in de pagina,** niet meer als `<use>` naar een sprite,
+  zodat index.css hem kan laten knipperen, de punt kan laten zweven en elke
+  uitdrukking haar gebaar kan geven (ADR-181). Waar beweging uit staat, staat
+  hij stil. Elk exemplaar krijgt een eigen id voor zijn verloop. De sprite is
+  weg.
+- **Zeven uitdrukkingen:** denken, blij, juichen, bemoedigend, trots, slapen en
+  zwaaien. Denker zwaait bij het welkom op de voordeur, is blij bij "Ronde
+  klaar" (behalve terwijl het diploma wordt uitgereikt: dan is de Denker van
+  de uitreiking de enige) en trots bij de uitreiking.
+- **De avatars zijn de geleverde acht,** met dezelfde ids, dus een kind houdt
+  zijn keuze. Het zijn plaatjes in `public/avatars` en geen pictogrammen: ze
+  mogen kleur dragen, want ze betekenen niets en staan altijd naast de naam.
+- **Het embleem van een gehaald diploma is een gouden schijf** in een ring van
+  de vakkleur, zoals het diploma-embleem van de gids.
+- **Room is `#FFF3E6`,** ook in de levering en het manifest.
+
+### Wat bewust niet is meegenomen
+
+- **De UI-iconen en vakglyphs uit `leer.js`.** De app heeft een getekende set
+  met één raster en één streekdikte (styleguide §E, `icons.test.ts`). De gids
+  tekent gevulde vormen met uitsparingen in de tegelkleur. Die ruil raakt
+  dertig plekken en de regel zelf, en is een eigen besluit.
+- **`leerFeest` en `leerVlieg`:** de sterren, de confetti en de punt die naar de
+  voortgang vliegt. Die horen bij de terugkoppeling in elke ronde, en die is
+  per vak gebouwd.
+- **Denker in de terugkoppeling van een ronde** (juichen bij goed, bemoedigend
+  bij fout). Dat is vijf schermen, en hoort bij dezelfde stap als het feest.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

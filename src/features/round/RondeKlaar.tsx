@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { Brandmark } from '@/components/Brandmark';
 import { DiplomaIcon, NextIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import { aanDeBeurt, setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
@@ -140,7 +141,12 @@ export function RondeKlaar({
               {t(module.name)}
             </p>
           ) : null}
-          <h1 className="tk-titel">{t('result.title')}</h1>
+          <div className="tk-kop-denker">
+            <h1 className="tk-titel">{t('result.title')}</h1>
+            {/* One Denker on a screen: while the diploma is being handed over,
+                that one is his. */}
+            {diploma !== null && uitreiking ? null : <Brandmark size={64} uitdrukking="blij" />}
+          </div>
           <p className="text-lopend text-tekst-secundair">
             {deel ? `${naamVan(deel)} · ${vorm}` : vorm}
           </p>

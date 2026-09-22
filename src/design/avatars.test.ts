@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { AVATARS, avatarVan } from '@/features/player/avatars';
@@ -41,34 +41,15 @@ describe('de avatars', () => {
     expect(avatarVan(undefined)).toBeNull();
   });
 
-  it('tekent ze op hetzelfde raster als de pictogrammen', () => {
-    // Ze betekenen niets — dat is het verschil met styleguide §E — maar ze
-    // staan er wel naast, en een eigen <svg> zou een eigen streekdikte en een
-    // eigen raster meebrengen.
-    expect(bron).not.toContain('<svg');
-    expect(bron.match(/<Icon \{\.\.\.props\}>/g)).toHaveLength(AVATARS.length);
-
-    for (const match of bron.matchAll(/(?:cx|cy|r|x|y|width|height)="(-?[\d.]+)"/g)) {
-      const waarde = Number(match[1]);
-      expect(waarde, match[0]).toBeGreaterThanOrEqual(0);
-      expect(waarde, match[0]).toBeLessThanOrEqual(24);
+  it('tekent elke avatar met het geleverde bestand', () => {
+    // De set uit de Merk en stijlgids (ADR-182), door tools/merk-uit-leer.mjs
+    // in public/avatars gezet. Een id zonder bestand is een lege cirkel in de
+    // balk van een kind dat allang gekozen had.
+    for (const avatar of AVATARS) {
+      const pad = join(process.cwd(), 'public', 'avatars', `${avatar.id}.svg`);
+      expect(existsSync(pad), avatar.id).toBe(true);
+      expect(readFileSync(pad, 'utf8'), avatar.id).toMatch(/^<svg [^>]*viewBox="0 0 100 100"/);
     }
-  });
-
-  it('laat geen avatar een eigen kleur dragen', () => {
-    // Het palet is bezet: groen zegt "goed", gearceerd rood zegt "fout",
-    // koraal is het merk en de zes vakkleuren zeggen welk vak je voor je hebt
-    // (ADR-159). Avatars verschillen daarom in vorm en niet in kleur — wat ze
-    // ook leesbaar houdt voor een kind dat kleuren niet onderscheidt.
-    for (const match of bron.matchAll(/fill="([^"]*)"/g)) {
-      expect(['none', 'currentColor'], match[0]).toContain(match[1]);
-    }
-    expect(bron).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
-    expect(bron).not.toMatch(/\b(?:rgb|hsl|oklch)\(/);
-  });
-
-  it('geeft elke silhouet een eigen tekening', () => {
-    const paden = [...bron.matchAll(/ d="([^"]+)"/g)].map((match) => match[1]);
-    expect(new Set(paden).size, 'twee avatars delen een pad').toBe(paden.length);
+    expect(bron).toContain('/avatars/${id}.svg');
   });
 });

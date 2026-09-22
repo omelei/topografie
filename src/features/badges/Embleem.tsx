@@ -6,10 +6,10 @@ import type { Module } from '@/features/shell/modules';
  * The round emblem a badge and a diploma both wear (ADR-112).
  *
  * One shape for everything a child can earn, so a diploma and a badge read as
- * the same kind of thing. Earned, it is a closed circle in the colour of the
- * module it belongs to — or the green, where it belongs to none — with the
- * drawing on it. Not yet, it is a dashed ring round a quiet drawing: a shape
- * rather than a tint says "nog niet", so it survives grey.
+ * the same kind of thing. Earned, it is a gold disc in a ring of the colour of
+ * the module it belongs to (ADR-182), with the drawing on it. Not yet, it is a
+ * dashed ring round a quiet drawing: a shape rather than a tint says "nog
+ * niet", so it survives grey.
  *
  * Sinds de diploma's het hele beloningsprogramma zijn, kan de rand ook
  * **meelopen**: geef `vul` mee en de gestippelde ring wordt een boog die voor

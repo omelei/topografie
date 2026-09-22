@@ -1,48 +1,70 @@
+import { useId } from 'react';
+
 /**
- * Denker alone: the logo without the name (ADR-154).
+ * Denker, the mascot: the logo without the name (ADR-154, ADR-182).
  *
- * Drawn from public/denker-sprite.svg, the designer's sprite, so the colours
- * follow --denker-lijf, --denker-oog and --denker-punt from design/kleuren.css.
- * Below 24px the favicon instead: bigger eyes and no dot, as the delivery
- * asks.
+ * The drawings are the delivery's own (docs/logo/beeldmerk/uitdrukkingen),
+ * written by tools/merk-uit-leer.mjs from the Merk en stijlgids's leer.js and
+ * copied to src/assets/denker. They are drawn inline rather than as an image,
+ * so index.css can make Denker blink, let the dot float and let him wave —
+ * and switch all of it off where motion is (ADR-181).
  *
- * The expressions are feedback in the app only: never in place of the logo, and
- * at most one on a screen. And never the answer itself — Denker is koraal,
- * eight degrees of hue from the red that means wrong, so an expression may
- * stand beside a result but may not be what tells a child it was right
- * (ADR-159). The shapes of §8 do that.
+ * Below 36px the simple drawing: the eyes and the dot stay, the mouth, the
+ * brows and the cheeks go, as the guide says.
+ *
+ * The expressions are feedback in the app only: never in place of the logo,
+ * and at most one on a screen. And never the answer itself — Denker stands
+ * beside a result, the shapes of HUISSTIJL §8 say what it was.
  *
  * Silent, always. The name is the logo's job.
  */
 export const UITDRUKKINGEN = [
-  'onthouden',
-  'goed-gedaan',
-  'iets-nieuws',
-  'oefenen',
-  'pauze',
+  'denken',
+  'blij',
+  'juichen',
+  'bemoedigend',
+  'trots',
+  'slapen',
+  'zwaaien',
 ] as const;
 
 export type Uitdrukking = (typeof UITDRUKKINGEN)[number];
 
-/** The smallest Denker is drawn with the dot; below it, the favicon. */
-const KLEINSTE_PX = 24;
+/** Below this Denker is drawn without mouth, brows and cheeks. */
+const SIMPEL_ONDER_PX = 36;
+
+const TEKENINGEN = import.meta.glob<string>('../assets/denker/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+function tekening(uitdrukking: Uitdrukking, simpel: boolean): string {
+  const naam = `../assets/denker/denker-${uitdrukking}${simpel ? '-klein' : ''}.svg`;
+  return TEKENINGEN[naam] ?? '';
+}
 
 export function Brandmark({
   size = 32,
-  uitdrukking = 'onthouden',
+  uitdrukking = 'denken',
   className,
 }: {
   readonly size?: number;
   readonly uitdrukking?: Uitdrukking;
   readonly className?: string;
 }) {
-  if (size < KLEINSTE_PX) {
-    return <img src="/favicon.svg" alt="" width={size} height={size} className={className} />;
-  }
+  // One gradient per Denker on the page: two that shared an id would both
+  // lose it the moment the first one is hidden.
+  const verloop = `denker-verloop-${useId().replace(/[^a-zA-Z0-9-]/g, '')}`;
+  const svg = tekening(uitdrukking, size < SIMPEL_ONDER_PX).replaceAll('denker-verloop', verloop);
 
   return (
-    <svg width={size} height={size} className={className} aria-hidden="true" focusable="false">
-      <use href={`/denker-sprite.svg#denker-${uitdrukking}`} />
-    </svg>
+    <span
+      className={className ? `tk-denker ${className}` : 'tk-denker'}
+      data-uitdrukking={uitdrukking}
+      style={{ width: size, height: size }}
+      aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: svg }}
+    />
   );
 }
