@@ -337,19 +337,24 @@
     --kaart-radius: var(--radius-kaart);
     --kaart-padding: var(--padding-kaart);
 
-    /* ---- Beweging (ADR-142) ----------------------------------------------
-     * Drie duren en twee curves, en niet meer. Beweging is hier taal: iets dat
-     * reageert op een aanraking gaat vlot, iets dat een waarde laat veranderen
-     * gaat rustig, en iets dat aankomt veert. Alles wat deze tokens gebruikt
-     * staat achter `prefers-reduced-motion: no-preference` — de regel bovenaan
+    /* ---- Beweging (ADR-142, ADR-181) ---------------------------------------
+     * De duren en de drie curves van de Merk en stijlgids (§05). Eén regel:
+     * tijdens de vraag staat alles stil, na het antwoord mag het feest. Alles
+     * wat deze tokens gebruikt staat achter `prefers-reduced-motion:
+     * no-preference` én buiten `data-beweging='rustig'` — de regel bovenaan
      * zet ze ook uit, maar twee sloten op een deur die een kind kan misselijk
      * maken is er een te weinig.
      */
-    --beweeg-vlot: 120ms; /* een knop onder je vinger */
-    --beweeg-rustig: 240ms; /* een balk die oploopt */
+    --beweeg-druk: 80ms; /* een knop die onder je vinger zakt */
+    --beweeg-vlot: 160ms; /* een tegel die opkomt, een knop die terugveert */
+    --beweeg-keuze: 220ms; /* een keuze die klikt */
+    --beweeg-rustig: 240ms; /* een scherm dat binnenkomt */
+    --beweeg-schud: 400ms; /* een fout: drie keer schudden */
     --beweeg-traag: 420ms; /* iets dat het toneel op komt */
-    --beweeg-uit: cubic-bezier(0.2, 0, 0, 1); /* vaart eraf, zoals een deur */
-    --beweeg-veer: cubic-bezier(0.34, 1.4, 0.64, 1); /* voorbij en terug */
+    --beweeg-balk: 700ms; /* een balk die oploopt */
+    --beweeg-uit: cubic-bezier(0.2, 0.8, 0.2, 1); /* vullen, schuiven, overgangen */
+    --beweeg-veer: cubic-bezier(0.3, 1.6, 0.5, 1); /* terugveren, ploppen */
+    --beweeg-golf: cubic-bezier(0.45, 0, 0.55, 1); /* zweven, ademen (loops) */
   }
 
   /* A tablet: a finger, on a screen wider than a phone. */
@@ -4218,8 +4223,11 @@
       animation: tk-teken-aan 260ms var(--beweeg-veer);
     }
     /* Goed krijgt zijn eigen komst (ADR-142): iets verder door, met een knik
-     * erin. Fout niet — een fout hoort te landen en niet te juichen, en een
-     * kind dat het even niet weet heeft geen dansend kruis nodig. */
+     * erin. Fout schudt kort, drie keer (ADR-181): dat is "nee" en geen
+     * feest, en het kruis staat daarna stil. */
+    .tk-teken-fout {
+      animation: tk-schud var(--beweeg-schud) ease-in-out;
+    }
     .tk-teken-goed {
       animation: tk-teken-goed var(--beweeg-traag) var(--beweeg-veer);
     }
@@ -4571,9 +4579,9 @@
    * `prefers-reduced-motion` om beweegt. Verspreid over dertig regels is dat
    * geen laag maar een gewoonte.
    *
-   * **Alleen transform en kleur.** Geen `box-shadow` (de huisstijl laat er
-   * precies één toe, op een beloningsplaatje) en niets dat de doos van een
-   * element verandert: een hover die iets groter maakt duwt de rij eronder
+   * **Alleen transform, kleur en de onderkant.** De enige `box-shadow` die
+   * beweegt is de harde onderkant waar een knop op zakt (ADR-180), en niets
+   * verandert de doos van een element: een hover die iets groter maakt duwt de rij eronder
    * weg, en een lijst die schuift onder je vinger is erger dan een lijst die
    * stilstaat.
    */
@@ -4599,18 +4607,22 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .tk-button,
-    .tk-kaart,
-    .tk-lijstrij,
-    .tk-tegel,
-    .tk-keuze,
-    .tk-tafel,
-    .tk-module-card,
-    .tk-profiel,
-    .tk-rail-item,
-    .tk-vakmenu-optie,
-    .tk-doel-ander,
-    .tk-weekdoel-weg {
+    :root:not([data-beweging='rustig'])
+      :is(
+        .tk-button,
+        .tk-kaart,
+        button.tk-kaartje,
+        .tk-lijstrij,
+        .tk-tegel,
+        .tk-keuze,
+        .tk-tafel,
+        .tk-module-card,
+        .tk-profiel,
+        .tk-rail-item,
+        .tk-vakmenu-optie,
+        .tk-doel-ander,
+        .tk-weekdoel-weg
+      ) {
       transition:
         transform var(--beweeg-vlot) var(--beweeg-uit),
         box-shadow var(--beweeg-vlot) var(--beweeg-uit),
@@ -4619,43 +4631,60 @@
         color var(--beweeg-vlot) var(--beweeg-uit);
     }
 
-    /* Iets dat je kunt indrukken komt naar je toe onder de muis. Twee pixels:
-     * genoeg om te zien dat het leeft, te weinig om de bladspiegel te laten
-     * ademen. */
-    .tk-kaart:hover,
-    .tk-lijstrij:hover,
-    .tk-tegel:hover:not(:disabled),
-    .tk-module-card:hover:not(:disabled) {
-      transform: translateY(-2px);
+    /* Een tegel komt op onder de muis (§05: 4 px, 160 ms). Wat opkomt staat
+     * nog op zijn onderkant, dus het leest als optillen en niet als zweven. */
+    :root:not([data-beweging='rustig'])
+      :is(
+        .tk-kaart:hover,
+        button.tk-kaartje:hover,
+        .tk-lijstrij:hover,
+        .tk-tegel:hover:not(:disabled),
+        .tk-module-card:hover:not(:disabled)
+      ) {
+      transform: translateY(-4px);
     }
 
-    /* En gaat onder je vinger in. Een knop krimpt in plaats van te zakken:
-     * zakken is wat een kaart doet die terugkomt, indrukken is wat een knop
-     * doet die iets doet. */
-    /* A button sinks onto its edge (Merk en stijlgids §05). */
-    .tk-button:active:not(:disabled):not(.tk-button-tertiary) {
+    /* Een knop zakt op zijn onderkant: 80 ms naar beneden, en met een veer
+     * terug. Rustig zakt hij niet; zijn onderkant wordt dan alleen donkerder
+     * (de regel bij .tk-button). */
+    :root:not([data-beweging='rustig']) .tk-button:not(.tk-button-tertiary) {
+      transition:
+        transform 180ms var(--beweeg-veer),
+        box-shadow 180ms var(--beweeg-veer),
+        background-color var(--beweeg-vlot) var(--beweeg-uit),
+        color var(--beweeg-vlot) var(--beweeg-uit);
+    }
+    :root:not([data-beweging='rustig']) .tk-button:active:not(:disabled):not(.tk-button-tertiary) {
       transform: translateY(var(--onderkant));
       box-shadow: 0 0 0 var(--actie-hover);
+      transition-duration: var(--beweeg-druk);
+      transition-timing-function: var(--beweeg-uit);
     }
-    .tk-button-secondary:active:not(:disabled) {
+    :root:not([data-beweging='rustig']) .tk-button-secondary:active:not(:disabled) {
       box-shadow: 0 0 0 var(--rand-licht);
     }
-    .tk-keuze:active,
-    .tk-tafel:active,
-    .tk-tegel:active:not(:disabled) {
+    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tafel, .tk-tegel):active:not(:disabled) {
       transform: scale(0.96);
     }
-    .tk-kaart:active,
-    .tk-lijstrij:active,
-    .tk-module-card:active:not(:disabled) {
+    :root:not([data-beweging='rustig'])
+      :is(
+        .tk-kaart:active,
+        button.tk-kaartje:active,
+        .tk-lijstrij:active,
+        .tk-module-card:active:not(:disabled)
+      ) {
       transform: translateY(0) scale(0.98);
     }
 
-    /* Een balk die oploopt loopt ook echt op. Hij stond altijd al op de goede
-     * stand; hij sprong er alleen heen, en dan is de winst van vandaag niet te
-     * zien maar alleen af te lezen. */
+    /* Een keuze klikt (§05): .96, 1.03, 1. Hij speelt zodra de keuze gekozen
+     * wordt, want dan gaat de regel pas gelden. */
+    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tegel, .tk-tafel)[aria-pressed='true'] {
+      animation: tk-keuze-klikt var(--beweeg-keuze) var(--beweeg-veer);
+    }
+
+    /* Een balk die oploopt loopt ook echt op, in de 700 ms van de gids. */
     .tk-progress-fill {
-      transition: width var(--beweeg-rustig) var(--beweeg-uit);
+      transition: width var(--beweeg-balk) var(--beweeg-uit);
     }
 
     /* De stippen van een ronde vullen zich veerkrachtig: dat is de enige plek
@@ -4666,6 +4695,53 @@
         background-color var(--beweeg-vlot) var(--beweeg-uit),
         transform var(--beweeg-vlot) var(--beweeg-veer);
     }
+
+    /* Een scherm komt binnen: 24 px omhoog in 240 ms. Alleen verplaatsing en
+     * geen vervaging, zodat een scherm nooit even half leesbaar is. */
+    :root:not([data-beweging='rustig']) .tk-page {
+      animation: tk-scherm-in var(--beweeg-rustig) var(--beweeg-uit);
+    }
+  }
+}
+
+/* A choice that clicks: in, a little over, and back (Merk en stijlgids §05). */
+@keyframes tk-keuze-klikt {
+  0% {
+    transform: scale(0.96);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* A screen arriving: from 24px below, onto its place. */
+@keyframes tk-scherm-in {
+  from {
+    transform: translateY(24px);
+  }
+}
+
+/* Wrong, after the answer: three shakes of 7px and then still (§05). It says
+ * "nee" and not "jammer": short, once, and never while the question is open. */
+@keyframes tk-schud {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-5px);
+  }
+  80% {
+    transform: translateX(4px);
   }
 }
 
