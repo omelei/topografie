@@ -2,6 +2,8 @@ import { useId, useState, type FormEvent } from 'react';
 import { SlotIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { isGeldigePin, PIN_LENGTE, probeer, zetPin, type OuderFout } from '@/store/ouder';
+import { useAccount } from '@/features/account/useAccount';
+import { Accountcheck } from './Accountcheck';
 import { useOuder } from './useOuder';
 import { Volwassenencheck } from './Volwassenencheck';
 
@@ -27,10 +29,15 @@ import { Volwassenencheck } from './Volwassenencheck';
  * precies zo zwaar als het hoort te zijn: hierachter zit geen kluis maar de
  * instellingen van dit apparaat.
  *
- * **Er staat een volwassenencheck vóór het zetten** (ADR-176). Zonder die check
+ * **Er staat een poort vóór het zetten** (ADR-176, ADR-178). Zonder die poort
  * mocht iedereen die als eerste bij de wisselaar kwam de pincode kiezen, en dat
- * is systematisch het kind: het kind opent de app als eerste. Zie
- * `Volwassenencheck.tsx` voor wat die check wel en niet is.
+ * is systematisch het kind: het kind opent de app als eerste.
+ *
+ * Welke poort, hangt af van wat de bouw heeft. Met een gezinsproject is het het
+ * **account**, en dan is een bevestigd mailadres de voorwaarde
+ * (`Accountcheck.tsx`). Zonder project is het het **geboortejaar**
+ * (`Volwassenencheck.tsx`) — zwakker, en de enige goede terugval voor een
+ * apparaat dat nergens iets kan navragen.
  *
  * **En vergeten kan.** ADR-173 liet dat met opzet niet toe — "een weg die alleen
  * het slot weghaalt zou geen slot zijn" — en dat klopte alleen zolang de ouder
@@ -58,11 +65,20 @@ type Stand = 'openen' | 'check' | 'zetten';
 
 export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
   const { pinGezet } = useOuder();
+  const { ingesteld, sessie } = useAccount();
   const [stand, setStand] = useState<Stand>(pinGezet ? 'openen' : 'check');
 
-  if (stand === 'check') return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+  if (stand === 'check' && !ingesteld) {
+    return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+  }
+  // Met een gezinsproject is het account de poort. Geen sessie betekent hier
+  // ook: aangemeld maar de mail nog niet bevestigd — Supabase geeft dan een
+  // gebruiker zonder tokens terug, en dat is precies de bedoeling (ADR-178).
+  if (stand === 'check' && sessie === null) return <Accountcheck />;
 
-  return <Veld zetten={stand === 'zetten'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
+  // Ingelogd, of het geboortejaar is gegeven: de poort is gepasseerd. Geen
+  // aparte stand ervoor — wie erdoor is, hoort niet nog een knop te krijgen.
+  return <Veld zetten={stand !== 'openen'} onOpen={onOpen} onVergeten={() => setStand('check')} />;
 }
 
 function Veld({

@@ -1502,6 +1502,21 @@ export const nl = {
   'ouder.bewaarPin': 'Bewaren',
   'ouder.vergetenKnop': 'Pincode vergeten?',
 
+  // De poort vóór de pincode, op een bouw mét gezinsproject (ADR-178). Het
+  // geboortejaar hieronder blijft staan voor een bouw zonder — een ouder met
+  // een tablet zonder verbinding moet bij de instellingen van zijn eigen kind
+  // kunnen.
+  //
+  // De zin zegt eerlijk wat de mail doet: hij stelt geen leeftijd vast, maar
+  // zet er een ronde buiten dit apparaat tussen. Wat hij daarnaast oplevert —
+  // een vergeten pincode van overal herstellen — staat erbij, want dat is voor
+  // een gezin waarschijnlijk het echte argument.
+  'ouder.accountTitel': 'Maak een ouderaccount',
+  'ouder.accountUitleg':
+    'Hierachter staan de instellingen, premium en hoe het met je kinderen gaat. Daarvoor maak je een account met je e-mailadres. We sturen je een mail met een link; pas als je daarop klikt, kun je verder.',
+  'ouder.accountHulp':
+    'Zo weten we dat er een volwassene meekijkt. En raak je later je pincode kwijt, dan kom je er met dit account overal weer in — niet alleen op dit apparaat.',
+
   // De volwassenencheck vóór het zetten of resetten van de pincode (ADR-176).
   // Geen rekensom: dit product leert kinderen tafels, dus dat zou de poort zijn
   // die de app zelf traint om te openen. Het jaartal wordt gecontroleerd en

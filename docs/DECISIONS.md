@@ -11007,6 +11007,102 @@ scrollpad af dat de rij half onder de balk legde.
 
 ---
 
+## ADR-178 — Het account is de poort vóór de pincode, zodra er een gezin is
+
+**Status:** accepted. **Date:** 2026-09-22. **Vervangt de poort van ADR-176** op
+elke bouw die een gezinsproject heeft, en laat hem staan op elke bouw zonder.
+Raakt de pincode zelf niet.
+
+### Context
+
+De eigenaar stelde de vraag die ADR-176 zelf al half beantwoordde: _"Is het niet
+beter om de ouder wel een account te laten aanmaken via e-mail met verificatie
+via e-mail? Nu kan het kind alsnog zelf een geboortejaar intoetsen."_
+
+Dat klopt, en ADR-176 schreef het op: _"Het blijft een hek en geen kluis. Een
+twaalfjarige die het doorheeft, tikt een jaartal in."_ Dat was toen de beste
+poort die er was — er was geen server om iets aan te vragen, dus er viel niets
+te verifiëren dat het apparaat niet zelf kon verzinnen.
+
+**Wat een geverifieerd mailadres wél en niet doet**, want daar hangt de hele
+plaatsing aan.
+
+Het stelt **geen leeftijd** vast. Een tienjarige met een eigen mailbox typt zijn
+eigen adres in en klikt op de link. Wie iets anders beweert, verkoopt een
+zekerheid die er niet is.
+
+Het stelt vast dat iemand **een postbus kan openen**, en dat is een andere soort
+drempel dan een formulierveld: er zit een ronde buiten dit apparaat tussen.
+Daarnaast koopt het drie dingen die een gezin waarschijnlijk meer waard zijn dan
+de poort zelf:
+
+1. **Herstel van overal.** Een vergeten pincode was alleen te herstellen op dát
+   apparaat, via die geboortejaarvraag. Met een account kan het van elke
+   telefoon.
+2. **Een adres dat de bon krijgt.** Verantwoordelijkheid schrikt af waar
+   moeilijkheidsgraad dat niet doet.
+3. **De grond onder artikel 8 AVG.** "Redelijke inspanning om ouderlijke
+   toestemming te verifiëren" is met een geverifieerd adres in te vullen; met
+   een jaartal in een formulier niet.
+
+**En wat níét mag veranderen.** De opdracht waar dit hele project op staat, zegt
+het met zoveel woorden: _een kind kan beginnen met oefenen zonder dat de ouder
+erbij is._ Een account aan de voordeur breekt dat. Het hoort dus niet vóór het
+oefenen maar vóór de instellingen.
+
+### Decision
+
+**Zodra de bouw een gezinsproject heeft, is het account de poort.** Het
+geboortejaar van ADR-176 verdwijnt dan van het scherm.
+
+De werking zit in Supabase en niet in onze code: bij aanmelden met bevestiging
+per mail antwoordt het met een **gebruiker zonder tokens**. Geen tokens is geen
+sessie, en zonder sessie komt er hier niemand langs. De klik in de mail ís de
+poort; wij tekenen alleen het formulier.
+
+**Zonder gezinsproject blijft het geboortejaar staan.** Dat is geen restje maar
+de enige goede terugval. Een ouder met een tablet zonder verbinding, of een
+bouw waarin `VITE_GEZIN_URL` leeg is, moet bij de instellingen van zijn eigen
+kind kunnen. Een poort die niet opengaat, is geen poort maar een muur.
+
+**De pincode blijft de dagelijkse deur.** ADR-173 legde uit waarom dat vier
+cijfers zijn en geen wachtwoord, en die redenering wordt door dit besluit alleen
+maar sterker: wie voor elke handeling een adres en een wachtwoord moet intikken
+op een gezins-iPad, plakt binnen een maand iets op de achterkant. Eén keer de
+omweg, daarna vier cijfers.
+
+**Vier sporten dus, elk met meer erachter:**
+
+| Wat                                            | Slot                                                   |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| Oefenen                                        | niets                                                  |
+| Dagelijks naar de ouderpagina                  | de pincode                                             |
+| De pincode voor het eerst zetten, of vervangen | **het account** (of, zonder project, het geboortejaar) |
+| Geld en gegevens van het apparaat af           | hetzelfde account                                      |
+
+### Consequences
+
+- **Het scherm is er al.** `AccountBlok` bestaat sinds ADR-155, met `aanmelden`,
+  `inloggen` en bevestiging-per-mail als eigen uitkomst, en wordt hier
+  hergebruikt in plaats van nagebouwd: twee formulieren die allebei een adres en
+  een wachtwoord vragen, lopen uit elkaar op de dag van de eerste foutmelding.
+  Wat erbij komt is `Accountcheck.tsx` — een kop, twee zinnen, en dat blok.
+- **De e2e-suite verandert niet.** CI heeft geen gezinsproject, dus daar staat
+  het geboortejaar en blijft elke bestaande test lopen zoals hij liep. De nieuwe
+  tak zou daar dus nooit aangeraakt worden, en daarom staat hij in
+  `Pinslot.test.tsx`: geen project, wel een project zonder sessie, wel een
+  project met sessie.
+- **Wat hier niet aan te tonen is**, en dat is dezelfde grens als `SUPABASE.md`
+  al trekt: dat Supabase werkelijk een gebruiker zonder tokens teruggeeft bij
+  `Confirm email: aan`, is ontwerp en pas feit als iemand het project één keer
+  echt heeft ingericht. Blijkt het anders, dan is dat een nieuwe ADR en geen
+  stille reparatie.
+- **De geboortejaarvraag blijft in de code**, met zijn eigen toets en zijn eigen
+  scherm. Hem weghalen zou de bouw zonder project onbruikbaar maken voor de
+  ouder, en dat is precies de bouw die vandaag draait.
+
+---
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
