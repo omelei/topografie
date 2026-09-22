@@ -92,6 +92,15 @@
     --actie-tint: #ffe9e1; /* the fill behind a label */
     --actie-tekst: #a8331d; /* koraal as text                  5.70 on actie-tint */
 
+    /* ---- Zon: reward and premium (§04) --------------------------------------
+     * Premium stays gold and inviting, never grey. Cacao on zon is 10.55; the
+     * deep tone is for words on the light tint.
+     */
+    --zon: #ffc93c;
+    --zon-rand: #d69a00; /* zon's lower edge */
+    --zon-tint: #fff4d1;
+    --zon-tekst: #8a6300; /*                                  5.31 on zon-tint */
+
     /* ---- Good, §02 ---------------------------------------------------------
      * Green is a status and nothing else: it says "onthouden", never "press
      * here". The guide's Goed (#1e9e55) is 3.46 under white, so the solid fill
@@ -140,54 +149,61 @@
     --map-grens: var(--inkt);
     /* Behind a dialog: the ink's own channels. */
     --scrim: rgb(42 30 23 / 45%);
-    /* What is chosen, done, or being asked about: the guide's teal, from its
-     * chosen tile, its chosen chip and its progress ring. Not koraal: the
-     * colour you press is not the colour of what you have already pressed.
-     * The guide's fill (#12b3a0) is 2.63 under white and on a card, so the
-     * rule and the words are its deep edge. accent.test.ts says where it may
-     * go at all. */
-    --teal: #0b7468; /* 5.66 on kaart, 5.18 on papier */
-    --teal-tint: #ddf6f1; /* teal on it 4.99 */
-    --accent: var(--teal);
-    --accent-text: var(--teal);
-    --accent-tint: var(--teal-tint);
+    /* What is chosen, done, or being asked about. Inside a subject it is the
+     * subject's own colour, as the guide draws its chosen tile, its chosen
+     * chip and its ring (data-accent below, ADR-180); where no subject is
+     * named it is cacao. Never koraal: the colour you press is not the colour
+     * of what you have already pressed. accent.test.ts says where it may go at
+     * all. */
+    --accent: var(--inkt);
+    --accent-text: var(--inkt);
+    --accent-tint: var(--balk-leeg);
 
-    /* ---- The six subjects, §03 ---------------------------------------------
-     * One hue each, and equal lightness and chroma across all six, so none of
-     * them shouts louder than the rest. Each comes in three strengths: a light
-     * tile with a dark glyph on it (the standard, in lists and in the rail),
-     * the full colour (progress bars and the chosen state), and the dark tone
-     * that names the subject in words.
-     *
-     * The styleguide draws five — 255, 155, 55, 310, 200 — and says a sixth
-     * belongs on hue 25 or 105. Tijdvakken takes 105: 25 is the red that means
-     * wrong, and a subject may not wear it.
+    /* ---- The six subjects (leer.js, ADR-180) ------------------------------
+     * Each subject has a colour and a world of its own (Merk en stijlgids §02,
+     * the LEER_VAK table in docs/leer.js). Each comes in four strengths:
+     *   -vlak  the bright fill of the tile, with a white glyph on it — beside
+     *          the subject's name, never instead of it: vlaggen's fill is 2.12
+     *          under white, so the tile decorates and the name carries;
+     *   (bare) the deep tone: a bar, a chosen rule, the pressed tile's edge;
+     *   -text  the same deep tone where it is read as words;
+     *   -tint  the light ground behind a chosen answer.
+     * The guide names two subjects differently: its rekenen is tafels here,
+     * its taal is woorden. Ratios: white on the deep tone / the deep tone on
+     * its tint.
      */
-    --topo: #3072c1; /* oklch(.55 .14 255)             white on it 4.88 */
-    --topo-text: #004b96; /* oklch(.42 .14 255)              on tint 6.37 */
-    --topo-tint: #c9e0ff; /* oklch(.90 .055 255) */
-    --tafels: #00884d; /* oklch(.55 .14 155)             white on it 4.54 */
-    --tafels-text: #005d33; /* oklch(.42 .13 155)              on tint 6.47 */
-    --tafels-tint: #c9f0d5; /* oklch(.92 .055 155) */
-    --klok: #b75f0b; /* oklch(.58 .14 55)              white on it 4.51 */
-    --klok-text: #834100; /* oklch(.45 .13 55)               on tint 6.03 */
-    --klok-tint: #ffddc7; /* oklch(.92 .06 55) */
-    --woorden: #8a57ae; /* oklch(.55 .14 310)             white on it 5.18 */
-    --woorden-text: #643185; /* oklch(.42 .14 310)              on tint 6.83 */
-    --woorden-tint: #edd8fd; /* oklch(.91 .055 310) */
-    --tijdvakken: #7c7400; /* oklch(.55 .13 105)             white on it 4.82 */
-    --tijdvakken-text: #554f00; /* oklch(.42 .12 105)              on tint 6.64 */
-    --tijdvakken-tint: #e9e7bd; /* oklch(.92 .055 105) */
-    --vlaggen: #008287; /* oklch(.55 .14 200)             white on it 4.62 */
-    --vlaggen-text: #00585c; /* oklch(.42 .12 200)              on tint 6.42 */
-    --vlaggen-tint: #b7edf0; /* oklch(.91 .055 200) */
-    /* What a module's colour is where no module is named: the guide's teal
-     * rather than the first module's, so a bar on the front door is progress and
-     * never "topografie" by accident — and never koraal, which is not
-     * progress (ADR-179). data-module below points these at a real subject. */
-    --module: var(--teal);
-    --module-tekst: var(--teal);
-    --module-tint: var(--teal-tint);
+    --topo-vlak: #12b3a0;
+    --topo: #0b7468; /*                                   5.66 / 4.99 */
+    --topo-text: var(--topo);
+    --topo-tint: #ddf6f1;
+    --tafels-vlak: #2e8bf2;
+    --tafels: #1560b8; /*                                 6.18 / 5.22 */
+    --tafels-text: var(--tafels);
+    --tafels-tint: #ddeeff;
+    --klok-vlak: #5c5fe6;
+    --klok: #3d3fbf; /*                                   7.89 / 6.48 */
+    --klok-text: var(--klok);
+    --klok-tint: #e6e7ff;
+    --woorden-vlak: #b15be6;
+    --woorden: #7e2fb3; /*                                7.13 / 5.84 */
+    --woorden-text: var(--woorden);
+    --woorden-tint: #f3e3fc;
+    --tijdvakken-vlak: #ee5a9e;
+    --tijdvakken: #b42468; /*                             6.19 / 5.17 */
+    --tijdvakken-text: var(--tijdvakken);
+    --tijdvakken-tint: #fde4f0;
+    --vlaggen-vlak: #f5a01a;
+    --vlaggen: #935700; /*                                5.83 / 5.19 */
+    --vlaggen-text: var(--vlaggen);
+    --vlaggen-tint: #fff0d6;
+    /* What a module's colour is where no module is named: cacao, so a bar on
+     * the front door is progress and never "topografie" by accident — and
+     * never koraal, which is not progress (ADR-179). data-module below points
+     * these at a real subject. */
+    --module-vlak: var(--inkt);
+    --module: var(--inkt);
+    --module-tekst: var(--inkt);
+    --module-tint: var(--balk-leeg);
     --module-grond: var(--papier);
 
     /* ---- The ground a page stands on --------------------------------------
@@ -255,14 +271,27 @@
     --type-bijschrift: 0.9375rem; /* 15px, help */
     --type-bijschrift-lh: 1.375rem; /* 22px */
 
-    /* ---- Radius ------------------------------------------------------------ */
-    --radius-chip: 6px; /* a chip, an option, a plate */
-    --radius-chip-groot: 8px;
-    --radius-kaart-vo: 10px;
-    --radius-kaart: 12px; /* a card, a button, a field */
-    --radius-kaart-telefoon: 14px;
-    --radius-rondevlak: 16px; /* an area in a round */
-    --radius-pil: 999px; /* a pill and the dot: round whatever their size */
+    /* ---- Radius ------------------------------------------------------------
+     * The guide's shapes (§04): soft and round, a step rounder the bigger the
+     * thing is. */
+    --radius-chip: 12px; /* an option, a small plate */
+    --radius-chip-groot: 14px; /* a subject's plate */
+    --radius-kaart-vo: 16px;
+    --radius-knop: 18px; /* a button, a field, an answer */
+    --radius-tegel: 22px; /* a tile you choose */
+    --radius-kaart: 24px; /* a card */
+    --radius-kaart-telefoon: 20px;
+    --radius-rondevlak: 24px; /* an area in a round */
+    --radius-pil: 999px; /* a pill, a chip and the dot: round whatever their size */
+
+    /* ---- The lower edge (§04) -----------------------------------------------
+     * What you can press stands on a hard edge of its own colour, one step
+     * darker, and sinks onto it when pressed. It is a shape and not a shadow:
+     * no blur, no offset sideways, and nothing that is not pressable has one.
+     */
+    --onderkant: 5px; /* a button, a tile, a card that is a door */
+    --onderkant-klein: 3px; /* a chip, a plate */
+    --stroke-tegel: 3px; /* the rule round a tile */
 
     /* ---- Lines --------------------------------------------------------------
      * 1px on light, 2px for emphasis or a chosen state. The two thicker ones
@@ -382,50 +411,57 @@
    * and one entry in the content, and touches no component.
    */
   [data-module='topo'] {
+    --module-vlak: var(--topo-vlak);
     --module: var(--topo);
     --module-tekst: var(--topo-text);
     --module-tint: var(--topo-tint);
     --module-grond: var(--topo-grond);
   }
   [data-module='tafels'] {
+    --module-vlak: var(--tafels-vlak);
     --module: var(--tafels);
     --module-tekst: var(--tafels-text);
     --module-tint: var(--tafels-tint);
     --module-grond: var(--tafels-grond);
   }
   [data-module='klok'] {
+    --module-vlak: var(--klok-vlak);
     --module: var(--klok);
     --module-tekst: var(--klok-text);
     --module-tint: var(--klok-tint);
     --module-grond: var(--klok-grond);
   }
   [data-module='woorden'] {
+    --module-vlak: var(--woorden-vlak);
     --module: var(--woorden);
     --module-tekst: var(--woorden-text);
     --module-tint: var(--woorden-tint);
     --module-grond: var(--woorden-grond);
   }
   [data-module='tijdvakken'] {
+    --module-vlak: var(--tijdvakken-vlak);
     --module: var(--tijdvakken);
     --module-tekst: var(--tijdvakken-text);
     --module-tint: var(--tijdvakken-tint);
     --module-grond: var(--tijdvakken-grond);
   }
   [data-module='vlaggen'] {
+    --module-vlak: var(--vlaggen-vlak);
     --module: var(--vlaggen);
     --module-tekst: var(--vlaggen-text);
     --module-tint: var(--vlaggen-tint);
     --module-grond: var(--vlaggen-grond);
   }
 
-  /* ADR-112 let a module take the accent over, so a chosen tile was blue on
-   * topografie and orange on klokkijken. The styleguide takes that back in §02
-   * and §06: what you press is one colour everywhere (koraal since ADR-179),
-   * precisely so a control is never mistaken for a subject — and the subject's
-   * own colour is kept for the two things that denote a subject, its tile and
-   * its bar. The attribute
-   * data-accent="module" is still written by the screens and no longer changes
-   * anything; data-module is what names the subject. */
+  /* ADR-112 let a module take the accent over, Leisteen took that back, and
+   * the Merk en stijlgids gives it back (ADR-180): its chosen tile, its chosen
+   * chip and its ring are the subject's colour. What you press stays koraal
+   * everywhere, so a control is still never mistaken for a subject. */
+  [data-accent='module'] {
+    --accent: var(--module);
+    --accent-text: var(--module-tekst);
+    --accent-tint: var(--module-tint);
+  }
 
   /* ---- A round (ADR-109, ADR-112) ------------------------------------------
    * Switched on by data-thema="ronde" on the root of every round screen. A
@@ -668,7 +704,8 @@
     min-height: var(--knop-hoogte);
     padding: 0 24px;
     border: var(--stroke-hair) solid transparent;
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
+    box-shadow: 0 var(--onderkant) 0 var(--actie-hover);
     background: var(--actie);
     color: var(--kaart);
     font-family: var(--font-kop);
@@ -678,19 +715,20 @@
     text-align: center;
     cursor: pointer;
   }
-  .tk-button:hover {
-    background: var(--actie-hover);
-  }
+  /* Pressed, without movement: the edge goes darker while you press. Where
+   * motion is allowed the button also sinks onto it (see the motion rules). */
   .tk-button:active {
-    background: var(--actie-hover);
-    /* Pressed reads as movement, not as another colour. */
-    transform: translateY(1px);
+    box-shadow: 0 var(--onderkant) 0 var(--inkt);
   }
 
+  /* The guide's light rule and edge. A button's words say what it is, so
+   * its outline is not the thing WCAG 1.4.11 asks to see; a field or an
+   * option without words keeps rand-bediening. */
   .tk-button-secondary {
     background: var(--kaart);
     color: var(--inkt);
-    border-color: var(--rand-bediening);
+    border: var(--stroke-tegel) solid var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
   }
   .tk-button-secondary:hover {
     background: var(--vlak-hover);
@@ -703,9 +741,10 @@
     background: transparent;
     color: var(--inkt);
     border-color: transparent;
+    box-shadow: none;
     padding: 0 8px;
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: 4px;
   }
   .tk-button-tertiary:hover {
     background: var(--vlak-hover);
@@ -722,6 +761,7 @@
     background: var(--balk-leeg);
     color: var(--tekst-tertiair);
     border-color: transparent;
+    box-shadow: none;
     cursor: not-allowed;
     transform: none;
   }
@@ -768,10 +808,11 @@
     flex-direction: column;
     gap: 16px;
     padding: 20px 20px 20px 24px;
-    border: var(--stroke-hair) solid var(--accent);
+    border: var(--stroke-hair) solid var(--actie);
     border-left-width: 8px;
     border-radius: var(--radius-kaart);
-    /* De kaart en niet de zachte accenttint: dit blok staat op de voordeur, op
+    /* Koraal, de kleur van wat je indrukt: dit is het ene dat vandaag te doen
+     * is (ADR-180). De kaart en niet de zachte tint: dit blok staat op de voordeur, op
      * de gewone grond, en een tint daarop is een derde vlak dat niets zegt. De
      * kleur zit in de rand, waar hij het werk doet. */
     background: var(--kaart);
@@ -1245,7 +1286,7 @@
     display: block;
     padding: 8px;
     border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: var(--kaart);
     cursor: pointer;
   }
@@ -1313,7 +1354,7 @@
     min-height: var(--knop-hoogte);
     padding: 12px;
     border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: var(--kaart);
     cursor: pointer;
   }
@@ -1448,7 +1489,7 @@
     width: 100%;
     padding: 12px 16px;
     border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: var(--kaart);
     color: var(--inkt);
     font: inherit;
@@ -1698,14 +1739,15 @@
   .tk-knop-licht:active {
     background: var(--actie-tint);
   }
-  /* Het label van premium: wit op de groene nadruk, zoals de knop in de balk. */
+  /* Het label van premium: cacao op zon (ADR-180). Premium is goud en
+   * uitnodigend, nooit grijs, en niet meer het groen van "goed". */
   .tk-pil {
     display: inline-flex;
     align-items: center;
     padding: 2px 10px;
     border-radius: var(--radius-pil);
-    background: var(--nadruk);
-    color: var(--kaart);
+    background: var(--zon);
+    color: var(--inkt);
     font-size: var(--type-vlaklabel);
     line-height: var(--type-vlaklabel-lh);
     letter-spacing: var(--type-vlaklabel-ls);
@@ -1739,6 +1781,8 @@
   /* Een kaart die een weg is: het teken, de kop en een pijl op één regel, en
    * de hele kaart is de knop. */
   button.tk-kaartje {
+    border-width: var(--stroke-tegel);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
     flex-direction: row;
     align-items: center;
     gap: 16px;
@@ -1799,10 +1843,11 @@
     flex-direction: column;
     gap: 4px;
   }
-  /* Wat premium is en aanstaat, met de groene rand van het plan dat de
+  /* Wat premium is en aanstaat, met de gouden rand van het plan dat de
    * premiumpagina aanraadt. */
   .tk-kaartrij[data-premium] {
-    border: var(--stroke-active) solid var(--nadruk);
+    border: var(--stroke-tegel) solid var(--zon);
+    background: linear-gradient(160deg, var(--zon-tint), var(--kaart) 70%);
   }
   .tk-premium-waarom-rij {
     display: flex;
@@ -1829,9 +1874,11 @@
     border-radius: var(--kaart-radius);
     background: var(--kaart);
   }
-  /* Premium met een rand van twee in groen: het plan dat de pagina aanraadt. */
+  /* Premium met een gouden rand: het plan dat de pagina aanraadt. */
   .tk-premium-plan[data-premium] {
-    border: var(--stroke-active) solid var(--nadruk);
+    border: var(--stroke-tegel) solid var(--zon);
+    box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
+    background: linear-gradient(160deg, var(--zon-tint), var(--kaart) 70%);
   }
   .tk-premium-plan-naam {
     font-family: var(--font-kop);
@@ -1937,7 +1984,7 @@
     margin-right: 12px;
     padding: 0 20px;
     border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: var(--kaart);
     color: var(--inkt);
     font: inherit;
@@ -2034,9 +2081,12 @@
     flex: none;
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-chip);
-    background: var(--module-tint);
-    color: var(--module-tekst);
+    border-radius: var(--radius-chip-groot);
+    /* The guide's tile: the subject's bright fill with the glyph in white.
+     * It always stands beside the subject's name, which is what carries it. */
+    background: var(--module-vlak);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--module);
+    color: var(--kaart);
   }
   /* Het vak waar je nu in bent, in de rail en in het menu dat de rail onder
    * 1200 wordt: de volle vulling, met het pictogram in het licht. Dat is de
@@ -2063,6 +2113,7 @@
   /* A plate that is about no module: "kies een vak", a test with no subject. */
   .tk-plaat-neutraal {
     background: var(--papier);
+    box-shadow: none;
     color: var(--tekst-secundair);
   }
 
@@ -2159,8 +2210,9 @@
     gap: 12px;
     width: 264px;
     padding: var(--kaart-padding);
-    border: var(--stroke-hair) solid var(--rand-licht);
+    border: var(--stroke-tegel) solid var(--rand-licht);
     border-radius: var(--kaart-radius);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
     background: var(--kaart);
     color: var(--inkt);
     text-align: left;
@@ -2710,7 +2762,7 @@
     gap: 8px;
     min-height: var(--raak);
     padding: 0 16px;
-    border: var(--stroke-hair) solid var(--rand-bediening);
+    border: var(--stroke-active) solid var(--rand-bediening);
     border-radius: var(--radius-pil);
     background: var(--kaart);
     color: var(--inkt);
@@ -2728,6 +2780,7 @@
   }
   .tk-keuze[aria-pressed='true'] {
     border-color: var(--accent-text);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--accent-text);
     background: var(--accent-tint);
     color: var(--accent-text);
   }
@@ -2769,9 +2822,10 @@
     align-items: center;
     gap: 16px;
     min-height: var(--knop-hoogte);
-    padding: 20px;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--radius-kaart);
+    padding: 18px;
+    border: var(--stroke-tegel) solid var(--rand-licht);
+    border-radius: var(--radius-tegel);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
     background: var(--kaart);
     color: var(--inkt);
     /* The words of a control, as a chip, a row and a button have them: a tile
@@ -2785,6 +2839,7 @@
   }
   .tk-tegel .tk-plaat {
     background: var(--papier);
+    box-shadow: none;
     color: var(--inkt);
   }
   @media (min-width: 1200px) {
@@ -2803,8 +2858,8 @@
   /* One pixel of padding goes back for the second pixel of rule, so nothing
    * beside a chosen tile moves. */
   .tk-tegel[aria-pressed='true'] {
-    padding: 19px;
-    border: var(--stroke-active) solid var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 var(--onderkant) 0 var(--accent);
     background: var(--accent-tint);
   }
   .tk-tegel[aria-pressed='true'] .tk-plaat {
@@ -2912,8 +2967,9 @@
     gap: 6px;
     aspect-ratio: 1;
     min-height: var(--raak);
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--radius-kaart);
+    border: var(--stroke-tegel) solid var(--rand-licht);
+    border-radius: var(--radius-tegel);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
     background: var(--kaart);
     color: var(--inkt);
     font-family: var(--font-kop);
@@ -2928,7 +2984,8 @@
     border-color: var(--tekst-tertiair);
   }
   .tk-tafel[aria-pressed='true'] {
-    border: var(--stroke-active) solid var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 var(--onderkant) 0 var(--accent);
     background: var(--accent-tint);
     color: var(--accent-text);
   }
@@ -3291,7 +3348,7 @@
     min-height: 72px;
     padding: 8px 4px;
     border: 0;
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: transparent;
     color: var(--tekst-secundair);
     font-size: var(--type-bijschrift);
@@ -3533,7 +3590,7 @@
     width: var(--raak);
     height: var(--raak);
     border: var(--stroke-hair) solid var(--rand-bediening);
-    border-radius: var(--radius-kaart);
+    border-radius: var(--radius-knop);
     background: transparent;
     color: var(--inkt);
     cursor: pointer;
@@ -4556,6 +4613,7 @@
     .tk-weekdoel-weg {
       transition:
         transform var(--beweeg-vlot) var(--beweeg-uit),
+        box-shadow var(--beweeg-vlot) var(--beweeg-uit),
         background-color var(--beweeg-vlot) var(--beweeg-uit),
         border-color var(--beweeg-vlot) var(--beweeg-uit),
         color var(--beweeg-vlot) var(--beweeg-uit);
@@ -4574,7 +4632,14 @@
     /* En gaat onder je vinger in. Een knop krimpt in plaats van te zakken:
      * zakken is wat een kaart doet die terugkomt, indrukken is wat een knop
      * doet die iets doet. */
-    .tk-button:active,
+    /* A button sinks onto its edge (Merk en stijlgids §05). */
+    .tk-button:active:not(:disabled):not(.tk-button-tertiary) {
+      transform: translateY(var(--onderkant));
+      box-shadow: 0 0 0 var(--actie-hover);
+    }
+    .tk-button-secondary:active:not(:disabled) {
+      box-shadow: 0 0 0 var(--rand-licht);
+    }
     .tk-keuze:active,
     .tk-tafel:active,
     .tk-tegel:active:not(:disabled) {

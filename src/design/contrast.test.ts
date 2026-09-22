@@ -164,6 +164,11 @@ describe('contrast', () => {
     expect(ratio('actie-tekst', 'kaart')).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('writes premium in cacao on zon, and in its deep tone on the tint', () => {
+    expect(ratio('inkt', 'zon')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio('zon-tekst', 'zon-tint')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('carries every word on a page’s koraal panel in cacao', () => {
     expect(ratio('inkt', 'koraal')).toBeGreaterThanOrEqual(4.5);
   });

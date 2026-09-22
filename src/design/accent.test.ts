@@ -5,11 +5,10 @@ import { describe, expect, it } from 'vitest';
 /**
  * The accent colours what is chosen, and nothing else.
  *
- * The accent is the guide's teal, everywhere, in every module (index.css,
- * ADR-179): the colour of what is chosen, which is not koraal, the colour of
- * what you press. A module's own colour is `--module` and is not an accent —
- * it denotes a subject on its tile and in its bar, and a subject is not a
- * state. Neither of them ever touches the mark: the dot is ink on paper or
+ * Inside a subject the accent is the subject's colour, as the Merk en
+ * stijlgids draws its chosen tile (ADR-180); where no subject is named it is
+ * cacao. It is never koraal, the colour of what you press. Neither the accent
+ * nor a module's colour ever touches the mark: the dot is ink on paper or
  * paper on ink in every module.
  *
  * The reason it is worth enforcing rather than agreeing is that an accent is
@@ -53,11 +52,12 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
 ]);
 
 /**
- * Where an accent may be *defined* rather than used: the root, and nowhere
- * else. ADR-112 let `data-accent="module"` point it at the module's own colour;
- * the styleguide takes that back, and the accent is one colour in every module.
+ * Where an accent may be *defined* rather than used: the root, and
+ * `data-accent="module"`, which points it at the subject's own colour. ADR-112
+ * did that, Leisteen took it back, and the Merk en stijlgids draws its chosen
+ * tile in the subject's colour again (ADR-180).
  */
-const DEFINITION_SELECTORS = /^:root$/;
+const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
 
 /** Lines in components that may name an accent, and why. */
 const ALLOWED_LINES: readonly { file: string; snippet: string; why: string }[] = [
