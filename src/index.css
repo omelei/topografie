@@ -4574,6 +4574,14 @@
     line-height: 0;
     vertical-align: middle;
   }
+  /* Denker beside the feedback in a round (ADR-183): at the end of the row,
+   * never in the way of the words. */
+  .tk-ronde-denker {
+    flex: none;
+    margin-left: auto;
+    line-height: 0;
+  }
+
   /* A page title with Denker beside it: the one expression on the screen. */
   .tk-kop-denker {
     display: flex;
@@ -4778,6 +4786,11 @@
       animation: tk-denker-adem 3.6s ease-in-out infinite;
     }
 
+    /* Denker komt na het antwoord binnen met een plop (§05: pop, 200 ms). */
+    :root:not([data-beweging='rustig']) .tk-ronde-denker {
+      animation: tk-denker-plop 0.5s var(--beweeg-veer) both;
+    }
+
     /* Een scherm komt binnen: 24 px omhoog in 240 ms. Alleen verplaatsing en
      * geen vervaging, zodat een scherm nooit even half leesbaar is. */
     :root:not([data-beweging='rustig']) .tk-page {
@@ -4910,6 +4923,14 @@
   100% {
     opacity: 0;
     transform: translate(6px, -10px);
+  }
+}
+
+/* Denker arriving beside an answer: from small, a little over, onto his size. */
+@keyframes tk-denker-plop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
   }
 }
 

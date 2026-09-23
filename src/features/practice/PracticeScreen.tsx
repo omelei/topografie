@@ -15,6 +15,7 @@ import { ZoomKiezer } from './ZoomKiezer';
 import { RoundProgress } from './RoundProgress';
 import { StopButton } from './StopButton';
 import { Counter } from '@/features/round/Teller';
+import { RondeDenker } from '@/features/round/RondeDenker';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { ResultScreen } from './ResultScreen';
 import {
@@ -301,6 +302,7 @@ export function PracticeScreen({
                     {feedbackDetail(state, naam, chosenName)}
                   </p>
                 </div>
+                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : nearMiss ? 'bijna' : 'fout'} />
               </div>
 
               {/* A lightning round moves on by itself, so there is nothing to

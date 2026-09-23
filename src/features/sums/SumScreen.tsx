@@ -6,6 +6,7 @@ import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
+import { RondeDenker } from '@/features/round/RondeDenker';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { useSumRound, stopsOnAMistake, typesTheSum, type SumMode } from './useSumRound';
 import { SumResultScreen } from './SumResultScreen';
@@ -183,6 +184,7 @@ export function SumScreen({
                         : t('sums.wrongSub', { gegeven: state.given })}
                   </p>
                 </div>
+                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
               </div>
 
               {/* A timed round moves on by itself, so there is nothing to

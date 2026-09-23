@@ -6,6 +6,7 @@ import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
+import { RondeDenker } from '@/features/round/RondeDenker';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { KlokFace } from './KlokFace';
 import { klokVoluit, klokWoorden } from './klokTaal';
@@ -202,6 +203,7 @@ export function KlokScreen({
                         : t('klok.wrongSub', { gegeven })}
                   </p>
                 </div>
+                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
               </div>
 
               {/* A timed round moves on by itself, so there is nothing to

@@ -11387,6 +11387,36 @@ eigenaar leverde met `leer.js` de tekeningen zelf, als web components.
 - **Denker in de terugkoppeling van een ronde** (juichen bij goed, bemoedigend
   bij fout). Dat is vijf schermen, en hoort bij dezelfde stap als het feest.
 
+## ADR-183 — Denker in de ronde: hij juicht bij goed, is bemoedigend bij fout, en goed is een feestje
+
+**Status:** accepted. **Date:** 2026-09-23. **Volgt op** ADR-182.
+
+### Context
+
+ADR-182 zette Denker op de voordeur, bij "Ronde klaar" en bij de uitreiking,
+maar niet waar een kind de meeste tijd doorbrengt: na een antwoord in een
+ronde. De gids tekent hem daar (§05, "Goed en fout antwoord"): juichend met
+sterren en een punt die naar de voortgang vliegt bij goed, bemoedigend bij
+fout.
+
+### Besluit
+
+- **`RondeDenker`** staat in alle vijf rondes (topografie, tafels, klok, vlaggen
+  en taal) aan het eind van de regel met het uitkomstteken en de zin. Bij goed
+  juicht hij, bij fout en bijna is hij bemoedigend. Hij komt na het antwoord
+  binnen met een plop; tijdens de vraag staat hij er niet, dus er beweegt niets
+  terwijl een kind nadenkt.
+- **Het feest bij goed** is `leerFeest` en `leerVlieg` uit `leer.js`, als
+  `src/features/round/feest.ts`: twaalf sterren in zon uit Denkers ster, en
+  een punt in cacao die in een boog naar het bolletje van de voortgang vliegt
+  dat net gevuld is. Het tekent in een laag die niets opvangt en zichzelf
+  opruimt. Waar beweging uit staat (`leesRustig`) gebeurt er niets; het
+  groene vlak, het vinkje en het gevulde bolletje zeggen dan alles.
+- **Denker is nooit de uitslag.** Het teken en de zin zeggen wat er gebeurde;
+  Denker zegt hoe dat voelt, en zwijgt voor een schermlezer.
+- **Geen confetti in een ronde.** De gids bewaart die voor een gehaald diploma,
+  en de uitreiking heeft al haar eigen beweging (ADR-167).
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)
