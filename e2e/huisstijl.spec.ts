@@ -37,7 +37,7 @@ test('stands on the guide’s room and sets its headings in Baloo 2', async ({ p
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   expect(ground).toBe('rgb(255, 243, 230)');
 
-  const heading = page.getByRole('heading', { name: /^Welkom / });
+  const heading = page.getByRole('heading', { name: /^Hoi / });
   await expect(heading).toBeVisible();
   expect(await heading.evaluate((el) => getComputedStyle(el).fontFamily)).toContain('Baloo 2');
   expect(await heading.evaluate((el) => getComputedStyle(el).fontWeight)).toBe('800');

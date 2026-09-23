@@ -100,7 +100,7 @@ test('the other direction: a time in words and four faces to point at', async ({
   // Four clocks, and the question is the sentence above them rather than a
   // picture. This is the half of clock reading a child who has learned to
   // recognise twelve pictures has never been asked.
-  const klokken = page.getByRole('group', { name: 'Welke klok is dit?' });
+  const klokken = page.getByRole('group', { name: 'Welke klok hoort hierbij?' });
   await expect(klokken.getByRole('button')).toHaveCount(4);
 
   await klokken.getByRole('button').first().click();
@@ -133,7 +133,7 @@ test('the clock is a door in the rail like the other two', async ({ page }, test
 
   await signIn(page, 'Timo');
 
-  const rail = page.getByRole('navigation', { name: 'Modules' });
+  const rail = page.getByRole('navigation', { name: 'Vakken' });
   await rail.getByRole('button', { name: 'Klok', exact: true }).click();
 
   // A door that is open opens onto the chooser, not onto "binnenkort".

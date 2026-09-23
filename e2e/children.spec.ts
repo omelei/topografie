@@ -84,7 +84,7 @@ test('a second child starts with nothing, and the first keeps everything', async
   // only runs at three of the six sizes is worse than one that says less.
   await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
-  await expect(page.getByRole('table').getByText('nog niet onthouden').first()).toBeVisible();
+  await expect(page.getByRole('table').getByText('nog aan het oefenen').first()).toBeVisible();
 
   await addChild(page, 'Bram');
 
@@ -96,7 +96,7 @@ test('a second child starts with nothing, and the first keeps everything', async
   // De tabel open, anders bewijst "nul rijen" niets: zonder knop staat er
   // sowieso geen tabel (ADR-143).
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
-  await expect(page.getByRole('table').getByText('nog niet onthouden')).toHaveCount(0);
+  await expect(page.getByRole('table').getByText('nog aan het oefenen')).toHaveCount(0);
 
   // And handing the device back gives Anne hers, unchanged.
   await wisselaar(page).click();
@@ -105,7 +105,7 @@ test('a second child starts with nothing, and the first keeps everything', async
 
   await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
-  await expect(page.getByRole('table').getByText('nog niet onthouden').first()).toBeVisible();
+  await expect(page.getByRole('table').getByText('nog aan het oefenen').first()).toBeVisible();
 });
 
 test('the child practising is the one the switcher says', async ({ page }) => {
@@ -137,5 +137,5 @@ test('er kunnen drie kinderen op een apparaat, en daarna zegt het dat', async ({
   await wisselaar(page).click();
   const venster = page.getByRole('dialog');
   await expect(venster.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
-  await expect(venster).toContainText('Er kunnen 3 kinderen op dit apparaat');
+  await expect(venster).toContainText('Er passen 3 kinderen op dit apparaat');
 });

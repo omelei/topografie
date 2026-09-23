@@ -64,8 +64,8 @@ async function speel(page: Page) {
 
 /** Back to the front door, and the round is in the child's history. */
 async function inGeschiedenis(page: Page, set: string) {
-  // "Klaar" when nothing is due any more (ADR-149), "Terug naar start" otherwise.
-  await page.getByRole('button', { name: /^(Klaar|Terug naar start)$/ }).click();
+  // "Klaar" when nothing is due any more (ADR-149), "Terug naar Vandaag" otherwise.
+  await page.getByRole('button', { name: /^(Klaar|Terug naar Vandaag)$/ }).click();
   const recent = page.getByRole('region', { name: 'Recent geoefend' });
   await expect(recent.getByRole('button', { name: new RegExp(set) }).first()).toBeVisible();
 }

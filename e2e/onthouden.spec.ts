@@ -56,14 +56,14 @@ test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({ 
   // Wat onthouden is, staat open boven de ring; de rest van de regels één druk
   // verder (ADR-172).
   await expect(geheugen).toContainText(
-    'Je onthoudt iets als je het drie keer goed hebt, op drie verschillende dagen.',
+    'Je kent iets als je het drie keer goed hebt, op drie verschillende dagen.',
   );
-  await expect(geheugen).not.toContainText('Dan begin je daarmee weer opnieuw.');
-  await geheugen.getByRole('button', { name: 'Hoe werkt onthouden?' }).click();
-  await expect(geheugen).toContainText('Dan begin je daarmee weer opnieuw.');
+  await expect(geheugen).not.toContainText('Dan begin je daar opnieuw mee.');
+  await geheugen.getByRole('button', { name: 'Hoe werkt herhalen?' }).click();
+  await expect(geheugen).toContainText('Dan begin je daar opnieuw mee.');
 
   const vaak = page.getByRole('region', { name: 'Hoe vaak oefen je?' });
-  await expect(vaak).toContainText('De laatste zeven dagen nog niet geoefend.');
+  await expect(vaak).toContainText('De laatste 7 dagen nog niet geoefend.');
   // Geen grafiek van acht lege staven voor wie nog niets deed.
   await expect(vaak.getByRole('list', { name: 'Vragen per week' })).toHaveCount(0);
 
@@ -142,7 +142,7 @@ test('de getallen over het oefenen staan alleen op Jij', async ({ page }) => {
   // van de oude reeks komen op de voordeur uit in plaats van op een leeg
   // scherm.
   await page.goto('/reeks');
-  await expect(page.getByRole('heading', { name: 'Welkom Ties!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hoi Ties!' })).toBeVisible();
 
   // En de kolom naast de pagina zegt niet nog eens hoeveel er goed was.
   await page.goto('/');

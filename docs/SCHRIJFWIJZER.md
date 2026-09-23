@@ -24,11 +24,11 @@ overhoort, niet als een reclame, en niet kinderachtig.
 | Wel                               | Niet                                    |
 | --------------------------------- | --------------------------------------- |
 | Goed! Dit is Limburg.             | Hoera!! Supergoed gedaan, kanjer!!!     |
-| Bijna. Dit is Limburg.            | Fout. Je hebt het verkeerd.             |
+| Bijna! Dit is Limburg.            | Fout. Je hebt het verkeerd.             |
 | Jouw antwoord: 54.                | Jij zei 54.                             |
 | Stoppen mag. Morgen verder?       | Je moet nog 8 vragen doen.              |
 | Klaar voor vandaag. Lekker bezig! | U heeft alle herhalingen voltooid.      |
-| Deze komt zo nog een keer langs.  | Deze vraag wordt later opnieuw getoond. |
+| Deze komt later nog terug.        | Deze vraag wordt later opnieuw getoond. |
 
 ## Zo schrijf je
 
@@ -39,15 +39,18 @@ overhoort, niet als een reclame, en niet kinderachtig.
    "Je bent niet klaar".
 3. **Fout is informatie, geen oordeel.** Eerst wat juist was, dan eventueel wat
    het kind antwoordde, neutraal ("Jouw antwoord: …"). Nooit "fout" als eerste
-   woord, nooit "jij zei", nooit uitroeptekens bij een fout.
+   woord, nooit "jij zei", nooit een uitroepteken bij een fout. De enige
+   uitzondering is "Bijna!": dat zegt dat het kind er dichtbij zat.
 4. **Eén begrip, één woord.** Zie de woordenlijst hieronder. Gebruik hem ook als
    een synoniem mooier klinkt.
 5. **Niet langer dan nodig.** Een nieuwe tekst is niet langer dan de oude, tenzij
    het kind hem anders niet begrijpt. Een knop is een werkwoord of een korte
    opdracht: "Start", "Volgende vraag", "Kijk na".
 6. **Correct Nederlands.** Spelling volgens het Groene Boekje, de typografische
-   apostrof (’) en het beletselteken (…). Getallen als cijfers. Hoofdletter alleen
-   aan het begin van een zin en bij namen.
+   apostrof (’) en het beletselteken (…). Een aantal dat het kind moet halen of
+   tellen, staat in cijfers: "20 sommen, 9 van de 10 goed". In een lopende uitleg
+   mag een klein getal voluit: "drie keer goed, op drie dagen". Begin een zin niet
+   met een cijfer. Hoofdletter alleen aan het begin van een zin en bij namen.
 7. **Logisch opgebouwd.** Het belangrijkste eerst. Wat een kind moet doen,
    staat vóór de uitleg waarom.
 8. **Uitroeptekens spaarzaam.** Alleen bij iets wat echt goed ging, en hooguit
@@ -71,10 +74,15 @@ Eén begrip, één woord, overal.
 | Een vraag die je aan het vergeten bent           | **bijna vergeten**               | zwak, rood                    |
 | Een antwoord dat klopt                           | **goed**                         | juist, correct                |
 | Een antwoord dat niet klopt                      | **fout** (alleen in overzichten) | verkeerd, mis                 |
+| Wat een kind fout had en opnieuw kan doen        | **jouw fouten** (als naam)       | je fouten                     |
 | De mensen thuis                                  | **je ouders**                    | vader of moeder, verzorgers   |
 | Toegang tot alles                                | **premium**                      | abonnement, pro, betaald      |
 | De code die ouders kopen                         | **code**                         | licentie, sleutel             |
 | Waar je vandaag begint                           | **Vandaag**                      | start, home, beginscherm      |
+
+"Onthouden" mag nog in de taalregels, waar het betekent: een spelling uit je
+hoofd leren ("Onthoud hoe het woord eruitziet"). Voor wat een kind weet, is het
+woord "kennen".
 
 "Ronde klaar" is het einde van een ronde; "klaar voor vandaag" betekent dat er
 niets meer te herhalen is. Een diploma is "gehaald", nooit "klaar".
@@ -89,8 +97,8 @@ Altijd dezelfde opbouw, in elk vak:
   Eronder, kleiner: "Jouw antwoord: Drenthe." Geen "fout", geen "helaas".
 - **Bijna** (een bestaande naam op de verkeerde plek, een tikfout): "Bijna!" en
   dan wat er bedoeld was.
-- **Ik weet het niet:** geen oordeel. "Geen probleem. Deze komt zo nog een keer
-  langs."
+- **Ik weet het niet:** geen oordeel. "Geen probleem. Deze komt later nog terug."
+  Niet "zo": een ronde vraagt hem niet nog een keer (ADR-101).
 
 ## Het herhaalsysteem, uitgelegd
 

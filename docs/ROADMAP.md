@@ -28,6 +28,9 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
      verwijderen, en weg na 24 maanden zonder gebruik.
 2. **Privacypagina `/privacy`**, met links vanaf account aanmaken, de kassa en de
    ouderpagina — _Claude_, na stap 1.
+   In dezelfde PR gaan de beloftes op de premiumpagina mee ("alles blijft op je
+   eigen apparaat", "je voornaam gaat nergens heen") en de uitleg bij wissen:
+   met een account gaat er met toestemming wel iets naar de server (ADR-197).
 3. **Supabase inrichten** — _jij_:
    - EU-regio controleren, migraties 0001, 0002 en 0003 draaien;
    - geheimen van de edge functions zetten, project-ref in GitHub, de workflow
@@ -61,7 +64,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | Vraag                                                                                                     | Voorstel                                                       | Waar het staat |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
 | Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen | ADR-193        |
-| Mag het aantal vragen op Vandaag ("N vragen die je bijna vergeet") zonder code blijven?                   | Laten staan als lokkertje                                      | ADR-192        |
+| Mag het aantal vragen op Vandaag ("N vragen die je bijna vergeten bent") zonder code blijven?             | Laten staan als lokkertje                                      | ADR-192        |
 
 ## Klein onderhoud
 
@@ -72,11 +75,12 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Gedaan (recent)
 
-| PR        | Wat                                                                                                          | ADR      |
-| --------- | ------------------------------------------------------------------------------------------------------------ | -------- |
-| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort) | 195, 196 |
-| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                     | 194      |
-| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                          | 193      |
-| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app           | 192      |
-| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina   | 191      |
-| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                   | 187–190  |
+| PR        | Wat                                                                                                              | ADR      |
+| --------- | ---------------------------------------------------------------------------------------------------------------- | -------- |
+| #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback | 197      |
+| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort)     | 195, 196 |
+| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                         | 194      |
+| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                              | 193      |
+| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app               | 192      |
+| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina       | 191      |
+| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                       | 187–190  |

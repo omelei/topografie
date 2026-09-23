@@ -49,7 +49,7 @@ test('Jij draagt je instellingen, je diploma’s en al je cijfers, in die volgor
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   // De zin onder de titel zegt wie er oefent en wat er op de pagina staat.
   await expect(page.locator('.tk-etalage-tekst').first()).toHaveText(
-    'Je oefent als Noor. Hier stel je jezelf in. En hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
+    'Je oefent als Noor. Hier stel je jezelf in. En hier staan je diploma’s, wat je kent en hoe vaak je oefent.',
   );
 
   for (const blok of [
@@ -217,7 +217,7 @@ test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
 
   // Eén druk wist nog niets: er komt eerst te staan wat er weggaat.
   await blok.getByRole('button', { name: 'Alles wissen' }).click();
-  await expect(blok).toContainText('Dit kan niet ongedaan gemaakt worden.');
+  await expect(blok).toContainText('Je kunt dit niet terugdraaien.');
 
   // En de uitweg brengt je terug zonder dat er iets gebeurd is.
   await blok.getByRole('button', { name: 'Laat maar staan' }).click();

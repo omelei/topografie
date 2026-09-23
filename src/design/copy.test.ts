@@ -122,6 +122,30 @@ describe('the words', () => {
     expect(offenders, 'ADR-030: the one word for retention is "onthouden"').toEqual([]);
   });
 
+  it('keeps to the word list in the schrijfwijzer', () => {
+    // One concept, one word (docs/SCHRIJFWIJZER.md). "Onthouden" is not on this
+    // list: the taal rules use it for learning a spelling by heart, which is
+    // not what a child knows. Where it meant that, it now says "kennen".
+    const retired = [
+      /afzwem/i,
+      /af te zwemmen/i,
+      /opfris/i,
+      /vader of moeder/i,
+      /\bjij zei\b/i,
+      /\bjij koos\b/i,
+      /\bmodules?\b/i,
+    ];
+    const offenders: string[] = [];
+
+    for (const [key, value] of Object.entries(nl)) {
+      for (const pattern of retired) {
+        if (pattern.test(value)) offenders.push(`${key}: "${value}"`);
+      }
+    }
+
+    expect(offenders, 'ADR-197: use the word from docs/SCHRIJFWIJZER.md').toEqual([]);
+  });
+
   it('does not tell a child what to feel', () => {
     const forbidden = [/\bleuk\w*/i, /\bspelenderwijs\b/i, /\bavontuur\w*/i, /\bplezier\w*/i];
     const offenders: string[] = [];
