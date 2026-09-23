@@ -144,6 +144,13 @@ niets om een code in te zetten.
    supabase functions deploy kassa --no-verify-jwt
    ```
 
+   Daarna hoeft dat laatste niet meer met de hand: de workflow **Kassa
+   functie** (`.github/workflows/kassa-functie.yml`) deployt de kassa bij elke
+   wijziging in `main`, en is onder **Actions** ook met de hand te starten. Hij
+   heeft het geheim `SUPABASE_ACCESS_TOKEN` nodig (een persoonlijk token van
+   supabase.com/dashboard/account/tokens) en haalt het project uit
+   `PREMIUM_URL` (ADR-201).
+
    `--no-verify-jwt` is nodig omdat Mollie geen token meestuurt en een ouder
    geen account heeft. De function is daarmee openbaar, en dat kan: hij gelooft
    niets van wat er binnenkomt en vraagt alles na bij Mollie.
