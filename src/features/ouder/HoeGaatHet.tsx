@@ -109,14 +109,17 @@ export function HoeGaatHet() {
                 <>
                   <p className="tk-reeks-getal">
                     <span className="tk-reeks-aantal">{stand.onthouden}</span>
-                    <span className="tk-reeks-zin">{t('retention.geheugenGoed')}</span>
+                    <span className="tk-reeks-zin">
+                      {t('ouder.kindKent', { naam: stand.naam })}
+                    </span>
                   </p>
                   <p className="tk-hulp">
-                    {t('retention.geheugenVan', { aantal: stand.geoefend })}
+                    {t('ouder.kindKentVan', { aantal: stand.geoefend, naam: stand.naam })}
                   </p>
                   <p className="text-lopend">
                     {t(stand.dagen === 1 ? 'ouder.kindDagEen' : 'ouder.kindDagen', {
                       dagen: stand.dagen,
+                      naam: stand.naam,
                     })}
                   </p>
                   {stand.schatting === null ? null : (

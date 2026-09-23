@@ -11973,6 +11973,67 @@ de twee er is. De policy laat een kind zijn eigen rijen schrijven
   `kind-inloggen` teruggeeft door PostgREST wordt geaccepteerd zoals hier
   nagebootst, blijkt bij de eerste echte inlog.
 
+## ADR-191 — Het menu staat er op een telefoon altijd, het logo blijft wit, "ken je inmiddels", en de ouder leest over zijn kind
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: vier
+punten uit één lijst, samen omdat ze allemaal over wat je ziet gaan en niets
+aan het gedrag van de app veranderen.
+
+### Besluit
+
+**Het menu onderaan staat er op een telefoon altijd.** Het stond onder aan de
+pagina, en je zag het pas als je helemaal naar beneden had gescrold. De eerste
+poging, `position: sticky` op het menu, legde het over de inhoud. Dat had twee
+gevolgen:
+
+- axe vond knoppen die er half achter verdwenen (`target-size`,
+  "partially obscured");
+- de startbalk van een modulepagina, die zelf onderaan plakt, kwam eronder te
+  zitten.
+
+Wat het geworden is: onder 1200 is de schil (`.tk-schil`) precies zo hoog als
+het scherm. De balk, het vakmenu en de pagina scrollen samen in `.tk-schil-rol`,
+en het menu staat daaronder in plaats van eroverheen.
+
+- De balk scrolt nog steeds weg.
+- Het vakmenu plakt nog steeds bovenaan (ADR-121).
+- De startbalk plakt vlak boven het menu.
+
+Vanaf 1200 is er geen menu onderaan en scrolt het document zoals altijd. In een
+ronde staat het menu er niet, want een ronde tekent de schil niet. Dat was de
+keuze van de eigenaar, en het houdt de vraag rustig. `naarBoven()` zet bij een
+nieuw scherm allebei terug: het venster en de schil.
+
+**Het logo blijft wit als je het kiest.** Het kreeg bij hover de crèmekleur
+van `--vlak-hover`, en op een telefoon bleef die staan na een tik. Nu is het
+wit in elke stand, zonder de tik-markering van de browser. Wie met het
+toetsenbord komt, ziet de focusrand van `:focus-visible`.
+
+**"Ken je inmiddels" in plaats van "weet je goed".** "8 — ken je inmiddels — van
+de 30 die je geoefend hebt": kennen is wat blijft, en "inmiddels" zegt dat het
+gegroeid is. Dezelfde gedachte zit in drie zinnen die zeggen wanneer je iets
+kent: drie keer goed, op drie verschillende dagen.
+
+**Op de ouderpagina gaat het over het kind, in de derde persoon.** "Je" is daar
+de ouder.
+
+- "Hoe gaat het?" zegt "90 — kent Fem inmiddels — van de 120 die Fem geoefend
+  heeft" en "Fem oefende op 3 van de laatste 7 dagen".
+- De groepknoppen per kind heten voor een schermlezer "De groep van Fem" in plaats
+  van "In welke groep zit je?".
+- De zin onder de doelenschakelaar zegt dat elk kind op Vandaag zelf kiest.
+- De uitleg bij het account spreekt over wat je kinderen oefenen.
+
+### Gevolgen
+
+- **Op een telefoon scrolt niet meer het document, maar `.tk-schil-rol`.** Wie
+  op een telefoon het venster scrolt, zoals `shell.spec.ts` deed, scrolt niets.
+  `naarOnder()` in die toets doet allebei. Browserfuncties die aan het
+  documentscrollen hangen, zoals het inklappen van de adresbalk in Safari,
+  werken op de schermen buiten een ronde niet meer; binnen een ronde wel.
+- **Een nieuwe toets** houdt vast dat het menu ook onder aan een lange pagina in
+  beeld staat, en dat de startbalk eindigt waar het menu begint.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

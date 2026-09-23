@@ -24,6 +24,7 @@ export function GroepKiezer({
   onKies,
   onOuder,
   bezig = false,
+  label,
 }: {
   /** De groep die nu geldt: `undefined` is geen groep, `null` is nog niets gekozen. */
   readonly gekozen: Groep | undefined | null;
@@ -32,9 +33,14 @@ export function GroepKiezer({
   /** "Ik ben een ouder", waar die knop erbij hoort. Weggelaten is weggelaten. */
   readonly onOuder?: (() => void) | undefined;
   readonly bezig?: boolean;
+  /**
+   * Hoe de groep met knoppen heet voor een schermlezer. Standaard de vraag aan het
+   * kind zelf; op de ouderpagina gaat het over een kind, in de derde persoon.
+   */
+  readonly label?: string;
 }) {
   return (
-    <div className="tk-keuzes" role="group" aria-label={t('groep.vraag')}>
+    <div className="tk-keuzes" role="group" aria-label={label ?? t('groep.vraag')}>
       {GROEPEN.map((groep) => (
         <button
           key={groep}

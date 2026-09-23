@@ -199,6 +199,7 @@ function Kind({
           <p className="tk-label">{t('ouder.groepVan', { naam: kind.naam })}</p>
           <GroepKiezer
             gekozen={groep}
+            label={t('ouder.groepVan', { naam: kind.naam })}
             uitweg="groep.geen"
             bezig={bezig}
             onKies={(gekozen) => void kiesGroep(gekozen)}

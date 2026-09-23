@@ -3,6 +3,7 @@ import { HomeScreen } from '@/features/home/HomeScreen';
 import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
 import { ProfileGate } from '@/features/player/ProfileGate';
+import { naarBoven } from '@/features/shell/naarBoven';
 import { NieuwWachtwoord } from '@/features/account/NieuwWachtwoord';
 import { leesTerugkeer } from '@/store/account';
 import { Gallery } from '@/design/Gallery';
@@ -381,7 +382,7 @@ export default function App() {
    * fold on the screen you press it from.
    */
   useEffect(() => {
-    window.scrollTo(0, 0);
+    naarBoven();
   }, [screen.name, route.name]);
 
   useEffect(() => {
