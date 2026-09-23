@@ -1,7 +1,13 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import { pathFor } from '@/features/shell/routes';
 import { abonneer, isActief, leesRuw, leesStand, type PremiumStand } from '@/store/premium';
-import { abonneerProef, leesProefRuw, proefBegin, proefStand, type ProefStand } from '@/store/proef';
+import {
+  abonneerProef,
+  leesProefRuw,
+  proefBegin,
+  proefStand,
+  type ProefStand,
+} from '@/store/proef';
 
 /**
  * Whether premium is on, for whichever screen asks (ADR-116).
