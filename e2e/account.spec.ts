@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { antwoord, GEZIN, sessie, stubGezin } from './gezin';
+import { antwoord, GEZIN, herstelLink, sessie, stubGezin, VERLOPEN_LINK } from './gezin';
 
 /**
  * Inloggen was een aanbod en is sinds ADR-178 ook de poort.
@@ -158,4 +158,90 @@ test('het account staat op de ouderpagina, en niet op Jij of Premium', async ({ 
     await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Inloggen' })).toHaveCount(0);
   }
+});
+
+/**
+ * Wachtwoord vergeten, aan de poort (ADR-186). Dit is waar een ouder uitkomt die
+ * zijn pincode kwijt is en daarna zijn wachtwoord, en hier hield het op.
+ */
+test('wie zijn wachtwoord vergeten is, krijgt een mail met een link terug naar de app', async ({
+  page,
+}) => {
+  await signIn(page, 'Noor');
+
+  let gevraagd = null as URL | null;
+  let body = null as unknown;
+  await page.route(`${GEZIN}/auth/v1/recover**`, (route) => {
+    if (route.request().method() === 'POST') {
+      gevraagd = new URL(route.request().url());
+      body = route.request().postDataJSON();
+    }
+    return antwoord(route, 200, {});
+  });
+
+  const blok = await naarDePoort(page);
+  await blok.getByRole('button', { name: 'Wachtwoord vergeten?' }).click();
+  // Alleen het adres: een wachtwoord is precies wat hier ontbreekt.
+  await expect(blok.getByLabel('Wachtwoord', { exact: true })).toHaveCount(0);
+  await blok.getByLabel('E-mailadres').fill(' Ouder@Example.nl ');
+  await blok.getByRole('button', { name: 'Stuur de mail' }).click();
+
+  await expect(blok.getByRole('status')).toContainText('Als er een account is met dit adres');
+  expect(body).toEqual({ email: 'ouder@example.nl' });
+  expect(gevraagd?.searchParams.get('redirect_to')).toMatch(/\/ouder$/);
+
+  // En terug, zonder dat er iets is blijven hangen.
+  await blok.getByRole('button', { name: 'Terug naar inloggen' }).click();
+  await expect(blok.getByLabel('Wachtwoord', { exact: true })).toBeVisible();
+});
+
+/**
+ * De link zelf. Op een apparaat waar nog nooit een kind heeft geoefend — de
+ * mail wordt net zo goed op een telefoon geopend — en dus zonder eerst "Hoe
+ * heet je?".
+ */
+test('de link uit de mail laat een nieuw wachtwoord kiezen, en haalt de sessie uit het adres', async ({
+  page,
+}) => {
+  let verzoek: { methode: string; token: string | null; body: unknown } | null = null;
+  await page.route(`${GEZIN}/auth/v1/user`, (route) => {
+    if (route.request().method() === 'PUT') {
+      verzoek = {
+        methode: 'PUT',
+        token: route.request().headers().authorization ?? null,
+        body: route.request().postDataJSON(),
+      };
+    }
+    return antwoord(route, 200, { id: 'ouder-e2e', email: 'ouder@example.nl' });
+  });
+
+  await page.goto(herstelLink());
+  await expect(page.getByRole('heading', { name: 'Kies een nieuw wachtwoord' })).toBeVisible();
+  await expect(page.getByText('Voor het account van ouder@example.nl.')).toBeVisible();
+  // Het adres met de sessie erin blijft niet in de geschiedenis staan.
+  await expect(page).toHaveURL(/\/ouder$/);
+
+  await page.getByLabel('Nieuw wachtwoord').fill('kort');
+  await page.getByRole('button', { name: 'Wachtwoord bewaren' }).click();
+  await expect(page.getByRole('alert')).toContainText('minstens acht tekens');
+  expect(verzoek, 'een te kort wachtwoord ging toch de deur uit').toBeNull();
+
+  await page.getByLabel('Nieuw wachtwoord').fill('nieuwgeheim');
+  await page.getByRole('button', { name: 'Wachtwoord bewaren' }).click();
+  await expect(page.getByRole('status')).toContainText('Je wachtwoord is veranderd');
+  expect(verzoek).toEqual({
+    methode: 'PUT',
+    token: expect.stringMatching(/^Bearer .+\..+\..+$/),
+    body: { password: 'nieuwgeheim' },
+  });
+});
+
+test('een link die op is, zegt dat en wijst de weg terug', async ({ page }) => {
+  await page.goto(VERLOPEN_LINK);
+  await expect(page.getByRole('heading', { name: 'Deze link werkt niet meer' })).toBeVisible();
+  await expect(page).toHaveURL(/\/ouder$/);
+  await expect(page.getByRole('link', { name: 'Naar de ouderpagina' })).toHaveAttribute(
+    'href',
+    '/ouder',
+  );
 });

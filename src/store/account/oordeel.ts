@@ -48,6 +48,24 @@ export function invoerFout(email: string, wachtwoord: string): AccountFout | nul
   return null;
 }
 
+/** Wat er aan een adres alleen mankeert: voor een herstelmail is er geen wachtwoord. */
+export function adresFout(email: string): AccountFout | null {
+  if (normaliseerEmail(email).length === 0) return 'leeg';
+  if (!isEmail(email)) return 'geen-email';
+  return null;
+}
+
+/**
+ * Wat er aan een nieuw wachtwoord mankeert. Hier wél de ondergrens, en niet pas
+ * bij Supabase: wie een nieuw wachtwoord kiest, hoort de regel te lezen vóór
+ * de link uit zijn mail is opgebruikt.
+ */
+export function nieuwWachtwoordFout(wachtwoord: string): AccountFout | null {
+  if (wachtwoord.length === 0) return 'leeg';
+  if (wachtwoordKort(wachtwoord)) return 'te-kort';
+  return null;
+}
+
 /**
  * Hoeveel eerder dan het einde er ververst wordt.
  *
@@ -86,6 +104,9 @@ export function foutVanAntwoord(status: number, code: string, tekst: string): Ac
   }
   if (bekend.includes('user_already_exists') || bekend.includes('already registered')) {
     return 'bestaat-al';
+  }
+  if (bekend.includes('same_password') || bekend.includes('different from the old')) {
+    return 'zelfde';
   }
   if (bekend.includes('weak_password') || bekend.includes('password should be')) return 'te-kort';
   if (bekend.includes('over_email_send_rate_limit') || bekend.includes('rate limit')) {

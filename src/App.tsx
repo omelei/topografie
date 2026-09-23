@@ -3,6 +3,8 @@ import { HomeScreen } from '@/features/home/HomeScreen';
 import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
 import { ProfileGate } from '@/features/player/ProfileGate';
+import { NieuwWachtwoord } from '@/features/account/NieuwWachtwoord';
+import { leesTerugkeer } from '@/store/account';
 import { Gallery } from '@/design/Gallery';
 import { DiagnoseScherm } from '@/features/diagnose/DiagnoseScherm';
 import { Shell } from '@/features/shell/Shell';
@@ -137,6 +139,9 @@ type Boot = { status: 'loading' } | { status: 'ready'; profile: ProfileRecord | 
  */
 export default function App() {
   const [boot, setBoot] = useState<Boot>({ status: 'loading' });
+  // De link uit een herstelmail (ADR-186), één keer gelezen bij het starten:
+  // het scherm haalt de tokens daarna meteen uit het adres.
+  const [terugkeer] = useState(() => leesTerugkeer(window.location.hash, new Date()));
   const [screen, setScreen] = useState<Screen>({ name: 'home' });
   const [visit, setVisit] = useState(0);
   // "Bekijk alle diploma's" op de voordeur opent Jij met de prijzenkast open
@@ -413,6 +418,11 @@ export default function App() {
   if (import.meta.env.DEV && window.location.hash === '#componenten') {
     return <Gallery />;
   }
+
+  // Een nieuw wachtwoord, vóór alles: wie op de link in zijn mail klikt, kan
+  // dat op een telefoon doen waar nog nooit iemand een naam heeft ingetikt, en
+  // hoort dan niet eerst "Hoe heet je?" te lezen (ADR-186).
+  if (terugkeer !== null) return <NieuwWachtwoord terugkeer={terugkeer} />;
 
   // Waar haken ze af (ADR-128). Anders dan de galerij hierboven gaat dit wél
   // mee in de build, en dat is de reden dat het bestaat: de geschiedenis waar

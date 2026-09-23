@@ -18,10 +18,12 @@
 
 import { leesSessie, schrijfSessie } from './bewaren';
 import {
+  adresFout,
   foutVanAntwoord,
   invoerFout,
   moetVernieuwen,
   normaliseerEmail,
+  nieuwWachtwoordFout,
   verlooptOp,
 } from './oordeel';
 import { isIngesteld, server } from './omgeving';
@@ -77,12 +79,13 @@ async function praat(
   pad: string,
   body: unknown,
   token?: string,
+  methode: 'POST' | 'PUT' = 'POST',
 ): Promise<{ readonly status: number; readonly inhoud: unknown } | null> {
   const doel = server();
   if (doel === null) return null;
   try {
     const reactie = await fetch(`${doel.url}${pad}`, {
-      method: 'POST',
+      method: methode,
       headers: koppen(doel.sleutel, token),
       body: JSON.stringify(body),
     });
@@ -93,6 +96,16 @@ async function praat(
     // hoort het verschil te lezen.
     return null;
   }
+}
+
+/** Wat Supabase bij een fout zei, in één woord (zie `foutVanAntwoord`). */
+function foutVan(antwoord: { readonly status: number; readonly inhoud: unknown }) {
+  const code = tekstVeld(antwoord.inhoud, 'error_code') || tekstVeld(antwoord.inhoud, 'error');
+  const tekst =
+    tekstVeld(antwoord.inhoud, 'msg') ||
+    tekstVeld(antwoord.inhoud, 'message') ||
+    tekstVeld(antwoord.inhoud, 'error_description');
+  return foutVanAntwoord(antwoord.status, code, tekst);
 }
 
 async function metWachtwoord(
@@ -108,14 +121,7 @@ async function metWachtwoord(
   const antwoord = await praat(pad, { email: normaliseerEmail(email), password: wachtwoord });
   if (antwoord === null) return { ok: false, reden: 'geen-verbinding' };
 
-  if (antwoord.status >= 400) {
-    const code = tekstVeld(antwoord.inhoud, 'error_code') || tekstVeld(antwoord.inhoud, 'error');
-    const tekst =
-      tekstVeld(antwoord.inhoud, 'msg') ||
-      tekstVeld(antwoord.inhoud, 'message') ||
-      tekstVeld(antwoord.inhoud, 'error_description');
-    return { ok: false, reden: foutVanAntwoord(antwoord.status, code, tekst) };
-  }
+  if (antwoord.status >= 400) return { ok: false, reden: foutVan(antwoord) };
 
   const sessie = alsSessie(antwoord.inhoud, now);
   if (sessie !== null) schrijfSessie(sessie);
@@ -165,6 +171,37 @@ export const supabaseAccount: Account = {
     // dat is de ene kant op waar het niet fout mag gaan.
     schrijfSessie(null);
     if (sessie !== null) await praat('/auth/v1/logout', {}, sessie.token);
+  },
+
+  herstel: async (email, terugNaar) => {
+    const fout = adresFout(email);
+    if (fout !== null) return { ok: false, reden: fout };
+    if (!isIngesteld()) return { ok: false, reden: 'niet-ingesteld' };
+
+    const antwoord = await praat(`/auth/v1/recover?redirect_to=${encodeURIComponent(terugNaar)}`, {
+      email: normaliseerEmail(email),
+    });
+    if (antwoord === null) return { ok: false, reden: 'geen-verbinding' };
+    if (antwoord.status >= 400) return { ok: false, reden: foutVan(antwoord) };
+    return { ok: true, sessie: null };
+  },
+
+  nieuwWachtwoord: async (sessie, wachtwoord) => {
+    const fout = nieuwWachtwoordFout(wachtwoord);
+    if (fout !== null) return { ok: false, reden: fout };
+    if (!isIngesteld()) return { ok: false, reden: 'niet-ingesteld' };
+
+    const antwoord = await praat('/auth/v1/user', { password: wachtwoord }, sessie.token, 'PUT');
+    if (antwoord === null) return { ok: false, reden: 'geen-verbinding' };
+    // Een token dat niet meer geldt, is hier een link die op is: een uur oud,
+    // of al een keer gebruikt. Dat is iets anders dan een fout wachtwoord.
+    if (antwoord.status === 401 || antwoord.status === 403) return { ok: false, reden: 'verlopen' };
+    if (antwoord.status >= 400) return { ok: false, reden: foutVan(antwoord) };
+
+    // Pas nu wordt de sessie uit de link bewaard. Wie de mail opent en het
+    // scherm wegklikt, is daarmee nergens ingelogd.
+    schrijfSessie(sessie);
+    return { ok: true, sessie };
   },
 
   sessie: async (now = new Date()) => {

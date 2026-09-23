@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { antwoord, GEZIN, stubGezin } from './gezin';
+import { antwoord, GEZIN, herstelLink, stubGezin, VERLOPEN_LINK } from './gezin';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -414,6 +414,36 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
     .getByRole('region', { name: 'Je kinderen' })
     .getByRole('button', { name: /^Fenna/ })
     .click();
+  expect((await scan(page)).violations).toEqual([]);
+});
+
+/**
+ * Waar de link uit een herstelmail op uitkomt (ADR-186), in zijn drie standen:
+ * het formulier, met een melding, en klaar. En de link die op is.
+ */
+test('choosing a new password has no violations', async ({ page }) => {
+  await page.route(`${GEZIN}/auth/v1/user`, (route) =>
+    antwoord(route, 200, { id: 'ouder-e2e', email: 'ouder@example.nl' }),
+  );
+
+  await page.goto(herstelLink());
+  await expect(page.getByRole('heading', { name: 'Kies een nieuw wachtwoord' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  await page.getByRole('button', { name: 'Wachtwoord bewaren' }).click();
+  await expect(page.getByRole('alert')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  await page.getByLabel('Nieuw wachtwoord').fill('nieuwgeheim');
+  await page.getByRole('button', { name: 'Wachtwoord bewaren' }).click();
+  await expect(page.getByRole('status')).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // Eerst weg: van /ouder naar /ouder#… is alleen een ander hekje en geen
+  // nieuwe pagina, en een link uit een mail opent altijd een nieuwe.
+  await page.goto('about:blank');
+  await page.goto(VERLOPEN_LINK);
+  await expect(page.getByRole('heading', { name: 'Deze link werkt niet meer' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
 

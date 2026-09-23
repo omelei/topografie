@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { langsDePoort, stubGezin } from './gezin';
+import { herstelLink, langsDePoort, stubGezin } from './gezin';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -195,6 +195,14 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible(READY);
   await shoot(page, size, '23-ouder');
+});
+
+/** Waar de link uit een herstelmail op uitkomt (ADR-186): een scherm zonder balk. */
+test('a new password from the link in the mail', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+  await page.goto(herstelLink());
+  await expect(page.getByRole('heading', { name: 'Kies een nieuw wachtwoord' })).toBeVisible(READY);
+  await shoot(page, size, '27-nieuw-wachtwoord');
 });
 
 test('the round: pointing, and the answer', async ({ page }, testInfo) => {

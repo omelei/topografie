@@ -34,6 +34,10 @@ export type AccountFout =
   | 'bevestig-email'
   /** Te vaak geprobeerd. */
   | 'te-vaak'
+  /** De link uit de mail is verlopen of al gebruikt (ADR-186). */
+  | 'verlopen'
+  /** Het nieuwe wachtwoord is hetzelfde als het oude. */
+  | 'zelfde'
   /** Geen verbinding, of de server antwoordde niet. */
   | 'geen-verbinding'
   /** Deze build heeft geen adres en geen sleutel; er valt niets in te loggen. */
@@ -51,6 +55,20 @@ export interface Account {
   readonly aanmelden: (email: string, wachtwoord: string) => Promise<AccountUitkomst>;
   readonly inloggen: (email: string, wachtwoord: string) => Promise<AccountUitkomst>;
   readonly uitloggen: () => Promise<void>;
+  /**
+   * Een mail vragen om een nieuw wachtwoord te kiezen (ADR-186). `terugNaar` is
+   * het adres waar de link in die mail op uitkomt.
+   *
+   * Gelukt zegt alleen dat het verzoek aankwam, niet dat er een account met dit
+   * adres is: Supabase antwoordt voor een onbekend adres hetzelfde, zodat
+   * niemand hiermee kan navragen wie er een account heeft.
+   */
+  readonly herstel: (email: string, terugNaar: string) => Promise<AccountUitkomst>;
+  /**
+   * Een nieuw wachtwoord zetten, met de sessie uit de link in de mail. Pas als
+   * dat lukt, wordt die sessie bewaard.
+   */
+  readonly nieuwWachtwoord: (sessie: Sessie, wachtwoord: string) => Promise<AccountUitkomst>;
   /**
    * De sessie die er is, ververst als hij bijna om is; null als er niemand is
    * ingelogd. Elk scherm vraagt het hieraan en niemand leest de opslag zelf,

@@ -3,10 +3,12 @@ import { maakNepAccount } from './nepAccount';
 import {
   VERVERS_MARGE_MS,
   WACHTWOORD_MINIMUM,
+  adresFout,
   foutVanAntwoord,
   invoerFout,
   isEmail,
   moetVernieuwen,
+  nieuwWachtwoordFout,
   normaliseerEmail,
   verlooptOp,
   wachtwoordKort,
@@ -109,6 +111,10 @@ describe('wat Supabase zei, in één woord', () => {
   it('noemt een kapotte server geen fout wachtwoord', () => {
     expect(foutVanAntwoord(500, '', '')).toBe('geen-verbinding');
     expect(foutVanAntwoord(503, '', '')).toBe('geen-verbinding');
+  });
+
+  it('herkent een nieuw wachtwoord dat het oude is', () => {
+    expect(foutVanAntwoord(422, 'same_password', '')).toBe('zelfde');
   });
 
   it('valt terug op "onjuist" als het niets herkent', () => {
@@ -252,5 +258,90 @@ describe('uitloggen en verversen', () => {
     account.zetOffline();
     expect(await account.sessie()).not.toBeNull();
     expect(account.verversingen()).toBe(0);
+  });
+});
+
+/**
+ * Wachtwoord vergeten (ADR-186). Sinds ADR-178 is het account de poort vóór de
+ * pincode, en zonder deze weg hield de keten daar op: wie zijn wachtwoord kwijt
+ * was, kon alleen nog het apparaat wissen.
+ */
+describe('wachtwoord vergeten', () => {
+  const TERUG = 'https://www.leer.nu/ouder';
+
+  it('kijkt het adres na voordat er iets de deur uit gaat', async () => {
+    expect(adresFout('')).toBe('leeg');
+    expect(adresFout('ouder.example.nl')).toBe('geen-email');
+    expect(adresFout(' Ouder@Example.nl ')).toBeNull();
+
+    const account = maakNepAccount();
+    expect(await account.herstel('ouder.example.nl', TERUG)).toEqual({
+      ok: false,
+      reden: 'geen-email',
+    });
+    expect(account.herstelmails()).toHaveLength(0);
+  });
+
+  /** Anders kan iedereen hiermee navragen wie er een account heeft. */
+  it('antwoordt hetzelfde voor een adres met en zonder account', async () => {
+    const account = maakNepAccount();
+    await account.aanmelden('ouder@example.nl', 'geheimwoord');
+
+    const bekend = await account.herstel('ouder@example.nl', TERUG);
+    const onbekend = await account.herstel('niemand@example.nl', TERUG);
+    expect(bekend).toEqual(onbekend);
+    expect(account.herstelmails()).toEqual([{ email: 'ouder@example.nl', terugNaar: TERUG }]);
+  });
+
+  it('noemt geen verbinding geen verbinding', async () => {
+    expect(await maakNepAccount({ offline: true }).herstel('ouder@example.nl', TERUG)).toEqual({
+      ok: false,
+      reden: 'geen-verbinding',
+    });
+  });
+
+  it('zet met de link een nieuw wachtwoord, en logt daarmee in', async () => {
+    const account = maakNepAccount();
+    await account.aanmelden('ouder@example.nl', 'geheimwoord');
+    await account.uitloggen();
+
+    const link = account.herstelSessie('ouder@example.nl');
+    expect(link).not.toBeNull();
+    const uitkomst = await account.nieuwWachtwoord(link!, 'nieuwgeheim');
+    expect(uitkomst).toEqual({ ok: true, sessie: link });
+    expect(account.bewaard()).toEqual(link);
+
+    expect((await account.inloggen('ouder@example.nl', 'geheimwoord')).ok).toBe(false);
+    expect((await account.inloggen('ouder@example.nl', 'nieuwgeheim')).ok).toBe(true);
+  });
+
+  it('houdt de regels voor een wachtwoord aan, ook hier', async () => {
+    expect(nieuwWachtwoordFout('')).toBe('leeg');
+    expect(nieuwWachtwoordFout('kort')).toBe('te-kort');
+    expect(nieuwWachtwoordFout('lang genoeg')).toBeNull();
+
+    const account = maakNepAccount();
+    await account.aanmelden('ouder@example.nl', 'geheimwoord');
+    const link = account.herstelSessie('ouder@example.nl')!;
+    expect(await account.nieuwWachtwoord(link, 'kort')).toEqual({ ok: false, reden: 'te-kort' });
+    expect(await account.nieuwWachtwoord(link, 'geheimwoord')).toEqual({
+      ok: false,
+      reden: 'zelfde',
+    });
+  });
+
+  it('laat een link maar één keer werken, en bewaart niets van een link die op is', async () => {
+    const account = maakNepAccount();
+    await account.aanmelden('ouder@example.nl', 'geheimwoord');
+    await account.uitloggen();
+    const link = account.herstelSessie('ouder@example.nl')!;
+
+    expect((await account.nieuwWachtwoord(link, 'nieuwgeheim')).ok).toBe(true);
+    await account.uitloggen();
+    expect(await account.nieuwWachtwoord(link, 'nogeenander')).toEqual({
+      ok: false,
+      reden: 'verlopen',
+    });
+    expect(account.bewaard()).toBeNull();
   });
 });

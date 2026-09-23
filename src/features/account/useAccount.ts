@@ -15,6 +15,16 @@ import { abonneer, isIngesteld, laadAccount, leesRuw, leesSessie } from '@/store
 import type { AccountUitkomst, Sessie } from '@/store/account';
 
 /**
+ * Waar de link in een herstelmail op uitkomt (ADR-186). De ouderpagina, want
+ * daar kwam de ouder vandaan; `App` vangt de link op elk adres op, dus ook als
+ * Supabase hem naar de hoofdpagina stuurt omdat dit adres niet op zijn lijst
+ * staat (`docs/SUPABASE.md`, stap 4).
+ */
+function terugNaar(): string {
+  return `${window.location.origin}/ouder`;
+}
+
+/**
  * De twee vormen die een scherm doorgeeft, hier met een naam.
  *
  * Dat is niet alleen netter: `copy.test.ts` zoekt zichtbare tekst met een regex
@@ -24,6 +34,8 @@ import type { AccountUitkomst, Sessie } from '@/store/account';
  */
 export type Aanmeldpoging = (email: string, wachtwoord: string) => Promise<AccountUitkomst>;
 export type Uitloggen = () => Promise<void>;
+export type Herstelpoging = (email: string) => Promise<AccountUitkomst>;
+export type Wachtwoordpoging = (sessie: Sessie, wachtwoord: string) => Promise<AccountUitkomst>;
 
 export interface AccountStand {
   readonly sessie: Sessie | null;
@@ -31,6 +43,8 @@ export interface AccountStand {
   readonly inloggen: Aanmeldpoging;
   readonly aanmelden: Aanmeldpoging;
   readonly uitloggen: Uitloggen;
+  readonly herstel: Herstelpoging;
+  readonly nieuwWachtwoord: Wachtwoordpoging;
 }
 
 export function useAccount(): AccountStand {
@@ -52,5 +66,23 @@ export function useAccount(): AccountStand {
     await account.uitloggen();
   }, []);
 
-  return { sessie, ingesteld: isIngesteld(), inloggen, aanmelden, uitloggen };
+  const herstel = useCallback(async (email: string) => {
+    const account = await laadAccount();
+    return account.herstel(email, terugNaar());
+  }, []);
+
+  const nieuwWachtwoord = useCallback(async (link: Sessie, wachtwoord: string) => {
+    const account = await laadAccount();
+    return account.nieuwWachtwoord(link, wachtwoord);
+  }, []);
+
+  return {
+    sessie,
+    ingesteld: isIngesteld(),
+    inloggen,
+    aanmelden,
+    uitloggen,
+    herstel,
+    nieuwWachtwoord,
+  };
 }

@@ -11,10 +11,19 @@
 # Er gaat geen sleutel in om. Alle drie de verzoeken zijn zonder token, want dat
 # is precies wat ze toetsen: wie er zonder token binnenkomt en wie niet.
 #
+# **En het houdt het project wakker** (ADR-186). Een gratis Supabase-project
+# wordt gepauzeerd na een week waarin niemand er iets vraagt, en dan kan geen
+# kind inloggen en geen ouder bij zijn pagina, zonder dat er iets stuk is. Twee
+# keer per week dezelfde drie vragen is die activiteit, zoals `premium-wakker.yml`
+# dat voor het andere project doet. Een geplande run zegt dat in zijn kop, zodat
+# een rood kruisje op een dinsdag niet leest als een controle met de hand.
+#
 # Overgeslagen zolang GEZIN_PROJECT_REF leeg is, net als `gezin-functions.yml`.
 name: Gezin nakijken
 
 on:
+  schedule:
+    - cron: '41 6 * * 1,4'
   workflow_dispatch:
 
 permissions:
@@ -29,10 +38,15 @@ jobs:
         env:
           BASIS: https://${{ vars.GEZIN_PROJECT_REF }}.supabase.co/functions/v1
           HERKOMST: https://www.leer.nu
+          GEBEURTENIS: ${{ github.event_name }}
         run: |
           fout=0
           {
-            echo "## Gezin nakijken"
+            if [ "$GEBEURTENIS" = "schedule" ]; then
+              echo "## Gezin nakijken — gepland, om het project wakker te houden"
+            else
+              echo "## Gezin nakijken — met de hand"
+            fi
             echo
             echo "| Vraag | Verwacht | Gekregen | |"
             echo "| --- | --- | --- | --- |"
@@ -137,5 +151,11 @@ jobs:
           else
             echo "Er klopt iets niet. Wat elke uitkomst betekent, staat in" \
               "\`docs/SUPABASE.md\` onder stap 3d." >> "$GITHUB_STEP_SUMMARY"
+            if [ "$GEBEURTENIS" = "schedule" ]; then
+              echo >> "$GITHUB_STEP_SUMMARY"
+              echo "Dit was een geplande run. Faalt hij op alle drie de vragen, kijk dan" \
+                "eerst of het project gepauzeerd is: Supabase → het project → Restore." \
+                >> "$GITHUB_STEP_SUMMARY"
+            fi
           fi
           exit "$fout"

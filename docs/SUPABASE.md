@@ -292,6 +292,14 @@ Onder **Authentication → Providers → Email**:
 - **Minimum password length: 6.** Dezelfde ondergrens als de app zelf aanhoudt,
   en ADR-155 legt uit waarom het er niet meer zijn.
 
+Onder **Authentication → URL Configuration**:
+
+- **Site URL:** `https://www.leer.nu`.
+- **Redirect URLs:** voeg `https://www.leer.nu/ouder` toe. Daar komt de link uit
+  een herstelmail op uit (ADR-186). Staat hij er niet, dan stuurt Supabase de
+  link naar de Site URL. De app vangt hem daar ook op, dus er breekt niets, maar
+  de ouder komt dan op de voorpagina uit in plaats van bij de ouderpagina.
+
 Een kind komt hier nooit langs: het heeft geen adres dat post kan ontvangen, en
 het wordt aangemaakt door `kind-beheer` met de service-sleutel. Meldt iemand
 zich met de hand aan op een `@kind.invalid`-adres, dan maakt de trigger
@@ -410,48 +418,16 @@ een gebruiker in twee stappen (eerst een tijdelijk adres, dan het adres uit de
 id) werkt zoals bedoeld. Gaat een van die twee niet op, dan is dat een nieuwe
 ADR en geen stille reparatie.
 
-## Nog te doen
+## Wat eerst nog te doen stond
 
-### Een wachtwoord vergeten, voor de ouder
+Allebei gebouwd in ADR-186.
 
-`AccountBlok` doet aanmelden en inloggen, en met opzet geen wachtwoord vergeten:
-dat stond als "komt met de schermen van F5". Dat kon zolang het account een
-aanbod was. Sinds ADR-178 is het de poort, en dan is het een gat.
-
-De keten is nu: pincode vergeten → account → en dáár houdt het op. Een ouder die
-zijn accountwachtwoord kwijt is, kan op een bouw mét gezinsproject **geen nieuwe
-pincode meer zetten** — er is geen geboortejaar meer als terugval, en de enige
-uitweg is het apparaat wissen. Dat is precies de val die ADR-176 wegnam, één
-laag hoger terug.
-
-Het is niet onherstelbaar: Supabase kan zelf een herstelmail sturen, alleen kan
-de ouder dat niet vanuit de app vragen. Wat ontbreekt is één knop en één
-scherm — `/auth/v1/recover` bestaat al.
-
-**Dit hoort af te zijn voordat er gezinnen op leunen.** Zolang de eigenaar de
-enige gebruiker is, is het ongemak; daarna is het een ouder die buiten staat.
-
-### Het project wakker houden
-
-**Een gratis Supabase-project wordt gepauzeerd na een week waarin niemand er
-iets vraagt.** Voor de premiumdatabase is dat opgelost met
-`premium-wakker.yml`, die twee keer per week één kleine vraag stelt
-(`tools/premium/README.md`). Het gezinsproject heeft nog niets dat hetzelfde
-doet.
-
-Zolang er aan gebouwd wordt, valt dat niet op: elke deploy en elke controle is
-activiteit. Het gaat pas pijn doen als het een tijdje stil is — en dan betekent
-een gepauzeerd project dat **geen enkel kind kan inloggen en geen enkele ouder
-bij zijn pagina komt**, zonder dat er iets stuk is.
-
-De voorgestelde oplossing is één regel: een `schedule` op `Gezin nakijken`,
-twee keer per week. Die workflow vraagt de functies toch al iets, dus dan is de
-controle meteen het wakker houden — één ding dat twee dingen doet, in plaats van
-een tweede workflow die hetzelfde adres aanspreekt.
-
-Wat er dan bij hoort: een gefaalde geplande run moet te onderscheiden zijn van
-een gefaalde controle met de hand, anders wordt een rood kruisje op een dinsdag
-iets waar niemand meer naar kijkt.
-
-**Waarom het nog niet gebouwd is:** de eigenaar wil eerst stap 4 en 5 afmaken.
-Dit is een herinnering, geen achterstand.
+- **Wachtwoord vergeten, voor de ouder.** `AccountBlok` heeft een derde stand
+  met alleen een adres, en de poort voor wie al ingelogd is stuurt de mail naar
+  het adres van de sessie. De link komt uit op `/ouder` (zie stap 4, URL
+  Configuration), waar de ouder een nieuw wachtwoord kiest. De keten "pincode
+  vergeten → account → wachtwoord vergeten" loopt daarmee weer rond.
+- **Het project wakker houden.** `Gezin nakijken` draait nu ook op maandag en
+  donderdag. De drie vragen die het stelt, zijn de activiteit die een gratis
+  project nodig heeft om niet gepauzeerd te worden. Een geplande run zegt dat
+  in zijn kop, en wijst bij een fout eerst naar een gepauzeerd project.

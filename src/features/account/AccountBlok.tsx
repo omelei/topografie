@@ -20,31 +20,21 @@
  * is nog niet beschikbaar", onder een kop: een blok zonder iets om te doen.
  *
  * Aanmelden zit erbij omdat inloggen zonder aanmelden niets is: er zou niemand
- * zijn om in te loggen. Wat er níét bij zit is een wachtwoord vergeten — dat
- * loopt via Supabase' eigen mail en komt met de schermen van F5.
+ * zijn om in te loggen. En sinds ADR-186 ook een wachtwoord vergeten: sinds
+ * ADR-178 is dit blok de poort vóór de pincode, en een poort zonder die uitweg
+ * sloot een ouder buiten die zijn wachtwoord kwijt was.
  */
 
 import { useId, useState, type FormEvent } from 'react';
-import { t, type TranslationKey } from '@/i18n';
+import { t } from '@/i18n';
 import type { AccountFout } from '@/store/account';
-import { useAccount, type Aanmeldpoging, type Uitloggen } from './useAccount';
+import { ACCOUNT_FOUT } from './fouten';
+import { useAccount, type Aanmeldpoging, type Herstelpoging, type Uitloggen } from './useAccount';
 
-const FOUT: Record<AccountFout, TranslationKey> = {
-  leeg: 'account.fout.leeg',
-  'geen-email': 'account.fout.geen-email',
-  'te-kort': 'account.fout.te-kort',
-  onjuist: 'account.fout.onjuist',
-  'bestaat-al': 'account.fout.bestaat-al',
-  'bevestig-email': 'account.fout.bevestig-email',
-  'te-vaak': 'account.fout.te-vaak',
-  'geen-verbinding': 'account.fout.geen-verbinding',
-  'niet-ingesteld': 'account.fout.niet-ingesteld',
-};
-
-type Modus = 'inloggen' | 'aanmelden';
+type Modus = 'inloggen' | 'aanmelden' | 'herstellen';
 
 export function AccountBlok() {
-  const { sessie, ingesteld, inloggen, aanmelden, uitloggen } = useAccount();
+  const { sessie, ingesteld, inloggen, aanmelden, uitloggen, herstel } = useAccount();
 
   if (!ingesteld) return null;
 
@@ -52,7 +42,7 @@ export function AccountBlok() {
     <section className="flex flex-col gap-3" aria-label={t('account.titel')}>
       <h2 className="tk-sectie">{t('account.titel')}</h2>
       {sessie === null ? (
-        <Formulier onInloggen={inloggen} onAanmelden={aanmelden} />
+        <Formulier onInloggen={inloggen} onAanmelden={aanmelden} onHerstel={herstel} />
       ) : (
         <Ingelogd email={sessie.email} onUitloggen={uitloggen} />
       )}
@@ -91,12 +81,20 @@ function Ingelogd({
   );
 }
 
+const KNOP = {
+  inloggen: 'account.inloggen',
+  aanmelden: 'account.aanmelden',
+  herstellen: 'account.herstelKnop',
+} as const;
+
 function Formulier({
   onInloggen,
   onAanmelden,
+  onHerstel,
 }: {
   readonly onInloggen: Aanmeldpoging;
   readonly onAanmelden: Aanmeldpoging;
+  readonly onHerstel: Herstelpoging;
 }) {
   const [modus, setModus] = useState<Modus>('inloggen');
   const [email, setEmail] = useState('');
@@ -116,9 +114,11 @@ function Formulier({
     setGemaild(false);
 
     const uitkomst =
-      modus === 'inloggen'
-        ? await onInloggen(email, wachtwoord)
-        : await onAanmelden(email, wachtwoord);
+      modus === 'herstellen'
+        ? await onHerstel(email)
+        : modus === 'inloggen'
+          ? await onInloggen(email, wachtwoord)
+          : await onAanmelden(email, wachtwoord);
     setBezig(false);
 
     if (!uitkomst.ok) {
@@ -128,11 +128,14 @@ function Formulier({
     setWachtwoord('');
     // Aangemeld zonder sessie betekent: er staat een mail klaar om op te
     // klikken. Dat is geen fout, en het zou als fout lezen in het rode vak.
-    if (modus === 'aanmelden' && uitkomst.sessie === null) setGemaild(true);
+    // Een herstelmail is altijd zo'n mail.
+    if (modus === 'herstellen' || (modus === 'aanmelden' && uitkomst.sessie === null)) {
+      setGemaild(true);
+    }
   }
 
-  function wissel() {
-    setModus(modus === 'inloggen' ? 'aanmelden' : 'inloggen');
+  function wissel(naar: Modus) {
+    setModus(naar);
     setFout(null);
     setGemaild(false);
   }
@@ -167,49 +170,71 @@ function Formulier({
           aria-invalid={fout ? true : undefined}
         />
 
-        <label htmlFor={wachtwoordVeld} className="tk-label">
-          {t('account.wachtwoord')}
-        </label>
-        <input
-          id={wachtwoordVeld}
-          className="tk-input max-w-xs"
-          type="password"
-          value={wachtwoord}
-          onChange={(event) => setWachtwoord(event.target.value)}
-          autoComplete={modus === 'inloggen' ? 'current-password' : 'new-password'}
-          maxLength={200}
-          aria-describedby={fout ? melding : undefined}
-          aria-invalid={fout ? true : undefined}
-        />
+        {modus === 'herstellen' ? (
+          <p className="tk-hulp">{t('account.herstelUitleg')}</p>
+        ) : (
+          <>
+            <label htmlFor={wachtwoordVeld} className="tk-label">
+              {t('account.wachtwoord')}
+            </label>
+            <input
+              id={wachtwoordVeld}
+              className="tk-input max-w-xs"
+              type="password"
+              value={wachtwoord}
+              onChange={(event) => setWachtwoord(event.target.value)}
+              autoComplete={modus === 'inloggen' ? 'current-password' : 'new-password'}
+              maxLength={200}
+              aria-describedby={fout ? melding : undefined}
+              aria-invalid={fout ? true : undefined}
+            />
+          </>
+        )}
         {modus === 'aanmelden' ? <p className="tk-hulp">{t('account.wachtwoordHint')}</p> : null}
 
         <button type="submit" className="tk-button self-start" disabled={bezig}>
-          {bezig
-            ? t('account.bezig')
-            : modus === 'inloggen'
-              ? t('account.inloggen')
-              : t('account.aanmelden')}
+          {bezig ? t('account.bezig') : t(KNOP[modus])}
         </button>
 
         {fout ? (
           <p id={melding} role="alert" className="text-lopend">
-            {t(FOUT[fout])}
+            {/* Bij een herstelmail is er maar één veld, en "vul allebei in" zou
+                naar een wachtwoord vragen dat hier niet gevraagd wordt. */}
+            {fout === 'leeg' && modus === 'herstellen'
+              ? t('account.fout.leegAdres')
+              : t(ACCOUNT_FOUT[fout])}
           </p>
         ) : null}
         {gemaild ? (
           <p role="status" className="text-lopend">
-            {t('account.gemaild')}
+            {modus === 'herstellen' ? t('account.herstelGemaild') : t('account.gemaild')}
           </p>
         ) : null}
 
-        <button
-          type="button"
-          className="tk-button tk-button-tertiary self-start"
-          onClick={wissel}
-          disabled={bezig}
-        >
-          {modus === 'inloggen' ? t('account.naarAanmelden') : t('account.naarInloggen')}
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            className="tk-button tk-button-tertiary"
+            onClick={() => wissel(modus === 'inloggen' ? 'aanmelden' : 'inloggen')}
+            disabled={bezig}
+          >
+            {modus === 'inloggen'
+              ? t('account.naarAanmelden')
+              : modus === 'herstellen'
+                ? t('account.terugNaarInloggen')
+                : t('account.naarInloggen')}
+          </button>
+          {modus === 'inloggen' ? (
+            <button
+              type="button"
+              className="tk-button tk-button-tertiary"
+              onClick={() => wissel('herstellen')}
+              disabled={bezig}
+            >
+              {t('account.wachtwoordVergeten')}
+            </button>
+          ) : null}
+        </div>
       </form>
     </>
   );

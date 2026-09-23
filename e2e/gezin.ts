@@ -26,7 +26,7 @@ export const GEZIN = 'https://gezin.leer.test';
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'apikey, authorization, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'POST, PUT, OPTIONS',
 };
 
 export async function antwoord(route: Route, status: number, body: unknown) {
@@ -87,3 +87,25 @@ export async function herbevestig(page: Page) {
   await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page.getByLabel('Nieuwe pincode')).toBeVisible();
 }
+
+/**
+ * Het adres waar de link uit een herstelmail op uitkomt (ADR-186), zoals
+ * Supabase het maakt: de sessie achter het hekje, met een JWT waar de app het
+ * adres en de id van de ouder uit leest.
+ */
+export function herstelLink(pad = '/ouder', email = 'ouder@example.nl') {
+  const deel = (waarde: unknown) => Buffer.from(JSON.stringify(waarde)).toString('base64url');
+  const token = `${deel({ alg: 'HS256', typ: 'JWT' })}.${deel({ sub: 'ouder-e2e', email })}.x`;
+  const velden = new URLSearchParams({
+    access_token: token,
+    expires_in: '3600',
+    refresh_token: 'vernieuw-herstel',
+    token_type: 'bearer',
+    type: 'recovery',
+  });
+  return `${pad}#${velden.toString()}`;
+}
+
+/** Een link die op is: verlopen, of al een keer gebruikt. */
+export const VERLOPEN_LINK =
+  '/ouder#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired';

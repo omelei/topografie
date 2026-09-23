@@ -1580,6 +1580,49 @@ export const nl = {
   'account.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
   'account.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'account.fout.niet-ingesteld': 'Inloggen is nog niet beschikbaar.',
+  'account.fout.leegAdres': 'Vul je e-mailadres in.',
+  'account.fout.verlopen': 'Deze link werkt niet meer. Vraag een nieuwe mail aan.',
+  'account.fout.zelfde': 'Dit is je oude wachtwoord. Kies een ander.',
+
+  // Wachtwoord vergeten (ADR-186). Het antwoord zegt niet óf er een account is
+  // met dit adres: dat zou iedereen laten navragen wie hier een account heeft.
+  'account.wachtwoordVergeten': 'Wachtwoord vergeten?',
+  'account.herstelUitleg':
+    'Vul het e-mailadres van je account in. We sturen je een mail met een link om een nieuw wachtwoord te kiezen.',
+  'account.herstelKnop': 'Stuur de mail',
+  'account.herstelGemaild':
+    'Als er een account is met dit adres, staat er nu een mail voor je klaar. Klik op de link erin om een nieuw wachtwoord te kiezen.',
+  'account.terugNaarInloggen': 'Terug naar inloggen',
+  'ouder.herstelGemaild':
+    'We hebben een mail gestuurd naar {email}. Klik op de link erin om een nieuw wachtwoord te kiezen.',
+
+  // Waar de link uit die mail op uitkomt (ADR-186).
+  'herstel.titel': 'Kies een nieuw wachtwoord',
+  'herstel.uitleg': 'Voor het account van {email}.',
+  'herstel.veld': 'Nieuw wachtwoord',
+  'herstel.knop': 'Wachtwoord bewaren',
+  'herstel.klaar': 'Je wachtwoord is veranderd, en je bent ingelogd.',
+  'herstel.naarOuder': 'Naar de ouderpagina',
+  'herstel.verlopenTitel': 'Deze link werkt niet meer',
+  'herstel.verlopenUitleg':
+    'Een link uit onze mail werkt één keer, en niet lang. Vraag een nieuwe aan op de ouderpagina, met Wachtwoord vergeten?',
+
+  // Bewaren op dit apparaat (ADR-186). Voor de ouder: het kind kan hier niets
+  // aan doen, en een waarschuwing over weggooien hoort niet op zijn scherm.
+  'bewaren.titel': 'Bewaren op dit apparaat',
+  'bewaren.safari':
+    'Safari gooit weg wat een website bewaart als je die een week niet opent. Dan zijn de voortgang en de diploma’s van je kinderen weg.',
+  'bewaren.beginscherm':
+    'Zet de app op je beginscherm: tik in Safari op de deelknop en kies Zet op beginscherm (op een Mac: Voeg toe aan Dock). Daar geldt die regel niet.',
+  'bewaren.beginschermLet':
+    'Wat in Safari geoefend is, gaat niet mee: op het beginscherm begint de app leeg. Hoe eerder je het doet, hoe minder er achterblijft.',
+  'bewaren.staatErop': 'De app staat op het beginscherm. Daar ruimt Safari niets op.',
+  'bewaren.blijvend': 'De browser bewaart wat je kinderen oefenen, ook als het apparaat vol raakt.',
+  'bewaren.magOpruimen':
+    'De browser mag wat je kinderen oefenen opruimen als het apparaat vol raakt. Dat gebeurt zelden, maar dan is het weg.',
+  'bewaren.vraag': 'Vraag de browser het te bewaren',
+  'bewaren.nee':
+    'De browser zegt nog nee. Dat beslist hij zelf, vaak pas als de app vaker gebruikt wordt of op het beginscherm staat.',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, en een zachte als het mis is.',
   // Twee schakelaars erbij (ADR-145), allebei voor een kind dat snel afgeleid is.
