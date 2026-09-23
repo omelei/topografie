@@ -1,23 +1,20 @@
 import type { ComponentType } from 'react';
+import type { IconProps } from '@/components/Icon';
 import {
-  AreaIcon,
-  ClockIcon,
-  EraIcon,
-  FlagIcon,
-  TablesIcon,
-  WordIcon,
-  type IconProps,
-} from '@/components/Icon';
+  KlokGlyph,
+  RekenenGlyph,
+  TaalGlyph,
+  TijdvakkenGlyph,
+  TopoGlyph,
+  VlaggenGlyph,
+} from '@/components/VakGlyph';
 import type { Module } from './modules';
 
 /**
- * A pictogram per module, which is the one place §E lets an icon take an
- * accent: "een icoon krijgt alleen een module-accent als het de module zelf
- * aanduidt".
- *
- * §E names six of them — gebied, vlag, klok, tafels, woord, tijdvak — and the
- * plan has six modules. Spelling used to be a seventh that shared the word; it
- * is one of Taal's parts now (ADR-118), so the word is Taal's alone.
+ * A glyph per module: the Merk en stijlgids's own, filled, from docs/leer.js
+ * (ADR-185). A subject's mark is the brand and not a control, so it is drawn
+ * as the guide draws it on the subject's tile, while every other icon keeps
+ * §E's line.
  *
  * Its own file rather than a constant inside the Shell, because the rail is no
  * longer the only place a module wears its own mark: K1's tiles carry it too,
@@ -26,10 +23,10 @@ import type { Module } from './modules';
  * can read without rendering anything.
  */
 export const MODULE_ICON: Record<Module['id'], ComponentType<Omit<IconProps, 'children'>>> = {
-  topo: AreaIcon,
-  tafels: TablesIcon,
-  klok: ClockIcon,
-  woorden: WordIcon,
-  tijdvakken: EraIcon,
-  vlaggen: FlagIcon,
+  topo: TopoGlyph,
+  tafels: RekenenGlyph,
+  klok: KlokGlyph,
+  woorden: TaalGlyph,
+  tijdvakken: TijdvakkenGlyph,
+  vlaggen: VlaggenGlyph,
 };

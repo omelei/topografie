@@ -25,6 +25,12 @@ import type { ReactNode } from 'react';
  * redraws them later replaces the shapes and keeps the names, the grid and the
  * weight.
  *
+ * That happened for five of them. Since ADR-185 the subject pictograms — the
+ * area, the tables, the clock, the word and the era — are the Merk en
+ * stijlgids's filled glyphs in VakGlyph.tsx, and are no longer drawn here. The
+ * notes further down that name AreaIcon, TablesIcon, ClockIcon, WordIcon or
+ * EraIcon say why a remaining icon was drawn apart from them.
+ *
  * Two things the construction forces. Nothing here curves: the primitives are
  * straight, so a shoulder is a bevel rather than an arc, which is also what
  * survives being drawn at 20px. And no two icons may share a silhouette —
@@ -91,29 +97,6 @@ export function FreezerIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
- * The area: topography's own mark, and the first of the module pictograms.
- *
- * A diamond, which is what K1 draws in the rail — a square stood on its point,
- * and one of §E's four primitives used whole. It replaced a bevelled outline
- * with an inner boundary, which was more drawing for less recognition: at 24px
- * the boundary was a scratch and the outline was a blob.
- *
- * It is a shape rather than a picture of the Netherlands on purpose. §E's rule
- * is that the real map shape comes from the topography source and never from an
- * icon, because an icon of a country is a country drawn wrong at 24px.
- *
- * The diamond is also the inside of `StampIcon`. They are told apart by the
- * circle around that one, which is the whole of what a stamp is.
- */
-export function AreaIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M12 3l9 9-9 9-9-9z" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/**
  * The flag: a pole and a swallowtail banner, both straight lines.
  *
  * No emblem in it. A flag icon with a device on it is a specific flag, and this
@@ -124,68 +107,6 @@ export function FlagIcon(props: Omit<IconProps, 'children'>) {
     <Icon {...props}>
       <path d="M6 3v18" />
       <path d="M6 5h13l-3.5 3.5L19 12H6" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/** The clock: a circle and two hands, which is the whole of what it teaches. */
-export function ClockIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7v5.5l3.5 2" />
-    </Icon>
-  );
-}
-
-/**
- * The tables: a times sign, on a key.
- *
- * The sign is what was asked for and it is the right sign — a child who is
- * learning the tables is learning ×, and a three-by-three array of dots is the
- * picture their teacher drew once in group 4 and never again.
- *
- * The frame around it is not decoration. `WrongIcon` is two crossed lines
- * corner to corner, and §E's rule is that an icon may not mean two things: a
- * bare cross in the rail would be the same drawing a child sees when they get
- * an answer wrong. Inside a key it is an operator on a calculator, which is a
- * different silhouette at any size and the thing the module actually is.
- */
-export function TablesIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M8.5 8.5l7 7M15.5 8.5l-7 7" />
-    </Icon>
-  );
-}
-
-/**
- * The word: a speech balloon.
- *
- * Language is what is said before it is what is written, and this module is
- * where a child meets a word rather than a spelling of it. Bevelled at the
- * corners and with a straight tail, because the primitives are straight and an
- * arc at 20px is a smudge.
- *
- * Two ruled lines were the previous drawing. They were a word list, which is
- * one form the module takes, and they were also very nearly `EraIcon` and very
- * nearly `FreezerIcon` — three icons of horizontal lines in one set.
- */
-export function WordIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M4 6h16v10H10l-4 4v-4H4z" strokeLinejoin="round" />
-    </Icon>
-  );
-}
-
-/** An era: a span on a line, marked at both ends. A period, not a moment. */
-export function EraIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <path d="M3 12h18" />
-      <path d="M8 7v10M16 7v10" />
     </Icon>
   );
 }

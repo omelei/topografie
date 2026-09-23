@@ -24,14 +24,13 @@ import { describe, expect, it } from 'vitest';
  */
 const source = readFileSync(join(process.cwd(), 'src', 'components', 'Icon.tsx'), 'utf8');
 
-/** The sixteen, in §E's own order. */
+/**
+ * §E's sixteen, in its own order, less the five subject pictograms: since
+ * ADR-185 a subject's mark is the guide's filled glyph (VakGlyph.tsx), and the
+ * flag stays here because a flag set is a tile and not only a subject.
+ */
 const NAMED = [
-  ['gebied', 'AreaIcon'],
   ['vlag', 'FlagIcon'],
-  ['klok', 'ClockIcon'],
-  ['tafels', 'TablesIcon'],
-  ['woord', 'WordIcon'],
-  ['tijdvak', 'EraIcon'],
   ['streak', 'StreakIcon'],
   ['ladder', 'LadderIcon'],
   ['stempel', 'StampIcon'],
@@ -45,7 +44,7 @@ const NAMED = [
 ] as const;
 
 describe('the icon set', () => {
-  it('has all sixteen §E names', () => {
+  it('has every §E name it still draws', () => {
     const missing = NAMED.filter(([, component]) => !source.includes(`function ${component}(`));
     expect(missing.map(([naam]) => naam)).toEqual([]);
   });
