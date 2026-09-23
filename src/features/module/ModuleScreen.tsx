@@ -34,6 +34,7 @@ import {
   itemsVan,
   MIN_FOUTEN,
   naamVan,
+  naamVanSet,
   onderwerpenVan,
   onderwerpVan,
   type Onderdeel,
@@ -196,6 +197,13 @@ export function ModuleScreen({
     adresVak ?? alleOnderwerpen.find((vak) => vak.id === vakId && vraagtWelke(vak)) ?? null;
   const onderwerp = gekozenVak !== null && onderwerpen.includes(gekozenVak) ? gekozenVak : null;
   const chosen = onderwerp !== null ? adresSet : null;
+
+  // Wat een kind wilde toen het op een slot drukte (ADR-193): het venster zegt
+  // het terug, en de ouderpagina onthoudt het.
+  const wilDit = (wat: string) => vraagOuders({ wat, soort: 'wil' });
+  const metSet = (vorm: string) =>
+    chosen !== null ? t('wens.vorm', { vorm, naam: naamVan(chosen) }) : vorm;
+  const wilDiploma = (setId: string) => wilDit(t('wens.diploma', { naam: naamVanSet(setId) }));
 
   /** How many steps this page has, so the numbers are the page's own. */
   const heeftRegio = regios.length >= 2;
@@ -481,7 +489,7 @@ export function ModuleScreen({
                   onClick={() => {
                     if (open) return;
                     if (premium && !actief) {
-                      vraagOuders();
+                      wilDit(t(vak.naam));
                       return;
                     }
                     setRegio(hier);
@@ -591,7 +599,7 @@ export function ModuleScreen({
                   aria-pressed={gekozenVorm}
                   onClick={() => {
                     if (premium && !actief) {
-                      vraagOuders();
+                      wilDit(metSet(t(candidate.name)));
                       return;
                     }
                     setFormId(candidate.id);
@@ -636,7 +644,7 @@ export function ModuleScreen({
                 aria-pressed={alsFouten}
                 onClick={() => {
                   if (!actief) {
-                    vraagOuders();
+                    wilDit(t('choose.fouten'));
                     return;
                   }
                   // Een diploma over de helft van een set is geen diploma, en
@@ -674,7 +682,11 @@ export function ModuleScreen({
                 aria-pressed={alsToets}
                 onClick={() => {
                   if (!actief) {
-                    vraagOuders();
+                    wilDit(
+                      chosen !== null
+                        ? t('wens.oefentoets', { naam: naamVan(chosen) })
+                        : t('choose.testMode'),
+                    );
                     return;
                   }
                   setFoutenstand(false);
@@ -710,7 +722,11 @@ export function ModuleScreen({
               aria-pressed={!alsToets && diplomaVorm.id === form?.id}
               onClick={() => {
                 if (isPremiumVorm(diplomaVorm.id) && !actief) {
-                  vraagOuders();
+                  wilDit(
+                    chosen !== null
+                      ? t('wens.diploma', { naam: naamVan(chosen) })
+                      : t(diplomaVorm.name),
+                  );
                   return;
                 }
                 setToetsstand(false);
@@ -806,7 +822,7 @@ export function ModuleScreen({
               // Een diploma halen is premium (ADR-192): zonder code eerst de
               // vraag aan de ouders, net als de diplomategel zelf.
               if (!actief) {
-                vraagOuders();
+                wilDiploma(tafel);
                 return;
               }
               kiesElders(tafel);
@@ -822,7 +838,7 @@ export function ModuleScreen({
           <VlagDiplomas
             onKies={(deel) => {
               if (!actief) {
-                vraagOuders();
+                wilDiploma(vlagDiplomaSet(deel));
                 return;
               }
               kiesElders(vlagDiplomaSet(deel));
@@ -839,7 +855,7 @@ export function ModuleScreen({
           <KlokDiplomas
             onKies={(stap) => {
               if (!actief) {
-                vraagOuders();
+                wilDiploma(stap);
                 return;
               }
               kiesElders(stap);
@@ -853,7 +869,7 @@ export function ModuleScreen({
           <TopoDiplomas
             onKies={(kaart) => {
               if (!actief) {
-                vraagOuders();
+                wilDiploma(kaart);
                 return;
               }
               kiesElders(kaart);
@@ -878,7 +894,7 @@ export function ModuleScreen({
             sets={setdiplomas}
             onKies={(setId) => {
               if (!actief) {
-                vraagOuders();
+                wilDiploma(setId);
                 return;
               }
               kiesElders(setId);

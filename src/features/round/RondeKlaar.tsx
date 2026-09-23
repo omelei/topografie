@@ -4,7 +4,12 @@ import { DiplomaIcon, NextIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import { aanDeBeurt, setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
 import { Embleem } from '@/features/badges/Embleem';
-import { datumVan } from '@/features/badges/datums';
+import { datumVan, useDiplomaDatums } from '@/features/badges/datums';
+import { useDiplomaStand } from '@/features/badges/useDiplomaStand';
+import { kaartStandVan } from '@/features/badges/voortgang';
+import { PremiumLabel } from '@/features/module/PremiumLabel';
+import { vraagOuders } from '@/features/premium/ouderVraag';
+import { onthoudWens } from '@/store/wensen';
 import { Uitreiking } from '@/features/badges/Uitreiking';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { usePreferences } from '@/features/player/settings';
@@ -13,7 +18,7 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import type { RoundOutcome } from '@/store/rewardStore';
-import { behaaldDiploma } from '@/features/home/doel';
+import { behaaldDiploma, doelwitVan } from '@/features/home/doel';
 import { getActiveChild } from '@/store/children';
 import { leesWeekdoelen } from '@/store/weekdoelStore';
 import { HerhaalFouten } from './HerhaalFouten';
@@ -190,6 +195,10 @@ export function RondeKlaar({
             {melding ? <p className="text-tekst-secundair">{melding}</p> : null}
           </div>
         </section>
+
+        {/* Klaar voor de toets, zonder code (ADR-193): het moment waarop een
+            kind het zijn ouders vraagt. */}
+        {premium ? null : <KlaarVoorToets setId={setId} />}
 
         {/* Hoeveel er nog van vandaag over is, en de weg erheen (ADR-139). */}
         {onVandaagVerder && !vandaagKlaar ? <VandaagVerder onVerder={onVandaagVerder} /> : null}
@@ -373,4 +382,48 @@ function OnthoudRegel({
   if (ids.length === 0) return null;
   const procent = setRetention(states, ids, new Date(Date.now() + DRIE_WEKEN_MS));
   return <p className="text-tekst-secundair">{t('result.onthoud', { procent })}</p>;
+}
+
+/**
+ * Klaar voor de toets, zonder code (ADR-193).
+ *
+ * Een kind oefent met meerkeuze en onthoudt een set goed genoeg voor het
+ * diploma. Met premium staat de toets dan klaar; zonder is dit het sterkste
+ * moment om het aan de ouders te vragen: het kind heeft het verdiend en wil
+ * het. Dus zegt de uitslag het, met de vraag erbij, en onthoudt dit apparaat
+ * het voor de ouderpagina — ook als het kind niet op de knop drukt.
+ */
+function KlaarVoorToets({ setId }: { readonly setId: string }) {
+  const stand = useDiplomaStand();
+  const datums = useDiplomaDatums();
+  const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId) ?? null;
+  const doelwit = deel === null ? null : doelwitVan(deel);
+  const klaar =
+    doelwit !== null &&
+    stand !== null &&
+    kaartStandVan(datums.has(doelwit.id), stand.voortgang(doelwit.id)) === 'rijp';
+  const naam = deel === null ? '' : naamVan(deel);
+
+  useEffect(() => {
+    if (klaar) void onthoudWens({ wat: naam, soort: 'klaar' });
+  }, [klaar, naam]);
+
+  if (!klaar) return null;
+
+  return (
+    <section className="tk-card flex flex-col gap-3" aria-label={t('result.klaarVoorToets')}>
+      <h2 className="tk-sectie">{t('result.klaarVoorToets')}</h2>
+      <p className="flex flex-wrap items-center gap-2 text-lopend">
+        <PremiumLabel hoorbaar />
+        {t('result.klaarVoorToetsUitleg', { naam })}
+      </p>
+      <button
+        type="button"
+        className="tk-button tk-button-secondary self-start"
+        onClick={() => vraagOuders({ wat: naam, soort: 'klaar' })}
+      >
+        {t('premium.vraagKnop')}
+      </button>
+    </section>
+  );
 }

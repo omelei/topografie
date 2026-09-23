@@ -12128,6 +12128,58 @@ verkopen na deze grens doen.
 - Een kind dat een tafeldiploma haalde vóór deze wijziging, houdt het: behaald
   is behaald.
 
+## ADR-193 — Wat een ouder naar premium brengt: wat het eigen kind wilde, en waar het klaar voor is
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar, na
+ADR-192: "Zorg voor voldoende triggers."
+
+### Context
+
+Na ADR-192 kwam een ouder premium op drie manieren tegen: een kind dat op een
+slot drukte en het venster "Vraag het even aan je ouders" kreeg, een slot op
+"Hoe gaat het?" op de ouderpagina, en de premiumpagina zelf. Alle drie waren
+algemeen. Het venster zei "Dit onderdeel hoort bij premium", de ouderpagina
+toonde alleen een slot, en er was geen enkel moment dat aan iets hing wat het
+kind bereikt had. Terwijl de grens van ADR-192 juist het diploma achter premium
+zet: het ding dat een kind het liefst wil, en dat een ouder fotografeert.
+
+### Besluit
+
+**Drie momenten, allemaal over het eigen kind.**
+
+1. **Klaar voor de toets.** Een kind zonder code dat met meerkeuze een set goed
+   genoeg kent voor het diploma, leest dat na de ronde ("Je bent klaar voor de
+   toets!"), op de ring ("Klaar voor de toets, met premium") en in het venster
+   van het diploma, met één knop: "Vraag het je ouders". Het kind heeft het
+   verdiend en wil het; sterker wordt de vraag niet.
+2. **Het venster zegt wat het kind wilde.** "Bliksemronde bij Provincies van
+   Nederland hoort bij premium", "Het diploma Tafel van 7 hoort bij premium", of
+   "Je bent klaar voor de toets van Tafel van 7!". Elk slot geeft door wat het
+   was (`vraagOuders(wens)`, `wensVoor`).
+3. **De ouderpagina onthoudt het.** Zonder code staat onder "Hoe gaat het?" per
+   kind waar het klaar voor is en wat het wilde doen: "Fem is klaar voor de
+   toets van Tafel van 7." en "Fem wilde dit graag doen: …". Daaronder het slot
+   zoals het was. Het klaar-moment wordt ook onthouden als het kind niet op de
+   knop drukt.
+
+**Alleen op dit apparaat** (`src/store/wensen.ts`, localStorage). Per kind
+hooguit drie van elk, uit de laatste dertig dagen. Het bericht dat een kind
+doorstuurt naar een ouder noemt het niet: dat reist via WhatsApp of andermans
+mail, en ADR-174 houdt dat bericht bewust leeg. De ouderpagina staat achter de
+pincode en is van de ouder.
+
+**Geen voortgang.** Er staat geen cijfer en geen telling bij; dat blijft
+premium (ADR-192). "Klaar voor de toets" is een mijlpaal, geen stand.
+
+### Afwegingen
+
+- Een klaar-moment laat zien dat de ring vol is, en dat is een vorm van
+  voortgang. Het is de enige die zonder code blijft, omdat het precies het
+  moment is waarop kopen iets oplost; een vulling of een telling blijft
+  premium.
+- Een ouder krijgt geen melding of mail. Dat kan pas met het gezinsaccount, en
+  dan met toestemming.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

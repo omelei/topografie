@@ -4,7 +4,7 @@ import { t } from '@/i18n';
 import { isTeKoop } from '@/store/premium';
 import { CodeVeld } from './CodeVeld';
 import { Doorsturen } from './Doorsturen';
-import { sluitOuderVraag, useOuderVraag } from './ouderVraag';
+import { huidigeWens, sluitOuderVraag, useOuderVraag } from './ouderVraag';
 import { naarPremium, usePremium } from './usePremium';
 
 /**
@@ -119,6 +119,9 @@ type Uitweg = 'vraag' | 'code' | 'sturen';
 
 function Inhoud() {
   const [uitweg, setUitweg] = useState<Uitweg>('vraag');
+  // Wat het kind wilde (ADR-193): het venster zegt het terug, zodat de vraag
+  // over dít gaat en niet over "een onderdeel".
+  const [wens] = useState(huidigeWens);
 
   if (uitweg === 'code') {
     return (
@@ -153,7 +156,13 @@ function Inhoud() {
         <FamilyIcon size={24} />
       </p>
       <h2 className="tk-titel">{t('ouderVraag.titel')}</h2>
-      <p className="text-lopend">{t('ouderVraag.uitleg')}</p>
+      <p className="text-lopend">
+        {wens === null
+          ? t('ouderVraag.uitleg')
+          : wens.soort === 'klaar'
+            ? t('ouderVraag.uitlegKlaar', { wat: wens.wat })
+            : t('ouderVraag.uitlegWat', { wat: wens.wat })}
+      </p>
 
       <ul className="tk-lijst">
         <Keuze

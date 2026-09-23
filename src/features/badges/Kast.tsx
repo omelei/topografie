@@ -3,7 +3,7 @@ import type { ModeId } from '@/game-core';
 import { doelwitten, type Doelwit } from '@/features/home/doel';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -254,7 +254,29 @@ function Venster({
       }}
       knop={
         opSlot ? (
-          <PremiumSlot kaal wat="premium.wat.diploma" />
+          <div className="flex flex-col gap-3">
+            {/* Klaar voor de toets is het moment om het te vragen (ADR-193).
+                Het venster gaat eerst dicht: de vraag aan de ouders is zelf een
+                venster, en twee over elkaar is er één te veel. */}
+            <p className="flex flex-wrap items-center gap-2 text-tekst-secundair">
+              <PremiumLabel hoorbaar />
+              {kaartStand === 'rijp' ? t('premium.wat.diplomaKlaar') : t('premium.wat.diploma')}
+            </p>
+            <button
+              type="button"
+              className="tk-button tk-button-secondary self-start"
+              onClick={() => {
+                onSluit();
+                vraagOuders(
+                  kaartStand === 'rijp'
+                    ? { wat: naam, soort: 'klaar' }
+                    : { wat: t('wens.diploma', { naam }), soort: 'wil' },
+                );
+              }}
+            >
+              {t('premium.vraagKnop')}
+            </button>
+          </div>
         ) : gehaald ? (
           <button type="button" className="tk-button" onClick={() => window.print()}>
             {t('afzwemmen.print')}
