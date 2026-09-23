@@ -11443,6 +11443,38 @@ arcering en het kruis hielden ze uit elkaar.
   tekening en geen vak.
 - **`contrast.test.ts` bewaakt het nu:** geen vak ligt dichter dan 30° bij fout.
 
+## ADR-185 — Een vak draagt de gevulde glyph uit de gids; de rest blijft lijn
+
+**Status:** accepted. **Date:** 2026-09-23. **Werkt §E bij** (de iconenset van
+de styleguide) voor de vijf vakpictogrammen.
+
+### Context
+
+De vaktegels hadden sinds ADR-180 de heldere vulling en de onderkant uit de
+gids, maar nog de lijnpictogrammen van §E: een ruit, een toets met een kruis,
+een klok van lijnen. `leer.js` tekent op die tegel gevulde, ronde glyphs. De
+eigenaar koos (optie 1B) om alleen die glyphs over te nemen en de rest van de
+iconen lijn te laten.
+
+### Besluit
+
+- **Zes gevulde glyphs** in `src/components/VakGlyph.tsx`, van het 48-raster van
+  `leer.js`: een speld (topografie), plus en keer (rekenen), een tekstballon met
+  Aa (taal), een klok, een vlag en een zandloper. `MODULE_ICON` wijst ernaar,
+  dus ze staan overal waar een vak zijn teken heeft: de rail, de kaarten, de
+  lijsten, de modulebadge en het embleem.
+- **De uitsparingen zijn echte gaten.** `leer.js` tekent ze in de kleur van de
+  tegel; hier zijn het even-odd-paden of een masker. Een glyph is dus één
+  kleur (`currentColor`) en leest op de heldere tegel, op een rustige plaat en
+  op een embleem even goed. De letters Aa staan als contouren in het masker, want
+  een `<text>` zou meetellen in de tekst van elke knop waar de glyph in staat.
+- **Bijgesneden tot het midden van het raster** (38 van de 48), zodat de glyph
+  zijn tegel vult zoals in de gids.
+- **§E blijft voor al het andere.** De vijf lijnpictogrammen die ze vervangen
+  (`AreaIcon`, `TablesIcon`, `ClockIcon`, `WordIcon`, `EraIcon`) zijn weg;
+  `FlagIcon` blijft, want die draagt ook een vlaggentegel. `icons.test.ts`
+  noemt nu de elf die er nog zijn.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)
