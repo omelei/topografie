@@ -72,6 +72,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | Premium per gezin in plaats van per apparaat                                                                               | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
 | Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
 | Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Besluit om te bouwen                  |
+| Uitdagen: een kind daagt een ander uit met een code (dezelfde vragen, offline); met premium de stand per tegenstander      | Claude        | Onderzocht: kan zonder server en zonder namen (zie het advies van 23 september)     | Besluit van de eigenaar               |
 | Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
 
 ## Geparkeerd
@@ -100,6 +101,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #138      | Vandaag voor een nieuw kind: eerste ronde, vakken, hoe het werkt; menu onderin duidelijker; op een telefoon schuift de app niet meer weg                                                  | 203, 204 |
 | #137      | Grotere stip voor een stad, avatar naast je naam, 48 nieuwe avatars, diplomanamen breken netjes af, twee teksten                                                                          | 202      |
 | #136      | De kassa wordt door een workflow gedeployd, bij elke wijziging en met de hand                                                                                                             | 201      |
 | #135      | Een ouder is geen profiel meer en telt niet mee in de drie; een kind kan van het apparaat; de pagina groeit mee op een groot scherm; klassencode van 40 plekken; een code geldt 365 dagen | 198–200  |

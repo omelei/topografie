@@ -390,7 +390,14 @@ test.describe('zonder code', () => {
       if (pad === '/premium') await expect(page.getByRole('table').first()).toBeVisible();
       // Pas als alles staat: de pagina schuift in, en pas daarna rekent de
       // browser de labels mee.
-      await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished)));
+      await page.evaluate(() =>
+        Promise.allSettled(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        ),
+      );
       const hoog = await page.evaluate(
         () => document.documentElement.scrollHeight - window.innerHeight,
       );

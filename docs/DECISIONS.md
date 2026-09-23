@@ -12470,6 +12470,35 @@ absoluut staat binnen het scrollende deel blijft. `shell.spec.ts` houdt vast
 dat het document onder 1200 nooit hoger is dan het scherm, op Vandaag, Jij, een
 vakpagina en Premium zonder code.
 
+## ADR-204 — Vandaag voor een nieuw kind, en een duidelijker menu onderin
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Ik wil
+dat de vandaag pagina beter gevuld is. Zeker als er nog niet geoefend is" en
+"Zorg dat de navigatie onderin duidelijker wordt."
+
+**Besluit.**
+
+- **Een kind dat nog niets deed** (geen ronde af en geen ronde half) krijgt op
+  Vandaag, onder de begroeting:
+  - **Je eerste ronde**: één grote kaart in de kleur van het vak, met de
+    bovenste starter voor zijn groep en één knop;
+  - de rij "Hier begin je mee vandaag", zoals voorheen;
+  - **Kies een vak**: de vijf vakken als tegels, met een regel over wat erin
+    zit;
+  - **Zo werkt leer.nu**: oefenen, herhalen, je diploma halen, in de woorden van
+    de schrijfwijzer;
+  - daarna de weekdoelen. "Recent geoefend" en "Maak af" komen er pas als er
+    iets in staat.
+- Wie al geoefend heeft, houdt de pagina zoals hij was, met "Kies een vak"
+  onderaan.
+- Elk blok heeft een vaste sleutel, zodat de pagina bij het wisselen van
+  volgorde de blokken verhuist en niet opnieuw bouwt: een rij houdt zijn focus en
+  scrollstand.
+- **Het menu onderin**: waar je bent is een pil in inkt achter het teken, het
+  woord eronder is groter (15 in plaats van 13), en de balk ligt met een dikke
+  rand op de pagina. Inkt en geen accentkleur: een bestemming is geen vak
+  (ADR-093).
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

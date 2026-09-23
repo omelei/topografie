@@ -708,6 +708,7 @@ export default function App() {
         onVerder={maakAf}
         onPlan={maakAf}
         onDiplomas={goDiplomas}
+        onVak={goModule}
       />
     </Shell>
   );
