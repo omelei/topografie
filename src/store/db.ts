@@ -56,7 +56,10 @@ export const SINGLETON_KEY = 'me';
 
 export interface ProfileRecord {
   id: string;
-  /** What the child typed. Never leaves the device. */
+  /**
+   * What the child typed. Leaves the device only when a parent takes the child
+   * into the family account, with their consent (ADR-155, ADR-187).
+   */
   naam: string;
   avatarConfig: Record<string, string>;
   niveau: Niveau;

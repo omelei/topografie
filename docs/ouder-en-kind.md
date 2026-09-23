@@ -510,3 +510,16 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   oude `kindId` omgezet, niet gekopieerd." Dat raakt elke winkel tegelijk, en een migratie die
   halverwege breekt laat de dozen van een kind achter onder twee sleutels — de fout van ADR-046,
   opnieuw. Een kind heeft nu twee identiteiten, en `Eigenaar` draagt ze allebei.
+
+### Stap 3, tweede deel (ADR-187)
+
+- **Stap 3 valt nog een keer uiteen: 3a, 3b en 3c.** 3a neemt een kind mee en verstuurt wat er op
+  dat moment staat. 3b houdt het daarna bij, na elke ronde. 3c haalt het op een ander apparaat op
+  en voegt samen. Zet het gezinsproject pas aan voor gezinnen als alle drie er zijn.
+- **De rijen gaan niet door een edge function.** §9 stap 3 zei "één edge function, met de
+  servicesleutel". Het kind aanmaken wel (`kind-beheer`, actie `opnemen`), maar de rijen gaan
+  rechtstreeks naar de tabellen met het token van de ouder, onder de policy die er al voor is.
+- **Samenvoegen met een kind dat al in het account staat, komt in 3c.** Tot dan is meenemen altijd
+  een nieuw kind, en staat een kind dat alleen in het account staat er als één regel onder.
+- **De toestemming heeft een schakelaar en een kolom.** De ouder zet hem zelf om, en de database
+  legt het moment vast (`kinderen.toestemming_op`).

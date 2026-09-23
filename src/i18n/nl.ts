@@ -1607,6 +1607,36 @@ export const nl = {
   'herstel.verlopenUitleg':
     'Een link uit onze mail werkt één keer, en niet lang. Vraag een nieuwe aan op de ouderpagina, met Wachtwoord vergeten?',
 
+  // De kinderen van dit apparaat, meegenomen naar het account (ADR-187). Dit is
+  // het moment van toestemming (artikel 8 AVG): wat er op de server komt, staat
+  // erbij, en ook dat het er weer af kan.
+  'overname.titel': 'Kinderen in je account',
+  'overname.uitleg':
+    'Staat een kind in je account, dan staat wat het oefende ook veilig op onze server, en niet alleen op dit apparaat.',
+  'overname.en': 'en',
+  'overname.hierEen': '{namen} oefent op dit apparaat, maar staat nog niet in je account.',
+  'overname.hierMeer': '{namen} oefenen op dit apparaat, maar staan nog niet in je account.',
+  'overname.wie': 'Wie neem je mee?',
+  'overname.toestemmingUitleg':
+    'Dan komt op onze server te staan, binnen de EU: de voornaam, de groep, de antwoorden, de diploma’s en de doelen. Niets anders, en nooit voor iemand anders. Je kunt een kind er altijd weer uit halen: dan verdwijnt alles van dat kind van de server, en blijft het op dit apparaat staan.',
+  'overname.toestemming': 'Ik ben hun ouder of voogd, en ik geef toestemming.',
+  'overname.knop': 'Neem mee naar mijn account',
+  'overname.bezig': 'Bezig met {naam}…',
+  'overname.nietVerstuurd': 'In je account, maar nog niet alles is verstuurd.',
+  'overname.verstuurd': 'In je account, met alles tot {datum}.',
+  'overname.opnieuw': 'Verstuur opnieuw',
+  'overname.haalWeg': 'Haal uit mijn account',
+  'overname.haalWegVraag':
+    'Alles van {naam} verdwijnt dan van onze server. Op dit apparaat blijft het gewoon staan.',
+  'overname.haalWegJa': 'Ja, haal weg',
+  'overname.haalWegNee': 'Toch niet',
+  'overname.alleenDaar': 'In je account, maar niet op dit apparaat: {namen}.',
+  'overname.opnieuwLaden': 'Probeer opnieuw',
+  'overname.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
+  'overname.fout.geweigerd': 'Dat lukte niet. Log uit en weer in, en probeer het opnieuw.',
+  'overname.fout.niet-ingesteld': 'Dit kan hier nog niet.',
+  'overname.fout.niet-ingelogd': 'Log eerst in met je account.',
+
   // Bewaren op dit apparaat (ADR-186). Voor de ouder: het kind kan hier niets
   // aan doen, en een waarschuwing over weggooien hoort niet op zijn scherm.
   'bewaren.titel': 'Bewaren op dit apparaat',

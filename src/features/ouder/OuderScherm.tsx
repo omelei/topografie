@@ -16,6 +16,7 @@ import {
 import { Bewaren } from './Bewaren';
 import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
+import { Overname } from './Overname';
 
 /**
  * De ouderpagina, op /ouder (ADR-173).
@@ -83,6 +84,10 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
             niets (ADR-172), en dat blijft zo: dit is de plek waar het komt te
             staan zodra er een account ís, en niet een kop met een belofte. */}
         <AccountBlok />
+
+        {/* Direct onder het account: wie ingelogd is, kan hier zijn kinderen
+            meenemen (ADR-187). Zonder sessie tekent het niets. */}
+        <Overname />
 
         {/* Als laatste, en achter de pincode: het enige op dit apparaat dat niet
             terug te draaien is (ADR-166). Het stond op Jij, waar een kind erbij

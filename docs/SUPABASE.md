@@ -31,7 +31,10 @@ Maak op [supabase.com](https://supabase.com) een project aan, regio **Central EU
 
 Open **SQL Editor**, plak de inhoud van
 [`supabase/migrations/0001_gezin.sql`](../supabase/migrations/0001_gezin.sql) en
-klik op **Run**.
+klik op **Run**. Doe daarna hetzelfde met
+[`0002_toestemming.sql`](../supabase/migrations/0002_toestemming.sql): één
+kolom, wanneer de ouder toestemming gaf voor een kind (ADR-187). Zonder die
+tweede werkt alles, maar dan is die toestemming nergens aan te tonen.
 
 Migraties staan genummerd in `supabase/migrations/` en worden niet meer bewerkt
 zodra ze ergens gedraaid hebben — een verandering is een volgend genummerd
@@ -364,13 +367,14 @@ het geboortejaar er weer. Dat is de terugval van ADR-178 en die blijft bestaan.
 
 ## Wat waar staat
 
-| Wat                                | Waar                                 |
-| ---------------------------------- | ------------------------------------ |
-| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql` |
-| Inloggen als kind                  | `supabase/functions/kind-inloggen/`  |
-| Wat een ouder met een kind doet    | `supabase/functions/kind-beheer/`    |
-| De code en het wachtwoord, puur    | `supabase/functions/_gezin/code.ts`  |
-| De premiumcodes (ander project)    | `tools/premium/README.md`            |
+| Wat                                | Waar                                       |
+| ---------------------------------- | ------------------------------------------ |
+| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql`       |
+| Wanneer de ouder toestemming gaf   | `supabase/migrations/0002_toestemming.sql` |
+| Inloggen als kind                  | `supabase/functions/kind-inloggen/`        |
+| Wat een ouder met een kind doet    | `supabase/functions/kind-beheer/`          |
+| De code en het wachtwoord, puur    | `supabase/functions/_gezin/code.ts`        |
+| De premiumcodes (ander project)    | `tools/premium/README.md`                  |
 
 De beslissingen staan in ADR-155 in [`DECISIONS.md`](DECISIONS.md); de tabellen
 staan als deel C in [`DATAMODEL.md`](DATAMODEL.md).

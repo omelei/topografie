@@ -25,8 +25,8 @@ export const GEZIN = 'https://gezin.leer.test';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'apikey, authorization, content-type',
-  'Access-Control-Allow-Methods': 'POST, PUT, OPTIONS',
+  'Access-Control-Allow-Headers': 'apikey, authorization, content-type, prefer',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
 };
 
 export async function antwoord(route: Route, status: number, body: unknown) {
@@ -66,7 +66,7 @@ export async function stubGezin(page: Page, email = 'ouder@example.nl') {
  * staat in de streek "Account" en begint in de stand "inloggen".
  */
 export async function langsDePoort(page: Page, email = 'ouder@example.nl') {
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = page.getByRole('region', { name: 'Account', exact: true });
   await blok.getByLabel('E-mailadres').fill(email);
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
   await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();

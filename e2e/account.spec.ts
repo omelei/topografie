@@ -40,7 +40,7 @@ async function naarDePoort(page: Page) {
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
   await page.getByRole('button', { name: 'Ouder', exact: false }).click();
-  return page.getByRole('region', { name: 'Account' });
+  return page.getByRole('region', { name: 'Account', exact: true });
 }
 
 /**
@@ -73,7 +73,7 @@ test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
   await signIn(page, 'Noor');
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = page.getByRole('region', { name: 'Account', exact: true });
   await expect(blok).toContainText('Je bent ingelogd als ouder@example.nl');
 
   await blok.getByRole('button', { name: 'Uitloggen' }).click();
@@ -137,7 +137,7 @@ test('een adres met een typefout gaat de deur niet uit', async ({ page }) => {
 test('de voordeur van het kind verandert niet', async ({ page }) => {
   await signIn(page, 'Sam');
 
-  await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Account', exact: true })).toHaveCount(0);
   for (const woord of ['Inloggen', 'Account maken', 'E-mailadres']) {
     await expect(page.getByRole('button', { name: woord })).toHaveCount(0);
   }
@@ -150,12 +150,12 @@ test('het account staat op de ouderpagina, en niet op Jij of Premium', async ({ 
 
   // Met `expect(locator)`, niet met `allInnerTexts()`: dat leest de koppen van
   // vóór de eerste render van React en wacht nergens op (zie premium.spec).
-  await expect(page.getByRole('region', { name: 'Account' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Account', exact: true })).toBeVisible();
 
   // En op geen van de twee pagina's die een kind kan openen (ADR-173).
   for (const adres of ['/jij', '/premium']) {
     await page.goto(adres);
-    await expect(page.getByRole('region', { name: 'Account' })).toHaveCount(0);
+    await expect(page.getByRole('region', { name: 'Account', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Inloggen' })).toHaveCount(0);
   }
 });

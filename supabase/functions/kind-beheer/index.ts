@@ -4,6 +4,7 @@
  * Wat een ouder met een kind doet, op één adres:
  *
  *   POST /kind-beheer   { actie: 'aanmaken', voornaam, wachtwoord, groep? }
+ *   POST /kind-beheer   { actie: 'opnemen', voornaam, groep? }
  *   POST /kind-beheer   { actie: 'nieuwe-code', kindId }
  *   POST /kind-beheer   { actie: 'wachtwoord', kindId, wachtwoord }
  *   POST /kind-beheer   { actie: 'verwijderen', kindId }
@@ -88,6 +89,14 @@ const diensten: Diensten = {
     const rijen = await vanSupabase(`/rest/v1/ouders?id=eq.${id}&select=id`);
     return Array.isArray(rijen) && rijen.length === 1 ? id : null;
   },
+
+  // 24 willekeurige bytes als hex: 192 bits, en niemand die hem ooit ziet. Het
+  // kind logt op zijn eigen apparaat in zonder wachtwoord (ADR-187); dit is
+  // alleen wat Supabase nodig heeft om een gebruiker te kunnen maken.
+  geheimWachtwoord: () =>
+    Array.from(crypto.getRandomValues(new Uint8Array(24)), (byte) =>
+      byte.toString(16).padStart(2, '0'),
+    ).join(''),
 
   maakGebruiker: async (wachtwoord) => {
     // Een tijdelijk adres, omdat het echte uit de id komt en die er nog niet is.

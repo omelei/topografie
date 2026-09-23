@@ -1,6 +1,6 @@
 /**
- * Wat een ouder met een kind kan: aanmaken, een nieuwe code, een nieuw
- * wachtwoord, weghalen (ADR-155).
+ * Wat een ouder met een kind kan: aanmaken, opnemen, een nieuwe code, een nieuw
+ * wachtwoord, weghalen (ADR-155, ADR-187).
  *
  * Puur, net als `kassa.ts` en `inloggen.ts`: wat de buitenwereld doet gaat via
  * `Diensten` naar binnen. Wat hier staat is welke handelingen er zijn, wie ze
@@ -40,6 +40,12 @@ export interface NieuwKind {
 export interface Diensten {
   /** Het token van de beller omzetten in een ouder-id, of niets. */
   readonly ouderVoorToken: (token: string) => Promise<string | null>;
+  /**
+   * Een wachtwoord dat niemand kent, voor een kind dat wordt opgenomen
+   * (ADR-187). Uit de cryptografische bron van de runtime, en dus hier niet
+   * zelf gemaakt: dit bestand is puur.
+   */
+  readonly geheimWachtwoord: () => string;
   /** Een gebruiker aanmaken met een wachtwoord; geeft de nieuwe id terug. */
   readonly maakGebruiker: (wachtwoord: string) => Promise<string>;
   /** Het adres van een gebruiker zetten, nu zijn id bekend is. */
@@ -109,19 +115,63 @@ export async function maakKind(
   ouderId: string,
   diensten: Diensten,
 ): Promise<NieuwKind> {
-  const voornaam = tekst(verzoek.voornaam).trim();
-  if (voornaam.length === 0 || voornaam.length > 40) throw new BeheerProbleem('naam-leeg');
-
+  const voornaam = leesVoornaam(verzoek.voornaam);
   const groep = leesGroep(verzoek.groep);
   const wachtwoord = tekst(verzoek.wachtwoord);
   const oordeel = wachtwoordOordeel(wachtwoord, voornaam);
   if (oordeel !== null) throw new BeheerProbleem(oordeel);
 
-  const id = await diensten.maakGebruiker(wachtwoord);
+  return schrijfKind({ voornaam, groep, wachtwoord, ouderId }, diensten);
+}
+
+/**
+ * Een kind opnemen dat al op een apparaat oefende (ADR-187).
+ *
+ * Hetzelfde als aanmaken, op één ding na: er wordt geen wachtwoord gevraagd.
+ * Op het eigen apparaat heeft een kind er geen nodig (ADR-173, `ouder-en-kind.md`
+ * §16), en een wachtwoord verzinnen op het moment dat een ouder alleen zijn
+ * kinderen wil meenemen, is een vraag te veel op het verkeerde moment. Het kind
+ * krijgt er een dat niemand kent; wil het op een ander apparaat inloggen, dan
+ * zet de ouder een wachtwoord met `wachtwoord`, zoals bij elk herstel.
+ */
+export async function neemKindOp(
+  verzoek: Verzoek,
+  ouderId: string,
+  diensten: Diensten,
+): Promise<NieuwKind> {
+  const voornaam = leesVoornaam(verzoek.voornaam);
+  const groep = leesGroep(verzoek.groep);
+  return schrijfKind(
+    { voornaam, groep, wachtwoord: diensten.geheimWachtwoord(), ouderId },
+    diensten,
+  );
+}
+
+function leesVoornaam(waarde: unknown): string {
+  const voornaam = tekst(waarde).trim();
+  if (voornaam.length === 0 || voornaam.length > 40) throw new BeheerProbleem('naam-leeg');
+  return voornaam;
+}
+
+async function schrijfKind(
+  kind: {
+    readonly voornaam: string;
+    readonly groep: number | null;
+    readonly wachtwoord: string;
+    readonly ouderId: string;
+  },
+  diensten: Diensten,
+): Promise<NieuwKind> {
+  const id = await diensten.maakGebruiker(kind.wachtwoord);
   await diensten.zetAdres(id, adresVoorKind(id));
-  await diensten.bewaarKind({ id, ouderId, voornaam, groep });
+  await diensten.bewaarKind({
+    id,
+    ouderId: kind.ouderId,
+    voornaam: kind.voornaam,
+    groep: kind.groep,
+  });
   const inlogcode = await diensten.codeUitgeven(id);
-  return { id, voornaam, inlogcode };
+  return { id, voornaam: kind.voornaam, inlogcode };
 }
 
 /**
@@ -184,6 +234,8 @@ export async function behandel(verzoek: Verzoek, diensten: Diensten): Promise<An
   switch (tekst(verzoek.actie)) {
     case 'aanmaken':
       return { kind: await maakKind(verzoek, ouderId, diensten) };
+    case 'opnemen':
+      return { kind: await neemKindOp(verzoek, ouderId, diensten) };
     case 'nieuwe-code':
       return { inlogcode: await nieuweCode(verzoek, ouderId, diensten) };
     case 'wachtwoord':
