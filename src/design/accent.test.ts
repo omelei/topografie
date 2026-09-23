@@ -33,6 +33,7 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   // worth finding again after looking away. Each also changes its rule or
   // carries a tick, because §A does not let a hue carry a state on its own.
   [".tk-keuze[aria-pressed='true']", 'the answer already given, as a chip'],
+  [".tk-avatarkeuze[aria-pressed='true']", 'the avatar already chosen, as a chip (ADR-202)'],
   [".tk-tegel[aria-pressed='true']", 'the answer already given, as a tile'],
   [".tk-tegel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a tile'],
   ['.tk-tegel-vink', 'the answer already given: its tick'],

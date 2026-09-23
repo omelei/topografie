@@ -41,17 +41,11 @@ export function TopBar({
         aria-label={t('wisselaar.knop', { naam: profile.naam })}
         onClick={onProfile}
       >
-        {/* Het teken staat er alleen waar de naam niet past: op een telefoon.
-            Zodra de naam er staat, staat hij er alleen (ADR-168) — dezelfde
-            informatie twee keer is er één te veel in de smalste balk van de
-            app. Onder 768 is er geen naam om te lezen, en dan is dit wél het
-            enige wat twee kinderen op één apparaat uit elkaar houdt.
-
-            Sinds ADR-177 is dat de avatar die het kind koos, met de voorletter
-            als terugval. Die voorletter deed dit werk niet goed genoeg: twee
-            broers die allebei met een S beginnen, waren hetzelfde rondje. */}
+        {/* De avatar die het kind koos (ADR-177), met de voorletter als
+            terugval. Op een telefoon staat hij er alleen, want daar past de
+            naam niet; vanaf 768 staat hij naast de naam (ADR-202). */}
         <span className="tk-profiel-letter" aria-hidden="true">
-          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={20} />
+          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={32} />
         </span>
         <span className="tk-profiel-naam">{profile.naam}</span>
       </button>

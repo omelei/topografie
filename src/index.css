@@ -1057,10 +1057,15 @@
     background: var(--vlak-hover);
     border-color: var(--tekst-tertiair);
   }
+  /* Een lang woord breekt af waar `afbreekbaar` het toestaat, en loopt nooit
+   * buiten de tegel: als laatste redmiddel breekt het waar het moet (ADR-202). */
   .tk-diploma-titel {
+    max-width: 100%;
     font-size: var(--type-knop);
     line-height: var(--type-knop-lh);
     font-weight: 600;
+    hyphens: manual;
+    overflow-wrap: break-word;
   }
   .tk-diploma-stand {
     font-size: var(--type-bijschrift);
@@ -3358,10 +3363,11 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  /* De voorletter is de avatar van de telefoon, en daar een schijf in plaats van
-   * een losse hoofdletter: een letter zonder vlak eronder leest als het begin
-   * van een woord dat is afgekapt. Vanaf 768 staat de naam er, en dan staat hij
-   * er alleen (ADR-168) — de letter is daar dezelfde informatie een tweede keer. */
+  /* De avatar, of de voorletter zolang er geen gekozen is, op een schijf: een
+   * letter zonder vlak eronder leest als het begin van een woord dat is
+   * afgekapt. Op een telefoon staat hij er alleen; vanaf 768 staat hij naast de
+   * naam (ADR-202). ADR-168 liet hem daar weg als dubbele informatie, maar een
+   * avatar is geen herhaling van de naam: het is wat het kind zelf koos. */
   .tk-profiel-letter {
     display: inline-flex;
     flex: none;
@@ -3375,16 +3381,6 @@
     font-size: var(--type-knop);
     line-height: 1;
     font-weight: 600;
-  }
-  @media (min-width: 768px) {
-    .tk-profiel-letter {
-      display: none;
-    }
-    /* Zonder de letter hangt de naam niet meer aan een schijf, dus staat er
-     * links evenveel lucht als rechts. */
-    .tk-profiel {
-      padding: 0 16px;
-    }
   }
   @media (max-width: 767px) {
     .tk-profiel {
@@ -4674,6 +4670,40 @@
     gap: 16px;
   }
 
+  /* De avatarkiezer: een raster van tegels met het plaatje groot en de naam
+   * eronder (ADR-202). Gekozen is dezelfde rand en tint als een gekozen keuze. */
+  .tk-avatarraster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 8px;
+  }
+  .tk-avatarkeuze {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 8px 4px;
+    border: var(--stroke-active) solid var(--rand-bediening);
+    border-radius: var(--radius-tegel);
+    background: var(--kaart);
+    color: var(--inkt);
+    font-size: var(--type-vlaklabel);
+    line-height: var(--type-vlaklabel-lh);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+  }
+  .tk-avatarkeuze:not([aria-pressed='true']):hover {
+    background: var(--vlak-hover);
+    border-color: var(--tekst-tertiair);
+  }
+  .tk-avatarkeuze[aria-pressed='true'] {
+    border-color: var(--accent-text);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--accent-text);
+    background: var(--accent-tint);
+    color: var(--accent-text);
+  }
   /* An avatar: the delivered picture, round (ADR-182). */
   .tk-avatar-plaatje {
     display: block;

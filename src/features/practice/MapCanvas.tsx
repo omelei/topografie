@@ -587,6 +587,10 @@ function AnswerShape({
   );
 }
 
+/** De straal van een stad op het scherm, in CSS-pixels (ADR-202). */
+const STIP_PX = 8;
+const STIP_GEVRAAGD_PX = 11;
+
 function CityMarker({
   point,
   name,
@@ -606,6 +610,12 @@ function CityMarker({
 }) {
   const [x, y] = point.punt;
   const radius = helpTargetFor([x, y, x, y], fit)?.r ?? MIN_TOUCH_PX / 2;
+  // De stip heeft een vaste maat op het scherm, niet op de kaart (ADR-202): in
+  // kaarteenheden was hij op een telefoon een puntje van vijf pixels. De stad
+  // waar het om gaat is groter, zodat je hem meteen ziet.
+  const opScherm = (px: number) =>
+    Number.isFinite(fit.unitsPerPixel) && fit.unitsPerPixel > 0 ? px * fit.unitsPerPixel : px;
+  const stip = opScherm(state === 'asked' ? STIP_GEVRAAGD_PX : STIP_PX);
 
   // A point has no area to fill and no room for a double rule, so the four
   // states arrive here as the StateMark drawn beside it plus these two colours.
@@ -646,10 +656,10 @@ function CityMarker({
       <circle
         cx={x}
         cy={y}
-        r={7}
+        r={stip}
         fill={fill}
         stroke={stroke}
-        strokeWidth={2}
+        strokeWidth={opScherm(2.5)}
         pointerEvents="none"
       />
       {clickable && (

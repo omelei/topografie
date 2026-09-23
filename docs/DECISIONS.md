@@ -12428,6 +12428,31 @@ zegt wat er moet gebeuren, in plaats van groen te zijn zonder iets te doen. De
 geheimen van de functie zelf blijven in Supabase. Net als bij `gezin-functions`
 (ADR-155) is de regel: wat draait, is wat in `main` staat.
 
+## ADR-202 — Beter te zien: de stip van een stad, de avatar, de diplomanamen
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar.
+
+**Besluit.**
+
+- **De stip van een stad heeft een vaste maat op het scherm**, niet op de kaart:
+  16 pixels, en 22 voor de stad waar de vraag over gaat. In kaarteenheden (7)
+  was hij op een telefoon een puntje van vijf pixels.
+- **De avatar staat naast je naam in de balk**, ook vanaf 768. ADR-168 liet hem
+  daar weg als dubbele informatie; maar een avatar herhaalt de naam niet, het is
+  wat het kind zelf koos.
+- **48 avatars van de eigenaar** in twee groepen, "Dieren en dingen" en
+  "Monsters en helden", in `public/avatars` zonder de metadata van het
+  tekenprogramma (die was acht keer zo groot als de tekening). De acht ids van
+  de vorige set bestaan nog, dus een gekozen avatar blijft. De kiezer is een
+  raster met grote plaatjes. `tools/merk-uit-leer.mjs` schrijft geen avatars
+  meer: het gooide de map leeg en zette de oude acht terug.
+- **Diplomanamen breken af tussen de delen van een samenstelling**
+  ("provincie-", "vlaggen"), met een zacht afbreekstreepje uit `afbreekbaar`, en
+  lopen als laatste redmiddel nooit buiten de tegel (`overflow-wrap`).
+- Twee teksten op verzoek: de inleiding van Jij ("Hieronder vind je je
+  instellingen en jouw diploma’s. …") en de regel onder "Mijn ouders zijn erbij"
+  ("Vul dan hier de code in").
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -21,8 +21,11 @@ import { nl } from '@/i18n/nl';
 const bron = readFileSync(join(process.cwd(), 'src', 'features', 'player', 'avatars.tsx'), 'utf8');
 
 describe('de avatars', () => {
-  it('heeft er acht, met ids die de vorm beschrijven en niet de volgorde', () => {
-    expect(AVATARS).toHaveLength(8);
+  it('heeft er 48, met ids die de vorm beschrijven en niet de volgorde', () => {
+    // De set van de eigenaar (ADR-202): twee groepen van 24.
+    expect(AVATARS).toHaveLength(48);
+    expect(AVATARS.filter((avatar) => avatar.groep === 'dieren')).toHaveLength(24);
+    expect(AVATARS.filter((avatar) => avatar.groep === 'helden')).toHaveLength(24);
     // Geen `avatar-3`: dat wordt bij de eerste herschikking de verkeerde
     // tekening voor een kind dat allang gekozen had.
     for (const avatar of AVATARS) expect(avatar.id).not.toMatch(/\d/);
@@ -34,6 +37,12 @@ describe('de avatars', () => {
     expect(new Set(namen).size).toBe(AVATARS.length);
   });
 
+  it('houdt de acht ids van de vorige set, zodat een gekozen avatar blijft', () => {
+    for (const id of ['zon', 'wolk', 'bloem', 'vis', 'raket', 'kat', 'robot', 'boot']) {
+      expect(avatarVan(id)?.id, id).toBe(id);
+    }
+  });
+
   it('vindt een bewaarde keuze terug, en valt anders netjes om', () => {
     expect(avatarVan('raket')?.id).toBe('raket');
     // Een id uit een oudere bouw, of geen keuze: allebei de voorletter.
@@ -42,13 +51,16 @@ describe('de avatars', () => {
   });
 
   it('tekent elke avatar met het geleverde bestand', () => {
-    // De set uit de Merk en stijlgids (ADR-182), door tools/merk-uit-leer.mjs
-    // in public/avatars gezet. Een id zonder bestand is een lege cirkel in de
-    // balk van een kind dat allang gekozen had.
+    // De set van de eigenaar (ADR-202), in public/avatars. Een id zonder
+    // bestand is een lege cirkel in de balk van een kind dat allang gekozen had.
     for (const avatar of AVATARS) {
       const pad = join(process.cwd(), 'public', 'avatars', `${avatar.id}.svg`);
       expect(existsSync(pad), avatar.id).toBe(true);
-      expect(readFileSync(pad, 'utf8'), avatar.id).toMatch(/^<svg [^>]*viewBox="0 0 100 100"/);
+      const svg = readFileSync(pad, 'utf8');
+      expect(svg, avatar.id).toMatch(/^<svg [^>]*viewBox="0 0 100 100"/);
+      // Zonder de metadata van het tekenprogramma: die was acht keer zo groot
+      // als de tekening zelf.
+      expect(svg, avatar.id).not.toContain('<metadata');
     }
     expect(bron).toContain('/avatars/${id}.svg');
   });
