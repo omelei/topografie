@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
 import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
+import type { Module } from '@/features/shell/modules';
 import { vrijeVorm } from './useVandaag';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
@@ -21,6 +22,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
+import { EersteRonde, VakkenRaster, ZoWerktHet } from './Kennismaken';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -95,15 +97,30 @@ export interface HomeScreenProps {
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
   /** Naar alle diploma's, op Jij (ADR-153). */
   readonly onDiplomas: () => void;
+  /** Naar de pagina van een vak, vanuit "Kies een vak" (ADR-204). */
+  readonly onVak: (id: Module['id']) => void;
 }
 
-export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: HomeScreenProps) {
+export function HomeScreen({
+  naam,
+  onBegin,
+  onVerder,
+  onPlan,
+  onDiplomas,
+  onVak,
+}: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
+  // Of de rondes gelezen zijn: pas dan is "nog niets geoefend" waar, en
+  // anders flitsen de blokken voor een nieuw kind langs bij een kind van jaren.
+  const [gelezen, setGelezen] = useState(false);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
 
   useEffect(() => {
-    void loadPlayedRounds().then(setPlayed);
+    void loadPlayedRounds().then((rondes) => {
+      setPlayed(rondes);
+      setGelezen(true);
+    });
     void loadOpenRounds().then(setOpen);
     void groepVanActiefKind().then(setGroep);
   }, []);
@@ -165,25 +182,42 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
     <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
   );
 
-  const rijen = (
-    <>
-      <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />
-      <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />
-    </>
-  );
+  // Een nieuw kind: eerst één ronde om mee te beginnen, dan de vakken en hoe
+  // het werkt (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de
+  // rijen erboven zijn dan zijn eigen weg terug.
+  // Nieuw is: nog geen ronde af én geen ronde half. Wie er één stopte, heeft
+  // "Maak af" nodig en is geen beginner meer.
+  const nieuw = gelezen && played.length === 0 && open !== null && open.length === 0;
+  const vakken = <VakkenRaster onVak={onVak} />;
 
-  const kern = (
-    <>
-      {kop}
-      {terug}
-      {beginnen}
-      {vandaagBoven}
-      {groepVraag}
-      {weekdoelen}
-      {rijen}
-      {vandaagOnder}
-    </>
-  );
+  // Elk blok met een vaste sleutel: als de rondes gelezen zijn en de pagina
+  // van volgorde wisselt, verhuist React de blokken in plaats van ze opnieuw
+  // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
+  const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
+  const kern = nieuw
+    ? [
+        blok('kop', kop),
+        blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
+        blok('vandaagBoven', vandaagBoven),
+        blok('beginnen', beginnen),
+        blok('vakken', vakken),
+        blok('zo', <ZoWerktHet />),
+        blok('groepVraag', groepVraag),
+        blok('weekdoelen', weekdoelen),
+        blok('vandaagOnder', vandaagOnder),
+      ]
+    : [
+        blok('kop', kop),
+        blok('terug', terug),
+        blok('beginnen', beginnen),
+        blok('vandaagBoven', vandaagBoven),
+        blok('groepVraag', groepVraag),
+        blok('weekdoelen', weekdoelen),
+        blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
+        blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
+        blok('vandaagOnder', vandaagOnder),
+        blok('vakken', vakken),
+      ];
 
   // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
   return <div className="tk-home">{kern}</div>;

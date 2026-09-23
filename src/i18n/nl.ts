@@ -19,6 +19,25 @@ export const nl = {
   // stopt na tien.
   'home.welcome': 'Hoi {naam}!',
   'home.todayOpen': 'Kies een vak, doe een ronde en kijk hoe het ging.',
+  // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
+  // de vakken, en in drie stappen hoe het werkt.
+  'home.eerste.kop': 'Je eerste ronde',
+  'home.eerste.zin': '{onderwerp}, {manier}. Een ronde duurt maar een paar minuten.',
+  'home.eerste.knop': 'Start',
+  'home.vakken.titel': 'Kies een vak',
+  'home.vak.topo': 'Provincies, steden en landen',
+  'home.vak.tafels': 'Tafels en sommen',
+  'home.vak.klok': 'Klokkijken, van hele uren tot minuten',
+  'home.vak.woorden': 'Spelling en werkwoorden',
+  'home.vak.vlaggen': 'Vlaggen van Nederland en de wereld',
+  'home.zo.titel': 'Zo werkt leer.nu',
+  'home.zo.oefen.kop': 'Oefen een ronde',
+  'home.zo.oefen.uitleg': 'Kies een vak en een onderwerp. Je doet het in je eigen tempo.',
+  'home.zo.herhaal.kop': 'Herhaal wat je bijna vergeten bent',
+  'home.zo.herhaal.uitleg':
+    'Wat je goed beheerst, komt pas later terug. Zo blijft het in je hoofd.',
+  'home.zo.diploma.kop': 'Haal je diploma',
+  'home.zo.diploma.uitleg': 'Beheers je genoeg? Dan doe je de toets, en hangt je diploma op Jij.',
   // De rondes die je begon en niet afmaakte (ADR-115), in de plaats van de
   // moduletegels van "Verder oefenen". Tikken vraagt wat die ronde nog niet
   // had gevraagd, op dezelfde manier.

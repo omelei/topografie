@@ -43,9 +43,11 @@ test('a round stopped halfway waits under Maak af, and asks only what was left',
 }) => {
   await signIn(page, 'Lotte');
 
-  // Nothing started yet: the row is there, and says what it is for.
+  // Nothing started yet: a new child gets the first round and the subjects,
+  // and the row comes once there is something to finish (ADR-204).
   const rij = page.getByRole('region', { name: 'Maak af' });
-  await expect(rij).toContainText('Stop je halverwege een ronde?');
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+  await expect(rij).toHaveCount(0);
   // And the module tiles it replaced are gone.
   await expect(page.getByRole('region', { name: 'Verder oefenen' })).toHaveCount(0);
 

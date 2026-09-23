@@ -2269,6 +2269,93 @@
       width: 300px;
     }
   }
+  /* ---- Kennismaken op Vandaag (ADR-204) -----------------------------------
+   * De eerste ronde als één grote kaart met een knop, de vakken als tegels in
+   * hun eigen kleur, en drie genummerde stappen. Alles in de vormen die de app
+   * al heeft: de rand en onderkant van een kaart, de plaat van een vak. */
+  .tk-eerste {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 20px;
+    padding: var(--kaart-padding);
+    border: var(--stroke-tegel) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    background: var(--module-tint);
+  }
+  .tk-eerste-tekst {
+    display: flex;
+    flex: 1 1 16rem;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tk-vakraster {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-vaktegel {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+    border: var(--stroke-tegel) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    background: var(--kaart);
+    color: var(--inkt);
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-vaktegel:hover {
+    border-color: var(--tekst-tertiair);
+  }
+  .tk-vaktegel-tekst {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .tk-uitlegstappen {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-uitlegstap {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+  }
+  .tk-uitlegstap-nummer {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pil);
+    background: var(--inkt);
+    color: var(--kaart);
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
   /* Hover in ink, not in the module's colour. The card is a door into one
    * exercise, and the plate already says which module it is behind. */
   .tk-kaart:hover {
@@ -3177,7 +3264,13 @@
     height: 100vh;
     height: 100dvh;
   }
+  /* `position: relative` houdt wat absoluut staat binnen dit deel. Zonder
+   * dat hingen de verborgen labels van `.tk-sr-only` aan de body, op hun plek
+   * in de lange inhoud, en maakten ze het document zelf duizenden pixels hoog:
+   * op een telefoon scrolde dan de hele pagina mee, schoof de balk weg en
+   * kwam er een lege vlakte onder de app (ADR-203). */
   .tk-schil-rol {
+    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -3589,12 +3682,16 @@
    * van een modulepagina plakt vlak boven hem in plaats van eronder. In een
    * ronde staat hij er niet, want een ronde tekent de Shell niet. De onderste
    * inzet houdt de knoppen boven de veegbalk van een iPhone. */
+  /* Duidelijker gemaakt op verzoek van de eigenaar (ADR-204): waar je bent is
+   * een pil in inkt achter het teken, zoals een gekozen keuze in de app een
+   * pil is, en het woord eronder is groter. Inkt en geen accent, om dezelfde
+   * reden als hierboven. De balk zelf ligt met een dikke rand op de pagina. */
   .tk-tabbar {
     display: flex;
     align-items: stretch;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 6px 8px env(safe-area-inset-bottom);
     background: var(--kaart);
-    border-top: var(--stroke-hair) solid var(--rand-licht);
+    border-top: var(--stroke-tegel) solid var(--rand-licht);
   }
   .tk-tabbar-item {
     display: flex;
@@ -3604,28 +3701,33 @@
     justify-content: center;
     gap: 4px;
     min-height: 64px;
-    padding: 6px 4px 8px;
+    padding: 4px 4px 8px;
     border: 0;
-    border-top: var(--stroke-active) solid transparent;
     background: transparent;
     color: var(--tekst-secundair);
-    font-size: var(--type-vlaklabel);
-    line-height: var(--type-vlaklabel-lh);
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
     font-weight: 600;
     cursor: pointer;
   }
-  @media (min-width: 768px) {
-    .tk-tabbar-item {
-      min-height: 68px;
-      font-size: var(--type-bijschrift);
-      line-height: var(--type-bijschrift-lh);
-    }
+  .tk-tabbar-teken {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 36px;
+    border-radius: var(--radius-pil);
+  }
+  .tk-tabbar-item:not([aria-current='page']):hover .tk-tabbar-teken {
+    background: var(--vlak-hover);
   }
   .tk-tabbar-item[aria-current='page'] {
-    border-top-color: var(--inkt);
-    background: var(--papier);
     color: var(--inkt);
     font-weight: 700;
+  }
+  .tk-tabbar-item[aria-current='page'] .tk-tabbar-teken {
+    background: var(--inkt);
+    color: var(--kaart);
   }
 
   /* ---- The round, on four sizes (K3) -----------------------------------

@@ -232,7 +232,9 @@ export function Shell({
               className="tk-tabbar-item"
               onClick={() => onNavigate?.(id)}
             >
-              <Icon size={24} />
+              <span className="tk-tabbar-teken" aria-hidden="true">
+                <Icon size={24} />
+              </span>
               {label}
             </button>
           ))}

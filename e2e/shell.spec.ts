@@ -368,3 +368,40 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
     })
     .toBeLessThanOrEqual(1);
 });
+
+/**
+ * Onder 1200 scrolt alleen de inhoud, nooit het document (ADR-203). Een label
+ * dat absoluut aan de body hing, maakte het document op Premium bijna vijfduizend
+ * pixels hoog; op een telefoon schoof dan de hele app weg boven een lege vlakte.
+ */
+test.describe('zonder code', () => {
+  // Zonder code staat op Premium de vergelijkingstabel met de verborgen labels.
+  test.use({ storageState: { cookies: [], origins: [] } });
+
+  test('onder 1200 is het document nooit hoger dan het scherm', async ({ page }) => {
+    await signIn(page, 'Noor');
+    const breedte = page.viewportSize()?.width ?? 0;
+    test.skip(breedte >= 1200, 'vanaf 1200 scrolt het document zelf');
+
+    for (const pad of ['/', '/jij', '/topografie', '/premium']) {
+      await page.goto(pad);
+      await expect(page.locator('main')).toBeVisible();
+      // Op Premium eerst de tabel: daar staan de labels die het misten.
+      if (pad === '/premium') await expect(page.getByRole('table').first()).toBeVisible();
+      // Pas als alles staat: de pagina schuift in, en pas daarna rekent de
+      // browser de labels mee.
+      await page.evaluate(() =>
+        Promise.allSettled(
+          document
+            .getAnimations()
+            .filter((a) => a.effect?.getTiming().iterations !== Infinity)
+            .map((a) => a.finished),
+        ),
+      );
+      const hoog = await page.evaluate(
+        () => document.documentElement.scrollHeight - window.innerHeight,
+      );
+      expect(hoog, pad).toBeLessThanOrEqual(1);
+    }
+  });
+});

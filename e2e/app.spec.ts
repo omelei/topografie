@@ -148,6 +148,8 @@ test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee vandaag"
   // en niet "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is.
   const rij = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
+  // Pas als Vandaag gelezen heeft wat er geoefend is, staat de pagina stil.
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
   await rij.focus();
   await page.keyboard.press('ArrowRight');
 
@@ -161,11 +163,10 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   // De kolom met favorieten staat er niet meer, op geen enkele maat (ADR-168).
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // Before the first round it is empty, and it says so rather than standing
-  // there as a heading over nothing.
-  await expect(
-    recent.getByText('Nog niets geoefend. Na je eerste ronde staat het hier.'),
-  ).toBeVisible();
+  // Before the first round there is nothing to log, and a new child gets the
+  // first round, the subjects and how it works instead (ADR-204).
+  await expect(recent).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
 
   await startRound(page, PROVINCIES, /Aanwijzen/);
   await page.getByRole('button', { name: 'Limburg' }).click();

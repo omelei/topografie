@@ -189,5 +189,5 @@ test('Ontdekken: a flag, where it is, its capital and one fact', async ({ page }
 
   // Nothing was asked, so nothing is in the history — and the way out is home.
   await page.getByRole('button', { name: 'Klaar' }).click();
-  await expect(page.getByRole('region', { name: 'Maak af' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
 });
