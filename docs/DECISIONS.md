@@ -11420,8 +11420,8 @@ fout.
 ## ADR-184 — Tijdvakken wordt magenta, zodat gekozen en fout niet op elkaar lijken
 
 **Status:** accepted. **Date:** 2026-09-23. **Werkt ADR-180 bij** voor één vak.
-De bevestiging van de ontwerper staat nog open; de eigenaar koos om niet te
-wachten.
+Doorgevoerd voordat de ontwerper had gereageerd; de ontwerper heeft `#9c2a8c`
+daarna bevestigd.
 
 ### Context
 
