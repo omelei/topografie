@@ -9,13 +9,13 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ## Nu
 
-| Wat                                                                          | Wie           | Staat                    | Hangt af van           |
-| ---------------------------------------------------------------------------- | ------------- | ------------------------ | ---------------------- |
-| Kassa naar € 79,95 zetten: `supabase functions deploy kassa --no-verify-jwt` | jij           | Te doen, direct          | #132 is live (ADR-196) |
-| Gezinsaccount live zetten (zie hieronder)                                    | jij en Claude | Wacht op vier antwoorden | —                      |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder)   | jij           | Te doen                  | —                      |
-| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)                | Claude        | Wacht op het adres       | Contactadres van jou   |
-| Klassencode: € 300 inclusief of exclusief btw?                               | jij           | Te beslissen             | —                      |
+| Wat                                                                            | Wie           | Staat                                                                     | Hangt af van         |
+| ------------------------------------------------------------------------------ | ------------- | ------------------------------------------------------------------------- | -------------------- |
+| Kassa naar € 79,95 zetten: gebeurt nu door de workflow Kassa functie (ADR-201) | jij           | Alleen als het token ontbreekt: `SUPABASE_ACCESS_TOKEN` als geheim zetten | —                    |
+| Gezinsaccount live zetten (zie hieronder)                                      | jij en Claude | Wacht op vier antwoorden                                                  | —                    |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder)     | jij           | Te doen                                                                   | —                    |
+| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)                  | Claude        | Wacht op het adres                                                        | Contactadres van jou |
+| Klassencode: € 300 inclusief of exclusief btw?                                 | jij           | Te beslissen                                                              | —                    |
 
 ### Code afschermen
 
@@ -101,6 +101,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #136      | De kassa wordt door een workflow gedeployd, bij elke wijziging en met de hand                                                                                                             | 201      |
 | #135      | Een ouder is geen profiel meer en telt niet mee in de drie; een kind kan van het apparaat; de pagina groeit mee op een groot scherm; klassencode van 40 plekken; een code geldt 365 dagen | 198–200  |
 | #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback                                                                          | 197      |
 | #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per jaar en € 9,95 per maand (binnenkort)                                                                                    | 195, 196 |

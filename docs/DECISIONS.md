@@ -12408,6 +12408,26 @@ code (`max_apparaten`), dus een klas past zonder de app te veranderen.
 - `OMSCHRIJVING` van de kassa zegt "een jaar"; dat geldt na de volgende deploy
   van de kassa-functie.
 
+## ADR-201 — De kassa wordt door een workflow gedeployd
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Deploy
+de kassa."
+
+**Context.** De kassa-functie ging tot nu toe met de hand naar Supabase
+(`supabase functions deploy kassa --no-verify-jwt`), en de CI deed het niet.
+Daardoor liep de kassa achter op de site: na ADR-196 stond er € 79,95 op de
+pagina terwijl de kassa € 24,95 afrekende, en na ADR-200 zei de omschrijving
+nog "een schooljaar".
+
+**Besluit.** `.github/workflows/kassa-functie.yml` deployt de kassa bij elke
+push naar `main` die `supabase/functions/kassa/**` of de workflow zelf raakt,
+en is met de hand te starten. Het project volgt uit `PREMIUM_URL`
+(`PREMIUM_PROJECT_REF` gaat voor als die bestaat); het token is het geheim
+`SUPABASE_ACCESS_TOKEN`. Ontbreekt het token, dan faalt de job met een zin die
+zegt wat er moet gebeuren, in plaats van groen te zijn zonder iets te doen. De
+geheimen van de functie zelf blijven in Supabase. Net als bij `gezin-functions`
+(ADR-155) is de regel: wat draait, is wat in `main` staat.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
