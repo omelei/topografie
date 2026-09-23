@@ -7,7 +7,8 @@ const ROOT = process.cwd();
 const lees = (...pad: string[]) => readFileSync(join(ROOT, ...pad));
 
 /**
- * The logo is Denker, as delivered in docs/logo (ADR-154).
+ * The logo is Denker, as delivered in docs/logo (ADR-154) — since ADR-182
+ * the delivery v2 that tools/merk-uit-leer.mjs draws from docs/leer.js.
  *
  * The app serves copies of the designer's files from public. If one of these
  * fails, either a new delivery went into docs/logo and has to be copied over
@@ -21,19 +22,26 @@ describe('the logo is the one in docs/logo', () => {
     }
   });
 
-  it('serves the logos and the sprite exactly as delivered', () => {
+  it('serves the logos and Denker exactly as delivered', () => {
     for (const naam of readdirSync(join(ROOT, 'docs', 'logo', 'logo'))) {
       const kopie = lees('public', 'logo', naam);
       expect(kopie.equals(lees('docs', 'logo', 'logo', naam)), naam).toBe(true);
     }
-    const sprite = lees('public', 'denker-sprite.svg');
-    expect(sprite.equals(lees('docs', 'logo', 'code', 'denker-sprite.svg'))).toBe(true);
+    const uitdrukkingen = join('docs', 'logo', 'beeldmerk', 'uitdrukkingen');
+    for (const naam of readdirSync(join(ROOT, uitdrukkingen))) {
+      const kopie = lees('src', 'assets', 'denker', naam);
+      expect(kopie.equals(lees(uitdrukkingen, naam)), naam).toBe(true);
+    }
   });
 
-  it('draws every expression the sprite has, and no other', () => {
-    const sprite = lees('public', 'denker-sprite.svg').toString('utf8');
-    const ids = [...sprite.matchAll(/id="denker-([a-z-]+)"/g)].map((match) => match[1]);
-    expect(ids).toEqual([...UITDRUKKINGEN]);
+  it('draws every expression the delivery has, and no other', () => {
+    // Each in two drawings: the whole Denker, and the simple one below 36px.
+    const namen = readdirSync(join(ROOT, 'docs', 'logo', 'beeldmerk', 'uitdrukkingen')).sort();
+    const verwacht = UITDRUKKINGEN.flatMap((uitdrukking) => [
+      `denker-${uitdrukking}-klein.svg`,
+      `denker-${uitdrukking}.svg`,
+    ]).sort();
+    expect(namen).toEqual(verwacht);
   });
 
   it('keeps the colours of the delivery', () => {

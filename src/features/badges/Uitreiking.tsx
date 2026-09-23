@@ -85,7 +85,7 @@ export function Uitreiking({
       </div>
 
       <p className="tk-uitreiking-denker" data-beat="denker" data-aan={aan('denker')}>
-        <Brandmark size={44} uitdrukking="goed-gedaan" />
+        <Brandmark size={44} uitdrukking="trots" />
         <span className="tk-uitreiking-kop">{t('diploma.gehaaldKop')}</span>
       </p>
 

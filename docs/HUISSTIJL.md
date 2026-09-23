@@ -3,10 +3,11 @@
 De huisstijl van leer.nu staat in drie bronnen, en elk is definitief voor zijn
 eigen deel:
 
-- **Het logo** is de levering `leernu-logo-denker`, ongewijzigd in `docs/logo`
-  (ADR-154). Die map bepaalt het merk: Denker, het woordbeeld, de app-iconen en
-  de vier merkkleuren koraal, koraal diep, cacao en room. Niemand retoucheert
-  daar iets; `logo.test.ts` houdt elke kopie in `public` er byte voor byte aan.
+- **Het logo** is de levering in `docs/logo`, versie 2.0 (ADR-182): getekend
+  door `tools/merk-uit-leer.mjs` uit `docs/leer.js`, nooit met de hand. Die map
+  bepaalt het merk: Denker en zijn zeven uitdrukkingen, het woordbeeld, de
+  app-iconen en de merkkleuren. `logo.test.ts` houdt elke kopie in `public` en
+  `src/assets/denker` er byte voor byte aan.
 - **Kleur en typografie** komen uit `docs/leer.nu Merk en stijlgids.dc.html`
   (ADR-179), met de vakkleuren, iconen en Denker uit `docs/leer.js` (ADR-180).
   Room als ondergrond, witte kaarten, cacao als inkt, koraal voor de knop en
@@ -109,12 +110,12 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    niet hoeft te weten. Maak er geen nieuwe hex voor.
 
 10. **Het merk, en waar koraal wel en niet mag.** Het logo is een plaatje:
-    `Wordmark` voor het liggende logo met de naam, `Brandmark` voor Denker los.
-    Teken ze niet na en zet de naam nergens in een lettertype — het woordbeeld
-    bestaat uit vormen en draagt `alt="leer.nu"`. Het logo staat op wit of op
-    `papier`, nooit kleiner dan 88 px breed; Denker los nooit kleiner dan 24,
-    en daaronder de favicon. Een uitdrukking van Denker is terugkoppeling,
-    hooguit één per scherm, en nooit in plaats van het logo.
+    `Wordmark` voor het liggende logo met de naam. Denker is `Brandmark`, met
+    een `uitdrukking` (denken, blij, juichen, bemoedigend, trots, slapen,
+    zwaaien); onder 36 px tekent hij zichzelf eenvoudig. Teken ze niet na en
+    zet de naam nergens in een lettertype. Het logo staat op wit of op
+    `papier`, nooit kleiner dan 88 px breed. Een uitdrukking van Denker is
+    terugkoppeling, hooguit één per scherm, en nooit in plaats van het logo.
 
     Koraal mag op drie plekken (ADR-179): de primaire knop (`actie`, met wit
     erop, alleen op knoptekst van 20 px Baloo 700), het vlak waar een pagina
