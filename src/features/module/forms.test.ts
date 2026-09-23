@@ -127,26 +127,27 @@ describe('the ways of practising', () => {
     }
   });
 
-  it('opens every page on a way that is free', () => {
-    // Until ADR-122 the free ways happened to come first and the premium ones
-    // last, and this test asserted that. It is no longer true and should not
-    // be: the tafeldiploma is free and stands last, where the order of the ways
-    // puts a diploma (ADR-112), and ontdekken is free and stands in the middle.
-    // What has to hold is that a page never opens on a lock — the first way a
-    // child sees is always one they can play.
+  it('offers a free way on every page (ADR-192)', () => {
+    // Until ADR-192 the first way on every page was free, and this test held
+    // that. Since the owner drew the line at ontdekken and meerkeuze, zoeken —
+    // the first way on topography, the clock and flags — is premium, and the
+    // order of the ways stays what it is (ADR-061): the page lists what there
+    // is, in order of weight, with the lock on what is locked. What still has
+    // to hold is that no page is all locks: there is always something a child
+    // without a code can play.
     for (const forms of ALLE) {
-      const eerste = forms[0];
-      expect(eerste, 'a page with no ways').toBeDefined();
-      expect(isPremiumVorm(eerste!.id), eerste!.id).toBe(false);
+      expect(
+        forms.some((form) => !isPremiumVorm(form.id)),
+        forms.map((form) => form.id).join(', '),
+      ).toBe(true);
     }
   });
 
-  it('leaves ontdekken and the tafeldiploma free wherever they appear (ADR-122)', () => {
+  it('leaves ontdekken free, and the tafeldiploma premium, wherever they appear', () => {
     for (const forms of ALLE) {
       for (const form of forms) {
-        if (form.id === 'ontdekken' || form.id === 'tafeldiploma') {
-          expect(isPremiumVorm(form.id), form.id).toBe(false);
-        }
+        if (form.id === 'ontdekken') expect(isPremiumVorm(form.id), form.id).toBe(false);
+        if (form.id === 'tafeldiploma') expect(isPremiumVorm(form.id), form.id).toBe(true);
       }
     }
   });

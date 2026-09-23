@@ -115,7 +115,11 @@ const ONDERWERP_ID = 'onthouden-onderwerp';
 
 export function Statistieken() {
   const { actief } = usePremium();
-  return <Onthouden premium={actief} />;
+  // Wat een kind kent en hoe vaak het oefende, is alleen met premium te zien
+  // (ADR-192). Het wordt wel altijd bewaard — het herhaalschema heeft het
+  // nodig — dus wie premium neemt, ziet meteen alles wat er al was. Zonder
+  // code staat hier alleen de vraag, en niets van de getallen erachter.
+  return actief ? <Onthouden premium /> : <Etalage />;
 }
 
 /**

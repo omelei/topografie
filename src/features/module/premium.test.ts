@@ -7,37 +7,38 @@ import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './r
  * map each page opens on.
  */
 describe('premium', () => {
-  it('leaves practising free, and marks what works over weeks', () => {
-    // ADR-122: oefenen is free — the three ways that ask about one thing at a
-    // time, ontdekken, and the tafeldiploma. The rest is premium.
+  it('leaves ontdekken and meerkeuze free, and marks everything else (ADR-192)', () => {
     const gratis = [
-      'wijs-aan',
-      'klok-welke-klok',
-      'vlag-zoeken',
       'ontdekken',
-      'tafeldiploma',
       'meerkeuze',
       'som-meerkeuze',
       'klok-meerkeuze',
       'vlag-meerkeuze',
-      'hoe-heet-dit',
-      'som-typen',
-      'klok-typen',
-      // Taal's choosing and typing (ADR-118).
+      // Taal's choosing (ADR-118).
       'taal-letters',
       'taal-vorm-kiezen',
-      'taal-flitsdictee',
-      'taal-vorm-typen',
     ];
     for (const vorm of gratis) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
     }
     for (const vorm of [
-      'bliksemronde',
-      'overleven',
+      // Zoeken and typen, free until ADR-192.
+      'wijs-aan',
+      'klok-welke-klok',
+      'vlag-zoeken',
+      'hoe-heet-dit',
+      'som-typen',
+      'klok-typen',
+      'taal-flitsdictee',
+      'taal-vorm-typen',
+      // Every diploma, the tafeldiploma too.
+      'tafeldiploma',
+      'reken-diploma',
       'vlag-diploma',
       'klok-diploma',
       'topo-diploma',
+      'bliksemronde',
+      'overleven',
       'vlag-gemengd',
     ]) {
       expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(true);

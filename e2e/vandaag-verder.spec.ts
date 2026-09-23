@@ -127,11 +127,13 @@ test('als alles van vandaag gedaan is, staat dat er', async ({ page }) => {
   await expect(blok).toBeVisible();
 
   await blok.getByRole('button').first().click();
-  // Alles goed: dan staat er vanavond niets meer open van deze set.
+  // Alles goed: dan staat er vanavond niets meer open van deze set. Het plan
+  // kiest een gratis manier, en typen is premium (ADR-192): dus uit vier.
+  const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let vraag = 1; vraag <= 10; vraag++) {
     const som = await page.locator('.tk-sum').innerText();
-    await page.getByPlaceholder('Antwoord').fill((som.split('×')[1] ?? '').trim());
-    await page.getByRole('button', { name: 'Kijk na' }).click();
+    const goed = (som.split('×')[1] ?? '').trim();
+    await opties.getByRole('button', { name: goed, exact: true }).click();
     // Wachten op één van beide: `isVisible` zonder wachten breekt de lus soms
     // af voordat het scherm bijgewerkt is, en dan zijn niet alle tien gedaan.
     const volgende = page.getByRole('button', { name: 'Volgende vraag' });

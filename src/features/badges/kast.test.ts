@@ -45,42 +45,26 @@ describe('welke diploma’s de kast kan tonen', () => {
     );
   });
 
-  it('zonder code blijven de twaalf tafeldiploma’s over, en niets anders', () => {
-    const gratis = doelwitten(startbareOnderdelen(), false);
-    expect(gratis).toHaveLength(12);
-    expect(gratis.every((doelwit) => doelwit.mode === 'tafeldiploma')).toBe(true);
+  it('zonder code is er geen enkel diploma te halen, ook niet de tafels (ADR-192)', () => {
+    // Tot ADR-192 bleven de twaalf tafeldiploma's gratis (ADR-122). De eigenaar
+    // zette alle diploma's achter premium; de ring bij elk diploma blijft wel
+    // te zien, zodat een kind weet wat er te halen valt.
+    expect(doelwitten(startbareOnderdelen(), false)).toEqual([]);
   });
 
-  it('en vier vakken houden zonder code niets over, maar bestaan wel', () => {
-    // De aanname waar `VakOpSlot` op staat (ADR-177). De kast filterde een vak
-    // zonder beschikbare diploma's weg, en dus zag een kind zonder code één
-    // vak en las het dat dit product twaalf diploma's heeft. Nu staan die vier
-    // er als regel — zonder het raster erachter, want ADR-116 verbiedt het
-    // tekenen van een beloning die een kind niet kan krijgen.
-    const vakVan = (premium: boolean) =>
-      new Set(doelwitten(startbareOnderdelen(), premium).map((doelwit) => doelwit.deel.moduleId));
-
-    const gratis = vakVan(false);
-    const alles = vakVan(true);
-    expect([...gratis]).toEqual(['tafels']);
-    expect([...alles].filter((vak) => !gratis.has(vak)).sort()).toEqual([
-      'klok',
-      'topo',
-      'vlaggen',
-      'woorden',
-    ]);
+  it('en alle vijf de vakken hebben diploma’s, met of zonder code om ze te halen', () => {
+    const vakken = new Set(
+      doelwitten(startbareOnderdelen(), true).map((doelwit) => doelwit.deel.moduleId),
+    );
+    expect([...vakken].sort()).toEqual(['klok', 'tafels', 'topo', 'vlaggen', 'woorden']);
   });
 
   it('en de premiumtabel noemt datzelfde aantal', () => {
     // `premium.regel.diplomas` staat een getal in de verkooptekst, en een getal
-    // in copy verloopt stil (ADR-177): er stond "vlaggen, klok en topografie",
-    // en Taal en twintig rekendiploma's stonden er niet bij. Deze toets bindt
-    // de zin aan de lijst, zodat een set erbij of eraf de tabel meeneemt.
+    // in copy verloopt stil (ADR-177). Deze toets bindt de zin aan de lijst,
+    // zodat een set erbij of eraf de tabel meeneemt.
     const alles = doelwitten(startbareOnderdelen(), true).length;
-    const gratis = doelwitten(startbareOnderdelen(), false).length;
-    expect(nl['premium.regel.diplomas']).toContain(String(alles - gratis));
-    expect(nl['premium.regel.tafeldiploma']).toContain('twaalf');
-    expect(gratis).toBe(12);
+    expect(nl['premium.regel.diplomas']).toContain(String(alles));
   });
 
   it('elk diploma komt precies één keer voor', () => {

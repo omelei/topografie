@@ -68,24 +68,27 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
       { tekst: 'premium.regel.vakken', basis: true },
       { tekst: 'premium.regel.vormen', basis: true },
       { tekst: 'premium.regel.herhaal', basis: true },
-      { tekst: 'premium.regel.voorspelling', basis: true },
+      // Zoeken en typen zijn premium sinds ADR-192.
+      { tekst: 'premium.regel.zoekenTypen', basis: false },
     ],
   ],
   [
     'premium.groep.belonen',
     [
-      { tekst: 'premium.regel.tafeldiploma', basis: true },
+      // De ring blijft gratis te zien, het halen niet (ADR-192).
+      { tekst: 'premium.regel.ringen', basis: true },
       { tekst: 'premium.regel.diplomas', basis: false },
+      { tekst: 'premium.regel.weekdoelen', basis: false },
     ],
   ],
   [
     'premium.groep.onthouden',
     [
-      // "Zien wat blijft hangen" stond onder Belonen, naast de diploma's
-      // (ADR-177). Het hoort hier: het is de enige gratis regel in deze groep,
-      // en dat is precies wat de grens van ADR-122 zegt — het inzicht is
-      // gratis, het bijhouden is betaald.
-      { tekst: 'premium.regel.blijfthangen', basis: true },
+      // Wat een kind kent en hoe vaak het oefende, wordt altijd bewaard — het
+      // herhaalschema heeft het nodig — maar het is alleen met premium te zien
+      // (ADR-192). De schatting na een ronde hoort daarbij.
+      { tekst: 'premium.regel.voortgang', basis: false },
+      { tekst: 'premium.regel.voorspelling', basis: false },
       { tekst: 'premium.regel.plan', basis: false },
       { tekst: 'premium.regel.onthouden', basis: false },
       { tekst: 'premium.regel.fouten', basis: false },

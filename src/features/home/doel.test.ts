@@ -77,8 +77,8 @@ describe('welke doelen dit kind mag kiezen', () => {
     deel('rekenmix', 'tafels', 40),
   ];
 
-  it('zonder code alleen het tafeldiploma', () => {
-    expect(doelwitten(alles, false).map((d) => d.id)).toEqual(['diploma-tafel-7']);
+  it('zonder code geen enkel diploma, ook niet de tafels (ADR-192)', () => {
+    expect(doelwitten(alles, false)).toEqual([]);
   });
 
   it('met code alle diploma’s die er zijn', () => {
@@ -126,7 +126,7 @@ describe('hoe ver een kind is', () => {
 describe('wat we voorstellen', () => {
   const alle = doelwitten(
     [deel('tafel-3', 'tafels', 10), deel('tafel-7', 'tafels', 10), deel('tafel-9', 'tafels', 10)],
-    false,
+    true,
   );
 
   it('zet het diploma dat het dichtst bij is bovenaan', () => {
@@ -193,7 +193,9 @@ describe('welke doelen bij een groep passen', () => {
     deel('vlag-afrika-alle', 'vlaggen', 54),
   ];
   const met = doelwitten(onderdelen, true);
-  const zonder = doelwitten(onderdelen, false);
+  // Alleen de tafels: tot ADR-192 was dat wat een kind zonder code kon kiezen,
+  // en het blijft een nuttige lijst om de volgorde binnen één vak te toetsen.
+  const zonder = met.filter((doelwit) => doelwit.deel.moduleId === 'tafels');
   const voor = (alle: typeof met, groep?: 3 | 4 | 5 | 6 | 7 | 8) =>
     suggesties(alle, new Set(), new Map(), NU, 3, groep).map((s) => s.doelwit.deel.setId);
 
@@ -223,7 +225,7 @@ describe('welke doelen bij een groep passen', () => {
     }
   });
 
-  it('herhaalt zonder code in de hoogste groepen de zwaarste tafels', () => {
+  it('herhaalt met alleen tafels in de hoogste groepen de zwaarste tafels', () => {
     expect(voor(zonder, 8)).toEqual(['tafel-12', 'tafel-11', 'tafel-9']);
   });
 

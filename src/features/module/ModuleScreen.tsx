@@ -320,8 +320,9 @@ export function ModuleScreen({
           now: new Date(),
         })
       : null;
+  // Hoeveel je eerder had, is voortgang: alleen met premium (ADR-192).
   const eerderZin =
-    vooraf !== null && vooraf.seen > 0
+    actief && vooraf !== null && vooraf.seen > 0
       ? t('start.eerderGehad', { eerder: vooraf.seen, totaal: vooraf.total })
       : null;
 
@@ -465,7 +466,7 @@ export function ModuleScreen({
                   // How the subject is going is not on the face of it; it is in
                   // its name, and in the child's own column (ADR-089).
                   aria-label={metPremium(
-                    [t(vak.naam), buitenGroep, vorderingVan(vak, known, now)]
+                    [t(vak.naam), buitenGroep, actief ? vorderingVan(vak, known, now) : null]
                       .filter((deel) => deel !== null)
                       .join('. '),
                     premium,
@@ -789,7 +790,7 @@ export function ModuleScreen({
 
         {/* Eén zin: wat hier vandaag terugkomt. Dat is de voorwaarde voor het
             diploma — alleen wat terugkomt kan onthouden raken. */}
-        {chosen !== null && states !== null ? (
+        {actief && chosen !== null && states !== null ? (
           <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
         ) : null}
 

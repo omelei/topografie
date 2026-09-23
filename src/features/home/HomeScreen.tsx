@@ -160,11 +160,13 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
 
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
   // die zegt "druk hier, dan oefen je" (ADR-162).
-  const beginnen = <Populairst populair={populair} groep={groep} onBegin={onBegin} />;
+  const beginnen = (
+    <Populairst populair={populair} groep={groep} tellen={actief} onBegin={onBegin} />
+  );
 
   const rijen = (
     <>
-      <Recent gespeeld={gespeeld} onBegin={onBegin} />
+      <Recent gespeeld={gespeeld} cijfers={actief} onBegin={onBegin} />
       <MaakAf open={open} alles={alles} onVerder={onVerder} />
     </>
   );
@@ -198,7 +200,7 @@ function GeoefendKaart({
 }: {
   readonly deel: Onderdeel;
   readonly vorm: string;
-  readonly status: string;
+  readonly status: string | null;
   readonly onClick: () => void;
 }) {
   const ModuleIcon = MODULE_ICON[deel.moduleId];
@@ -210,7 +212,7 @@ function GeoefendKaart({
       </span>
       <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
       <span className="tk-kaart-regel">{vorm}</span>
-      <span className="tk-kaart-voet">{status}</span>
+      {status === null ? null : <span className="tk-kaart-voet">{status}</span>}
     </button>
   );
 }
@@ -226,11 +228,17 @@ function GeoefendKaart({
 function Populairst({
   populair,
   groep,
+  tellen,
   onBegin,
 }: {
   readonly populair: readonly Populair[];
   /** Waarmee een nieuw kind begint, hangt af van zijn groep (ADR-151). */
   readonly groep: Groep | undefined;
+  /**
+   * Of het aantal keer eronder staat. Alleen met premium (ADR-192): de volgorde
+   * blijft, want die zegt waar je mee verder wilt, maar de telling is voortgang.
+   */
+  readonly tellen: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const leeg = populair.length === 0;
@@ -251,11 +259,13 @@ function Populairst({
           // Nought is a sentence rather than a nought: "0 keer gespeeld" reads
           // as a score on a child who has done nothing wrong.
           status={
-            keer === 0
-              ? t('home.popularNone')
-              : keer === 1
-                ? t('home.popularOnce')
-                : t('home.popularTimes', { aantal: keer })
+            !tellen
+              ? null
+              : keer === 0
+                ? t('home.popularNone')
+                : keer === 1
+                  ? t('home.popularOnce')
+                  : t('home.popularTimes', { aantal: keer })
           }
           onClick={() => onBegin(deel, mode)}
         />
@@ -273,9 +283,15 @@ function Populairst({
  */
 function Recent({
   gespeeld,
+  cijfers,
   onBegin,
 }: {
   readonly gespeeld: readonly Gespeeld[];
+  /**
+   * Of het cijfer erbij staat. Alleen met premium (ADR-192): de rij blijft de
+   * snelste weg terug naar wat je net deed, de uitslag ervan is voortgang.
+   */
+  readonly cijfers: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const recent = gespeeld.slice(0, RECENT_SHOWN);
@@ -310,11 +326,13 @@ function Recent({
                       {t(`mode.${ronde.mode}` as TranslationKey)}
                     </span>
                   </span>
-                  <span className="tk-lijstrij-stand">
-                    {cijfer === null
-                      ? t('home.recentOutOf', uit)
-                      : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
-                  </span>
+                  {cijfers ? (
+                    <span className="tk-lijstrij-stand">
+                      {cijfer === null
+                        ? t('home.recentOutOf', uit)
+                        : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
+                    </span>
+                  ) : null}
                   <span className="tk-lijstrij-pijl">
                     <NextIcon size={20} />
                   </span>

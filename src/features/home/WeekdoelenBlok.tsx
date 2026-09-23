@@ -13,6 +13,7 @@ import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { isPremiumVorm, metPremium } from '@/features/module/premium';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
 import { vraagOuders } from '@/features/premium/ouderVraag';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -162,6 +163,17 @@ export function WeekdoelenBlok({
   // Uit. Op de voordeur is dat niets — het kind koos ervoor en hoort er niet
   // elke dag een regel over te lezen. De weg terug staat op Jij (ADR-171).
   if (stand.uit) return null;
+
+  // Zonder premium de kop en wat het zou doen (ADR-192). Een weekdoel telt
+  // rondes en dagen, en dat is precies wat alleen met premium te zien is.
+  if (!actief) {
+    return (
+      <section className="flex flex-col gap-3" aria-label={titel}>
+        <h2 className="tk-sectie">{titel}</h2>
+        <PremiumSlot wat="premium.wat.weekdoelen" />
+      </section>
+    );
+  }
 
   const lijst = standen(stand.doelen, afgemaakt, behaald, now);
   const vol = stand.doelen.length >= MAX_DOELEN;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { setRetention } from '@/game-core';
 import { t } from '@/i18n';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { geheugen, geoefend, perDag } from '@/features/retention/statistiek';
 import { listChildren } from '@/store/children';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
@@ -74,9 +76,12 @@ async function lees(): Promise<Stand[]> {
 }
 
 export function HoeGaatHet() {
+  const { actief } = usePremium();
   const [standen, setStanden] = useState<Stand[] | null>(null);
 
   useEffect(() => {
+    // Zonder code wordt er niets gelezen: er staat toch niets van (ADR-192).
+    if (!actief) return;
     let levend = true;
     void lees().then((gelezen) => {
       if (levend) setStanden(gelezen);
@@ -84,7 +89,18 @@ export function HoeGaatHet() {
     return () => {
       levend = false;
     };
-  }, []);
+  }, [actief]);
+
+  // Hoe het gaat, is voortgang, en voortgang is alleen met premium te zien
+  // (ADR-192). De kop blijft staan, zodat een ouder weet wat er hier kan staan.
+  if (!actief) {
+    return (
+      <section className="flex flex-col gap-3" aria-label={t('ouder.hoeGaatHet')}>
+        <h2 className="tk-sectie">{t('ouder.hoeGaatHet')}</h2>
+        <PremiumSlot wat="premium.wat.voortgang" />
+      </section>
+    );
+  }
 
   return (
     <section
