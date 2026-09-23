@@ -12093,6 +12093,13 @@ er met een slot dat zegt wat het doet; wie doelen uitzette, ziet niets.
 **De premiumpagina volgt.** De vergelijking noemt per regel wat gratis en wat
 premium is, met dezelfde indeling: oefenen, belonen, onthouden.
 
+**Geen proefperiode.** Een omgekeerde proef (veertien dagen alles, daarna
+gratis) is gebouwd en op verzoek van de eigenaar teruggedraaid vóór hij live
+ging. Zijn redenering: een ouder die zijn kind wil laten oefenen, koopt meteen;
+een proef stelt die beslissing alleen uit. De gratis vormen zijn de
+kennismaking. Wie dit opnieuw wil overwegen, kan beter eerst kijken wat de
+verkopen na deze grens doen.
+
 ### Gevolgen
 
 - Een e2e-test draait standaard met premium. De tests "zonder code" oefenen nu
