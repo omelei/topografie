@@ -146,35 +146,45 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
 });
 
 /**
- * "Ik ben een ouder" op de eerste vraag (ADR-161): geen groep, en meteen de
- * premiumpagina in plaats van de voordeur — Voor ouders is weg (ADR-171). Het
- * profiel bestaat daarna wel — de app heeft er overal een nodig — en de groep
- * is op Jij alsnog te zetten.
+ * "Ik ben een ouder" op de eerste vraag (ADR-161, ADR-198). Een ouder oefent
+ * niet en wordt dus geen profiel: de kaart vraagt naar de naam en de groep van
+ * het kind, dat kind bestaat daarna, en de app opent op Premium.
  */
-test('"Ik ben een ouder" maakt het profiel zonder groep en opent Premium', async ({ page }) => {
+test('"Ik ben een ouder" maakt het kind, niet de ouder, en opent Premium', async ({ page }) => {
   await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill('Sanne');
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-
-  await expect(page.getByRole('heading', { name: 'In welke groep zit je?' })).toBeVisible();
   await page.getByRole('button', { name: 'Ik ben een ouder' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Hoe heet je kind?' })).toBeVisible();
+  await page.getByPlaceholder('Naam van je kind').fill('Sanne');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+
+  await expect(page.getByRole('heading', { name: 'In welke groep zit Sanne?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Groep 5', exact: true }).click();
 
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
-  // Geen groep gekozen, en de instelling op Jij zegt dat ook.
+  // Wie er oefent, is het kind, in de groep die de ouder koos.
+  await expect(page.getByRole('banner').getByRole('button', { name: /Sanne/ })).toBeVisible();
   await page.goto('/jij');
-  await expect(groepRij(page).getByRole('button', { name: /^Je groep/ })).toContainText(
-    'Geen groep gekozen',
-  );
-  const instelling = await openGroep(page);
-  await expect(instelling.getByRole('status')).toHaveText(
-    'Je hebt geen groep gekozen. Dan staat alles in de gewone volgorde.',
-  );
+  await expect(groepRij(page).getByRole('button', { name: /^Je groep/ })).toContainText('Groep 5');
 
-  // En de vraag komt niet terug op de voordeur: die is beantwoord.
+  // En er is maar één kind: de ouder neemt geen plek in.
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  const venster = page.getByRole('dialog');
+  await expect(venster.getByRole('button', { name: /de beurt/ })).toHaveCount(0);
+  await expect(venster.getByRole('button', { name: 'Nog een kind erbij' })).toBeVisible();
+});
+
+test('wie "Ik ben een ouder" per ongeluk kiest, kan terug', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Ik ben een ouder' }).click();
+  await page.getByRole('button', { name: 'Ik ben een kind' }).click();
+  await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toBeVisible();
+  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
 });
 
 test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één keer', async ({

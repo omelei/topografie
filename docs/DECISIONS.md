@@ -12320,6 +12320,44 @@ vlag…") en zei bij een fout "Jij zei 54", wat als een verwijt leest.
   voornaam nergens heen gaat. Dat klopt zolang het gezinsaccount uit staat; het
   gaat mee in de stap die het account live zet (`ROADMAP.md`).
 
+## ADR-198 — Een ouder is geen profiel, en een kind kan van het apparaat
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Ouders
+moeten niet kunnen spelen. Kinderen wel." en "De max van 3 kinderen is nu
+inclusief ouder."
+
+**Context.** "Ik ben een ouder" stond bij de groepsvraag (ADR-161). De ouder
+had dan al zijn eigen naam getypt onder "Wie ben jij?", en de knop maakte van
+die naam een gewoon kind zonder groep. Die ouder kon oefenen, stond in de
+wisselaar, en nam een van de drie plekken van ADR-173 in. ADR-173 bedoelde
+"drie kinderen en één ouder", maar de ouder was nooit iets anders dan een deur
+met een pincode. Een kind weghalen kon niet, terwijl de wisselaar zei dat het
+kon.
+
+**Besluit.**
+
+- **Een ouder is geen profiel.** "Ik ben een ouder" staat nu bij de naam. Wie
+  erop drukt, krijgt dezelfde kaart over het kind: "Hoe heet je kind?" en "In
+  welke groep zit Sanne?" (overslaan mag). Dat kind wordt gemaakt en de app
+  opent op Premium, zoals voorheen. "Ik ben een kind" zet de kaart terug.
+- **De drie plekken zijn dus alleen voor kinderen**, zonder dat de grens
+  (`MAX_KINDEREN`) of het tellen verandert: er komt geen ouder meer in de lijst.
+- **Een kind kan van het apparaat** (`store/kindWeg.ts`), op de ouderpagina bij
+  het kind, na één vraag met dezelfde woorden als "Alles van dit apparaat
+  halen". Weg gaan het profiel, de dozen, de diploma's, elke ronde en elk
+  antwoord, de instellingen die op `:<kindId>` eindigen, de wensen en een
+  eventuele inlog van het kind. Wat in het gezinsaccount staat, blijft daar.
+  Het laatste kind blijft staan: de app heeft altijd iemand die oefent.
+- Dit is ook de weg voor apparaten van vóór dit besluit: een ouder die toen als
+  kind werd gemaakt, is niet te herkennen (de keuze werd nergens bewaard), maar
+  is nu met één knop weg te halen.
+
+**Gevolgen.**
+
+- Geen nieuwe `DB_VERSION` en geen migratie: er komt geen veld bij.
+- `GroepKiezer` heeft geen ouderknop meer; `groep.ouder` is `profile.ouder`
+  geworden.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

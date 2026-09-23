@@ -98,6 +98,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                              | ADR      |
 | --------- | ---------------------------------------------------------------------------------------------------------------- | -------- |
+| #135      | Een ouder is geen profiel meer en telt niet mee in de drie; een kind kan van het apparaat                        | 198      |
 | #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback | 197      |
 | #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort)     | 195, 196 |
 | #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                         | 194      |

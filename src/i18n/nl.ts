@@ -1485,7 +1485,12 @@ export const nl = {
   'ouder.geenGroep': 'geen groep gekozen',
   'ouder.kinderenUitleg':
     'Ieder kind heeft een eigen voortgang. Wat de een oefent, telt niet mee voor de ander.',
-  'ouder.kinderenVol': 'Op dit apparaat staan al {aantal} kinderen. Er kan er geen meer bij.',
+  'ouder.kinderenVol':
+    'Op dit apparaat staan al {aantal} kinderen. Wil je er een kind bij? Haal er dan eerst een weg.',
+  'ouder.kindWeg': 'Haal {naam} van dit apparaat',
+  'ouder.kindWegZeker':
+    'Alles wat {naam} hier heeft geoefend, gaat weg: diploma’s, rondes en voortgang. Staat {naam} in je account, dan blijft het daar staan.',
+  'ouder.kindWegDoe': 'Ja, haal {naam} weg',
 
   // Hoe het met je kinderen gaat (ADR-177). Dit stond op vier plekken beloofd
   // — in de poort, in de volwassenencheck, bij het zetten van de pincode en in
@@ -1814,6 +1819,15 @@ export const nl = {
   'profile.placeholder': 'Je naam',
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
+  // De volwassene die het apparaat als eerste in handen heeft, oefent niet en
+  // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
+  'profile.ouder': 'Ik ben een ouder',
+  'profile.ouder.title': 'Hoe heet je kind?',
+  'profile.ouder.help': 'Typ de naam van je kind. Die blijft op dit apparaat.',
+  'profile.ouder.placeholder': 'Naam van je kind',
+  'profile.ouder.submit': 'Verder',
+  'profile.ouder.nameTooShort': 'Typ eerst de naam van je kind.',
+  'profile.ouder.terug': 'Ik ben een kind',
 
   // De groep (ADR-151). Na de naam, en altijd over te slaan. Het zegt wat de
   // groep doet — wat bovenaan staat — en wat hij niet doet: niets gaat op slot.
@@ -1826,9 +1840,12 @@ export const nl = {
   // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
   // een keuze, en daarmee hetzelfde antwoord zonder de kleine vernedering.
   'groep.zegIkNiet': 'Zeg ik niet',
-  // En de volwassene die het apparaat als eerste in handen heeft, hoeft niet
-  // te doen alsof hij in groep 6 zit. Hij gaat naar Premium (ADR-171).
-  'groep.ouder': 'Ik ben een ouder',
+  // Een ouder is geen profiel (ADR-198): dezelfde vraag, over het kind.
+  'groep.ouder.vraag': 'In welke groep zit {naam}?',
+  'groep.ouder.uitleg':
+    'Dan zetten we de onderwerpen voor die groep bovenaan. Je kunt het later nog veranderen.',
+  'groep.ouder.overslaan': 'Sla over',
+  'groep.ouder.terug': 'Terug naar de naam',
   'groep.terug': 'Terug naar je naam',
   // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
   'groep.nietNu': 'Niet nu',

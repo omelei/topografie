@@ -394,3 +394,40 @@ test.describe('zonder code', () => {
     await expect(page.getByRole('banner').getByRole('button', { name: 'Fien' })).toBeVisible();
   });
 });
+
+/**
+ * Een kind van het apparaat halen (ADR-198). Het is ook de weg voor een ouder
+ * die vóór ADR-198 zelf als kind werd aangemaakt: die nam een van de drie
+ * plekken in. Het laatste kind blijft staan.
+ */
+test('een kind gaat van het apparaat, en dan kan er weer een bij', async ({ page }) => {
+  await signIn(page, 'Mama');
+  for (const naam of ['Ties', 'Lot']) {
+    await wisselaar(page).click();
+    await page.getByRole('button', { name: 'Nog een kind erbij' }).click();
+    await page.getByLabel('Naam van het kind').fill(naam);
+    await page.getByRole('button', { name: 'Toevoegen', exact: true }).click();
+    await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
+  }
+  await maakOuder(page);
+
+  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  await expect(kinderen).toContainText('Op dit apparaat staan al 3 kinderen.');
+  await kinderen.getByRole('button', { name: /^Mama/ }).click();
+  await kinderen.getByRole('button', { name: 'Haal Mama van dit apparaat' }).click();
+  await expect(kinderen).toContainText('Alles wat Mama hier heeft geoefend, gaat weg');
+  await kinderen.getByRole('button', { name: 'Ja, haal Mama weg' }).click();
+
+  await expect(kinderen.getByRole('button', { name: /^Mama/ })).toHaveCount(0);
+  await expect(kinderen.getByRole('button', { name: 'Nog een kind erbij' })).toBeVisible();
+});
+
+test('het laatste kind kan niet weg', async ({ page }) => {
+  await signIn(page, 'Noor');
+  await maakOuder(page);
+
+  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  await kinderen.getByRole('button', { name: /^Noor/ }).click();
+  await expect(kinderen.getByLabel('Naam')).toBeVisible();
+  await expect(kinderen.getByRole('button', { name: /van dit apparaat/ })).toHaveCount(0);
+});

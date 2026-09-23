@@ -72,6 +72,18 @@ export function voegWensToe(kind: string, wens: Wens, now: Date = new Date()): v
   }
 }
 
+/** Alles van dit kind weg, als het van het apparaat gaat (ADR-198). */
+export function vergeetWensenVan(kind: string): void {
+  try {
+    window.localStorage.setItem(
+      WENSEN_SLEUTEL,
+      JSON.stringify(lees().filter((wens) => wens.kind !== kind)),
+    );
+  } catch {
+    // Niets bewaard, dan valt er ook niets weg te halen.
+  }
+}
+
 /** Voor het kind dat nu oefent. */
 export async function onthoudWens(wens: Wens, now: Date = new Date()): Promise<void> {
   voegWensToe(await activeChildId(), wens, now);

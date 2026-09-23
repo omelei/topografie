@@ -445,10 +445,9 @@ export default function App() {
     return (
       <ProfileGate
         // "Ik ben een ouder" op de eerste vraag opent de premiumpagina in
-        // plaats van de voordeur (ADR-161, ADR-171): Voor ouders is weg, en wat
-        // een ouder komt doen — kijken wat het is, een code invullen — staat
-        // daar. Het profiel is er dan al — de app heeft er overal een nodig —
-        // en het draagt geen groep, precies als bij "Zeg ik niet".
+        // plaats van de voordeur (ADR-161, ADR-171): wat een ouder komt doen —
+        // kijken wat het is, een code invullen — staat daar. Het profiel is
+        // dan dat van het kind, want een ouder oefent niet (ADR-198).
         onReady={(profile, naarOuder) => {
           setBoot({ status: 'ready', profile });
           if (naarOuder) go({ name: 'premium' });
