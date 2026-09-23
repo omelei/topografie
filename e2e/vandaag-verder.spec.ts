@@ -108,7 +108,7 @@ test('na een ronde staat er hoeveel er nog van vandaag over is', async ({ page }
   // ronde die na één vraag stopt laat de rest van die set gewoon openstaan.
   const verder = page.locator('.tk-vandaag-verder');
   await expect(verder).toBeVisible();
-  await expect(verder).toContainText(/Nog \d+ van vandaag/);
+  await expect(verder).toContainText(/Nog \d+ rondes? voor vandaag/);
   await verder.click();
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
 });
@@ -144,5 +144,5 @@ test('als alles van vandaag gedaan is, staat dat er', async ({ page }) => {
   }
 
   await page.goto('/');
-  await expect(blok.getByText('Klaar voor vandaag.')).toBeVisible();
+  await expect(blok.getByText('Klaar voor vandaag. Lekker bezig!')).toBeVisible();
 });

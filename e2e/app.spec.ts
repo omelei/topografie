@@ -132,7 +132,7 @@ test('keeps the profile across a reload, with no sign-in', async ({ page }) => {
  */
 test('greets the child by name on the front door', async ({ page }) => {
   await signIn(page, 'Bo');
-  await expect(page.getByRole('heading', { name: 'Welkom Bo!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hoi Bo!' })).toBeVisible();
 });
 
 /**
@@ -172,7 +172,7 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  await page.getByRole('button', { name: 'Terug naar start' }).click();
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
   // One answer, so the mark is a 10,0 or a 1,0 and never anything between —
   // which is exactly what "over what was answered" means.
@@ -349,7 +349,7 @@ test('the collection is hidden, and its address opens the front door', async ({ 
   await signIn(page, 'Puk');
   await page.goto('/voortgang');
 
-  await expect(page.getByRole('heading', { name: 'Welkom Puk!' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hoi Puk!' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Jouw voortgang' })).toHaveCount(0);
 });
 
@@ -382,7 +382,7 @@ test('announces the question and the outcome to a screen reader', async ({ page 
 
   await page.getByRole('button', { name: 'Limburg' }).click();
   // Either outcome is fine; what matters is that one of them is spoken.
-  await expect(live).toContainText(/goed\.|ligt hier\./);
+  await expect(live).toContainText(/Goed!|ligt hier\./);
 });
 
 test('every button meets the 48px touch target', async ({ page }) => {
@@ -406,7 +406,7 @@ test('asks about every province, and lets a child stop early', async ({ page }) 
   await page.getByRole('button', { name: 'Stoppen' }).click();
   // K8: the heading is what changed, and the score is a line underneath it.
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Terug naar start' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Terug naar Vandaag' })).toBeVisible();
 });
 
 test('practises the capitals as points on the map', async ({ page }) => {
@@ -427,7 +427,7 @@ test('practises the capitals as points on the map', async ({ page }) => {
  */
 test('multiple choice offers four names, three of them wrong', async ({ page }) => {
   await signIn(page, 'Daan');
-  await startRound(page, PROVINCIES, /Kies uit vier namen/);
+  await startRound(page, PROVINCIES, /Kies uit 4 namen/);
 
   await expect(page.getByRole('heading', { name: 'Hoe heet dit gebied?' })).toBeVisible();
 
@@ -440,7 +440,7 @@ test('multiple choice offers four names, three of them wrong', async ({ page }) 
   await options.getByRole('button').first().click();
 
   // Either outcome is a real answer, and both move the round on.
-  await expect(page.getByRole('status')).toContainText(/goed\.|ligt hier\./);
+  await expect(page.getByRole('status')).toContainText(/Goed!|ligt hier\./);
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
 });
 
@@ -459,7 +459,7 @@ test('typing a name: a real place from elsewhere is a near miss, not a cross', a
   await page.getByRole('button', { name: 'Kijk na' }).click();
 
   const feedback = page.getByRole('status');
-  await expect(feedback).toContainText(/Bijna|goed\./);
+  await expect(feedback).toContainText(/Bijna|Goed!/);
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
 });
 

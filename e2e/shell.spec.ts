@@ -135,7 +135,7 @@ test('the frame comes back when the round ends', async ({ page }) => {
   await signIn(page, 'Noor');
   await startRound(page);
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  await page.getByRole('button', { name: 'Terug naar start' }).click();
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
   await expect(page.getByRole('banner').getByRole('button', { name: 'Noor' })).toBeVisible();
   await expect(page.locator('.tk-appbar')).toHaveCount(1);
@@ -178,7 +178,7 @@ test('keeps the wordmark and the question legible at 200% text', async ({ page }
   // The heading of the page, not the name in the app bar: what this is checking
   // is that the type scale moves with the root size, and only a heading is set
   // on the scale. A label in a pill would pass this by staying small.
-  const heading = page.getByRole('heading', { name: 'Welkom Fatima!' });
+  const heading = page.getByRole('heading', { name: 'Hoi Fatima!' });
   await expect(heading).toBeVisible();
 
   // Grown, not merely still there.
@@ -235,7 +235,7 @@ test('below 1200 the modules are a menu under the app bar', async ({ page }, tes
   await knop.click();
   await expect(knop).toHaveAttribute('aria-expanded', 'true');
   await page
-    .getByRole('navigation', { name: 'Modules' })
+    .getByRole('navigation', { name: 'Vakken' })
     .getByRole('button', { name: 'Klok', exact: true })
     .click();
 

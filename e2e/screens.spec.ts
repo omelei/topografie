@@ -162,7 +162,7 @@ test.describe('zonder code', () => {
     await expect(venster).toBeVisible(READY);
     await shoot(page, size, '24-ouder-vraag');
 
-    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
     await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible(READY);
     await shoot(page, size, '25-doorsturen');
   });
@@ -292,7 +292,7 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
   // answers in words (ADR-087). The two pictures are the argument.
   for (const [regio, hoe, naam] of [
     ['Europa', /Aanwijzen/, '13-europa'],
-    ['Wereld', /Kies uit vier namen/, '14-wereld'],
+    ['Wereld', /Kies uit 4 namen/, '14-wereld'],
   ] as const) {
     await page.goto('/topografie');
     // In de regiorij: sinds ADR-168 heeft de wereldkaart ook een diploma, en
@@ -348,7 +348,7 @@ test('the round: choosing between four names', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 
   await signIn(page, 'Mila');
-  await chooseAndStart(page, /Kies uit vier namen/);
+  await chooseAndStart(page, /Kies uit 4 namen/);
 
   await expect(page.getByRole('group', { name: 'Kies de naam' })).toBeVisible(READY);
   await shoot(page, size, '08-meerkeuze');

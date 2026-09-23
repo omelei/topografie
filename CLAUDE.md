@@ -63,6 +63,12 @@ local or in the cloud.
 - In CSS, a comment must be indented to its brace depth.
 - In Markdown, emphasis is `_word_`, not `*word*`; at most one blank line.
 
+## Texts
+
+- Every visible text follows `docs/SCHRIJFWIJZER.md`: its tone, its word list
+  (one concept, one word) and its feedback pattern. Read it before writing or
+  changing a string in `src/i18n/nl.ts`.
+
 ## CSS and design
 
 - Before introducing or renaming a `tk-` class, grep `src/index.css` and the

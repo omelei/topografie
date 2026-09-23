@@ -12276,6 +12276,50 @@ woord, geen gat en geen keuzes. `woordlijsten.spec.ts` begint nu ook een ronde.
   kassa € 24,95 af: deploy de functie dus direct na de merge.
 - Codes die al gekocht zijn, blijven geldig tot hun datum.
 
+## ADR-197 — Eén stem voor de hele app: de schrijfwijzer
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar. Vervangt
+het woordbesluit van ADR-030 ("onthouden").
+
+**Context.** De teksten waren in vier jaar ADR's gegroeid en zeiden hetzelfde op
+drie manieren: "onthouden", "kennen" en "weten" voor wat een kind weet;
+"afzwemmen" en "toets"; "opfrissen" en "herhalen"; "je vader of moeder" en "je
+ouders". De feedback verschilde per vak ("Limburg — goed.", "Goed! Dit is de
+vlag…") en zei bij een fout "Jij zei 54", wat als een verwijt leest.
+
+**Besluit.**
+
+- **`docs/SCHRIJFWIJZER.md` is de maatstaf** voor elke tekst in `nl.ts`: voor
+  wie (kinderen van 8 tot 12, ouders op premium, ouder en kassa), de toon ("als
+  een coole oudere neef of nicht"), acht schrijfregels en een woordenlijst met
+  één woord per begrip. `CLAUDE.md` en `HUISSTIJL.md` verwijzen ernaar.
+- **Beheersen, niet onthouden of kennen.** Wat op drie dagen goed ging, "beheers
+  je": "Je beheerst er al 9 van de 12." De eigenaar koos dat woord bij deze PR;
+  het vervangt ook "ken je inmiddels" van ADR-191. Het zelfstandig naamwoord
+  "beheersing" blijft weg (ADR-030); het werkwoord is wat een kind leest. "Onthouden"
+  blijft alleen in de taalregels, waar het "uit je hoofd leren" betekent.
+- **Toets, niet afzwemmen.** "Toets: Provincies", "Klaar voor de toets".
+- **Bijna vergeten en herhalen, niet opfrissen.** Tegel, status en knop zeggen
+  hetzelfde.
+- **Eén vorm voor feedback, in elk vak.** Goed: "Goed! Dit is Limburg." Fout:
+  eerst wat klopt, eronder "Jouw antwoord: Drenthe." Weet niet: "Geen probleem.
+  Deze komt later nog terug." "Later" en niet "zo", want een ronde vraagt een
+  fout niet nog eens (ADR-101).
+- **Je ouders**, overal waar een kind leest; de ouderteksten zeggen "je kind" en
+  spreken over het kind in de derde persoon.
+- 161 teksten zijn herschreven; leerinhoud (namen, vlaggen, sommen, woorden,
+  onderwerpen), code, routes en sleutels niet.
+
+**Gevolgen.**
+
+- `copy.test.ts` houdt de woordenlijst bij: "afzwemmen", "opfrissen", "vader of
+  moeder", "jij zei", "jij koos" en "module(s)" komen in geen tekst meer voor.
+- Oudere ADR's citeren de teksten van toen. Dat blijft zo: het is geschiedenis.
+  Wat nu geldt, staat in `nl.ts` en de schrijfwijzer.
+- De premiumpagina belooft nog dat alles op het apparaat blijft en dat de
+  voornaam nergens heen gaat. Dat klopt zolang het gezinsaccount uit staat; het
+  gaat mee in de stap die het account live zet (`ROADMAP.md`).
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -38,7 +38,7 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    expect(screen.getByRole('navigation', { name: 'Modules' })).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: 'Vakken' })).toBeInTheDocument();
 
     // Two of them, and that is the design rather than an accident: the same
     // four destinations stand in the app bar from a tablet up and lie along
@@ -54,7 +54,7 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    const rail = screen.getByRole('navigation', { name: 'Modules' });
+    const rail = screen.getByRole('navigation', { name: 'Vakken' });
     const names = [...rail.querySelectorAll('button')].map((button) => button.textContent);
 
     // ADR-029. Clock reading is third because that is where the plan puts it,
@@ -72,7 +72,7 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    const rail = screen.getByRole('navigation', { name: 'Modules' });
+    const rail = screen.getByRole('navigation', { name: 'Vakken' });
     const buttons = [...rail.querySelectorAll('button')];
 
     // data-module is the whole mechanism: the CSS resolves --accent from it, so
@@ -120,7 +120,7 @@ describe('the shell', () => {
     }
 
     // The rail still says which module, because that part is true.
-    const rail = screen.getByRole('navigation', { name: 'Modules' });
+    const rail = screen.getByRole('navigation', { name: 'Vakken' });
     expect(rail.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
   });
 
@@ -185,8 +185,8 @@ describe('the shell', () => {
     expect(knop).toHaveAttribute('aria-expanded', 'false');
 
     // Closed, the list is not in the document at all, so the rail is the one
-    // navigation called "Modules" — never two at once at a width that shows one.
-    expect(screen.getAllByRole('navigation', { name: 'Modules' })).toHaveLength(1);
+    // navigation called "Vakken" — never two at once at a width that shows one.
+    expect(screen.getAllByRole('navigation', { name: 'Vakken' })).toHaveLength(1);
 
     fireEvent.click(knop);
     expect(knop).toHaveAttribute('aria-expanded', 'true');

@@ -312,8 +312,8 @@ test('Kies de vorm: three real forms, and the round in the history', async ({ pa
   expect((await scan(page)).violations).toEqual([]);
   await speel(page);
 
-  // "Klaar" when nothing is due any more (ADR-149), "Terug naar start" otherwise.
-  await page.getByRole('button', { name: /^(Klaar|Terug naar start)$/ }).click();
+  // "Klaar" when nothing is due any more (ADR-149), "Terug naar Vandaag" otherwise.
+  await page.getByRole('button', { name: /^(Klaar|Terug naar Vandaag)$/ }).click();
   const recent = page.getByRole('region', { name: 'Recent geoefend' });
   await expect(recent.getByRole('button', { name: /Tegenwoordige tijd/ }).first()).toBeVisible();
 });

@@ -169,7 +169,7 @@ test('"Ik ben een ouder" maakt het profiel zonder groep en opent Premium', async
   );
   const instelling = await openGroep(page);
   await expect(instelling.getByRole('status')).toHaveText(
-    'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',
+    'Je hebt geen groep gekozen. Dan staat alles in de gewone volgorde.',
   );
 
   // En de vraag komt niet terug op de voordeur: die is beantwoord.

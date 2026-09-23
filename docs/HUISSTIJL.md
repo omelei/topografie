@@ -18,6 +18,9 @@ eigen deel:
   styleguide die daarbij hoort, `docs/leer.nu Styleguide.dc.html`; de vorm —
   ronde hoeken en de harde onderkant — uit de nieuwe gids (ADR-180).
 
+**Tekst** hoort er ook bij: hoe leer.nu praat, en welk woord bij welk begrip
+hoort, staat in [SCHRIJFWIJZER.md](SCHRIJFWIJZER.md) (ADR-197).
+
 Dit blad zegt hoe je een scherm bouwt dat erbij hoort; ADR-109 zegt waarom het
 zo staat, ADR-112 wat daarna is gelijkgetrokken, ADR-144 wat de kleur betreft,
 ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.

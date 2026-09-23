@@ -80,5 +80,7 @@ test('voor de ronde staat er hoeveel je er eerder gehad hebt', async ({ page }) 
   }
 
   await kiesTafelVanEen(page);
-  await expect(page.getByText(/heb je eerder gehad. Dat is de bedoeling./).first()).toBeVisible();
+  await expect(
+    page.getByText(/heb je al eerder gehad. Zo blijft het in je hoofd./).first(),
+  ).toBeVisible();
 });

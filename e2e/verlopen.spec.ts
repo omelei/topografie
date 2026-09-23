@@ -56,7 +56,7 @@ test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen 
 
   await page.goto('/premium');
   await zetCode(page, dag(-1));
-  await expect(page.getByText(/staat nog gewoon op dit apparaat/)).toBeVisible();
+  await expect(page.getByText(/staat nog op dit apparaat/)).toBeVisible();
   // En het aanbod staat er weer onder: verlengen is kopen.
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();
 });

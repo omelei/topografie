@@ -198,7 +198,7 @@ test('the Jij page has no violations', async ({ page }) => {
   // de diploma's en bij het geheugen, en de naam en de groep bij de
   // instellingen — een formulier en een rij knoppen binnen een lijst.
   await page.getByRole('button', { name: 'Hoe haal je een diploma?' }).click();
-  await page.getByRole('button', { name: 'Hoe werkt onthouden?' }).click();
+  await page.getByRole('button', { name: 'Hoe werkt herhalen?' }).click();
   const instellingen = page.getByRole('region', { name: 'Instellingen' });
   await instellingen.getByRole('button', { name: /^Je naam/ }).click();
   await instellingen.getByRole('button', { name: /^Je groep/ }).click();
@@ -251,7 +251,7 @@ test('the result screen has no violations', async ({ page }) => {
   await signIn(page, 'Yara');
   await startRound(page, PROVINCIES, /Aanwijzen/);
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  await expect(page.getByRole('button', { name: 'Terug naar start' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Terug naar Vandaag' })).toBeVisible();
 
   expect((await scan(page)).violations).toEqual([]);
 });
@@ -338,12 +338,12 @@ test.describe('het slot zonder code', () => {
     await expect(venster).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
 
-    await venster.getByRole('button', { name: 'Mijn vader of moeder is erbij' }).click();
+    await venster.getByRole('button', { name: 'Mijn ouders zijn erbij' }).click();
     await expect(venster.getByLabel('Typ de code')).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
 
     await venster.getByRole('button', { name: 'Terug', exact: true }).click();
-    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
     await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });
@@ -481,7 +481,7 @@ test.describe('zonder code', () => {
     await signIn(page, 'Wout');
     await page.goto('/jij');
     await expect(
-      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
     ).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });

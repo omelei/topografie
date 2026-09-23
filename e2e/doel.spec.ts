@@ -76,7 +76,7 @@ test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ pag
 
   const blok = blokVan(page);
   await expect(blok).toBeVisible();
-  await expect(blok).toContainText('Nog geen doel. Wat wil je deze week halen?');
+  await expect(blok).toContainText('Nog geen doel. Waar ga jij deze week voor?');
 
   // De datums van de week staan erbij: "deze week" heeft een einde.
   await expect(blok).toContainText(/\d+ .*t\/m .*\d+ \w+/);
@@ -183,12 +183,12 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
     .click();
   await page.locator('.tk-choose-start button').click();
   // Afzwemmen (ADR-149): de pagina is rijp, dus de vraag is of er iemand meekijkt.
-  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await tienSommen(page);
 
   // Op het moment zelf, naast het diploma.
-  await expect(page.getByText('Dit was een doel van deze week.')).toBeVisible();
+  await expect(page.getByText('Daarmee is ook je weekdoel gehaald.')).toBeVisible();
 
   // En op de voordeur staat het doel op gehaald.
   await page.goto('/');

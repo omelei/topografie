@@ -50,7 +50,7 @@ test('a round stopped halfway waits under Maak af, and asks only what was left',
   await expect(page.getByRole('region', { name: 'Verder oefenen' })).toHaveCount(0);
 
   await eenProvincieEnStop(page);
-  await page.getByRole('button', { name: 'Terug naar start' }).click();
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
   const kaart = rij.getByRole('button', { name: /Provincies van Nederland/ });
   await expect(kaart).toContainText('Nog 11 van de 12 vragen');
@@ -73,7 +73,7 @@ test('the table on Jij counts the answers, the share right, and the days since',
   // beeld, en dit is de test over de tabel.
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
   const tabel = page.getByRole('table');
-  for (const kop of ['Onderdeel', 'Hoe het gaat', 'Aantal', '% goed', 'Laatst geoefend']) {
+  for (const kop of ['Onderdeel', 'Hoe het gaat', 'Keer gevraagd', '% goed', 'Laatst geoefend']) {
     await expect(tabel.getByRole('columnheader', { name: kop, exact: true })).toBeVisible();
   }
   await expect(tabel.getByRole('columnheader', { name: 'Weer op' })).toHaveCount(0);
@@ -86,5 +86,5 @@ test('the table on Jij counts the answers, the share right, and the days since',
   // ADR-171, over every subject.
   const blik = page.getByRole('region', { name: 'Alles in één blik' });
   await expect(page.getByText('Vandaag op de rol')).toHaveCount(0);
-  await expect(blik.getByText('Even opfrissen', { exact: true })).toBeVisible();
+  await expect(blik.getByText('Bijna vergeten', { exact: true })).toBeVisible();
 });

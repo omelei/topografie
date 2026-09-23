@@ -149,7 +149,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
 
   // Niemand oefende deze vlaggen, dus de pagina is niet rijp: één knop, en die
   // gaat terug naar oefenen. Sinds proefzwemmen weg is, is dat de enige uitweg.
-  await expect(page.getByText('Nog niet klaar om af te zwemmen')).toBeVisible();
+  await expect(page.getByText('Nog niet klaar voor de toets')).toBeVisible();
   const knoppen = page.locator('.tk-uitslag-knoppen').getByRole('button');
   await expect(knoppen).toHaveCount(1);
   await expect(knoppen).toHaveText('Eerst oefenen');
@@ -163,7 +163,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await page.goto('/vlaggen');
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
   await page.locator('.tk-choose-start button').click();
-  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await speel(page);
 

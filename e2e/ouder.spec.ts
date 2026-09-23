@@ -321,7 +321,7 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
   // geeft een getal dat over niemand gaat.
   await expect(blok.getByRole('heading', { name: 'Fenna' })).toBeVisible();
   // Over het kind in de derde persoon: de ouder leest dit.
-  await expect(blok).toContainText('kent Fenna inmiddels');
+  await expect(blok).toContainText('beheerst Fenna inmiddels');
   await expect(blok).toContainText('van de 1 die Fenna geoefend heeft');
   await expect(blok).toContainText('Fenna oefende op 1 van de laatste 7 dagen.');
 

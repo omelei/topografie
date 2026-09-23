@@ -55,7 +55,7 @@ test('without a code the premium parts are labelled once, and say what they do',
   await page.goto('/jij');
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
   await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(0);
@@ -91,7 +91,7 @@ test('without a code the premium parts are labelled once, and say what they do',
   // bij je is. Voor een kind dat alleen zit, is een veld dat het niet kan
   // invullen een dichte deur met een formulier ervoor.
   await expect(venster.getByLabel('Typ de code')).toHaveCount(0);
-  await venster.getByRole('button', { name: 'Mijn vader of moeder is erbij' }).click();
+  await venster.getByRole('button', { name: 'Mijn ouders zijn erbij' }).click();
   await expect(venster.getByLabel('Typ de code')).toBeVisible();
   await venster.getByRole('button', { name: 'Terug', exact: true }).click();
 
@@ -256,7 +256,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft het hangen.',
+    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft de stof hangen.',
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
@@ -272,7 +272,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // ernaast. Per maand betalen bestaat nog niet (ADR-196), dus staat er
   // "binnenkort" en geen knop naar een kassa die het niet kan.
   await expect(page.getByText('€ 9,95').first()).toBeVisible();
-  await expect(page.getByText('Per maand betalen komt binnenkort').first()).toBeVisible();
+  await expect(page.getByText('Binnenkort kun je ook per maand betalen').first()).toBeVisible();
   await expect(page.getByRole('link', { name: 'Per maand' })).toHaveCount(0);
 
   // En de belofte over namen staat erbij (ADR-164).
@@ -376,7 +376,7 @@ test('the day plan says how much without a code, and is the plan with one', asyn
 
   await page.goto('/');
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  await expect(vandaag).toContainText('die je bijna vergeet');
+  await expect(vandaag).toContainText('die je bijna vergeten bent');
   await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
   await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
 
@@ -485,7 +485,7 @@ test.describe('doorsturen naar de ouder', () => {
       .click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
-    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
     await venster.getByRole('button', { name: 'Versturen' }).click();
     await expect(venster.getByRole('status')).toContainText('Verstuurd');
 
@@ -528,7 +528,7 @@ test.describe('doorsturen naar de ouder', () => {
       .click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
-    await venster.getByRole('button', { name: 'Stuur het naar mijn vader of moeder' }).click();
+    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
     return venster;
   }
 
@@ -631,7 +631,7 @@ test('without a code the parents read what the child wanted, and what it is read
   await alsOnthouden(page);
   await oefenTafelVanEen(page);
   const klaar = page.getByRole('region', { name: 'Je bent klaar voor de toets!' });
-  await expect(klaar).toContainText('Je kent Tafel van 1 goed genoeg voor het diploma.');
+  await expect(klaar).toContainText('Je beheerst Tafel van 1 goed genoeg voor het diploma.');
   await klaar.getByRole('button', { name: 'Vraag het je ouders' }).click();
   await expect(vraag).toContainText('Je bent klaar voor de toets van Tafel van 1!');
   await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();

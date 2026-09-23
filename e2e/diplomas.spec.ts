@@ -88,8 +88,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   // Afzwemmen first (ADR-149): what it asks, and that a page nobody practised
   // is not ripe. Er is dan precies één knop, en die gaat terug naar oefenen —
   // de toets afleggen terwijl er geen diploma uit kan komen, kan niet meer.
-  await expect(page.getByRole('heading', { name: /^Afzwemmen: / })).toBeVisible();
-  await expect(page.getByText('Nog niet klaar om af te zwemmen')).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Toets: / })).toBeVisible();
+  await expect(page.getByText('Nog niet klaar voor de toets')).toBeVisible();
   const knoppen = page.locator('.tk-uitslag-knoppen').getByRole('button');
   await expect(knoppen).toHaveCount(1);
   await expect(knoppen).toHaveText('Eerst oefenen');
@@ -103,7 +103,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await page.goto('/topografie');
   await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
   await page.locator('.tk-choose-start button').click();
-  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
 
   // Five islands, and "ik weet het niet" to each: no answer is shown between.
@@ -154,7 +154,7 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ 
   const venster = page.getByRole('dialog');
   await expect(venster).toBeVisible();
   await expect(venster.getByText('Tafeldiploma')).toBeVisible();
-  await expect(venster.getByText('Nog niets onthouden.', { exact: false })).toBeVisible();
+  await expect(venster.getByText('Je beheerst hier nog niets.', { exact: false })).toBeVisible();
   await expect(venster.getByRole('button', { name: 'Ga oefenen' })).toBeVisible();
 
   // Escape sluit, en dan staat de kast er weer.

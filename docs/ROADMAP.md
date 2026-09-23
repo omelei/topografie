@@ -13,6 +13,27 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | ---------------------------------------------------------------------------- | ------------- | ------------------------ | ---------------------- |
 | Kassa naar € 79,95 zetten: `supabase functions deploy kassa --no-verify-jwt` | jij           | Te doen, direct          | #132 is live (ADR-196) |
 | Gezinsaccount live zetten (zie hieronder)                                    | jij en Claude | Wacht op vier antwoorden | —                      |
+| Code afschermen (zie hieronder)                                              | jij en Claude | Te doen                  | —                      |
+
+### Code afschermen
+
+De repository `omelei/topografie` is nu **openbaar**: iedereen kan de code, de
+ADR's en de geschiedenis lezen en kopiëren. De site draait op GitHub Pages
+vanuit deze repository.
+
+1. **Repository privé zetten** — _jij_, in GitHub onder Settings → General →
+   Danger Zone. Let op: GitHub Pages op een privé-repository vraagt een betaald
+   plan (GitHub Pro). Zonder dat plan stopt de site. Het alternatief is de site
+   ergens anders hosten (bijvoorbeeld Cloudflare Pages); dan past _Claude_ de
+   deploy aan. Eerst beslissen welke van de twee, dan pas omzetten.
+2. **Nalopen wat er in de repository staat** — _Claude_: geen geheimen, geen
+   persoonsgegevens, en welke documenten (bedrijfsplan, prijzen, ADR's) niet
+   buiten de deur horen.
+3. **De app in de browser** — _Claude_: er gaan al geen sourcemaps mee, en de
+   code is verkleind. Helemaal verbergen kan niet: een webapp draait in de
+   browser van de gebruiker, dus wie moeite doet, kan de JavaScript lezen. Wat
+   echt geheim moet blijven (premiumcodes controleren, de kassa), gebeurt
+   daarom al op de server. Dat blijft de regel.
 
 ### Gezinsaccount live zetten
 
@@ -28,6 +49,9 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
      verwijderen, en weg na 24 maanden zonder gebruik.
 2. **Privacypagina `/privacy`**, met links vanaf account aanmaken, de kassa en de
    ouderpagina — _Claude_, na stap 1.
+   In dezelfde PR gaan de beloftes op de premiumpagina mee ("alles blijft op je
+   eigen apparaat", "je voornaam gaat nergens heen") en de uitleg bij wissen:
+   met een account gaat er met toestemming wel iets naar de server (ADR-197).
 3. **Supabase inrichten** — _jij_:
    - EU-regio controleren, migraties 0001, 0002 en 0003 draaien;
    - geheimen van de edge functions zetten, project-ref in GitHub, de workflow
@@ -61,7 +85,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | Vraag                                                                                                     | Voorstel                                                       | Waar het staat |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
 | Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen | ADR-193        |
-| Mag het aantal vragen op Vandaag ("N vragen die je bijna vergeet") zonder code blijven?                   | Laten staan als lokkertje                                      | ADR-192        |
+| Mag het aantal vragen op Vandaag ("N vragen die je bijna vergeten bent") zonder code blijven?             | Laten staan als lokkertje                                      | ADR-192        |
 
 ## Klein onderhoud
 
@@ -72,11 +96,12 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Gedaan (recent)
 
-| PR        | Wat                                                                                                          | ADR      |
-| --------- | ------------------------------------------------------------------------------------------------------------ | -------- |
-| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort) | 195, 196 |
-| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                     | 194      |
-| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                          | 193      |
-| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app           | 192      |
-| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina   | 191      |
-| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                   | 187–190  |
+| PR        | Wat                                                                                                              | ADR      |
+| --------- | ---------------------------------------------------------------------------------------------------------------- | -------- |
+| #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback | 197      |
+| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort)     | 195, 196 |
+| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                         | 194      |
+| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                              | 193      |
+| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app               | 192      |
+| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina       | 191      |
+| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                       | 187–190  |

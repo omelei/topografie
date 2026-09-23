@@ -65,7 +65,7 @@ test('een ingetypte lijst wordt een set die je kunt oefenen', async ({ page }) =
 /**
  * En er is ook echt mee te oefenen (ADR-195). De test hierboven stopte bij de
  * vorm, en daardoor viel het niet op dat elke ronde met een eigen lijst
- * uitliep op "De woorden konden niet geladen worden".
+ * uitliep op "De woorden laden even niet".
  */
 test('een ronde flitsdictee op een eigen lijst begint', async ({ page }) => {
   await signIn(page, 'Mees');
@@ -87,7 +87,7 @@ test('een ronde flitsdictee op een eigen lijst begint', async ({ page }) => {
   await page.locator('.tk-choose-start button').click();
 
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
-  await expect(page.getByText('De woorden konden niet geladen worden.')).toHaveCount(0);
+  await expect(page.getByText('De woorden laden even niet.')).toHaveCount(0);
 });
 
 /** Zonder lijst is er geen deel: een knop naar een lege kamer is erger dan geen knop. */

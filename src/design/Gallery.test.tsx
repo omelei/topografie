@@ -62,9 +62,9 @@ describe('every component renders every state it claims to have', () => {
   it('gives every item status a word, not only a shape', () => {
     render(<Gallery />);
     for (const word of [
-      'even opfrissen',
-      'dit onthoud je nu',
-      'nog niet onthouden',
+      'bijna vergeten',
+      'beheers je',
+      'nog aan het oefenen',
       'nog niet geoefend',
     ]) {
       expect(screen.getAllByText(word).length).toBeGreaterThan(0);

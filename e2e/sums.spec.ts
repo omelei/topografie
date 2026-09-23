@@ -88,7 +88,7 @@ test('the rail is the map of the product, not a list of what is finished', async
   // ADR-051. Five doors, of which three are not open yet — a rail with only
   // the two built ones does not read as a short list, it reads as the whole
   // product, and a child could not tell what leer.nu is for.
-  const rail = page.getByRole('navigation', { name: 'Modules' });
+  const rail = page.getByRole('navigation', { name: 'Vakken' });
   await expect(rail.getByRole('button')).toHaveCount(5);
 
   for (const naam of ['Topo', 'Rekenen', 'Klok', 'Taal', 'Vlaggen']) {
@@ -198,7 +198,7 @@ test('typing a table: right, wrong, and not knowing', async ({ page }) => {
 
 test('choosing a table: four numbers, one of them right', async ({ page }) => {
   await signIn(page, 'Joris');
-  await startTable(page, 3, /Kies uit vier/);
+  await startTable(page, 3, /Kies uit 4/);
 
   const options = page.getByRole('group', { name: 'Kies het antwoord' });
   await expect(options.getByRole('button')).toHaveCount(4);
@@ -406,7 +406,7 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
   await alsOnthouden(page);
 
   await startTable(page, 1, /Tafeldiploma/);
-  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
 
   // A diploma asks the table straight through, so the first sum is 1 x 1.
@@ -417,9 +417,7 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
   // The button says what it does: this attempt is over, not "next question".
   await page.getByRole('button', { name: 'Bekijk je poging' }).click();
 
-  await expect(
-    page.getByText('Nog geen diploma. Alle tien goed, dan is hij van jou.'),
-  ).toBeVisible();
+  await expect(page.getByText('Nog geen diploma. Alle 10 goed, dan is hij van jou.')).toBeVisible();
 });
 
 test('a diploma passed goes on the wall, where the gaps are the point', async ({ page }) => {
@@ -432,7 +430,7 @@ test('a diploma passed goes on the wall, where the gaps are the point', async ({
   await alsOnthouden(page);
 
   await startTable(page, 1, /Tafeldiploma/);
-  await expect(page.getByText('Klaar om af te zwemmen', { exact: true })).toBeVisible();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Ja, ik haal iemand' }).click();
   await page.getByRole('button', { name: 'Begin' }).click();
 
