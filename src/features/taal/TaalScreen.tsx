@@ -20,6 +20,7 @@ import {
 import { RoundProgress } from '@/features/practice/RoundProgress';
 import { StopButton } from '@/features/practice/StopButton';
 import { Counter } from '@/features/round/Teller';
+import { RondeDenker } from '@/features/round/RondeDenker';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { typtHet, type TaalMode } from './taalRegels';
 import { gespeld, regelVoor } from './taalTaal';
@@ -300,6 +301,7 @@ function Vraag({
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
                 </div>
+                <RondeDenker uitkomst={correct ? 'goed' : 'fout'} />
               </div>
 
               <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>
