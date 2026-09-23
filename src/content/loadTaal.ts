@@ -1,4 +1,5 @@
 import type { SpellingItem, SterkeWerkwoorden, TaalDeel, WerkwoordItem } from '@/game-core';
+import { itemId, leesLijsten, setIdVan } from '@/store/woordlijsten';
 
 /**
  * Taal's content, at build time: the spelling sets and the verb sets, and the
@@ -124,9 +125,40 @@ function samen(deel: TaalDeel, id: string): TaalSet | undefined {
 }
 
 export function loadTaalSet(id: string): TaalSet | undefined {
+  if (id.startsWith('taal-eigen-')) return eigenSet(id);
   const deel = taalDeelVan(id);
   if (deel !== null && (id === TAAL_MIX[deel] || id === TAAL_FOUTEN[deel])) return samen(deel, id);
   return loadTaalSets().find((set) => set.id === id);
+}
+
+/**
+ * Een eigen woordenlijst als set (ADR-195): de woorden die een ouder op Jij
+ * intypte, uit localStorage. Zonder dit zocht een ronde alleen tussen de sets
+ * in de bundel, en liep elk flitsdictee op een eigen lijst uit op "De woorden
+ * konden niet geladen worden".
+ *
+ * Elk woord is het hele woord: geen gat en geen keuzes, want het flitsdictee
+ * laat het woord zien en vraagt het dan te typen (`onderdelen.ts`, dezelfde
+ * items). De versie is `eigen`: er is geen bestand dat kan veranderen.
+ */
+function eigenSet(id: string): SpellingSet | undefined {
+  const lijst = leesLijsten().find((kandidaat) => setIdVan(kandidaat.id) === id);
+  if (lijst === undefined || lijst.woorden.length === 0) return undefined;
+  return {
+    id,
+    deel: 'spelling',
+    contentVersie: 'eigen',
+    items: lijst.woorden.map((woord) => ({
+      id: itemId(lijst.id, woord),
+      woord,
+      gat: [0, woord.length] as const,
+      keuzes: [woord],
+      zin: woord,
+      // Een lijst van school hoort bij de groep van het kind dat hem oefent,
+      // niet bij een vaste groep; in een ronde wordt de groep niet gelezen.
+      groep: 3,
+    })),
+  };
 }
 
 /** The forms of the strong verbs in the content: "reed", "geworden". */
