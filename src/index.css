@@ -1921,7 +1921,7 @@
     font-weight: var(--type-getal-weight);
   }
   /* De twee prijzen naast elkaar (ADR-164), en onder elkaar zodra ze niet
-   * passen: "€ 24,95 per schooljaar" en "€ 5 per maand" zijn samen breder dan
+   * passen: "€ 79,95 per schooljaar" en "€ 9,95 per maand" zijn samen breder dan
    * een kolom op een telefoon. De tweede krijgt een streep ervoor waar ze naast
    * elkaar staan, zodat het één regel blijft lezen en geen twee aanbiedingen. */
   .tk-premium-prijzen {
@@ -1936,8 +1936,9 @@
       border-left: var(--stroke-hair) solid var(--rand-licht);
     }
   }
-  /* De twee knoppen. Het jaar is de primaire en de maand de secundaire: de
-   * pagina raadt er één aan, en twee even zware knoppen raden niets aan. */
+  /* De knoppen. Het jaar is de primaire; de maand staat er tot hij te koop is
+   * als "binnenkort" (ADR-196), en daarna als secundaire knop: de pagina raadt
+   * er één aan, en twee even zware knoppen raden niets aan. */
   .tk-premium-plan-knoppen {
     display: flex;
     flex-wrap: wrap;

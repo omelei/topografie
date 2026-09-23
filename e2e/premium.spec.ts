@@ -266,16 +266,14 @@ test('without a code the premium page points at the kassa, and with one it does 
     // van de ouder.
     'Heb je al een code?',
   ]);
-  await expect(page.getByText('€ 24,95').first()).toBeVisible();
+  await expect(page.getByText('€ 79,95').first()).toBeVisible();
 
   // Twee manieren van betalen (ADR-164): het jaar als aanrader, de maand
-  // ernaast, met een knop die de kassa zegt welk plan gekozen is.
-  await expect(page.getByText('€ 5').first()).toBeVisible();
-  await expect(page.getByText('Maandelijks opzegbaar.').first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Per maand' })).toHaveAttribute(
-    'href',
-    '/kopen/?plan=maand',
-  );
+  // ernaast. Per maand betalen bestaat nog niet (ADR-196), dus staat er
+  // "binnenkort" en geen knop naar een kassa die het niet kan.
+  await expect(page.getByText('€ 9,95').first()).toBeVisible();
+  await expect(page.getByText('Per maand betalen komt binnenkort').first()).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Per maand' })).toHaveCount(0);
 
   // En de belofte over namen staat erbij (ADR-164).
   await expect(page.getByText('We slaan geen namen van kinderen op')).toBeVisible();
@@ -355,7 +353,7 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124).
   await page.goto('/premium');
   await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
-  await expect(page.getByText('€ 24,95')).toHaveCount(0);
+  await expect(page.getByText('€ 79,95')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 });

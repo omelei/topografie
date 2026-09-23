@@ -12237,6 +12237,45 @@ relative; z-index: 1 }`). Hij wordt dan als laatste getekend en niets
   zelf, dus daar is het verschil klein. De winst zit op Windows, waar dat niet
   gebeurt, en op een Mac door de smoothing. Dat is niet in de CI te zien.
 
+## ADR-195 — Eigen woordenlijsten zijn ook echt te oefenen
+
+**Status:** accepted. **Date:** 2026-09-23.
+
+Een ronde flitsdictee op een eigen woordenlijst liep uit op "De woorden konden
+niet geladen worden". `loadTaalSet` zocht alleen tussen de sets in de bundel,
+terwijl de eigen lijsten in localStorage staan (`store/woordlijsten.ts`). De
+e2e-test stopte bij het kiezen van de vorm, en daardoor viel het niet op. Een
+premiumfunctie die sinds ADR-192 op de kassapagina als reden om te kopen staat.
+
+**Besluit.** `loadTaalSet` maakt van een `taal-eigen-*` id een spellingset uit
+de lijsten op het apparaat, met dezelfde items als `onderdelen.ts`: het hele
+woord, geen gat en geen keuzes. `woordlijsten.spec.ts` begint nu ook een ronde.
+
+## ADR-196 — Nieuwe prijzen: € 79,95 per schooljaar, € 9,95 per maand binnenkort
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar.
+
+**Besluit.**
+
+- **Een schooljaar kost € 79,95** (was € 24,95). Het blijft een code die tot het
+  einde van het schooljaar geldt en daarna vanzelf afloopt; er wordt niets
+  automatisch verlengd. De kassa rekent het nieuwe bedrag af
+  (`PRIJS_CENTEN = 7995`), zodat de pagina en het afschrift hetzelfde zeggen.
+- **Per maand kost € 9,95, en dat komt binnenkort.** Betalen per maand bestaat
+  nog niet (geen mandaat, geen abonnement bij Mollie). De premiumpagina noemt de
+  prijs met "binnenkort" en heeft geen knop meer naar de kassa voor de maand; de
+  kassapagina zegt hetzelfde als iemand er met een oude link `?plan=maand` komt.
+- "Een heel schooljaar kost minder dan negen maanden": 79,95 is minder dan
+  9 × 9,95.
+
+**Gevolgen.**
+
+- De kassa-functie wordt niet door de CI gedeployed. Het nieuwe bedrag geldt pas
+  als de eigenaar `supabase functions deploy kassa --no-verify-jwt` draait
+  (`tools/premium/README.md`). Tot dan staat op de site € 79,95 en rekent de
+  kassa € 24,95 af: deploy de functie dus direct na de merge.
+- Codes die al gekocht zijn, blijven geldig tot hun datum.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
