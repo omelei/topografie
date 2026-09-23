@@ -5111,3 +5111,16 @@
     transform: translateY(6px);
   }
 }
+
+/* De Denker boven de tekst die na hem komt (ADR-194). Zijn lussen — knipperen,
+ * zweven, zwaaien — geven hem in Chrome een eigen laag, en alles wat daarna
+ * getekend wordt en hem zou kunnen raken, kreeg er ook een ("Overlap"): op
+ * Vandaag de welkomstzin, de weekdoelen en de profielknop. Tekst in zo'n laag
+ * verliest op Windows ClearType en wordt grijs en zacht; op een telefoon is
+ * er geen ClearType, en daar zag je het dus nooit. Met een eigen stapel boven
+ * de gewone inhoud wordt hij als laatste getekend, en hoeft niets erna te
+ * wijken. */
+.tk-denker {
+  position: relative;
+  z-index: 1;
+}
