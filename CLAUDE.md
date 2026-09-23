@@ -22,6 +22,13 @@ local or in the cloud.
 - Verify rewrites against `git show HEAD:<file>`; the working tree may have
   changed branch during the session.
 
+## Roadmap
+
+- `docs/ROADMAP.md` is what the owner reads to see where things stand. A PR that
+  picks up, finishes, parks or adds an item updates it in the same PR: move the
+  item, set the date at the top, and add the PR to "Gedaan (recent)". A PR that
+  touches nothing on it leaves it alone.
+
 ## CI
 
 - `ci.yml` runs on `pull_request` and on push to `main` only. A pushed branch
