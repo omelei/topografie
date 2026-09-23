@@ -11417,6 +11417,32 @@ fout.
 - **Geen confetti in een ronde.** De gids bewaart die voor een gehaald diploma,
   en de uitreiking heeft al haar eigen beweging (ADR-167).
 
+## ADR-184 — Tijdvakken wordt magenta, zodat gekozen en fout niet op elkaar lijken
+
+**Status:** accepted. **Date:** 2026-09-23. **Werkt ADR-180 bij** voor één vak.
+De bevestiging van de ontwerper staat nog open; de eigenaar koos om niet te
+wachten.
+
+### Context
+
+ADR-180 nam de vakkleuren uit `leer.js` over en noemde één risico: de diepe
+tint van tijdvakken (`#b42468`, 332°) lag 16° van fout (`#b81d3b`, 348°).
+Binnen een vak heeft wat gekozen is de kleur van dat vak (ADR-180), dus in een
+ronde tijdvakken had een gekozen tegel bijna de kleur van fout. Alleen de
+arcering en het kruis hielden ze uit elkaar.
+
+### Besluit
+
+- **Tijdvakken wordt magenta, 308°:** vulling `#d65bc6`, diep `#9c2a8c`, tint
+  `#fae3f6`. Dat is 40° van fout en 32° van taal. Wit op de diepe tint is 6,72,
+  de diepe tint op zijn tint 5,57 en op de grond 6,15.
+- **Fout blijft waar hij is.** Fout zit tussen koraal (10°) en tijdvakken; elke
+  verschuiving van fout brengt hem te dicht bij een van de twee.
+- **`docs/leer.js` gaat mee,** in `LEER_VAK` en in de confetti, zodat de gids en
+  de app dezelfde kleur tonen. De bloem-avatar houdt haar roze: dat is een
+  tekening en geen vak.
+- **`contrast.test.ts` bewaakt het nu:** geen vak ligt dichter dan 30° bij fout.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

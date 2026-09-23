@@ -188,10 +188,13 @@
     --woorden: #7e2fb3; /*                                7.13 / 5.84 */
     --woorden-text: var(--woorden);
     --woorden-tint: #f3e3fc;
-    --tijdvakken-vlak: #ee5a9e;
-    --tijdvakken: #b42468; /*                             6.19 / 5.17 */
+    /* Magenta rather than leer.js's first pink (ADR-184): that deep tone sat
+     * 16 degrees of hue from fout, so a chosen tile in a tijdvakken round
+     * wore nearly the colour of wrong. 308 is 40 from fout and 32 from taal. */
+    --tijdvakken-vlak: #d65bc6;
+    --tijdvakken: #9c2a8c; /*                             6.72 / 5.57 */
     --tijdvakken-text: var(--tijdvakken);
-    --tijdvakken-tint: #fde4f0;
+    --tijdvakken-tint: #fae3f6;
     --vlaggen-vlak: #f5a01a;
     --vlaggen: #935700; /*                                5.83 / 5.19 */
     --vlaggen-text: var(--vlaggen);
