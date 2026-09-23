@@ -14,10 +14,12 @@
 
 import { abonneer, leesRuw, leesSessie } from './bewaren';
 import { isIngesteld } from './omgeving';
+import { leesTerugkeer, type Terugkeer } from './terugkeer';
 import type { Account } from './types';
 
 export type { Account, AccountFout, AccountUitkomst, Sessie } from './types';
-export { abonneer, isIngesteld, leesRuw, leesSessie };
+export type { Terugkeer };
+export { abonneer, isIngesteld, leesRuw, leesSessie, leesTerugkeer };
 
 let geladen: Promise<Account> | null = null;
 

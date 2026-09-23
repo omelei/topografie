@@ -1,8 +1,9 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { SlotIcon } from '@/components/Icon';
-import { t, type TranslationKey } from '@/i18n';
+import { t } from '@/i18n';
 import { AccountBlok } from '@/features/account/AccountBlok';
-import { useAccount, type Aanmeldpoging } from '@/features/account/useAccount';
+import { ACCOUNT_FOUT } from '@/features/account/fouten';
+import { useAccount, type Aanmeldpoging, type Herstelpoging } from '@/features/account/useAccount';
 import type { AccountFout } from '@/store/account';
 
 /**
@@ -46,7 +47,7 @@ import type { AccountFout } from '@/store/account';
  * eigen kind kunnen. `Pinslot` kiest ertussen; hier staat alleen de ene helft.
  */
 export function Accountcheck({ onGoed }: { readonly onGoed: () => void }) {
-  const { sessie, inloggen } = useAccount();
+  const { sessie, inloggen, herstel } = useAccount();
 
   // Eén keer bij het monteren vastgelegd. Anders wisselt dit scherm van vorm op
   // het moment dat het inloggen lukt, en dat is precies het moment waarop het
@@ -54,7 +55,7 @@ export function Accountcheck({ onGoed }: { readonly onGoed: () => void }) {
   const [bekend] = useState(() => sessie?.email ?? null);
 
   if (bekend !== null) {
-    return <Herbevestigen email={bekend} inloggen={inloggen} onGoed={onGoed} />;
+    return <Herbevestigen email={bekend} inloggen={inloggen} herstel={herstel} onGoed={onGoed} />;
   }
   return <Aanmelden binnen={sessie !== null} onGoed={onGoed} />;
 }
@@ -86,18 +87,6 @@ function Aanmelden({ binnen, onGoed }: { readonly binnen: boolean; readonly onGo
   );
 }
 
-const FOUT: Record<AccountFout, TranslationKey> = {
-  leeg: 'account.fout.leeg',
-  'geen-email': 'account.fout.geen-email',
-  'te-kort': 'account.fout.te-kort',
-  onjuist: 'account.fout.onjuist',
-  'bestaat-al': 'account.fout.bestaat-al',
-  'bevestig-email': 'account.fout.bevestig-email',
-  'te-vaak': 'account.fout.te-vaak',
-  'geen-verbinding': 'account.fout.geen-verbinding',
-  'niet-ingesteld': 'account.fout.niet-ingesteld',
-};
-
 /**
  * Er is al iemand ingelogd: dan alleen het wachtwoord, bij het adres dat er al
  * staat.
@@ -109,19 +98,39 @@ const FOUT: Record<AccountFout, TranslationKey> = {
  * Een mislukte poging laat de bewaarde sessie met rust (`supabaseAccount.ts`
  * schrijft alleen bij een geslaagd antwoord), dus een typefout logt de ouder
  * niet uit.
+ *
+ * **Wachtwoord vergeten gaat naar het adres dat er al staat** (ADR-186). Dit is
+ * het scherm waar een ouder die zijn pincode kwijt is uitkomt, en hier hield
+ * de keten op: zonder wachtwoord geen nieuwe pincode, en zonder pincode alleen
+ * nog het apparaat wissen. De mail gaat naar het adres van deze sessie en niet
+ * naar een adres dat iemand intikt, dus een kind dat hier op drukt, stuurt zijn
+ * vader een mail en komt zelf nergens.
  */
 function Herbevestigen({
   email,
   inloggen,
+  herstel,
   onGoed,
 }: {
   readonly email: string;
   readonly inloggen: Aanmeldpoging;
+  readonly herstel: Herstelpoging;
   readonly onGoed: () => void;
 }) {
   const [wachtwoord, setWachtwoord] = useState('');
   const [bezig, setBezig] = useState(false);
   const [fout, setFout] = useState<AccountFout | null>(null);
+  const [gemaild, setGemaild] = useState(false);
+
+  async function vergeten() {
+    setBezig(true);
+    setFout(null);
+    setGemaild(false);
+    const uitkomst = await herstel(email);
+    setBezig(false);
+    if (uitkomst.ok) setGemaild(true);
+    else setFout(uitkomst.reden);
+  }
 
   const veld = useId();
   const melding = useId();
@@ -130,6 +139,7 @@ function Herbevestigen({
     event.preventDefault();
     setBezig(true);
     setFout(null);
+    setGemaild(false);
 
     const uitkomst = await inloggen(email, wachtwoord);
     setBezig(false);
@@ -175,9 +185,23 @@ function Herbevestigen({
 
       {fout ? (
         <p id={melding} role="alert" className="text-lopend">
-          {t(FOUT[fout])}
+          {t(ACCOUNT_FOUT[fout])}
         </p>
       ) : null}
+      {gemaild ? (
+        <p role="status" className="text-lopend">
+          {t('ouder.herstelGemaild', { email })}
+        </p>
+      ) : null}
+
+      <button
+        type="button"
+        className="tk-button tk-button-tertiary self-start"
+        disabled={bezig}
+        onClick={() => void vergeten()}
+      >
+        {t('account.wachtwoordVergeten')}
+      </button>
 
       <p className="tk-hulp">{t('ouder.bevestigHulp')}</p>
     </form>

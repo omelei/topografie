@@ -11475,6 +11475,106 @@ iconen lijn te laten.
   `FlagIcon` blijft, want die draagt ook een vlaggentegel. `icons.test.ts`
   noemt nu de elf die er nog zijn.
 
+## ADR-186 — Wat een kind oefent blijft staan: bewaren op het apparaat, en de uitwegen onder het account
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar, als
+eerste van de volgende stappen na de stijlgids. **Werkt ADR-178 bij** (de poort
+krijgt een uitweg) en sluit de twee open punten van `docs/SUPABASE.md`.
+
+### Context
+
+Het product rekent in weken. De langste tussenpoos van Leitner is
+eenentwintig dagen, een diploma is iets wat je houdt, en alles staat op het
+apparaat (ADR-015). Safari gooit weg wat een script bewaart voor een site die
+een week niet geopend is (ADR-046). Het kind voor wie de planning het best
+werkt, is dus het kind dat alles kwijtraakt. Accounts (ADR-155) zijn het
+echte antwoord, maar die staan nog niet live, en ze hebben zelf twee gaten die
+`SUPABASE.md` noemt: een ouder die zijn wachtwoord kwijt is, kan sinds ADR-178
+geen nieuwe pincode meer zetten, en een gratis project dat een week niets
+hoort, wordt gepauzeerd.
+
+### Besluit
+
+**Een blok "Bewaren op dit apparaat" op de ouderpagina** (`Bewaren.tsx`,
+`store/bewaarstand.ts`), direct onder "Hoe gaat het?":
+
+- **In een tabblad van Safari** zegt het de regel van de week en de weg
+  eromheen: de app op het beginscherm, waar die regel niet geldt. En het zegt
+  wat dat kost. Op het beginscherm begint de app leeg, want die heeft een eigen
+  opslag, dus wat in Safari geoefend is, gaat niet mee. Herkend aan
+  `navigator.standalone`, dat alleen WebKit op iPhone en iPad kent. Dat is
+  betrouwbaarder dan een user-agent.
+- **Elders** zegt het wat de browser opgeeft over opruimen als het apparaat
+  vol raakt (`navigator.storage.persisted()`), met een knop die om de
+  uitzondering vraagt (`persist()`).
+- **Weet de browser van niets**, dan staat er niets.
+
+**Het vraagt nooit uit zichzelf.** Het plan was om na de eerste ronde
+automatisch `persist()` te vragen. Dat is het niet geworden: Firefox toont
+daarbij een venster, en dat zou dan midden in een ronde voor een kind staan. De
+knop zet het voor de ouder.
+
+**De tip staat er meteen en niet pas na de tweede oefendag,** zoals eerst
+voorgesteld. Omdat de voortgang uit Safari niet meegaat, kost elke dag wachten
+iets. En het blok staat op de ouderpagina, waar een kind het niet ziet.
+
+**Wat hier niet beloofd wordt:** dat `persist()` ook tegen Safari's week
+beschermt. Dat staat nergens vastgelegd, en daarom zegt het blok in Safari
+alleen iets over het beginscherm.
+
+**Wachtwoord vergeten**, op twee plekken:
+
+- in `AccountBlok`, als derde stand naast inloggen en aanmelden, met alleen
+  een adres;
+- op de poort voor wie al ingelogd is (`Accountcheck`), naar het adres van de
+  sessie. Dat is waar een ouder uitkomt die zijn pincode kwijt is. Omdat de
+  mail naar dat adres gaat en niet naar een ingetikt adres, stuurt een kind dat
+  erop drukt zijn vader een mail en komt het zelf nergens.
+
+Het antwoord is voor een bekend en een onbekend adres hetzelfde, zoals
+Supabase het ook geeft. Anders kan iedereen hiermee navragen wie er een account
+heeft.
+
+**De link uit die mail** komt uit op `/ouder`, met de sessie achter het hekje.
+`App` leest hem op elk adres, voordat er om een naam gevraagd wordt: de mail
+wordt net zo goed geopend op een telefoon waar nog nooit een kind heeft
+geoefend. Het scherm (`NieuwWachtwoord.tsx`) doet het volgende:
+
+- het haalt de tokens meteen uit het adres, zodat ze niet in de geschiedenis
+  van een gedeelde tablet blijven staan;
+- het vraagt een nieuw wachtwoord met dezelfde ondergrens van acht tekens;
+- het bewaart de sessie pas als dat gelukt is.
+
+Het opent de ouderpagina niet vanzelf. Daarna staat de gewone deur er weer,
+dus de pincode, of "Pincode vergeten?" met het wachtwoord dat net gekozen is.
+Deze link is geen tweede weg naar binnen.
+
+Alleen `type=recovery` wordt gelezen. De link in een bevestigingsmail brengt
+ook een sessie mee, en die blijft liggen zoals hij lag. Een tweede weg naar
+binnen zou er ook een zijn voor een link die iemand anders heeft gemaakt.
+
+**Het gezinsproject blijft wakker.** `Gezin nakijken` draait nu ook op maandag
+en donderdag. De drie vragen die het al stelde, zijn dan meteen de activiteit
+die het project nodig heeft: één workflow die twee dingen doet, in plaats van
+een tweede die hetzelfde adres aanspreekt. Een geplande run zegt in zijn kop
+dat hij gepland was, zodat een rood kruisje op een dinsdag niet leest als een
+controle die iemand met de hand deed.
+
+### Gevolgen
+
+- **In Supabase moet de terugweg op de lijst staan.** Onder **Authentication →
+  URL Configuration** komt `https://www.leer.nu/ouder` bij de Redirect URLs.
+  Staat hij er niet, dan stuurt Supabase de link naar de Site URL. `App` vangt
+  hem daar ook op, dus er breekt niets, maar de ouder komt dan op de voorpagina
+  uit. Staat in `docs/SUPABASE.md`, stap 4.
+- **Er is nog steeds geen weg van Safari naar het beginscherm.** Wie de tip
+  volgt nadat er al geoefend is, laat dat achter. De echte oplossing is het
+  account met synchroniseren (stap 3 van `ouder-en-kind.md` §14). Dit blok is
+  de brug tot dan, geen vervanging.
+- `AccountFout` kent twee woorden meer: `verlopen` (de link is op) en `zelfde`
+  (het nieuwe wachtwoord is het oude). De foutzinnen staan nu in één tabel
+  (`features/account/fouten.ts`) in plaats van in twee kopieën.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

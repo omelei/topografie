@@ -12,8 +12,10 @@
  */
 
 import {
+  adresFout,
   invoerFout,
   moetVernieuwen,
+  nieuwWachtwoordFout,
   normaliseerEmail,
   verlooptOp,
   wachtwoordKort,
@@ -40,6 +42,10 @@ export interface NepAccount extends Account {
   readonly trekIn: () => void;
   /** De verbinding wegnemen nádat er is ingelogd. */
   readonly zetOffline: () => void;
+  /** Naar welke adressen een herstelmail ging, en waar de link heen wees. */
+  readonly herstelmails: () => readonly { readonly email: string; readonly terugNaar: string }[];
+  /** De sessie die de link in een herstelmail zou geven, voor een adres dat er is. */
+  readonly herstelSessie: (email: string) => Sessie | null;
 }
 
 export function maakNepAccount(opties: NepOpties = {}): NepAccount {
@@ -52,6 +58,9 @@ export function maakNepAccount(opties: NepOpties = {}): NepAccount {
   let ingetrokken = false;
   let verversingen = 0;
   let volgende = 0;
+  const mails: { readonly email: string; readonly terugNaar: string }[] = [];
+  /** De tokens die een herstellink uitgaf, en of ze nog niet gebruikt zijn. */
+  const herstelTokens = new Map<string, string>();
 
   function nieuweSessie(email: string, id: string, now: Date): Sessie {
     ingetrokken = false;
@@ -122,7 +131,45 @@ export function maakNepAccount(opties: NepOpties = {}): NepAccount {
       return sessie;
     },
 
+    herstel: async (email, terugNaar) => {
+      const fout = adresFout(email);
+      if (fout !== null) return { ok: false, reden: fout };
+      if (nietIngesteld) return { ok: false, reden: 'niet-ingesteld' };
+      if (offline) return { ok: false, reden: 'geen-verbinding' };
+      // Ook voor een adres zonder account: hetzelfde antwoord, zoals Supabase.
+      if (gebruikers.has(normaliseerEmail(email))) {
+        mails.push({ email: normaliseerEmail(email), terugNaar });
+      }
+      return { ok: true, sessie: null };
+    },
+
+    nieuwWachtwoord: async (link, wachtwoord) => {
+      const fout = nieuwWachtwoordFout(wachtwoord);
+      if (fout !== null) return { ok: false, reden: fout };
+      if (nietIngesteld) return { ok: false, reden: 'niet-ingesteld' };
+      if (offline) return { ok: false, reden: 'geen-verbinding' };
+
+      const adres = herstelTokens.get(link.token);
+      const gebruiker = adres === undefined ? undefined : gebruikers.get(adres);
+      if (adres === undefined || gebruiker === undefined) return { ok: false, reden: 'verlopen' };
+      if (gebruiker.wachtwoord === wachtwoord) return { ok: false, reden: 'zelfde' };
+
+      herstelTokens.delete(link.token);
+      gebruikers.set(adres, { id: gebruiker.id, wachtwoord });
+      sessie = link;
+      return { ok: true, sessie };
+    },
+
     bewaard: () => sessie,
+    herstelmails: () => mails,
+    herstelSessie: (email) => {
+      const adres = normaliseerEmail(email);
+      const gebruiker = gebruikers.get(adres);
+      if (gebruiker === undefined) return null;
+      const link = nieuweSessie(adres, gebruiker.id, new Date());
+      herstelTokens.set(link.token, adres);
+      return link;
+    },
     verversingen: () => verversingen,
     trekIn: () => {
       ingetrokken = true;

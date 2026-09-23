@@ -13,6 +13,7 @@ import {
   schrijfWeekdoelen,
   type Weekdoelen,
 } from '@/store/weekdoelStore';
+import { Bewaren } from './Bewaren';
 import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
 
@@ -69,6 +70,11 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
             hadden (ADR-177). Boven premium, want dit is waar een ouder voor
             komt; wat het kost is de vraag daarna. */}
         <HoeGaatHet key={versie} />
+
+        {/* Direct onder hoe het gaat: of wat de kinderen oefenen over een week
+            nog staat, is de voorwaarde voor al het andere op deze pagina
+            (ADR-186). Het blok tekent niets als de browser er niets over zegt. */}
+        <Bewaren />
 
         <Premium />
         <Gezinsinstellingen />
