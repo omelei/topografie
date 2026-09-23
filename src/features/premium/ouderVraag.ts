@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { onthoudWens, type Wens } from '@/store/wensen';
 
 /**
  * Of de vraag aan de ouders openstaat (ADR-163).
@@ -17,22 +18,37 @@ import { useSyncExternalStore } from 'react';
  */
 
 let open = false;
+let huidig: Wens | null = null;
 const luisteraars = new Set<() => void>();
 
 function meld(): void {
   for (const luisteraar of luisteraars) luisteraar();
 }
 
-/** Vraag het even aan je ouders: de pop-up, in plaats van de premiumpagina. */
-export function vraagOuders(): void {
+/**
+ * Vraag het even aan je ouders: de pop-up, in plaats van de premiumpagina.
+ *
+ * Met een wens noemt het venster wat het kind wilde, en onthoudt dit apparaat
+ * het voor de ouderpagina (ADR-193). Het gaat niet mee in wat er doorgestuurd
+ * wordt (ADR-174).
+ */
+export function vraagOuders(wens?: Wens): void {
   if (open) return;
+  huidig = wens ?? null;
   open = true;
   meld();
+  if (wens) void onthoudWens(wens);
+}
+
+/** Wat het kind wilde, zolang het venster openstaat. */
+export function huidigeWens(): Wens | null {
+  return open ? huidig : null;
 }
 
 export function sluitOuderVraag(): void {
   if (!open) return;
   open = false;
+  huidig = null;
   meld();
 }
 

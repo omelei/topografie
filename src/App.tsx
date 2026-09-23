@@ -42,6 +42,7 @@ import { OuderPoort, OuderScherm } from '@/features/ouder/OuderScherm';
 import { useOuder } from '@/features/ouder/useOuder';
 import { openWisselaar } from '@/features/ouder/wisselaar';
 import { vraagOuders } from '@/features/premium/ouderVraag';
+import { wensVoor } from '@/features/premium/wens';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
@@ -205,7 +206,8 @@ export default function App() {
     // de hele premiumpagina: een kind dat op een spel drukte hoort niet in een
     // etalage te staan, en de code die het nodig heeft ligt bij zijn ouders.
     if (!premium && (toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId))) {
-      vraagOuders();
+      // Met wat het kind wilde (ADR-193): het venster zegt het terug.
+      vraagOuders({ wat: wensVoor(deel, mode, toetsstand), soort: 'wil' });
       return;
     }
 

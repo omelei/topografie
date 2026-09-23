@@ -706,6 +706,18 @@ export const nl = {
   // is een getal zonder betekenis.
   'ouderVraag.titel': 'Vraag het even aan je ouders',
   'ouderVraag.uitleg': 'Dit onderdeel hoort bij premium. Daar is een code voor nodig.',
+  // Met wat het kind wilde (ADR-193).
+  'ouderVraag.uitlegWat': '{wat} hoort bij premium. Daar is een code voor nodig.',
+  'ouderVraag.uitlegKlaar':
+    'Je bent klaar voor de toets van {wat}! Die toets hoort bij premium. Daar is een code voor nodig.',
+  // Hoe een wens heet, in het venster en op de ouderpagina (ADR-193).
+  'wens.vorm': '{vorm} bij {naam}',
+  'wens.diploma': 'Het diploma {naam}',
+  'wens.oefentoets': 'De oefentoets bij {naam}',
+  'premium.vraagKnop': 'Vraag het je ouders',
+  'result.klaarVoorToets': 'Je bent klaar voor de toets!',
+  'result.klaarVoorToetsUitleg':
+    'Je kent {naam} goed genoeg voor het diploma. De toets hoort bij premium: vraag het even aan je ouders.',
 
   // Drie uitwegen, en de eerste vraag is niet "heb je een code" maar "is er
   // iemand bij je" (ADR-174). Dat is het enige wat het kind op dit moment weet,
@@ -744,6 +756,8 @@ export const nl = {
   'premium.wat.voortgang':
     'Met premium zie je per kind wat het inmiddels kent en hoe vaak het oefent. Alles wordt nu al bewaard, dus het staat er meteen.',
   'premium.wat.diploma': 'Met premium haal je dit diploma: je doet de toets, en je naam komt erop.',
+  'premium.wat.diplomaKlaar':
+    'Je bent klaar voor de toets! Met premium doe je hem, en komt je naam op het diploma.',
   'premium.wat.weekdoelen':
     'Met premium kies je elke week je eigen doelen, en zie je hoe ver je ermee bent.',
 
@@ -1480,6 +1494,9 @@ export const nl = {
   // de rij van de wisselaar — en was er nergens. Per kind, want twee kinderen
   // optellen geeft een getal dat over niemand gaat.
   'ouder.hoeGaatHet': 'Hoe gaat het?',
+  // Wat een kind wilde en waar het klaar voor was, zonder code (ADR-193).
+  'ouder.wensKlaar': '{naam} is klaar voor de toets van {wat}. Die toets hoort bij premium.',
+  'ouder.wensWil': '{naam} wilde dit graag doen, en daar is premium voor nodig:',
   'ouder.hoeGaatHetUitleg':
     'Per kind, over alle vakken bij elkaar. Per som en per woord kijk je op Jij, bij je kind zelf.',
   'ouder.kindNogNiets': '{naam} heeft nog niets geoefend.',

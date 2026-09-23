@@ -6,6 +6,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { geheugen, geoefend, perDag } from '@/features/retention/statistiek';
 import { listChildren } from '@/store/children';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
+import { wensenVan } from '@/store/wensen';
 
 /**
  * Hoe het met je kinderen gaat, op de ouderpagina (ADR-177).
@@ -101,6 +102,7 @@ export function HoeGaatHet() {
     return (
       <section className="flex flex-col gap-3" aria-label={t('ouder.hoeGaatHet')}>
         <h2 className="tk-sectie">{t('ouder.hoeGaatHet')}</h2>
+        <Wensen />
         <PremiumSlot wat="premium.wat.voortgang" />
       </section>
     );
@@ -154,5 +156,68 @@ export function HoeGaatHet() {
         </ul>
       )}
     </section>
+  );
+}
+
+interface KindWensen {
+  readonly id: string;
+  readonly naam: string;
+  readonly klaar: readonly string[];
+  readonly wil: readonly string[];
+}
+
+/**
+ * Wat elk kind wilde en waar het klaar voor was, zonder code (ADR-193).
+ *
+ * Dit is geen voortgang: geen cijfer, geen telling. Het zijn de momenten waarop
+ * een kind tegen premium aanliep — een slot, of een diploma dat het verdiend
+ * had en niet kon halen — en die gaan over precies de beslissing die hier
+ * genomen wordt. Een ouder die leest "Fem is klaar voor de toets van Tafel van
+ * 7" weet waarom hij een code zou kopen; een ouder die alleen een slot ziet,
+ * niet. Alleen van dit apparaat, en alleen kinderen met iets om te zeggen.
+ */
+function Wensen() {
+  const [kinderen, setKinderen] = useState<readonly KindWensen[] | null>(null);
+
+  useEffect(() => {
+    let levend = true;
+    void listChildren().then((lijst) => {
+      if (!levend) return;
+      setKinderen(
+        lijst
+          .map((kind) => ({ id: kind.id, naam: kind.naam, ...wensenVan(kind.id) }))
+          .filter((kind) => kind.klaar.length > 0 || kind.wil.length > 0),
+      );
+    });
+    return () => {
+      levend = false;
+    };
+  }, []);
+
+  if (kinderen === null || kinderen.length === 0) return null;
+
+  return (
+    <ul className="flex flex-col gap-3">
+      {kinderen.map((kind) => (
+        <li key={kind.id} className="tk-card flex flex-col gap-2">
+          <h3 className="tk-sectie">{kind.naam}</h3>
+          {kind.klaar.map((wat) => (
+            <p key={wat} className="text-lopend">
+              {t('ouder.wensKlaar', { naam: kind.naam, wat })}
+            </p>
+          ))}
+          {kind.wil.length > 0 ? (
+            <>
+              <p className="text-lopend">{t('ouder.wensWil', { naam: kind.naam })}</p>
+              <ul className="list-disc pl-6 text-lopend">
+                {kind.wil.map((wat) => (
+                  <li key={wat}>{wat}</li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+        </li>
+      ))}
+    </ul>
   );
 }

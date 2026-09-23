@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
+import { alsOnthouden } from './zaai';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -136,14 +137,14 @@ test('without a code the premium parts are labelled once, and say what they do',
   }
   await expect(kast).not.toContainText('Hier zijn ook diploma’s');
 
-  // En de weg eruit is de uitleg en niet een codeveld: wie dit leest, heeft de
-  // code niet (ADR-124, ADR-174).
+  // En de weg eruit is de vraag aan de ouders, met het diploma erin (ADR-193).
   await kast.locator('.tk-diploma').first().click();
   const diploma = page.getByRole('dialog');
   await expect(diploma).toContainText('Met premium haal je dit diploma');
   await expect(diploma.getByRole('button', { name: 'Doe de toets' })).toHaveCount(0);
-  await diploma.getByRole('button', { name: 'Bekijk premium' }).click();
-  await expect(page).toHaveURL(/\/premium$/);
+  await diploma.getByRole('button', { name: 'Vraag het je ouders' }).click();
+  const vraag = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+  await expect(vraag).toContainText(/Het diploma .+ hoort bij premium\./);
 });
 
 /**
@@ -601,4 +602,55 @@ test('without a code the first card starts a round, and a diploma asks the paren
     .getByRole('button', { name: /^Tafel van 3/ })
     .click();
   await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toBeVisible();
+});
+
+/**
+ * De triggers van ADR-193: het venster zegt wat het kind wilde, de uitslag zegt
+ * dat het klaar is voor de toets, en de ouderpagina onthoudt allebei.
+ */
+test('without a code the parents read what the child wanted, and what it is ready for', async ({
+  page,
+}) => {
+  await stubGezin(page);
+  await signIn(page, 'Fem');
+
+  // Een slot noemt wat het kind wilde.
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Bliksemronde/ })
+    .click();
+  const vraag = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+  await expect(vraag).toContainText('Bliksemronde bij Provincies van Nederland hoort bij premium.');
+  await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
+
+  // Met meerkeuze de tafel van 1 onthouden, en dan zegt de uitslag het.
+  await oefenTafelVanEen(page);
+  await alsOnthouden(page);
+  await oefenTafelVanEen(page);
+  const klaar = page.getByRole('region', { name: 'Je bent klaar voor de toets!' });
+  await expect(klaar).toContainText('Je kent Tafel van 1 goed genoeg voor het diploma.');
+  await klaar.getByRole('button', { name: 'Vraag het je ouders' }).click();
+  await expect(vraag).toContainText('Je bent klaar voor de toets van Tafel van 1!');
+  await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
+
+  // En op de ouderpagina staat het, in de derde persoon.
+  await page.goto('/');
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await langsDePoort(page);
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  const hoe = page.getByRole('region', { name: 'Hoe gaat het?' });
+  await expect(hoe).toContainText('Fem is klaar voor de toets van Tafel van 1.');
+  await expect(hoe).toContainText('Fem wilde dit graag doen');
+  await expect(hoe).toContainText('Bliksemronde bij Provincies van Nederland');
 });
