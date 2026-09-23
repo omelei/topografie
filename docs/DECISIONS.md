@@ -11812,6 +11812,95 @@ hij moet.
 - **Nog steeds: niet aanzetten voor gezinnen vóór 3c.** Pas dan komt wat op de
   server staat ergens anders terug.
 
+## ADR-189 — Stap 3c-1: een kind op een tweede apparaat, en ophalen gaat net zo als versturen
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar. Het
+eerste deel van stap 3c uit ADR-187. **Voert uit** wat §9 van
+`ouder-en-kind.md` "samenvoegen met een bestaand kind" noemde.
+
+### Context
+
+Na 3b gaat alles wat een kind oefent naar het account, maar niets komt er ooit
+uit terug. Een gezin met een iPad en een laptop heeft daar nog niets aan: op de
+laptop begint Noor opnieuw. 3c is de terugweg, in twee delen:
+
+- **3c-1 (dit record):** de ouder zet een kind op een tweede apparaat, en na
+  elke ronde komt mee wat een ander apparaat stuurde.
+- **3c-2:** een kind logt zelf in met code en wachtwoord, op een apparaat
+  zonder ouder erbij.
+
+### Besluit
+
+**Twee keuzes per kind dat in het account staat maar niet hier.** Op de
+ouderpagina, in "Kinderen in je account", en nooit vanzelf:
+
+- **"Zet Noor op dit apparaat":** een nieuw kind hier (`createChild`, binnen de
+  grens van drie, ADR-173), met alles wat het op het andere apparaat deed.
+- **"Noortje is Noor":** een kind dat hier al oefent, gekoppeld aan het kind in
+  het account. Eerst ophalen en hier samenvoegen, dan alles van hier
+  versturen; op de server voegen de triggers van `0003` het samen. Daarna is
+  het één kind met één stel dozen, op beide apparaten.
+
+"Twee keer Noor is niet per se één Noor" (§9): de ouder kiest, ook als de namen
+gelijk zijn. Een koppeling legt geen nieuwe gegevens vast, want het kind in het
+account had al toestemming (ADR-187). Er komt dus geen tweede
+toestemmingsvraag.
+
+**Bijwerken gaat nu beide kanten op** (`werkBij`), na elke ronde en bij het
+openen van de app (ADR-188): eerst versturen wat hier bij kwam, dan ophalen wat
+elders bij kwam. Allebei alleen wat er sinds de vorige keer veranderde, met
+een eigen moment op de koppeling (`verstuurdOp`, `opgehaaldOp`). Faalt het
+versturen, dan wordt er niet opgehaald; de volgende keer gebeuren ze allebei.
+
+**Ophalen leest de tijdkolommen die de server al heeft**, net als versturen die
+van het apparaat:
+
+- `laatste_review` bij de dozen;
+- `geeindigd` bij de rondes;
+- `tijdstip` bij de pogingen, twee uur eerder, zodat een ronde die daarna
+  afliep al haar antwoorden meekrijgt;
+- `behaald_op` bij de diploma's;
+- `gewijzigd_op` bij de instellingen.
+
+Per tabel wordt er in bladzijden van duizend gelezen. PostgREST geeft er
+standaard hooguit zoveel terug, en wie daar niet om vraagt, krijgt stilletjes de
+eerste duizend en denkt dat dat alles is.
+
+**Lokaal samenvoegen met dezelfde regels als de database**
+(`samenvoegen.ts`), want het is dezelfde vraag de andere kant op:
+
+- **dozen:** de jongste `laatsteReview` wint, bij gelijke tijd de lagere doos;
+  tellers en hoogste doos worden het maximum;
+- **diploma's:** de vroegste dag wint;
+- **instellingen:** de jongste schrijver wint;
+- **rondes en antwoorden:** alleen aangevuld.
+
+De gevallen in `samenvoegen.test.ts` zijn dezelfde als in
+`supabase/tests/gezin.sql`. Wie een regel op de ene plek verandert, ziet het op
+de andere plek misgaan.
+
+**Terugvertalen is net zo streng als heen** (`terug.ts`). Een rij van de server
+wordt alleen een rij hier als hij de velden heeft die hier nodig zijn, en onder
+de lokale id van het kind (ADR-175). Een ronde zonder einde wordt niet
+overgenomen, want die zou hier een ronde lijken die nog loopt. Van de
+instellingen komt alleen terug wat in `GEDEELDE_INSTELLINGEN` staat. Alles wat
+binnenkomt, gaat in één transactie over vijf winkels: halverwege stukgaan laat
+niets half achter.
+
+### Gevolgen
+
+- **Een gezin met twee apparaten kan het aan**, zolang de ouder op beide
+  ingelogd is: dat is het token waarmee bijgewerkt wordt. Een apparaat zonder
+  ouder is 3c-2.
+- **Een foutje gevonden en opgelost:** `Kinderen` en `HoeGaatHet` op de
+  ouderpagina hadden allebei een getal als React-sleutel. Zodra beide 1 waren,
+  stonden er twee blokken "Je kinderen". De sleutels dragen nu een voorvoegsel.
+- **De inlogcode staat er nog steeds niet.** Die komt in 3c-2, samen met het
+  inlogscherm voor een kind en een wachtwoord dat de ouder zet.
+- **Voor de eigenaar verandert er niets** aan het project: geen nieuwe
+  migratie. Het advies blijft staan: niet aanzetten voor gezinnen vóór 3c-2,
+  de privacyverklaring en de verwerkersovereenkomst.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

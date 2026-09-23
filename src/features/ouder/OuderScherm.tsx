@@ -56,6 +56,10 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
   // teller als sleutel is hier goedkoper dan een winkel met abonnees, want er
   // zijn precies twee lezers en ze staan naast elkaar op één pagina.
   const [versie, zetVersie] = useState(0);
+  // Een kind dat `Overname` op dit apparaat zet, hoort ook in `Kinderen` te
+  // staan (ADR-189). Een eigen teller, zodat `Kinderen` alleen opnieuw begint
+  // als er van buitenaf iets veranderde, en niet bij zijn eigen wijzigingen.
+  const [vanBuiten, zetVanBuiten] = useState(0);
 
   return (
     <div className="tk-page" onClickCapture={() => verleng()} onKeyDownCapture={() => verleng()}>
@@ -65,12 +69,15 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
           <p className="text-lopend text-tekst-secundair">{t('ouder.intro')}</p>
         </header>
 
-        <Kinderen onVeranderd={() => zetVersie((vorige) => vorige + 1)} />
+        <Kinderen
+          key={`kinderen-${vanBuiten}`}
+          onVeranderd={() => zetVersie((vorige) => vorige + 1)}
+        />
 
         {/* Waar de poort, de volwassenencheck en de wisselaar het allemaal over
             hadden (ADR-177). Boven premium, want dit is waar een ouder voor
             komt; wat het kost is de vraag daarna. */}
-        <HoeGaatHet key={versie} />
+        <HoeGaatHet key={`hoe-${versie}`} />
 
         {/* Direct onder hoe het gaat: of wat de kinderen oefenen over een week
             nog staat, is de voorwaarde voor al het andere op deze pagina
@@ -87,7 +94,12 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
 
         {/* Direct onder het account: wie ingelogd is, kan hier zijn kinderen
             meenemen (ADR-187). Zonder sessie tekent het niets. */}
-        <Overname />
+        <Overname
+          onKinderenVeranderd={() => {
+            zetVanBuiten((vorige) => vorige + 1);
+            zetVersie((vorige) => vorige + 1);
+          }}
+        />
 
         {/* Als laatste, en achter de pincode: het enige op dit apparaat dat niet
             terug te draaien is (ADR-166). Het stond op Jij, waar een kind erbij

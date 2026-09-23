@@ -29,6 +29,29 @@ export interface Koppeling {
    * account achter maar niet zijn voortgang; dit is hoe het scherm dat ziet.
    */
   readonly verstuurdOp: string | null;
+  /**
+   * Wanneer er voor het laatst is opgehaald wat andere apparaten stuurden, of
+   * null als dat nog nooit gebeurde (ADR-189).
+   */
+  readonly opgehaaldOp: string | null;
+}
+
+/**
+ * Hoeveel eerder dan de vorige keer er opnieuw gekeken wordt (ADR-188).
+ *
+ * Het moment van de vorige keer is genomen vóór er gelezen werd, dus in
+ * principe is nul genoeg. Vijf minuten vangt wat daar tussen kan zitten — een
+ * ronde die afliep terwijl er verstuurd werd, een klok die even verspringt —
+ * en kost niets: wat twee keer aankomt, wordt overgeslagen of samengevoegd.
+ */
+const MARGE_MS = 5 * 60_000;
+
+/** Vanaf wanneer opnieuw gekeken wordt, of alles als het nog nooit gebeurde. */
+export function sindsVan(moment: string | null): string | undefined {
+  if (moment === null) return undefined;
+  const tijd = new Date(moment).getTime();
+  if (Number.isNaN(tijd)) return undefined;
+  return new Date(tijd - MARGE_MS).toISOString();
 }
 
 function lees(lokaalId: string, ruw: string | undefined): Koppeling | null {
@@ -41,6 +64,7 @@ function lees(lokaalId: string, ruw: string | undefined): Koppeling | null {
       kindId: waarde.kindId,
       ouderId: waarde.ouderId,
       verstuurdOp: typeof waarde.verstuurdOp === 'string' ? waarde.verstuurdOp : null,
+      opgehaaldOp: typeof waarde.opgehaaldOp === 'string' ? waarde.opgehaaldOp : null,
     };
   } catch {
     return null;

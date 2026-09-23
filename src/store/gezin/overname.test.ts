@@ -4,8 +4,11 @@ import type { Koppeling } from './koppeling';
 import {
   gezinsstand,
   haalUitAccount,
+  koppelAan,
   neemMee,
   verstuurOpnieuw,
+  werkBij,
+  zetKindHier,
   type OvernameDiensten,
 } from './overname';
 import type { Pakket } from './pakket';
@@ -19,7 +22,8 @@ import type { Vervoer } from './vervoer';
 
 const opgeslagen = new Map<string, Koppeling>();
 
-vi.mock('./koppeling', () => ({
+vi.mock('./koppeling', async (echt) => ({
+  sindsVan: (await echt<typeof import('./koppeling')>()).sindsVan,
   leesKoppeling: async (lokaalId: string) => opgeslagen.get(lokaalId) ?? null,
   schrijfKoppeling: async (koppeling: Koppeling) => {
     opgeslagen.set(koppeling.lokaalId, koppeling);
@@ -34,6 +38,12 @@ vi.mock('./koppeling', () => ({
 const PAKKET: Pakket = { sessies: [], pogingen: [], voortgang: [], diplomas: [], instellingen: [] };
 vi.mock('./pakket', () => ({ leesPakket: vi.fn(async () => PAKKET) }));
 
+// Wat er op dit apparaat gezet wordt, en welke kinderen er hier bij komen.
+const opApparaat = vi.hoisted(() => vi.fn(async () => undefined));
+vi.mock('./ophalen', () => ({ zetOpApparaat: opApparaat }));
+const nieuwHier = vi.hoisted(() => vi.fn());
+vi.mock('../children', () => ({ createChild: nieuwHier }));
+
 const NOOR = { id: 'me', naam: 'Noor', groep: 5, groepSchooljaar: 2026 } as ProfileRecord;
 const NU = new Date('2026-09-23T12:00:00.000Z');
 
@@ -42,10 +52,14 @@ function diensten(vervoer: Partial<Vervoer> = {}, ouderId: string | null = 'oude
     kinderen: vi.fn(async () => ({ ok: true as const, waarde: [] })),
     neemOp: vi.fn(async () => ({
       ok: true as const,
-      waarde: { id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345' },
+      waarde: { id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: null },
     })),
     haalWeg: vi.fn(async () => ({ ok: true as const, waarde: null })),
     stuur: vi.fn(async () => ({ ok: true as const, waarde: null })),
+    haal: vi.fn(async () => ({
+      ok: true as const,
+      waarde: { voortgang: [], sessies: [], pogingen: [], diplomas: [], instellingen: [] },
+    })),
     ...vervoer,
   };
   const d: OvernameDiensten = {
@@ -68,6 +82,7 @@ describe('een kind meenemen', () => {
         kindId: 'server-noor',
         ouderId: 'ouder-1',
         verstuurdOp: NU.toISOString(),
+        opgehaaldOp: NU.toISOString(),
       },
     });
     expect(vervoer.neemOp).toHaveBeenCalledWith('token', { voornaam: 'Noor', groep: 5 });
@@ -101,6 +116,7 @@ describe('een kind meenemen', () => {
       kindId: 'van-een-ander',
       ouderId: 'ouder-2',
       verstuurdOp: '2026-01-01T00:00:00.000Z',
+      opgehaaldOp: null,
     });
     const { d, vervoer } = diensten();
     await neemMee(NOOR, d, NU);
@@ -127,6 +143,7 @@ describe('opnieuw versturen en weghalen', () => {
     kindId: 'server-noor',
     ouderId: 'ouder-1',
     verstuurdOp: null,
+    opgehaaldOp: null,
   };
 
   it('verstuurt opnieuw zonder een kind te maken', async () => {
@@ -157,13 +174,13 @@ describe('opnieuw versturen en weghalen', () => {
     const { d } = diensten({
       kinderen: vi.fn(async () => ({
         ok: true as const,
-        waarde: [{ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345' }],
+        waarde: [{ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: null }],
       })),
     });
     expect(await gezinsstand(d)).toEqual({
       ok: true,
       ouderId: 'ouder-1',
-      inAccount: [{ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345' }],
+      inAccount: [{ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: null }],
       koppelingen: [KOPPELING],
     });
   });
@@ -174,5 +191,106 @@ describe('opnieuw versturen en weghalen', () => {
     const stand = await gezinsstand(d);
     expect(stand.ok && stand.koppelingen).toEqual([]);
     expect(opgeslagen.has('me')).toBe(false);
+  });
+});
+
+/**
+ * Het tweede apparaat (ADR-189): een kind uit het account hier zetten, of
+ * koppelen aan een kind dat hier al oefent — en daarna beide kanten op bijwerken.
+ */
+describe('een tweede apparaat', () => {
+  const NOOR_DAAR = { id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: 6 };
+
+  beforeEach(() => {
+    opApparaat.mockClear();
+    nieuwHier.mockReset();
+  });
+
+  it('zet een kind uit het account hier neer, en haalt alles op', async () => {
+    nieuwHier.mockResolvedValue({ id: 'lokaal-noor', naam: 'Noor' });
+    const { d, vervoer } = diensten();
+    const uit = await zetKindHier(NOOR_DAAR, d, NU);
+
+    expect(nieuwHier).toHaveBeenCalledWith('Noor', 6);
+    expect(vervoer.haal).toHaveBeenCalledWith('token', 'server-noor', undefined);
+    expect(opApparaat).toHaveBeenCalledWith(expect.anything(), 'lokaal-noor');
+    expect(uit).toEqual({
+      ok: true,
+      koppeling: {
+        lokaalId: 'lokaal-noor',
+        kindId: 'server-noor',
+        ouderId: 'ouder-1',
+        verstuurdOp: NU.toISOString(),
+        opgehaaldOp: NU.toISOString(),
+      },
+    });
+    // Hier stond niets, dus er ging niets heen.
+    expect(vervoer.stuur).not.toHaveBeenCalled();
+  });
+
+  it('zegt het als er hier geen kind meer bij kan', async () => {
+    nieuwHier.mockResolvedValue(null);
+    const { d, vervoer } = diensten();
+    expect(await zetKindHier(NOOR_DAAR, d, NU)).toEqual({ ok: false, reden: 'vol' });
+    expect(vervoer.haal).not.toHaveBeenCalled();
+    expect(opgeslagen.size).toBe(0);
+  });
+
+  it('koppelt een kind van hier aan een kind in het account: eerst ophalen, dan alles versturen', async () => {
+    const { d, vervoer } = diensten();
+    const uit = await koppelAan(NOOR, NOOR_DAAR, d, NU);
+    expect(uit.ok).toBe(true);
+    expect(opApparaat).toHaveBeenCalledWith(expect.anything(), 'me');
+    expect(vervoer.haal).toHaveBeenCalledWith('token', 'server-noor', undefined);
+    expect(vervoer.stuur).toHaveBeenCalledWith('token', PAKKET);
+    expect(vervoer.neemOp).not.toHaveBeenCalled();
+    expect(opgeslagen.get('me')).toMatchObject({
+      kindId: 'server-noor',
+      verstuurdOp: NU.toISOString(),
+      opgehaaldOp: NU.toISOString(),
+    });
+  });
+
+  it('werkt bij door eerst te versturen en dan op te halen, allebei sinds de vorige keer', async () => {
+    const volgorde: string[] = [];
+    const { d, vervoer } = diensten({
+      stuur: vi.fn(async () => {
+        volgorde.push('stuur');
+        return { ok: true as const, waarde: null };
+      }),
+      haal: vi.fn(async () => {
+        volgorde.push('haal');
+        return {
+          ok: true as const,
+          waarde: { voortgang: [], sessies: [], pogingen: [], diplomas: [], instellingen: [] },
+        };
+      }),
+    });
+    const koppeling = {
+      lokaalId: 'me',
+      kindId: 'server-noor',
+      ouderId: 'ouder-1',
+      verstuurdOp: '2026-09-23T10:00:00.000Z',
+      opgehaaldOp: '2026-09-23T11:00:00.000Z',
+    };
+    expect((await werkBij(koppeling, d, NU)).ok).toBe(true);
+    expect(volgorde).toEqual(['stuur', 'haal']);
+    // Vijf minuten marge, zoals `sindsVan` zegt.
+    expect(vervoer.haal).toHaveBeenCalledWith('token', 'server-noor', '2026-09-23T10:55:00.000Z');
+  });
+
+  it('haalt niet op als het versturen al misging', async () => {
+    const { d, vervoer } = diensten({
+      stuur: vi.fn(async () => ({ ok: false as const, reden: 'geen-verbinding' as const })),
+    });
+    const koppeling = {
+      lokaalId: 'me',
+      kindId: 'server-noor',
+      ouderId: 'ouder-1',
+      verstuurdOp: null,
+      opgehaaldOp: null,
+    };
+    expect(await werkBij(koppeling, d, NU)).toEqual({ ok: false, reden: 'geen-verbinding' });
+    expect(vervoer.haal).not.toHaveBeenCalled();
   });
 });

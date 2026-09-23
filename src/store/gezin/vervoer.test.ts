@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Pakket } from './pakket';
-import { PER_VERZOEK, vervoer } from './vervoer';
+import { PER_BLADZIJDE, PER_VERZOEK, vervoer } from './vervoer';
 
 /**
  * Het transport naar het gezinsproject (ADR-187), tegen een nagemaakte `fetch`.
@@ -112,7 +112,7 @@ describe('opnemen en weghalen', () => {
     });
     expect(await vervoer.neemOp('t', { voornaam: 'Noor', groep: 5 })).toEqual({
       ok: true,
-      waarde: { id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345' },
+      waarde: { id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: null },
     });
     expect(verzoeken[0]?.url).toBe('https://gezin.test/functions/v1/kind-beheer');
     expect(JSON.parse(String(verzoeken[0]?.init.body))).toEqual({
@@ -135,7 +135,7 @@ describe('opnemen en weghalen', () => {
     nepFetch(() => 200, [{ id: 'a', voornaam: 'Noor', inlogcode: 'ABCD2345' }, { rommel: true }]);
     expect(await vervoer.kinderen('t')).toEqual({
       ok: true,
-      waarde: [{ id: 'a', voornaam: 'Noor', inlogcode: 'ABCD2345' }],
+      waarde: [{ id: 'a', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: null }],
     });
   });
 
@@ -144,5 +144,52 @@ describe('opnemen en weghalen', () => {
     const verzoeken = nepFetch();
     expect(await vervoer.kinderen('t')).toEqual({ ok: false, reden: 'niet-ingesteld' });
     expect(verzoeken).toHaveLength(0);
+  });
+});
+
+describe('ophalen', () => {
+  it('haalt per tabel alles van één kind, op volgorde', async () => {
+    const verzoeken = nepFetch(() => 200, []);
+    const uit = await vervoer.haal('t', 'server-noor');
+    expect(uit).toEqual({
+      ok: true,
+      waarde: { voortgang: [], sessies: [], pogingen: [], diplomas: [], instellingen: [] },
+    });
+    expect(verzoeken.map((v) => new URL(v.url).pathname)).toEqual([
+      '/rest/v1/voortgang',
+      '/rest/v1/sessies',
+      '/rest/v1/pogingen',
+      '/rest/v1/kind_diplomas',
+      '/rest/v1/instellingen',
+    ]);
+    const eerste = new URL(verzoeken[0]?.url ?? '');
+    expect(eerste.searchParams.get('kind_id')).toBe('eq.server-noor');
+    expect(eerste.searchParams.get('laatste_review')).toBeNull();
+  });
+
+  it('haalt sinds een moment, en pogingen twee uur eerder', async () => {
+    const verzoeken = nepFetch(() => 200, []);
+    await vervoer.haal('t', 'k', '2026-09-22T12:00:00.000Z');
+    const url = (i: number) => new URL(verzoeken[i]?.url ?? '');
+    expect(url(0).searchParams.get('laatste_review')).toBe('gte.2026-09-22T12:00:00.000Z');
+    expect(url(1).searchParams.get('geeindigd')).toBe('gte.2026-09-22T12:00:00.000Z');
+    expect(url(2).searchParams.get('tijdstip')).toBe('gte.2026-09-22T10:00:00.000Z');
+  });
+
+  it('bladert door tot er minder dan een volle bladzijde komt', async () => {
+    let keer = 0;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        const pad = new URL(url).pathname;
+        const vol = pad === '/rest/v1/pogingen' && keer++ < 2;
+        const rijen = Array.from({ length: vol ? PER_BLADZIJDE : 3 }, (_, i) => ({
+          id: `${keer}-${i}`,
+        }));
+        return new Response(JSON.stringify(rijen), { status: 200 });
+      }),
+    );
+    const uit = await vervoer.haal('t', 'k');
+    expect(uit.ok && uit.waarde.pogingen).toHaveLength(PER_BLADZIJDE * 2 + 3);
   });
 });

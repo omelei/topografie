@@ -4,9 +4,12 @@ import {
   koppelingenVan,
   leesKoppeling,
   schrijfKoppeling,
+  sindsVan,
   vergeetKoppeling,
   type Koppeling,
 } from './koppeling';
+import { createChild } from '../children';
+import { zetOpApparaat } from './ophalen';
 import { leesPakket } from './pakket';
 import type { ServerKind, Vervoer, VervoerFout } from './vervoer';
 
@@ -27,11 +30,22 @@ import type { ServerKind, Vervoer, VervoerFout } from './vervoer';
  * lokale sleutel (ADR-175); de koppeling is het enige wat erbij komt.
  */
 
-export type OvernameFout = VervoerFout | 'niet-ingelogd';
+export type OvernameFout =
+  | VervoerFout
+  | 'niet-ingelogd'
+  /** Er kan op dit apparaat geen kind meer bij (ADR-173). */
+  | 'vol';
 
 export type OvernameUitkomst =
   | { readonly ok: true; readonly koppeling: Koppeling }
   | { readonly ok: false; readonly reden: OvernameFout };
+
+/**
+ * Eén handeling van een scherm, met een naam: `copy.test.ts` zoekt zichtbare
+ * tekst met een regex die `=> Promise<…>` in een `.tsx` aanziet voor tekst
+ * tussen twee tags (zie `useAccount.ts`). Hier, in een `.ts`, is dat geen tekst.
+ */
+export type OvernameStap = () => Promise<OvernameUitkomst>;
 
 export interface OvernameDiensten {
   readonly vervoer: Vervoer;
@@ -64,6 +78,9 @@ export async function neemMee(
       kindId: nieuw.waarde.id,
       ouderId: ouder.ouderId,
       verstuurdOp: null,
+      // Een kind dat net nieuw in het account staat, heeft daar niets wat hier
+      // ontbreekt: ophalen hoeft pas vanaf nu.
+      opgehaaldOp: nu.toISOString(),
     };
     await schrijfKoppeling(koppeling);
   }
@@ -85,24 +102,6 @@ export async function verstuurOpnieuw(
   return verstuur(koppeling, ouder.token, diensten, nu);
 }
 
-/**
- * Hoeveel eerder dan de vorige keer er opnieuw gekeken wordt (ADR-188).
- *
- * Het moment van de vorige keer is genomen vóór er gelezen werd, dus in
- * principe is nul genoeg. Vijf minuten vangt wat daar tussen kan zitten — een
- * ronde die afliep terwijl er verstuurd werd, een klok die even verspringt —
- * en kost niets: wat twee keer aankomt, wordt op de server overgeslagen of
- * samengevoegd.
- */
-const MARGE_MS = 5 * 60_000;
-
-function sindsVan(koppeling: Koppeling): string | undefined {
-  if (koppeling.verstuurdOp === null) return undefined;
-  const moment = new Date(koppeling.verstuurdOp).getTime();
-  if (Number.isNaN(moment)) return undefined;
-  return new Date(moment - MARGE_MS).toISOString();
-}
-
 async function verstuur(
   koppeling: Koppeling,
   token: string,
@@ -111,13 +110,112 @@ async function verstuur(
 ): Promise<OvernameUitkomst> {
   // Is het nog nooit helemaal gelukt, dan alles; anders wat er sindsdien bij
   // kwam (ADR-188).
-  const pakket = await leesPakket(koppeling, nu, sindsVan(koppeling));
+  const pakket = await leesPakket(koppeling, nu, sindsVan(koppeling.verstuurdOp));
   const gestuurd = await diensten.vervoer.stuur(token, pakket);
   if (!gestuurd.ok) return gestuurd;
 
   const klaar = { ...koppeling, verstuurdOp: nu.toISOString() };
   await schrijfKoppeling(klaar);
   return { ok: true, koppeling: klaar };
+}
+
+/**
+ * Ophalen wat andere apparaten van dit kind stuurden, en het hier samenvoegen
+ * (ADR-189). Alleen wat er sinds de vorige keer veranderde.
+ */
+async function haalOp(
+  koppeling: Koppeling,
+  token: string,
+  diensten: OvernameDiensten,
+  nu: Date,
+): Promise<OvernameUitkomst> {
+  const gehaald = await diensten.vervoer.haal(
+    token,
+    koppeling.kindId,
+    sindsVan(koppeling.opgehaaldOp),
+  );
+  if (!gehaald.ok) return gehaald;
+  await zetOpApparaat(gehaald.waarde, koppeling.lokaalId);
+
+  const klaar = { ...koppeling, opgehaaldOp: nu.toISOString() };
+  await schrijfKoppeling(klaar);
+  return { ok: true, koppeling: klaar };
+}
+
+/**
+ * Bijwerken, beide kanten op (ADR-188, ADR-189): eerst versturen wat hier bij
+ * kwam, dan ophalen wat elders bij kwam. Na elke ronde en bij het openen van
+ * de app, vanuit `bijhouden.ts`.
+ */
+export async function werkBij(
+  koppeling: Koppeling,
+  diensten: OvernameDiensten,
+  nu = new Date(),
+): Promise<OvernameUitkomst> {
+  const ouder = await diensten.ouder();
+  if (ouder === null) return { ok: false, reden: 'niet-ingelogd' };
+  const gestuurd = await verstuur(koppeling, ouder.token, diensten, nu);
+  if (!gestuurd.ok) return gestuurd;
+  return haalOp(gestuurd.koppeling, ouder.token, diensten, nu);
+}
+
+/**
+ * Een kind uit het account op dit apparaat zetten, als nieuw kind hier
+ * (ADR-189). Het tweede apparaat van een gezin: de laptop naast de iPad.
+ */
+export async function zetKindHier(
+  kind: ServerKind,
+  diensten: OvernameDiensten,
+  nu = new Date(),
+): Promise<OvernameUitkomst> {
+  const ouder = await diensten.ouder();
+  if (ouder === null) return { ok: false, reden: 'niet-ingelogd' };
+
+  const groep = kind.groep !== null && kind.groep >= 3 && kind.groep <= 8 ? kind.groep : undefined;
+  const hier = await createChild(kind.voornaam, groep as Parameters<typeof createChild>[1]);
+  if (hier === null) return { ok: false, reden: 'vol' };
+
+  const koppeling: Koppeling = {
+    lokaalId: hier.id,
+    kindId: kind.id,
+    ouderId: ouder.ouderId,
+    // Hier stond nog niets, dus er is niets te versturen.
+    verstuurdOp: nu.toISOString(),
+    opgehaaldOp: null,
+  };
+  await schrijfKoppeling(koppeling);
+  return haalOp(koppeling, ouder.token, diensten, nu);
+}
+
+/**
+ * Een kind dat hier al oefent, koppelen aan een kind dat al in het account
+ * staat (ADR-189, §9: "samenvoegen met een bestaand kind").
+ *
+ * Nooit vanzelf: twee keer Noor is niet per se één Noor, dus de ouder kiest.
+ * Eerst ophalen en hier samenvoegen, dan alles van hier versturen; op de server
+ * voegen de triggers van `0003` het samen. Daarna is het één kind met één stel
+ * dozen, op beide apparaten.
+ */
+export async function koppelAan(
+  hier: ProfileRecord,
+  kind: ServerKind,
+  diensten: OvernameDiensten,
+  nu = new Date(),
+): Promise<OvernameUitkomst> {
+  const ouder = await diensten.ouder();
+  if (ouder === null) return { ok: false, reden: 'niet-ingelogd' };
+
+  const koppeling: Koppeling = {
+    lokaalId: hier.id,
+    kindId: kind.id,
+    ouderId: ouder.ouderId,
+    verstuurdOp: null,
+    opgehaaldOp: null,
+  };
+  await schrijfKoppeling(koppeling);
+  const gehaald = await haalOp(koppeling, ouder.token, diensten, nu);
+  if (!gehaald.ok) return gehaald;
+  return verstuur(gehaald.koppeling, ouder.token, diensten, nu);
 }
 
 /**

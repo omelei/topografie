@@ -9,10 +9,13 @@ import type { Koppeling } from '@/store/gezin/koppeling';
 import {
   gezinsstand,
   haalUitAccount,
+  koppelAan,
   laadOvernameDiensten,
   neemMee,
   verstuurOpnieuw,
+  zetKindHier,
   type OvernameFout,
+  type OvernameStap,
 } from '@/store/gezin/overname';
 import type { ServerKind } from '@/store/gezin/vervoer';
 
@@ -30,17 +33,21 @@ import type { ServerKind } from '@/store/gezin/vervoer';
  * en daarom is er een schakelaar die de ouder zelf omzet vóór de knop werkt.
  * Het moment zelf legt de database vast (`0002_toestemming.sql`).
  *
- * **Wat het nog niet belooft.** Het meenemen verstuurt wat er staat, en daarna
- * gaat na elke ronde mee wat er bij kwam (ADR-188). Het terughalen op een ander
- * apparaat is de volgende stap (3c). De inlogcode staat er daarom nog niet: er
- * is nog nergens een plek om hem te gebruiken.
+ * **Een tweede apparaat** (ADR-189). Een kind dat in het account staat maar
+ * niet hier, zet de ouder hier neer, of koppelt het aan een kind dat hier al
+ * oefent. Nooit vanzelf: twee keer Noor is niet per se één Noor (§9).
+ *
+ * **Wat het nog niet belooft.** Na elke ronde gaat beide kanten op mee wat er
+ * bij kwam (ADR-188, ADR-189). Zelf inloggen met een code, voor een apparaat
+ * zonder ouder erbij, is de volgende stap; de inlogcode staat er daarom nog
+ * niet.
  */
-export function Overname() {
+export function Overname({ onKinderenVeranderd }: { readonly onKinderenVeranderd?: () => void }) {
   const { sessie } = useAccount();
   if (sessie === null) return null;
   // Per ouder een eigen stand: wie uitlogt en een ander laat inloggen, hoort
   // niet de kinderen van de vorige te zien.
-  return <Blok key={sessie.gebruikerId} />;
+  return <Blok key={sessie.gebruikerId} onKinderenVeranderd={onKinderenVeranderd} />;
 }
 
 type Stand =
@@ -58,6 +65,7 @@ const FOUT: Record<OvernameFout, TranslationKey> = {
   geweigerd: 'overname.fout.geweigerd',
   'niet-ingesteld': 'overname.fout.niet-ingesteld',
   'niet-ingelogd': 'overname.fout.niet-ingelogd',
+  vol: 'overname.fout.vol',
 };
 
 function namen(lijst: readonly string[]): string {
@@ -65,7 +73,11 @@ function namen(lijst: readonly string[]): string {
   return `${lijst.slice(0, -1).join(', ')} ${t('overname.en')} ${lijst[lijst.length - 1]}`;
 }
 
-function Blok() {
+function Blok({
+  onKinderenVeranderd,
+}: {
+  readonly onKinderenVeranderd?: (() => void) | undefined;
+}) {
   const [stand, setStand] = useState<Stand>({ soort: 'laden' });
   const [versie, setVersie] = useState(0);
 
@@ -116,7 +128,14 @@ function Blok() {
           </button>
         </div>
       ) : stand.soort === 'klaar' ? (
-        <Inhoud stand={stand} onVeranderd={opnieuwLezen} />
+        <Inhoud
+          stand={stand}
+          onVeranderd={opnieuwLezen}
+          onKinderenVeranderd={() => {
+            opnieuwLezen();
+            onKinderenVeranderd?.();
+          }}
+        />
       ) : null}
     </section>
   );
@@ -125,9 +144,11 @@ function Blok() {
 function Inhoud({
   stand,
   onVeranderd,
+  onKinderenVeranderd,
 }: {
   readonly stand: Extract<Stand, { soort: 'klaar' }>;
   readonly onVeranderd: () => void;
+  readonly onKinderenVeranderd: () => void;
 }) {
   const gekoppeld = new Map(stand.koppelingen.map((k) => [k.lokaalId, k]));
   const hier = stand.kinderen.filter((kind) => gekoppeld.has(kind.id));
@@ -155,9 +176,16 @@ function Inhoud({
       {mee.length > 0 ? <Meenemen kinderen={mee} onVeranderd={onVeranderd} /> : null}
 
       {alleenDaar.length > 0 ? (
-        <p className="tk-hulp">
-          {t('overname.alleenDaar', { namen: namen(alleenDaar.map((k) => k.voornaam)) })}
-        </p>
+        <ul className="tk-lijst" aria-label={t('overname.alleenDaarTitel')}>
+          {alleenDaar.map((kind) => (
+            <AlleenInAccount
+              key={kind.id}
+              kind={kind}
+              losHier={mee}
+              onVeranderd={onKinderenVeranderd}
+            />
+          ))}
+        </ul>
       ) : null}
     </>
   );
@@ -379,5 +407,87 @@ function Meenemen({
         </p>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * Een kind dat in het account staat maar niet op dit apparaat (ADR-189).
+ *
+ * Twee wegen, en de ouder kiest. Staat het kind hier nog niet, dan komt het
+ * erbij met alles wat het op het andere apparaat deed. Oefent het hier al —
+ * onder dezelfde naam of een andere — dan wordt het daaraan gekoppeld, en
+ * worden de twee samengevoegd met de regels van ADR-155.
+ */
+function AlleenInAccount({
+  kind,
+  losHier,
+  onVeranderd,
+}: {
+  readonly kind: ServerKind;
+  readonly losHier: readonly ProfileRecord[];
+  readonly onVeranderd: () => void;
+}) {
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<OvernameFout | null>(null);
+
+  async function doe(stap: OvernameStap) {
+    setBezig(true);
+    setFout(null);
+    const uit = await stap();
+    setBezig(false);
+    if (uit.ok) onVeranderd();
+    else setFout(uit.reden);
+  }
+
+  return (
+    <li className="flex flex-col gap-3 p-4">
+      <p className="flex items-center gap-3">
+        <span className="tk-plaat tk-plaat-neutraal">
+          <PupilIcon size={24} />
+        </span>
+        <span className="flex flex-col">
+          <span className="tk-lijstrij-titel">{kind.voornaam}</span>
+          <span className="tk-lijstrij-regel">{t('overname.nietHier')}</span>
+        </span>
+      </p>
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="tk-button tk-button-secondary"
+          disabled={bezig}
+          onClick={() => void doe(async () => zetKindHier(kind, await laadOvernameDiensten()))}
+        >
+          {bezig ? t('account.bezig') : t('overname.zetHier', { naam: kind.voornaam })}
+        </button>
+      </div>
+
+      {losHier.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <p className="tk-hulp">{t('overname.ofKoppel', { naam: kind.voornaam })}</p>
+          <div className="flex flex-wrap gap-3">
+            {losHier.map((hier) => (
+              <button
+                key={hier.id}
+                type="button"
+                className="tk-button tk-button-tertiary"
+                disabled={bezig}
+                onClick={() =>
+                  void doe(async () => koppelAan(hier, kind, await laadOvernameDiensten()))
+                }
+              >
+                {t('overname.koppel', { hier: hier.naam, daar: kind.voornaam })}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {fout ? (
+        <p role="alert" className="text-lopend">
+          {t(FOUT[fout])}
+        </p>
+      ) : null}
+    </li>
   );
 }

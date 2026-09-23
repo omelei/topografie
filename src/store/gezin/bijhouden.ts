@@ -1,13 +1,14 @@
 import { leesSessie } from '../account/bewaren';
 import { koppelingenVan } from './koppeling';
-import { laadOvernameDiensten, verstuurOpnieuw, type OvernameDiensten } from './overname';
+import { laadOvernameDiensten, werkBij, type OvernameDiensten } from './overname';
 
 /**
  * Wat een kind in een account oefent, gaat vanzelf mee (ADR-188).
  *
  * Na elke ronde en bij het openen van de app: per kind op dit apparaat dat in
  * het account van de ingelogde ouder staat, wat er sinds de vorige keer bij
- * kwam. Het kind merkt er niets van. Er is geen knop, geen melding en geen
+ * kwam — beide kanten op: eerst versturen, dan ophalen wat een ander apparaat
+ * stuurde (ADR-189). Het kind merkt er niets van. Er is geen knop, geen melding en geen
  * wachten: lukt het niet — geen verbinding, een verlopen sessie — dan blijft
  * het moment van de vorige keer staan, en gaat het de volgende keer mee.
  *
@@ -41,6 +42,6 @@ async function werk(diensten?: OvernameDiensten): Promise<void> {
   for (const koppeling of koppelingen) {
     // Faalt het voor één kind, dan het volgende toch; wat faalde, komt de
     // volgende keer vanzelf opnieuw.
-    await verstuurOpnieuw(koppeling, echt).catch(() => undefined);
+    await werkBij(koppeling, echt).catch(() => undefined);
   }
 }
