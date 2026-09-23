@@ -213,6 +213,29 @@ describe('the colours outside the styleguide’s table', () => {
   });
 });
 
+/** The hue of a colour, in degrees round the wheel. */
+function hue(hex: string): number {
+  const [r, g, b] = channels(hex).map((value) => value / 255) as [number, number, number];
+  const max = Math.max(r, g, b);
+  const d = max - Math.min(r, g, b);
+  if (d === 0) return 0;
+  const h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return (h * 60 + 360) % 360;
+}
+
+/**
+ * A subject may not wear the red that means wrong (ADR-184). Inside a subject
+ * the chosen tile is the subject's colour, so a subject within 30 degrees of
+ * fout would make "chosen" and "wrong" one colour apart from their shapes.
+ * The first tijdvakken pink sat 16 degrees away; its magenta sits 40.
+ */
+describe('the subjects keep clear of wrong', () => {
+  it.each(MODULES.map((name) => [name] as const))('%s is 30 degrees or more from fout', (name) => {
+    const verschil = Math.abs(hue(token(name)) - hue(token('fout')));
+    expect(Math.min(verschil, 360 - verschil)).toBeGreaterThanOrEqual(30);
+  });
+});
+
 /**
  * The ground a page stands on. ADR-120 gave a module's page a soft version of
  * its own tint; §01 of the styleguide takes that back — a page-wide subject

@@ -13,7 +13,7 @@
     taal: { f: '#B15BE6', d: '#7E2FB3', t: '#F3E3FC', n: 'Taal' },
     klok: { f: '#5C5FE6', d: '#3D3FBF', t: '#E6E7FF', n: 'Klok' },
     vlaggen: { f: '#F5A01A', d: '#935700', t: '#FFF0D6', n: 'Vlaggen' },
-    tijdvakken: { f: '#EE5A9E', d: '#B42468', t: '#FDE4F0', n: 'Tijdvakken' },
+    tijdvakken: { f: '#D65BC6', d: '#9C2A8C', t: '#FAE3F6', n: 'Tijdvakken' },
   };
   window.LEER_VAK = VAK;
 
@@ -295,7 +295,7 @@
   customElements.define('leer-icoon', Icoon);
 
   /* ---------- Feest: sterren/confetti uit een element ---------- */
-  const CONF = ['#FF6A4D', '#FFC93C', '#12B3A0', '#2E8BF2', '#B15BE6', '#EE5A9E'];
+  const CONF = ['#FF6A4D', '#FFC93C', '#12B3A0', '#2E8BF2', '#B15BE6', '#D65BC6'];
   window.leerFeest = function (el, o) {
     o = o || {}; if (!el || window.leerKalm()) return;
     const r = el.getBoundingClientRect(); const x0 = r.left + r.width * (o.ox ?? 0.5), y0 = r.top + r.height * (o.oy ?? 0.5);
