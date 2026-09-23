@@ -624,8 +624,12 @@ export function ModuleScreen({
               <button
                 type="button"
                 className="tk-tegel"
+                // Zonder code geen aantal: hoeveel je fout had is een telling over
+                // rondes heen, en dat is voortgang (ADR-192).
                 aria-label={metPremium(
-                  `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`,
+                  actief
+                    ? `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`
+                    : t('choose.fouten'),
                   true,
                   actief,
                 )}
@@ -799,6 +803,12 @@ export function ModuleScreen({
         {onderwerp?.id === 'tafels' ? (
           <Tafeldiplomas
             onKies={(tafel) => {
+              // Een diploma halen is premium (ADR-192): zonder code eerst de
+              // vraag aan de ouders, net als de diplomategel zelf.
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(tafel);
               setFormId('tafeldiploma');
               setToetsstand(false);
@@ -811,6 +821,10 @@ export function ModuleScreen({
         {module.id === 'vlaggen' ? (
           <VlagDiplomas
             onKies={(deel) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(vlagDiplomaSet(deel));
               setFormId('vlag-diploma');
               setToetsstand(false);
@@ -824,6 +838,10 @@ export function ModuleScreen({
         {module.id === 'klok' ? (
           <KlokDiplomas
             onKies={(stap) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(stap);
               setFormId('klok-diploma');
               setToetsstand(false);
@@ -834,6 +852,10 @@ export function ModuleScreen({
         {module.id === 'topo' ? (
           <TopoDiplomas
             onKies={(kaart) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(kaart);
               setFormId('topo-diploma');
               setToetsstand(false);
@@ -855,6 +877,10 @@ export function ModuleScreen({
             titel={t(module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle')}
             sets={setdiplomas}
             onKies={(setId) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(setId);
               setFormId(module.id === 'woorden' ? 'taal-diploma' : 'reken-diploma');
               setToetsstand(false);

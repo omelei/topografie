@@ -126,13 +126,17 @@ export function mailVoorCode(input: {
 }): { readonly onderwerp: string; readonly tekst: string; readonly html: string } {
   const code = codeVoorMens(input.code);
   const tot = leesbareDatum(input.geldigTot);
+  // De code vult een ouder in op de ouderpagina (ADR-173), niet op de
+  // premiumpagina. Het adres van de premiumpagina staat in de configuratie;
+  // de ouderpagina ligt ernaast.
+  const ouderUrl = input.premiumUrl.replace(/\/premium\/?$/, '/ouder');
 
   const tekst = [
     'Bedankt. Hier is je code voor leer.nu premium:',
     '',
     `    ${code}`,
     '',
-    `Vul hem in op ${input.premiumUrl}. Hij geldt tot en met ${tot},`,
+    `Vul hem in op de ouderpagina: ${ouderUrl}. Hij geldt tot en met ${tot},`,
     `voor alle kinderen thuis, op maximaal ${MAX_APPARATEN} apparaten.`,
     '',
     'Bewaar deze mail: de code staat nergens anders. Wij bewaren hem niet in',
@@ -144,7 +148,7 @@ export function mailVoorCode(input: {
   const html = [
     '<p>Bedankt. Hier is je code voor leer.nu premium:</p>',
     `<p style="font-size:24px;font-weight:700;letter-spacing:1px">${code}</p>`,
-    `<p>Vul hem in op <a href="${input.premiumUrl}">${input.premiumUrl}</a>.`,
+    `<p>Vul hem in op de ouderpagina: <a href="${ouderUrl}">${ouderUrl}</a>.`,
     ` Hij geldt tot en met ${tot}, voor alle kinderen thuis,`,
     ` op maximaal ${MAX_APPARATEN} apparaten.</p>`,
     '<p>Bewaar deze mail: de code staat nergens anders. Wij bewaren hem niet in',

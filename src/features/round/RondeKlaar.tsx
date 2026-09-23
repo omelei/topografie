@@ -354,9 +354,9 @@ const DRIE_WEKEN_MS = 21 * 86_400_000;
  * What is left of this subject in three weeks, under the round's own numbers
  * (ADR-122).
  *
- * Free, and on purpose: it is the one sentence in this product that is about
- * what happens if you do nothing, and a forecast a family cannot see is a
- * promise they cannot check.
+ * Free from ADR-122 until ADR-192, as the one sentence about what happens if you
+ * do nothing. Since ADR-192 it is shown with a code only: a forecast over the
+ * whole set is keeping track, and that is premium.
  *
  * **The whole set, not the ten questions just asked.** A round's own items were
  * answered a minute ago and would forecast at very nearly a hundred per cent,

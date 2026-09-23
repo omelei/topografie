@@ -14,14 +14,17 @@ import { t } from '@/i18n';
  * Everything else is premium: finding the place, the clock or the flag that
  * goes with a name (zoeken), typing the answer, the bliksemronde and overleven,
  * the oefentoets, every diploma — the tafeldiploma too, which ADR-122 had left
- * free — the child's own collected mistakes, and more than one child. Those
- * are gated here and in `App`, where a round starts, so a way into a round
- * from anywhere — a favourite, the history, an unfinished round — meets the
- * same rule; the rest is gated where it is drawn, each with the same slot
- * (`PremiumSlot`).
+ * free — the child's own collected mistakes, and the child's own word lists.
+ * Those are gated here and in `App`, where a round starts, so a way into a
+ * round from anywhere meets the same rule; the rest is gated where it is drawn,
+ * each with the same slot (`PremiumSlot`). The rows on Vandaag and an
+ * unfinished round turn a premium way into the set's first free way instead of
+ * a lock (`vrijeVorm`).
  *
- * What stays free besides practising: "klaar voor vandaag" (ADR-149), and the
- * ring on every diploma, so a child sees what there is to earn (ADR-192).
+ * What stays free besides practising: the result of the round just played,
+ * "Herhaal je fouten", "klaar voor vandaag" (ADR-149), finishing a round, the
+ * way back after a break, three children on a device (ADR-173), and the ring on
+ * every diploma, so a child sees what there is to earn (ADR-192).
  */
 const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Ontdekken: the first meeting with an item, which asks nothing and so can
@@ -43,14 +46,22 @@ export function isPremiumVorm(id: ModeId): boolean {
 
 /**
  * A child's own collected list of mistakes, in any module: rekenen's `fouten`,
- * and `*-fouten`. Premium because it is a record kept across rounds.
+ * and `*-fouten`. Premium because it is a record kept across rounds. And the
+ * child's own word lists (the `eigen-lijsten` subject and its `taal-eigen-*`
+ * sets): the lists are made on Jij with premium, and without it the subject is
+ * a lock rather than a page whose only way is premium (ADR-192).
  *
  * Not to be confused with "Herhaal je fouten" on the result page, which is free
  * since ADR-122: that one asks about the round that just ended and nothing
  * else, so it belongs to the round rather than to the record.
  */
 export function isPremiumOnderwerp(id: string): boolean {
-  return id === 'fouten' || id.endsWith('-fouten');
+  return (
+    id === 'fouten' ||
+    id.endsWith('-fouten') ||
+    id === 'eigen-lijsten' ||
+    id.startsWith('taal-eigen-')
+  );
 }
 
 /**

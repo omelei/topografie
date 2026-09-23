@@ -8,7 +8,7 @@ export const WEEK_DAGEN = 7;
  *
  * De noemer onder "Dagen geoefend" (ADR-172). Hij stond in het weekbericht
  * (ADR-133), dat premium was; het is een feit over de week van het eigen kind,
- * en die zijn gratis (ADR-124). Tegen schooldagen en niet tegen zeven dagen: een
+ * en die waren gratis (ADR-124). Sinds ADR-192 staat hij alleen met een code. Tegen schooldagen en niet tegen zeven dagen: een
  * weekend is geen dag waarop een kind iets naliet (`kalender.ts`).
  *
  * Zonder vakanties zijn het er altijd vijf — zeven dagen op rij bevatten precies

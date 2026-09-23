@@ -255,7 +255,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen is gratis. Met premium blijft het hangen.',
+    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft het hangen.',
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
@@ -571,4 +571,34 @@ test.describe('doorsturen naar de ouder', () => {
     await expect(melding).toContainText('lukt niet op dit apparaat');
     await expect(melding.locator('.tk-adres')).toContainText('/premium');
   });
+});
+
+/**
+ * Zonder code leidt de eerste kaart op Vandaag niet naar een slot, en vraagt
+ * een diploma op een vakpagina eerst de ouders (ADR-192).
+ */
+test('without a code the first card starts a round, and a diploma asks the parents', async ({
+  page,
+}) => {
+  await signIn(page, 'Pim');
+
+  // De startkaarten zijn meerkeuze: gratis, dus geen vraag aan de ouders.
+  await page
+    .getByRole('button', { name: /Provincies/ })
+    .first()
+    .click();
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toHaveCount(0);
+
+  // Een diploma op de muur kiezen is premium.
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
+    .click();
+  await page
+    .getByRole('region', { name: 'Jouw tafeldiploma’s' })
+    .getByRole('button', { name: /^Tafel van 3/ })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toBeVisible();
 });

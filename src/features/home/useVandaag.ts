@@ -9,6 +9,8 @@ import {
 } from '@/game-core';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { formsFor } from '@/features/module/forms';
+import { EIGEN_DEEL } from '@/features/module/regios';
+import { taalDeelVan } from '@/content/loadTaal';
 import { voorrangVoor } from '@/features/module/groepen';
 import { startbareOnderdelen, type Gespeeld, type Onderdeel } from '@/features/module/onderdelen';
 import { loadItemStates } from '@/store/progress';
@@ -138,8 +140,29 @@ export function vormVoor(deel: Onderdeel, gespeeld: readonly Gespeeld[]): ModeId
     (ronde) => ronde.deel.setId === deel.setId && !isPremiumVorm(ronde.ronde.mode),
   );
   if (laatst) return laatst.ronde.mode;
+  return eersteVrijeVorm(deel);
+}
 
-  const vormen = formsFor(deel.moduleId, deel.setId);
+/**
+ * De eerste gratis manier die deze set aanbiedt (ADR-192).
+ *
+ * `formsFor` vraagt het deel en niet de set: bij Taal zijn werkwoorden en eigen
+ * lijsten elk een eigen rij manieren, en met de set-id kreeg elke taalset de
+ * manieren van spelling.
+ */
+export function eersteVrijeVorm(deel: Onderdeel): ModeId {
+  const taalDeel =
+    taalDeelVan(deel.setId) ?? (deel.setId.startsWith('taal-eigen-') ? EIGEN_DEEL : null);
+  const vormen = formsFor(deel.moduleId, taalDeel);
   const gratis = vormen.find((vorm) => !isPremiumVorm(vorm.id));
   return gratis?.id ?? vormen[0]!.id;
+}
+
+/**
+ * Zonder premium wordt een premiummanier de eerste gratis manier van die set
+ * (ADR-192). Voor de rijen op Vandaag: wat een kind vóór de grens zocht of
+ * typte, staat daar nog, en een kaart die op een slot uitloopt is geen kaart.
+ */
+export function vrijeVorm(deel: Onderdeel, mode: ModeId, premium: boolean): ModeId {
+  return premium || !isPremiumVorm(mode) ? mode : eersteVrijeVorm(deel);
 }

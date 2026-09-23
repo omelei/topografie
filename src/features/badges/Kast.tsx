@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ModeId } from '@/game-core';
 import { doelwitten, type Doelwit } from '@/features/home/doel';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
+import { PremiumLabel } from '@/features/module/PremiumLabel';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
@@ -119,7 +120,12 @@ export function Kast({
   return (
     <section className="flex flex-col gap-4" aria-label={t('kast.titel')}>
       <div className="flex flex-col gap-1">
-        <h2 className="tk-sectie">{t('kast.titel')}</h2>
+        <div className="tk-sectie">
+          <h2>{t('kast.titel')}</h2>
+          {/* Halen is premium (ADR-192), en de muren op de vakpagina's zeggen
+              dat ook in hun kop. */}
+          {premium ? null : <PremiumLabel hoorbaar />}
+        </div>
         <p className="text-lopend text-tekst-secundair">
           {gehaaldTotaal === 0
             ? t('kast.leeg')

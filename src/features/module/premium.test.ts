@@ -34,6 +34,7 @@ describe('premium', () => {
       // Every diploma, the tafeldiploma too.
       'tafeldiploma',
       'reken-diploma',
+      'taal-diploma',
       'vlag-diploma',
       'klok-diploma',
       'topo-diploma',
@@ -45,11 +46,20 @@ describe('premium', () => {
     }
   });
 
-  it("marks every module's collected list of mistakes and nothing else", () => {
-    for (const id of ['fouten', 'nl-fouten', 'wereld-fouten', 'klok-fouten', 'taal-sp-fouten']) {
+  it("marks every module's collected list of mistakes, the own word lists, and nothing else", () => {
+    for (const id of [
+      'fouten',
+      'nl-fouten',
+      'wereld-fouten',
+      'klok-fouten',
+      'taal-sp-fouten',
+      // De eigen woordenlijsten (ADR-192): het onderwerp en zijn sets.
+      'eigen-lijsten',
+      'taal-eigen-abc123',
+    ]) {
       expect(isPremiumOnderwerp(id), id).toBe(true);
     }
-    for (const id of ['tafels', 'nl-mix', 'provincies']) {
+    for (const id of ['tafels', 'nl-mix', 'provincies', 'taal-sp-eiij']) {
       expect(isPremiumOnderwerp(id), id).toBe(false);
     }
   });

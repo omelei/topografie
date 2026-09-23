@@ -14,6 +14,7 @@ import type { ProfileRecord } from '@/store/db';
 import { Kast } from '@/features/badges/Kast';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
+import { usePremium } from '@/features/premium/usePremium';
 import { Statistieken } from '@/features/retention/Statistieken';
 import { AVATARS, avatarNaam, AvatarTeken } from './avatars';
 import { EigenLijsten } from './EigenLijsten';
@@ -79,6 +80,7 @@ export function ProfileScreen({
   readonly onProfiel?: ((profile: ProfileRecord) => void) | undefined;
 }) {
   const kast = useRef<HTMLDivElement>(null);
+  const { actief: premium } = usePremium();
 
   // Met premium staat "Wie oefent er?" boven de kast, dus is dit nog een sprong;
   // zonder is het er een van niets.
@@ -98,7 +100,9 @@ export function ProfileScreen({
             (ADR-172). */}
         <header className="tk-etalage">
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
-          <p className="tk-etalage-tekst text-lopend">{t('you.intro', { naam: profile.naam })}</p>
+          <p className="tk-etalage-tekst text-lopend">
+            {t(premium ? 'you.intro' : 'you.introZonderCode', { naam: profile.naam })}
+          </p>
         </header>
 
         {/* Wie je bent, bovenaan (ADR-177): je avatar, je naam, je groep en de

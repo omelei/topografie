@@ -165,6 +165,8 @@ export const NIET_AF_TE_MAKEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'vlag-diploma',
   'klok-diploma',
   'topo-diploma',
+  'reken-diploma',
+  'taal-diploma',
 ]);
 
 /** A round left longer ago than this is not unfinished any more; it is over. */

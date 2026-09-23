@@ -9,6 +9,7 @@ import {
   TOPO_FORMS,
   VLAG_FORMS,
   WERKWOORD_FORMS,
+  EIGEN_FORMS,
   formsFor,
   minutesFor,
   offeredForms,
@@ -141,6 +142,10 @@ describe('the ways of practising', () => {
         forms.map((form) => form.id).join(', '),
       ).toBe(true);
     }
+    // De ene uitzondering: de eigen woordenlijsten. Die pagina heeft alleen
+    // premiummanieren, en daarom is het onderwerp zelf een slot
+    // (`isPremiumOnderwerp`), zodat een kind zonder code er niet op uitkomt.
+    expect(EIGEN_FORMS.every((form) => isPremiumVorm(form.id))).toBe(true);
   });
 
   it('leaves ontdekken free, and the tafeldiploma premium, wherever they appear', () => {

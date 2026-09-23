@@ -12093,6 +12093,25 @@ er met een slot dat zegt wat het doet; wie doelen uitzette, ziet niets.
 **De premiumpagina volgt.** De vergelijking noemt per regel wat gratis en wat
 premium is, met dezelfde indeling: oefenen, belonen, onthouden.
 
+**Consistent door de hele app.** Na een controle van elke plek waar premium
+geldt:
+
+- Een diplomaring laat zonder code geen vulling en geen telling zien. Gehaald
+  blijft gehaald, en een diploma dat klaar is voor de toets zegt "Klaar voor de
+  toets, met premium": het moment waarop een kind het aan zijn ouders vraagt.
+- Een diploma kiezen op een vakpagina vraagt zonder code eerst de ouders, net
+  als de diplomategel.
+- De rijen op Vandaag (meest geoefend, recent, maak af) en de startkaarten
+  zetten een premiummanier zonder code om naar de eerste gratis manier van die
+  set (`vrijeVorm`). Afmaken is gratis; het gaat dan op die manier verder.
+- De knop naar de volgende ronde van het dagplan na een ronde staat er alleen
+  met premium, net als het plan zelf.
+- De eigen woordenlijsten zijn een premiumonderwerp: zonder code een slot, en
+  ze vallen uit het plan.
+- Een onbekende manier valt terug op een gratis manier, nooit op een betaalde.
+- De kassapagina, de bedankpagina en de mail met de code noemen wat premium nu
+  is, en sturen naar de ouderpagina om de code in te vullen.
+
 **Geen proefperiode.** Een omgekeerde proef (veertien dagen alles, daarna
 gratis) is gebouwd en op verzoek van de eigenaar teruggedraaid vóór hij live
 ging. Zijn redenering: een ouder die zijn kind wil laten oefenen, koopt meteen;

@@ -108,8 +108,10 @@ export const POPULAR_SHOWN = 5;
  * module has one card and none has two (ADR-118).
  */
 const STARTERS: readonly { readonly setId: string; readonly mode: ModeId }[] = [
-  { setId: 'nl-provincies', mode: 'wijs-aan' },
-  { setId: 'tafel-2', mode: 'som-typen' },
+  // Meerkeuze, want de eerste kaart hoort een kind zonder code niet naar een
+  // slot te sturen (ADR-192).
+  { setId: 'nl-provincies', mode: 'meerkeuze' },
+  { setId: 'tafel-2', mode: 'som-meerkeuze' },
   { setId: 'klok-heel', mode: 'klok-meerkeuze' },
   { setId: 'vlag-europa-bekend', mode: 'vlag-meerkeuze' },
   { setId: 'taal-sp-eiij', mode: 'taal-letters' },
@@ -1286,7 +1288,9 @@ export function starters(groep?: Groep): Populair[] {
  * `ModeId` is every way there is across both modules, because that is what a
  * session records. Anything a module does not recognise falls back to the way
  * that module begins — which is never wrong, only sometimes not the one that
- * was asked for.
+ * was asked for. That way is a free one (ADR-192): the premium check in `App`
+ * looks at the mode before it is narrowed, so a fallback must never open more
+ * than what was checked.
  */
 const PRACTICE_MODES: readonly ModeId[] = [
   'wijs-aan',
@@ -1314,11 +1318,11 @@ const KLOK_MODES: readonly ModeId[] = [
 ];
 
 export function asPracticeMode(mode: ModeId): PracticeMode {
-  return PRACTICE_MODES.includes(mode) ? (mode as PracticeMode) : 'wijs-aan';
+  return PRACTICE_MODES.includes(mode) ? (mode as PracticeMode) : 'meerkeuze';
 }
 
 export function asSumMode(mode: ModeId): SumMode {
-  return SUM_MODES.includes(mode) ? (mode as SumMode) : 'som-typen';
+  return SUM_MODES.includes(mode) ? (mode as SumMode) : 'som-meerkeuze';
 }
 
 export function asKlokMode(mode: ModeId): KlokMode {
@@ -1335,7 +1339,7 @@ const VLAG_MODES: readonly ModeId[] = [
 ];
 
 export function asVlagMode(mode: ModeId): VlagMode {
-  return VLAG_MODES.includes(mode) ? (mode as VlagMode) : 'vlag-zoeken';
+  return VLAG_MODES.includes(mode) ? (mode as VlagMode) : 'vlag-meerkeuze';
 }
 
 const TAAL_MODES: readonly ModeId[] = [

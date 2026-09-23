@@ -1,5 +1,6 @@
 import { t } from '@/i18n';
 import { NextIcon } from '@/components/Icon';
+import { usePremium } from '@/features/premium/usePremium';
 import { useVandaag } from './useVandaag';
 
 /**
@@ -21,8 +22,11 @@ import { useVandaag } from './useVandaag';
  * viel, en een lege dag vieren is een compliment voor niets doen.
  */
 export function VandaagVerder({ onVerder }: { readonly onVerder: () => void }) {
+  const { actief } = usePremium();
   const vandaag = useVandaag();
-  if (vandaag === null) return null;
+  // Het dagplan is premium (ADR-192): op de voordeur is het een slot, en hier
+  // hoort het dan geen knop te zijn die de volgende geplande ronde begint.
+  if (!actief || vandaag === null) return null;
 
   if (vandaag.voortgang.klaar || vandaag.volgende === null) return null;
 

@@ -177,7 +177,7 @@ export function WeekdoelenBlok({
 
   const lijst = standen(stand.doelen, afgemaakt, behaald, now);
   const vol = stand.doelen.length >= MAX_DOELEN;
-  // Alle 33, ook de premiumdiploma's. Die worden niet weggelaten maar gemerkt:
+  // Alle 68, ook de premiumdiploma's. Die worden niet weggelaten maar gemerkt:
   // een kind dat de vlaggen van Europa wil, hoort te zien dát dat bestaat. En
   // een doel dat met een code gezet is, houdt zo zijn naam ook als de code om
   // is — met `actief` stond daar "Dit diploma bestaat niet meer".
