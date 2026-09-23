@@ -49,7 +49,7 @@ test('Jij draagt je instellingen, je diploma’s en al je cijfers, in die volgor
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   // De zin onder de titel zegt wie er oefent en wat er op de pagina staat.
   await expect(page.locator('.tk-etalage-tekst').first()).toHaveText(
-    'Je oefent als Noor. Hier stel je jezelf in. En hier staan je diploma’s, wat je kent en hoe vaak je oefent.',
+    'Je oefent als Noor. Hier stel je jezelf in. En hier staan je diploma’s, wat je beheerst en hoe vaak je oefent.',
   );
 
   for (const blok of [

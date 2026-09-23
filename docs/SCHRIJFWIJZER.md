@@ -69,7 +69,7 @@ Eén begrip, één woord, overal.
 | De toets voor een diploma                        | **toets**                        | afzwemmen, examen, proefwerk  |
 | Oefenen zoals op school, zonder hulp, met cijfer | **oefentoets**                   | proeftoets                    |
 | Een diploma krijgen                              | **halen**, **gehaald**           | behalen, verdienen, winnen    |
-| Iets zo goed weten dat het blijft                | **kennen**, "ken je"             | onthouden, beheersen, weten   |
+| Iets zo goed weten dat het blijft                | **beheersen**, "beheers je"      | onthouden, kennen, weten      |
 | Een vraag die terug moet komen                   | **herhalen**                     | opfrissen, repeteren          |
 | Een vraag die je aan het vergeten bent           | **bijna vergeten**               | zwak, rood                    |
 | Een antwoord dat klopt                           | **goed**                         | juist, correct                |
@@ -82,7 +82,7 @@ Eén begrip, één woord, overal.
 
 "Onthouden" mag nog in de taalregels, waar het betekent: een spelling uit je
 hoofd leren ("Onthoud hoe het woord eruitziet"). Voor wat een kind weet, is het
-woord "kennen".
+woord "beheersen": "Je beheerst er al 9 van de 12."
 
 "Ronde klaar" is het einde van een ronde; "klaar voor vandaag" betekent dat er
 niets meer te herhalen is. Een diploma is "gehaald", nooit "klaar".
@@ -104,18 +104,18 @@ Altijd dezelfde opbouw, in elk vak:
 
 Zo leggen we het overal uit, in deze woorden:
 
-> Wat je goed kent, komt pas later terug. Wat je bijna vergeten bent, komt
+> Wat je beheerst, komt pas later terug. Wat je bijna vergeten bent, komt
 > vandaag terug. Zo blijft het in je hoofd.
 
 - "Vandaag herhalen": de vragen die vandaag terug moeten komen.
 - "Klaar voor vandaag": er hoeft vandaag niets meer terug te komen.
-- "Ken je": wat op verschillende dagen goed ging.
+- "Beheers je": wat op verschillende dagen goed ging.
 
 ## Voor ouders
 
 Op de premiumpagina, de ouderpagina en de kassa:
 
-- **"Je" tegen de ouder**, en over het kind in de derde persoon: "Fem kent 90 van
+- **"Je" tegen de ouder**, en over het kind in de derde persoon: "Fem beheerst 90 van
   de 120 steden."
 - **Rustig en precies.** Taalniveau B1, geen verkoopzinnen, geen hoofdletters
   voor nadruk. Zeg wat het doet en wat het kost.

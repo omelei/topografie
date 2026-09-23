@@ -56,7 +56,7 @@ test('Jij toont je geheugen, en zegt het eerlijk als er nog niets is', async ({ 
   // Wat onthouden is, staat open boven de ring; de rest van de regels één druk
   // verder (ADR-172).
   await expect(geheugen).toContainText(
-    'Je kent iets als je het drie keer goed hebt, op drie verschillende dagen.',
+    'Je beheerst iets als je het drie keer goed hebt, op drie verschillende dagen.',
   );
   await expect(geheugen).not.toContainText('Dan begin je daar opnieuw mee.');
   await geheugen.getByRole('button', { name: 'Hoe werkt herhalen?' }).click();

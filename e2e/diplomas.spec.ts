@@ -154,7 +154,7 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ 
   const venster = page.getByRole('dialog');
   await expect(venster).toBeVisible();
   await expect(venster.getByText('Tafeldiploma')).toBeVisible();
-  await expect(venster.getByText('Je kent hier nog niets.', { exact: false })).toBeVisible();
+  await expect(venster.getByText('Je beheerst hier nog niets.', { exact: false })).toBeVisible();
   await expect(venster.getByRole('button', { name: 'Ga oefenen' })).toBeVisible();
 
   // Escape sluit, en dan staat de kast er weer.

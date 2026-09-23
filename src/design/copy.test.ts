@@ -125,7 +125,7 @@ describe('the words', () => {
   it('keeps to the word list in the schrijfwijzer', () => {
     // One concept, one word (docs/SCHRIJFWIJZER.md). "Onthouden" is not on this
     // list: the taal rules use it for learning a spelling by heart, which is
-    // not what a child knows. Where it meant that, it now says "kennen".
+    // not what a child knows. Where it meant that, it now says "beheersen".
     const retired = [
       /afzwem/i,
       /af te zwemmen/i,

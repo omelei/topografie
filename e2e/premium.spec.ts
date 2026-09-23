@@ -55,7 +55,7 @@ test('without a code the premium parts are labelled once, and say what they do',
   await page.goto('/jij');
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
   await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(0);
@@ -631,7 +631,7 @@ test('without a code the parents read what the child wanted, and what it is read
   await alsOnthouden(page);
   await oefenTafelVanEen(page);
   const klaar = page.getByRole('region', { name: 'Je bent klaar voor de toets!' });
-  await expect(klaar).toContainText('Je kent Tafel van 1 goed genoeg voor het diploma.');
+  await expect(klaar).toContainText('Je beheerst Tafel van 1 goed genoeg voor het diploma.');
   await klaar.getByRole('button', { name: 'Vraag het je ouders' }).click();
   await expect(vraag).toContainText('Je bent klaar voor de toets van Tafel van 1!');
   await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();

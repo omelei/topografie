@@ -134,16 +134,18 @@ export const nl = {
   'afzwemmen.eisVragen': '{vragen} vragen, en je hebt er {drempel} goed nodig.',
   'afzwemmen.eisStil': 'Je hoort pas aan het eind hoe het ging.',
   'afzwemmen.eisOpnieuw': 'Lukt het nog niet? Dan probeer je het een andere dag opnieuw.',
-  'afzwemmen.rijpZin': 'Je kent er {onthouden} van de {totaal}. Dat is genoeg om de toets te doen.',
+  'afzwemmen.rijpZin':
+    'Je beheerst er {onthouden} van de {totaal}. Dat is genoeg om de toets te doen.',
   'afzwemmen.nietRijpTitel': 'Nog niet klaar voor de toets',
   'afzwemmen.nietRijpZin':
-    'Je kent er nu {onthouden} van de {totaal}. Ken je er {nodig}, dan mag je de toets doen.',
+    'Je beheerst er nu {onthouden} van de {totaal}. Beheers je er {nodig}, dan mag je de toets doen.',
   // Nooit een telling die nul is (ADR-167). De eerste twee dagen kan er niets
   // staan — een onderdeel telt pas na drie goede antwoorden op drie dagen — en
   // "0 van de 10" leest als een cijfer voor het kind in plaats van als de stand.
-  'afzwemmen.nietRijpNiets': 'Je kent hier nog niets. Ken je er {nodig}, dan mag je de toets doen.',
+  'afzwemmen.nietRijpNiets':
+    'Je beheerst hier nog niets. Beheers je er {nodig}, dan mag je de toets doen.',
   'afzwemmen.nietRijpUitleg':
-    'Oefen nog even door. Je kent iets als je het drie keer goed hebt, op drie verschillende dagen.',
+    'Oefen nog even door. Je beheerst iets als je het drie keer goed hebt, op drie verschillende dagen.',
   'afzwemmen.alGehaald': 'Dit diploma heb je al. De datum op je diploma blijft staan.',
   'afzwemmen.meekijkenVraag': 'Wil je dat iemand meekijkt?',
   'afzwemmen.meekijkenUitleg': 'Haal je ouders erbij. Dan zien jullie samen hoe het gaat.',
@@ -162,7 +164,7 @@ export const nl = {
   'uitklap.tabelDicht': 'Verberg de tabel',
   'uitklap.uitlegDicht': 'Verberg de uitleg',
   'home.retention': 'weet je hier over drie weken nog van',
-  'home.setMastered': '{goed} van de {totaal} ken je',
+  'home.setMastered': '{goed} van de {totaal} beheers je',
   'home.setNew': 'nog niet geoefend',
 
   // The frame. Module order is ADR-029; only the ones with content are shown,
@@ -212,11 +214,11 @@ export const nl = {
   // al: "8 — ken je inmiddels — van de 30 die je geoefend hebt". "Ken je" en
   // niet "weet je goed" (op verzoek van de eigenaar): kennen is wat blijft, en
   // "inmiddels" zegt dat het gegroeid is.
-  'retention.geheugenGoed': 'ken je inmiddels',
+  'retention.geheugenGoed': 'beheers je inmiddels',
   'retention.geheugenVan': 'van de {aantal} die je geoefend hebt',
   'retention.geheugenLeeg':
     'Je hebt nog niets geoefend. Na je eerste ronde zie je hier hoe het gaat.',
-  'retention.vakRegel': '{onthouden} ken je, {geoefend} geoefend, {totaal} in totaal',
+  'retention.vakRegel': '{onthouden} beheers je, {geoefend} geoefend, {totaal} in totaal',
   'retention.vakLeeg': 'Nog niet geoefend, {totaal} in totaal',
   // Alles wat er ooit geoefend is, en de laatste acht weken, onder de tegels van
   // deze week (ADR-172). De totalen zijn één zin en geen tweede rij tegels: twee
@@ -242,7 +244,7 @@ export const nl = {
   'retention.welkeSom': 'Welke sommen?',
   // De vier statussen als tegels; samen zijn ze het hele onderwerp. "Vandaag op
   // de rol" is weg: dat ging over het schema, niet over wat je onthoudt.
-  'retention.tegelOnthouden': 'Ken je',
+  'retention.tegelOnthouden': 'Beheers je',
   'retention.tegelOpfrissen': 'Bijna vergeten',
   'retention.tegelOefenen': 'Nog aan het oefenen',
   'retention.tegelNieuw': 'Nog niet geoefend',
@@ -277,9 +279,9 @@ export const nl = {
   // De vraag zelf, de enige op Jij (ADR-172), in woorden die zeggen wat je
   // erbij krijgt in plaats van dat er iets op slot zit — en in de stem van het
   // kind, met de ouder als wie de code heeft (ADR-163).
-  'retention.verkoopKop': 'Wil je zien wat je inmiddels kent?',
+  'retention.verkoopKop': 'Wil je zien wat je inmiddels beheerst?',
   'retention.verkoopTekst':
-    'Met premium zie je hier wat je al kent, per vak en per onderwerp. En hoe vaak je oefent, week na week. Alles wat je nu oefent, houden we al bij: met premium staat het er meteen. Je ouders hebben daar een code voor nodig.',
+    'Met premium zie je hier wat je al beheerst, per vak en per onderwerp. En hoe vaak je oefent, week na week. Alles wat je nu oefent, houden we al bij: met premium staat het er meteen. Je ouders hebben daar een code voor nodig.',
   'retention.verkoopKnop': 'Bekijk premium',
   // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114).
   // Sinds ADR-172 staat regel 1 open boven de ring die het woord telt, en de
@@ -294,14 +296,15 @@ export const nl = {
   // (`isStale`), en één goed antwoord haalt het terug. Eén fout zet het in
   // doos 1.
   'retention.regelsTitel': 'Hoe werkt herhalen?',
-  'retention.regel1': 'Je kent iets als je het drie keer goed hebt, op drie verschillende dagen.',
+  'retention.regel1':
+    'Je beheerst iets als je het drie keer goed hebt, op drie verschillende dagen.',
   // Zonder "onderdeel" en zonder "aan de beurt" (ADR-177). Dat laatste is het
   // woord van het schema en niet van het kind: wat het betekent is dat één dag
   // één keer telt, en dát is wat hier nu staat.
   'retention.regel2':
     'Op één dag telt één goed antwoord. Heb je het diezelfde dag nog een keer goed, dan telt dat niet extra. Daarom zijn het drie verschillende dagen.',
   'retention.regel3':
-    'Heb je iets wat je kent lang niet gezien? Dan ben je het bijna vergeten. Herhaal het: één goed antwoord is genoeg, en je kent het weer.',
+    'Heb je iets wat je beheerst lang niet gezien? Dan ben je het bijna vergeten. Herhaal het: één goed antwoord is genoeg, en je beheerst het weer.',
   'retention.regel4': 'Heb je iets fout? Dan begin je daar opnieuw mee.',
 
   // Het toetsblok is weg (ADR-162). Het vroeg een datum en een vak, en gaf
@@ -329,7 +332,7 @@ export const nl = {
   // child they had just got something right. "In de vriezer" is gone
   // (ADR-114): onthouden begins at box four now, and box five is the same fact.
   'status.refresh': 'bijna vergeten',
-  'status.remembered': 'ken je',
+  'status.remembered': 'beheers je',
   'status.practising': 'nog aan het oefenen',
   'status.new': 'nog niet geoefend',
 
@@ -437,8 +440,8 @@ export const nl = {
   'way.meerkeuze': 'Kies uit 4 namen — de eerste stap naar typen',
   'way.hoe-heet-dit': 'Typ de naam zelf — zoals op de toets',
   'way.ontdekken': 'Kijk rond, zonder vragen',
-  'way.bliksemronde': 'Zo veel mogelijk in 1 minuut — voor als je het al kent',
-  'way.overleven': 'Ga door tot je levens op zijn — voor als je het al kent',
+  'way.bliksemronde': 'Zo veel mogelijk in 1 minuut — voor als je het al beheerst',
+  'way.overleven': 'Ga door tot je levens op zijn — voor als je het al beheerst',
   // Het topodiploma (ADR-117): twintig plekken van één kaart, of de hele kaart
   // als die kleiner is, de naam zelf typen, negen van de tien goed.
   'mode.topo-diploma': 'Topodiploma',
@@ -535,7 +538,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind kent. Voor het hele gezin, een schooljaar lang.',
+    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een schooljaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
@@ -577,7 +580,7 @@ export const nl = {
     'Per som en per woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
   'premium.usp.zelf': 'Diploma’s halen en zichzelf overhoren',
   'premium.usp.zelfUit':
-    'Je kind kan alle 68 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof kent. Jij hoeft niet meer te overhoren.',
+    'Je kind kan alle 68 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
     'Eén code voor al je kinderen, op maximaal drie apparaten, een heel schooljaar lang.',
@@ -623,7 +626,7 @@ export const nl = {
   'premium.regel.diplomas':
     'Alle 68 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
   'premium.regel.weekdoelen': 'Elke week eigen doelen kiezen en halen',
-  'premium.regel.voortgang': 'Zien wat je kind inmiddels kent en hoe vaak het oefent',
+  'premium.regel.voortgang': 'Zien wat je kind inmiddels beheerst en hoe vaak het oefent',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
   // De diepte en de tijd (ADR-177). Sinds ADR-192 is ook per vak en per
   // onderwerp kijken premium (`premium.regel.voortgang`); dit is wat er
@@ -713,7 +716,7 @@ export const nl = {
   'premium.vraagKnop': 'Vraag het je ouders',
   'result.klaarVoorToets': 'Je bent klaar voor de toets!',
   'result.klaarVoorToetsUitleg':
-    'Je kent {naam} goed genoeg voor het diploma. De toets hoort bij premium: vraag het even aan je ouders.',
+    'Je beheerst {naam} goed genoeg voor het diploma. De toets hoort bij premium: vraag het even aan je ouders.',
 
   // Drie uitwegen, en de eerste vraag is niet "heb je een code" maar "is er
   // iemand bij je" (ADR-174). Dat is het enige wat het kind op dit moment weet,
@@ -751,7 +754,7 @@ export const nl = {
   // Wat premium laat zien, sinds ADR-192. Steeds met de zin dat het al bewaard
   // wordt: wie premium neemt, begint niet op nul.
   'premium.wat.voortgang':
-    'Met premium zie je per kind wat het inmiddels kent en hoe vaak het oefent. Leer.nu bewaart het nu al, dus het staat er meteen.',
+    'Met premium zie je per kind wat het inmiddels beheerst en hoe vaak het oefent. Leer.nu bewaart het nu al, dus het staat er meteen.',
   'premium.wat.diploma': 'Met premium haal je dit diploma: je doet de toets, en je naam komt erop.',
   'premium.wat.diplomaKlaar':
     'Je bent klaar voor de toets! Met premium doe je hem, en komt je naam op het diploma.',
@@ -912,7 +915,7 @@ export const nl = {
   'rekenen.diplomasCount': '{aantal} van de {totaal} gehaald',
   'rekenen.diplomaHave': 'Tafel van {tafel}: diploma gehaald',
   'rekenen.diplomaWant': 'Tafel van {tafel}: nog geen diploma',
-  'way.som-typen': 'Typ het antwoord zelf — zo weet je of je het kent',
+  'way.som-typen': 'Typ het antwoord zelf — zo weet je of je het beheerst',
   'way.som-meerkeuze': 'Kies uit 4 getallen — de eerste stap naar typen',
   'way.tafeldiploma': 'De hele tafel foutloos — één fout en je begint opnieuw',
   'way.reken-diploma': 'De toets: 20 sommen typen, 9 van de 10 goed',
@@ -1332,10 +1335,10 @@ export const nl = {
   // naam erin, want wie je bent is het eerste wat Jij zegt (ADR-126), en in de
   // volgorde van de pagina eronder (ADR-172).
   'you.intro':
-    'Je oefent als {naam}. Hier stel je jezelf in. En hier staan je diploma’s, wat je kent en hoe vaak je oefent.',
+    'Je oefent als {naam}. Hier stel je jezelf in. En hier staan je diploma’s, wat je beheerst en hoe vaak je oefent.',
   // Zonder code (ADR-192): de cijfers staan er dan niet, en de zin belooft ze niet.
   'you.introZonderCode':
-    'Je oefent als {naam}. Hier stel je jezelf in, en hier hangen je diploma’s. Met premium zie je hier ook wat je kent en hoe vaak je oefent.',
+    'Je oefent als {naam}. Hier stel je jezelf in, en hier hangen je diploma’s. Met premium zie je hier ook wat je beheerst en hoe vaak je oefent.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
   // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
@@ -1498,7 +1501,7 @@ export const nl = {
   // Over het kind in de derde persoon: de ouder leest dit, en "je" op deze
   // pagina is de ouder. Dezelfde vorm als op Jij, met de naam erin: "90 — kent
   // Fem inmiddels — van de 120 die Fem geoefend heeft".
-  'ouder.kindKent': 'kent {naam} inmiddels',
+  'ouder.kindKent': 'beheerst {naam} inmiddels',
   'ouder.kindKentVan': 'van de {aantal} die {naam} geoefend heeft',
   'ouder.kindDagEen': '{naam} oefende op 1 van de laatste 7 dagen.',
   'ouder.kindDagen': '{naam} oefende op {dagen} van de laatste 7 dagen.',
@@ -1743,13 +1746,13 @@ export const nl = {
   // telling die nul is: een kop die de afwezigheid uitrekent, is wat "je hebt
   // niets" letterlijk op het scherm zet.
   'diploma.gehaaldOp': 'Gehaald op {datum}',
-  'diploma.onthoudt': 'Je kent er {bewezen} van de {totaal}.',
+  'diploma.onthoudt': 'Je beheerst er {bewezen} van de {totaal}.',
   // De eerste twee dagen kan er niets in de ring staan: een onderdeel telt pas
   // mee na drie goede antwoorden op drie dagen. In het grote diploma staat de
   // regel dan voluit — daar gaat het over één diploma. Op een kaart staat
   // alleen `diploma.nogNiet`: twaalf keer dezelfde zin onder elkaar is geen
   // uitleg maar een muur, en de kaarten verdwijnen erin.
-  'diploma.nogNiets': 'Je kent hier nog niets. Iets ken je na drie keer goed, op drie dagen.',
+  'diploma.nogNiets': 'Je beheerst hier nog niets. Dat lukt na drie keer goed, op drie dagen.',
   // De ring telt wat ooit bewezen is, de lat telt wat vers is. Na ruim twee
   // weken weg lopen die uiteen, en dan staat dit er.
   'diploma.opfrissen': 'Herhaal even wat je bijna vergeten bent. Dan mag je de toets doen.',
@@ -1784,7 +1787,7 @@ export const nl = {
   'you.diplomaTitel': 'Hoe haal je een diploma?',
   'you.diplomaStap1': 'Kies een diploma. Bijvoorbeeld de tafel van 6.',
   'you.diplomaStap2':
-    'Ga oefenen. Je kent iets pas als je het drie keer goed hebt, op drie verschillende dagen.',
+    'Ga oefenen. Je beheerst iets pas als je het drie keer goed hebt, op drie verschillende dagen.',
   'you.diplomaStap3':
     'De ring om het diploma laat zien hoe ver je bent. Die ring loopt nooit terug, ook niet als je een keer iets fout hebt.',
   'you.diplomaStap4':

@@ -481,7 +481,7 @@ test.describe('zonder code', () => {
     await signIn(page, 'Wout');
     await page.goto('/jij');
     await expect(
-      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
     ).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });

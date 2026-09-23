@@ -12293,8 +12293,10 @@ vlag…") en zei bij een fout "Jij zei 54", wat als een verwijt leest.
   wie (kinderen van 8 tot 12, ouders op premium, ouder en kassa), de toon ("als
   een coole oudere neef of nicht"), acht schrijfregels en een woordenlijst met
   één woord per begrip. `CLAUDE.md` en `HUISSTIJL.md` verwijzen ernaar.
-- **Kennen, niet onthouden.** Wat op drie dagen goed ging, "ken je". De eigenaar
-  koos dat al in ADR-191 ("ken je inmiddels"); nu staat het overal. "Onthouden"
+- **Beheersen, niet onthouden of kennen.** Wat op drie dagen goed ging, "beheers
+  je": "Je beheerst er al 9 van de 12." De eigenaar koos dat woord bij deze PR;
+  het vervangt ook "ken je inmiddels" van ADR-191. Het zelfstandig naamwoord
+  "beheersing" blijft weg (ADR-030); het werkwoord is wat een kind leest. "Onthouden"
   blijft alleen in de taalregels, waar het "uit je hoofd leren" betekent.
 - **Toets, niet afzwemmen.** "Toets: Provincies", "Klaar voor de toets".
 - **Bijna vergeten en herhalen, niet opfrissen.** Tegel, status en knop zeggen

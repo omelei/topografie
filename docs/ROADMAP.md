@@ -13,6 +13,27 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | ---------------------------------------------------------------------------- | ------------- | ------------------------ | ---------------------- |
 | Kassa naar € 79,95 zetten: `supabase functions deploy kassa --no-verify-jwt` | jij           | Te doen, direct          | #132 is live (ADR-196) |
 | Gezinsaccount live zetten (zie hieronder)                                    | jij en Claude | Wacht op vier antwoorden | —                      |
+| Code afschermen (zie hieronder)                                              | jij en Claude | Te doen                  | —                      |
+
+### Code afschermen
+
+De repository `omelei/topografie` is nu **openbaar**: iedereen kan de code, de
+ADR's en de geschiedenis lezen en kopiëren. De site draait op GitHub Pages
+vanuit deze repository.
+
+1. **Repository privé zetten** — _jij_, in GitHub onder Settings → General →
+   Danger Zone. Let op: GitHub Pages op een privé-repository vraagt een betaald
+   plan (GitHub Pro). Zonder dat plan stopt de site. Het alternatief is de site
+   ergens anders hosten (bijvoorbeeld Cloudflare Pages); dan past _Claude_ de
+   deploy aan. Eerst beslissen welke van de twee, dan pas omzetten.
+2. **Nalopen wat er in de repository staat** — _Claude_: geen geheimen, geen
+   persoonsgegevens, en welke documenten (bedrijfsplan, prijzen, ADR's) niet
+   buiten de deur horen.
+3. **De app in de browser** — _Claude_: er gaan al geen sourcemaps mee, en de
+   code is verkleind. Helemaal verbergen kan niet: een webapp draait in de
+   browser van de gebruiker, dus wie moeite doet, kan de JavaScript lezen. Wat
+   echt geheim moet blijven (premiumcodes controleren, de kassa), gebeurt
+   daarom al op de server. Dat blijft de regel.
 
 ### Gezinsaccount live zetten
 
