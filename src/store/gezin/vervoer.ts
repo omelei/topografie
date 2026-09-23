@@ -47,6 +47,26 @@ export interface ServerPakket {
   readonly instellingen: readonly unknown[];
 }
 
+/** Wat `kind-inloggen` kan antwoorden (ADR-155), plus geen verbinding. */
+export type KindInlogFout = 'onjuist' | 'te-vaak' | 'leeg' | 'storing' | 'geen-verbinding';
+
+/** Wat `kind-beheer` over een nieuw wachtwoord kan zeggen (`_gezin/code.ts`). */
+export type WachtwoordFout = 'te-kort' | 'te-simpel' | 'eigen-naam' | VervoerFout;
+
+/** Een kind, zoals het zichzelf ziet na inloggen: zijn eigen rij in `kinderen`. */
+export interface IkZelf {
+  readonly id: string;
+  readonly ouderId: string;
+  readonly voornaam: string;
+  readonly groep: number | null;
+}
+
+export interface KindToken {
+  readonly token: string;
+  readonly vernieuwToken: string;
+  readonly seconden: number;
+}
+
 export interface Vervoer {
   readonly kinderen: (token: string) => Promise<Uitkomst<readonly ServerKind[]>>;
   readonly neemOp: (
@@ -55,6 +75,22 @@ export interface Vervoer {
   ) => Promise<Uitkomst<ServerKind>>;
   readonly haalWeg: (token: string, kindId: string) => Promise<Uitkomst<null>>;
   readonly stuur: (token: string, pakket: Pakket) => Promise<Uitkomst<null>>;
+  /** Een wachtwoord zetten waarmee een kind zelf inlogt (ADR-190). */
+  readonly zetWachtwoord: (
+    token: string,
+    kindId: string,
+    wachtwoord: string,
+  ) => Promise<{ readonly ok: true } | { readonly ok: false; readonly reden: WachtwoordFout }>;
+  /** Inloggen als kind, met code en wachtwoord, langs `kind-inloggen` (ADR-190). */
+  readonly inloggenAlsKind: (
+    code: string,
+    wachtwoord: string,
+  ) => Promise<
+    | { readonly ok: true; readonly sessie: KindToken }
+    | { readonly ok: false; readonly reden: KindInlogFout }
+  >;
+  /** De eigen rij van het kind dat met dit token is ingelogd. */
+  readonly ikZelf: (token: string) => Promise<Uitkomst<IkZelf>>;
   /** Alles van één kind, of wat er sinds `sinds` veranderde (ADR-189). */
   readonly haal: (token: string, kindId: string, sinds?: string) => Promise<Uitkomst<ServerPakket>>;
 }
@@ -237,6 +273,99 @@ export const vervoer: Vervoer = {
       }
     }
     return { ok: true, waarde: null };
+  },
+
+  zetWachtwoord: async (token, kindId, wachtwoord) => {
+    const doel = server();
+    if (doel === null) return { ok: false, reden: 'niet-ingesteld' };
+    try {
+      const reactie = await fetch(`${doel.url}/functions/v1/kind-beheer`, {
+        method: 'POST',
+        headers: koppen(doel.sleutel, token),
+        body: JSON.stringify({ actie: 'wachtwoord', kindId, wachtwoord }),
+      });
+      if (reactie.ok) return { ok: true };
+      if (reactie.status >= 500) return { ok: false, reden: 'geen-verbinding' };
+      // De functie zegt waarom, en voor een wachtwoord is dat voor de ouder te lezen.
+      const inhoud = (await reactie.json().catch(() => null)) as { readonly fout?: unknown } | null;
+      const fout = inhoud?.fout;
+      if (fout === 'te-kort' || fout === 'te-simpel' || fout === 'eigen-naam') {
+        return { ok: false, reden: fout };
+      }
+      return { ok: false, reden: 'geweigerd' };
+    } catch {
+      return { ok: false, reden: 'geen-verbinding' };
+    }
+  },
+
+  inloggenAlsKind: async (code, wachtwoord) => {
+    const doel = server();
+    if (doel === null) return { ok: false, reden: 'storing' };
+    try {
+      // Zonder token: wie inlogt, heeft er nog geen. De functie staat daarom
+      // open (`--no-verify-jwt`, docs/SUPABASE.md) en zit achter zijn eigen
+      // begrenzer.
+      const reactie = await fetch(`${doel.url}/functions/v1/kind-inloggen`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: doel.sleutel },
+        body: JSON.stringify({ code, wachtwoord }),
+      });
+      const inhoud = (await reactie.json().catch(() => null)) as {
+        readonly fout?: unknown;
+        readonly sessie?: {
+          readonly access_token?: unknown;
+          readonly refresh_token?: unknown;
+          readonly expires_in?: unknown;
+        };
+      } | null;
+      const fout = inhoud?.fout;
+      if (fout === 'onjuist' || fout === 'te-vaak' || fout === 'leeg' || fout === 'storing') {
+        return { ok: false, reden: fout };
+      }
+      const s = inhoud?.sessie;
+      if (
+        !reactie.ok ||
+        typeof s?.access_token !== 'string' ||
+        typeof s.refresh_token !== 'string' ||
+        typeof s.expires_in !== 'number'
+      ) {
+        return { ok: false, reden: 'storing' };
+      }
+      return {
+        ok: true,
+        sessie: { token: s.access_token, vernieuwToken: s.refresh_token, seconden: s.expires_in },
+      };
+    } catch {
+      return { ok: false, reden: 'geen-verbinding' };
+    }
+  },
+
+  ikZelf: async (token) => {
+    const antwoord = await vraag('/rest/v1/kinderen?select=id,ouder_id,voornaam,groep', token, {
+      method: 'GET',
+    });
+    if (!antwoord.ok) return antwoord;
+    // De policy laat een kind precies één rij zien: zichzelf.
+    const rij = (Array.isArray(antwoord.waarde) ? antwoord.waarde[0] : null) as Record<
+      string,
+      unknown
+    > | null;
+    if (
+      typeof rij?.id !== 'string' ||
+      typeof rij.ouder_id !== 'string' ||
+      typeof rij.voornaam !== 'string'
+    ) {
+      return { ok: false, reden: 'geweigerd' };
+    }
+    return {
+      ok: true,
+      waarde: {
+        id: rij.id,
+        ouderId: rij.ouder_id,
+        voornaam: rij.voornaam,
+        groep: typeof rij.groep === 'number' ? rij.groep : null,
+      },
+    };
   },
 
   haal: async (token, kindId, sinds) => {

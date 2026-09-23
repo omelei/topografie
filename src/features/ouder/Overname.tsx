@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { CorrectIcon, PupilIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { useAccount } from '@/features/account/useAccount';
@@ -16,8 +16,9 @@ import {
   zetKindHier,
   type OvernameFout,
   type OvernameStap,
+  zetWachtwoordVoorKind,
 } from '@/store/gezin/overname';
-import type { ServerKind } from '@/store/gezin/vervoer';
+import type { ServerKind, WachtwoordFout } from '@/store/gezin/vervoer';
 
 /**
  * De kinderen van dit apparaat, meegenomen naar het account van hun ouder
@@ -167,6 +168,10 @@ function Inhoud({
               key={kind.id}
               kind={kind}
               koppeling={gekoppeld.get(kind.id)!}
+              inlogcode={
+                stand.inAccount.find((daar) => daar.id === gekoppeld.get(kind.id)?.kindId)
+                  ?.inlogcode ?? null
+              }
               onVeranderd={onVeranderd}
             />
           ))}
@@ -194,10 +199,12 @@ function Inhoud({
 function GekoppeldKind({
   kind,
   koppeling,
+  inlogcode,
   onVeranderd,
 }: {
   readonly kind: ProfileRecord;
   readonly koppeling: Koppeling;
+  readonly inlogcode: string | null;
   readonly onVeranderd: () => void;
 }) {
   const [bezig, setBezig] = useState(false);
@@ -239,6 +246,10 @@ function GekoppeldKind({
           </span>
         </span>
       </p>
+
+      {inlogcode !== null ? (
+        <Inlogcode code={inlogcode} kindId={koppeling.kindId} naam={kind.naam} />
+      ) : null}
 
       {vraagWeg ? (
         <div className="flex flex-col gap-3">
@@ -489,5 +500,94 @@ function AlleenInAccount({
         </p>
       ) : null}
     </li>
+  );
+}
+
+const WACHTWOORD_FOUT: Record<'te-kort' | 'te-simpel' | 'eigen-naam', TranslationKey> = {
+  'te-kort': 'overname.wachtwoordFout.te-kort',
+  'te-simpel': 'overname.wachtwoordFout.te-simpel',
+  'eigen-naam': 'overname.wachtwoordFout.eigen-naam',
+};
+
+/** Een code zoals hij wordt voorgelezen: `KIND-ABCD-2345` (`_gezin/code.ts`). */
+function codeVoorMens(code: string): string {
+  return `KIND-${code.slice(0, 4)}-${code.slice(4)}`;
+}
+
+/**
+ * De inlogcode van een kind, en het wachtwoord waarmee het zelf inlogt
+ * (ADR-190).
+ *
+ * Een kind dat werd meegenomen, kreeg een wachtwoord dat niemand kent
+ * (ADR-187). Wil het op een ander apparaat zelf inloggen, dan zet de ouder er
+ * hier een. De regels zijn die voor een kind (`_gezin/code.ts`): minstens zes
+ * tekens, niet de eigen naam, niet het eerste wat iemand intikt. Een nieuw
+ * wachtwoord logt het kind overal uit, zoals bij elk herstel (ADR-155).
+ */
+function Inlogcode({
+  code,
+  kindId,
+  naam,
+}: {
+  readonly code: string;
+  readonly kindId: string;
+  readonly naam: string;
+}) {
+  const [wachtwoord, setWachtwoord] = useState('');
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<WachtwoordFout | 'niet-ingelogd' | null>(null);
+  const [klaar, setKlaar] = useState(false);
+  const veld = useId();
+  const melding = useId();
+
+  async function zet(event: FormEvent) {
+    event.preventDefault();
+    setBezig(true);
+    setFout(null);
+    setKlaar(false);
+    const uit = await zetWachtwoordVoorKind(kindId, wachtwoord, await laadOvernameDiensten());
+    setBezig(false);
+    if (uit.ok) {
+      setWachtwoord('');
+      setKlaar(true);
+    } else {
+      setFout(uit.reden);
+    }
+  }
+
+  return (
+    <form className="flex flex-col gap-2" noValidate onSubmit={(event) => void zet(event)}>
+      <p className="text-lopend">{t('overname.code', { code: codeVoorMens(code) })}</p>
+      <label htmlFor={veld} className="tk-label">
+        {t('overname.wachtwoordVeld', { naam })}
+      </label>
+      <input
+        id={veld}
+        className="tk-input max-w-xs"
+        type="password"
+        autoComplete="new-password"
+        maxLength={200}
+        value={wachtwoord}
+        onChange={(event) => setWachtwoord(event.target.value)}
+        aria-describedby={fout ? melding : undefined}
+        aria-invalid={fout ? true : undefined}
+      />
+      <p className="tk-hulp">{t('overname.wachtwoordUitleg', { naam })}</p>
+      <button type="submit" className="tk-button tk-button-secondary self-start" disabled={bezig}>
+        {bezig ? t('account.bezig') : t('overname.wachtwoordKnop')}
+      </button>
+      {fout ? (
+        <p id={melding} role="alert" className="text-lopend">
+          {fout === 'te-kort' || fout === 'te-simpel' || fout === 'eigen-naam'
+            ? t(WACHTWOORD_FOUT[fout], { naam })
+            : t(FOUT[fout])}
+        </p>
+      ) : null}
+      {klaar ? (
+        <p role="status" className="text-lopend">
+          {t('overname.wachtwoordKlaar', { naam })}
+        </p>
+      ) : null}
+    </form>
   );
 }

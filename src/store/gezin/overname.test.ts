@@ -60,6 +60,9 @@ function diensten(vervoer: Partial<Vervoer> = {}, ouderId: string | null = 'oude
       ok: true as const,
       waarde: { voortgang: [], sessies: [], pogingen: [], diplomas: [], instellingen: [] },
     })),
+    zetWachtwoord: vi.fn(async () => ({ ok: true as const })),
+    inloggenAlsKind: vi.fn(async () => ({ ok: false as const, reden: 'storing' as const })),
+    ikZelf: vi.fn(async () => ({ ok: false as const, reden: 'geweigerd' as const })),
     ...vervoer,
   };
   const d: OvernameDiensten = {
