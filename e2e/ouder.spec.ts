@@ -140,7 +140,7 @@ test('een kind komt niet langs de poort en kan de pincode dus niet zetten', asyn
   await expect(page.getByLabel('Nieuwe pincode')).toHaveCount(0);
   await expect(page.getByLabel('In welk jaar ben je geboren?')).toHaveCount(0);
 
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = page.getByRole('region', { name: 'Account', exact: true });
   await blok.getByLabel('E-mailadres').fill('daan@example.nl');
   await blok.getByLabel('Wachtwoord').fill('ietsgeprobeerd');
   await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();

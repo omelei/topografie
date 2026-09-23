@@ -11575,6 +11575,150 @@ controle die iemand met de hand deed.
   (het nieuwe wachtwoord is het oude). De foutzinnen staan nu in één tabel
   (`features/account/fouten.ts`) in plaats van in twee kopieën.
 
+## ADR-187 — Stap 3a: een kind dat al oefende gaat mee naar het account, met toestemming
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar. Het
+tweede deel van stap 3 uit `docs/ouder-en-kind.md` (§9, §14), na ADR-175.
+**Voert uit** wat §9 "de overname" noemt, **wijkt op twee punten af** van hoe
+§9 het beschreef, en **knipt de rest van stap 3 op** in 3b en 3c.
+
+### Context
+
+ADR-175 legde alles klaar wat vóór het netwerk moest: uuid-sleutels, een
+moment op een instelling, en `rijen.ts` als de ene vertaling. Er was nog
+niemand die iets verstuurde. Zolang dat zo is, staat alles wat een kind oefent
+op één apparaat, en blijft ADR-186 een brug zonder overkant.
+
+Stap 3 als geheel is groot: aanmelden, kinderen opnemen, versturen, doorlopend
+bijhouden, ophalen op een ander apparaat en samenvoegen volgens de regels van
+ADR-155. Dat is te veel voor één wijziging die niet tegen een echt project te
+proberen is. Daarom in drie delen, elk op zichzelf af:
+
+- **3a (dit record):** een ouder neemt de kinderen van dit apparaat mee naar zijn
+  account, en alles wat er op dat moment staat, gaat mee.
+- **3b:** wat een kind daarna oefent, gaat vanzelf mee, na elke ronde, met de
+  samenvoegregels van ADR-155.
+- **3c:** een kind op een ander apparaat: inloggen met code en wachtwoord (de
+  ouder zet het wachtwoord), en zijn voortgang ophalen en samenvoegen.
+
+### Besluit
+
+**Een blok "Kinderen in je account" op de ouderpagina** (`Overname.tsx`), onder
+het account en alleen voor wie ingelogd is. Het toont drie groepen:
+
+- kinderen die al in het account staan;
+- kinderen die alleen op dit apparaat staan, met een schakelaar per kind;
+- kinderen die alleen in het account staan, als één regel.
+
+Meenemen is één knop, en die werkt pas als de ouder zelf de schakelaar
+"Ik ben hun ouder of voogd, en ik geef toestemming" heeft omgezet. Daarboven
+staat in gewone taal wat er dan op de server komt, en waar:
+
+- de voornaam, de groep, de antwoorden, de diploma's en de doelen;
+- binnen de EU;
+- en dat het er weer af kan.
+
+**Dit is het moment van toestemming** (artikel 8 AVG). Aantonen dat die gegeven
+is (artikel 7) doet de database: `0002_toestemming.sql` geeft `kinderen` een
+kolom `toestemming_op`, met `now()` als standaard. Een rij in `kinderen`
+ontstaat alleen langs `kind-beheer`, met het token van de ouder, dus het
+ontstaan van de rij ís het moment. De kolom staat niet in het recht om te
+wijzigen: een toestemming die achteraf te verplaatsen is, toont niets aan.
+
+**Een kind opnemen is een nieuwe actie in `kind-beheer`: `opnemen`.** Die
+werkt als `aanmaken`, maar zonder wachtwoord van de ouder. Het kind krijgt er
+een dat niemand kent (192 willekeurige bits). Op het eigen apparaat heeft een
+kind geen wachtwoord nodig (§16, vraag 4). Wil het elders inloggen, dan zet de
+ouder er een, met de actie `wachtwoord` die er al is (3c).
+
+**De rijen gaan rechtstreeks naar de tabellen, met het token van de ouder.**
+Dit is de eerste afwijking van §9, dat "één edge function, met de
+servicesleutel" schreef. Een kind aanmaken kan alleen met de servicesleutel,
+dus dat blijft `kind-beheer`. Voor de rijen is die sleutel niet nodig: de policy
+van `0001_gezin.sql` laat een ouder de rijen van zijn eigen kinderen schrijven.
+Een functie die dat met de servicesleutel nog eens nadoet, zou de ene regel
+waar de hele autorisatie op rust omzeilen in plaats van gebruiken.
+
+Per tabel gaat het in stukken van vijfhonderd rijen, in deze volgorde:
+
+1. sessies;
+2. pogingen, want elke poging wijst naar haar sessie;
+3. voortgang;
+4. diploma's;
+5. instellingen.
+
+Een botsing wordt bij sessies en pogingen overgeslagen, want die veranderen
+niet meer. Voor pogingen kan het ook niet anders: die tabel kent geen `update`.
+De rest wordt bijgewerkt.
+
+**De volgorde maakt elke stap herhaalbaar.** Eerst het kind in het account,
+dan meteen de koppeling op dit apparaat, en pas dan versturen. Hapert het
+versturen, dan staat het kind wel in het account, en maakt de volgende poging er
+geen tweede van. Het scherm zegt dan "nog niet alles is verstuurd", met een knop
+om het opnieuw te doen.
+
+**De koppeling is een instelling van dit apparaat**, `gezin:<lokaalId>`, met de
+id van het kind op de server, de ouder, en wanneer alles verstuurd was.
+
+- Niets wordt omgeschreven: het kind houdt zijn lokale sleutel (ADR-175).
+- `rijen.ts` kent `gezin` niet als gedeelde instelling, dus de koppeling gaat
+  nergens heen.
+- Een koppeling naar een kind dat niet meer in het account staat, wordt
+  vergeten, zodat het weer mee te nemen is.
+
+**Uit het account halen kan meteen, per kind.** Dat is de actie `verwijderen`
+die `kind-beheer` al had. Op de server verdwijnt alles (`on delete cascade`),
+op dit apparaat blijft alles staan, alleen de koppeling gaat weg. Het blok belooft
+dat het er weer af kan, dus die knop hoort erbij en niet erachteraan (ADR-155).
+
+**Wat er vertrekt, ligt vast in `pakket.ts`:**
+
+- de afgeronde rondes van dit kind, ook die van vóór er kinderen waren (zonder
+  `kindId`, dus van `me`);
+- alleen pogingen waarvan de ronde ook meegaat;
+- nooit een poging met een genummerde sleutel;
+- nooit een rij van een broertje of zusje;
+- van de instellingen alleen wat de database kent.
+
+Een gekozen antwoord van meer dan tweehonderd tekens gaat zonder dat antwoord,
+want één zo'n rij zou het hele pakket laten weigeren.
+
+**De tweede afwijking van §9: een gezin dat al kinderen in het account heeft.**
+§9 wilde dan per kind laten kiezen: nieuw, samenvoegen of laten staan.
+Samenvoegen hoort bij 3c, waar ook het ophalen staat. Tot die tijd is meenemen
+altijd een nieuw kind, en staat een kind dat alleen in het account staat er als
+één regel onder. Er wordt niets automatisch samengevoegd; "twee keer Noor is
+niet per se één Noor" (§9) blijft staan.
+
+### Gevolgen
+
+- **Zet het gezinsproject nog niet aan voor gezinnen.** Pas ná 3b en 3c zijn
+  `GEZIN_URL` en `GEZIN_KEY` in productie een goed idee. Na alleen 3a staat er op
+  de server wat er op één moment stond, en niet meer. Het blok zegt dat eerlijk
+  ("met alles tot 23 september"), maar het is een halve belofte.
+- **De inlogcode staat nog niet op het scherm.** De server geeft hem al; hij
+  komt terug in 3c, samen met een plek om hem te gebruiken en een wachtwoord om
+  erbij te zetten.
+- **De grens van drie kinderen staat nog niet op de server.** Een gezin met drie
+  kinderen op twee apparaten kan er zo zes in het account krijgen. Dat hoort bij
+  stap 4 (premium van het gezin, §7), waar die grens ook een prijs krijgt.
+- **De groep gaat mee zonder schooljaar.** `kind-beheer` schrijft
+  `groep_schooljaar` niet, dus de groep op de server schuift op 1 augustus niet
+  mee. Dat telt pas als de server zelf iets met de groep doet (3c).
+- **Voor de eigenaar:** `0002_toestemming.sql` draaien, net als 0001
+  (`docs/SUPABASE.md`, stap 2), en `kind-beheer` opnieuw uitrollen (de workflow
+  `Gezin functions` doet dat bij de volgende push naar `main`). En vóór er echte
+  gezinnen op komen: de privacyverklaring en de verwerkersovereenkomst met
+  Supabase die ADR-155 al noemde. Die zijn er nog niet, en dat is geen code.
+- **`ProfileRecord.naam` verlaat het apparaat nu**, maar alleen zo. Het
+  commentaar in `db.ts` zei "Never leaves the device" en zegt nu waar het wél
+  heen gaat en onder welke voorwaarde.
+- **Nog niet tegen een echt project gedraaid**, net als ADR-175. De rijen zijn
+  getoetst tegen de kolommen van `0001_gezin.sql` (`pakket.test.ts`,
+  `e2e/overname.spec.ts`), niet tegen PostgREST. Het eerst te verwachten
+  verschil: dat `Prefer: resolution=…` met een samengestelde sleutel doet wat
+  hier verwacht wordt.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

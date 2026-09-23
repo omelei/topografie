@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { herstelLink, langsDePoort, stubGezin } from './gezin';
+import { antwoord, GEZIN, herstelLink, langsDePoort, stubGezin } from './gezin';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -171,6 +171,7 @@ test.describe('zonder code', () => {
 test('the switcher and the parent page', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
   await stubGezin(page);
+  await page.route(`${GEZIN}/rest/v1/kinderen**`, (route) => antwoord(route, 200, []));
   await signIn(page, 'Noor');
 
   await page
@@ -193,8 +194,14 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
-  await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible(READY);
+  await expect(page.getByRole('region', { name: 'Je kinderen', exact: true })).toBeVisible(READY);
   await shoot(page, size, '23-ouder');
+
+  // Het blok waarmee een ouder zijn kinderen meeneemt naar het account (ADR-187).
+  const overname = page.getByRole('region', { name: 'Kinderen in je account' });
+  await expect(overname).toContainText('oefent op dit apparaat', READY);
+  await overname.scrollIntoViewIfNeeded();
+  await shoot(page, size, '23c-overname');
 });
 
 /** Waar de link uit een herstelmail op uitkomt (ADR-186): een scherm zonder balk. */

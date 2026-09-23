@@ -137,6 +137,9 @@ export interface PogingRij {
   readonly tijdstip: string;
 }
 
+/** De lengte die `pogingen.gekozen_antwoord` in `0001_gezin.sql` toestaat. */
+const ANTWOORD_MAX = 200;
+
 /**
  * Een poging wordt alleen een rij als zijn sleutel een uuid is.
  *
@@ -158,7 +161,13 @@ export function pogingRij(poging: AttemptRecord, eigenaar: Eigenaar): PogingRij 
     mode: poging.mode,
     correct: poging.correct,
     response_ms: poging.responseMs,
-    gekozen_antwoord: poging.gekozenAntwoord,
+    // De database houdt een gekozen antwoord op tweehonderd tekens, en één
+    // langere rij zou het hele pakket laten weigeren. Zonder antwoord is een
+    // poging nog steeds goed of fout, en dat is wat er van haar gelezen wordt.
+    gekozen_antwoord:
+      poging.gekozenAntwoord !== null && poging.gekozenAntwoord.length > ANTWOORD_MAX
+        ? null
+        : poging.gekozenAntwoord,
     tijdstip: poging.tijdstip,
   };
 }

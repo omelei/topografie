@@ -603,6 +603,7 @@ create table kinderen (
   groep             smallint check (groep between 3 and 8),
   groep_schooljaar  smallint,
   created_at        timestamptz not null default now(),
+  toestemming_op    timestamptz not null default now(),  -- 0002, ADR-187
   unique (id, ouder_id)
 );
 ```
@@ -624,6 +625,12 @@ ADR-116 is hashed because it was printed once and never read back; this one a
 parent has to read aloud again and again. It is a user name, not a secret: a
 code on its own reaches nothing, because there is no path to a child without the
 password and no endpoint that says whether a code exists.
+
+`toestemming_op` is when the parent gave consent for this child (GDPR art. 8,
+shown under art. 7). A row here only comes into being through `kind-beheer`,
+with the parent's token, so the moment the row appears is the moment of
+consent; it is a default and not a column anyone writes, and it is not in the
+column grant, so it cannot be moved afterwards.
 
 `unique (id, ouder_id)` exists only so that every table below can point a
 composite foreign key at it. It is redundant as a constraint and load-bearing as

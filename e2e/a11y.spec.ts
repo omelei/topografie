@@ -383,15 +383,18 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
   await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  const blok = page.getByRole('region', { name: 'Account' });
+  const blok = page.getByRole('region', { name: 'Account', exact: true });
   await blok.getByLabel('E-mailadres').fill('ouder@example.nl');
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
   await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
   await expect(blok.getByRole('alert')).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
-  // En dezelfde poging nog eens, nu met een server die ja zegt.
+  // En dezelfde poging nog eens, nu met een server die ja zegt — en een gezin
+  // zonder kinderen, zodat de ouderpagina het blok toont waarmee een ouder zijn
+  // kinderen meeneemt (ADR-187).
   await stubGezin(page);
+  await page.route(`${GEZIN}/rest/v1/kinderen**`, (route) => antwoord(route, 200, []));
   await blok.getByLabel('Wachtwoord').fill('geheimwoord');
   await blok.getByRole('button', { name: 'Inloggen', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
@@ -414,6 +417,9 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
     .getByRole('region', { name: 'Je kinderen' })
     .getByRole('button', { name: /^Fenna/ })
     .click();
+  await expect(page.getByRole('region', { name: 'Kinderen in je account' })).toContainText(
+    'Fenna oefent op dit apparaat',
+  );
   expect((await scan(page)).violations).toEqual([]);
 });
 

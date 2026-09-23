@@ -5,8 +5,9 @@ function nepDiensten(overschrijf: Partial<Diensten> = {}) {
   const gedaan: string[] = [];
   const diensten: Diensten = {
     ouderVoorToken: async (token) => (token === 'ouder-token' ? 'ouder-1' : null),
-    maakGebruiker: async () => {
-      gedaan.push('maakGebruiker');
+    geheimWachtwoord: () => 'geheim-van-de-server',
+    maakGebruiker: async (wachtwoord) => {
+      gedaan.push(wachtwoord === 'geheim-van-de-server' ? 'maakGebruiker:geheim' : 'maakGebruiker');
       return 'kind-nieuw';
     },
     zetAdres: async (id, adres) => {
@@ -120,6 +121,46 @@ describe('een kind aanmaken', () => {
     expect(await reden(behandel({ ...BASIS, wachtwoord: 'kat' }, diensten))).toBe('te-kort');
     expect(await reden(behandel({ ...BASIS, wachtwoord: 'sofie' }, diensten))).toBe('te-kort');
     expect(await reden(behandel({ ...BASIS, wachtwoord: '123456' }, diensten))).toBe('te-simpel');
+    expect(gedaan).toEqual([]);
+  });
+});
+
+/**
+ * Een kind dat al oefende, meenemen naar het account (ADR-187). Zonder
+ * wachtwoord van de ouder: het kind krijgt er een dat niemand kent.
+ */
+describe('een kind opnemen', () => {
+  const OPNEMEN: Verzoek = { ...BASIS, actie: 'opnemen', wachtwoord: null };
+
+  it('maakt het kind met een wachtwoord van de server, en geeft een code', async () => {
+    const { diensten, gedaan } = nepDiensten();
+    const antwoord = await behandel(OPNEMEN, diensten);
+    expect(antwoord).toEqual({
+      kind: { id: 'kind-nieuw', voornaam: 'Sofie', inlogcode: 'ABCD2345' },
+    });
+    expect(gedaan).toEqual([
+      'maakGebruiker:geheim',
+      'zetAdres:kind-nieuw:kind-nieuw@kind.invalid',
+      'bewaarKind:kind-nieuw:Sofie:5',
+      'codeUitgeven:kind-nieuw',
+    ]);
+  });
+
+  it('negeert een wachtwoord dat toch meekomt', async () => {
+    const { diensten, gedaan } = nepDiensten();
+    await behandel({ ...OPNEMEN, wachtwoord: '123456' }, diensten);
+    expect(gedaan[0]).toBe('maakGebruiker:geheim');
+  });
+
+  it('houdt dezelfde regels aan voor naam en groep', async () => {
+    const { diensten } = nepDiensten();
+    expect(await reden(behandel({ ...OPNEMEN, voornaam: '' }, diensten))).toBe('naam-leeg');
+    expect(await reden(behandel({ ...OPNEMEN, groep: 12 }, diensten))).toBe('groep-onbekend');
+  });
+
+  it('alleen voor een ouder', async () => {
+    const { diensten, gedaan } = nepDiensten();
+    expect(await reden(behandel({ ...OPNEMEN, token: 'kind-token' }, diensten))).toBe('geen-ouder');
     expect(gedaan).toEqual([]);
   });
 });
