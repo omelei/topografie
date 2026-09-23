@@ -3126,6 +3126,35 @@
    * All three disappear during a round. A round screen is not wrapped in the
    * Shell at all (ADR-041).
    */
+  /* De schil van elke pagina buiten een ronde. Op een telefoon precies zo hoog
+   * als het scherm, met `.tk-schil-rol` als het deel dat scrolt en het menu
+   * (`.tk-tabbar`) eronder; zo staat het menu er altijd en ligt het nergens
+   * overheen. Vanaf 1200 is er geen menu onderaan, en scrolt het document weer
+   * zoals altijd. */
+  .tk-schil {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+  .tk-schil-rol {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  @media (min-width: 1200px) {
+    .tk-schil {
+      height: auto;
+      min-height: 100vh;
+    }
+    .tk-schil-rol {
+      flex: 1 0 auto;
+      overflow: visible;
+    }
+  }
+
   .tk-appbar {
     display: flex;
     align-items: center;
@@ -3172,8 +3201,17 @@
     background: transparent;
     cursor: pointer;
   }
-  .tk-brand:hover {
-    background: var(--vlak-hover);
+  /* Wit, ook als je erop tikt, eroverheen gaat of hem kiest. Op een telefoon
+   * bleef de crème van een hover staan na een tik, en dan leek het logo op een
+   * knop die ingedrukt was blijven hangen; de eigenaar wil het merk op wit, zoals
+   * de balk eromheen. Wie met het toetsenbord komt, ziet de focusrand van
+   * `:focus-visible`; die hangt niet aan de achtergrond. */
+  .tk-brand,
+  .tk-brand:hover,
+  .tk-brand:active,
+  .tk-brand:focus {
+    background: var(--kaart);
+    -webkit-tap-highlight-color: transparent;
   }
   /* Het liggende logo in de balk: 28 op een telefoon, 32 vanaf 768 (ADR-154,
    * bijgesteld in ADR-168).
@@ -3513,9 +3551,17 @@
    * in topography's blue: a destination is not a module, and §B does not let
    * an accent say which one you are on (ADR-093).
    */
+  /* Altijd in beeld op een telefoon (op verzoek van de eigenaar). Hij stond
+   * onder aan de pagina, en dan zag je hem pas als je helemaal naar beneden had
+   * gescrold. Hij staat nu onder `.tk-schil-rol`, dat zelf scrolt, en dus nooit
+   * over de inhoud heen: geen knop verdwijnt half achter hem, en de startbalk
+   * van een modulepagina plakt vlak boven hem in plaats van eronder. In een
+   * ronde staat hij er niet, want een ronde tekent de Shell niet. De onderste
+   * inzet houdt de knoppen boven de veegbalk van een iPhone. */
   .tk-tabbar {
     display: flex;
     align-items: stretch;
+    padding-bottom: env(safe-area-inset-bottom);
     background: var(--kaart);
     border-top: var(--stroke-hair) solid var(--rand-licht);
   }

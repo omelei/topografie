@@ -320,8 +320,10 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
   // Per kind een eigen kaart met zijn naam erboven: twee kinderen optellen
   // geeft een getal dat over niemand gaat.
   await expect(blok.getByRole('heading', { name: 'Fenna' })).toBeVisible();
-  await expect(blok).toContainText('van de 1 die je geoefend hebt');
-  await expect(blok).toContainText('Op 1 van de laatste 7 dagen geoefend.');
+  // Over het kind in de derde persoon: de ouder leest dit.
+  await expect(blok).toContainText('kent Fenna inmiddels');
+  await expect(blok).toContainText('van de 1 die Fenna geoefend heeft');
+  await expect(blok).toContainText('Fenna oefende op 1 van de laatste 7 dagen.');
 
   // De schatting mag hier staan, en zegt dat hij er een is. Op Jij is ze weg:
   // daar is de lezer acht en leest hij geen percentages (ADR-177).

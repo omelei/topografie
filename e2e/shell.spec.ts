@@ -1,6 +1,22 @@
 import { expect, test, type Page } from '@playwright/test';
 
 /**
+ * Naar de onderkant van de pagina, en hoe ver dat was.
+ *
+ * Op een telefoon scrolt `.tk-schil-rol` en niet het document: dan staat het
+ * menu onderaan er altijd (zie `.tk-schil` in index.css). Vanaf 1200 scrolt het
+ * document zoals altijd. Dit zet allebei, en geeft terug wat er bewoog.
+ */
+async function naarOnder(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    const rol = document.querySelector('.tk-schil-rol');
+    rol?.scrollTo(0, rol.scrollHeight);
+    return Math.max(window.scrollY, rol?.scrollTop ?? 0);
+  });
+}
+
+/**
  * The frame, and the rule that it disappears.
  *
  * Every one of these runs at all six sizes in playwright.config.ts, because the
@@ -253,8 +269,7 @@ test('below 1200 the vak menu stays on the glass while the page scrolls', async 
   const knop = page.locator('.tk-vakmenu-knop');
   const voor = await knop.boundingBox();
 
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  const gescrold = await page.evaluate(() => window.scrollY);
+  const gescrold = await naarOnder(page);
   expect(
     gescrold,
     'the page has to be longer than the screen for this to mean anything',
@@ -315,8 +330,34 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
   await expect(start).toBeEnabled();
 
   // Still there at the foot of the page, and it starts the round.
-  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await naarOnder(page);
   await expect(start).toBeInViewport();
   await start.click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
+});
+
+/**
+ * Het menu onderaan staat er op een telefoon altijd, ook onder aan een lange
+ * pagina, en ligt nergens overheen (op verzoek van de eigenaar).
+ */
+test('on a phone the tab bar stays in view, below the page rather than over it', async ({
+  page,
+}, testInfo) => {
+  test.skip(!['iphone', 'android'].includes(testInfo.project.name), 'the tab bar is for phones');
+
+  await signIn(page, 'Ilse');
+  await page.goto('/topografie');
+  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  const menu = page.locator('.tk-tabbar');
+  await expect(menu).toBeInViewport();
+
+  await expect
+    .poll(() => naarOnder(page), { message: 'the page has to be longer than the screen' })
+    .toBeGreaterThan(0);
+  await expect(menu).toBeInViewport();
+
+  // Onder de inhoud, niet eroverheen: de startbalk eindigt waar het menu begint.
+  const balk = await page.locator('.tk-startbalk-mobiel').boundingBox();
+  const onder = await menu.boundingBox();
+  expect((balk?.y ?? 0) + (balk?.height ?? 0)).toBeLessThanOrEqual((onder?.y ?? 0) + 1);
 });

@@ -118,103 +118,108 @@ export function Shell({
   }));
 
   return (
-    <div className="flex min-h-screen flex-col bg-kaart">
-      {/* Het eerste wat de tab-toets raakt, op elke pagina (ADR-166).
+    <div className="tk-schil bg-kaart">
+      {/* Op een telefoon scrolt dit deel, en staat het menu eronder in plaats
+          van eroverheen (zie `.tk-schil` in index.css). Vanaf 1200 is het
+          gewoon de pagina. */}
+      <div className="tk-schil-rol">
+        {/* Het eerste wat de tab-toets raakt, op elke pagina (ADR-166).
           De focus wordt met de hand verzet in plaats van aan het anker
           overgelaten: browsers zijn het er niet over eens of springen naar een
           fragment ook de focus meeneemt, en een link die de pagina wel scrollt
           maar de focus laat staan, helpt precies niemand. Het adres blijft
           schoon, want het volgende `pushState` schrijft toch alleen het pad. */}
-      <a
-        className="tk-overslaan"
-        href={`#${INHOUD_ID}`}
-        onClick={(event) => {
-          event.preventDefault();
-          const inhoud = document.getElementById(INHOUD_ID);
-          inhoud?.focus();
-          inhoud?.scrollIntoView();
-        }}
-      >
-        {t('nav.overslaan')}
-      </a>
-
-      <header className="tk-appbar flex-none">
-        {/* The logo, and the way back to the front door: Denker and the name,
-            at every width (ADR-154). */}
-        <button
-          type="button"
-          className="tk-brand"
-          aria-label={t('nav.home', { merk: brand.name })}
-          onClick={() => onNavigate?.('vandaag')}
+        <a
+          className="tk-overslaan"
+          href={`#${INHOUD_ID}`}
+          onClick={(event) => {
+            event.preventDefault();
+            const inhoud = document.getElementById(INHOUD_ID);
+            inhoud?.focus();
+            inhoud?.scrollIntoView();
+          }}
         >
-          <Wordmark className="tk-logo" />
-        </button>
+          {t('nav.overslaan')}
+        </a>
 
-        {showDestinations ? (
-          <nav aria-label={t('nav.destinations')} className="tk-navbar hidden desk:flex">
-            {destinationItems.map((destination) => (
-              <button
-                key={destination.id}
-                type="button"
-                aria-current={destination.id === current ? 'page' : undefined}
-                className="tk-navbar-item"
-                onClick={() => onNavigate?.(destination.id)}
-              >
-                {destination.label}
-              </button>
-            ))}
-          </nav>
-        ) : null}
+        <header className="tk-appbar flex-none">
+          {/* The logo, and the way back to the front door: Denker and the name,
+            at every width (ADR-154). */}
+          <button
+            type="button"
+            className="tk-brand"
+            aria-label={t('nav.home', { merk: brand.name })}
+            onClick={() => onNavigate?.('vandaag')}
+          >
+            <Wordmark className="tk-logo" />
+          </button>
 
-        {bar}
-      </header>
+          {showDestinations ? (
+            <nav aria-label={t('nav.destinations')} className="tk-navbar hidden desk:flex">
+              {destinationItems.map((destination) => (
+                <button
+                  key={destination.id}
+                  type="button"
+                  aria-current={destination.id === current ? 'page' : undefined}
+                  className="tk-navbar-item"
+                  onClick={() => onNavigate?.(destination.id)}
+                >
+                  {destination.label}
+                </button>
+              ))}
+            </nav>
+          ) : null}
 
-      {/* The vak menu, and the box that keeps it on the glass (ADR-121). The
+          {bar}
+        </header>
+
+        {/* The vak menu, and the box that keeps it on the glass (ADR-121). The
           sticky is here rather than inside VakMenu because a sticky box can
           only travel inside its containing block: on the component's own root
           that block is this wrapper, which is exactly as tall as the menu, and
           it would not move at all. Here the block is the page's column. */}
-      {showModules ? (
-        <div className="tk-vakmenu-houder flex-none desk:hidden">
-          <VakMenu modules={modules} current={currentModule} onModule={onModule} />
-        </div>
-      ) : null}
-
-      <div className="flex min-h-0 flex-1">
         {showModules ? (
-          <nav aria-label={t('nav.modules')} className="tk-rail hidden desk:flex">
-            {modules.map((module) => {
-              const ModuleIcon = MODULE_ICON[module.id];
-
-              return (
-                <button
-                  key={module.id}
-                  type="button"
-                  data-module={module.id}
-                  data-accent="module"
-                  aria-current={module.id === currentModule ? 'page' : undefined}
-                  className="tk-rail-item"
-                  onClick={() => onModule?.(module.id)}
-                >
-                  <span className="tk-plaat tk-plaat-rail">
-                    <ModuleIcon size={20} />
-                  </span>
-                  {t(module.name)}
-                </button>
-              );
-            })}
-          </nav>
+          <div className="tk-vakmenu-houder flex-none desk:hidden">
+            <VakMenu modules={modules} current={currentModule} onModule={onModule} />
+          </div>
         ) : null}
 
-        <main
-          id={INHOUD_ID}
-          tabIndex={-1}
-          className="tk-grond min-h-0 min-w-0 flex-1"
-          data-grond={grondSoort(grond)}
-          data-module={grond === 'vandaag' ? undefined : grond}
-        >
-          {children}
-        </main>
+        <div className="flex min-h-0 flex-1">
+          {showModules ? (
+            <nav aria-label={t('nav.modules')} className="tk-rail hidden desk:flex">
+              {modules.map((module) => {
+                const ModuleIcon = MODULE_ICON[module.id];
+
+                return (
+                  <button
+                    key={module.id}
+                    type="button"
+                    data-module={module.id}
+                    data-accent="module"
+                    aria-current={module.id === currentModule ? 'page' : undefined}
+                    className="tk-rail-item"
+                    onClick={() => onModule?.(module.id)}
+                  >
+                    <span className="tk-plaat tk-plaat-rail">
+                      <ModuleIcon size={20} />
+                    </span>
+                    {t(module.name)}
+                  </button>
+                );
+              })}
+            </nav>
+          ) : null}
+
+          <main
+            id={INHOUD_ID}
+            tabIndex={-1}
+            className="tk-grond min-h-0 min-w-0 flex-1"
+            data-grond={grondSoort(grond)}
+            data-module={grond === 'vandaag' ? undefined : grond}
+          >
+            {children}
+          </main>
+        </div>
       </div>
 
       {showDestinations ? (

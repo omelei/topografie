@@ -144,7 +144,7 @@ export const nl = {
   'afzwemmen.nietRijpNiets':
     'Je hebt hier nog niets onthouden. Voor het diploma moet je er {nodig} onthouden.',
   'afzwemmen.nietRijpUitleg':
-    'Een onderdeel telt mee als je het drie keer goed weet, op drie verschillende dagen. Oefen nog even, dan mag je afzwemmen.',
+    'Een onderdeel telt mee als je het kent: drie keer goed, op drie verschillende dagen. Oefen nog even, dan mag je afzwemmen.',
   'afzwemmen.alGehaald': 'Dit diploma heb je al. De datum op je diploma blijft staan.',
   'afzwemmen.meekijkenVraag': 'Wil je dat iemand meekijkt?',
   'afzwemmen.meekijkenUitleg':
@@ -211,8 +211,10 @@ export const nl = {
   // product uitgelegd, en de eigenaar las het — terecht — als "goede
   // antwoorden", wat iets heel anders is: dat telt `Hoe vaak oefen je`. Hier
   // staat nu helemaal geen zelfstandig naamwoord, want de bijzin draagt het
-  // al: "8 — weet je goed — van de 30 die je geoefend hebt".
-  'retention.geheugenGoed': 'weet je goed',
+  // al: "8 — ken je inmiddels — van de 30 die je geoefend hebt". "Ken je" en
+  // niet "weet je goed" (op verzoek van de eigenaar): kennen is wat blijft, en
+  // "inmiddels" zegt dat het gegroeid is.
+  'retention.geheugenGoed': 'ken je inmiddels',
   'retention.geheugenVan': 'van de {aantal} die je geoefend hebt',
   'retention.geheugenLeeg':
     'Je hebt nog niets geoefend. Na je eerste ronde zie je hier wat je onthoudt.',
@@ -653,7 +655,7 @@ export const nl = {
     'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
-    'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed weet. Niets hangt van geluk af, en er valt niets te kopen.',
+    'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed heeft. Niets hangt van geluk af, en er valt niets te kopen.',
 
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
@@ -1385,7 +1387,8 @@ export const nl = {
   'you.readAloud': 'Vragen voorlezen',
   // De weg terug na "Ik wil geen doelen" op Vandaag (ADR-171).
   'you.doelen': 'Doelen voor deze week',
-  'you.doelenWhy': 'Op Vandaag kies je wat je deze week wilt halen.',
+  // Op de ouderpagina (ADR-173), dus over het kind en niet tegen het kind.
+  'you.doelenWhy': 'Op Vandaag kiest elk kind zelf wat het deze week wil halen.',
   'you.readAloudWhy': 'Je kunt elke vraag laten voorlezen.',
   'you.on': 'aan',
   'you.off': 'uit',
@@ -1467,8 +1470,13 @@ export const nl = {
   'ouder.hoeGaatHetUitleg':
     'Per kind, over alle vakken bij elkaar. Wat je kind zelf ziet, staat op Jij; per som en per woord kijken zit in premium.',
   'ouder.kindNogNiets': '{naam} heeft nog niets geoefend.',
-  'ouder.kindDagEen': 'Op 1 van de laatste 7 dagen geoefend.',
-  'ouder.kindDagen': 'Op {dagen} van de laatste 7 dagen geoefend.',
+  // Over het kind in de derde persoon: de ouder leest dit, en "je" op deze
+  // pagina is de ouder. Dezelfde vorm als op Jij, met de naam erin: "90 — kent
+  // Fem inmiddels — van de 120 die Fem geoefend heeft".
+  'ouder.kindKent': 'kent {naam} inmiddels',
+  'ouder.kindKentVan': 'van de {aantal} die {naam} geoefend heeft',
+  'ouder.kindDagEen': '{naam} oefende op 1 van de laatste 7 dagen.',
+  'ouder.kindDagen': '{naam} oefende op {dagen} van de laatste 7 dagen.',
   // "Naar schatting", en de voorwaarde erbij. Het is een vergeetcurve met een
   // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
   // Op Jij is dit getal weg omdat een percentage groep 7-stof is; hier is de
@@ -1558,7 +1566,7 @@ export const nl = {
   // doet, staat er ook bij: zonder account werkt alles zoals het werkte.
   'account.titel': 'Account',
   'account.uitleg':
-    'Met een account staat wat je oefent niet alleen op dit apparaat, maar ook op de iPad en de laptop. Zonder account werkt alles gewoon zoals je gewend bent.',
+    'Met een account staat wat je kinderen oefenen niet alleen op dit apparaat, maar ook op de iPad en de laptop. Zonder account werkt alles gewoon zoals je gewend bent.',
   'account.email': 'E-mailadres',
   'account.wachtwoord': 'Wachtwoord',
   'account.wachtwoordHint': 'Minstens acht tekens.',
@@ -1569,7 +1577,8 @@ export const nl = {
   'account.bezig': 'Even kijken…',
   'account.ingelogd': 'Je bent ingelogd als {email}.',
   'account.uitloggen': 'Uitloggen',
-  'account.uitloggenUitleg': 'Wat je op dit apparaat hebt geoefend, blijft gewoon staan.',
+  'account.uitloggenUitleg':
+    'Wat je kinderen op dit apparaat hebben geoefend, blijft gewoon staan.',
   'account.gemaild': 'Er staat een mail voor je klaar. Klik op de link erin, dan kun je inloggen.',
   'account.fout.leeg': 'Vul allebei de velden in.',
   'account.fout.geen-email': 'Dit lijkt geen e-mailadres. Kijk of er een typefout in zit.',
@@ -1747,7 +1756,7 @@ export const nl = {
   'you.diplomaTitel': 'Hoe haal je een diploma?',
   'you.diplomaStap1': 'Kies een diploma. Bijvoorbeeld de tafel van 6.',
   'you.diplomaStap2':
-    'Ga oefenen. Je weet iets pas goed als je het drie keer goed had, op drie verschillende dagen.',
+    'Ga oefenen. Je kent iets pas als je het drie keer goed had, op drie verschillende dagen.',
   'you.diplomaStap3':
     'De ring om het diploma laat zien hoe ver je bent. Die ring loopt nooit terug, ook niet als je een keer iets fout hebt.',
   'you.diplomaStap4': 'Is de ring helemaal vol? Dan mag je de toets doen.',
