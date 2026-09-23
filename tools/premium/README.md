@@ -174,4 +174,4 @@ Dit is geen vrijgesteld onderwijs: daarvoor is erkend onderwijs én interactie
 tussen docent en leerling nodig, en een oefenprogramma heeft geen van beide.
 Reken op 21%, en laat het door je boekhouder bevestigen. Blijft de jaaromzet
 onder de € 20.000, dan kun je de kleineondernemersregeling gebruiken en draag je
-geen btw af — bij € 24,95 is dat ongeveer 800 codes.
+geen btw af — bij € 79,95 is dat ongeveer 250 codes.

@@ -24,7 +24,6 @@ import { leesbareDatum, usePremium } from './usePremium';
  * je koopt; de app hoeft daarmee nog steeds niets van betalen te weten.
  */
 const KASSA_PAD = '/kopen/';
-const KASSA_MAAND = '/kopen/?plan=maand';
 
 type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
 
@@ -330,7 +329,9 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
               </p>
               <p className="tk-premium-plan-prijs">
                 <span className="tk-display">{t('premium.maandPrijs')}</span>{' '}
-                <span className="text-tekst-secundair">{t('premium.perMaand')}</span>
+                <span className="text-tekst-secundair">
+                  {t('premium.perMaand')} · {t('premium.binnenkort').toLowerCase()}
+                </span>
               </p>
             </div>
           ) : null}
@@ -340,9 +341,6 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
               <div className="tk-premium-plan-knoppen">
                 <a className="tk-button" href={KASSA_PAD}>
                   {t('premium.kopenKnop')}
-                </a>
-                <a className="tk-button tk-button-secondary" href={KASSA_MAAND}>
-                  {t('premium.maandKnop')}
                 </a>
               </div>
               <p className="tk-hulp">{t('premium.kopenUitleg')}</p>

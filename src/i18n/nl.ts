@@ -652,7 +652,7 @@ export const nl = {
   'premium.waarom.apparaatUit':
     'Wat je kind oefent, gaat nergens heen. Alleen de code gaat naar onze server, om te controleren of hij klopt.',
   // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
-  // waar "€ 5 per maand" op staat (ADR-164), en de plek gaat naar de belofte
+  // waar een prijs per maand op staat (ADR-164), en de plek gaat naar de belofte
   // die dit product wél onderscheidt en die nergens anders stond.
   'premium.waarom.geenNamen': 'We slaan geen namen van kinderen op',
   'premium.waarom.geenNamenUit':
@@ -664,20 +664,21 @@ export const nl = {
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
   // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
-  'premium.prijs': '€ 24,95',
+  'premium.prijs': '€ 79,95',
   'premium.kopenUitleg':
     'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
   // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
   // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
-  // Daarom ook per maand, en dan zonder een jaar eraan vast te zitten.
-  'premium.maandPrijs': '€ 5',
+  // Daarom ook per maand, en dan zonder een jaar eraan vast te zitten. Tot
+  // betalen per maand er is, staat het er als "binnenkort" (ADR-196).
+  'premium.maandPrijs': '€ 9,95',
   'premium.perMaand': 'per maand',
   'premium.perSchooljaarKort': 'per schooljaar',
-  'premium.maandKnop': 'Per maand',
-  'premium.maandUitleg': 'Maandelijks opzegbaar. Je zegt op wanneer je wilt.',
-  'premium.jaarVoordeel': 'Een heel schooljaar kost minder dan vijf maanden.',
-  'premium.ofPerMaand': 'Of {prijs} per maand, maandelijks opzegbaar.',
+  'premium.binnenkort': 'Binnenkort',
+  'premium.maandUitleg': 'Per maand betalen komt binnenkort, en dan maandelijks opzegbaar.',
+  'premium.jaarVoordeel': 'Een heel schooljaar kost minder dan negen maanden.',
+  'premium.ofPerMaand': 'Binnenkort ook {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',

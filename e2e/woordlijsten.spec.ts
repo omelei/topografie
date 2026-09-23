@@ -62,6 +62,34 @@ test('een ingetypte lijst wordt een set die je kunt oefenen', async ({ page }) =
   await expect(vormen.getByRole('button', { name: /Kies de letters/ })).toHaveCount(0);
 });
 
+/**
+ * En er is ook echt mee te oefenen (ADR-195). De test hierboven stopte bij de
+ * vorm, en daardoor viel het niet op dat elke ronde met een eigen lijst
+ * uitliep op "De woorden konden niet geladen worden".
+ */
+test('een ronde flitsdictee op een eigen lijst begint', async ({ page }) => {
+  await signIn(page, 'Mees');
+  await maakLijst(page, 'Week 13', ['trein', 'fiets', 'wijzer']);
+
+  await page.goto('/taal');
+  await page
+    .getByRole('region', { name: 'Welk deel?' })
+    .getByRole('button', { name: 'Eigen woorden', exact: true })
+    .click();
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Eigen woorden/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Flitsdictee/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+  await expect(page.getByText('De woorden konden niet geladen worden.')).toHaveCount(0);
+});
+
 /** Zonder lijst is er geen deel: een knop naar een lege kamer is erger dan geen knop. */
 test('het deel Eigen woorden bestaat alleen als er een lijst is', async ({ page }) => {
   await signIn(page, 'Fenna');
