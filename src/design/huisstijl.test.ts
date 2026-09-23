@@ -214,7 +214,9 @@ describe('the tokens are the styleguide’s', () => {
     expect(readdirSync(join(ROOT, 'public', 'fonts')).sort()).toEqual([
       'atkinson-hyperlegible-latin-400.woff2',
       'atkinson-hyperlegible-latin-700.woff2',
-      'baloo-2-latin-wght.woff2',
+      'baloo-2-latin-600.woff2',
+      'baloo-2-latin-700.woff2',
+      'baloo-2-latin-800.woff2',
     ]);
   });
 
