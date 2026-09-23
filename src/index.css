@@ -3177,7 +3177,13 @@
     height: 100vh;
     height: 100dvh;
   }
+  /* `position: relative` houdt wat absoluut staat binnen dit deel. Zonder
+   * dat hingen de verborgen labels van `.tk-sr-only` aan de body, op hun plek
+   * in de lange inhoud, en maakten ze het document zelf duizenden pixels hoog:
+   * op een telefoon scrolde dan de hele pagina mee, schoof de balk weg en
+   * kwam er een lege vlakte onder de app (ADR-203). */
   .tk-schil-rol {
+    position: relative;
     display: flex;
     flex: 1;
     flex-direction: column;

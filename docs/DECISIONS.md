@@ -12453,6 +12453,23 @@ geheimen van de functie zelf blijven in Supabase. Net als bij `gezin-functions`
   instellingen en jouw diploma’s. …") en de regel onder "Mijn ouders zijn erbij"
   ("Vul dan hier de code in").
 
+## ADR-203 — Op een telefoon scrolt alleen de inhoud, nooit het document
+
+**Status:** accepted. **Date:** 2026-09-23. Gemeld door de eigenaar: "De
+achtergrondkleur op mobiel loopt niet goed door."
+
+**Oorzaak.** Onder 1200 is de app een vaste schil met `.tk-schil-rol` als het
+deel dat scrolt. De verborgen labels van `.tk-sr-only` staan absoluut, en omdat
+er tussen hen en de body geen gepositioneerde ouder stond, hingen ze aan de
+body, op hun plek diep in de lange inhoud. Op Premium zonder code maakten de
+labels van de vergelijkingstabel het document zo 4262 pixels hoger dan het
+scherm: de hele app schoof dan weg, boven een lege vlakte.
+
+**Besluit.** `.tk-schil-rol` krijgt `position: relative`, zodat alles wat
+absoluut staat binnen het scrollende deel blijft. `shell.spec.ts` houdt vast
+dat het document onder 1200 nooit hoger is dan het scherm, op Vandaag, Jij, een
+vakpagina en Premium zonder code.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
