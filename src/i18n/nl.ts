@@ -538,12 +538,12 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een schooljaar lang.',
+    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
     'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft de stof hangen.',
-  'premium.perSchooljaar': 'per schooljaar',
+  'premium.perSchooljaar': 'per jaar',
   'premium.codeTitel': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
@@ -583,7 +583,7 @@ export const nl = {
     'Je kind kan alle 68 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
-    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel schooljaar lang.',
+    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel jaar lang.',
 
   // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
   // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
@@ -664,7 +664,7 @@ export const nl = {
   // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
   'premium.prijs': '€ 79,95',
   'premium.kopenUitleg':
-    'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
+    'Eenmalig, voor een heel jaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
   // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
   // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
@@ -672,10 +672,10 @@ export const nl = {
   // betalen per maand er is, staat het er als "binnenkort" (ADR-196).
   'premium.maandPrijs': '€ 9,95',
   'premium.perMaand': 'per maand',
-  'premium.perSchooljaarKort': 'per schooljaar',
+  'premium.perSchooljaarKort': 'per jaar',
   'premium.binnenkort': 'Binnenkort',
   'premium.maandUitleg': 'Binnenkort kun je ook per maand betalen, en elke maand opzeggen.',
-  'premium.jaarVoordeel': 'Een schooljaar in één keer kost minder dan negen losse maanden.',
+  'premium.jaarVoordeel': 'Een jaar in één keer kost minder dan negen losse maanden.',
   'premium.ofPerMaand': 'Binnenkort ook {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',

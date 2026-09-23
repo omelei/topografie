@@ -65,3 +65,20 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   expect(stop?.height ?? 0, 'the stop in a round').toBeGreaterThanOrEqual(56);
   expect(stop?.width ?? 0, 'the stop in a round').toBeGreaterThanOrEqual(56);
 });
+
+/**
+ * Op een groot scherm groeit de pagina mee (ADR-199): driekwart van het
+ * scherm, tussen 1080 en 1600. Alleen op de desktop, want daar zit de maat.
+ */
+test('de pagina groeit mee met een groot scherm', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-1440', 'de maat van een desktop');
+  await signIn(page, 'Noor');
+  const breedte = () =>
+    page.locator('.tk-home').evaluate((el) => Math.round(el.getBoundingClientRect().width));
+
+  expect(await breedte()).toBe(1080);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  expect(await breedte()).toBe(1440);
+  await page.setViewportSize({ width: 2560, height: 1440 });
+  expect(await breedte()).toBe(1600);
+});

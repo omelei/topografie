@@ -13,7 +13,9 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | ---------------------------------------------------------------------------- | ------------- | ------------------------ | ---------------------- |
 | Kassa naar € 79,95 zetten: `supabase functions deploy kassa --no-verify-jwt` | jij           | Te doen, direct          | #132 is live (ADR-196) |
 | Gezinsaccount live zetten (zie hieronder)                                    | jij en Claude | Wacht op vier antwoorden | —                      |
-| Code afschermen (zie hieronder)                                              | jij en Claude | Te doen                  | —                      |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder)   | jij           | Te doen                  | —                      |
+| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)                | Claude        | Wacht op het adres       | Contactadres van jou   |
+| Klassencode: € 300 inclusief of exclusief btw?                               | jij           | Te beslissen             | —                      |
 
 ### Code afschermen
 
@@ -21,11 +23,11 @@ De repository `omelei/topografie` is nu **openbaar**: iedereen kan de code, de
 ADR's en de geschiedenis lezen en kopiëren. De site draait op GitHub Pages
 vanuit deze repository.
 
-1. **Repository privé zetten** — _jij_, in GitHub onder Settings → General →
-   Danger Zone. Let op: GitHub Pages op een privé-repository vraagt een betaald
-   plan (GitHub Pro). Zonder dat plan stopt de site. Het alternatief is de site
-   ergens anders hosten (bijvoorbeeld Cloudflare Pages); dan past _Claude_ de
-   deploy aan. Eerst beslissen welke van de twee, dan pas omzetten.
+1. **GitHub Pro nemen, dan de repository privé zetten** — _jij_. Gekozen: GitHub
+   Pro, want GitHub Pages op een privé-repository vraagt een betaald plan.
+   Eerst Pro (github.com → Settings → Billing and plans), dan pas de
+   repository privé (Settings → General → Danger Zone). Andersom stopt de site.
+   Controleer daarna dat www.leer.nu nog opent en dat de laatste deploy groen is.
 2. **Nalopen wat er in de repository staat** — _Claude_: geen geheimen, geen
    persoonsgegevens, en welke documenten (bedrijfsplan, prijzen, ADR's) niet
    buiten de deur horen.
@@ -66,11 +68,12 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Daarna
 
-| Wat                                                                        | Wie    | Waarom                                                                  | Hangt af van          |
-| -------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------------- | --------------------- |
-| Premium per gezin in plaats van per apparaat                               | Claude | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen | Gezinsaccount live    |
-| Opruimen van accounts na 24 maanden zonder gebruik                         | Claude | De bewaartermijn uit de privacyverklaring waarmaken                     | Akkoord op de termijn |
-| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen) | Claude | Staat nu als "binnenkort" op de site (ADR-196)                          | Besluit om te bouwen  |
+| Wat                                                                                                                        | Wie           | Waarom                                                                              | Hangt af van                          |
+| -------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
+| Premium per gezin in plaats van per apparaat                                                                               | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
+| Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
+| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Besluit om te bouwen                  |
+| Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
 
 ## Geparkeerd
 
@@ -96,13 +99,13 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Gedaan (recent)
 
-| PR        | Wat                                                                                                              | ADR      |
-| --------- | ---------------------------------------------------------------------------------------------------------------- | -------- |
-| #135      | Een ouder is geen profiel meer en telt niet mee in de drie; een kind kan van het apparaat                        | 198      |
-| #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback | 197      |
-| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per schooljaar en € 9,95 per maand (binnenkort)     | 195, 196 |
-| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                         | 194      |
-| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                              | 193      |
-| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app               | 192      |
-| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina       | 191      |
-| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                       | 187–190  |
+| PR        | Wat                                                                                                                                                                                       | ADR      |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #135      | Een ouder is geen profiel meer en telt niet mee in de drie; een kind kan van het apparaat; de pagina groeit mee op een groot scherm; klassencode van 40 plekken; een code geldt 365 dagen | 198–200  |
+| #134      | Alle interfaceteksten herschreven volgens een nieuwe schrijfwijzer: één woord per begrip, één vorm voor feedback                                                                          | 197      |
+| #132      | Eigen woordenlijsten zijn te oefenen; nieuwe prijzen € 79,95 per jaar en € 9,95 per maand (binnenkort)                                                                                    | 195, 196 |
+| #131      | Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint                                                                                                                  | 194      |
+| #130      | Triggers voor ouders: wat het kind wilde, en waar het klaar voor is                                                                                                                       | 193      |
+| #129      | Premiumgrens: gratis is oefenen, premium is alles wat over weken gaat; consistent door de hele app                                                                                        | 192      |
+| #128      | Menu altijd in beeld op een telefoon, logo blijft wit, "ken je inmiddels", derde persoon op de ouderpagina                                                                                | 191      |
+| #124–#127 | Gezinsaccount stap 3: een kind mee naar het account, synchroniseren, inloggen met een code                                                                                                | 187–190  |

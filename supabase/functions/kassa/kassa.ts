@@ -27,7 +27,7 @@ export const PRIJS_CENTEN = 7995;
 export const VALUTA = 'EUR';
 
 /** Wat er op het rekeningafschrift en in de Mollie-omschrijving staat. */
-export const OMSCHRIJVING = 'leer.nu premium — een schooljaar';
+export const OMSCHRIJVING = 'leer.nu premium — een jaar';
 
 /** Hoe lang een gekochte code geldt, en op hoeveel apparaten (ADR-116). */
 export const GELDIG_DAGEN = 365;

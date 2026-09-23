@@ -333,6 +333,9 @@
     --padding-kaart-telefoon: 20px;
     --padding-kaart-vo: 16px;
     --padding-scherm: 32px; /* 16 on a phone, below */
+    /* De breedte van een pagina: driekwart van het scherm, tussen 1080 en 1600
+     * (ADR-199). */
+    --pagina-breed: clamp(1080px, 75vw, 1600px);
     --gap-sectie: 64px;
     --gap-kaart-ruim: 16px; /* inside a card: 16, 12 or 10 */
     --gap-kaart: 12px;
@@ -1632,14 +1635,21 @@
    *
    * De voordeur en een modulepagina zijn één vorm en delen elk getal hieronder.
    * Ze houden twee namen omdat het midden van de voordeur rijen draagt en dat
-   * van een modulepagina een keuze, en dat is het hele verschil. */
+   * van een modulepagina een keuze, en dat is het hele verschil.
+   *
+   * **De maat groeit mee met het scherm** (ADR-199). 1080 was een vaste maat,
+   * en op een scherm van 1920 of breder stond de pagina als een smalle strook
+   * in het midden. Nu is het driekwart van het scherm, nooit minder dan 1080
+   * en nooit meer dan 1600. Lopende tekst groeit niet mee: die houdt zijn eigen
+   * grens in `ch`, dus de regels blijven leesbaar en de rasters krijgen de
+   * ruimte. */
   .tk-page,
   .tk-home {
     display: flex;
     flex-direction: column;
     gap: 24px;
     width: 100%;
-    max-width: 1080px;
+    max-width: var(--pagina-breed);
     margin: 0 auto;
     padding: var(--padding-scherm);
   }

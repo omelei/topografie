@@ -121,7 +121,7 @@ test('the kassa asks one address and nobody else', async ({ page, baseURL }) => 
   });
 
   await page.goto('/kopen/');
-  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Premium voor een jaar' })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
 
   // Tot hier is er nog niets gevraagd aan wie dan ook: het formulier praat pas

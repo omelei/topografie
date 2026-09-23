@@ -12358,6 +12358,56 @@ kon.
 - `GroepKiezer` heeft geen ouderknop meer; `groep.ouder` is `profile.ouder`
   geworden.
 
+## ADR-199 — De pagina groeit mee met een groot scherm
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Op een
+groot scherm is de body te smal."
+
+**Besluit.** `.tk-page` en `.tk-home` hebben geen vaste maat van 1080 meer maar
+`--pagina-breed: clamp(1080px, 75vw, 1600px)`: driekwart van het scherm, nooit
+smaller dan de oude maat en nooit breder dan 1600. Op 1440 verandert er niets;
+op 1920 is de pagina 1440 breed, op 2560 1600. Lopende tekst groeit niet mee,
+want die heeft zijn eigen grens in `ch`; de rasters en tegels krijgen de ruimte.
+`huisstijl.spec.ts` legt de drie maten vast.
+
+## ADR-200 — Een klassencode, en een code geldt 365 dagen
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Stap A
+ja. 40 plekken. De looptijd is 365 dagen."
+
+**Context.** Een school of leerkracht wil een klas laten oefenen. ADR-014 en
+ADR-123 hielden scholen buiten de app, omdat een school die betaalt voor inzicht
+in leerlingen van leer.nu een verwerker maakt, met een verwerkersovereenkomst en
+een ander privacyregime. Het aantal plekken op een code was al een kolom per
+code (`max_apparaten`), dus een klas past zonder de app te veranderen.
+
+**Besluit.**
+
+- **Stap A: een klassencode als gezinscode met 40 plekken**, € 300 per jaar, op
+  factuur. De leerkracht deelt de code met de ouders; die vullen hem thuis in
+  op de ouderpagina, zoals nu. De leerkracht ziet niets van de kinderen: er
+  komen geen leerlinggegevens bij leer.nu, en leer.nu wordt geen verwerker.
+  `maak-codes.mjs --plekken 40` maakt zo'n code; `tools/premium/README.md` zegt
+  hoe je een volle klas opschoont.
+- **Een plek is een apparaat**, geen kind. 40 in plaats van 35 geeft ruimte voor
+  een tweede apparaat thuis.
+- **Een code geldt 365 dagen** vanaf de aankoop, voor een gezin en een klas. Dat
+  deed de kassa al (`GELDIG_DAGEN`); de teksten zeiden "schooljaar", en ADR-196
+  ook. Overal staat nu "jaar".
+- **Stap B** (klasmodus op schoolapparaten, een overzicht voor de leerkracht,
+  een verwerkersovereenkomst, betalen op factuur) staat op de roadmap en wacht
+  op het gezinsaccount en op wat stap A oplevert.
+
+**Gevolgen.**
+
+- € 300 voor 40 plekken is ongeveer € 8 per kind; een gezin betaalt € 79,95.
+  Een klas kan dus gezinnen wegnemen die anders zelf kochten. Stap A is daarom
+  bedoeld als kanaal: aan het eind van het jaar krijgen de ouders het aanbod om
+  zelf door te gaan.
+- De pagina `/scholen` met een aanvraagknop komt zodra er een contactadres is.
+- `OMSCHRIJVING` van de kassa zegt "een jaar"; dat geldt na de volgende deploy
+  van de kassa-functie.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
