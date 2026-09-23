@@ -1,17 +1,20 @@
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { brand } from '@/config/brand';
 import { Wordmark } from '@/components/Wordmark';
 import type { Groep } from '@/game-core';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { createProfile } from '@/store/profile';
+import { isIngesteld } from '@/store/account';
+import type { KindInlogUitkomst } from '@/store/gezin/kindinlog';
 import type { ProfileRecord } from '@/store/db';
 import { GroepKiezer } from './GroepKiezer';
 
 /**
  * The first screen. It asks for a name, and then in which group the child is
- * — no e-mail, no age. The name is used to say hello and never leaves the
- * device, and the copy says exactly that, because a child who is asked for
- * their name deserves to be told where it goes.
+ * — no e-mail, no age. The name is used to say hello and stays on the device
+ * unless a parent takes the child into the family account (ADR-187), and the
+ * copy says where it goes, because a child who is asked for their name
+ * deserves to be told.
  *
  * **De groep is bewust teruggekomen** (ADR-151). Dit scherm vroeg eerst "no
  * class, no age", en dat was een keuze: wat je niet vraagt, hoef je niet te
@@ -36,6 +39,11 @@ import { GroepKiezer } from './GroepKiezer';
  *
  * Twee stappen op één kaart, en het kind bestaat pas na de tweede. Wie bij de
  * groep terug wil naar de naam, is nog niemand.
+ *
+ * **En een vierde: "Ik heb een inlogcode"** (ADR-190). Een kind dat al in een
+ * gezinsaccount staat, logt hier in met zijn code en het wachtwoord dat zijn
+ * ouder zette, en oefent verder waar het was. Alleen op een bouw met een
+ * gezinsproject: zonder is er niets om in te loggen.
  */
 export function ProfileGate({
   onReady,
@@ -49,7 +57,7 @@ export function ProfileGate({
 }) {
   const [naam, setNaam] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [stap, setStap] = useState<'naam' | 'groep'>('naam');
+  const [stap, setStap] = useState<'naam' | 'groep' | 'code'>('naam');
   const [busy, setBusy] = useState(false);
 
   function handleSubmit(event: FormEvent) {
@@ -110,7 +118,18 @@ export function ProfileGate({
           <button type="submit" className="tk-button">
             {t('profile.submit')}
           </button>
+          {isIngesteld() ? (
+            <button
+              type="button"
+              className="tk-button tk-button-tertiary self-start"
+              onClick={() => setStap('code')}
+            >
+              {t('inlog.knop')}
+            </button>
+          ) : null}
         </form>
+      ) : stap === 'code' ? (
+        <MetCode onReady={(profiel) => onReady(profiel)} onTerug={() => setStap('naam')} />
       ) : (
         <section className="tk-card flex flex-col gap-4" aria-labelledby="groep-vraag">
           <h1 id="groep-vraag" className="tk-titel">
@@ -135,5 +154,118 @@ export function ProfileGate({
         </section>
       )}
     </main>
+  );
+}
+
+const INLOG_FOUT: Record<Exclude<KindInlogUitkomst, { ok: true }>['reden'], TranslationKey> = {
+  onjuist: 'inlog.fout.onjuist',
+  'te-vaak': 'inlog.fout.te-vaak',
+  leeg: 'inlog.fout.leeg',
+  storing: 'inlog.fout.storing',
+  'geen-verbinding': 'inlog.fout.geen-verbinding',
+  vol: 'inlog.fout.vol',
+};
+
+/**
+ * Inloggen met de code en het wachtwoord van een kind (ADR-190).
+ *
+ * De meldingen zijn die van ADR-155: één zin voor een onbekende code en een fout
+ * wachtwoord, zodat niemand hier kan navragen welke codes bestaan, en bij te
+ * vaak proberen de verwijzing naar een ouder.
+ */
+function MetCode({
+  onReady,
+  onTerug,
+}: {
+  readonly onReady: (profiel: ProfileRecord) => void;
+  readonly onTerug: () => void;
+}) {
+  const [code, setCode] = useState('');
+  const [wachtwoord, setWachtwoord] = useState('');
+  const [bezig, setBezig] = useState(false);
+  const [fout, setFout] = useState<Exclude<KindInlogUitkomst, { ok: true }>['reden'] | null>(null);
+  const codeVeld = useId();
+  const wachtwoordVeld = useId();
+  const melding = useId();
+
+  async function verstuur(event: FormEvent) {
+    event.preventDefault();
+    if (code.trim() === '' || wachtwoord === '') {
+      setFout('leeg');
+      return;
+    }
+    setBezig(true);
+    setFout(null);
+    const [{ logInAlsKind }, { vervoer }] = await Promise.all([
+      import('@/store/gezin/kindinlog'),
+      import('@/store/gezin/vervoer'),
+    ]);
+    const uit = await logInAlsKind(code, wachtwoord, vervoer);
+    setBezig(false);
+    setWachtwoord('');
+    if (uit.ok) onReady(uit.profiel);
+    else setFout(uit.reden);
+  }
+
+  return (
+    <form
+      className="tk-card flex flex-col gap-4"
+      noValidate
+      onSubmit={(event) => void verstuur(event)}
+    >
+      <h1 className="tk-titel">{t('inlog.titel')}</h1>
+      <p className="text-tekst-secundair">{t('inlog.uitleg')}</p>
+
+      <label htmlFor={codeVeld} className="tk-label">
+        {t('inlog.code')}
+      </label>
+      <input
+        id={codeVeld}
+        className="tk-input"
+        value={code}
+        onChange={(event) => setCode(event.target.value)}
+        placeholder={t('inlog.codeVoorbeeld')}
+        autoComplete="username"
+        autoCapitalize="characters"
+        spellCheck={false}
+        maxLength={20}
+        aria-describedby={fout ? melding : undefined}
+        aria-invalid={fout ? true : undefined}
+      />
+
+      <label htmlFor={wachtwoordVeld} className="tk-label">
+        {t('inlog.wachtwoord')}
+      </label>
+      <input
+        id={wachtwoordVeld}
+        className="tk-input"
+        type="password"
+        value={wachtwoord}
+        onChange={(event) => setWachtwoord(event.target.value)}
+        autoComplete="current-password"
+        maxLength={200}
+        aria-describedby={fout ? melding : undefined}
+        aria-invalid={fout ? true : undefined}
+      />
+
+      <button type="submit" className="tk-button" disabled={bezig}>
+        {bezig ? t('account.bezig') : t('inlog.verder')}
+      </button>
+
+      {fout ? (
+        <p id={melding} role="alert" className="font-semibold text-fout">
+          {t(INLOG_FOUT[fout])}
+        </p>
+      ) : null}
+
+      <button
+        type="button"
+        className="tk-button tk-button-secondary"
+        disabled={bezig}
+        onClick={onTerug}
+      >
+        {t('groep.terug')}
+      </button>
+    </form>
   );
 }

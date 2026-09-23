@@ -539,3 +539,10 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   komen: "Zet Noor op dit apparaat".
 - **Ophalen gebeurt na elke ronde en bij het openen van de app**, net als versturen, met dezelfde
   samenvoegregels als de database. Het inloggen van een kind zelf is 3c-2.
+
+### Stap 3c-2 (ADR-190)
+
+- **Het wachtwoord van een kind zet de ouder op de ouderpagina**, naast de inlogcode, pas als het kind
+  elders wil inloggen. Een meegenomen kind heeft tot dan een wachtwoord dat niemand kent.
+- **Een kind dat zelf inlogde, wordt bijgehouden met zijn eigen sessie**, per kind bewaard op het
+  apparaat. Stap 3 is daarmee af.

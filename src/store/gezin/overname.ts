@@ -11,7 +11,7 @@ import {
 import { createChild } from '../children';
 import { zetOpApparaat } from './ophalen';
 import { leesPakket } from './pakket';
-import type { ServerKind, Vervoer, VervoerFout } from './vervoer';
+import type { ServerKind, Vervoer, VervoerFout, WachtwoordFout } from './vervoer';
 
 /**
  * Een kind dat al op dit apparaat oefende, meenemen naar het account van zijn
@@ -269,6 +269,40 @@ export async function gezinsstand(diensten: OvernameDiensten): Promise<
   }
 
   return { ok: true, ouderId: ouder.ouderId, inAccount: lijst.waarde, koppelingen };
+}
+
+/**
+ * Een wachtwoord zetten waarmee een kind zelf inlogt (ADR-190), met het token
+ * van de ouder. `kind-beheer` kijkt na of het kind van deze ouder is.
+ */
+export async function zetWachtwoordVoorKind(
+  kindId: string,
+  wachtwoord: string,
+  diensten: OvernameDiensten,
+): Promise<
+  { readonly ok: true } | { readonly ok: false; readonly reden: WachtwoordFout | 'niet-ingelogd' }
+> {
+  const ouder = await diensten.ouder();
+  if (ouder === null) return { ok: false, reden: 'niet-ingelogd' };
+  return diensten.vervoer.zetWachtwoord(ouder.token, kindId, wachtwoord);
+}
+
+/**
+ * Diensten voor een kind dat zelf ingelogd is (ADR-190): hetzelfde transport,
+ * met het token van het kind in plaats van dat van een ouder. `werkBij` heeft
+ * alleen het token nodig; de policy laat een kind zijn eigen rijen schrijven.
+ */
+export function dienstenVoorKind(
+  vervoer: Vervoer,
+  token: () => Promise<string | null>,
+): OvernameDiensten {
+  return {
+    vervoer,
+    ouder: async () => {
+      const waarde = await token();
+      return waarde === null ? null : { token: waarde, ouderId: '' };
+    },
+  };
 }
 
 let echt: Promise<OvernameDiensten> | null = null;

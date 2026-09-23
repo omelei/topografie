@@ -75,14 +75,19 @@ export async function leesKoppeling(lokaalId: string): Promise<Koppeling | null>
   return lees(lokaalId, await getSetting(`${VOORVOEGSEL}${lokaalId}`));
 }
 
-/** Alle koppelingen op dit apparaat die bij deze ouder horen. */
-export async function koppelingenVan(ouderId: string): Promise<Koppeling[]> {
+/** Alle koppelingen op dit apparaat, van welke ouder ook. */
+export async function alleKoppelingen(): Promise<Koppeling[]> {
   const db = await getDb();
   const rijen = await db.getAll('settings');
   return rijen
     .filter((rij) => rij.key.startsWith(VOORVOEGSEL))
     .map((rij) => lees(rij.key.slice(VOORVOEGSEL.length), rij.value))
-    .filter((koppeling): koppeling is Koppeling => koppeling?.ouderId === ouderId);
+    .filter((koppeling): koppeling is Koppeling => koppeling !== null);
+}
+
+/** Alle koppelingen op dit apparaat die bij deze ouder horen. */
+export async function koppelingenVan(ouderId: string): Promise<Koppeling[]> {
+  return (await alleKoppelingen()).filter((koppeling) => koppeling.ouderId === ouderId);
 }
 
 export async function schrijfKoppeling(koppeling: Koppeling): Promise<void> {

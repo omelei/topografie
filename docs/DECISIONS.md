@@ -11901,6 +11901,78 @@ niets half achter.
   migratie. Het advies blijft staan: niet aanzetten voor gezinnen vóór 3c-2,
   de privacyverklaring en de verwerkersovereenkomst.
 
+## ADR-190 — Stap 3c-2: een kind logt zelf in, met de code en een wachtwoord van zijn ouder
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar. Het
+laatste deel van stap 3 (ADR-187). **Voert uit** wat ADR-155 voor het kind
+beschreef, en gebruikt `kind-inloggen` en de actie `wachtwoord` van
+`kind-beheer` voor het eerst vanuit de app.
+
+### Context
+
+Na 3c-1 werkt een tweede apparaat zolang de ouder er ingelogd is. Maar de
+chromebook van school en de laptop bij opa hebben geen ouder. Daar moet een
+kind zelf binnen kunnen, en dat was vanaf het begin de vorm van ADR-155: een
+inlogcode en een wachtwoord.
+
+### Besluit
+
+**Op de ouderpagina staat per kind in het account de inlogcode**, als
+`KIND-ABCD-2345`, met een veld om het wachtwoord te zetten waarmee het kind zelf
+inlogt.
+
+- Een kind dat werd meegenomen, kreeg een wachtwoord dat niemand kent
+  (ADR-187). Wie dat kind elders wil laten inloggen, zet er hier een.
+- De regels zijn die voor een kind (`_gezin/code.ts`): minstens zes tekens, niet
+  de eigen naam, niet het eerste wat iemand intikt. De fout komt van
+  `kind-beheer` en staat er in woorden bij.
+- Een nieuw wachtwoord logt het kind overal uit, zoals bij elk herstel
+  (ADR-155), en dat staat erbij.
+- Over het kind in de derde persoon: "Noor kan nu zelf inloggen".
+
+**Op het eerste scherm staat "Ik heb een inlogcode"**, alleen op een bouw met
+een gezinsproject. De inlog loopt in vier stappen:
+
+1. Code en wachtwoord gaan naar `kind-inloggen`, en worden daar een sessie of
+   een van de antwoorden van ADR-155. "Deze code en dit wachtwoord horen niet
+   bij elkaar" is één zin voor een onbekende code en een fout wachtwoord. Bij
+   te vaak proberen volgt de verwijzing naar een ouder.
+2. Met die sessie leest het kind zijn eigen rij in `kinderen`. De policy laat
+   er precies één zien.
+3. Staat het kind hier al (een koppeling met zijn id), dan wordt het het
+   actieve kind. Anders komt het erbij, binnen de grens van drie.
+4. De sessie en de koppeling worden bewaard, en alles wordt opgehaald. Lukt dat
+   laatste niet, dan is het kind er toch, en haalt de volgende ronde het op.
+
+**De sessie van een kind staat per kind in `localStorage`**
+(`leernu.kindsessies`), net als die van de ouder: een token en een
+vernieuwtoken, nooit een wachtwoord. Hij wordt ververst als hij bijna om is, en
+vergeten als de server hem weigert, zoals na een nieuw wachtwoord.
+
+**Bijhouden kent nu twee soorten kinderen** (`bijhouden.ts`): die van de
+ingelogde ouder, met het token van de ouder, en die zelf ingelogd zijn, elk met
+hun eigen token (`dienstenVoorKind`). Een kind met een ouder hier gaat met de
+ouder, en niet ook nog als zichzelf. Een kind zonder allebei wacht tot een van
+de twee er is. De policy laat een kind zijn eigen rijen schrijven
+(`kind_id = auth.uid()`), dus er hoeft niets aan de server te veranderen.
+
+### Gevolgen
+
+- **Stap 3 is hiermee af**: meenemen (3a), bijhouden (3b), een tweede apparaat
+  via de ouder (3c-1) en een kind dat zelf inlogt (3c-2).
+- **Wat de eigenaar vóór livegang moet doen, en wat geen code is:**
+  - Supabase inrichten volgens `docs/SUPABASE.md`: migraties 0001 tot en met
+    0003, eigen SMTP, **Confirm email** aan, de Redirect URL;
+  - daarna `GEZIN_URL` en `GEZIN_KEY` zetten;
+  - de privacyverklaring;
+  - de verwerkersovereenkomst met Supabase.
+- **Een nieuwe code uitgeven** (`kind-beheer`, `nieuwe-code`) staat er nog
+  niet. Dat is voor een code die uitlekte, en een nieuw wachtwoord zetten is
+  daar meestal genoeg voor.
+- **Nog steeds niet tegen een echt project gedraaid.** Of de sessie die
+  `kind-inloggen` teruggeeft door PostgREST wordt geaccepteerd zoals hier
+  nagebootst, blijkt bij de eerste echte inlog.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

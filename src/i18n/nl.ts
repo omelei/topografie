@@ -1643,6 +1643,36 @@ export const nl = {
   'overname.fout.niet-ingelogd': 'Log eerst in met je account.',
   'overname.fout.vol': 'Op dit apparaat staan al drie kinderen. Er kan er geen meer bij.',
 
+  // Een kind logt zelf in, met code en wachtwoord (ADR-190). De meldingen zijn
+  // die van ADR-155: één zin voor een onbekende code en een fout wachtwoord.
+  'inlog.knop': 'Ik heb een inlogcode',
+  'inlog.titel': 'Inloggen met je code',
+  'inlog.uitleg':
+    'Je vader of moeder heeft een code en een wachtwoord voor je. Daarmee oefen je hier verder waar je gebleven was.',
+  'inlog.code': 'Inlogcode',
+  'inlog.codeVoorbeeld': 'KIND-XXXX-XXXX',
+  'inlog.wachtwoord': 'Wachtwoord',
+  'inlog.verder': 'Inloggen',
+  'inlog.fout.onjuist': 'Deze code en dit wachtwoord horen niet bij elkaar.',
+  'inlog.fout.te-vaak': 'Probeer het over een uur nog eens, of vraag je vader of moeder.',
+  'inlog.fout.leeg': 'Vul allebei de velden in.',
+  'inlog.fout.storing': 'Er ging iets mis. Probeer het zo nog eens.',
+  'inlog.fout.geen-verbinding':
+    'Er is nu geen verbinding. Probeer het zo nog eens, of oefen zonder in te loggen.',
+  'inlog.fout.vol': 'Op dit apparaat staan al drie kinderen. Er kan er geen meer bij.',
+
+  // De code en het wachtwoord waarmee een kind zelf inlogt, op de ouderpagina
+  // (ADR-190). Over het kind in de derde persoon: de ouder leest dit.
+  'overname.code': 'Inlogcode: {code}',
+  'overname.wachtwoordVeld': 'Wachtwoord waarmee {naam} zelf inlogt',
+  'overname.wachtwoordUitleg':
+    'Met de code en dit wachtwoord logt {naam} zelf in op een ander apparaat. Minstens zes tekens. Zet je een nieuw wachtwoord, dan wordt {naam} overal uitgelogd.',
+  'overname.wachtwoordKnop': 'Zet het wachtwoord',
+  'overname.wachtwoordKlaar': '{naam} kan nu zelf inloggen met deze code en dit wachtwoord.',
+  'overname.wachtwoordFout.te-kort': 'Kies minstens zes tekens.',
+  'overname.wachtwoordFout.te-simpel': 'Dit wachtwoord is te makkelijk te raden.',
+  'overname.wachtwoordFout.eigen-naam': 'Kies iets anders dan de naam {naam}.',
+
   // Bewaren op dit apparaat (ADR-186). Voor de ouder: het kind kan hier niets
   // aan doen, en een waarschuwing over weggooien hoort niet op zijn scherm.
   'bewaren.titel': 'Bewaren op dit apparaat',

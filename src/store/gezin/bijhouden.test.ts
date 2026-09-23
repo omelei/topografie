@@ -12,13 +12,19 @@ const koppelingen = vi.hoisted(() => ({ waarde: [] as Koppeling[] }));
 const werkBij = vi.hoisted(() => vi.fn());
 
 vi.mock('../account/bewaren', () => ({ leesSessie: () => sessie.waarde }));
-vi.mock('./koppeling', () => ({
-  koppelingenVan: async (ouderId: string) =>
-    koppelingen.waarde.filter((koppeling) => koppeling.ouderId === ouderId),
+const kindsessies = vi.hoisted(() => ({ waarde: [] as string[] }));
+vi.mock('./koppeling', () => ({ alleKoppelingen: async () => koppelingen.waarde }));
+vi.mock('./kindsessie', () => ({
+  kinderenMetSessie: () => kindsessies.waarde,
+  geldigeKindsessie: async (kindId: string) => ({ token: `token-${kindId}` }),
 }));
 vi.mock('./overname', () => ({
   werkBij,
   laadOvernameDiensten: vi.fn(),
+  dienstenVoorKind: (vervoer: unknown, token: () => Promise<string | null>) => ({
+    vervoer,
+    ouder: async () => ({ token: await token(), ouderId: '' }),
+  }),
 }));
 
 const { houBij } = await import('./bijhouden');
@@ -37,6 +43,7 @@ function koppeling(lokaalId: string, ouderId = 'ouder-1'): Koppeling {
 beforeEach(() => {
   sessie.waarde = null;
   koppelingen.waarde = [];
+  kindsessies.waarde = [];
   werkBij.mockReset();
   werkBij.mockResolvedValue({ ok: true });
 });
@@ -73,5 +80,23 @@ describe('bijhouden', () => {
     // En daarna mag het gewoon weer.
     await houBij(DIENSTEN);
     expect(werkBij).toHaveBeenCalledTimes(2);
+  });
+
+  /** Een kind dat zelf inlogde, op een apparaat zonder ouder (ADR-190). */
+  it('werkt een zelf ingelogd kind bij met zijn eigen token', async () => {
+    koppelingen.waarde = [koppeling('me', 'ouder-elders')];
+    kindsessies.waarde = ['server-me'];
+    await houBij(DIENSTEN);
+    expect(werkBij).toHaveBeenCalledTimes(1);
+    const diensten = werkBij.mock.calls[0]?.[1] as OvernameDiensten;
+    expect(await diensten.ouder()).toEqual({ token: 'token-server-me', ouderId: '' });
+  });
+
+  it('laat een kind met een ouder hier niet ook nog als zichzelf bijwerken', async () => {
+    sessie.waarde = { gebruikerId: 'ouder-1' };
+    koppelingen.waarde = [koppeling('me')];
+    kindsessies.waarde = ['server-me'];
+    await houBij(DIENSTEN);
+    expect(werkBij).toHaveBeenCalledTimes(1);
   });
 });

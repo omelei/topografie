@@ -106,7 +106,13 @@ async function naarOuder(page: Page) {
 
 /** Een gezinsproject dat onthoudt wat het krijgt. */
 async function nepGezin(page: Page) {
-  const inAccount: { id: string; voornaam: string; inlogcode: string; groep: number | null }[] = [];
+  const inAccount: {
+    id: string;
+    ouder_id: string;
+    voornaam: string;
+    inlogcode: string;
+    groep: number | null;
+  }[] = [];
   const beheer: unknown[] = [];
   /** Wat er binnenkwam, per tabel. */
   const tabellen: Record<string, unknown[]> = {};
@@ -116,17 +122,27 @@ async function nepGezin(page: Page) {
   await page.route(`${GEZIN}/rest/v1/kinderen**`, (route) => antwoord(route, 200, inAccount));
   await page.route(`${GEZIN}/functions/v1/kind-beheer`, async (route) => {
     if (route.request().method() !== 'POST') return antwoord(route, 204, {});
-    const lijf = route.request().postDataJSON() as { actie: string; voornaam?: string };
+    const lijf = route.request().postDataJSON() as {
+      actie: string;
+      voornaam?: string;
+      wachtwoord?: string;
+    };
     beheer.push(lijf);
     if (lijf.actie === 'opnemen') {
       const kind = {
         id: 'server-noor',
+        ouder_id: 'ouder-e2e',
         voornaam: lijf.voornaam ?? '',
         inlogcode: 'ABCD2345',
         groep: null,
       };
       inAccount.push(kind);
       return antwoord(route, 200, { kind });
+    }
+    if (lijf.actie === 'wachtwoord') {
+      // Dezelfde ondergrens als `_gezin/code.ts`: zes tekens.
+      if ((lijf.wachtwoord ?? '').length < 6) return antwoord(route, 400, { fout: 'te-kort' });
+      return antwoord(route, 200, { ok: true });
     }
     if (lijf.actie === 'verwijderen') {
       inAccount.splice(0, inAccount.length);
@@ -187,7 +203,13 @@ async function opApparaat(page: Page) {
 
 /** Noor zoals ze op een ander apparaat in het account kwam: een doos, een diploma, een ronde. */
 function noorOpDeIpad(gezin: Awaited<ReturnType<typeof nepGezin>>) {
-  gezin.inAccount.push({ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: 6 });
+  gezin.inAccount.push({
+    id: 'server-noor',
+    ouder_id: 'ouder-e2e',
+    voornaam: 'Noor',
+    inlogcode: 'ABCD2345',
+    groep: 6,
+  });
   const van = { kind_id: 'server-noor', ouder_id: 'ouder-e2e' };
   gezin.opServer.voortgang = [
     {
@@ -462,4 +484,85 @@ test('een kind dat hier al oefent, wordt gekoppeld aan het kind in het account',
   expect((gezin.tabellen.sessies as { id: string }[]).map((rij) => rij.id)).toContain(
     'ronde-klaar',
   );
+});
+
+/**
+ * Een kind logt zelf in (ADR-190), op een apparaat waar nog niemand oefende en
+ * geen ouder bij is: de chromebook van school.
+ */
+test('een kind logt zelf in met code en wachtwoord, en oefent verder waar het was', async ({
+  page,
+}) => {
+  const gezin = await nepGezin(page);
+  noorOpDeIpad(gezin);
+  let inlog: unknown = null;
+  await page.route(`${GEZIN}/functions/v1/kind-inloggen`, (route) => {
+    if (route.request().method() === 'POST') inlog = route.request().postDataJSON();
+    return antwoord(route, 200, {
+      sessie: {
+        access_token: 'token-noor',
+        refresh_token: 'vernieuw-noor',
+        expires_in: 3600,
+        token_type: 'bearer',
+      },
+    });
+  });
+
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ik heb een inlogcode' }).click();
+  await page.getByLabel('Inlogcode').fill('kind-abcd-2345');
+  await page.getByLabel('Wachtwoord').fill('konijntje');
+  await page.getByRole('button', { name: 'Inloggen', exact: true }).click();
+
+  await expect(page.getByRole('banner').getByRole('button', { name: 'Noor' })).toBeVisible();
+  expect(inlog).toEqual({ code: 'kind-abcd-2345', wachtwoord: 'konijntje' });
+
+  const hier = await opApparaat(page);
+  expect(hier.profielen.map((kind) => kind.naam)).toEqual(['Noor']);
+  expect(hier.dozen).toContainEqual(expect.objectContaining({ itemId: 'nl-utrecht', box: 4 }));
+  expect(hier.diplomas).toContainEqual(expect.objectContaining({ badgeId: 'tafel-3' }));
+});
+
+test('een fout wachtwoord zegt dat, zonder te zeggen of de code bestaat', async ({ page }) => {
+  await page.route(`${GEZIN}/functions/v1/kind-inloggen`, (route) =>
+    antwoord(route, 200, { fout: 'onjuist' }),
+  );
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Ik heb een inlogcode' }).click();
+  await page.getByLabel('Inlogcode').fill('KIND-ABCD-2345');
+  await page.getByLabel('Wachtwoord').fill('verkeerd');
+  await page.getByRole('button', { name: 'Inloggen', exact: true }).click();
+
+  await expect(page.getByRole('alert')).toHaveText(
+    'Deze code en dit wachtwoord horen niet bij elkaar.',
+  );
+  // Terug naar de naam kan altijd, en er is niemand aangemaakt.
+  await page.getByRole('button', { name: 'Terug' }).click();
+  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
+});
+
+test('de ouder ziet de inlogcode en zet een wachtwoord voor het kind', async ({ page }) => {
+  await stubGezin(page);
+  const gezin = await nepGezin(page);
+  await signIn(page, 'Noor');
+  await naarOuder(page);
+
+  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
+  await expect(blok).toContainText('Inlogcode: KIND-ABCD-2345');
+
+  const veld = blok.getByLabel('Wachtwoord waarmee Noor zelf inlogt');
+  await veld.fill('kort');
+  await blok.getByRole('button', { name: 'Zet het wachtwoord' }).click();
+  await expect(blok.getByRole('alert')).toHaveText('Kies minstens zes tekens.');
+
+  await veld.fill('konijntje');
+  await blok.getByRole('button', { name: 'Zet het wachtwoord' }).click();
+  await expect(blok.getByRole('status')).toContainText('Noor kan nu zelf inloggen');
+  expect(gezin.beheer).toContainEqual({
+    actie: 'wachtwoord',
+    kindId: 'server-noor',
+    wachtwoord: 'konijntje',
+  });
 });
