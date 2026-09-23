@@ -531,3 +531,11 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   kwam.
 - **De samenvoegregels van ADR-155 zijn triggers in de database geworden** en geen afspraak voor de
   client. Dat was in §9 nog niet uitgewerkt; het is de enige plek waar ze voor elke schrijver gelden.
+
+### Stap 3c-1 (ADR-189)
+
+- **Samenvoegen met een bestaand kind is een knop per paar**: "Noortje is Noor". De ouder kiest, ook
+  bij gelijke namen, zoals §9 vroeg. Een kind uit het account kan ook als nieuw kind op het apparaat
+  komen: "Zet Noor op dit apparaat".
+- **Ophalen gebeurt na elke ronde en bij het openen van de app**, net als versturen, met dezelfde
+  samenvoegregels als de database. Het inloggen van een kind zelf is 3c-2.

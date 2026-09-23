@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, langsDePoort, stubGezin } from './gezin';
 
@@ -105,9 +106,12 @@ async function naarOuder(page: Page) {
 
 /** Een gezinsproject dat onthoudt wat het krijgt. */
 async function nepGezin(page: Page) {
-  const inAccount: { id: string; voornaam: string; inlogcode: string }[] = [];
+  const inAccount: { id: string; voornaam: string; inlogcode: string; groep: number | null }[] = [];
   const beheer: unknown[] = [];
+  /** Wat er binnenkwam, per tabel. */
   const tabellen: Record<string, unknown[]> = {};
+  /** Wat de server teruggeeft als er iets opgehaald wordt (ADR-189), per tabel. */
+  const opServer: Record<string, unknown[]> = {};
 
   await page.route(`${GEZIN}/rest/v1/kinderen**`, (route) => antwoord(route, 200, inAccount));
   await page.route(`${GEZIN}/functions/v1/kind-beheer`, async (route) => {
@@ -115,7 +119,12 @@ async function nepGezin(page: Page) {
     const lijf = route.request().postDataJSON() as { actie: string; voornaam?: string };
     beheer.push(lijf);
     if (lijf.actie === 'opnemen') {
-      const kind = { id: 'server-noor', voornaam: lijf.voornaam ?? '', inlogcode: 'ABCD2345' };
+      const kind = {
+        id: 'server-noor',
+        voornaam: lijf.voornaam ?? '',
+        inlogcode: 'ABCD2345',
+        groep: null,
+      };
       inAccount.push(kind);
       return antwoord(route, 200, { kind });
     }
@@ -126,7 +135,8 @@ async function nepGezin(page: Page) {
     return antwoord(route, 400, { fout: 'onbekende-actie' });
   });
   for (const tabel of ['sessies', 'pogingen', 'voortgang', 'kind_diplomas', 'instellingen']) {
-    await page.route(`${GEZIN}/rest/v1/${tabel}`, (route) => {
+    await page.route(`${GEZIN}/rest/v1/${tabel}**`, (route) => {
+      if (route.request().method() === 'GET') return antwoord(route, 200, opServer[tabel] ?? []);
       if (route.request().method() === 'POST') {
         tabellen[tabel] = [
           ...(tabellen[tabel] ?? []),
@@ -136,7 +146,77 @@ async function nepGezin(page: Page) {
       return antwoord(route, 201, null);
     });
   }
-  return { inAccount, beheer, tabellen };
+  return { inAccount, beheer, tabellen, opServer };
+}
+
+/** Wat er van een kind in IndexedDB staat, per winkel, voor de controles hieronder. */
+async function opApparaat(page: Page) {
+  return page.evaluate(
+    async () =>
+      new Promise<{
+        profielen: { id: string; naam: string }[];
+        dozen: { kindId: string; itemId: string; box: number }[];
+        diplomas: { kindId: string; badgeId: string; behaaldOp: string }[];
+        sessies: { id: string; kindId: string }[];
+      }>((klaar, mis) => {
+        const open = indexedDB.open('leernu');
+        open.onerror = () => mis(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction(['profile', 'progress', 'kindBadges', 'sessions']);
+          const uit: Record<string, unknown[]> = {};
+          const lees = (winkel: string, naam: string) => {
+            const verzoek = tx.objectStore(winkel).getAll();
+            verzoek.onsuccess = () => {
+              uit[naam] = verzoek.result;
+            };
+          };
+          lees('profile', 'profielen');
+          lees('progress', 'dozen');
+          lees('kindBadges', 'diplomas');
+          lees('sessions', 'sessies');
+          tx.oncomplete = () => {
+            db.close();
+            klaar(uit as never);
+          };
+          tx.onerror = () => mis(tx.error);
+        };
+      }),
+  );
+}
+
+/** Noor zoals ze op een ander apparaat in het account kwam: een doos, een diploma, een ronde. */
+function noorOpDeIpad(gezin: Awaited<ReturnType<typeof nepGezin>>) {
+  gezin.inAccount.push({ id: 'server-noor', voornaam: 'Noor', inlogcode: 'ABCD2345', groep: 6 });
+  const van = { kind_id: 'server-noor', ouder_id: 'ouder-e2e' };
+  gezin.opServer.voortgang = [
+    {
+      ...van,
+      item_id: 'nl-utrecht',
+      box: 4,
+      laatste_review: '2026-09-22T10:01:00+00:00',
+      volgende_review: '2026-09-30T10:01:00+00:00',
+      goed_count: 6,
+      fout_count: 1,
+      hoogste_doos: 4,
+    },
+  ];
+  gezin.opServer.kind_diplomas = [
+    { ...van, badge_id: 'tafel-3', behaald_op: '2026-09-21T10:00:00+00:00' },
+  ];
+  gezin.opServer.sessies = [
+    {
+      ...van,
+      id: 'ronde-ipad',
+      mode: 'meerkeuze',
+      set_id: 'nl-provincies',
+      item_set: [],
+      score: 1,
+      beantwoord: 1,
+      gestart: '2026-09-22T10:00:00+00:00',
+      geeindigd: '2026-09-22T10:05:00+00:00',
+    },
+  ];
 }
 
 test('een ouder neemt zijn kind mee naar het account, met toestemming', async ({ page }) => {
@@ -295,4 +375,91 @@ test('wat er daarna geoefend wordt, gaat vanzelf mee, en alleen dat', async ({ p
     .poll(() => (gezin.tabellen.pogingen as { id: string }[]).map((rij) => rij.id))
     .toEqual(['poging-twee']);
   expect((gezin.tabellen.sessies as { id: string }[]).map((rij) => rij.id)).toEqual(['ronde-twee']);
+});
+
+/**
+ * Het tweede apparaat (ADR-189): Noor oefent op de iPad en staat in het
+ * account; op de laptop zet de ouder haar neer, met wat ze op de iPad deed.
+ */
+test('een kind uit het account komt op een tweede apparaat, met wat het daar deed', async ({
+  page,
+}) => {
+  await stubGezin(page);
+  const gezin = await nepGezin(page);
+  noorOpDeIpad(gezin);
+  await signIn(page, 'Sam');
+  await naarOuder(page);
+
+  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const noor = blok.getByRole('list', { name: 'In je account, maar niet op dit apparaat' });
+  await expect(noor).toContainText('Noor');
+  // De twee keuzes staan op een scherm dat een ouder leest; axe kijkt mee, met
+  // dezelfde regels als `a11y.spec.ts`.
+  const scan = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
+    .analyze();
+  expect(scan.violations).toEqual([]);
+  await noor.getByRole('button', { name: 'Zet Noor op dit apparaat' }).click();
+
+  await expect(blok).toContainText('Noor');
+  await expect(noor).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Je kinderen', exact: true })).toContainText(
+    'Noor',
+  );
+
+  const hier = await opApparaat(page);
+  const lokaal = hier.profielen.find((kind) => kind.naam === 'Noor');
+  expect(lokaal).toBeDefined();
+  expect(hier.dozen).toContainEqual(
+    expect.objectContaining({ kindId: lokaal?.id, itemId: 'nl-utrecht', box: 4 }),
+  );
+  expect(hier.diplomas).toContainEqual(
+    expect.objectContaining({ kindId: lokaal?.id, badgeId: 'tafel-3' }),
+  );
+  expect(hier.sessies).toContainEqual(
+    expect.objectContaining({ id: 'ronde-ipad', kindId: lokaal?.id }),
+  );
+  // Sam is gebleven wie hij was.
+  expect(hier.profielen.map((kind) => kind.naam).sort()).toEqual(['Noor', 'Sam']);
+});
+
+/**
+ * Of Noor oefende hier al — de laptop vroeg om een naam voor er een ouder bij
+ * was — en dan koppelt de ouder de twee: één kind, met wat er op beide stond.
+ */
+test('een kind dat hier al oefent, wordt gekoppeld aan het kind in het account', async ({
+  page,
+}) => {
+  await stubGezin(page);
+  const gezin = await nepGezin(page);
+  noorOpDeIpad(gezin);
+  await signIn(page, 'Noortje');
+  await zaaiVoortgang(page);
+  await naarOuder(page);
+
+  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  await blok.getByRole('button', { name: 'Noortje is Noor' }).click();
+  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await expect(
+    blok.getByRole('list', { name: 'In je account, maar niet op dit apparaat' }),
+  ).toHaveCount(0);
+
+  // Niets nieuws in het account: gekoppeld, niet opgenomen.
+  expect(gezin.beheer).toEqual([]);
+
+  // Hier staat nu wat er op beide stond, onder de id die het hier al had.
+  const hier = await opApparaat(page);
+  expect(hier.profielen.map((kind) => kind.naam)).toEqual(['Noortje']);
+  expect(hier.dozen.map((doos) => `${doos.kindId}:${doos.itemId}`).sort()).toEqual([
+    'me:nl-limburg',
+    'me:nl-utrecht',
+  ]);
+
+  // En wat hier stond, ging naar het account, onder de id daar.
+  expect(gezin.tabellen.voortgang).toContainEqual(
+    expect.objectContaining({ kind_id: 'server-noor', item_id: 'nl-limburg' }),
+  );
+  expect((gezin.tabellen.sessies as { id: string }[]).map((rij) => rij.id)).toContain(
+    'ronde-klaar',
+  );
 });

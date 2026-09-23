@@ -1630,12 +1630,18 @@ export const nl = {
     'Alles van {naam} verdwijnt dan van onze server. Op dit apparaat blijft het gewoon staan.',
   'overname.haalWegJa': 'Ja, haal weg',
   'overname.haalWegNee': 'Toch niet',
-  'overname.alleenDaar': 'In je account, maar niet op dit apparaat: {namen}.',
+  'overname.alleenDaarTitel': 'In je account, maar niet op dit apparaat',
+  'overname.nietHier': 'In je account, maar niet op dit apparaat.',
+  'overname.zetHier': 'Zet {naam} op dit apparaat',
+  'overname.ofKoppel':
+    'Oefent {naam} hier al, onder deze of een andere naam? Kies wie het is, dan worden de twee één.',
+  'overname.koppel': '{hier} is {daar}',
   'overname.opnieuwLaden': 'Probeer opnieuw',
   'overname.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'overname.fout.geweigerd': 'Dat lukte niet. Log uit en weer in, en probeer het opnieuw.',
   'overname.fout.niet-ingesteld': 'Dit kan hier nog niet.',
   'overname.fout.niet-ingelogd': 'Log eerst in met je account.',
+  'overname.fout.vol': 'Op dit apparaat staan al drie kinderen. Er kan er geen meer bij.',
 
   // Bewaren op dit apparaat (ADR-186). Voor de ouder: het kind kan hier niets
   // aan doen, en een waarschuwing over weggooien hoort niet op zijn scherm.

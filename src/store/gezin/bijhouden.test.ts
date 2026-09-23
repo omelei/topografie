@@ -9,7 +9,7 @@ import type { OvernameDiensten } from './overname';
 
 const sessie = vi.hoisted(() => ({ waarde: null as { gebruikerId: string } | null }));
 const koppelingen = vi.hoisted(() => ({ waarde: [] as Koppeling[] }));
-const verstuurOpnieuw = vi.hoisted(() => vi.fn());
+const werkBij = vi.hoisted(() => vi.fn());
 
 vi.mock('../account/bewaren', () => ({ leesSessie: () => sessie.waarde }));
 vi.mock('./koppeling', () => ({
@@ -17,7 +17,7 @@ vi.mock('./koppeling', () => ({
     koppelingen.waarde.filter((koppeling) => koppeling.ouderId === ouderId),
 }));
 vi.mock('./overname', () => ({
-  verstuurOpnieuw,
+  werkBij,
   laadOvernameDiensten: vi.fn(),
 }));
 
@@ -30,47 +30,48 @@ function koppeling(lokaalId: string, ouderId = 'ouder-1'): Koppeling {
     kindId: `server-${lokaalId}`,
     ouderId,
     verstuurdOp: '2026-09-22T10:00:00.000Z',
+    opgehaaldOp: '2026-09-22T10:00:00.000Z',
   };
 }
 
 beforeEach(() => {
   sessie.waarde = null;
   koppelingen.waarde = [];
-  verstuurOpnieuw.mockReset();
-  verstuurOpnieuw.mockResolvedValue({ ok: true });
+  werkBij.mockReset();
+  werkBij.mockResolvedValue({ ok: true });
 });
 
 describe('bijhouden', () => {
   it('doet niets zonder ingelogde ouder', async () => {
     koppelingen.waarde = [koppeling('me')];
     await houBij(DIENSTEN);
-    expect(verstuurOpnieuw).not.toHaveBeenCalled();
+    expect(werkBij).not.toHaveBeenCalled();
   });
 
   it('doet niets zonder gekoppeld kind van deze ouder', async () => {
     sessie.waarde = { gebruikerId: 'ouder-1' };
     koppelingen.waarde = [koppeling('me', 'ouder-2')];
     await houBij(DIENSTEN);
-    expect(verstuurOpnieuw).not.toHaveBeenCalled();
+    expect(werkBij).not.toHaveBeenCalled();
   });
 
   it('verstuurt voor elk gekoppeld kind, ook als er één mislukt', async () => {
     sessie.waarde = { gebruikerId: 'ouder-1' };
     koppelingen.waarde = [koppeling('me'), koppeling('sem')];
-    verstuurOpnieuw.mockRejectedValueOnce(new Error('weg'));
+    werkBij.mockRejectedValueOnce(new Error('weg'));
     await houBij(DIENSTEN);
-    expect(verstuurOpnieuw).toHaveBeenCalledTimes(2);
-    expect(verstuurOpnieuw.mock.calls.map((aanroep) => aanroep[0].lokaalId)).toEqual(['me', 'sem']);
+    expect(werkBij).toHaveBeenCalledTimes(2);
+    expect(werkBij.mock.calls.map((aanroep) => aanroep[0].lokaalId)).toEqual(['me', 'sem']);
   });
 
   it('maakt van twee aanleidingen tegelijk één keer versturen', async () => {
     sessie.waarde = { gebruikerId: 'ouder-1' };
     koppelingen.waarde = [koppeling('me')];
     await Promise.all([houBij(DIENSTEN), houBij(DIENSTEN)]);
-    expect(verstuurOpnieuw).toHaveBeenCalledTimes(1);
+    expect(werkBij).toHaveBeenCalledTimes(1);
 
     // En daarna mag het gewoon weer.
     await houBij(DIENSTEN);
-    expect(verstuurOpnieuw).toHaveBeenCalledTimes(2);
+    expect(werkBij).toHaveBeenCalledTimes(2);
   });
 });
