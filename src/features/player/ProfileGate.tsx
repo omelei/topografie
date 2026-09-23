@@ -29,13 +29,14 @@ import { GroepKiezer } from './GroepKiezer';
  * toegeven wat het gewoon weet. Overslaan hoort een keuze te zijn en geen
  * bekentenis; wat de app ermee doet, is precies hetzelfde.
  *
- * **En er is een derde weg: "Ik ben een ouder"** (ADR-161). Dit scherm is het
- * allereerste wat iemand van leer.nu ziet, en dat is vaak niet het kind maar de
- * volwassene die de app opzoekt. Die werd hier gedwongen een groep te kiezen om
- * ergens te komen. Nu maakt die knop het profiel aan zonder groep — de naam is
- * al getypt en de groep is toch altijd over te slaan — en opent Premium, waar
- * staat wat leer.nu doet en wat het kost. Dat was Voor ouders, tot die pagina
- * opging in Jij en Premium (ADR-171); de groep zet het kind zelf op Jij.
+ * **En er is een derde weg: "Ik ben een ouder"** (ADR-161, ADR-198). Dit
+ * scherm is het allereerste wat iemand van leer.nu ziet, en dat is vaak niet
+ * het kind maar de volwassene die de app opzoekt. Een ouder oefent niet en is
+ * dus geen profiel: de knop staat bij de naam, en daarna vraagt dezelfde kaart
+ * naar de naam en de groep van het kind. Dat kind wordt gemaakt, en de app
+ * opent op Premium, waar staat wat leer.nu doet en wat het kost. Tot ADR-198
+ * stond de knop bij de groep en werd de ouder zelf het eerste kind: die telde
+ * mee in de drie, en kon oefenen.
  *
  * Twee stappen op één kaart, en het kind bestaat pas na de tweede. Wie bij de
  * groep terug wil naar de naam, is nog niemand.
@@ -58,18 +59,19 @@ export function ProfileGate({
   const [naam, setNaam] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [stap, setStap] = useState<'naam' | 'groep' | 'code'>('naam');
+  const [voorOuder, setVoorOuder] = useState(false);
   const [busy, setBusy] = useState(false);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     if (naam.trim().length < 2) {
-      setError(t('profile.nameTooShort'));
+      setError(t(voorOuder ? 'profile.ouder.nameTooShort' : 'profile.nameTooShort'));
       return;
     }
     setStap('groep');
   }
 
-  async function kies(groep: Groep | undefined, naarOuder = false) {
+  async function kies(groep: Groep | undefined) {
     setBusy(true);
     const kind = await createProfile(naam, groep);
     // Onbereikbaar: dit scherm staat er alleen als er nog geen kind is, en de
@@ -80,7 +82,7 @@ export function ProfileGate({
       setBusy(false);
       return;
     }
-    onReady(kind, naarOuder);
+    onReady(kind, voorOuder);
   }
 
   return (
@@ -92,9 +94,9 @@ export function ProfileGate({
 
       {stap === 'naam' ? (
         <form onSubmit={handleSubmit} className="tk-card flex flex-col gap-4">
-          <h1 className="tk-titel">{t('profile.title')}</h1>
+          <h1 className="tk-titel">{t(voorOuder ? 'profile.ouder.title' : 'profile.title')}</h1>
           <label htmlFor="naam" className="text-tekst-secundair">
-            {t('profile.help')}
+            {t(voorOuder ? 'profile.ouder.help' : 'profile.help')}
           </label>
           <input
             id="naam"
@@ -104,7 +106,7 @@ export function ProfileGate({
               setNaam(event.target.value);
               setError(null);
             }}
-            placeholder={t('profile.placeholder')}
+            placeholder={t(voorOuder ? 'profile.ouder.placeholder' : 'profile.placeholder')}
             autoComplete="off"
             maxLength={24}
             aria-describedby={error ? 'naam-error' : undefined}
@@ -116,9 +118,19 @@ export function ProfileGate({
             </p>
           )}
           <button type="submit" className="tk-button">
-            {t('profile.submit')}
+            {t(voorOuder ? 'profile.ouder.submit' : 'profile.submit')}
           </button>
-          {isIngesteld() ? (
+          <button
+            type="button"
+            className="tk-button tk-button-tertiary self-start"
+            onClick={() => {
+              setVoorOuder(!voorOuder);
+              setError(null);
+            }}
+          >
+            {t(voorOuder ? 'profile.ouder.terug' : 'profile.ouder')}
+          </button>
+          {isIngesteld() && !voorOuder ? (
             <button
               type="button"
               className="tk-button tk-button-tertiary self-start"
@@ -133,15 +145,17 @@ export function ProfileGate({
       ) : (
         <section className="tk-card flex flex-col gap-4" aria-labelledby="groep-vraag">
           <h1 id="groep-vraag" className="tk-titel">
-            {t('groep.vraag')}
+            {voorOuder ? t('groep.ouder.vraag', { naam: naam.trim() }) : t('groep.vraag')}
           </h1>
-          <p className="text-tekst-secundair">{t('groep.uitleg')}</p>
+          <p className="text-tekst-secundair">
+            {t(voorOuder ? 'groep.ouder.uitleg' : 'groep.uitleg')}
+          </p>
           <GroepKiezer
             gekozen={null}
-            uitweg="groep.zegIkNiet"
+            uitweg={voorOuder ? 'groep.ouder.overslaan' : 'groep.zegIkNiet'}
+            label={voorOuder ? t('groep.ouder.vraag', { naam: naam.trim() }) : undefined}
             bezig={busy}
             onKies={(groep) => void kies(groep)}
-            onOuder={() => void kies(undefined, true)}
           />
           <button
             type="button"
@@ -149,7 +163,7 @@ export function ProfileGate({
             disabled={busy}
             onClick={() => setStap('naam')}
           >
-            {t('groep.terug')}
+            {t(voorOuder ? 'groep.ouder.terug' : 'groep.terug')}
           </button>
         </section>
       )}

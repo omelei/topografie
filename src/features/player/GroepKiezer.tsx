@@ -13,16 +13,12 @@ import { t, type TranslationKey } from '@/i18n';
  * De uitweg staat erbij als gewone knop, niet als klein linkje eronder. Een
  * kind dat zijn groep niet kwijt wil, hoort niet te zoeken hoe het verder kan.
  *
- * **En bij de eerste vraag staat er nog een knop naast** (ADR-161): "Ik ben een
- * ouder". Die is geen groep en kiest er ook geen — hij draagt daarom nooit
- * `aria-pressed`, want er valt niets aan te staan. Alleen de eerste vraag geeft
- * hem mee; op Jij is er niemand meer om hem voor te houden.
+ * "Ik ben een ouder" stond hier tot ADR-198; hij staat nu bij de naam.
  */
 export function GroepKiezer({
   gekozen,
   uitweg,
   onKies,
-  onOuder,
   bezig = false,
   label,
 }: {
@@ -30,14 +26,12 @@ export function GroepKiezer({
   readonly gekozen: Groep | undefined | null;
   readonly uitweg: TranslationKey;
   readonly onKies: (groep: Groep | undefined) => void;
-  /** "Ik ben een ouder", waar die knop erbij hoort. Weggelaten is weggelaten. */
-  readonly onOuder?: (() => void) | undefined;
   readonly bezig?: boolean;
   /**
    * Hoe de groep met knoppen heet voor een schermlezer. Standaard de vraag aan het
    * kind zelf; op de ouderpagina gaat het over een kind, in de derde persoon.
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 }) {
   return (
     <div className="tk-keuzes" role="group" aria-label={label ?? t('groep.vraag')}>
@@ -62,11 +56,6 @@ export function GroepKiezer({
       >
         {t(uitweg)}
       </button>
-      {onOuder ? (
-        <button type="button" className="tk-keuze" disabled={bezig} onClick={onOuder}>
-          {t('groep.ouder')}
-        </button>
-      ) : null}
     </div>
   );
 }

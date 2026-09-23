@@ -299,7 +299,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   expect(doel.origin, 'de kassa staat op dit adres zelf').toBe(origin);
 
   await knop.click();
-  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Premium voor een jaar' })).toBeVisible();
 });
 
 test('a code is checked once, and then everything opens', async ({ page }) => {

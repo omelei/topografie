@@ -538,12 +538,12 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een schooljaar lang.',
+    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
     'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft de stof hangen.',
-  'premium.perSchooljaar': 'per schooljaar',
+  'premium.perSchooljaar': 'per jaar',
   'premium.codeTitel': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
@@ -583,7 +583,7 @@ export const nl = {
     'Je kind kan alle 68 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
-    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel schooljaar lang.',
+    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel jaar lang.',
 
   // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
   // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
@@ -664,7 +664,7 @@ export const nl = {
   // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
   'premium.prijs': '€ 79,95',
   'premium.kopenUitleg':
-    'Eenmalig, voor een heel schooljaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
+    'Eenmalig, voor een heel jaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
   // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
   // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
@@ -672,10 +672,10 @@ export const nl = {
   // betalen per maand er is, staat het er als "binnenkort" (ADR-196).
   'premium.maandPrijs': '€ 9,95',
   'premium.perMaand': 'per maand',
-  'premium.perSchooljaarKort': 'per schooljaar',
+  'premium.perSchooljaarKort': 'per jaar',
   'premium.binnenkort': 'Binnenkort',
   'premium.maandUitleg': 'Binnenkort kun je ook per maand betalen, en elke maand opzeggen.',
-  'premium.jaarVoordeel': 'Een schooljaar in één keer kost minder dan negen losse maanden.',
+  'premium.jaarVoordeel': 'Een jaar in één keer kost minder dan negen losse maanden.',
   'premium.ofPerMaand': 'Binnenkort ook {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
@@ -1485,7 +1485,12 @@ export const nl = {
   'ouder.geenGroep': 'geen groep gekozen',
   'ouder.kinderenUitleg':
     'Ieder kind heeft een eigen voortgang. Wat de een oefent, telt niet mee voor de ander.',
-  'ouder.kinderenVol': 'Op dit apparaat staan al {aantal} kinderen. Er kan er geen meer bij.',
+  'ouder.kinderenVol':
+    'Op dit apparaat staan al {aantal} kinderen. Wil je er een kind bij? Haal er dan eerst een weg.',
+  'ouder.kindWeg': 'Haal {naam} van dit apparaat',
+  'ouder.kindWegZeker':
+    'Alles wat {naam} hier heeft geoefend, gaat weg: diploma’s, rondes en voortgang. Staat {naam} in je account, dan blijft het daar staan.',
+  'ouder.kindWegDoe': 'Ja, haal {naam} weg',
 
   // Hoe het met je kinderen gaat (ADR-177). Dit stond op vier plekken beloofd
   // — in de poort, in de volwassenencheck, bij het zetten van de pincode en in
@@ -1814,6 +1819,15 @@ export const nl = {
   'profile.placeholder': 'Je naam',
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
+  // De volwassene die het apparaat als eerste in handen heeft, oefent niet en
+  // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
+  'profile.ouder': 'Ik ben een ouder',
+  'profile.ouder.title': 'Hoe heet je kind?',
+  'profile.ouder.help': 'Typ de naam van je kind. Die blijft op dit apparaat.',
+  'profile.ouder.placeholder': 'Naam van je kind',
+  'profile.ouder.submit': 'Verder',
+  'profile.ouder.nameTooShort': 'Typ eerst de naam van je kind.',
+  'profile.ouder.terug': 'Ik ben een kind',
 
   // De groep (ADR-151). Na de naam, en altijd over te slaan. Het zegt wat de
   // groep doet — wat bovenaan staat — en wat hij niet doet: niets gaat op slot.
@@ -1826,9 +1840,12 @@ export const nl = {
   // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
   // een keuze, en daarmee hetzelfde antwoord zonder de kleine vernedering.
   'groep.zegIkNiet': 'Zeg ik niet',
-  // En de volwassene die het apparaat als eerste in handen heeft, hoeft niet
-  // te doen alsof hij in groep 6 zit. Hij gaat naar Premium (ADR-171).
-  'groep.ouder': 'Ik ben een ouder',
+  // Een ouder is geen profiel (ADR-198): dezelfde vraag, over het kind.
+  'groep.ouder.vraag': 'In welke groep zit {naam}?',
+  'groep.ouder.uitleg':
+    'Dan zetten we de onderwerpen voor die groep bovenaan. Je kunt het later nog veranderen.',
+  'groep.ouder.overslaan': 'Sla over',
+  'groep.ouder.terug': 'Terug naar de naam',
   'groep.terug': 'Terug naar je naam',
   // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
   'groep.nietNu': 'Niet nu',

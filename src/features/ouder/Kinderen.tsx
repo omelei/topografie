@@ -5,6 +5,7 @@ import { t } from '@/i18n';
 import { GroepKiezer } from '@/features/player/GroepKiezer';
 import { createChild, listChildren, MAX_KINDEREN, renameChild, setGroep } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
+import { verwijderKind } from '@/store/kindWeg';
 
 /**
  * Je kinderen, op de ouderpagina (ADR-173).
@@ -21,11 +22,11 @@ import type { ProfileRecord } from '@/store/db';
  * eigen scherm daarvoor zou een klik toevoegen aan iets wat één keer per jaar
  * gebeurt.
  *
- * **Verwijderen staat er nog niet.** Een kind weghalen is het weggooien van elk
- * diploma en elke doos die eronder hangt, en dat verdient hetzelfde soort
- * scherm als "alles van dit apparaat halen" — met de vraag wat er weggaat en
- * een knop die zegt wat hij doet. Het hoort bij de gegevensknoppen van F3, waar
- * ook het meenemen van de gegevens van een kind komt.
+ * **Een kind weghalen** gooit elk diploma en elke doos weg die eronder hangt,
+ * en krijgt daarom dezelfde vraag als "Alles van dit apparaat halen": wat er
+ * weggaat, en een knop die zegt wat hij doet (ADR-198). Het laatste kind blijft
+ * staan: de app heeft altijd iemand die oefent. Het is ook de weg voor een
+ * ouder die vroeger zelf als kind werd aangemaakt en nu een plek inneemt.
  *
  * **`onVeranderd` zegt het tegen de rest van de pagina** (ADR-177). Dit blok
  * houdt zijn eigen lijst bij, en sinds er een tweede blok op deze pagina staat
@@ -66,6 +67,11 @@ export function Kinderen({ onVeranderd }: { readonly onVeranderd?: () => void })
           <Kind
             key={kind.id}
             kind={kind}
+            magWeg={(kinderen ?? []).length > 1}
+            onWeg={() => {
+              void listChildren().then(setKinderen);
+              onVeranderd?.();
+            }}
             onGewijzigd={(bijgewerkt) => {
               setKinderen((rijen) =>
                 (rijen ?? []).map((rij) => (rij.id === bijgewerkt.id ? bijgewerkt : rij)),
@@ -118,10 +124,14 @@ export function Kinderen({ onVeranderd }: { readonly onVeranderd?: () => void })
 /** Eén kind: de naam en de groep van vandaag, en allebei te veranderen. */
 function Kind({
   kind,
+  magWeg,
   onGewijzigd,
+  onWeg,
 }: {
   readonly kind: ProfileRecord;
+  readonly magWeg: boolean;
   readonly onGewijzigd: (kind: ProfileRecord) => void;
+  readonly onWeg: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [naam, setNaam] = useState(kind.naam);
@@ -204,8 +214,54 @@ function Kind({
             bezig={bezig}
             onKies={(gekozen) => void kiesGroep(gekozen)}
           />
+
+          {magWeg ? <Weghalen kind={kind} onWeg={onWeg} /> : null}
         </div>
       ) : null}
     </li>
+  );
+}
+
+/** Dit kind van het apparaat halen, na één vraag (ADR-198). */
+function Weghalen({ kind, onWeg }: { readonly kind: ProfileRecord; readonly onWeg: () => void }) {
+  const [zeker, setZeker] = useState(false);
+  const [bezig, setBezig] = useState(false);
+
+  async function haalWeg() {
+    setBezig(true);
+    if (await verwijderKind(kind.id)) onWeg();
+    setBezig(false);
+  }
+
+  if (!zeker) {
+    return (
+      <button
+        type="button"
+        className="tk-button tk-button-tertiary self-start"
+        onClick={() => setZeker(true)}
+      >
+        {t('ouder.kindWeg', { naam: kind.naam })}
+      </button>
+    );
+  }
+
+  return (
+    <div className="tk-card flex flex-col gap-3">
+      <p className="text-lopend">{t('ouder.kindWegZeker', { naam: kind.naam })}</p>
+      <p className="text-lopend text-tekst-secundair">{t('wissen.onomkeerbaar')}</p>
+      <div className="flex flex-wrap gap-3">
+        <button type="button" className="tk-button" onClick={() => setZeker(false)}>
+          {t('wissen.laatMaar')}
+        </button>
+        <button
+          type="button"
+          className="tk-button tk-button-secondary"
+          disabled={bezig}
+          onClick={() => void haalWeg()}
+        >
+          {t('ouder.kindWegDoe', { naam: kind.naam })}
+        </button>
+      </div>
+    </div>
   );
 }

@@ -489,7 +489,7 @@ test.describe('zonder code', () => {
 
 test('the kassa and the page after it have no violations', async ({ page }) => {
   await page.goto('/kopen/');
-  await expect(page.getByRole('heading', { name: 'Premium voor een schooljaar' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Premium voor een jaar' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   // Met een foutmelding erbij: die staat in een rode kaart en is de enige tekst

@@ -67,6 +67,32 @@ select c.notitie, a.eerst_gezien, a.laatst_gezien
 from public.premium_apparaten a join public.premium_codes c using (code_hash);
 ```
 
+## Klassencode
+
+Een klas krijgt één code voor 40 apparaten, een jaar (365 dagen) geldig, voor
+€ 300 per jaar op factuur (ADR-200). De code werkt precies als een gezinscode:
+de leerkracht deelt hem met de ouders, en die vullen hem thuis in op de
+ouderpagina.
+
+```bash
+node tools/premium/maak-codes.mjs --plekken 40 1 "" klas 6b De Regenboog
+```
+
+Een plek is een apparaat, geen kind: een kind dat op een tablet en een laptop
+oefent, neemt er twee. Een plek komt alleen vrij als iemand zich op dat apparaat
+afmeldt. Raakt een klas vol met apparaten die niet meer meedoen, maak dan de
+plekken vrij die lang niet gezien zijn:
+
+```sql
+delete from public.premium_apparaten a
+using public.premium_codes c
+where a.code_hash = c.code_hash
+  and c.notitie = 'klas 6b De Regenboog'
+  and a.laatst_gezien < now() - interval '60 days';
+```
+
+De factuur maak je met de hand, tot er een factuurroute is.
+
 ## De kassa
 
 Sinds ADR-123 kan een ouder een code kopen in plaats van erom vragen. De kassa

@@ -12320,6 +12320,94 @@ vlag…") en zei bij een fout "Jij zei 54", wat als een verwijt leest.
   voornaam nergens heen gaat. Dat klopt zolang het gezinsaccount uit staat; het
   gaat mee in de stap die het account live zet (`ROADMAP.md`).
 
+## ADR-198 — Een ouder is geen profiel, en een kind kan van het apparaat
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Ouders
+moeten niet kunnen spelen. Kinderen wel." en "De max van 3 kinderen is nu
+inclusief ouder."
+
+**Context.** "Ik ben een ouder" stond bij de groepsvraag (ADR-161). De ouder
+had dan al zijn eigen naam getypt onder "Wie ben jij?", en de knop maakte van
+die naam een gewoon kind zonder groep. Die ouder kon oefenen, stond in de
+wisselaar, en nam een van de drie plekken van ADR-173 in. ADR-173 bedoelde
+"drie kinderen en één ouder", maar de ouder was nooit iets anders dan een deur
+met een pincode. Een kind weghalen kon niet, terwijl de wisselaar zei dat het
+kon.
+
+**Besluit.**
+
+- **Een ouder is geen profiel.** "Ik ben een ouder" staat nu bij de naam. Wie
+  erop drukt, krijgt dezelfde kaart over het kind: "Hoe heet je kind?" en "In
+  welke groep zit Sanne?" (overslaan mag). Dat kind wordt gemaakt en de app
+  opent op Premium, zoals voorheen. "Ik ben een kind" zet de kaart terug.
+- **De drie plekken zijn dus alleen voor kinderen**, zonder dat de grens
+  (`MAX_KINDEREN`) of het tellen verandert: er komt geen ouder meer in de lijst.
+- **Een kind kan van het apparaat** (`store/kindWeg.ts`), op de ouderpagina bij
+  het kind, na één vraag met dezelfde woorden als "Alles van dit apparaat
+  halen". Weg gaan het profiel, de dozen, de diploma's, elke ronde en elk
+  antwoord, de instellingen die op `:<kindId>` eindigen, de wensen en een
+  eventuele inlog van het kind. Wat in het gezinsaccount staat, blijft daar.
+  Het laatste kind blijft staan: de app heeft altijd iemand die oefent.
+- Dit is ook de weg voor apparaten van vóór dit besluit: een ouder die toen als
+  kind werd gemaakt, is niet te herkennen (de keuze werd nergens bewaard), maar
+  is nu met één knop weg te halen.
+
+**Gevolgen.**
+
+- Geen nieuwe `DB_VERSION` en geen migratie: er komt geen veld bij.
+- `GroepKiezer` heeft geen ouderknop meer; `groep.ouder` is `profile.ouder`
+  geworden.
+
+## ADR-199 — De pagina groeit mee met een groot scherm
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Op een
+groot scherm is de body te smal."
+
+**Besluit.** `.tk-page` en `.tk-home` hebben geen vaste maat van 1080 meer maar
+`--pagina-breed: clamp(1080px, 75vw, 1600px)`: driekwart van het scherm, nooit
+smaller dan de oude maat en nooit breder dan 1600. Op 1440 verandert er niets;
+op 1920 is de pagina 1440 breed, op 2560 1600. Lopende tekst groeit niet mee,
+want die heeft zijn eigen grens in `ch`; de rasters en tegels krijgen de ruimte.
+`huisstijl.spec.ts` legt de drie maten vast.
+
+## ADR-200 — Een klassencode, en een code geldt 365 dagen
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "Stap A
+ja. 40 plekken. De looptijd is 365 dagen."
+
+**Context.** Een school of leerkracht wil een klas laten oefenen. ADR-014 en
+ADR-123 hielden scholen buiten de app, omdat een school die betaalt voor inzicht
+in leerlingen van leer.nu een verwerker maakt, met een verwerkersovereenkomst en
+een ander privacyregime. Het aantal plekken op een code was al een kolom per
+code (`max_apparaten`), dus een klas past zonder de app te veranderen.
+
+**Besluit.**
+
+- **Stap A: een klassencode als gezinscode met 40 plekken**, € 300 per jaar, op
+  factuur. De leerkracht deelt de code met de ouders; die vullen hem thuis in
+  op de ouderpagina, zoals nu. De leerkracht ziet niets van de kinderen: er
+  komen geen leerlinggegevens bij leer.nu, en leer.nu wordt geen verwerker.
+  `maak-codes.mjs --plekken 40` maakt zo'n code; `tools/premium/README.md` zegt
+  hoe je een volle klas opschoont.
+- **Een plek is een apparaat**, geen kind. 40 in plaats van 35 geeft ruimte voor
+  een tweede apparaat thuis.
+- **Een code geldt 365 dagen** vanaf de aankoop, voor een gezin en een klas. Dat
+  deed de kassa al (`GELDIG_DAGEN`); de teksten zeiden "schooljaar", en ADR-196
+  ook. Overal staat nu "jaar".
+- **Stap B** (klasmodus op schoolapparaten, een overzicht voor de leerkracht,
+  een verwerkersovereenkomst, betalen op factuur) staat op de roadmap en wacht
+  op het gezinsaccount en op wat stap A oplevert.
+
+**Gevolgen.**
+
+- € 300 voor 40 plekken is ongeveer € 8 per kind; een gezin betaalt € 79,95.
+  Een klas kan dus gezinnen wegnemen die anders zelf kochten. Stap A is daarom
+  bedoeld als kanaal: aan het eind van het jaar krijgen de ouders het aanbod om
+  zelf door te gaan.
+- De pagina `/scholen` met een aanvraagknop komt zodra er een contactadres is.
+- `OMSCHRIJVING` van de kassa zegt "een jaar"; dat geldt na de volgende deploy
+  van de kassa-functie.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

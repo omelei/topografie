@@ -1,11 +1,15 @@
 // Premium codes for leer.nu (ADR-116): makes them, and prints the SQL that
 // stores them.
 //
-//   node tools/premium/maak-codes.mjs [aantal] [geldig-tot] [notitie ...]
+//   node tools/premium/maak-codes.mjs [--plekken n] [aantal] [geldig-tot] [notitie ...]
 //
 //   node tools/premium/maak-codes.mjs                 one code, valid for a year
 //   node tools/premium/maak-codes.mjs 5 2027-09-30    five, valid until then
 //   node tools/premium/maak-codes.mjs 1 "" familie Jansen
+//   node tools/premium/maak-codes.mjs --plekken 40 1 "" klas 6b De Regenboog
+//
+// `--plekken` is op hoeveel apparaten een code werkt: 3 voor een gezin, 40 voor
+// een klassencode (ADR-200). Een plek is een apparaat, geen kind.
 //
 // The codes are printed once, here, and nowhere else: the database only ever
 // holds their SHA-256 (tools/premium/schema.sql). Hand a code to a family and
@@ -21,7 +25,19 @@ import { createHash, randomInt } from 'node:crypto';
 const ALFABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const LENGTE = 8;
 
-const [aantalTekst = '1', totTekst = '', ...notitieDelen] = process.argv.slice(2);
+const argumenten = process.argv.slice(2);
+let plekken = 3;
+const plekIndex = argumenten.indexOf('--plekken');
+if (plekIndex !== -1) {
+  plekken = Number(argumenten[plekIndex + 1]);
+  argumenten.splice(plekIndex, 2);
+  if (!Number.isInteger(plekken) || plekken < 1 || plekken > 100) {
+    console.error('Plekken moet een heel getal zijn van 1 tot en met 100.');
+    process.exit(1);
+  }
+}
+
+const [aantalTekst = '1', totTekst = '', ...notitieDelen] = argumenten;
 
 const aantal = Number(aantalTekst);
 if (!Number.isInteger(aantal) || aantal < 1 || aantal > 500) {
@@ -54,11 +70,11 @@ const codes = new Set();
 while (codes.size < aantal) codes.add(nieuweCode());
 
 const rijen = [];
-console.log(`Codes, geldig tot en met ${tot}:\n`);
+console.log(`Codes, geldig tot en met ${tot}, op ${plekken} apparaten:\n`);
 for (const code of codes) {
   const hash = createHash('sha256').update(code).digest('hex');
   console.log(`  LEER-${code.slice(0, 4)}-${code.slice(4)}`);
-  rijen.push(`  ('${hash}', '${tot}', 3, ${sqlTekst(notitie)})`);
+  rijen.push(`  ('${hash}', '${tot}', ${plekken}, ${sqlTekst(notitie)})`);
 }
 
 console.log('\n-- Plak dit in de SQL-editor van Supabase:');
