@@ -1,14 +1,17 @@
 import type { ItemState, ModeId } from '@/game-core';
 import { getDb, SINGLETON_KEY, type AttemptRecord, type SessionRecord } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
+import { laatBijhouden } from './gezin/aanleiding';
 
 /**
  * Reading and writing what a child has learned.
  *
- * Everything here writes to the device and nowhere else. The shapes match the
- * future server tables (DATAMODEL part A), so adding accounts one day is an
- * upload rather than a migration — including `sessions.itemSet`, which nothing
- * validates yet but which the server will need to re-score against (ADR-003).
+ * Everything here writes to the device. The shapes match the server tables
+ * (DATAMODEL part A and C), so an account is an upload rather than a migration
+ * — including `sessions.itemSet`, which nothing validates yet but which the
+ * server will need to re-score against (ADR-003). The one thing that leaves is
+ * a finished round, and only for a child a parent took into an account
+ * (`finishSession`, ADR-188); nothing is sent while a round is being played.
  *
  * Which child is answering is resolved here and not by the caller. Every screen
  * asks for "the boxes" and gets the ones belonging to whoever is practising,
@@ -71,6 +74,8 @@ export async function finishSession(id: string, score: number, answered: number)
     beantwoord: answered,
     geeindigd: new Date().toISOString(),
   });
+  // Een ronde die af is, gaat mee naar het account, als er een is (ADR-188).
+  laatBijhouden();
 }
 
 /** One finished round, as K1's history reads it back. */

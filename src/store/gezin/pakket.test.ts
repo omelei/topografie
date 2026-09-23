@@ -122,3 +122,40 @@ describe('het pakket van één kind', () => {
     expect(pakket.instellingen.map((rij) => rij.sleutel)).toEqual(['weekdoel']);
   });
 });
+
+/**
+ * Na elke ronde gaat alleen mee wat er sinds de vorige keer bij kwam (ADR-188).
+ */
+describe('een aanvulling sinds de vorige keer', () => {
+  const SINDS = '2026-09-22T10:02:00.000Z';
+  const bron: Bron = {
+    ...BRON,
+    sessions: [
+      sessie('s-voor', 'me'), // afgerond om 10:05, dus na SINDS
+      {
+        ...sessie('s-lang-geleden', 'me'),
+        geeindigd: '2026-09-01T10:00:00.000Z',
+      } as SessionRecord,
+    ],
+    attempts: [poging('p-voor', 's-voor', 'me'), poging('p-lang', 's-lang-geleden', 'me')],
+    settings: [
+      { key: 'weekdoel:me', value: 'nieuw', gewijzigdOp: '2026-09-22T11:00:00.000Z' },
+      { key: 'doel:me', value: 'oud', gewijzigdOp: '2026-09-01T10:00:00.000Z' },
+      { key: 'bijhouden:me', value: 'zonder moment' },
+    ],
+  };
+  const pakket = pakketVan(bron, NOOR, NU, SINDS);
+
+  it('neemt een ronde die daarna afliep mee, met al haar pogingen', () => {
+    expect(pakket.sessies.map((rij) => rij.id)).toEqual(['s-voor']);
+    // De poging is van 10:01, vóór SINDS, maar haar ronde liep af om 10:05.
+    expect(pakket.pogingen.map((rij) => rij.id)).toEqual(['p-voor']);
+  });
+
+  it('neemt alleen dozen, diploma’s en instellingen mee die daarna veranderden', () => {
+    // De doos van Noor is om 10:01 bijgewerkt en het diploma op de 20e: allebei ervoor.
+    expect(pakket.voortgang).toEqual([]);
+    expect(pakket.diplomas).toEqual([]);
+    expect(pakket.instellingen.map((rij) => rij.sleutel)).toEqual(['weekdoel']);
+  });
+});

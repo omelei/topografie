@@ -5,6 +5,7 @@ import { Foutscherm } from './features/shell/Foutscherm';
 import { OuderVraag } from './features/premium/OuderVraag';
 import { Profielwisselaar } from './features/ouder/Profielwisselaar';
 import { brand } from './config/brand';
+import { laatBijhouden } from './store/gezin/aanleiding';
 import './index.css';
 import './design/kleuren.css';
 
@@ -36,3 +37,7 @@ ReactDOM.createRoot(rootElement).render(
     <Profielwisselaar />
   </React.StrictMode>,
 );
+
+// Wat er sinds de vorige keer geoefend is en nog niet in het account staat —
+// een ronde die offline afliep — gaat mee zodra de app weer opent (ADR-188).
+laatBijhouden();

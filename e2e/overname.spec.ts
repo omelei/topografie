@@ -156,7 +156,7 @@ test('een ouder neemt zijn kind mee naar het account, met toestemming', async ({
   await expect(knop).toBeEnabled();
   await knop.click();
 
-  await expect(blok).toContainText('In je account, met alles tot');
+  await expect(blok).toContainText('In je account, bijgewerkt op');
   expect(gezin.beheer).toEqual([{ actie: 'opnemen', voornaam: 'Noor', groep: null }]);
 
   // Wat er vertrok: de afgeronde ronde en zijn poging, niet de ronde die nog
@@ -186,7 +186,7 @@ test('een kind uit het account halen laat het op dit apparaat staan', async ({ p
   const blok = page.getByRole('region', { name: 'Kinderen in je account' });
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
   await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
-  await expect(blok).toContainText('In je account, met alles tot');
+  await expect(blok).toContainText('In je account, bijgewerkt op');
 
   await blok.getByRole('button', { name: 'Haal uit mijn account' }).click();
   await expect(blok).toContainText('Op dit apparaat blijft het gewoon staan');
@@ -221,7 +221,78 @@ test('als het versturen hapert, is het kind er wel en kan het opnieuw', async ({
   await expect(blok).toContainText('nog niet alles is verstuurd');
 
   await blok.getByRole('button', { name: 'Verstuur opnieuw' }).click();
-  await expect(blok).toContainText('In je account, met alles tot');
+  await expect(blok).toContainText('In je account, bijgewerkt op');
   // Eén kind, niet twee.
   expect(gezin.beheer.filter((b) => (b as { actie: string }).actie === 'opnemen')).toHaveLength(1);
+});
+
+/**
+ * Daarna gaat vanzelf mee wat er bij kwam (ADR-188), en alleen dat: een ronde
+ * die na het meenemen afliep, en niet opnieuw alles van vóór.
+ */
+test('wat er daarna geoefend wordt, gaat vanzelf mee, en alleen dat', async ({ page }) => {
+  await stubGezin(page);
+  const gezin = await nepGezin(page);
+  await signIn(page, 'Noor');
+  await zaaiVoortgang(page);
+  await naarOuder(page);
+
+  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
+  await expect(blok).toContainText('In je account, bijgewerkt op');
+  gezin.tabellen.sessies = [];
+  gezin.tabellen.pogingen = [];
+
+  // Een ronde die daarna afliep, zoals `finishSession` hem achterlaat.
+  await page.evaluate(
+    async () =>
+      new Promise<void>((klaar, mis) => {
+        const open = indexedDB.open('leernu');
+        open.onerror = () => mis(open.error);
+        open.onsuccess = () => {
+          const db = open.result;
+          const tx = db.transaction(['sessions', 'attempts'], 'readwrite');
+          const nu = new Date().toISOString();
+          tx.objectStore('sessions').put({
+            id: 'ronde-twee',
+            kindId: 'me',
+            mode: 'meerkeuze',
+            setId: 'nl-provincies',
+            itemSet: [],
+            score: 1,
+            beantwoord: 1,
+            gestart: nu,
+            geeindigd: nu,
+          });
+          tx.objectStore('attempts').put({
+            id: 'poging-twee',
+            sessionId: 'ronde-twee',
+            kindId: 'me',
+            itemId: 'nl-drenthe',
+            mode: 'meerkeuze',
+            correct: true,
+            responseMs: 900,
+            gekozenAntwoord: 'nl-drenthe',
+            tijdstip: nu,
+          });
+          tx.oncomplete = () => {
+            db.close();
+            klaar();
+          };
+          tx.onerror = () => mis(tx.error);
+        };
+      }),
+  );
+
+  // Bij het opnieuw openen van de app gaat hij mee.
+  const verstuurd = page.waitForRequest(
+    (verzoek) => verzoek.url() === `${GEZIN}/rest/v1/pogingen` && verzoek.method() === 'POST',
+  );
+  await page.goto('/');
+  await verstuurd;
+  await expect
+    .poll(() => (gezin.tabellen.pogingen as { id: string }[]).map((rij) => rij.id))
+    .toEqual(['poging-twee']);
+  expect((gezin.tabellen.sessies as { id: string }[]).map((rij) => rij.id)).toEqual(['ronde-twee']);
 });
