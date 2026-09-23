@@ -147,14 +147,14 @@ function Terug({ naam }: { readonly naam: string }) {
  * kinderen. Dat is sinds ADR-173 ook waar — drie kinderen aanmaken is gratis.
  */
 function Premium() {
-  const { actief, stand } = usePremium();
+  const { metCode, stand, proef } = usePremium();
   const verlopen = isVerlopen(stand, new Date());
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('ouder.premium')}>
       <h2 className="tk-sectie">{t('ouder.premium')}</h2>
 
-      {actief && stand ? (
+      {metCode && stand ? (
         <div className="tk-card flex flex-col gap-3">
           <p className="flex items-center gap-2 text-lopend">
             <CorrectIcon size={24} />
@@ -175,6 +175,10 @@ function Premium() {
           {verlopen && stand ? (
             <p className="text-lopend">
               {t('premium.verlopen', { datum: leesbareDatum(stand.geldigTot) })}
+            </p>
+          ) : proef.soort === 'loopt' ? (
+            <p className="text-lopend">
+              {t('ouder.premiumProef', { datum: leesbareDatum(proef.laatsteDag) })}
             </p>
           ) : (
             <p className="text-lopend">{t('ouder.premiumUit')}</p>

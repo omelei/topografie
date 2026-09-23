@@ -44,7 +44,8 @@ import { openWisselaar } from '@/features/ouder/wisselaar';
 import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
-import { controleerOpnieuw } from '@/store/premium';
+import { controleerOpnieuw, isActief, isTeKoop, leesStand } from '@/store/premium';
+import { startProef } from '@/store/proef';
 import { zorgVoorUniekePogingen } from '@/store/sleutels';
 import type { Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
@@ -395,6 +396,16 @@ export default function App() {
   useEffect(() => {
     void controleerOpnieuw();
   }, []);
+
+  // Veertien dagen alles open, één keer per apparaat (ADR-193): zodra er een
+  // kind is, ook een kind dat er al was, en alleen zonder geldige code — wie
+  // al betaald heeft, krijgt geen kennismaking maar later een verlenging.
+  const heeftKind = boot.status === 'ready' && boot.profile !== null;
+  useEffect(() => {
+    if (!heeftKind) return;
+    const now = new Date();
+    startProef(now, isTeKoop() && !isActief(leesStand(), now));
+  }, [heeftKind]);
 
   // De sleutel van een poging wordt een uuid (ADR-175). Eén keer per apparaat,
   // bij het openen: het is een lokale migratie die vóór elk netwerk gaat, en ze
