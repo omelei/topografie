@@ -1,6 +1,5 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
-import { ZONDER_CODE } from './zonderCode';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -15,7 +14,7 @@ import { ZONDER_CODE } from './zonderCode';
  * from nothing, and answers for the premium server itself — the build asks
  * https://premium.leer.test, which does not exist.
  */
-test.use({ storageState: ZONDER_CODE });
+test.use({ storageState: { cookies: [], origins: [] } });
 
 const SERVER = 'https://premium.leer.test';
 const GOEDE_CODE = '7K3MQ9TX';
@@ -457,7 +456,7 @@ async function zetStandenTerug(page: Page) {
  * dat er niets meegaat dan het adres.
  */
 test.describe('doorsturen naar de ouder', () => {
-  test.use({ storageState: ZONDER_CODE });
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   test('stuurt de premiumpagina door met de deelknop van het toestel', async ({ page }) => {
     // `navigator.share` bestaat niet in een kale browser, dus hij wordt hier

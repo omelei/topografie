@@ -141,16 +141,16 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
  * apparaat haalt, en de rest is er niet.
  */
 export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
-  const { metCode, stand, proef } = usePremium();
+  const { actief, stand } = usePremium();
   const verlopen = isVerlopen(stand, now);
-  const bijnaAf = metCode && verlooptBinnenkort(stand, now);
+  const bijnaAf = actief && verlooptBinnenkort(stand, now);
 
   return (
     <div className="tk-page">
       <div className="tk-page-main">
         <div className="flex flex-col gap-2">
           <h1 className="tk-titel">{t('premium.titel')}</h1>
-          {metCode ? (
+          {actief ? (
             <p className="text-lopend text-tekst-secundair">{t('premium.introAan')}</p>
           ) : null}
         </div>
@@ -172,21 +172,7 @@ export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
           </p>
         ) : null}
 
-        {/* De proef (ADR-193): hoe lang alles nog open staat, of dat het voorbij
-            is en dat er niets weg is. Onder een verlopen code zegt de regel
-            daarboven dat al. */}
-        {proef.soort === 'loopt' ? (
-          <p className="tk-card text-lopend">
-            {proef.dagenOver === 1
-              ? t('premium.proefLaatste')
-              : t('premium.proefLoopt', { datum: leesbareDatum(proef.laatsteDag) })}
-          </p>
-        ) : null}
-        {proef.soort === 'voorbij' && !verlopen ? (
-          <p className="tk-card text-lopend">{t('premium.proefVoorbij')}</p>
-        ) : null}
-
-        {metCode && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
+        {actief && stand ? <Aan tot={stand.geldigTot} /> : <Aanbod />}
       </div>
     </div>
   );

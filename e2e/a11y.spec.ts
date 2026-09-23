@@ -1,7 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, stubGezin, VERLOPEN_LINK } from './gezin';
-import { ZONDER_CODE } from './zonderCode';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -324,7 +323,7 @@ test('explore has no violations, empty or with something chosen', async ({ page 
  * stand. Deze scan zou dat hebben gezien, en ziet het voortaan.
  */
 test.describe('het slot zonder code', () => {
-  test.use({ storageState: ZONDER_CODE });
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   test('the parent question has no violations, in each of its three states', async ({ page }) => {
     await signIn(page, 'Sanne');
@@ -469,7 +468,7 @@ test('the premium page has no violations once a code is in', async ({ page }) =>
 });
 
 test.describe('zonder code', () => {
-  test.use({ storageState: ZONDER_CODE });
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   test('the premium page has no violations while it is still selling', async ({ page }) => {
     await signIn(page, 'Wout');

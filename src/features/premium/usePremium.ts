@@ -1,13 +1,6 @@
 import { useMemo, useSyncExternalStore } from 'react';
 import { pathFor } from '@/features/shell/routes';
 import { abonneer, isActief, leesRuw, leesStand, type PremiumStand } from '@/store/premium';
-import {
-  abonneerProef,
-  leesProefRuw,
-  proefBegin,
-  proefStand,
-  type ProefStand,
-} from '@/store/proef';
 
 /**
  * Whether premium is on, for whichever screen asks (ADR-116).
@@ -15,25 +8,11 @@ import {
  * Every screen asks the same store and every one of them hears the moment a
  * code is entered — on this tab or another — so a block that was locked opens
  * without a reload.
- *
- * `actief` is a code or the trial (ADR-193): every lock asks only that, so the
- * fourteen days open everything a code opens. `metCode` is the code alone, for
- * the few places that talk about the code itself; `proef` is where the trial
- * stands, and is `geen` whenever a code is on.
  */
-export function usePremium(): {
-  readonly actief: boolean;
-  readonly metCode: boolean;
-  readonly stand: PremiumStand | null;
-  readonly proef: ProefStand;
-} {
+export function usePremium(): { readonly actief: boolean; readonly stand: PremiumStand | null } {
   const ruw = useSyncExternalStore(abonneer, leesRuw, () => null);
-  const proefRuw = useSyncExternalStore(abonneerProef, leesProefRuw, () => null);
   const stand = useMemo(() => leesStand(ruw), [ruw]);
-  const now = new Date();
-  const metCode = isActief(stand, now);
-  const proef: ProefStand = metCode ? { soort: 'geen' } : proefStand(proefBegin(proefRuw), now);
-  return { actief: metCode || proef.soort === 'loopt', metCode, stand, proef };
+  return { actief: isActief(stand, new Date()), stand };
 }
 
 /**

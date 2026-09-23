@@ -541,24 +541,6 @@ export const nl = {
   'premium.intro':
     'Je kind oefent alle vakken en onderwerpen gratis, voor altijd. Premium plant het herhalen, laat zien wat er blijft hangen en laat je kind zichzelf overhoren. Voor het hele gezin, een schooljaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
-  // Wat de proef op de voordeur zegt, tegen het kind (ADR-193).
-  'proef.titel': 'Premium op proef',
-  'proef.kopNog': 'Nog {dagen} dagen staat alles open',
-  'proef.welkom':
-    'Je mag leer.nu twee weken helemaal proberen: elke spelvorm, alle diploma’s, je weekdoelen en wat je inmiddels kent.',
-  'proef.kopLaatste': 'Vandaag staat alles nog open',
-  'proef.bijnaKlaar':
-    'Daarna kan dat met premium. Alles wat je nu doet, blijft bewaard, ook je diploma’s.',
-  'proef.kopVoorbij': 'De twee weken zijn voorbij',
-  'proef.voorbij':
-    'Alles wat je deed, staat nog op dit apparaat, ook je diploma’s. Met premium staat alles er meteen weer.',
-  // Twee weken op proef (ADR-193).
-  'premium.proefLoopt':
-    'Je probeert premium: alles staat open op dit apparaat, tot en met {datum}. Daarna blijft alles bewaard, en met een code gaat het gewoon verder.',
-  'premium.proefLaatste':
-    'Je probeert premium, en vandaag is de laatste dag. Alles blijft bewaard, en met een code gaat het morgen gewoon verder.',
-  'premium.proefVoorbij':
-    'De twee weken op proef zijn voorbij. Alles wat er geoefend is, staat nog op dit apparaat: met een code staat het er meteen weer.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop': 'Oefenen is gratis. Met premium blijft het hangen.',
   'premium.perSchooljaar': 'per schooljaar',
@@ -1515,8 +1497,6 @@ export const nl = {
   'ouder.premium': 'Premium',
   'ouder.premiumUit':
     'Premium staat uit. Heb je een code gekocht, vul hem dan hier in — hij geldt meteen voor al je kinderen.',
-  'ouder.premiumProef':
-    'Premium staat op proef aan, tot en met {datum}. Daarna is een code nodig; alles wat je kinderen doen, blijft bewaard.',
   'ouder.premiumAlleKinderen': 'De code geldt voor alle kinderen op dit apparaat.',
   'ouder.bekijkPremium': 'Wat zit er in premium?',
 

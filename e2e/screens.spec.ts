@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, langsDePoort, stubGezin } from './gezin';
-import { ZONDER_CODE } from './zonderCode';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -143,7 +142,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
 test.describe('zonder code', () => {
   // De rest van dit bestand draait mét code (`playwright.config.ts`), en dan
   // start de bliksemronde gewoon. Het slot is wat een kind zonder code ziet.
-  test.use({ storageState: ZONDER_CODE });
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   test('the parent question, and sending it on', async ({ page }, testInfo) => {
     const size = testInfo.project.name;

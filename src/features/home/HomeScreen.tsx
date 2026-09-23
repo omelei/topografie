@@ -4,7 +4,6 @@ import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
-import { ProefBlok } from './ProefBlok';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
@@ -175,7 +174,6 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
   const kern = (
     <>
       {kop}
-      <ProefBlok />
       {terug}
       {beginnen}
       {vandaagBoven}

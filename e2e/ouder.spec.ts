@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
-import { ZONDER_CODE } from './zonderCode';
 
 /**
  * De ouder en het kind (ADR-173).
@@ -355,7 +354,7 @@ test('de sessie van de ouder overleeft een adreswissel in hetzelfde tabblad', as
  * wat een kind zonder code te zien krijgt.
  */
 test.describe('zonder code', () => {
-  test.use({ storageState: ZONDER_CODE });
+  test.use({ storageState: { cookies: [], origins: [] } });
 
   /**
    * De parental gate die Apple en Google eisen: een kind dat op de
