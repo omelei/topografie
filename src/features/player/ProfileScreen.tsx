@@ -16,7 +16,7 @@ import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
 import { Statistieken } from '@/features/retention/Statistieken';
-import { AVATARS, avatarNaam, AvatarTeken } from './avatars';
+import { AVATAR_GROEPEN, AVATARS, avatarNaam, AvatarTeken } from './avatars';
 import { EigenLijsten } from './EigenLijsten';
 import { GroepInstelling } from './GroepInstelling';
 import { Jaaroverzicht } from './Jaaroverzicht';
@@ -369,22 +369,40 @@ function Avatarkiezer({
       </button>
 
       {open ? (
-        <div className="tk-keuzes px-4 pb-4" role="group" aria-label={t('you.avatarKies')}>
-          {AVATARS.map((avatar) => {
-            const Teken = avatar.teken;
-            return (
-              <button
-                key={avatar.id}
-                type="button"
-                className="tk-keuze"
-                aria-pressed={avatar.id === gekozen}
-                onClick={() => void kies(avatar.id)}
-              >
-                <Teken size={24} />
-                {t(avatar.naam)}
-              </button>
-            );
-          })}
+        <div
+          className="flex flex-col gap-4 px-4 pb-4"
+          role="group"
+          aria-label={t('you.avatarKies')}
+        >
+          {/* Twee groepen van 24, als raster met grote plaatjes (ADR-202): in
+              een rij pillen van 24 pixels was een tekening niet te zien. */}
+          {AVATAR_GROEPEN.map((groep) => (
+            <div
+              key={groep.id}
+              className="flex flex-col gap-2"
+              role="group"
+              aria-label={t(groep.naam)}
+            >
+              <p className="tk-label">{t(groep.naam)}</p>
+              <div className="tk-avatarraster">
+                {AVATARS.filter((avatar) => avatar.groep === groep.id).map((avatar) => {
+                  const Teken = avatar.teken;
+                  return (
+                    <button
+                      key={avatar.id}
+                      type="button"
+                      className="tk-avatarkeuze"
+                      aria-pressed={avatar.id === gekozen}
+                      onClick={() => void kies(avatar.id)}
+                    >
+                      <Teken size={56} />
+                      {t(avatar.naam)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       ) : null}
     </li>

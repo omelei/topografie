@@ -11,7 +11,6 @@
  *   docs/logo/          the delivery: logos, Denker, expressions, app icons
  *   public/             the copies the app serves (logo.test.ts holds them)
  *   src/assets/denker/  the expressions the app draws inline, to animate them
- *   public/avatars/     the eight avatars
  *
  * The PNGs are rendered in Chromium through Playwright, which the e2e tests
  * already install. Run with `node tools/merk-uit-leer.mjs`; it is idempotent.
@@ -285,21 +284,8 @@ for (const naam of readdirSync(join(DOCS, 'beeldmerk', 'uitdrukkingen'))) {
   copyFileSync(join(DOCS, 'beeldmerk', 'uitdrukkingen', naam), join(DENKER, naam));
 }
 
-// The avatars: the owner's set, which avatars.tsx serves by id (ADR-177).
-const AVATARS = join(PUBLIC, 'avatars');
-rmSync(AVATARS, { recursive: true, force: true });
-for (const kind of ['zon', 'wolk', 'bloem', 'vis', 'raket', 'kat', 'robot', 'boot']) {
-  const svg = alsBestand(teken('leer-avatar', { kind, size: 100 }), { titel: '' }).replace(
-    /clip-path="circle\(50px at 50px 50px\)"/,
-    'clip-path="url(#rond)"',
-  );
-  schrijf(
-    join(AVATARS, `${kind}.svg`),
-    svg.replace(
-      /(<svg[^>]*>)/,
-      '$1<defs><clipPath id="rond"><circle cx="50" cy="50" r="50"/></clipPath></defs>',
-    ),
-  );
-}
+// De avatars komen hier niet meer vandaan: sinds ADR-202 is het de eigen set
+// van 48 van de eigenaar, rechtstreeks in public/avatars. Dit script schreef er
+// acht uit leer.js en gooide de map eerst leeg; dat zou de set nu wissen.
 
 console.log('Logolevering v2 geschreven uit docs/leer.js.');

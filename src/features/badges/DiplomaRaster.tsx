@@ -3,6 +3,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import type { Module } from '@/features/shell/modules';
 import { t } from '@/i18n';
 import { datumVan, useDiplomaDatums } from './datums';
+import { afbreekbaar } from './afbreken';
 import { Embleem } from './Embleem';
 import { useDiplomaStand } from './useDiplomaStand';
 import { kaartStandVan, vulling, type KaartStand, type Voortgang } from './voortgang';
@@ -80,7 +81,7 @@ export function DiplomaRaster({
               vul={voortgang && actief ? vulling(voortgang) : undefined}
             />
             <span className="tk-diploma-titel" aria-hidden="true">
-              {vak.titel}
+              {afbreekbaar(vak.titel)}
             </span>
             <span className="tk-diploma-stand" aria-hidden="true" data-stand={kaartStand}>
               {zin}
