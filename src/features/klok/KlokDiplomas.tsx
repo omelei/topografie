@@ -4,7 +4,6 @@ import { t, type TranslationKey } from '@/i18n';
 import { loadKlokDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { usePremium } from '@/features/premium/usePremium';
 
 /**
  * Four klokdiploma's, one per step of the clock, with the gaps showing
@@ -27,19 +26,14 @@ export function KlokDiplomas({
   /** Niets tonen zolang er niets gehaald is (ADR-158). */
   readonly stilAlsLeeg?: boolean;
 }) {
-  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<KlokDiplomaSet> | null>(null);
 
   useEffect(() => {
     void loadKlokDiplomas().then(setBehaald);
   }, []);
 
-  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
-  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
-  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
-  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
-  if (!actief) return null;
-
+  // Ook zonder code getekend (ADR-192): de ringen zijn te zien, halen kan met
+  // premium. Het label in de kop zegt dat, en de toets vraagt om de code.
   // Nothing until it is known: a wall that shows four gaps and then fills two
   // of them has told a child they had none.
   if (behaald === null) return null;

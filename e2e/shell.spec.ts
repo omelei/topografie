@@ -357,7 +357,14 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
   await expect(menu).toBeInViewport();
 
   // Onder de inhoud, niet eroverheen: de startbalk eindigt waar het menu begint.
-  const balk = await page.locator('.tk-startbalk-mobiel').boundingBox();
-  const onder = await menu.boundingBox();
-  expect((balk?.y ?? 0) + (balk?.height ?? 0)).toBeLessThanOrEqual((onder?.y ?? 0) + 1);
+  // Gepold, want onder belasting is de schil soms nog aan het scrollen als er
+  // gemeten wordt; een echte overlap blijft staan en faalt nog steeds.
+  const balk = page.locator('.tk-startbalk-mobiel');
+  await expect
+    .poll(async () => {
+      const b = await balk.boundingBox();
+      const m = await menu.boundingBox();
+      return (b?.y ?? 0) + (b?.height ?? 0) - (m?.y ?? 0);
+    })
+    .toBeLessThanOrEqual(1);
 });

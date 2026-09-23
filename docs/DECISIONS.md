@@ -12036,6 +12036,98 @@ de ouder.
 
 ---
 
+## ADR-192 — De grens van premium: gratis is oefenen, premium is alles wat over weken gaat
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: punt 2
+tot en met 5 van dezelfde lijst als ADR-191. Vervangt de grenzen van ADR-122
+(tafeldiploma's gratis), ADR-148 (de getallen over het oefenen gratis) en
+ADR-177 (alle vormen gratis, de vakken op slot als regel in de kast).
+
+### Besluit
+
+**Eén regel voor de grens.** Gratis is oefenen, en wat je van de ronde van
+vandaag ziet. Premium is alles wat over weken gaat: wat je inmiddels kent, hoe
+vaak je oefent, doelen voor de week, en een diploma, dat bewijst dat je iets
+blijvend kent.
+
+**Spelvormen.** Gratis zijn Ontdekken en meerkeuze, in elk vak
+(`GRATIS_VORMEN`: `ontdekken`, `meerkeuze`, `som-meerkeuze`, `klok-meerkeuze`,
+`vlag-meerkeuze`, `taal-letters`, `taal-vorm-kiezen`). Zoeken, aanwijzen, zelf
+typen, bliksemronde, overleven en de diplomavormen zijn premium. Elke pagina
+houdt een gratis manier: een test in `forms.test.ts` houdt dat vast.
+
+**Diploma's: de ringen zijn te zien, halen is premium.** Alle 68, rekenen
+ook, dus de tafeldiploma's van ADR-122 ook. De kast op Jij en de muren op de
+vakpagina's tekenen de ringen ook zonder code, met het premiumlabel in de kop.
+Het venster van een diploma zegt zonder code dat je het met premium haalt, in
+plaats van de stand en de knop naar de toets. Starten blijft geweigerd waar
+het altijd geweigerd werd, in `beginRonde`.
+
+Dit laat de regel van ADR-116 los dat een beloning die een kind niet kan
+krijgen, niet getekend wordt. Met die regel had een kind zonder code een kast
+zonder één diploma gezien, en dus gelezen dat dit product geen diploma's heeft.
+Een ring waar je op kunt mikken is hier het aanbod.
+
+**Voortgang wordt bewaard, maar alleen met premium getoond.** De opslag
+verandert niet: wie later een code invoert, ziet meteen alles wat al geoefend
+was. Achter premium gaan:
+
+- op Jij: "Je geheugen", de weken en "Hoe vaak oefen je?" (zonder code staat er
+  één vraag, `Etalage`);
+- op de ouderpagina: "Hoe gaat het?" (zonder code wordt er niets gelezen, en
+  staat er een slot);
+- na een ronde: de schatting over drie weken en "morgen komt terug";
+- op een vakpagina: "eerder gehad", "komen terug" en de vordering in de naam van
+  een onderwerp;
+- op Vandaag: "N keer gespeeld" onder Meest geoefend, en het cijfer bij Recent
+  geoefend. De rijen blijven, want ze zijn de snelste weg terug naar wat je deed.
+
+Gratis blijven de uitslag van de ronde die je net deed, "Herhaal je fouten",
+"klaar voor vandaag", de rondes die je niet afmaakte, en de weg terug na een
+pauze.
+
+**Weekdoelen zijn premium.** Een weekdoel telt rondes en dagen, en kan een
+diploma zijn: dat is precies wat premium geworden is. Zonder code staat de kop
+er met een slot dat zegt wat het doet; wie doelen uitzette, ziet niets.
+
+**De premiumpagina volgt.** De vergelijking noemt per regel wat gratis en wat
+premium is, met dezelfde indeling: oefenen, belonen, onthouden.
+
+**Consistent door de hele app.** Na een controle van elke plek waar premium
+geldt:
+
+- Een diplomaring laat zonder code geen vulling en geen telling zien. Gehaald
+  blijft gehaald, en een diploma dat klaar is voor de toets zegt "Klaar voor de
+  toets, met premium": het moment waarop een kind het aan zijn ouders vraagt.
+- Een diploma kiezen op een vakpagina vraagt zonder code eerst de ouders, net
+  als de diplomategel.
+- De rijen op Vandaag (meest geoefend, recent, maak af) en de startkaarten
+  zetten een premiummanier zonder code om naar de eerste gratis manier van die
+  set (`vrijeVorm`). Afmaken is gratis; het gaat dan op die manier verder.
+- De knop naar de volgende ronde van het dagplan na een ronde staat er alleen
+  met premium, net als het plan zelf.
+- De eigen woordenlijsten zijn een premiumonderwerp: zonder code een slot, en
+  ze vallen uit het plan.
+- Een onbekende manier valt terug op een gratis manier, nooit op een betaalde.
+- De kassapagina, de bedankpagina en de mail met de code noemen wat premium nu
+  is, en sturen naar de ouderpagina om de code in te vullen.
+
+**Geen proefperiode.** Een omgekeerde proef (veertien dagen alles, daarna
+gratis) is gebouwd en op verzoek van de eigenaar teruggedraaid vóór hij live
+ging. Zijn redenering: een ouder die zijn kind wil laten oefenen, koopt meteen;
+een proef stelt die beslissing alleen uit. De gratis vormen zijn de
+kennismaking. Wie dit opnieuw wil overwegen, kan beter eerst kijken wat de
+verkopen na deze grens doen.
+
+### Gevolgen
+
+- Een e2e-test draait standaard met premium. De tests "zonder code" oefenen nu
+  met meerkeuze en zien de ringen met een slot in het venster.
+- Het dagplan kiest nog steeds een gratis vorm (`vormVoor`), dus een geplande
+  tafelronde is meerkeuze.
+- Een kind dat een tafeldiploma haalde vóór deze wijziging, houdt het: behaald
+  is behaald.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

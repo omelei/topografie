@@ -34,10 +34,10 @@ import type { RoundOutcome } from '@/store/rewardStore';
  * bij verzonnen: ADR-130 haalde er juist twee weg omdat niets ze ooit las. Een
  * mix heeft er geen — dat is elk ander onderwerp van zijn vak nog een keer.
  *
- * **Alleen een diploma dat dit kind ook kan halen.** Zonder code is het
- * tafeldiploma het enige vrije diploma (ADR-122), dus staan de twaalf tafels in
- * de lijst en de rest niet. Dat is `vormVoor`'s regel, hardop: een plan dat naar
- * de betaalpagina leidt is geen plan.
+ * **Alleen een diploma dat dit kind ook kan halen.** Sinds ADR-192 is geen
+ * enkel diploma zonder code te halen (tot dan waren de tafels vrij, ADR-122),
+ * dus is de lijst zonder code leeg. Dat is `vormVoor`'s regel, hardop: een plan
+ * dat naar de betaalpagina leidt is geen plan.
  *
  * **De voortgang is eerlijk en niet gemaakt.** Een diploma is geslaagd of niet
  * geslaagd: er bestaat geen "60% van een diploma". Wat er wél is, is hoeveel van

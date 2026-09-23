@@ -8,6 +8,7 @@ import { datumVan } from '@/features/badges/datums';
 import { Uitreiking } from '@/features/badges/Uitreiking';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { usePreferences } from '@/features/player/settings';
+import { usePremium } from '@/features/premium/usePremium';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
@@ -93,6 +94,7 @@ export function RondeKlaar({
 }) {
   const [now] = useState(() => new Date());
   const { geluid } = usePreferences();
+  const { actief: premium } = usePremium();
   const module = MODULES.find((kandidaat) => kandidaat.id === moduleId);
   const ModuleIcon = MODULE_ICON[moduleId];
   const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
@@ -166,7 +168,10 @@ export function RondeKlaar({
               </span>
               {gedaan}
             </li>
-            {eigenDeel ? (
+            {/* Wat morgen terugkomt en wat er over drie weken over is, zijn
+                voortgang, en die is alleen met premium te zien (ADR-192). Wat
+                er in deze ronde gebeurde, staat er altijd. */}
+            {eigenDeel && premium ? (
               <li>
                 <span className="tk-uitslag-regelicoon" aria-hidden="true">
                   <TodayIcon size={20} />
@@ -177,7 +182,7 @@ export function RondeKlaar({
           </ul>
 
           <div className="flex flex-col gap-1">
-            <OnthoudRegel ids={ids} states={na} />
+            {premium ? <OnthoudRegel ids={ids} states={na} /> : null}
             {gestopt ? (
               <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
             ) : null}
@@ -349,9 +354,9 @@ const DRIE_WEKEN_MS = 21 * 86_400_000;
  * What is left of this subject in three weeks, under the round's own numbers
  * (ADR-122).
  *
- * Free, and on purpose: it is the one sentence in this product that is about
- * what happens if you do nothing, and a forecast a family cannot see is a
- * promise they cannot check.
+ * Free from ADR-122 until ADR-192, as the one sentence about what happens if you
+ * do nothing. Since ADR-192 it is shown with a code only: a forecast over the
+ * whole set is keeping track, and that is premium.
  *
  * **The whole set, not the ten questions just asked.** A round's own items were
  * answered a minute ago and would forecast at very nearly a hundred per cent,

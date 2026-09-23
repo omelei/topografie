@@ -1,4 +1,5 @@
 import { DiplomaIcon } from '@/components/Icon';
+import { usePremium } from '@/features/premium/usePremium';
 import type { Module } from '@/features/shell/modules';
 import { t } from '@/i18n';
 import { datumVan, useDiplomaDatums } from './datums';
@@ -36,6 +37,12 @@ export interface DiplomaVak {
  * In de kast op Jij opent elke kaart het diploma groot (`onOpen`), gehaald of
  * niet: één regel, geen uitzondering. Op een modulepagina blijft een gat een
  * ingang (`onKies`), want dát is de pagina waar je komt om te oefenen.
+ *
+ * **Zonder code geen voortgang** (ADR-192). De ring blijft leeg en er staat
+ * geen telling onder: hoe ver een kind is, is premium. Wat wel blijft: gehaald
+ * is gehaald, en een diploma dat klaar is voor de toets zegt dat — met erbij
+ * dat die toets bij premium hoort. Dat is het moment waarop een kind het aan
+ * zijn ouders vraagt.
  */
 export function DiplomaRaster({
   module,
@@ -47,6 +54,7 @@ export function DiplomaRaster({
   /** De kast: elke kaart opent het diploma groot. */
   readonly onOpen?: ((vak: DiplomaVak) => void) | undefined;
 }) {
+  const { actief } = usePremium();
   const stand = useDiplomaStand();
   const datums = useDiplomaDatums();
 
@@ -56,7 +64,9 @@ export function DiplomaRaster({
         const voortgang = stand?.voortgang(vak.diplomaId) ?? null;
         const kaartStand = kaartStandVan(vak.gehaald, voortgang);
         const behaaldOp = datums.get(vak.diplomaId);
-        const zin = zinVan(kaartStand, voortgang, behaaldOp);
+        const zin = actief
+          ? zinVan(kaartStand, voortgang, behaaldOp)
+          : zonderCode(kaartStand, behaaldOp);
         const label = [vak.label, kaartStand === 'gehaald' ? null : zin]
           .filter((deel): deel is string => deel !== null && deel !== '')
           .join('. ');
@@ -67,7 +77,7 @@ export function DiplomaRaster({
               icon={DiplomaIcon}
               module={module}
               gehaald={vak.gehaald}
-              vul={voortgang ? vulling(voortgang) : undefined}
+              vul={voortgang && actief ? vulling(voortgang) : undefined}
             />
             <span className="tk-diploma-titel" aria-hidden="true">
               {vak.titel}
@@ -123,6 +133,17 @@ export function DiplomaRaster({
       })}
     </ul>
   );
+}
+
+/**
+ * De zin onder een kaart zonder code (ADR-192): gehaald, klaar voor de toets
+ * met premium, of nog niet. Geen telling en niets over opfrissen: dat is
+ * voortgang.
+ */
+function zonderCode(stand: KaartStand, behaaldOp: string | undefined): string {
+  if (stand === 'gehaald') return zinVan(stand, null, behaaldOp);
+  if (stand === 'rijp') return t('diploma.rijpMetPremium');
+  return t('diploma.nogNiet');
 }
 
 /** De zin onder een kaart. Nooit een telling die nul is. */

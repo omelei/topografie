@@ -3,7 +3,6 @@ import { TOPO_DIPLOMA_SETS, type TopoDiplomaSet } from '@/game-core';
 import { t } from '@/i18n';
 import { loadTopoDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
-import { usePremium } from '@/features/premium/usePremium';
 import { PremiumLabel } from './PremiumLabel';
 import { KAART_NAAM } from './topoDiplomaNamen';
 
@@ -27,19 +26,14 @@ export function TopoDiplomas({
   /** Niets tonen zolang er niets gehaald is (ADR-158). */
   readonly stilAlsLeeg?: boolean;
 }) {
-  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<TopoDiplomaSet> | null>(null);
 
   useEffect(() => {
     void loadTopoDiplomas().then(setBehaald);
   }, []);
 
-  // Zonder code helemaal niet getekend, in plaats van als een eigen slot
-  // (ADR-124). Op Jij stonden vijf van deze secties onder elkaar, elk met
-  // hetzelfde zinnetje eronder: vijf keer dezelfde vraag is geen aanbod maar
-  // ruis. Eén blok onderaan die pagina zegt nu wat ze samen zijn.
-  if (!actief) return null;
-
+  // Ook zonder code getekend (ADR-192): de ringen zijn te zien, halen kan met
+  // premium. Het label in de kop zegt dat, en de toets vraagt om de code.
   // Nothing until it is known, for the reason every wall gives.
   if (behaald === null) return null;
   // Op Jij zwijgt een lege wand (ADR-158): een kop met "0 van de 12" erboven

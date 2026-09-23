@@ -201,6 +201,9 @@ describe('de mail', () => {
     expect(mail.tekst).toContain('LEER-7K3M-Q9TX');
     expect(mail.tekst).toContain('14 september 2027');
     expect(mail.tekst).toContain('Bewaar deze mail');
+    // Waar de code ingevuld wordt: de ouderpagina (ADR-173).
+    expect(mail.tekst).toContain('https://www.leer.nu/ouder');
+    expect(mail.html).toContain('href="https://www.leer.nu/ouder"');
     expect(mail.html).toContain('LEER-7K3M-Q9TX');
   });
 });

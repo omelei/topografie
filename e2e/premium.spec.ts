@@ -47,53 +47,25 @@ test('without a code the premium parts are labelled once, and say what they do',
 }) => {
   await signIn(page, 'Noor');
 
-  // Wat Onthouden was, staat op Jij (ADR-171), en laat sinds ADR-124 zien wat
-  // het zou laten zien. Sinds ADR-177 is dat elk van je eigen vakken en elk
-  // van je eigen onderwerpen: oefenen is volledig gratis, dus dit kind heeft
-  // ze allemaal gedaan en kreeg cijfers over één ervan. Wat premium blijft is
-  // het bijhouden — de tabel per onderdeel en de weken achter elkaar.
+  // Wat Onthouden was, staat op Jij (ADR-171). Sinds ADR-192 zijn wat je
+  // inmiddels kent en hoe vaak je oefent premium: zonder code staat er de vraag
+  // en niet de cijfers. Bewaard worden ze wel, dus met een code staan ze er
+  // meteen.
   await page.goto('/jij');
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
-  const geheugen = page.getByRole('region', { name: 'Je geheugen' });
-  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
+  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toHaveCount(0);
   await expect(page.getByRole('table')).toHaveCount(0);
-  await expect(page.getByRole('list', { name: 'Vragen per week' })).toHaveCount(0);
 
-  // De keuze staat er, en hij is er een: alle vijf de vakken, en de onderwerpen
-  // van het vak dat aanstaat. Zonder die keuze viel de pagina terug op het
-  // eerste onderwerp van het eerste vak — de provincies van Nederland, niet als
-  // keuze maar als lot.
-  await expect(geheugen.getByRole('heading', { name: 'Welk vak?' })).toBeVisible();
-  for (const vak of ['Topo', 'Rekenen', 'Klok', 'Taal', 'Vlaggen']) {
-    await expect(geheugen.getByRole('button', { name: new RegExp(`^${vak}`) })).toBeVisible();
-  }
-  await expect(geheugen.getByRole('group', { name: 'Welk onderwerp?' })).toBeVisible();
-  await expect(geheugen.getByRole('button', { name: 'Hoe werkt onthouden?' })).toBeVisible();
-
-  // Een ander vak aanwijzen werkt ook zonder code, en de kaart gaat mee.
-  await geheugen.getByRole('button', { name: /^Klok/ }).click();
-  await expect(geheugen.getByRole('button', { name: /^Klok/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-
-  // De getallen over alles zijn gratis (ADR-148): wat je onthoudt en hoe vaak
-  // je oefent.
-  await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toBeVisible();
-
-  // Het voorbeeldkind is weg (ADR-177): het bestond omdat je maar één onderwerp
-  // zag, en verzonnen cijfers op een pagina die "Jij" heet zijn precies wat de
-  // rest van die pagina minder geloofwaardig maakt. De vraag eronder blijft.
-  await expect(page.getByText('Dit zijn niet jouw cijfers.')).toHaveCount(0);
-  await expect(page.getByRole('list', { name: 'Het voorbeeld, in één blik' })).toHaveCount(0);
-  await expect(page.getByText('Wil je dit over jezelf zien?')).toBeVisible();
-
-  // En dat is de enige vraag op de pagina (ADR-124, ADR-172): geen slot bij de
-  // tabel, geen weekbericht, en de eigen woorden staan er zonder code niet.
+  // En dat is de enige vraag op de pagina (ADR-124, ADR-172): geen slot bij elk
+  // blok, en de eigen woorden staan er zonder code niet.
   await expect(page.getByRole('button', { name: 'Bekijk premium' })).toHaveCount(1);
   await expect(page.getByRole('region', { name: 'Hoe gaat het?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Eigen woorden' })).toHaveCount(0);
-  await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(1);
 
   await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
   await expect(page).toHaveURL(/\/premium$/);
@@ -142,8 +114,8 @@ test('without a code the premium parts are labelled once, and say what they do',
     .getByRole('region', { name: /Kies een onderwerp/ })
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await hoe.getByRole('button', { name: /^Aanwijzen/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Aanwijzen/ })).toHaveAttribute(
+  await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
+  await expect(hoe.getByRole('button', { name: /^Meerkeuze/ })).toHaveAttribute(
     'aria-pressed',
     'true',
   );
@@ -152,27 +124,25 @@ test('without a code the premium parts are labelled once, and say what they do',
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Nog een kind erbij' })).toHaveCount(0);
 
-  // En de kast staat er ook, met precies twaalf kaarten: de tafeldiploma's zijn
-  // gratis (ADR-122) en geen enkel diploma dat dit kind niet kan halen wordt
-  // getekend — dat is de kleine wreedheid die ADR-116 verbiedt, en die regel
-  // blijft staan.
+  // De kast hangt vol, ook zonder code (ADR-192). Sinds elk diploma premium
+  // is, liet een kast zonder de ringen een kind lezen dat dit product geen
+  // diploma's heeft. Nu staan ze er allemaal, en zegt het venster van een
+  // diploma dat je het met premium haalt.
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
-  await expect(kast.locator('.tk-diploma')).toHaveCount(12);
-
-  // Wat sinds ADR-177 wél verandert: de vier andere vakken staan er als regel.
-  // Ze vielen uit de lijst, en dus las een kind zonder code dat dit product
-  // twaalf diploma's heeft in plaats van achtenzestig. De naam van een vak
-  // noemen is niet hetzelfde als een beloning tekenen: het verschil is dat
-  // tussen "dit bestaat ook" en "dit heb jij niet".
+  await expect(kast.locator('.tk-diploma').first()).toBeVisible();
   for (const vak of ['Topo', 'Klok', 'Taal', 'Vlaggen']) {
     const rij = kast.getByRole('button', { name: new RegExp(`^${vak}`) });
-    await expect(rij, vak).toContainText('Hier zijn ook diploma’s');
-    await expect(rij, vak).toContainText('Premium');
+    await expect(rij, vak).toContainText('diploma’s');
   }
+  await expect(kast).not.toContainText('Hier zijn ook diploma’s');
 
   // En de weg eruit is de uitleg en niet een codeveld: wie dit leest, heeft de
   // code niet (ADR-124, ADR-174).
-  await kast.getByRole('button', { name: /^Topo/ }).click();
+  await kast.locator('.tk-diploma').first().click();
+  const diploma = page.getByRole('dialog');
+  await expect(diploma).toContainText('Met premium haal je dit diploma');
+  await expect(diploma.getByRole('button', { name: 'Doe de toets' })).toHaveCount(0);
+  await diploma.getByRole('button', { name: 'Bekijk premium' }).click();
   await expect(page).toHaveURL(/\/premium$/);
 });
 
@@ -197,7 +167,7 @@ test('without a code the column beside every page carries no lock at all', async
   await expect(page.getByText('Dit hoort bij premium.')).toHaveCount(0);
 });
 
-test('without a code a child can still discover, repeat their misses, and see the forecast', async ({
+test('without a code a child can still discover, choose, and repeat their misses', async ({
   page,
 }) => {
   await signIn(page, 'Sam');
@@ -216,8 +186,9 @@ test('without a code a child can still discover, repeat their misses, and see th
   await page.locator('.tk-choose-start button').click();
   await expect(page).not.toHaveURL(/\/premium$/);
 
-  // The table of one, typed, so the round can be finished honestly — and one
-  // answer given wrong on purpose, so there is something to repeat.
+  // The table of one, chosen from four, so the round can be finished honestly
+  // — and one answer given wrong on purpose, so there is something to repeat.
+  // Meerkeuze is free, typing is premium (ADR-192).
   await page.goto('/rekenen');
   await page
     .getByRole('region', { name: /Kies een onderwerp/ })
@@ -226,33 +197,35 @@ test('without a code a child can still discover, repeat their misses, and see th
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
   await page
     .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
+    .getByRole('button', { name: /^Meerkeuze/ })
     .click();
   await page.locator('.tk-choose-start button').click();
 
+  const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let n = 1; n <= 10; n++) {
     const som = await page.locator('.tk-sum').innerText();
     const goed = som.split('×')[1]?.trim() ?? '';
-    await page.getByPlaceholder('Antwoord').fill(n === 1 ? '99' : goed);
-    await page.getByRole('button', { name: 'Kijk na' }).click();
+    const keuze =
+      n === 1
+        ? opties
+            .getByRole('button')
+            .filter({ hasNotText: new RegExp(`^${goed}$`) })
+            .first()
+        : opties.getByRole('button', { name: goed, exact: true });
+    await keuze.click();
     await page.getByRole('button', { name: 'Volgende vraag' }).click();
   }
 
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
-  // The forecast is free: it is the one sentence about what happens if you do
-  // nothing, and nothing beside it asks for a code. Sinds ADR-177 zegt hij ook
-  // dát het een schatting is — "ongeveer", en onder welke voorwaarde. De ring
-  // die op Jij hetzelfde getal als kop droeg, is weg; hier is het één regel na
-  // een ronde, met iets om voor te pleiten.
-  await expect(
-    page.getByText(/Doe je niets, dan weet je hier over drie weken nog ongeveer \d+% van\./),
-  ).toBeVisible();
+  // The forecast is premium since ADR-192: it is what you will still know in
+  // three weeks, and that is keeping track. The round itself is still there.
+  await expect(page.getByText(/Doe je niets, dan weet je hier over drie weken/)).toHaveCount(0);
 
-  // And so is going back over what just went wrong.
+  // And going back over what just went wrong is free.
   await page.getByRole('button', { name: 'Herhaal je fouten' }).click();
   await expect(page).not.toHaveURL(/\/premium$/);
-  await expect(page.getByPlaceholder('Antwoord')).toBeVisible();
+  await expect(opties).toBeVisible();
 });
 
 /**
@@ -282,7 +255,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen is gratis. Met premium blijft het hangen.',
+    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft het hangen.',
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
@@ -426,7 +399,10 @@ test('the day plan says how much without a code, and is the plan with one', asyn
   await expect(inDeNavigatie).toBeVisible();
 });
 
-/** Een ronde tafel van 1, getypt: elk antwoord is de vermenigvuldiger zelf. */
+/**
+ * Een ronde tafel van 1, uit vier gekozen: elk antwoord is de vermenigvuldiger
+ * zelf. Meerkeuze, want zonder code is typen premium (ADR-192).
+ */
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
   await page
@@ -436,14 +412,15 @@ async function oefenTafelVanEen(page: Page) {
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
   await page
     .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
+    .getByRole('button', { name: /^Meerkeuze/ })
     .click();
   await page.locator('.tk-choose-start button').click();
 
+  const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let vraag = 1; vraag <= 10; vraag++) {
     const som = await page.locator('.tk-sum').innerText();
-    await page.getByPlaceholder('Antwoord').fill((som.split('×')[1] ?? '').trim());
-    await page.getByRole('button', { name: 'Kijk na' }).click();
+    const goed = (som.split('×')[1] ?? '').trim();
+    await opties.getByRole('button', { name: goed, exact: true }).click();
     await page.getByRole('button', { name: 'Volgende vraag' }).click();
   }
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
@@ -594,4 +571,34 @@ test.describe('doorsturen naar de ouder', () => {
     await expect(melding).toContainText('lukt niet op dit apparaat');
     await expect(melding.locator('.tk-adres')).toContainText('/premium');
   });
+});
+
+/**
+ * Zonder code leidt de eerste kaart op Vandaag niet naar een slot, en vraagt
+ * een diploma op een vakpagina eerst de ouders (ADR-192).
+ */
+test('without a code the first card starts a round, and a diploma asks the parents', async ({
+  page,
+}) => {
+  await signIn(page, 'Pim');
+
+  // De startkaarten zijn meerkeuze: gratis, dus geen vraag aan de ouders.
+  await page
+    .getByRole('button', { name: /Provincies/ })
+    .first()
+    .click();
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toHaveCount(0);
+
+  // Een diploma op de muur kiezen is premium.
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
+    .click();
+  await page
+    .getByRole('region', { name: 'Jouw tafeldiploma’s' })
+    .getByRole('button', { name: /^Tafel van 3/ })
+    .click();
+  await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toBeVisible();
 });

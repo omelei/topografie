@@ -7,7 +7,7 @@ import { voortgangVan, type Voortgang } from './voortgang';
 /**
  * Wat een diplomakaart naast "gehaald" nog weet: hoe ver hij is.
  *
- * Eén keer de Leitner-standen lezen voor alle drieëndertig diploma's, want een
+ * Eén keer de Leitner-standen lezen voor alle achtenzestig diploma's, want een
  * raster tekent er twaalf tegelijk en dat mag geen twaalf uitlezingen zijn.
  *
  * `rijp` is de lat van ADR-141, ongewijzigd. `voortgang` is nieuw en telt wat

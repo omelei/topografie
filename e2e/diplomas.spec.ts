@@ -143,8 +143,8 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ 
   await signIn(page, 'Fenna');
   await page.goto('/jij');
 
-  // Zonder gespeelde ronde staat tafels open: het enige vak dat zonder code
-  // diploma's heeft (ADR-122).
+  // Zonder gespeelde ronde staat tafels open: het diploma dat een Nederlands
+  // kind al kent voordat het deze app kent (ADR-122).
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
   await kast.getByRole('button', { name: /^Bekijk je diploma: Tafel van 1$/ }).click();

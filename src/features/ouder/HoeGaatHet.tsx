@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { setRetention } from '@/game-core';
 import { t } from '@/i18n';
+import { PremiumSlot } from '@/features/premium/PremiumSlot';
+import { usePremium } from '@/features/premium/usePremium';
 import { geheugen, geoefend, perDag } from '@/features/retention/statistiek';
 import { listChildren } from '@/store/children';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
@@ -20,8 +22,12 @@ import { loadItemStates, loadPlayedRounds } from '@/store/progress';
  * kind náást een ander kind staat, en dat mag hier: ADR-164 weigerde namen in
  * de statistieken van het kind, en dit is de pagina van de ouder.
  *
+ * **Sinds ADR-192 staat dit blok alleen met een code**; zonder code wordt er
+ * niets gelezen en staat er een slot. Wat volgt, is waarom het daarvoor gratis
+ * was.
+ *
  * **Kort, en de diepte is premium.** Wat hier staat zijn feiten over het eigen
- * kind, en die zijn gratis — dezelfde grens die ADR-133 trok voor de noemer van
+ * kind, en die waren gratis — dezelfde grens die ADR-133 trok voor de noemer van
  * de weekdagen en die ADR-177 doortrok naar de vakkeuze op Jij. Wat premium
  * blijft is het bijhouden: per som en per woord, en het verloop week na week
  * (`premium.usp.zicht`).
@@ -74,9 +80,12 @@ async function lees(): Promise<Stand[]> {
 }
 
 export function HoeGaatHet() {
+  const { actief } = usePremium();
   const [standen, setStanden] = useState<Stand[] | null>(null);
 
   useEffect(() => {
+    // Zonder code wordt er niets gelezen: er staat toch niets van (ADR-192).
+    if (!actief) return;
     let levend = true;
     void lees().then((gelezen) => {
       if (levend) setStanden(gelezen);
@@ -84,7 +93,18 @@ export function HoeGaatHet() {
     return () => {
       levend = false;
     };
-  }, []);
+  }, [actief]);
+
+  // Hoe het gaat, is voortgang, en voortgang is alleen met premium te zien
+  // (ADR-192). De kop blijft staan, zodat een ouder weet wat er hier kan staan.
+  if (!actief) {
+    return (
+      <section className="flex flex-col gap-3" aria-label={t('ouder.hoeGaatHet')}>
+        <h2 className="tk-sectie">{t('ouder.hoeGaatHet')}</h2>
+        <PremiumSlot wat="premium.wat.voortgang" />
+      </section>
+    );
+  }
 
   return (
     <section

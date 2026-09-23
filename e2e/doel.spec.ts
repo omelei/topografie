@@ -161,7 +161,10 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
   // daaronder alles per vak. Wat bovenaan staat, staat er maar één keer.
   await expect(blok.getByRole('region', { name: 'Dichtbij' })).toBeVisible();
   await expect(blok.getByRole('region', { name: 'Topo' })).toBeVisible();
-  await blok.getByRole('button', { name: 'Het diploma Tafel van 1 halen', exact: true }).click();
+  // Met ". Premium" erachter: sinds ADR-192 is elk diploma premium, ook dit.
+  await blok
+    .getByRole('button', { name: 'Het diploma Tafel van 1 halen. Premium', exact: true })
+    .click();
 
   await expect(blok).toContainText('Het diploma Tafel van 1 halen');
   await expect(blok).toContainText('0 van de 1');

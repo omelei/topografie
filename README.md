@@ -178,6 +178,15 @@ product argues from and it lives on **Onthouden**, one screen along. On the
 front door beside a mark it read as a second opinion about the same thing
 ([ADR-058](docs/DECISIONS.md)).
 
+## Free and premium
+
+Practising is free in every module in the gentlest ways: ontdekken and
+meerkeuze. Everything else is premium, bought by a parent as one code per
+school year for the whole family: the other ways of practising, all 68
+diplomas (their rings are visible to everyone), what a child knows and how
+often it practises, weekly goals, the daily plan and own word lists
+([ADR-192](docs/DECISIONS.md)). There is no trial period.
+
 ## Architecture in one paragraph
 
 A static single-page app. **Everything a child practises lives in IndexedDB on

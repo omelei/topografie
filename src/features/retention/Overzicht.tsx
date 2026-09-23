@@ -201,8 +201,8 @@ export interface Verloop {
  * dan de ring erboven. De noemer was het enige wat het toevoegde, en het is een
  * feit over het eigen kind, dus gratis (ADR-124).
  *
- * De tegels zijn gratis, zoals ze op Voor ouders waren. Het verloop is premium:
- * dat is het bijhouden (ADR-124).
+ * De tegels waren gratis, zoals ze op Voor ouders waren, en het verloop
+ * premium (ADR-124). Sinds ADR-192 staat dit hele blok alleen met een code.
  */
 export function HoeVaak({
   rondes,
@@ -345,6 +345,10 @@ function breedte(deel: number, totaal: number): string {
  * Elk vak op één regel: hoeveel je onthoudt, hoeveel je geoefend hebt, en van
  * hoeveel, met een balk in de kleur van het vak. Een druk op de regel kiest dat
  * vak, en wat eronder staat gaat mee.
+ *
+ * **Sinds ADR-192 staat hij er alleen met een code**, zoals de rest van deze
+ * pagina. Wat hieronder staat, is waarom hij tussen ADR-177 en ADR-192 gratis
+ * was.
  *
  * **Sinds ADR-177 is dit de keuze zelf, en staat hij er zonder code.** Twee
  * dingen die allebei fout waren, met één oorzaak. De rij stond achter premium,

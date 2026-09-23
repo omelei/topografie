@@ -53,7 +53,7 @@ import { geplaatst, onderdelen, startbareOnderdelen } from '@/features/module/on
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
 import { leesDagstand } from '@/store/dagstandStore';
 import { standVoor, volgendeSet } from '@/features/home/dagstand';
-import { planSets, vormVoor } from '@/features/home/useVandaag';
+import { planSets, vormVoor, vrijeVorm } from '@/features/home/useVandaag';
 import {
   isFoutenSet,
   isMixSet,
@@ -280,7 +280,9 @@ export default function App() {
    */
   const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => {
     if (rest.length === 0) return;
-    beginRonde(deel, mode, rest.length, false, [...rest]);
+    // Afmaken is gratis (ADR-192): een ronde die in een premiummanier begon,
+    // gaat zonder code verder op de eerste gratis manier van die set.
+    beginRonde(deel, vrijeVorm(deel, mode, premium), rest.length, false, [...rest]);
   };
 
   /**

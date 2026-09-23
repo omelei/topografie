@@ -79,6 +79,9 @@ import { geheugen, perVak, perWeek, procentGoedVan, type Antwoord } from './stat
  * remembering changed in ADR-114 and again in ADR-160 — drie keer goed op
  * drie dagen — and a definition nobody can read is one nobody can trust.
  *
+ * **Sinds ADR-192 staat hier zonder code alleen de vraag (`Etalage`).** Wat
+ * hieronder over een gratis voorproef staat, is de geschiedenis van die grens.
+ *
  * Premium since ADR-116, en sinds ADR-124 met een gratis voorproef, want dit is
  * de pagina die de hele propositie ís en hij liet er niets van zien. Er stond
  * een kaal slot waar het product hoort. Een belofte die een ouder niet kan zien
@@ -115,7 +118,11 @@ const ONDERWERP_ID = 'onthouden-onderwerp';
 
 export function Statistieken() {
   const { actief } = usePremium();
-  return <Onthouden premium={actief} />;
+  // Wat een kind kent en hoe vaak het oefende, is alleen met premium te zien
+  // (ADR-192). Het wordt wel altijd bewaard — het herhaalschema heeft het
+  // nodig — dus wie premium neemt, ziet meteen alles wat er al was. Zonder
+  // code staat hier alleen de vraag, en niets van de getallen erachter.
+  return actief ? <Onthouden premium /> : <Etalage />;
 }
 
 /**

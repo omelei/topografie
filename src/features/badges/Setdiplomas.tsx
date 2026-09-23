@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { doelwitVan } from '@/features/home/doel';
 import { naamVan, type Onderdeel } from '@/features/module/onderdelen';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { usePremium } from '@/features/premium/usePremium';
 import type { Module } from '@/features/shell/modules';
 import { t } from '@/i18n';
 import { loadBehaald } from '@/store/rewardStore';
@@ -23,7 +22,8 @@ import { DiplomaRaster } from './DiplomaRaster';
  * hele reden dat deze component bestaat in plaats van een vijfde en zesde kopie
  * van dezelfde vijftig regels.
  *
- * Zonder code niet getekend, zoals de andere drie premiumwanden (ADR-124).
+ * Ook zonder code getekend (ADR-192): de ringen zijn te zien, halen kan met
+ * premium. Het label in de kop zegt dat, en de toets vraagt om de code.
  */
 export function Setdiplomas({
   moduleId,
@@ -38,14 +38,12 @@ export function Setdiplomas({
   /** Drukken kiest die set en het diploma erbij. */
   readonly onKies?: ((setId: string) => void) | undefined;
 }) {
-  const { actief } = usePremium();
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
 
   useEffect(() => {
     void loadBehaald().then(setBehaald);
   }, []);
 
-  if (!actief) return null;
   // Niets tot het bekend is: een wand die eerst vier gaten toont en er daarna
   // twee van vult, heeft een kind verteld dat het niets had.
   if (behaald === null) return null;

@@ -320,8 +320,9 @@ export function ModuleScreen({
           now: new Date(),
         })
       : null;
+  // Hoeveel je eerder had, is voortgang: alleen met premium (ADR-192).
   const eerderZin =
-    vooraf !== null && vooraf.seen > 0
+    actief && vooraf !== null && vooraf.seen > 0
       ? t('start.eerderGehad', { eerder: vooraf.seen, totaal: vooraf.total })
       : null;
 
@@ -465,7 +466,7 @@ export function ModuleScreen({
                   // How the subject is going is not on the face of it; it is in
                   // its name, and in the child's own column (ADR-089).
                   aria-label={metPremium(
-                    [t(vak.naam), buitenGroep, vorderingVan(vak, known, now)]
+                    [t(vak.naam), buitenGroep, actief ? vorderingVan(vak, known, now) : null]
                       .filter((deel) => deel !== null)
                       .join('. '),
                     premium,
@@ -623,8 +624,12 @@ export function ModuleScreen({
               <button
                 type="button"
                 className="tk-tegel"
+                // Zonder code geen aantal: hoeveel je fout had is een telling over
+                // rondes heen, en dat is voortgang (ADR-192).
                 aria-label={metPremium(
-                  `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`,
+                  actief
+                    ? `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`
+                    : t('choose.fouten'),
                   true,
                   actief,
                 )}
@@ -789,7 +794,7 @@ export function ModuleScreen({
 
         {/* Eén zin: wat hier vandaag terugkomt. Dat is de voorwaarde voor het
             diploma — alleen wat terugkomt kan onthouden raken. */}
-        {chosen !== null && states !== null ? (
+        {actief && chosen !== null && states !== null ? (
           <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
         ) : null}
 
@@ -798,6 +803,12 @@ export function ModuleScreen({
         {onderwerp?.id === 'tafels' ? (
           <Tafeldiplomas
             onKies={(tafel) => {
+              // Een diploma halen is premium (ADR-192): zonder code eerst de
+              // vraag aan de ouders, net als de diplomategel zelf.
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(tafel);
               setFormId('tafeldiploma');
               setToetsstand(false);
@@ -810,6 +821,10 @@ export function ModuleScreen({
         {module.id === 'vlaggen' ? (
           <VlagDiplomas
             onKies={(deel) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(vlagDiplomaSet(deel));
               setFormId('vlag-diploma');
               setToetsstand(false);
@@ -823,6 +838,10 @@ export function ModuleScreen({
         {module.id === 'klok' ? (
           <KlokDiplomas
             onKies={(stap) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(stap);
               setFormId('klok-diploma');
               setToetsstand(false);
@@ -833,6 +852,10 @@ export function ModuleScreen({
         {module.id === 'topo' ? (
           <TopoDiplomas
             onKies={(kaart) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(kaart);
               setFormId('topo-diploma');
               setToetsstand(false);
@@ -854,6 +877,10 @@ export function ModuleScreen({
             titel={t(module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle')}
             sets={setdiplomas}
             onKies={(setId) => {
+              if (!actief) {
+                vraagOuders();
+                return;
+              }
               kiesElders(setId);
               setFormId(module.id === 'woorden' ? 'taal-diploma' : 'reken-diploma');
               setToetsstand(false);

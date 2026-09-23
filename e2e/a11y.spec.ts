@@ -477,10 +477,12 @@ test.describe('zonder code', () => {
     expect((await scan(page)).violations).toEqual([]);
   });
 
-  test('the Jij page has no violations while showing its free preview', async ({ page }) => {
+  test('the Jij page has no violations while it asks for premium', async ({ page }) => {
     await signIn(page, 'Wout');
     await page.goto('/jij');
-    await expect(page.getByRole('list', { name: 'Alles in één blik' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels kent?' }),
+    ).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });
 });

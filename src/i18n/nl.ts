@@ -18,7 +18,7 @@ export const nl = {
   // opdracht met een plafond: tien, en dan ben je klaar. Niets in het product
   // stopt na tien.
   'home.welcome': 'Welkom {naam}!',
-  'home.todayOpen': 'Kies een vak, doe een ronde en kijk wat je al onthoudt.',
+  'home.todayOpen': 'Kies een vak, doe een ronde en kijk hoe het ging.',
   // De rondes die je begon en niet afmaakte (ADR-115), in de plaats van de
   // moduletegels van "Verder oefenen". Tikken vraagt wat die ronde nog niet
   // had gevraagd, op dezelfde manier.
@@ -110,7 +110,7 @@ export const nl = {
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.
   'terug.titel': 'Welkom terug',
-  'terug.zin': 'Je diploma’s staan er nog.',
+  'terug.zin': 'Alles wat je geoefend hebt, staat er nog.',
   'terug.klaar': '{aantal} onderdelen staan klaar.',
   'terug.klaarEen': '1 onderdeel staat klaar.',
   'terug.minuutEen': 'De eerste ronde duurt ongeveer 1 minuut.',
@@ -279,9 +279,9 @@ export const nl = {
   // De vraag zelf, de enige op Jij (ADR-172), in woorden die zeggen wat je
   // erbij krijgt in plaats van dat er iets op slot zit — en in de stem van het
   // kind, met de ouder als wie de code heeft (ADR-163).
-  'retention.verkoopKop': 'Wil je dit over jezelf zien?',
+  'retention.verkoopKop': 'Wil je zien wat je inmiddels kent?',
   'retention.verkoopTekst':
-    'Met premium zie je hier elk vak, elk onderwerp en elk onderdeel, en hoe vaak je oefent, week na week. leer.nu zet elke dag voor je klaar wat je bijna vergeet, en je kunt de woorden van school zelf invoeren. Daar hebben je ouders een code voor nodig.',
+    'Met premium zie je hier wat je inmiddels kent, per vak, per onderwerp en per onderdeel, en hoe vaak je oefent, week na week. Alles wat je nu oefent, wordt al bewaard: met premium staat het er meteen. Daar hebben je ouders een code voor nodig.',
   'retention.verkoopKnop': 'Bekijk premium',
   // Wat onthouden is, uitgeschreven zoals de regels van de reeks (ADR-114).
   // Sinds ADR-172 staat regel 1 open boven de ring die het woord telt, en de
@@ -436,7 +436,7 @@ export const nl = {
   // erbij: meerkeuze is de instap naar typen, geen alternatief ervoor. De klok
   // en de levens staan achteraan en zeggen zelf waarvoor ze zijn — ze staan in
   // de lijst, want alles wat een ronde start hoort langs dezelfde startknop.
-  'way.wijs-aan': 'Tik het gebied aan — voor de eerste keer',
+  'way.wijs-aan': 'Tik het gebied aan op de kaart',
   'way.meerkeuze': 'Kies uit vier namen — de instap naar typen',
   'way.hoe-heet-dit': 'Schrijf het zelf op — voor de toets',
   'way.ontdekken': 'Rondkijken, geen vragen',
@@ -530,19 +530,20 @@ export const nl = {
   // Premium (ADR-111, ADR-116, ADR-122): een code die een ouder één keer
   // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
   //
-  // De knip staat sinds ADR-122 tussen oefenen en onthouden, en de intro zegt
-  // hem in die volgorde: eerst wat gratis is en blijft, dan waar premium over
-  // gaat. Andersom leest elke zin als een muur.
+  // De knip staat sinds ADR-192 tussen oefenen in de gratis vormen en alles wat
+  // over weken gaat, en de intro zegt hem in die volgorde: eerst wat gratis is,
+  // dan waar premium over gaat. Andersom leest elke zin als een muur.
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
-  // De knip van ADR-122, in de woorden van een ouder: oefenen kost niets, en
-  // premium zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
+  // De knip van ADR-192, in de woorden van een ouder: oefenen kan gratis, en
+  // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent alle vakken en onderwerpen gratis, voor altijd. Premium plant het herhalen, laat zien wat er blijft hangen en laat je kind zichzelf overhoren. Voor het hele gezin, een schooljaar lang.',
+    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s, plant het herhalen en laat zien wat er blijft hangen. Voor het hele gezin, een schooljaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
-  'premium.etalageKop': 'Oefenen is gratis. Met premium blijft het hangen.',
+  'premium.etalageKop':
+    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft het hangen.',
   'premium.perSchooljaar': 'per schooljaar',
   'premium.codeTitel': 'Heb je al een code?',
   'premium.codeLabel': 'Typ de code',
@@ -573,15 +574,15 @@ export const nl = {
   'premium.usp.zicht': 'Uitgebreide statistieken over je kind',
   // Zonder de voorspelling over drie weken (ADR-177). Die stond hier als
   // premiumbelofte en klopte op twee manieren niet meer: hij staat niet meer
-  // bij de statistieken, en waar hij wél staat — na een ronde — is hij gratis
-  // (`premium.regel.voorspelling`). Een belofte die nergens uitkomt is de
+  // bij de statistieken, en waar hij wél staat — na een ronde — staat hij bij
+  // `premium.regel.voorspelling`, sinds ADR-192 ook premium. Een belofte die nergens uitkomt is de
   // snelste manier om een ouder kwijt te raken die net betaald heeft, en dat
   // staat al sinds ADR-164 boven deze sleutel.
   'premium.usp.zichtUit':
     'Tot op de som en het woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
-  'premium.usp.zelf': 'Je kind overhoort zichzelf',
+  'premium.usp.zelf': 'Diploma’s halen en zichzelf overhoren',
   'premium.usp.zelfUit':
-    'Met de oefentoets test je kind zelf of het de stof kent: zonder hulp, met een cijfer aan het eind. Jij hoeft niet meer te overhoren.',
+    'Je kind haalt alle 68 diploma’s, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof kent. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
     'Eén code voor al je kinderen, op maximaal drie apparaten, een heel schooljaar lang.',
@@ -591,12 +592,12 @@ export const nl = {
   // manieren op elke modulepagina. Die drie toetsen, en dat staat er nu.
   'premium.vergelijkTitel': 'Basis en premium naast elkaar',
   'premium.vergelijkUitleg':
-    'Oefenen kost niets. De bliksemronde, overleven en de oefentoets zijn premium: daarmee test je kind of het de stof al kent, en dat hoort bij onthouden.',
+    'Oefenen kan gratis: ontdekken en meerkeuze, in elk vak. De andere manieren van oefenen, de diploma’s, de voortgang en de weekdoelen zijn premium.',
   'premium.basisNaam': 'Basis',
   'premium.basisPrijs': 'Gratis',
-  'premium.basisVoor': 'Alles om te oefenen, in elk vak. Voor altijd, zonder code.',
+  'premium.basisVoor': 'Ontdekken en meerkeuze, in elk vak. Voor altijd, zonder code.',
   'premium.premiumVoor':
-    'Alles uit Basis, en daarbovenop het onthouden: plannen, bijhouden en zelf overhoren.',
+    'Alles uit Basis, en daarbovenop: aanwijzen, zoeken en zelf typen, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
   'premium.aanrader': 'Aanrader',
   'premium.tabelWat': 'Onderdeel',
   'premium.tabelJa': 'Zit erin',
@@ -606,29 +607,32 @@ export const nl = {
   'premium.groep.onthouden': 'Onthouden',
   'premium.groep.uitdagen': 'Uitdagen',
   'premium.groep.ouders': 'Voor ouders',
-  'premium.regel.vakken': 'Alle vakken en alle onderwerpen',
+  'premium.regel.vakken': 'Alle vakken en alle onderwerpen van school',
   // Sinds ADR-177 is dit waar. Het stond hier als "Basis" terwijl een kind
   // zonder code één onderwerp van één vak zag — de provincies van Nederland,
   // niet als keuze maar als lot. Nu kan het elk van zijn eigen vakken en
   // onderwerpen aanwijzen.
-  'premium.regel.blijfthangen': 'Per vak en per onderwerp zien wat blijft hangen',
-  'premium.regel.vormen': 'Ontdekken, zoeken, meerkeuze en zelf typen',
+  // De grens van ADR-192: ontdekken en meerkeuze zijn gratis, zoeken en zelf
+  // typen niet. Twee regels, want het zijn twee kanten van dezelfde grens.
+  'premium.regel.vormen': 'Ontdekken en meerkeuze',
+  'premium.regel.zoekenTypen': 'Aanwijzen op de kaart, klok en vlag zoeken, en zelf typen',
   'premium.regel.herhaal': 'Na een ronde je fouten meteen overdoen',
   // "Een schatting" en niet "zien" (ADR-177): het is een vergeetcurve met een
   // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
   'premium.regel.voorspelling':
     'Na elke ronde een schatting van hoeveel je er over drie weken nog van weet',
-  'premium.regel.tafeldiploma': 'De twaalf tafeldiploma’s',
-  // Alle vijf de vakken, en het getal erbij (ADR-177). Er stond "vlaggen, klok
-  // en topografie": Taal ontbrak, en de twintig rekendiploma's naast de tafels
-  // ook. Dat is zesenvijftig van de achtenzestig, en de regel noemde er drie
-  // soorten van. Een tabel die minder belooft dan het product geeft, is net zo
-  // fout als een die meer belooft — `kast.test.ts` bewaakt de aantallen.
-  'premium.regel.diplomas': 'De andere 56 diploma’s: rekenen, topografie, taal, klok en vlaggen',
+  // Alle diploma's zijn premium sinds ADR-192, ook de tafels. De ring bij elk
+  // diploma blijft te zien: een kind hoort te weten wat er te halen valt.
+  // `kast.test.ts` bindt het getal aan de lijst.
+  'premium.regel.ringen': 'Alle diploma’s zien, en wanneer je klaar bent voor de toets',
+  'premium.regel.diplomas':
+    'Alle 68 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
+  'premium.regel.weekdoelen': 'Elke week je eigen doelen kiezen en halen',
+  'premium.regel.voortgang': 'Zien wat je inmiddels kent en hoe vaak je hebt geoefend',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
-  // Wat premium hier écht toevoegt sinds ADR-177: de diepte en de tijd. Per
-  // vak en per onderwerp kijken is gratis geworden, en deze regel zei nog dat
-  // je dat kocht.
+  // De diepte en de tijd (ADR-177). Sinds ADR-192 is ook per vak en per
+  // onderwerp kijken premium (`premium.regel.voortgang`); dit is wat er
+  // daaronder nog bij komt.
   'premium.regel.onthouden': 'Per som en per woord zien hoe het gaat, en het verloop week na week',
   'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
   'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
@@ -655,7 +659,7 @@ export const nl = {
     'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
-    'Een plaatje krijgt kleur doordat je kind het op verschillende dagen goed heeft. Niets hangt van geluk af, en er valt niets te kopen.',
+    'Een diploma haal je door het op verschillende dagen goed te weten, en dan de toets te doen. Niets hangt van geluk af.',
 
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
@@ -735,6 +739,13 @@ export const nl = {
   'doorsturen.mail': 'Of mail het ze',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is, zodat je kind niet hoeft te bedenken waar het moet beginnen.',
+  // Wat premium laat zien, sinds ADR-192. Steeds met de zin dat het al bewaard
+  // wordt: wie premium neemt, begint niet op nul.
+  'premium.wat.voortgang':
+    'Met premium zie je per kind wat het inmiddels kent en hoe vaak het oefent. Alles wordt nu al bewaard, dus het staat er meteen.',
+  'premium.wat.diploma': 'Met premium haal je dit diploma: je doet de toets, en je naam komt erop.',
+  'premium.wat.weekdoelen':
+    'Met premium kies je elke week je eigen doelen, en zie je hoe ver je ermee bent.',
 
   // De onderwerpen van rekenen. Acht soorten sommen en een mix ervan; de tafels
   // hebben er twaalf, die als knopjes onder de kaart staan in plaats van als
@@ -956,7 +967,7 @@ export const nl = {
   // De volgorde is op elke pagina dezelfde (ADR-112): zoeken, meerkeuze, zelf
   // typen. Bij de klok is zoeken de klok die bij een tijd hoort.
   'way.klok-meerkeuze': 'Kies uit vier tijden — de instap naar typen',
-  'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort — voor de eerste keer',
+  'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort',
   'way.klok-typen': 'Schrijf de tijd zelf op — voor de toets',
   // Het klokdiploma (ADR-117): tien klokken van één stap, zelf opschrijven,
   // negen goed, en pas aan het eind hoor je hoe het ging.
@@ -1010,7 +1021,7 @@ export const nl = {
   // Alleen de oefentoets vraagt zo, en zo heet hij dan ook in de lijst van
   // wat je laatst hebt geoefend.
   'mode.vlag-gemengd': 'Oefentoets',
-  'way.vlag-zoeken': 'Kies de vlag die bij de naam hoort — voor de eerste keer',
+  'way.vlag-zoeken': 'Zoek de vlag die bij de naam hoort',
   'way.vlag-meerkeuze': 'Kies de naam die bij de vlag hoort',
   'way.vlag-gemengd':
     'Je kiest zonder hulp, vlaggen en namen door elkaar. Aan het eind zie je wat goed was en krijg je een cijfer.',
@@ -1278,8 +1289,7 @@ export const nl = {
   'result.nieuwePlaatjes': 'Iets nieuws leren',
   // De regel van de diploma's (ADR-167): iets nieuws telt pas mee als je het op
   // een volgende dag weer goed weet.
-  'result.nieuwePlaatjesUitleg':
-    'Iets nieuws telt nog niet mee voor je diploma. Dat gebeurt als het terugkomt.',
+  'result.nieuwePlaatjesUitleg': 'Iets nieuws telt pas mee als het terugkomt, op een andere dag.',
 
   // Het cijfer, en alleen na een toetsstand. Elke ronde wordt geteld en elke
   // ronde komt met een cijfer in het logboek, maar een cijfer voor een ronde
@@ -1291,7 +1301,7 @@ export const nl = {
   // iets bij kwam. Geen "goed gedaan": het product zegt wat er gebeurd is, niet
   // wat je ervan moet vinden.
   'result.beloningTitle': 'Wat je verdiende',
-  // De voorspelling, gratis en zonder code (ADR-122). Dezelfde woorden als op
+  // De voorspelling (ADR-122), sinds ADR-192 alleen met een code. Dezelfde woorden als op
   // de voordeur, want het is dezelfde som: wat er over is als je niets doet.
   // Geen knop ernaast naar premium — een kind een slot voorhouden op de pagina
   // waar het net iets goed deed, is precies wat PremiumSlot niet doet.
@@ -1314,6 +1324,9 @@ export const nl = {
   // volgorde van de pagina eronder (ADR-172).
   'you.intro':
     'Je oefent als {naam}. Hier stel je jezelf in. En hier staan je diploma’s, wat je onthoudt en hoe vaak je oefent.',
+  // Zonder code (ADR-192): de cijfers staan er dan niet, en de zin belooft ze niet.
+  'you.introZonderCode':
+    'Je oefent als {naam}. Hier stel je jezelf in, en hier hangen je diploma’s. Met premium zie je hier ook wat je onthoudt en hoe vaak je oefent.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
   // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
@@ -1388,7 +1401,7 @@ export const nl = {
   // De weg terug na "Ik wil geen doelen" op Vandaag (ADR-171).
   'you.doelen': 'Doelen voor deze week',
   // Op de ouderpagina (ADR-173), dus over het kind en niet tegen het kind.
-  'you.doelenWhy': 'Op Vandaag kiest elk kind zelf wat het deze week wil halen.',
+  'you.doelenWhy': 'Met premium kiest elk kind op Vandaag zelf wat het deze week wil halen.',
   'you.readAloudWhy': 'Je kunt elke vraag laten voorlezen.',
   'you.on': 'aan',
   'you.off': 'uit',
@@ -1468,7 +1481,7 @@ export const nl = {
   // optellen geeft een getal dat over niemand gaat.
   'ouder.hoeGaatHet': 'Hoe gaat het?',
   'ouder.hoeGaatHetUitleg':
-    'Per kind, over alle vakken bij elkaar. Wat je kind zelf ziet, staat op Jij; per som en per woord kijken zit in premium.',
+    'Per kind, over alle vakken bij elkaar. Per som en per woord kijk je op Jij, bij je kind zelf.',
   'ouder.kindNogNiets': '{naam} heeft nog niets geoefend.',
   // Over het kind in de derde persoon: de ouder leest dit, en "je" op deze
   // pagina is de ouder. Dezelfde vorm als op Jij, met de naam erin: "90 — kent
@@ -1709,6 +1722,8 @@ export const nl = {
   'diploma.gehaald': 'Gehaald',
   'diploma.nogNiet': 'Nog niet',
   // Rijp: de pagina is ver genoeg om af te zwemmen (ADR-141, ADR-149).
+  // Zonder code: klaar voor de toets, en die hoort bij premium (ADR-192).
+  'diploma.rijpMetPremium': 'Klaar voor de toets, met premium',
   'diploma.rijp': 'Klaar om af te zwemmen',
 
   // Wat er onder een diplomakaart staat, per stand. Vijf zinnen, en nooit een
@@ -1759,21 +1774,17 @@ export const nl = {
     'Ga oefenen. Je kent iets pas als je het drie keer goed had, op drie verschillende dagen.',
   'you.diplomaStap3':
     'De ring om het diploma laat zien hoe ver je bent. Die ring loopt nooit terug, ook niet als je een keer iets fout hebt.',
-  'you.diplomaStap4': 'Is de ring helemaal vol? Dan mag je de toets doen.',
+  'you.diplomaStap4':
+    'Is de ring helemaal vol? Dan mag je de toets doen. De toets hoort bij premium.',
   'you.diplomaStap5':
     'Haal je de toets? Dan is het diploma van jou. Het blijft altijd van jou, en je kunt het uitprinten.',
 
   // De diplomakast op Jij: alle diploma's, één vak open en de rest als regel.
   'kast.titel': 'Jouw diploma’s',
   'kast.stand': '{aantal} van de {totaal} gehaald.',
-  'kast.leeg': 'Hier komen je diploma’s te hangen. Druk op een diploma om eraan te beginnen.',
+  'kast.leeg':
+    'Hier komen je diploma’s te hangen. Druk op een diploma om te zien hoe je het haalt.',
   'kast.vakAantal': '{aantal} diploma’s',
-  // Een vak waar dit apparaat geen code voor heeft (ADR-177). Het vak staat er
-  // wél, want anders bestaat het niet voor een kind zonder code; de diploma's
-  // erachter worden niet getekend, want dat verbiedt ADR-116.
-  'kast.vakOpSlot': 'Hier zijn ook diploma’s',
-  'kast.vakOpSlotUitleg':
-    'Voor de diploma’s van {vak} hebben je ouders een code nodig. Druk hier om te kijken wat dat is.',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt
   // uitleggen is een raadsel in plaats van een beloning — en een kind dat niet
@@ -1793,7 +1804,7 @@ export const nl = {
   // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
   'groep.vraag': 'In welke groep zit je?',
   'groep.uitleg':
-    'Dan zetten we de oefeningen voor jouw groep bovenaan. Je kunt altijd alles kiezen. Je groep blijft op dit apparaat.',
+    'Dan zetten we de oefeningen voor jouw groep bovenaan. Wat bij een andere groep hoort, kun je ook kiezen. Je groep blijft op dit apparaat.',
   'groep.knop': 'Groep {groep}',
   // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
   // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
@@ -1811,7 +1822,7 @@ export const nl = {
   'groep.jijTitel': 'Je groep',
   'groep.rijGeen': 'Geen groep gekozen',
   'groep.jijUitleg':
-    'Wat bij je groep past, staat bovenaan in Vandaag en op elke vakpagina. Je kunt altijd alles kiezen. Op 1 augustus ga je vanzelf een groep verder.',
+    'Wat bij je groep past, staat bovenaan in Vandaag en op elke vakpagina. Wat bij een andere groep hoort, kun je ook kiezen. Op 1 augustus ga je vanzelf een groep verder.',
   'groep.geen': 'Geen groep',
   'groep.gekozen': 'Je zit in groep {groep}.',
   'groep.nietGekozen': 'Er is geen groep gekozen. Dan staat alles in de gewone volgorde.',

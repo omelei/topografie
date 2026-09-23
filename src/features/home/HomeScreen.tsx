@@ -4,6 +4,7 @@ import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
+import { vrijeVorm } from './useVandaag';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
@@ -160,12 +161,14 @@ export function HomeScreen({ naam, onBegin, onVerder, onPlan, onDiplomas }: Home
 
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
   // die zegt "druk hier, dan oefen je" (ADR-162).
-  const beginnen = <Populairst populair={populair} groep={groep} onBegin={onBegin} />;
+  const beginnen = (
+    <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
+  );
 
   const rijen = (
     <>
-      <Recent gespeeld={gespeeld} onBegin={onBegin} />
-      <MaakAf open={open} alles={alles} onVerder={onVerder} />
+      <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />
+      <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />
     </>
   );
 
@@ -198,7 +201,7 @@ function GeoefendKaart({
 }: {
   readonly deel: Onderdeel;
   readonly vorm: string;
-  readonly status: string;
+  readonly status: string | null;
   readonly onClick: () => void;
 }) {
   const ModuleIcon = MODULE_ICON[deel.moduleId];
@@ -210,7 +213,7 @@ function GeoefendKaart({
       </span>
       <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
       <span className="tk-kaart-regel">{vorm}</span>
-      <span className="tk-kaart-voet">{status}</span>
+      {status === null ? null : <span className="tk-kaart-voet">{status}</span>}
     </button>
   );
 }
@@ -226,11 +229,18 @@ function GeoefendKaart({
 function Populairst({
   populair,
   groep,
+  premium,
   onBegin,
 }: {
   readonly populair: readonly Populair[];
   /** Waarmee een nieuw kind begint, hangt af van zijn groep (ADR-151). */
   readonly groep: Groep | undefined;
+  /**
+   * Zonder premium geen aantal eronder, en een premiummanier wordt de eerste
+   * gratis manier van die set (ADR-192). De volgorde blijft, want die zegt waar
+   * je mee verder wilt; de telling is voortgang.
+   */
+  readonly premium: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const leeg = populair.length === 0;
@@ -247,17 +257,19 @@ function Populairst({
         <GeoefendKaart
           key={`${deel.setId}-${mode}`}
           deel={deel}
-          vorm={t(`mode.${mode}` as TranslationKey)}
+          vorm={t(`mode.${vrijeVorm(deel, mode, premium)}` as TranslationKey)}
           // Nought is a sentence rather than a nought: "0 keer gespeeld" reads
           // as a score on a child who has done nothing wrong.
           status={
-            keer === 0
-              ? t('home.popularNone')
-              : keer === 1
-                ? t('home.popularOnce')
-                : t('home.popularTimes', { aantal: keer })
+            !premium
+              ? null
+              : keer === 0
+                ? t('home.popularNone')
+                : keer === 1
+                  ? t('home.popularOnce')
+                  : t('home.popularTimes', { aantal: keer })
           }
-          onClick={() => onBegin(deel, mode)}
+          onClick={() => onBegin(deel, vrijeVorm(deel, mode, premium))}
         />
       ))}
     </ScrollRij>
@@ -273,9 +285,16 @@ function Populairst({
  */
 function Recent({
   gespeeld,
+  premium,
   onBegin,
 }: {
   readonly gespeeld: readonly Gespeeld[];
+  /**
+   * Zonder premium geen cijfer, en een premiummanier wordt de eerste gratis
+   * manier van die set (ADR-192): de rij blijft de snelste weg terug naar wat
+   * je net deed, de uitslag ervan is voortgang.
+   */
+  readonly premium: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const recent = gespeeld.slice(0, RECENT_SHOWN);
@@ -291,6 +310,7 @@ function Recent({
           {recent.map(({ deel, ronde }) => {
             const ModuleIcon = MODULE_ICON[deel.moduleId];
             const cijfer = grade(ronde.correct, ronde.answered);
+            const vorm = vrijeVorm(deel, ronde.mode, premium);
             const uit = { goed: ronde.correct, totaal: ronde.answered };
 
             return (
@@ -299,22 +319,22 @@ function Recent({
                   type="button"
                   data-module={deel.moduleId}
                   className="tk-lijstrij"
-                  onClick={() => onBegin(deel, ronde.mode)}
+                  onClick={() => onBegin(deel, vorm)}
                 >
                   <span className="tk-plaat">
                     <ModuleIcon size={24} />
                   </span>
                   <span className="tk-lijstrij-tekst">
                     <span className="tk-lijstrij-titel">{naamVan(deel)}</span>
-                    <span className="tk-lijstrij-regel">
-                      {t(`mode.${ronde.mode}` as TranslationKey)}
+                    <span className="tk-lijstrij-regel">{t(`mode.${vorm}` as TranslationKey)}</span>
+                  </span>
+                  {premium ? (
+                    <span className="tk-lijstrij-stand">
+                      {cijfer === null
+                        ? t('home.recentOutOf', uit)
+                        : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
                     </span>
-                  </span>
-                  <span className="tk-lijstrij-stand">
-                    {cijfer === null
-                      ? t('home.recentOutOf', uit)
-                      : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
-                  </span>
+                  ) : null}
                   <span className="tk-lijstrij-pijl">
                     <NextIcon size={20} />
                   </span>
@@ -343,10 +363,13 @@ function Recent({
 function MaakAf({
   open,
   alles,
+  premium,
   onVerder,
 }: {
   readonly open: readonly OpenRound[] | null;
   readonly alles: readonly Onderdeel[];
+  /** Zonder premium gaat een ronde in een premiummanier verder op een gratis manier (ADR-192). */
+  readonly premium: boolean;
   readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
 }) {
   const kaarten = (open ?? []).flatMap((ronde) => {
@@ -375,13 +398,15 @@ function MaakAf({
             type="button"
             data-module={deel.moduleId}
             className="tk-kaart"
-            onClick={() => onVerder(deel, ronde.mode, ronde.rest)}
+            onClick={() => onVerder(deel, vrijeVorm(deel, ronde.mode, premium), ronde.rest)}
           >
             <span className="tk-plaat tk-plaat-groot">
               <ModuleIcon size={24} />
             </span>
             <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
-            <span className="tk-kaart-regel">{t(`mode.${ronde.mode}` as TranslationKey)}</span>
+            <span className="tk-kaart-regel">
+              {t(`mode.${vrijeVorm(deel, ronde.mode, premium)}` as TranslationKey)}
+            </span>
             {/* The bar is decorative: the words under it say the same, and the
                 whole card is one button whose name is read once. */}
             <span aria-hidden="true">
