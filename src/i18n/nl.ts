@@ -1612,7 +1612,7 @@ export const nl = {
   // erbij, en ook dat het er weer af kan.
   'overname.titel': 'Kinderen in je account',
   'overname.uitleg':
-    'Staat een kind in je account, dan staat wat het oefende ook veilig op onze server, en niet alleen op dit apparaat.',
+    'Staat een kind in je account, dan staat wat het oefent ook veilig op onze server, en niet alleen op dit apparaat. Na elke ronde gaat mee wat er bij kwam.',
   'overname.en': 'en',
   'overname.hierEen': '{namen} oefent op dit apparaat, maar staat nog niet in je account.',
   'overname.hierMeer': '{namen} oefenen op dit apparaat, maar staan nog niet in je account.',
@@ -1623,7 +1623,7 @@ export const nl = {
   'overname.knop': 'Neem mee naar mijn account',
   'overname.bezig': 'Bezig met {naam}…',
   'overname.nietVerstuurd': 'In je account, maar nog niet alles is verstuurd.',
-  'overname.verstuurd': 'In je account, met alles tot {datum}.',
+  'overname.verstuurd': 'In je account, bijgewerkt op {datum}.',
   'overname.opnieuw': 'Verstuur opnieuw',
   'overname.haalWeg': 'Haal uit mijn account',
   'overname.haalWegVraag':

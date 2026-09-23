@@ -232,6 +232,30 @@ jobs:
           path: lighthouse-report/
           retention-days: 7
 
+  # De SQL van het gezinsproject op een echte Postgres (ADR-188): elke migratie
+  # twee keer, en dan de controles in supabase/tests/ — wie wat mag, en wie er
+  # wint als twee apparaten botsen. Tot nu toe stond dat alleen in ADR's, en
+  # niets in CI had het ooit gedraaid. Niet in `deploy`'s needs: deze SQL gaat
+  # niet mee met de site, de eigenaar draait hem in het dashboard.
+  sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        # 15, de versie waar een nieuw Supabase-project op begint.
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: nakijken
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: nakijken
+    steps:
+      - uses: actions/checkout@v4
+      - run: tools/sql-nakijken.sh
+
   # Publishing is gated on the two jobs above. This is a product for children on
   # a real domain; a build that fails its own tests must not be the one that
   # reaches it, and "we forgot to check" is not a thing CI should allow.

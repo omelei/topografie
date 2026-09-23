@@ -30,11 +30,10 @@ import type { ServerKind } from '@/store/gezin/vervoer';
  * en daarom is er een schakelaar die de ouder zelf omzet vóór de knop werkt.
  * Het moment zelf legt de database vast (`0002_toestemming.sql`).
  *
- * **Wat het nog niet belooft.** Dit verstuurt wat er nu staat. Wat een kind
- * daarna oefent, en het terughalen op een ander apparaat, zijn de volgende
- * stappen (3b en 3c in ADR-187). Daarom zegt het "alles tot" met een datum, en
- * niet dat het bijblijft. De inlogcode staat er om dezelfde reden nog niet: er is
- * nog nergens een plek om hem te gebruiken.
+ * **Wat het nog niet belooft.** Het meenemen verstuurt wat er staat, en daarna
+ * gaat na elke ronde mee wat er bij kwam (ADR-188). Het terughalen op een ander
+ * apparaat is de volgende stap (3c). De inlogcode staat er daarom nog niet: er
+ * is nog nergens een plek om hem te gebruiken.
  */
 export function Overname() {
   const { sessie } = useAccount();

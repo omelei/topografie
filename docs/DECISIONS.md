@@ -11719,6 +11719,99 @@ niet per se één Noor" (§9) blijft staan.
   verschil: dat `Prefer: resolution=…` met een samengestelde sleutel doet wat
   hier verwacht wordt.
 
+## ADR-188 — Stap 3b: wat een kind oefent gaat vanzelf mee, en de database beslist wie er wint
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar. Stap 3b
+uit ADR-187. **Voert de samenvoegregels van ADR-155 uit**, als triggers in de
+database in plaats van als afspraak voor elke client, en **zet de SQL voor het
+eerst in CI**.
+
+### Context
+
+Na 3a staat een kind in het account met wat er op één moment stond. Wat het
+daarna oefent, blijft op het apparaat. En zodra twee apparaten van hetzelfde kind
+iets versturen, zou de upsert van 3a gewoon overschrijven: de laptop die een
+week offline was, zet dan de dozen van de iPad terug. ADR-155 schreef per winkel
+op wie er moet winnen, maar dat stond alleen in dat record.
+
+Daarbij was er een tweede gat: niets van de SQL was ooit gedraaid. ADR-155,
+ADR-156, ADR-175 en ADR-187 zeggen het allemaal: "nagelezen en niet
+uitgeprobeerd".
+
+### Besluit
+
+**Na elke ronde gaat mee wat er sinds de vorige keer bij kwam.** `finishSession`
+roept `laatBijhouden()` aan zodra de ronde af is. Het opstarten van de app doet
+dat ook, voor een ronde die offline afliep.
+
+- Zonder gezinsproject in de bouw laadt dat niets.
+- Zonder ingelogde ouder of gekoppeld kind doet het niets en vraagt het niets.
+- Het kind merkt er niets van: geen knop, geen melding, geen wachten. Lukt het
+  niet, dan gaat het de volgende keer mee.
+- Nooit tijdens een ronde. `e2e/network.spec.ts` blijft dat vasthouden.
+
+**"Wat er bij kwam" is per winkel het moment dat die winkel al bijhoudt**
+(`pakketVan` met `sinds`):
+
+- een ronde die daarna afliep, met al haar pogingen;
+- een doos met een jongere `laatsteReview`;
+- een diploma met een jongere `behaaldOp`;
+- een instelling met een jongere `gewijzigdOp`.
+
+`sinds` is het moment van de vorige keer min vijf minuten. Dat moment is genomen
+vóór er gelezen werd; de marge vangt een ronde die afliep terwijl er verstuurd
+werd. Wat twee keer aankomt, wordt op de server overgeslagen of samengevoegd,
+dus te veel sturen kost niets en te weinig sturen kan niet. Twee aanleidingen
+tegelijk worden één keer versturen.
+
+**De regels van ADR-155 staan in de database** (`0003_samenvoegen.sql`), als
+`before update`-triggers. Ze vuren dus ook op de upsert van PostgREST en gelden
+voor elke schrijver, hoe oud zijn client ook is:
+
+- **voortgang:** de jongste `laatste_review` wint, met doos en volgende keer.
+  Bij een gelijke tijd wint de lagere doos. Tellers en hoogste doos worden het
+  maximum van de twee.
+- **diploma's:** de vroegste `behaald_op` wint.
+- **instellingen:** de jongste `gewijzigd_op` wint. ADR-155 noemde voor
+  `zegels` de vereniging, maar niets schrijft die sleutel nog (ADR-149), dus
+  ook daar de jongste.
+- **sessies en pogingen** worden alleen aangevuld (`ignore-duplicates`); daar is
+  geen trigger voor nodig.
+
+**De SQL wordt nagekeken, en nu in CI** (job `sql`, `tools/sql-nakijken.sh`):
+
+- Op een lege Postgres 15 draait eerst een nagebootste Supabase-basis
+  (`supabase/tests/0000_supabase_nagebootst.sql`: de rollen, `auth.users`,
+  `auth.uid()`).
+- Daarna draait elke migratie twee keer, want ze horen opnieuw te kunnen
+  draaien.
+- Tot slot `supabase/tests/gezin.sql`, als ouder onder RLS. Die controleert:
+  - alle samenvoegregels hierboven;
+  - dat een ouder de kinderen van een ander niet ziet en niet kan beschrijven;
+  - dat een kind niet aan een vreemde ouder te hangen is;
+  - dat een gegeven antwoord niet te wijzigen is;
+  - dat het moment van toestemming niet te verplaatsen is;
+  - dat een kind met zijn eigen token alleen zichzelf ziet.
+
+Lokaal gedraaid op Postgres 16. Zonder 0003 faalt de controle op de dozen, zoals
+hij moet.
+
+### Gevolgen
+
+- **Twee apparaten van één kind kunnen nu tegelijk versturen**, zonder dat de
+  ene de ander terugzet. Terughalen naar een tweede apparaat is 3c.
+- **Het blok op de ouderpagina zegt "bijgewerkt op"** in plaats van "met alles
+  tot": het houdt nu bij.
+- **Voor de eigenaar:** `0003_samenvoegen.sql` draaien in de SQL Editor, na 0001
+  en 0002 (`docs/SUPABASE.md`, stap 2). Zonder die migratie gaat versturen goed,
+  maar wint bij een botsing wie het laatst stuurt.
+- **Wat de nagebootste basis niet is:** Supabase zelf. PostgREST, de gateway en
+  Auth zitten er niet in. De controles gaan over de SQL; of PostgREST met
+  `Prefer: resolution=merge-duplicates` precies `on conflict do update` maakt
+  zoals hier nagebootst, blijkt tegen het echte project.
+- **Nog steeds: niet aanzetten voor gezinnen vóór 3c.** Pas dan komt wat op de
+  server staat ergens anders terug.
+
 ---
 
 ## Deferred with accounts and commerce (ADR-014)

@@ -523,3 +523,11 @@ Zeg welke van de vijf je anders wilt, dan schrijf ik de ADR's en begin ik aan st
   een nieuw kind, en staat een kind dat alleen in het account staat er als één regel onder.
 - **De toestemming heeft een schakelaar en een kolom.** De ouder zet hem zelf om, en de database
   legt het moment vast (`kinderen.toestemming_op`).
+
+### Stap 3b (ADR-188)
+
+- **Bijhouden gebeurt na elke ronde en bij het openen van de app**, alleen voor een gekoppeld kind en
+  een ingelogde ouder, en nooit tijdens een ronde. Wat er meegaat is wat er sinds de vorige keer bij
+  kwam.
+- **De samenvoegregels van ADR-155 zijn triggers in de database geworden** en geen afspraak voor de
+  client. Dat was in §9 nog niet uitgewerkt; het is de enige plek waar ze voor elke schrijver gelden.

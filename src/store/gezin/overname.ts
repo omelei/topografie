@@ -71,7 +71,10 @@ export async function neemMee(
   return verstuur(koppeling, ouder.token, diensten, nu);
 }
 
-/** Opnieuw versturen voor een kind dat al gekoppeld is, bijvoorbeeld na een hapering. */
+/**
+ * Versturen voor een kind dat al gekoppeld is: na een hapering, en na elke
+ * ronde (`bijhouden.ts`). Alleen wat er sinds de vorige keer bij kwam.
+ */
 export async function verstuurOpnieuw(
   koppeling: Koppeling,
   diensten: OvernameDiensten,
@@ -82,13 +85,33 @@ export async function verstuurOpnieuw(
   return verstuur(koppeling, ouder.token, diensten, nu);
 }
 
+/**
+ * Hoeveel eerder dan de vorige keer er opnieuw gekeken wordt (ADR-188).
+ *
+ * Het moment van de vorige keer is genomen vóór er gelezen werd, dus in
+ * principe is nul genoeg. Vijf minuten vangt wat daar tussen kan zitten — een
+ * ronde die afliep terwijl er verstuurd werd, een klok die even verspringt —
+ * en kost niets: wat twee keer aankomt, wordt op de server overgeslagen of
+ * samengevoegd.
+ */
+const MARGE_MS = 5 * 60_000;
+
+function sindsVan(koppeling: Koppeling): string | undefined {
+  if (koppeling.verstuurdOp === null) return undefined;
+  const moment = new Date(koppeling.verstuurdOp).getTime();
+  if (Number.isNaN(moment)) return undefined;
+  return new Date(moment - MARGE_MS).toISOString();
+}
+
 async function verstuur(
   koppeling: Koppeling,
   token: string,
   diensten: OvernameDiensten,
   nu: Date,
 ): Promise<OvernameUitkomst> {
-  const pakket = await leesPakket(koppeling, nu);
+  // Is het nog nooit helemaal gelukt, dan alles; anders wat er sindsdien bij
+  // kwam (ADR-188).
+  const pakket = await leesPakket(koppeling, nu, sindsVan(koppeling));
   const gestuurd = await diensten.vervoer.stuur(token, pakket);
   if (!gestuurd.ok) return gestuurd;
 
