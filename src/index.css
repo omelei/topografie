@@ -16,17 +16,38 @@
  * the thing this product exists not to do.
  */
 
-/* Baloo 2, one variable file from 400 to 800: headings, the question,
- * buttons, numbers. Atkinson
- * Hyperlegible 400 and 700: running text, help and labels (ADR-179, docs/leer.nu
- * Merk en stijlgids.dc.html §03). Baloo is one variable file; Atkinson has no
- * variable cut, so it is two static ones. Latin only, as before. */
+/* Baloo 2 in 600, 700 and 800: headings, the question, buttons, numbers.
+ * Atkinson Hyperlegible 400 and 700: running text, help and labels (ADR-179,
+ * docs/leer.nu Merk en stijlgids.dc.html §03). Latin only, as before.
+ *
+ * Baloo was one variable file, and that file carried no hinting at all — not
+ * one glyph with instructions. On a phone that is invisible: three pixels to
+ * the CSS pixel draw any outline sharp. On a desktop screen at one pixel to
+ * the pixel, Windows uses the hinting to put stems on whole pixels, and without
+ * it every button, card title and heading came out soft next to the running
+ * text in Atkinson, which is hinted. So Baloo is now three static cuts, each
+ * autohinted (ADR-194). Only the weights the tokens name are shipped, and a
+ * page only fetches the ones it draws. */
 @font-face {
   font-family: 'Baloo 2';
   font-style: normal;
-  font-weight: 400 800;
+  font-weight: 600;
   font-display: swap;
-  src: url('/fonts/baloo-2-latin-wght.woff2') format('woff2');
+  src: url('/fonts/baloo-2-latin-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/baloo-2-latin-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/baloo-2-latin-800.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Atkinson Hyperlegible';
@@ -228,7 +249,7 @@
     --vandaag-grond: var(--papier);
 
     /* ---- Typefaces (see @font-face) --------------------------------------- */
-    --font-kop: 'Baloo 2', system-ui, sans-serif; /* 700 and 800 */
+    --font-kop: 'Baloo 2', system-ui, sans-serif; /* 600, 700 and 800 */
     --font-tekst: 'Atkinson Hyperlegible', system-ui, sans-serif; /* 400 and 700 */
 
     /* ---- Type scale, PO ----------------------------------------------------
@@ -510,7 +531,10 @@
     font-family: var(--font-tekst);
     font-size: var(--type-lopend);
     line-height: var(--type-lopend-lh);
-    -webkit-font-smoothing: antialiased;
+    /* No -webkit-font-smoothing: antialiased (ADR-194). On a Mac it turns off
+     * the slight thickening macOS gives dark text on a light ground, and the
+     * letters came out thinner and softer than on a phone, where the setting
+     * does nothing. The system default is what an iPhone shows. */
     /* At 200% text a single long word can be wider than the column it is in,
      * and the page then scrolls sideways — which is the one failure mode that
      * makes a screen unusable rather than merely cramped. "Waddeneilanden" at
@@ -5086,4 +5110,17 @@
     opacity: 0;
     transform: translateY(6px);
   }
+}
+
+/* De Denker boven de tekst die na hem komt (ADR-194). Zijn lussen — knipperen,
+ * zweven, zwaaien — geven hem in Chrome een eigen laag, en alles wat daarna
+ * getekend wordt en hem zou kunnen raken, kreeg er ook een ("Overlap"): op
+ * Vandaag de welkomstzin, de weekdoelen en de profielknop. Tekst in zo'n laag
+ * verliest op Windows ClearType en wordt grijs en zacht; op een telefoon is
+ * er geen ClearType, en daar zag je het dus nooit. Met een eigen stapel boven
+ * de gewone inhoud wordt hij als laatste getekend, en hoeft niets erna te
+ * wijken. */
+.tk-denker {
+  position: relative;
+  z-index: 1;
 }

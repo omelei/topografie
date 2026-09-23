@@ -12180,6 +12180,63 @@ premium (ADR-192). "Klaar voor de toets" is een mijlpaal, geen stand.
 - Een ouder krijgt geen melding of mail. Dat kan pas met het gezinsaccount, en
   dan met toestemming.
 
+## ADR-194 — Scherpe letters op een desktop: ClearType terug op Vandaag, Baloo gehint, geen antialiased
+
+**Status:** accepted. **Date:** 2026-09-23. Op verzoek van de eigenaar: "het
+lettertype is op mobiel veel scherper dan op desktop".
+
+### Wat er aan de hand was
+
+- **Baloo 2 had geen hinting.** Het was één variabel bestand, en geen enkele van
+  de 286 glyphs had instructies. Atkinson Hyperlegible, de lopende tekst, is wel
+  gehint (184 van 241). Op een telefoon zie je dat niet: twee à drie
+  schermpixels per CSS-pixel tekenen elke vorm scherp. Op een desktopscherm met
+  één pixel per pixel zet Windows met de hinting de stammen op hele pixels, en
+  zonder hinting werden alle knoppen, kaarttitels en koppen zachter dan de tekst
+  eromheen.
+- **`-webkit-font-smoothing: antialiased` op de body.** Op een Mac zet dat de
+  lichte verdikking uit die macOS donkere tekst op een lichte grond geeft; de
+  letters worden dunner en zachter. Op een iPhone doet de instelling niets. Het
+  verschil tussen telefoon en Mac zat dus deels in onze eigen CSS.
+
+- **Tekst die ClearType verloor, op Vandaag.** De eigenaar gebruikt een
+  Windows-laptop. Daar tekent Chrome tekst met ClearType, behalve in een
+  gecomposite laag zonder dekkende achtergrond: dan wordt het grijs en zacht.
+  De Denker op Vandaag heeft doorlopende animaties (knipperen, zweven,
+  zwaaien) en krijgt daarom een eigen laag, en alles wat daarna getekend werd
+  en hem kon raken, kreeg er ook een, met als reden "Overlap": de
+  welkomstzin, de weekdoelen en de profielknop. Nagemeten met de LayerTree van
+  Chromium op 1536 bij 864 en 125 procent. Een telefoon heeft geen ClearType,
+  dus daar was het verschil er niet.
+
+### Besluit
+
+- **De Denker in een eigen stapel boven de inhoud** (`.tk-denker { position:
+relative; z-index: 1 }`). Hij wordt dan als laatste getekend en niets
+  erna hoeft naar een eigen laag. Nagemeten: op Vandaag, de vakpagina's, Jij,
+  Premium en de ouderpagina staat daarna geen tekst meer in een laag.
+- **Baloo 2 als drie statische snedes, 600, 700 en 800**, elk gehint met
+  ttfautohint. Dat zijn precies de gewichten die de tokens en de regels
+  gebruiken (nagemeten op Vandaag, de vakpagina's, Jij en Premium). Gemaakt
+  uit het vorige variabele bestand met fontTools
+  (`instancer.instantiateVariableFont(font, {'wght': n})`) en ttfautohint
+  (`hinting_range_min=8`, `hinting_range_max=50`, `windows_compatibility=True`,
+  `default_script='latn'`), daarna weer als woff2.
+- **Geen `-webkit-font-smoothing` meer.** De standaard van het systeem is wat
+  een iPhone laat zien.
+
+### Afwegingen
+
+- **Grootte.** Drie gehinte bestanden van ongeveer 27 kB tegen één variabel
+  bestand van 33 kB. Een pagina haalt alleen de snedes op die hij tekent, meestal
+  700 en 800: ongeveer 55 kB in plaats van 33, één keer, daarna uit de cache.
+- **Niet alles is op te lossen.** Een telefoon heeft twee tot drie keer zoveel
+  pixels per letter als een gewoon desktopscherm; dat verschil blijft. Wat weg
+  is, is het deel dat aan de bestanden en de CSS lag.
+- **Nagemeten waar het kon.** In Linux (de CI) hint FreeType een ongehinte font
+  zelf, dus daar is het verschil klein. De winst zit op Windows, waar dat niet
+  gebeurt, en op een Mac door de smoothing. Dat is niet in de CI te zien.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
