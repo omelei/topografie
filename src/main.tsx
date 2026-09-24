@@ -4,12 +4,9 @@ import App from './App';
 import { Foutscherm } from './features/shell/Foutscherm';
 import { OuderVraag } from './features/premium/OuderVraag';
 import { Profielwisselaar } from './features/ouder/Profielwisselaar';
-import { brand } from './config/brand';
 import { laatBijhouden } from './store/gezin/aanleiding';
 import './index.css';
 import './design/kleuren.css';
-
-document.title = brand.name;
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

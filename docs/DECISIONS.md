@@ -12557,6 +12557,48 @@ lezen en kan verdedigen; een regel over de content levert op wat de content
 toevallig breed of smal indeelt. De test bewaakt dat een nieuwe indeling in de
 content de lijst niet stil laat afwijken.
 
+## ADR-207 — Elk vak en elk onderwerp is een pagina die Google kan lezen
+
+**Status:** accepted. **Date:** 2026-09-24. Aanleiding: nul bezoekers, en de
+vraag wat daar het meest aan verandert.
+
+**Wat er mis was.** Google vond alleen de voordeur. Elk ander adres was
+`404.html` met de app erin (`tools/spa-fallback.mjs`): voor een kind werkt dat,
+maar een pagina die 404 zegt, neemt Google niet op. En ook de voordeur zei
+weinig: de titel was "leer.nu", en wie de pagina opende, zag een naamveld. Een
+ouder die zoekt op "provincies oefenen groep 6" kon leer.nu niet vinden, terwijl
+precies dat erin staat.
+
+**Besluit.**
+
+- **Een HTML-bestand per adres.** `tools/seo-paginas.mjs` draait na de build,
+  laadt `src/seo/paginas.ts` via Vite en schrijft per vak en per onderwerp een
+  bestand: /topografie wordt `topografie.html`, /topografie/provincies wordt
+  `topografie/provincies.html`. GitHub Pages serveert een adres zonder `.html`
+  uit dat bestand, met 200. Nu 88 pagina's: de voordeur, vijf vakken en elk
+  onderwerp. Een mix en jouw fouten niet: die zijn geen onderwerp om op te
+  zoeken.
+- **Elk bestand is `index.html` met een eigen titel, beschrijving en canonieke
+  link**, en met een korte tekst in `#root`: een kop ("Provincies van
+  Nederland oefenen"), een regel met het aantal vragen en de groepen, en links
+  naar de andere onderwerpen van het vak. De app vervangt die tekst zodra hij
+  start.
+- **De namen komen uit de app zelf**, niet uit een tweede lijst: dezelfde
+  `naamVan`, `groepenVan` en `pathFor`. Een nieuw onderwerp krijgt vanzelf een
+  pagina.
+- **Dezelfde titel in het tabblad** (`titelVoor`, in `App`). Jij, een ronde en
+  Premium heten gewoon leer.nu.
+- **`sitemap.xml` en `robots.txt`**, met alle pagina's.
+- **404.html blijft de kale app**, voor Jij, een ronde en elk adres dat niet
+  bestaat.
+- **De beschikbaarheidscheck kijkt mee**: /topografie/provincies en de sitemap
+  horen 200 te zeggen. Een waarschuwing en geen fout, want een kind merkt er
+  niets van.
+
+**Wat het niet doet.** Er wordt niets gemeten; dat kan Google Search Console
+laten zien, en die zet de eigenaar op. En het effect is traag: Google doet er
+weken over, en de concurrenten staan er al jaren.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

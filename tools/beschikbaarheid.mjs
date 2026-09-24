@@ -347,6 +347,30 @@ async function checkApex(address) {
   }
 }
 
+/**
+ * Een onderwerp heeft een eigen pagina (ADR-207), en die hoort 200 te zeggen:
+ * met 404 neemt Google hem niet op. Een waarschuwing en geen fout, want een
+ * kind merkt er niets van — 404.html is de app ook.
+ */
+async function checkDiepeLink(address) {
+  for (const [path, titel] of [
+    ['/topografie/provincies', 'Provincies van Nederland oefenen'],
+    ['/sitemap.xml', '<urlset'],
+  ]) {
+    const label = `${SITE}${path} at ${address}`;
+    let answer;
+    try {
+      answer = await fetchOverAddress({ address, host: SITE, path });
+    } catch (err) {
+      warn(`${label}: ${describeError(err)}`);
+      continue;
+    }
+    if (answer.status !== 200) warn(`${label}: HTTP ${answer.status}, so Google leaves it out`);
+    else if (!answer.body.includes(titel)) warn(`${label}: HTTP 200 but without "${titel}"`);
+    else ok(`${label}: HTTP 200, its own page`);
+  }
+}
+
 const dnsOnly = process.argv.includes('--dns-only');
 
 console.log(`Beschikbaarheid — ${new Date().toISOString()}\n`);
@@ -368,6 +392,7 @@ if (!dnsOnly) {
   for (const address of [...apexA, ...alsZes(apexAAAA)]) await checkApex(address);
   // One address is enough for the redirect: it is a setting, not an edge.
   if (siteA.length > 0) await checkHttpRedirect(siteA[0]);
+  if (siteA.length > 0) await checkDiepeLink(siteA[0]);
 }
 
 console.log(lines.join('\n'));

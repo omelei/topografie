@@ -86,7 +86,11 @@ test('carries no link or import pointing off-origin', async ({ page, baseURL }) 
   // makes no successful request either, and would otherwise pass silently.
   const references = await page.evaluate(() =>
     [
-      ...[...document.querySelectorAll('link[href]')].map((el) => el.getAttribute('href')),
+      // Behalve de canonieke link (ADR-207): die noemt het adres van de pagina
+      // voor Google en laadt niets.
+      ...[...document.querySelectorAll('link[href]:not([rel="canonical"])')].map((el) =>
+        el.getAttribute('href'),
+      ),
       ...[...document.querySelectorAll('script[src]')].map((el) => el.getAttribute('src')),
       ...[...document.querySelectorAll('img[src]')].map((el) => el.getAttribute('src')),
     ].filter((value): value is string => value !== null),
@@ -143,7 +147,11 @@ test('the kassa carries no link or import pointing off-origin', async ({ page, b
     await page.goto(pagina);
     const verwijzingen = await page.evaluate(() =>
       [
-        ...[...document.querySelectorAll('link[href]')].map((el) => el.getAttribute('href')),
+        // Behalve de canonieke link (ADR-207): die noemt het adres van de pagina
+        // voor Google en laadt niets.
+        ...[...document.querySelectorAll('link[href]:not([rel="canonical"])')].map((el) =>
+          el.getAttribute('href'),
+        ),
         ...[...document.querySelectorAll('script[src]')].map((el) => el.getAttribute('src')),
         ...[...document.querySelectorAll('img[src]')].map((el) => el.getAttribute('src')),
       ].filter((value): value is string => value !== null),
