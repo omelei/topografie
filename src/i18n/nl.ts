@@ -58,6 +58,30 @@ export const nl = {
   'seo.onderwerpen': 'Onderwerpen',
   'seo.meer': 'Meer {vak}',
   'seo.alles': 'Alles van {vak}',
+  // Voor ouders (ADR-214): de schrijfwijzer voor ouders. "Je" tegen de ouder,
+  // over het kind in de derde persoon, rustig en precies.
+  'ouders.titel': 'leer.nu voor ouders',
+  'ouders.intro':
+    'Je kind oefent topografie, rekenen, klokkijken, vlaggen en taal. In korte rondes, op een telefoon, tablet of laptop. Zonder account.',
+  'ouders.proberen': 'Laat je kind een ronde proberen',
+  'ouders.premium': 'Wat premium is',
+  'ouders.oefenen.kop': 'Oefenen in korte rondes',
+  'ouders.oefenen.tekst':
+    'Je kind kiest een vak, een onderwerp en een manier. Een ronde duurt een paar minuten. Het ziet meteen wat goed is, en wat het juiste antwoord was.',
+  'ouders.herhalen.kop': 'Herhalen op het goede moment',
+  'ouders.herhalen.tekst':
+    'Wat je kind beheerst, komt pas later terug. Wat het bijna vergeten is, komt vandaag terug. Zo blijft het in het hoofd.',
+  'ouders.papier.kop': 'Ook op papier',
+  'ouders.papier.tekst':
+    'Elk onderwerp heeft een werkblad om te printen, met de antwoorden erbij. Voor de klas is er een set van 30 verschillende bladen.',
+  'ouders.privacy.kop': 'Wat er met de gegevens gebeurt',
+  'ouders.privacy.tekst':
+    'Wat je kind oefent, blijft op dit apparaat. We vragen alleen een voornaam, en die gaat nergens heen. Onze server telt alleen hoe vaak iets gebeurt, zonder naam.',
+  'ouders.kosten.kop': 'Wat het kost',
+  'ouders.kosten.gratis': 'Oefenen is gratis, in elk vak en elk onderwerp.',
+  'ouders.kosten.premium':
+    'Premium kost {prijs} per jaar. Dan plant leer.nu wat je kind vandaag moet herhalen, en staan alle manieren en de diploma’s open.',
+  'profile.voorOuders': 'Voor ouders: zo werkt het',
   // "Over dit onderwerp" (ADR-213): onderaan de pagina van een onderwerp en op
   // de pagina voor Google. De vragen zijn die van een ouder.
   'over.kop': 'Over {onderwerp}',
@@ -74,6 +98,7 @@ export const nl = {
   'over.vraag.gratis': 'Is het gratis?',
   'over.antwoord.gratis':
     'Ja. Oefenen is gratis en zonder account. Met premium plant leer.nu ook wat je kind moet herhalen.',
+  'seo.ouders.titel': 'Voor ouders: zo werkt leer.nu, en wat het kost · leer.nu',
   'seo.werkblad.titel': '{onderwerp}: werkblad om te printen · leer.nu',
   'seo.werkblad.kop': '{onderwerp}: werkblad om te printen',
   'seo.werkblad.beschrijving':

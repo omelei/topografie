@@ -260,6 +260,8 @@ export type Route =
   | { readonly name: 'premium' }
   /** De ouderpagina, achter de pincode van dit apparaat (ADR-173). */
   | { readonly name: 'ouder' }
+  /** Voor ouders: wat leer.nu is, hoe het werkt en wat het kost (ADR-214). */
+  | { readonly name: 'voorOuders' }
   /** Een werkblad om te printen, voor één onderwerp (ADR-211). */
   | { readonly name: 'werkblad'; readonly module: Module; readonly setId: string };
 
@@ -267,6 +269,9 @@ export type Route =
 export const PREMIUM_SLUG = 'premium';
 
 export const YOU_SLUG = 'jij';
+
+/** Voor ouders (ADR-214). Niet /ouder: dat is de ouderpagina achter de pincode. */
+export const VOOR_OUDERS_SLUG = 'voor-ouders';
 
 /** Achter een onderwerp: /topografie/provincies/werkblad (ADR-211). */
 export const WERKBLAD_SLUG = 'werkblad';
@@ -339,6 +344,7 @@ export function routeFor(pathname: string): Route {
   if (slug === YOU_SLUG || slug === RETENTION_SLUG) return { name: 'you' };
   if (slug === PREMIUM_SLUG) return { name: 'premium' };
   if (slug === OUDER_SLUG) return { name: 'ouder' };
+  if (slug === VOOR_OUDERS_SLUG) return { name: 'voorOuders' };
 
   const [head = '', tail, derde] = slug.split('/');
   // /topografie/provincies/werkblad: het werkblad van dat onderwerp (ADR-211).
@@ -372,6 +378,7 @@ function slugFor(route: Route): string {
   if (route.name === 'you') return YOU_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'ouder') return OUDER_SLUG;
+  if (route.name === 'voorOuders') return VOOR_OUDERS_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'werkblad') {
     return `${slugFor({ name: 'module', module: route.module, setId: route.setId })}/${WERKBLAD_SLUG}`;

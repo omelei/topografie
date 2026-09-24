@@ -52,9 +52,12 @@ import { GroepKiezer } from './GroepKiezer';
 export function ProfileGate({
   onReady,
   onProberen,
+  onVoorOuders,
 }: {
   /** Eerst proberen, zonder naam: opent het eerste onderwerp om mee te beginnen. */
   readonly onProberen?: (deel: Onderdeel) => void;
+  /** Naar de pagina voor ouders (ADR-214). */
+  readonly onVoorOuders?: () => void;
   /**
    * Het profiel bestaat. `naarOuder` zegt of de app op Premium moet openen
    * in plaats van op de voordeur: dat is geen eigenschap van het profiel, dus
@@ -106,6 +109,15 @@ export function ProfileGate({
         <p className="mt-1 text-tekst-secundair">{brand.slogan}</p>
         {/* Wie hier voor het eerst komt, leest eerst wat dit is (ADR-208). */}
         {naRonde ? null : <p className="mt-3 text-lopend">{t('profile.watIsHet')}</p>}
+        {onVoorOuders && !naRonde ? (
+          <button
+            type="button"
+            className="tk-button tk-button-tertiary mt-2"
+            onClick={onVoorOuders}
+          >
+            {t('profile.voorOuders')}
+          </button>
+        ) : null}
       </div>
 
       {stap === 'naam' ? (

@@ -139,6 +139,7 @@ Na 8 oktober bijstellen op wat de teller laat zien.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #149      | Een pagina voor ouders (`/voor-ouders`), en premium ook zonder naam te bekijken                                                                                                           | 214      |
 | #148      | "Over dit onderwerp": wat erin zit en de vragen van ouders, op de pagina voor Google en onder het onderwerp in de app                                                                     | 213      |
 | #147      | Een QR-code op elk werkblad en een klassenset van 30 verschillende bladen                                                                                                                 | 212      |
 | #145      | Een werkblad om te printen per onderwerp, met een blinde kaart, sommen, klokken, vlaggen of zinnen en de antwoorden erbij                                                                 | 211      |
