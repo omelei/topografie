@@ -25,13 +25,25 @@ import { expect, test, type Request } from '@playwright/test';
  * kassa under /kopen is not the app: no bundle, no child, no progress. It has to
  * reach a payment provider — that is what paying is — and the tests hold it to
  * exactly one address and no fonts, no analytics and no third party besides.
+ *
+ * And since ADR-210 a third, just as narrow: the counter on the premium server,
+ * which hears that something happened and on which page — never by whom.
  */
 
 const ALLOWED_SCHEMES = ['data:', 'blob:', 'about:'];
 
+/**
+ * De teller (ADR-210): onze eigen premiumserver, één functie, en in het
+ * verzoek alleen een gebeurtenis en een adres van leer.nu. Hetzelfde adres als
+ * playwright.config.ts de build meegeeft. Wat erin staat, kijkt
+ * `teller.spec.ts` na; hier gaat het erom dat er verder niemand wordt gevraagd.
+ */
+const TELLER = 'https://premium.leer.test/rest/v1/rpc/teller_tel';
+
 function isForeign(request: Request, origin: string): boolean {
   const url = request.url();
   if (ALLOWED_SCHEMES.some((scheme) => url.startsWith(scheme))) return false;
+  if (url === TELLER) return false;
   return !url.startsWith(origin);
 }
 

@@ -290,3 +290,53 @@ exception when others then
   raise notice 'pg_cron niet beschikbaar (%): ruim premium_bestellingen.code met de hand op.', sqlerrm;
 end
 $$;
+
+-- ---------------------------------------------------------------------------
+-- De teller (ADR-210): hoeveel keer iets gebeurde, per dag. Geen apparaat,
+-- geen naam, geen cookie, geen tijdstip: alleen een dag, een gebeurtenis, een
+-- adres en een aantal. Een rij zegt "op 24 september begonnen er 17 rondes op
+-- /topografie/provincies", en nooit wie.
+--
+-- De app mag alleen tellen, via `teller_tel`, en alleen wat in de lijst staat.
+-- Lezen doet de eigenaar in de SQL Editor (zie README.md).
+
+create table if not exists public.teller (
+  dag         date not null,
+  gebeurtenis text not null,
+  pad         text not null default '',
+  aantal      integer not null default 0,
+  primary key (dag, gebeurtenis, pad)
+);
+
+alter table public.teller enable row level security;
+revoke all on public.teller from anon, authenticated;
+
+create or replace function public.teller_tel(p_gebeurtenis text, p_pad text default '')
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_pad text := coalesce(p_pad, '');
+begin
+  -- Alleen de gebeurtenissen die de app kent, en alleen een adres van leer.nu
+  -- zelf: wie de publieke sleutel misbruikt, kan geen tekst van zichzelf
+  -- achterlaten.
+  if p_gebeurtenis not in (
+    'binnenkomst', 'ronde', 'ronde-zonder-naam', 'naam', 'gedeeld', 'premium', 'kassa'
+  ) then
+    return;
+  end if;
+  if v_pad !~ '^(/[a-z0-9-]{1,40}){0,2}/?$' then
+    v_pad := '';
+  end if;
+
+  insert into public.teller as t (dag, gebeurtenis, pad, aantal)
+  values ((now() at time zone 'Europe/Amsterdam')::date, p_gebeurtenis, v_pad, 1)
+  on conflict (dag, gebeurtenis, pad) do update set aantal = t.aantal + 1;
+end;
+$$;
+
+revoke all on function public.teller_tel(text, text) from public;
+grant execute on function public.teller_tel(text, text) to anon;

@@ -5,6 +5,7 @@ import type { Groep } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { createProfile } from '@/store/profile';
 import { loadPlayedRounds } from '@/store/progress';
+import { tel } from '@/store/teller';
 import { isIngesteld } from '@/store/account';
 import type { KindInlogUitkomst } from '@/store/gezin/kindinlog';
 import type { ProfileRecord } from '@/store/db';
@@ -94,6 +95,7 @@ export function ProfileGate({
       setBusy(false);
       return;
     }
+    tel('naam');
     onReady(kind, voorOuder);
   }
 

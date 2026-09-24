@@ -1,3 +1,4 @@
+import { tel } from '@/store/teller';
 import { useEffect, useRef, useState } from 'react';
 import { FamilyIcon, NextIcon, OogIcon, SlotIcon } from '@/components/Icon';
 import { t } from '@/i18n';
@@ -131,7 +132,11 @@ function Inhoud() {
         <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
         {isTeKoop() ? (
           <div className="tk-venster-knoppen">
-            <a className="tk-button tk-button-secondary" href={KASSA_PAD}>
+            <a
+              className="tk-button tk-button-secondary"
+              href={KASSA_PAD}
+              onClick={() => tel('kassa')}
+            >
               {t('premium.kopenKnop')}
             </a>
           </div>

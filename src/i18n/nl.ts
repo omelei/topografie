@@ -702,7 +702,8 @@ export const nl = {
     'Dat hoef je niet op ons woord te geloven: de broncode is openbaar, dus je kunt het zelf controleren.',
   'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
   'premium.waarom.apparaatUit':
-    'Wat je kind oefent, gaat nergens heen. Alleen de code gaat naar onze server, om te controleren of hij klopt.',
+    // Sinds ADR-210 gaat er ook een telling heen, zonder naam of apparaatnummer.
+    'Wat je kind oefent, blijft op dit apparaat. Naar onze server gaan alleen de code en tellingen zonder naam of apparaatnummer.',
   // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
   // waar een prijs per maand op staat (ADR-164), en de plek gaat naar de belofte
   // die dit product wél onderscheidt en die nergens anders stond.

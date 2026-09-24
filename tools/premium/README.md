@@ -51,6 +51,37 @@ bestelling. Zet in de notitie voor wie een code is, zodat je hem later kunt
 verlengen of intrekken. Codes die uit de kassa komen krijgen automatisch de
 notitie `kassa tr_…`, met het betaal-id van Mollie erin.
 
+## De teller lezen
+
+De app telt per dag hoe vaak iets gebeurde, zonder te weten door wie (ADR-210):
+waar iemand binnenkwam, rondes met en zonder naam, namen ingevuld, uitslagen
+gedeeld, de premiumpagina bekeken en de knop naar de kassa. Draai na een
+wijziging aan `schema.sql` het hele script opnieuw in de SQL Editor; het is
+veilig om opnieuw te draaien.
+
+In de SQL Editor:
+
+```sql
+-- De trechter van de laatste 14 dagen:
+select gebeurtenis, sum(aantal) as aantal
+from public.teller
+where dag > current_date - 14
+group by gebeurtenis
+order by aantal desc;
+
+-- Waar mensen binnenkomen:
+select pad, sum(aantal) as aantal
+from public.teller
+where gebeurtenis = 'binnenkomst' and dag > current_date - 14
+group by pad
+order by aantal desc
+limit 20;
+```
+
+Een browser met "Do Not Track" of "Global Privacy Control" aan telt niet mee,
+en wie de pagina herlaadt, telt opnieuw. De aantallen zijn dus een ondergrens
+voor wie niet geteld wil worden, en iets te hoog voor wie herlaadt.
+
 ## Beheren
 
 In de SQL Editor:

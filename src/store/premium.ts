@@ -227,6 +227,9 @@ const REDENEN: readonly PremiumReden[] = ['onbekend', 'verlopen', 'vol', 'te-vaa
  * The older anon key is a JWT and was sent on both, which is what a project
  * made before the switch still expects.
  */
+/** Waar de teller telt: dezelfde server, met dezelfde publieke sleutel (ADR-210). */
+export { server as premiumServer };
+
 export function sleutelKoppen(sleutel: string): Record<string, string> {
   const koppen: Record<string, string> = { 'Content-Type': 'application/json', apikey: sleutel };
   if (sleutel.startsWith('eyJ')) koppen.Authorization = `Bearer ${sleutel}`;
