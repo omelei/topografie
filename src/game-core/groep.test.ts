@@ -3,7 +3,6 @@ import {
   GROEPEN,
   huidigeGroep,
   isGroep,
-  kiesVoorGroep,
   opGroep,
   pastBijGroep,
   rangVoorGroep,
@@ -80,37 +79,6 @@ describe('rangVoorGroep en opGroep', () => {
   it('zet wat past eerst, en houdt verder de volgorde', () => {
     const lijst = opGroep(sets, (set) => pastBijGroep(set.groepen, 5));
     expect(lijst.map((set) => set.id)).toEqual(['mix', 'tafel-7', 'plus-20', 'provincies']);
-  });
-});
-
-describe('kiesVoorGroep', () => {
-  const groepen: Record<string, readonly Groep[] | undefined> = {
-    'tafel-2': [4, 5],
-    'tafel-11': [5, 6],
-    'keer-100': [6],
-    'plus-20': [3, 4],
-    rekenmix: undefined,
-  };
-  const kandidaten = ['tafel-2', 'tafel-11', 'keer-100', 'plus-20', 'rekenmix'];
-  const kies = (groep: Groep | undefined) =>
-    kiesVoorGroep('tafel-2', kandidaten, (id) => groepen[id], groep);
-
-  it('houdt de vaste keuze zonder groep', () => {
-    expect(kies(undefined)).toBe('tafel-2');
-  });
-
-  it('houdt de vaste keuze als die past', () => {
-    expect(kies(4)).toBe('tafel-2');
-    expect(kies(5)).toBe('tafel-2');
-  });
-
-  it('kiest anders wat past en het laatst begint', () => {
-    expect(kies(3)).toBe('plus-20');
-    expect(kies(6)).toBe('keer-100');
-  });
-
-  it('houdt de vaste keuze als er niets past, en kiest nooit iets zonder groep', () => {
-    expect(kies(8)).toBe('tafel-2');
   });
 });
 

@@ -113,35 +113,6 @@ export function samen(indelingen: readonly Indeling[]): Indeling {
   return indelingen.includes('herhaling') ? 'herhaling' : 'later';
 }
 
-/**
- * Waarmee een kind begint dat nog niets deed: de vaste keuze als die past, en
- * anders de set die het best bij de groep past.
- *
- * "Het best" is de set die nu past en het laatst begint. Voor groep 6 past de
- * tafel van 11 (groep 5 en 6) en passen keersommen tot 100 (groep 6); het
- * tweede is de stof van dit jaar, het eerste die van vorig jaar die nog loopt.
- * Bij gelijke stand wint de eerste in de lijst, en dat is de volgorde van de
- * content. Past er niets, dan blijft de vaste keuze staan.
- */
-export function kiesVoorGroep<T>(
-  standaard: T,
-  kandidaten: readonly T[],
-  groepenVan: (waarde: T) => readonly Groep[] | undefined,
-  groep: Groep | undefined,
-): T {
-  if (groep === undefined) return standaard;
-  if (pastBijGroep(groepenVan(standaard), groep) === 'nu') return standaard;
-
-  let beste: { waarde: T; begin: number } | null = null;
-  for (const waarde of kandidaten) {
-    const groepen = groepenVan(waarde);
-    if (pastBijGroep(groepen, groep) !== 'nu' || groepen === undefined) continue;
-    const begin = Math.min(...groepen);
-    if (beste === null || begin > beste.begin) beste = { waarde, begin };
-  }
-  return beste?.waarde ?? standaard;
-}
-
 /** Een lijst op groep gezet, verder in de volgorde waarin hij kwam. */
 export function opGroep<T>(lijst: readonly T[], indeling: (waarde: T) => Indeling): T[] {
   return lijst

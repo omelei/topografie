@@ -16,6 +16,7 @@ import {
   naamVan,
   starters,
   startbareOnderdelen,
+  voorGroep,
   POPULAR_SHOWN,
   type Gespeeld,
   type Onderdeel,
@@ -182,6 +183,12 @@ export function HomeScreen({
     <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
   );
 
+  // Wat bij de groep past en nog niet gedaan is, onder wat het vaakst gedaan
+  // is (ADR-206). Zo doet de groep ook iets voor wie al geoefend heeft.
+  const passend = (
+    <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />
+  );
+
   // Een nieuw kind: eerst één ronde om mee te beginnen, dan de vakken en hoe
   // het werkt (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de
   // rijen erboven zijn dan zijn eigen weg terug.
@@ -210,6 +217,7 @@ export function HomeScreen({
         blok('kop', kop),
         blok('terug', terug),
         blok('beginnen', beginnen),
+        blok('passend', passend),
         blok('vandaagBoven', vandaagBoven),
         blok('groepVraag', groepVraag),
         blok('weekdoelen', weekdoelen),
@@ -286,7 +294,15 @@ function Populairst({
     // "Meest geoefend" een kop over een geschiedenis die niet bestaat, en het
     // is meteen het eerste wat het leest (ADR-131). De regel eronder zei dat al
     // en is nu de kop zelf, want twee keer hetzelfde is één keer te veel.
-    <ScrollRij titel={leeg ? t('home.popularStart') : t('home.popularTitle')}>
+    <ScrollRij
+      titel={
+        !leeg
+          ? t('home.popularTitle')
+          : groep === undefined
+            ? t('home.popularStart')
+            : t('home.popularStartGroep', { groep })
+      }
+    >
       {lijst.map(({ deel, mode, keer }) => (
         <GeoefendKaart
           key={`${deel.setId}-${mode}`}
@@ -306,6 +322,43 @@ function Populairst({
           onClick={() => onBegin(deel, vrijeVorm(deel, mode, premium))}
         />
       ))}
+    </ScrollRij>
+  );
+}
+
+/**
+ * "Past bij groep 6": per vak de set van de groep die dit kind nog niet deed
+ * (ADR-206). Zonder groep, of als alles gedaan is, staat de rij er niet.
+ */
+function PastBijGroep({
+  gespeeld,
+  groep,
+  premium,
+  onBegin,
+}: {
+  readonly gespeeld: readonly Gespeeld[];
+  readonly groep: Groep | undefined;
+  readonly premium: boolean;
+  readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+}) {
+  if (groep === undefined || gespeeld.length === 0) return null;
+  const lijst = voorGroep(groep, new Set(gespeeld.map(({ deel }) => deel.setId)));
+  if (lijst.length === 0) return null;
+
+  return (
+    <ScrollRij titel={t('home.pastBijGroep', { groep })}>
+      {lijst.map(({ deel, mode }) => {
+        const vorm = vrijeVorm(deel, mode, premium);
+        return (
+          <GeoefendKaart
+            key={deel.setId}
+            deel={deel}
+            vorm={t(`mode.${vorm}` as TranslationKey)}
+            status={premium ? t('home.popularNone') : null}
+            onClick={() => onBegin(deel, vorm)}
+          />
+        );
+      })}
     </ScrollRij>
   );
 }
