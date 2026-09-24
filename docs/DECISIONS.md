@@ -12800,6 +12800,20 @@ kind gebeurt, zonder eerst een naam in te tikken.
 - **Op de eerste kaart** staat "Voor ouders: zo werkt het", en de pagina heeft
   een eigen pagina voor Google, met een link vanaf de voordeur.
 
+## ADR-215 — Het weekoverzicht van de teller komt vanzelf, als issue
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 5 van "de volgende tien".
+
+**Besluit.** Elke maandag om 06:00 UTC leest de workflow `teller-week.yml` de
+teller (ADR-210) via de Management API van Supabase, met het geheim dat de
+kassa-workflow al gebruikt, en zet een overzicht in een issue met het label
+`teller`: elke gebeurtenis deze week naast de week ervoor, en de tien adressen
+waar mensen binnenkwamen. Cijfers die je moet opzoeken, worden niet gebruikt.
+
+Het script (`tools/premium/teller-week.mjs`) kan ook `--voorbeeld`, om de
+opmaak zonder server te zien. Bestaat de tabel nog niet, dan faalt de run met
+de zin dat `schema.sql` gedraaid moet worden, en komt er geen leeg issue.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

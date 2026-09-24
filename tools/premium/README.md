@@ -59,7 +59,10 @@ gedeeld, de premiumpagina bekeken, de knop naar de kassa, werkbladen geprint en 
 wijziging aan `schema.sql` het hele script opnieuw in de SQL Editor; het is
 veilig om opnieuw te draaien.
 
-In de SQL Editor:
+Elke maandagochtend zet de workflow **Teller per week** het overzicht van de
+afgelopen week in een issue met het label `teller` (ADR-215). Met de hand kan
+het ook: **Actions → Teller per week → Run workflow**. Zelf zoeken kan in de
+SQL Editor:
 
 ```sql
 -- De trechter van de laatste 14 dagen:
