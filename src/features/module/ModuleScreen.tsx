@@ -1,3 +1,4 @@
+import { OverOnderwerp } from './OverOnderwerp';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
 import { useEffect, useId, useState } from 'react';
 import { Button } from '@/components/Button';
@@ -920,6 +921,12 @@ export function ModuleScreen({
               setFoutenstand(false);
             }}
           />
+        ) : null}
+
+        {/* Wat erin zit en de vragen van een ouder (ADR-213): ook wat Google
+            leest, nadat de app de pagina heeft overgenomen. */}
+        {chosen !== null && !chosen.mix && !/(^|-)fouten$/.test(chosen.setId) ? (
+          <OverOnderwerp deel={chosen} />
         ) : null}
       </div>
 

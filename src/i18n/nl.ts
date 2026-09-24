@@ -58,6 +58,22 @@ export const nl = {
   'seo.onderwerpen': 'Onderwerpen',
   'seo.meer': 'Meer {vak}',
   'seo.alles': 'Alles van {vak}',
+  // "Over dit onderwerp" (ADR-213): onderaan de pagina van een onderwerp en op
+  // de pagina voor Google. De vragen zijn die van een ouder.
+  'over.kop': 'Over {onderwerp}',
+  'over.lijst': 'Wat je oefent ({aantal})',
+  'over.meer': 'En nog {aantal}.',
+  'over.vragen': 'Vragen van ouders',
+  'over.vraag.hoe': 'Hoe oefen je {onderwerp}?',
+  'over.antwoord.hoe':
+    'Kies een manier en start een ronde. Een ronde duurt een paar minuten, en je ziet meteen wat goed is.',
+  'over.vraag.groep': 'Voor welke groep is dit?',
+  'over.antwoord.groep': 'Voor {groepen} van de basisschool.',
+  'over.vraag.werkblad': 'Kan mijn kind dit ook op papier oefenen?',
+  'over.antwoord.werkblad': 'Ja. Er is een werkblad om te printen, met de antwoorden erbij.',
+  'over.vraag.gratis': 'Is het gratis?',
+  'over.antwoord.gratis':
+    'Ja. Oefenen is gratis en zonder account. Met premium plant leer.nu ook wat je kind moet herhalen.',
   'seo.werkblad.titel': '{onderwerp}: werkblad om te printen · leer.nu',
   'seo.werkblad.kop': '{onderwerp}: werkblad om te printen',
   'seo.werkblad.beschrijving':
