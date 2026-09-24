@@ -15,6 +15,7 @@ import { useRoute } from '@/features/shell/useRoute';
 import { titelVoor } from '@/seo/paginas';
 import { tel, telBinnenkomst } from '@/store/teller';
 import { WerkbladScherm } from '@/features/werkblad/WerkbladScherm';
+import { VoorOuders } from '@/features/home/VoorOuders';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
 import { ModuleScreen } from '@/features/module/ModuleScreen';
@@ -53,7 +54,7 @@ import { zorgVoorUniekePogingen } from '@/store/sleutels';
 import { pathFor, type Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
 import { dagplan, isDiplomaVorm, type ModeId } from '@/game-core';
-import { geplaatst, onderdelen, startbareOnderdelen } from '@/features/module/onderdelen';
+import { geplaatst, onderdelen, startbareOnderdelen, starters } from '@/features/module/onderdelen';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
 import { leesDagstand } from '@/store/dagstandStore';
 import { standVoor, volgendeSet } from '@/features/home/dagstand';
@@ -481,6 +482,7 @@ export default function App() {
       }}
       // Eerst proberen (ADR-208): het eerste onderwerp om mee te beginnen,
       // zonder naam.
+      onVoorOuders={() => go({ name: 'voorOuders' })}
       onProberen={(deel: Onderdeel) => {
         const module = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
         if (module) go({ name: 'module', module, setId: deel.setId });
@@ -496,6 +498,8 @@ export default function App() {
     boot.profile === null &&
     route.name !== 'module' &&
     route.name !== 'werkblad' &&
+    route.name !== 'voorOuders' &&
+    route.name !== 'premium' &&
     screen.name === 'home'
   ) {
     return poort;
@@ -660,6 +664,38 @@ export default function App() {
     );
   }
 
+  // What premium is and where the code goes (ADR-116). Reached from every
+  // lock, and since ADR-171 one of the three destinations. Ook zonder naam
+  // (ADR-214): een ouder die via "Voor ouders" komt, wil eerst lezen.
+  if (route.name === 'premium') {
+    return (
+      <Shell bar={bar} current="premium" onNavigate={goTo} onModule={goModule}>
+        {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
+            maar niemand komt hier om een toets te plannen, en de vergelijking
+            tussen basis en premium heeft de breedte nodig. */}
+        <PremiumScreen />
+      </Shell>
+    );
+  }
+
+  // Voor ouders (ADR-214): wat het is, hoe het werkt en wat het kost. Zonder
+  // naam, want wie dit leest, is meestal geen kind.
+  if (route.name === 'voorOuders') {
+    return (
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+        <VoorOuders
+          onProberen={() => {
+            const eerste = starters()[0];
+            const module = eerste && MODULES.find((m) => m.id === eerste.deel.moduleId);
+            if (eerste && module) go({ name: 'module', module, setId: eerste.deel.setId });
+          }}
+          onPremium={() => go({ name: 'premium' })}
+          onVak={goModule}
+        />
+      </Shell>
+    );
+  }
+
   // Wat hierna komt, gaat over wie je bent en heeft een naam nodig.
   if (boot.profile === null) return poort;
 
@@ -679,19 +715,6 @@ export default function App() {
     setScreen({ name: 'home' });
     go({ name: 'module', module, setId: deel.setId });
   };
-
-  // What premium is and where the code goes (ADR-116). Reached from every
-  // lock, and since ADR-171 one of the three destinations.
-  if (route.name === 'premium') {
-    return (
-      <Shell bar={bar} current="premium" onNavigate={goTo} onModule={goModule}>
-        {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
-            maar niemand komt hier om een toets te plannen, en de vergelijking
-            tussen basis en premium heeft de breedte nodig. */}
-        <PremiumScreen />
-      </Shell>
-    );
-  }
 
   // De ouderpagina, achter de pincode van dit apparaat (ADR-173). De deur staat
   // hier en niet in de router: een adres dat alleen bestaat als je er mag komen,

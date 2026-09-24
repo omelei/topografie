@@ -12778,6 +12778,28 @@ overnam: Google laat JavaScript draaien en leest wat er daarna staat.
   hij er ook na het draaien van de app, en heeft een ouder er zelf ook wat aan.
 - Niet bij een mix of jouw fouten.
 
+## ADR-214 — Een pagina voor ouders, en premium ook zonder naam
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 3 van "de volgende tien".
+
+**Wat er mis was.** Wie via Google kwam, las nergens waarom leer.nu anders is
+dan een ander oefenprogramma, wat het kost of wat er met de gegevens van een
+kind gebeurt, zonder eerst een naam in te tikken.
+
+**Besluit.**
+
+- **`/voor-ouders`**: wat het is, oefenen in korte rondes, herhalen op het
+  goede moment (in de woorden van de schrijfwijzer), werkbladen, wat er met de
+  gegevens gebeurt, wat het kost, en de vakken. Met twee knoppen: een ronde
+  laten proberen, en premium bekijken. Niet `/ouders`: `/ouder` is de
+  ouderpagina achter de pincode, en twee adressen die één letter verschillen,
+  worden verward.
+- **Zonder naam te lezen**, net als een onderwerp (ADR-208). En **premium
+  ook**: een ouder die "Wat premium is" kiest, hoort niet eerst de naam van een
+  kind te moeten typen.
+- **Op de eerste kaart** staat "Voor ouders: zo werkt het", en de pagina heeft
+  een eigen pagina voor Google, met een link vanaf de voordeur.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

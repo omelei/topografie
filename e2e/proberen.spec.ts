@@ -49,3 +49,19 @@ test('the first card says what leer.nu is, and lets you try a round first', asyn
   await expect(page).toHaveURL(/\/topografie\/provincies$/);
   await expect(page.getByRole('heading', { name: 'Wat wil je oefenen?' })).toBeVisible();
 });
+
+/**
+ * Voor ouders (ADR-214): te lezen zonder naam, met de weg naar een ronde en
+ * naar premium.
+ */
+test('a parent reads what leer.nu is, and can look at premium without a name', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Voor ouders: zo werkt het' }).click();
+  await expect(page).toHaveURL(/\/voor-ouders$/);
+  await expect(page.getByRole('heading', { name: 'leer.nu voor ouders' })).toBeVisible();
+  await expect(page.getByText('Herhalen op het goede moment')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Wat premium is' }).click();
+  await expect(page).toHaveURL(/\/premium$/);
+  await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
+});

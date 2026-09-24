@@ -102,6 +102,16 @@ export function seoPaginas(): SeoPagina[] {
     })),
   };
 
+  // Voor ouders (ADR-214): wat het is, hoe het werkt en wat het kost.
+  const voorOuders: SeoPagina = {
+    pad: pathFor({ name: 'voorOuders' }),
+    titel: t('seo.ouders.titel'),
+    beschrijving: t('ouders.intro'),
+    kop: t('ouders.titel'),
+    linksKop: t('seo.vakken'),
+    links: home.links,
+  };
+
   const vakken = BUILT_MODULES.flatMap((module): SeoPagina[] => {
     const vak = t(VAK_ZOEKNAAM[module.id]);
     // Midden in een zin zonder hoofdletter: "Meer topografie".
@@ -175,7 +185,11 @@ export function seoPaginas(): SeoPagina[] {
     return [vakPagina, ...setPaginas, ...werkbladPaginas];
   });
 
-  return [home, ...vakken];
+  return [
+    { ...home, links: [...home.links, { pad: voorOuders.pad, naam: t('profile.voorOuders') }] },
+    voorOuders,
+    ...vakken,
+  ];
 }
 
 let perPad: Map<string, string> | null = null;
