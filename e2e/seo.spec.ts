@@ -8,8 +8,8 @@ import { expect, test } from '@playwright/test';
 test('a topic has its own page and title, and the app takes it over', async ({ page }) => {
   await page.goto('/topografie/provincies');
   await expect(page).toHaveTitle('Provincies van Nederland oefenen · leer.nu');
-  await expect(page.getByRole('heading', { name: 'In welke groep zit je?' })).toHaveCount(0);
-  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
+  // Zonder naam opent het onderwerp zelf (ADR-208).
+  await expect(page.getByRole('heading', { name: 'Wat wil je oefenen?' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Alles van topografie' })).toHaveCount(0);
 });
 

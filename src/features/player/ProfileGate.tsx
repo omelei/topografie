@@ -1,12 +1,14 @@
-import { useId, useState, type FormEvent } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { brand } from '@/config/brand';
 import { Wordmark } from '@/components/Wordmark';
 import type { Groep } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { createProfile } from '@/store/profile';
+import { loadPlayedRounds } from '@/store/progress';
 import { isIngesteld } from '@/store/account';
 import type { KindInlogUitkomst } from '@/store/gezin/kindinlog';
 import type { ProfileRecord } from '@/store/db';
+import { starters, type Onderdeel } from '@/features/module/onderdelen';
 import { GroepKiezer } from './GroepKiezer';
 
 /**
@@ -48,7 +50,10 @@ import { GroepKiezer } from './GroepKiezer';
  */
 export function ProfileGate({
   onReady,
+  onProberen,
 }: {
+  /** Eerst proberen, zonder naam: opent het eerste onderwerp om mee te beginnen. */
+  readonly onProberen?: (deel: Onderdeel) => void;
   /**
    * Het profiel bestaat. `naarOuder` zegt of de app op Premium moet openen
    * in plaats van op de voordeur: dat is geen eigenschap van het profiel, dus
@@ -61,6 +66,13 @@ export function ProfileGate({
   const [stap, setStap] = useState<'naam' | 'groep' | 'code'>('naam');
   const [voorOuder, setVoorOuder] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Of er zonder naam al een ronde gespeeld is (ADR-208). Dan zegt de kaart
+  // waarom de naam nu gevraagd wordt: om te bewaren wat er net geoefend is.
+  // Gelezen en niet doorgegeven, zodat het ook na herladen klopt.
+  const [naRonde, setNaRonde] = useState(false);
+  useEffect(() => {
+    void loadPlayedRounds().then((rondes) => setNaRonde(rondes.length > 0));
+  }, []);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -90,13 +102,25 @@ export function ProfileGate({
       <div>
         <Wordmark height={40} />
         <p className="mt-1 text-tekst-secundair">{brand.slogan}</p>
+        {/* Wie hier voor het eerst komt, leest eerst wat dit is (ADR-208). */}
+        {naRonde ? null : <p className="mt-3 text-lopend">{t('profile.watIsHet')}</p>}
       </div>
 
       {stap === 'naam' ? (
         <form onSubmit={handleSubmit} className="tk-card flex flex-col gap-4">
-          <h1 className="tk-titel">{t(voorOuder ? 'profile.ouder.title' : 'profile.title')}</h1>
+          <h1 className="tk-titel">
+            {t(
+              voorOuder
+                ? 'profile.ouder.title'
+                : naRonde
+                  ? 'profile.naRonde.title'
+                  : 'profile.title',
+            )}
+          </h1>
           <label htmlFor="naam" className="text-tekst-secundair">
-            {t(voorOuder ? 'profile.ouder.help' : 'profile.help')}
+            {t(
+              voorOuder ? 'profile.ouder.help' : naRonde ? 'profile.naRonde.help' : 'profile.help',
+            )}
           </label>
           <input
             id="naam"
@@ -130,6 +154,18 @@ export function ProfileGate({
           >
             {t(voorOuder ? 'profile.ouder.terug' : 'profile.ouder')}
           </button>
+          {onProberen && !naRonde && !voorOuder ? (
+            <button
+              type="button"
+              className="tk-button tk-button-tertiary self-start"
+              onClick={() => {
+                const eerste = starters()[0];
+                if (eerste) onProberen(eerste.deel);
+              }}
+            >
+              {t('profile.proberen')}
+            </button>
+          ) : null}
           {isIngesteld() && !voorOuder ? (
             <button
               type="button"

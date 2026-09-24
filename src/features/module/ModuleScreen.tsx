@@ -403,7 +403,9 @@ export function ModuleScreen({
               handoff drops the name on a phone; a chooser that asks "wat wil
               je oefenen?" of nobody in particular is a form, and asked of Fem
               it is a question (ADR-095). */}
-          <h1 className="tk-display tk-titel">{t('choose.title', { naam })}</h1>
+          <h1 className="tk-display tk-titel">
+            {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
+          </h1>
 
           {/* Hier stond "Hier gaat je toets over", met een knop die de hele
               module als toets oefende. Het hing aan een toetsdatum, en die
