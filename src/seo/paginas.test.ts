@@ -19,6 +19,9 @@ describe('the pages Google reads', () => {
     expect(paden).toContain('/rekenen/tafel-7');
     expect(paden).toContain('/taal/voltooid-deelwoord');
     expect(paden).toContain('/vlaggen/europa-bekend');
+    // En het werkblad van elk onderwerp (ADR-211).
+    expect(paden).toContain('/topografie/provincies/werkblad');
+    expect(paden).toContain('/rekenen/tafel-7/werkblad');
     // Een mix en jouw fouten zijn geen onderwerp om op te zoeken.
     expect(paden.some((pad) => /mix|fouten/.test(pad))).toBe(false);
   });
@@ -27,6 +30,7 @@ describe('the pages Google reads', () => {
     for (const pagina of paginas) {
       const route = routeFor(pagina.pad);
       if (pagina.pad === '/') expect(route.name).toBe('home');
+      else if (pagina.pad.endsWith('/werkblad')) expect(route.name, pagina.pad).toBe('werkblad');
       else expect(route.name, pagina.pad).toBe('module');
     }
     const provincies = routeFor('/topografie/provincies');

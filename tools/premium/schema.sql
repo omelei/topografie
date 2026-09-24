@@ -324,7 +324,8 @@ begin
   -- zelf: wie de publieke sleutel misbruikt, kan geen tekst van zichzelf
   -- achterlaten.
   if p_gebeurtenis not in (
-    'binnenkomst', 'ronde', 'ronde-zonder-naam', 'naam', 'gedeeld', 'premium', 'kassa'
+    'binnenkomst', 'ronde', 'ronde-zonder-naam', 'naam', 'gedeeld', 'premium', 'kassa',
+    'werkblad'
   ) then
     return;
   end if;

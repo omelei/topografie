@@ -4,6 +4,7 @@ import { groepenVan } from '@/features/module/groepen';
 import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onderdelen';
 import { pathFor } from '@/features/shell/routes';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
+import { heeftWerkblad } from '@/features/werkblad/werkblad';
 
 /**
  * Wat Google van leer.nu te lezen krijgt (ADR-207).
@@ -120,6 +121,9 @@ export function seoPaginas(): SeoPagina[] {
       links: sets.map((deel) => ({ pad: setPad(module, deel), naam: naamVan(deel) })),
     };
 
+    const werkbladPad = (deel: Onderdeel) =>
+      pathFor({ name: 'werkblad', module, setId: deel.setId });
+
     const setPaginas = sets.map((deel): SeoPagina => {
       const naam = naamVan(deel);
       const eigen = groepenVan(deel) ?? [];
@@ -134,6 +138,7 @@ export function seoPaginas(): SeoPagina[] {
         kop: t('seo.oefenen', { wat: naam }),
         linksKop: t('seo.meer', { vak: vakKlein }),
         links: [
+          ...(heeftWerkblad(deel) ? [{ pad: werkbladPad(deel), naam: t('werkblad.knop') }] : []),
           { pad: vakPagina.pad, naam: t('seo.alles', { vak: vakKlein }) },
           ...sets
             .filter((ander) => ander !== deel)
@@ -142,7 +147,28 @@ export function seoPaginas(): SeoPagina[] {
       };
     });
 
-    return [vakPagina, ...setPaginas];
+    // Een werkblad om te printen per onderwerp (ADR-211): daar zoeken ouders en
+    // leerkrachten op, met het woord "werkblad" erbij.
+    const werkbladPaginas = sets.filter(heeftWerkblad).map((deel): SeoPagina => {
+      const onderwerp = naamVan(deel);
+      const eigen = groepenVan(deel) ?? [];
+      return {
+        pad: werkbladPad(deel),
+        titel: t('seo.werkblad.titel', { onderwerp }),
+        beschrijving:
+          eigen.length === 0
+            ? t('seo.werkblad.beschrijvingZonderGroep')
+            : t('seo.werkblad.beschrijving', { groepen: groepenTekst(eigen) }),
+        kop: t('seo.werkblad.kop', { onderwerp }),
+        linksKop: t('seo.meer', { vak: vakKlein }),
+        links: [
+          { pad: setPad(module, deel), naam: t('seo.werkblad.oefenen', { onderwerp }) },
+          { pad: vakPagina.pad, naam: t('seo.alles', { vak: vakKlein }) },
+        ],
+      };
+    });
+
+    return [vakPagina, ...setPaginas, ...werkbladPaginas];
   });
 
   return [home, ...vakken];
