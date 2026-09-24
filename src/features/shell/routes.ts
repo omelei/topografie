@@ -259,12 +259,17 @@ export type Route =
   /** What premium is, and the one field that turns it on (ADR-116). */
   | { readonly name: 'premium' }
   /** De ouderpagina, achter de pincode van dit apparaat (ADR-173). */
-  | { readonly name: 'ouder' };
+  | { readonly name: 'ouder' }
+  /** Een werkblad om te printen, voor één onderwerp (ADR-211). */
+  | { readonly name: 'werkblad'; readonly module: Module; readonly setId: string };
 
 /** De premiumpagina: een van de drie bestemmingen, naast Vandaag en Jij (ADR-171). */
 export const PREMIUM_SLUG = 'premium';
 
 export const YOU_SLUG = 'jij';
+
+/** Achter een onderwerp: /topografie/provincies/werkblad (ADR-211). */
+export const WERKBLAD_SLUG = 'werkblad';
 
 /**
  * Onthouden was een pagina en is een deel van Jij geworden (ADR-171): Jij is
@@ -335,19 +340,25 @@ export function routeFor(pathname: string): Route {
   if (slug === PREMIUM_SLUG) return { name: 'premium' };
   if (slug === OUDER_SLUG) return { name: 'ouder' };
 
-  const [head = '', tail] = slug.split('/');
+  const [head = '', tail, derde] = slug.split('/');
+  // /topografie/provincies/werkblad: het werkblad van dat onderwerp (ADR-211).
+  // Zonder onderwerp is er geen werkblad, en dan opent het vak zelf.
+  const alsWerkblad = (route: Route): Route =>
+    derde === WERKBLAD_SLUG && route.name === 'module' && route.setId !== null
+      ? { name: 'werkblad', module: route.module, setId: route.setId }
+      : route;
 
   const alias = MODULE_ALIAS[head];
   const module = MODULES.find(
     (candidate) => MODULE_SLUG[candidate.id] === head || candidate.id === alias?.module,
   );
-  if (module) return moduleRoute(module, tail, alias?.regio ?? null);
+  if (module) return alsWerkblad(moduleRoute(module, tail, alias?.regio ?? null));
 
   const category = CATEGORIES.find((candidate) => candidate.id === head);
   if (category) {
     const built = builtUnder(category);
     const only = built[0];
-    if (built.length === 1 && only) return moduleRoute(only, tail);
+    if (built.length === 1 && only) return alsWerkblad(moduleRoute(only, tail));
     if (built.length > 1) return { name: 'category', category };
   }
 
@@ -362,6 +373,9 @@ function slugFor(route: Route): string {
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'category') return route.category.id;
+  if (route.name === 'werkblad') {
+    return `${slugFor({ name: 'module', module: route.module, setId: route.setId })}/${WERKBLAD_SLUG}`;
+  }
   if (route.name === 'soon') return MODULE_SLUG[route.module.id];
 
   // The word a parent types wins where there is one: the tables are the whole

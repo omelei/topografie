@@ -18,7 +18,6 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | Google Search Console voor www.leer.nu, en de sitemap insturen                             | jij           | Te doen                  | —                    |
 | De teller aanzetten: `tools/premium/schema.sql` opnieuw draaien in de SQL Editor (ADR-210) | jij           | Te doen                  | —                    |
 | Testaankoop in de kassa: komt de code aan? In de DNS staan geen records van Resend         | jij           | Te doen                  | —                    |
-| Werkbladen om te printen per onderwerp                                                     | Claude        | Bezig                    | —                    |
 
 ### Code afschermen
 
@@ -106,6 +105,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #145      | Een werkblad om te printen per onderwerp, met een blinde kaart, sommen, klokken, vlaggen of zinnen en de antwoorden erbij                                                                 | 211      |
 | #144      | Een anonieme teller: per dag hoe vaak iemand binnenkwam, een ronde begon, een naam invulde, deelde of naar premium keek; nooit wie                                                        | 210      |
 | #143      | Deel je uitslag na een ronde, met een link naar hetzelfde onderwerp en zonder naam                                                                                                        | 209      |
 | #142      | Eerst een ronde proberen, daarna je naam: een onderwerp opent zonder naamveld, en de eerste kaart zegt wat leer.nu is                                                                     | 208      |

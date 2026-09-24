@@ -1,3 +1,4 @@
+import { heeftWerkblad } from '@/features/werkblad/werkblad';
 import { useEffect, useId, useState } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
@@ -111,6 +112,7 @@ export function ModuleScreen({
   setId,
   regio: adresRegio = null,
   onSet,
+  onWerkblad,
   onStart,
 }: {
   readonly module: Module;
@@ -122,6 +124,8 @@ export function ModuleScreen({
   readonly regio?: string | null;
   /** Puts a set in the address, or takes it out with null. */
   readonly onSet: (setId: string | null) => void;
+  /** Opent het werkblad om te printen van dit onderwerp (ADR-211). */
+  readonly onWerkblad?: (setId: string) => void;
   readonly onStart: (
     deel: Onderdeel,
     mode: ModeId,
@@ -814,6 +818,17 @@ export function ModuleScreen({
             diploma — alleen wat terugkomt kan onthouden raken. */}
         {actief && chosen !== null && states !== null ? (
           <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
+        ) : null}
+
+        {/* Hetzelfde onderwerp op papier (ADR-211): voor thuis, of voor de klas. */}
+        {onWerkblad && chosen !== null && heeftWerkblad(chosen) ? (
+          <button
+            type="button"
+            className="tk-button tk-button-tertiary self-start"
+            onClick={() => onWerkblad(chosen.setId)}
+          >
+            {t('werkblad.knop')}
+          </button>
         ) : null}
 
         {/* Twelve diplomas, under the tables and nowhere else (ADR-075). Pressing

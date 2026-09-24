@@ -12696,6 +12696,48 @@ partij toe. De privacyverklaring noemt het, zodra die er is.
 Editor; zonder dat telt de server niets, en de app merkt daar niets van. De
 vragen om te lezen staan in `tools/premium/README.md`.
 
+## ADR-211 — Een werkblad om te printen, per onderwerp
+
+**Status:** accepted. **Date:** 2026-09-24. Gevraagd door de eigenaar, na
+ADR-210: "daarna de werkbladen om te printen per onderwerp".
+
+**Waarom.** Ouders en leerkrachten zoeken naar werkbladen ("topografie werkblad
+groep 6", "tafel van 7 werkblad"). Een werkblad dat een juf uitdeelt, brengt een
+hele klas bij leer.nu. En een kind dat liever op papier oefent, kan dat nu ook.
+
+**Besluit.**
+
+- **Elk onderwerp heeft een werkblad op `/<vak>/<onderwerp>/werkblad`**,
+  behalve een mix en jouw fouten. Het is te openen zonder naam, net als de
+  pagina van een onderwerp (ADR-208), en gratis.
+- **Op het blad:** een naamregel en een datum, de opdracht, de vragen, een regel
+  met het adres om verder te oefenen, en op een tweede pagina de antwoorden. Per
+  vak de vorm van de app, op papier:
+  - topografie: een blinde kaart met genummerde plekken en genummerde lijnen
+    ernaast (hooguit 25);
+  - rekenen: sommen met een lijn (hooguit 30);
+  - klokkijken: klokken met een lijn (hooguit 12), met als antwoord "half
+    drie (2:30)";
+  - vlaggen: vlaggen met een lijn (hooguit 20);
+  - Taal: zinnen met een gat en de keuze erachter ("(ei / ij)") of het hele
+    werkwoord ("(pakken)") (hooguit 15).
+- **De kaart is een eigen tekening** (`WerkbladKaart`) en niet `MapCanvas`: die
+  is gemaakt om op te tikken en laat een stad pas zien als je hem kiest.
+- **"Andere vragen"** geeft een ander blad; hetzelfde blad komt terug bij
+  hetzelfde adres, zodat twee kinderen die dezelfde link krijgen hetzelfde blad
+  printen.
+- **Printen** toont alleen het blad (`data-print`), wit, zonder knoppen, met de
+  antwoorden op een eigen pagina.
+- **Op de pagina van een onderwerp** staat "Werkblad om te printen", en elk
+  werkblad heeft een eigen pagina voor Google (ADR-207), met een link vanaf de
+  pagina van het onderwerp. Samen 170 pagina's.
+- **De teller telt `werkblad`** als iemand op "Printen" drukt (ADR-210).
+  `tools/premium/schema.sql` kent die gebeurtenis nu ook.
+
+**Wat het niet doet.** Er is geen PDF om te downloaden: de printer van de
+browser maakt er een van ("Opslaan als PDF"). En de wereldkaart met 25 landen
+is druk; dat is een eerste versie.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

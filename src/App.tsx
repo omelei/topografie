@@ -14,6 +14,7 @@ import { MODULES, type Destination, type Module } from '@/features/shell/modules
 import { useRoute } from '@/features/shell/useRoute';
 import { titelVoor } from '@/seo/paginas';
 import { tel, telBinnenkomst } from '@/store/teller';
+import { WerkbladScherm } from '@/features/werkblad/WerkbladScherm';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
 import { ModuleScreen } from '@/features/module/ModuleScreen';
@@ -491,7 +492,14 @@ export default function App() {
   // ronde spelen (ADR-208): wie via Google op /topografie/provincies komt,
   // oefent eerst en typt daarna pas een naam. Al het andere vraagt eerst de
   // naam, want het gaat over wie je bent.
-  if (boot.profile === null && route.name !== 'module' && screen.name === 'home') return poort;
+  if (
+    boot.profile === null &&
+    route.name !== 'module' &&
+    route.name !== 'werkblad' &&
+    screen.name === 'home'
+  ) {
+    return poort;
+  }
 
   // Explore and practice are rounds, and a round has no navigation: no rail,
   // no bar, no tab bar, only the stop cross, the progress dots and the
@@ -633,9 +641,22 @@ export default function App() {
           setId={route.setId}
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
+          onWerkblad={(setId) => go({ name: 'werkblad', module: route.module, setId })}
           onStart={beginRonde}
         />
       </Shell>
+    );
+  }
+
+  // Een werkblad om te printen (ADR-211): zonder balk en zonder menu, want het
+  // is een blad papier. Ook zonder naam, zoals de pagina van een onderwerp.
+  if (route.name === 'werkblad') {
+    return (
+      <WerkbladScherm
+        module={route.module}
+        setId={route.setId}
+        onTerug={() => go({ name: 'module', module: route.module, setId: route.setId })}
+      />
     );
   }
 

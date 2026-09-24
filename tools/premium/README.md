@@ -55,7 +55,7 @@ notitie `kassa tr_…`, met het betaal-id van Mollie erin.
 
 De app telt per dag hoe vaak iets gebeurde, zonder te weten door wie (ADR-210):
 waar iemand binnenkwam, rondes met en zonder naam, namen ingevuld, uitslagen
-gedeeld, de premiumpagina bekeken en de knop naar de kassa. Draai na een
+gedeeld, de premiumpagina bekeken, de knop naar de kassa en werkbladen geprint. Draai na een
 wijziging aan `schema.sql` het hele script opnieuw in de SQL Editor; het is
 veilig om opnieuw te draaien.
 

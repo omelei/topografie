@@ -16,7 +16,14 @@ import { premiumServer, sleutelKoppen } from './premium';
  */
 
 export type Gebeurtenis =
-  'binnenkomst' | 'ronde' | 'ronde-zonder-naam' | 'naam' | 'gedeeld' | 'premium' | 'kassa';
+  | 'binnenkomst'
+  | 'ronde'
+  | 'ronde-zonder-naam'
+  | 'naam'
+  | 'gedeeld'
+  | 'premium'
+  | 'kassa'
+  | 'werkblad';
 
 /** Of deze browser zegt: tel mij niet. */
 function wilNietGeteld(): boolean {

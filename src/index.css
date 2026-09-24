@@ -4799,6 +4799,179 @@
     }
   }
 
+  /* ---- Werkblad (ADR-211) -------------------------------------------------
+   * Een blad papier: wit, inkt, geen schaduw en geen kleur die de printer
+   * grijs maakt. Op het scherm staat het blad op de ruimte, met de knoppen
+   * erboven; de printer krijgt alleen het blad, en de antwoorden op een eigen
+   * pagina. */
+  .tk-werkblad {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+  .tk-werkblad-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tk-werkblad-blad {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 32px;
+    border: var(--stroke-hair) solid var(--rand-sterk);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+    color: var(--inkt);
+  }
+  .tk-werkblad-kop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .tk-werkblad-soort {
+    color: var(--tekst-secundair);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tk-werkblad-regels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+  }
+  .tk-werkblad-opdracht {
+    font-weight: 700;
+  }
+  .tk-werkblad-vragen {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px 24px;
+    padding-left: 1.5em;
+    list-style: decimal;
+  }
+  .tk-werkblad-vragen[data-soort='zin'] {
+    grid-template-columns: 1fr;
+  }
+  /* Klokken en vlaggen: vier op een rij, met het nummer boven de figuur in
+   * plaats van ernaast, zodat het niet tegen de vorige figuur aan komt. */
+  .tk-werkblad-vragen[data-soort='klok'],
+  .tk-werkblad-vragen[data-soort='vlag'] {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    padding-left: 0;
+    list-style: none;
+    counter-reset: werkblad;
+  }
+  .tk-werkblad-vragen[data-soort='klok'] > li,
+  .tk-werkblad-vragen[data-soort='vlag'] > li {
+    counter-increment: werkblad;
+  }
+  .tk-werkblad-vragen[data-soort='klok'] > li::before,
+  .tk-werkblad-vragen[data-soort='vlag'] > li::before {
+    content: counter(werkblad) '.';
+    font-weight: 700;
+  }
+  .tk-werkblad-som {
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .tk-werkblad-figuur {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .tk-werkblad-figuur .tk-klok {
+    width: 120px;
+    height: 120px;
+  }
+  .tk-werkblad-figuur .tk-vlag {
+    width: 130px;
+  }
+  .tk-werkblad-kaartblok {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(180px, 2fr);
+    gap: 24px;
+    align-items: start;
+  }
+  .tk-werkblad-kaart {
+    width: 100%;
+    height: auto;
+  }
+  .tk-werkblad-land {
+    fill: var(--kaart);
+    stroke: var(--inkt);
+    stroke-width: var(--stroke-hair);
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-werkblad-vorm {
+    fill: var(--rand-licht);
+    stroke: var(--inkt);
+    stroke-width: var(--stroke-hair);
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-werkblad-stip {
+    fill: var(--inkt);
+  }
+  .tk-werkblad-nummer {
+    fill: var(--kaart);
+    stroke: var(--inkt);
+    stroke-width: var(--stroke-hair);
+    vector-effect: non-scaling-stroke;
+  }
+  .tk-werkblad-nummertekst {
+    fill: var(--inkt);
+    font-weight: 700;
+  }
+  .tk-werkblad-lijnen {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-left: 1.8em;
+    list-style: decimal;
+  }
+  .tk-werkblad-voet {
+    color: var(--tekst-secundair);
+    font-size: 0.9rem;
+  }
+  .tk-werkblad-antwoordlijst {
+    columns: 2;
+    column-gap: 32px;
+    padding-left: 1.8em;
+    list-style: decimal;
+  }
+  @media (max-width: 640px) {
+    .tk-werkblad-blad {
+      padding: 20px 16px;
+    }
+    .tk-werkblad-kaartblok {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media print {
+    .tk-werkblad {
+      max-width: none;
+      padding: 0;
+    }
+    .tk-werkblad-knoppen {
+      display: none;
+    }
+    .tk-werkblad-blad {
+      border: none;
+      padding: 0;
+    }
+    .tk-werkblad-antwoorden {
+      break-before: page;
+    }
+    body:has(.tk-werkblad) {
+      background: var(--kaart);
+    }
+  }
+
   /* ---- Denker (ADR-182) ----------------------------------------------------
    * The mascot, drawn inline by Brandmark from the delivery's own drawings.
    * The drawing overflows its box on purpose: the dot, the arms and the star
