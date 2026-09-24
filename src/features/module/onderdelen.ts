@@ -1,5 +1,4 @@
 import {
-  kiesVoorGroep,
   opGroep,
   type Groep,
   type ItemState,
@@ -107,14 +106,18 @@ export const POPULAR_SHOWN = 5;
  * took the second flags card, the world's well-known flags, so that every
  * module has one card and none has two (ADR-118).
  */
-const STARTERS: readonly { readonly setId: string; readonly mode: ModeId }[] = [
+const STARTERS: readonly {
+  readonly moduleId: Onderdeel['moduleId'];
+  readonly setId: string;
+  readonly mode: ModeId;
+}[] = [
   // Meerkeuze, want de eerste kaart hoort een kind zonder code niet naar een
   // slot te sturen (ADR-192).
-  { setId: 'nl-provincies', mode: 'meerkeuze' },
-  { setId: 'tafel-2', mode: 'som-meerkeuze' },
-  { setId: 'klok-heel', mode: 'klok-meerkeuze' },
-  { setId: 'vlag-europa-bekend', mode: 'vlag-meerkeuze' },
-  { setId: 'taal-sp-eiij', mode: 'taal-letters' },
+  { moduleId: 'topo', setId: 'nl-provincies', mode: 'meerkeuze' },
+  { moduleId: 'tafels', setId: 'tafel-2', mode: 'som-meerkeuze' },
+  { moduleId: 'klok', setId: 'klok-heel', mode: 'klok-meerkeuze' },
+  { moduleId: 'vlaggen', setId: 'vlag-europa-bekend', mode: 'vlag-meerkeuze' },
+  { moduleId: 'woorden', setId: 'taal-sp-eiij', mode: 'taal-letters' },
 ];
 
 /**
@@ -1251,35 +1254,95 @@ export function meestGeoefend(
  * Returned with a count of zero rather than with a made-up one, so the tile can
  * say "nog niet geoefend" and mean it.
  *
- * Met een groep (ADR-151) blijft het één kaart per module, maar niet per se
- * dezelfde: past de vaste set niet bij de groep, dan komt de set van die
- * module die wel past (`kiesVoorGroep`). Een kind in groep 3 begint rekenen
- * met plussommen tot 20 in plaats van met de tafel van 2. Wat daarna nog
- * steeds niet past — de provincies voor groep 4 — schuift achteraan, maar
+ * Met een groep (ADR-151) blijft het één kaart per module, maar niet dezelfde:
+ * elke groep heeft zijn eigen vijf (ADR-206). Wat niet bij de groep past —
+ * de provincies voor groep 4, de klok voor groep 8 — schuift achteraan, maar
  * blijft in de rij.
  */
 export function starters(groep?: Groep): Populair[] {
   const alles = startbareOnderdelen();
+  const ids = groep === undefined ? STARTERS.map(({ setId }) => setId) : STARTERS_PER_GROEP[groep];
 
-  const lijst = STARTERS.flatMap(({ setId, mode }) => {
-    const vast = alles.find((kandidaat) => kandidaat.setId === setId);
-    if (!vast) return [];
-
-    const kandidaten = alles.filter(
-      (kandidaat) =>
-        kandidaat.moduleId === vast.moduleId &&
-        !kandidaat.mix &&
-        (kandidaat.moduleId !== 'woorden' || taalDeelVan(kandidaat.setId) !== null),
-    );
-    const deel = kiesVoorGroep(vast, kandidaten, groepenVan, groep);
-    // De vorm hoort bij de module, behalve bij Taal: daar kiest elk deel op
-    // zijn eigen manier, en een werkwoord heeft geen letters om te kiezen.
-    const deelVanTaal = taalDeelVan(deel.setId);
-    const vorm = deel === vast || deelVanTaal === null ? mode : KIES_VORM[deelVanTaal];
-    return [{ deel, mode: vorm, keer: 0, at: '' }];
+  const lijst = ids.flatMap((setId) => {
+    const deel = alles.find((kandidaat) => kandidaat.setId === setId);
+    return deel ? [{ deel, mode: beginVorm(deel), keer: 0, at: '' }] : [];
   });
 
-  return opGroep(lijst, (kaart) => indelingVoor(kaart.deel, groep));
+  // Van wat voorbij is, eerst wat het kortst geleden was: voor groep 8 de
+  // werkwoorden van groep 7 voor de klok van groep 6.
+  const geleden = ({ deel }: Populair) =>
+    groep === undefined || indelingVoor(deel, groep) !== 'herhaling'
+      ? 0
+      : groep - Math.max(...(groepenVan(deel) ?? []));
+  const opAfstand = [...lijst].sort((een, ander) => geleden(een) - geleden(ander));
+
+  return opGroep(opAfstand, (kaart) => indelingVoor(kaart.deel, groep));
+}
+
+/**
+ * Waarmee een kind van een groep begint, per groep met de hand gekozen
+ * (ADR-206).
+ *
+ * Eerst rekende een regel het uit: de vaste set als die past, anders de set
+ * die het laatst begint. Dat gaf voor groep 7 en 8 bijna dezelfde rij als voor
+ * groep 5, want bekende vlaggen en ei of ij passen van groep 5 tot 8, en groep
+ * 8 kreeg "Hele uren" omdat er voor de klok niets meer past. Hier staat de stof
+ * van dat jaar, één set per module, in de volgorde van `STARTERS`. Past er in
+ * een module niets, dan een set van het laatste jaar dat nog iets had; de test
+ * legt dat vast. Die schuift achteraan, het verst terug het laatst.
+ */
+const STARTERS_PER_GROEP: Readonly<Record<Groep, readonly string[]>> = {
+  // Per groep: topografie, rekenen, klok, vlaggen, Taal.
+  3: ['nl-provincies', 'plus-20', 'klok-heel', 'vlag-europa-bekend', 'taal-sp-eiij'],
+  4: ['nl-provincies', 'tafel-2', 'klok-half', 'vlag-europa-bekend', 'taal-sp-eiij'],
+  5: ['nl-provincies', 'tafel-3', 'klok-kwart', 'vlag-europa-bekend', 'taal-sp-eiij'],
+  6: ['nl-provincies', 'keer-100', 'klok-vijf', 'vlag-nederland-provincies', 'taal-ww-tt'],
+  7: ['nl-hoofdsteden', 'keer-1000', 'klok-vijf', 'vlag-europa-alle', 'taal-ww-vt'],
+  8: ['europa-landen', 'delen-1000', 'klok-vijf', 'vlag-wereld-alle', 'taal-ww-vd'],
+};
+
+/** De vorm waarin een kaart begint: die van zijn module, en bij Taal die van zijn deel. */
+function beginVorm(deel: Onderdeel): ModeId {
+  const deelVanTaal = taalDeelVan(deel.setId);
+  if (deel.moduleId === 'woorden' && deelVanTaal !== null) return KIES_VORM[deelVanTaal];
+  return STARTERS.find((starter) => starter.moduleId === deel.moduleId)?.mode ?? 'meerkeuze';
+}
+
+/**
+ * Wat bij de groep past en dit kind nog niet deed: de rij "Past bij groep 6"
+ * op Vandaag, voor wie al geoefend heeft (ADR-206).
+ *
+ * Eén kaart per module, zodat de rij over alle vakken gaat. Per module eerst de
+ * starter van de groep, dan de stof van dit jaar (de set die het laatst
+ * begint), dan de volgorde van de content. Een mix, een foutenlijst en een
+ * eigen lijst hebben geen groep en staan er niet in. Is alles gedaan, dan is de
+ * lijst leeg en de rij weg.
+ */
+export function voorGroep(groep: Groep | undefined, gedaan: ReadonlySet<string>): Populair[] {
+  if (groep === undefined) return [];
+  const voorkeur = STARTERS_PER_GROEP[groep];
+  const alles = startbareOnderdelen();
+
+  return STARTERS.flatMap(({ moduleId }) => {
+    const kandidaten = alles
+      .map((deel, plek) => ({ deel, plek, groepen: groepenVan(deel) }))
+      .filter(
+        ({ deel, groepen }) =>
+          deel.moduleId === moduleId &&
+          !deel.mix &&
+          groepen !== undefined &&
+          !gedaan.has(deel.setId) &&
+          indelingVoor(deel, groep) === 'nu',
+      )
+      .sort(
+        (een, ander) =>
+          Number(voorkeur.includes(ander.deel.setId)) - Number(voorkeur.includes(een.deel.setId)) ||
+          Math.min(...(ander.groepen ?? [])) - Math.min(...(een.groepen ?? [])) ||
+          een.plek - ander.plek,
+      );
+    const eerste = kandidaten[0]?.deel;
+    return eerste ? [{ deel: eerste, mode: beginVorm(eerste), keer: 0, at: '' }] : [];
+  });
 }
 
 /**

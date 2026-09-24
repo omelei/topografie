@@ -6,10 +6,12 @@ import {
   POPULAR_SHOWN,
   starters,
   startbareOnderdelen,
+  voorGroep,
   type Gespeeld,
   type Onderdeel,
 } from './onderdelen';
-import type { ModeId } from '@/game-core';
+import { GROEPEN, type ModeId } from '@/game-core';
+import { groepenVan, indelingVoor } from './groepen';
 import { TOPO_REGIOS } from './regios';
 
 /**
@@ -132,10 +134,100 @@ describe('the ones to start with, for a group', () => {
     expect(lijst.slice(2)).toEqual(['nl-provincies', 'vlag-europa-bekend', 'taal-sp-eiij']);
   });
 
+  /**
+   * Per groep de stof van dat jaar (ADR-206). Past er in een module niets, dan
+   * de set die het laatst ophoudt: de klok voor groep 7 en 8 is vijf minuten,
+   * niet de hele uren van groep 3.
+   */
+  it('picks what fits the group, or else what was last in the years before', () => {
+    const alles = startbareOnderdelen().filter((set) => !set.mix && groepenVan(set) !== undefined);
+    for (const groep of GROEPEN) {
+      for (const { deel: kaart } of starters(groep)) {
+        const module = alles.filter((set) => set.moduleId === kaart.moduleId);
+        const pastIets = module.some((set) => indelingVoor(set, groep) === 'nu');
+        const indeling = indelingVoor(kaart, groep);
+        if (pastIets) {
+          expect(indeling, `groep ${groep}: ${kaart.setId}`).toBe('nu');
+        } else if (indeling === 'herhaling') {
+          const hoogste = (set: Onderdeel) => Math.max(...(groepenVan(set) ?? []));
+          const eerder = module.filter((set) => indelingVoor(set, groep) === 'herhaling');
+          expect(hoogste(kaart), `groep ${groep}: ${kaart.setId}`).toBe(
+            Math.max(...eerder.map(hoogste)),
+          );
+        }
+      }
+    }
+  });
+
+  it('gives groep 7 and 8 harder work, and puts a subject they are past at the back', () => {
+    expect(sets(7)).toEqual([
+      'nl-hoofdsteden',
+      'keer-1000',
+      'vlag-europa-alle',
+      'taal-ww-vt',
+      'klok-vijf',
+    ]);
+    expect(sets(8)).toEqual([
+      'europa-landen',
+      'delen-1000',
+      'vlag-wereld-alle',
+      'taal-ww-vd',
+      'klok-vijf',
+    ]);
+  });
+
+  it('does not give two groups the same row', () => {
+    const rijen = GROEPEN.map((groep) => sets(groep).join());
+    expect(new Set(rijen).size).toBe(GROEPEN.length);
+  });
+
   it('asks a verb the way verbs are asked', () => {
     const taal = starters(8).find((entry) => entry.deel.moduleId === 'woorden');
     if (taal?.deel.setId.startsWith('taal-ww-')) expect(taal.mode).toBe('taal-vorm-kiezen');
     else expect(taal?.mode).toBe('taal-letters');
+  });
+});
+
+/**
+ * "Past bij groep 6" op Vandaag, voor wie al geoefend heeft (ADR-206): per vak
+ * één set die bij de groep past en die dit kind nog niet deed.
+ */
+describe('what fits the group and is not done yet', () => {
+  it('is nothing without a group', () => {
+    expect(voorGroep(undefined, new Set())).toEqual([]);
+  });
+
+  it('starts from the group row, one card per subject, and all of it fits', () => {
+    const lijst = voorGroep(6, new Set());
+    expect(lijst.map((kaart) => kaart.deel.setId)).toEqual(
+      starters(6).map((kaart) => kaart.deel.setId),
+    );
+    for (const { deel: kaart } of lijst) expect(indelingVoor(kaart, 6)).toBe('nu');
+  });
+
+  it('leaves out what was done, and moves on to the next that fits', () => {
+    const lijst = voorGroep(6, new Set(['nl-provincies', 'keer-100']));
+    const ids = lijst.map((kaart) => kaart.deel.setId);
+    expect(ids).not.toContain('nl-provincies');
+    expect(ids).not.toContain('keer-100');
+    // Voor rekenen is er meer stof van groep 6; voor topografie niet.
+    expect(lijst.find((kaart) => kaart.deel.moduleId === 'tafels')).toBeDefined();
+    expect(lijst.find((kaart) => kaart.deel.moduleId === 'topo')).toBeUndefined();
+  });
+
+  it('drops a subject that has nothing for the group', () => {
+    expect(voorGroep(8, new Set()).map((kaart) => kaart.deel.moduleId)).not.toContain('klok');
+  });
+
+  it('is empty once everything that fits is done', () => {
+    const alles = new Set(startbareOnderdelen().map((set) => set.setId));
+    expect(voorGroep(7, alles)).toEqual([]);
+  });
+
+  it('asks a verb the way verbs are asked', () => {
+    const taal = voorGroep(7, new Set()).find((kaart) => kaart.deel.moduleId === 'woorden');
+    expect(taal?.deel.setId).toBe('taal-ww-vt');
+    expect(taal?.mode).toBe('taal-vorm-kiezen');
   });
 });
 

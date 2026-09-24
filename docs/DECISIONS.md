@@ -12517,6 +12517,46 @@ volwassenencheck, een code invullen, doorsturen naar je ouders en de overname
 van een kind. Niet bij het inlezen van eigen woordenlijsten: dat is een
 meldingsregel die er altijd staat, soms leeg.
 
+## ADR-206 — De groep kiest de rij op Vandaag, ook na de eerste ronde
+
+**Status:** accepted. **Date:** 2026-09-24. Gemeld door de eigenaar: een andere
+groep kiezen leek op Vandaag niets te doen.
+
+**Wat er mis was.** De groep deed drie dingen: de volgorde in het dagplan
+(premium), de voorgestelde diploma's (premium) en de vijf starters. Die
+starters stonden er alleen voor een kind dat nog niets deed, en een regel koos
+ze: de vaste set als die past, anders de set die het laatst begint. Omdat
+bekende vlaggen en ei of ij van groep 5 tot en met 8 passen, was de rij voor
+groep 5 tot 8 bijna gelijk, en groep 8 kreeg "Hele uren", omdat er voor de
+klok niets meer past. Wie al geoefend had, zag van de groep niets meer.
+
+**Besluit.**
+
+- **Vijf starters per groep, met de hand gekozen** (`STARTERS_PER_GROEP`): per
+  groep de stof van dat jaar, één set per module. Groep 6 begint met
+  keersommen tot 100, provincievlaggen en de tegenwoordige tijd; groep 7 met
+  de hoofdsteden, keersommen tot 1000, alle vlaggen van Europa en de verleden
+  tijd; groep 8 met de landen van Europa, deelsommen tot 1000, alle vlaggen
+  van de wereld en het voltooid deelwoord. Een regel die dit uitrekent
+  (`kiesVoorGroep`) is weg: hij gaf per groep hetzelfde zodra een set breed
+  paste.
+- **Wat een groep voorbij is, staat achteraan**, het verst terug het laatst:
+  voor groep 8 eerst de werkwoorden van groep 7, dan de klok van groep 6.
+  Past er in een module niets, dan een set van het laatste jaar dat nog iets
+  had. Een test legt vast dat elke kaart past, of anders dat.
+- **De groep in de kop**: "Hier begin je mee in groep 6". Zonder groep blijft
+  het "Hier begin je mee vandaag".
+- **"Past bij groep 6"**, onder "Meest geoefend", voor wie al geoefend heeft:
+  per vak één set die bij de groep past en die dit kind nog niet deed, eerst
+  de starter van de groep, dan de stof van dit jaar. Zonder groep, of als
+  alles gedaan is, staat de rij er niet. Een vak zonder stof voor de groep
+  (de klok voor groep 7 en 8) staat er niet in.
+
+**Waarom met de hand.** Vijf keer zes kaarten is een lijst die een mens kan
+lezen en kan verdedigen; een regel over de content levert op wat de content
+toevallig breed of smal indeelt. De test bewaakt dat een nieuwe indeling in de
+content de lijst niet stil laat afwijken.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

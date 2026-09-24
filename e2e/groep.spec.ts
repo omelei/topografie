@@ -146,6 +146,43 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
 });
 
 /**
+ * De groep doet ook iets op Vandaag (ADR-206): de rij om mee te beginnen noemt
+ * de groep en heeft de stof van dat jaar, en wie al geoefend heeft, krijgt
+ * "Past bij groep 6" met wat erbij past en nog niet gedaan is.
+ */
+test('de groep staat in de kop, en na een ronde komt "Past bij groep"', async ({ page }) => {
+  await page.goto('/');
+  await page.getByPlaceholder('Je naam').fill('Lot');
+  await page.getByRole('button', { name: 'Beginnen' }).click();
+  await page.getByRole('button', { name: 'Groep 6', exact: true }).click();
+
+  const begin = page.getByRole('group', { name: 'Hier begin je mee in groep 6' });
+  await expect(begin.getByRole('button', { name: /Keersommen tot 100/ })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Past bij groep 6' })).toHaveCount(0);
+
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /Aanwijzen/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+  await page.getByRole('button', { name: 'Limburg' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+
+  await page.goto('/');
+  const passend = page.getByRole('group', { name: 'Past bij groep 6' });
+  await expect(passend.getByRole('button', { name: /Keersommen tot 100/ })).toBeVisible();
+  // Wat al gedaan is, staat onder "Meest geoefend" en niet nog eens hier.
+  await expect(passend.getByRole('button', { name: /Provincies van Nederland/ })).toHaveCount(0);
+});
+
+/**
  * "Ik ben een ouder" op de eerste vraag (ADR-161, ADR-198). Een ouder oefent
  * niet en wordt dus geen profiel: de kaart vraagt naar de naam en de groep van
  * het kind, dat kind bestaat daarna, en de app opent op Premium.

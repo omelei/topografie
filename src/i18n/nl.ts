@@ -53,6 +53,11 @@ export const nl = {
   // Dezelfde rij, voor wie nog niets deed. "Meest geoefend" is dan een kop over
   // een geschiedenis die niet bestaat (ADR-131).
   'home.popularStart': 'Hier begin je mee vandaag',
+  // Met een groep zegt de kop dat ook: de rij is voor groep 6 een andere dan
+  // voor groep 8 (ADR-206).
+  'home.popularStartGroep': 'Hier begin je mee in groep {groep}',
+  // Voor wie al geoefend heeft: wat bij de groep past en nog niet gedaan is.
+  'home.pastBijGroep': 'Past bij groep {groep}',
   'home.popularTimes': '{aantal} keer geoefend',
   'home.popularOnce': '1 keer geoefend',
   'home.popularNone': 'nog niet geoefend',
