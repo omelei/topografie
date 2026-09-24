@@ -325,7 +325,7 @@ begin
   -- achterlaten.
   if p_gebeurtenis not in (
     'binnenkomst', 'ronde', 'ronde-zonder-naam', 'naam', 'gedeeld', 'premium', 'kassa',
-    'werkblad'
+    'werkblad', 'qr'
   ) then
     return;
   end if;

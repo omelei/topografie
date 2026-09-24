@@ -55,6 +55,14 @@ test('counts where someone came in and that a round began, and nothing about who
   expect(JSON.stringify(tellingen)).not.toContain('Noor');
 });
 
+test('counts a scan of the code on a worksheet', async ({ page }) => {
+  const tellingen = await vangTellingen(page);
+  await page.goto('/topografie/provincies?van=werkblad');
+  await expect
+    .poll(() => tellingen)
+    .toContainEqual({ p_gebeurtenis: 'qr', p_pad: '/topografie/provincies' });
+});
+
 test('counts nothing when the browser asks not to be tracked', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, 'globalPrivacyControl', { value: true });

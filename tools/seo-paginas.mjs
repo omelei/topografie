@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { createServer } from 'vite';
+import QRCode from 'qrcode';
 
 /**
  * Een echte pagina per vak en per onderwerp (ADR-207).
@@ -129,4 +130,23 @@ writeFileSync(
   ['User-agent: *', 'Allow: /', '', `Sitemap: ${oorsprong}/sitemap.xml`, ''].join('\n'),
 );
 
-console.log(`SEO: ${paginas.length} pagina's, sitemap.xml en robots.txt.\n`);
+// Een QR-code per werkblad (ADR-212): wie hem scant, komt op de pagina van
+// het onderwerp en kan meteen oefenen. `?van=werkblad` laat de teller zien
+// dat iemand via papier kwam. Hier en niet in de app, zodat er geen bibliotheek
+// voor QR-codes in de bundel komt.
+let qrs = 0;
+for (const p of paginas) {
+  if (!p.pad.endsWith('/werkblad')) continue;
+  const onderwerp = p.pad.slice(0, -'/werkblad'.length);
+  const svg = await QRCode.toString(`${oorsprong}${onderwerp}?van=werkblad`, {
+    type: 'svg',
+    margin: 0,
+    errorCorrectionLevel: 'M',
+  });
+  const bestand = join(dist, 'qr', `${onderwerp.replace(/^\/+/, '')}.svg`);
+  mkdirSync(dirname(bestand), { recursive: true });
+  writeFileSync(bestand, svg);
+  qrs += 1;
+}
+
+console.log(`SEO: ${paginas.length} pagina's, ${qrs} QR-codes, sitemap.xml en robots.txt.\n`);

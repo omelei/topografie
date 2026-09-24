@@ -23,7 +23,8 @@ export type Gebeurtenis =
   | 'gedeeld'
   | 'premium'
   | 'kassa'
-  | 'werkblad';
+  | 'werkblad'
+  | 'qr';
 
 /** Of deze browser zegt: tel mij niet. */
 function wilNietGeteld(): boolean {
@@ -59,4 +60,6 @@ export function telBinnenkomst(pad: string): void {
   if (binnen) return;
   binnen = true;
   tel('binnenkomst', pad);
+  // Via de QR-code op een werkblad (ADR-212): dan weten we dat papier werkt.
+  if (new URLSearchParams(window.location.search).get('van') === 'werkblad') tel('qr', pad);
 }
