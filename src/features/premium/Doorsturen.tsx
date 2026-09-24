@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FamilyIcon } from '@/components/Icon';
 import { pathFor } from '@/features/shell/routes';
 import { t } from '@/i18n';
+import { deel } from '@/features/delen/deel';
 
 /**
  * "Stuur het naar je vader of moeder" (ADR-174).
@@ -28,11 +29,9 @@ import { t } from '@/i18n';
  * het is het soort gegeven dat dit product juist niet de deur uit doet, en het
  * reist bovendien via WhatsApp of de mail van iemand anders.
  *
- * **Drie manieren, in deze volgorde.** De deelknop van het toestel als die er
- * is (op een telefoon is dat precies wat een kind kent: WhatsApp, Berichten,
- * de mail van zijn ouder). Anders de link kopiëren. En als kopiëren ook niet
- * mag — dat kan, `clipboard` vraagt een beveiligde context en mag geweigerd
- * worden — staat het adres er gewoon, om over te tikken of vast te pakken.
+ * **Drie manieren, in deze volgorde** (`deel`): de deelknop van het toestel,
+ * de link kopiëren, en anders staat het adres er gewoon, om over te tikken of
+ * vast te pakken.
  */
 
 type Stand =
@@ -53,36 +52,12 @@ export function Doorsturen() {
 
   async function stuur() {
     setStand({ soort: 'bezig' });
-
-    // De deelknop van het toestel. Hij moet uit een echte aanraking komen —
-    // daarom staat hij in de klikafhandeling en niet achter een `await` die
-    // eerst iets anders doet.
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({
-          title: t('doorsturen.onderwerp'),
-          text: t('doorsturen.bericht'),
-          url: adres,
-        });
-        setStand({ soort: 'gedeeld' });
-        return;
-      } catch {
-        // Wegklikken gooit hier ook (`AbortError`), en dat is geen fout: het
-        // kind bedacht zich. Dus geen melding, maar terug naar de knop — en
-        // als delen echt niet kan, gaat het hieronder alsnog via kopiëren.
-        if (typeof navigator.clipboard?.writeText !== 'function') {
-          setStand({ soort: 'handmatig' });
-          return;
-        }
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(`${t('doorsturen.bericht')} ${adres}`);
-      setStand({ soort: 'gekopieerd' });
-    } catch {
-      setStand({ soort: 'handmatig' });
-    }
+    const uitkomst = await deel({
+      titel: t('doorsturen.onderwerp'),
+      tekst: t('doorsturen.bericht'),
+      adres,
+    });
+    setStand({ soort: uitkomst });
   }
 
   return (

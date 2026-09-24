@@ -12628,6 +12628,30 @@ formulier. Dat is precies het moment waarop een nieuwe bezoeker afhaakt.
 manieren (ADR-192). En wie zonder naam weggaat, laat zijn ronde op dit apparaat
 achter; die hoort bij wie daarna als eerste een naam typt.
 
+## ADR-209 — Deel je uitslag, met een link naar hetzelfde onderwerp
+
+**Status:** accepted. **Date:** 2026-09-24. Volgt op ADR-207 en ADR-208; de
+lichte eerste stap van Uitdagen (optie A, 23 september).
+
+**Besluit.**
+
+- **Op "Ronde klaar" staat "Deel je uitslag".** Het bericht is "Ik had 9 van de
+  12 goed bij Provincies van Nederland. Kun jij dat ook?", met een link naar
+  dat onderwerp. Wie de link opent, speelt meteen een ronde, ook zonder naam
+  (ADR-208). Zo brengt een kind dat deelt een nieuwe bezoeker mee.
+- **Er gaat geen naam mee**, en geen voortgang: alleen de uitslag van deze
+  ronde en het onderwerp. Het bericht reist via de telefoon van een ouder of
+  WhatsApp (ADR-174).
+- **Niet bij jouw fouten**: die lijst is van dit kind alleen en heeft geen
+  pagina om naar te linken.
+- **Het delen zelf is één functie** (`features/delen/deel.ts`): de deelknop van
+  het toestel, anders kopiëren, anders staat de link er zelf. "Stuur het naar
+  je ouders" gebruikt dezelfde.
+
+**Wat het niet doet.** Er is geen stand tussen kinderen en geen code met een
+score erin. Dat is Uitdagen, en dat blijft geparkeerd tot er gebruikers zijn
+die erom vragen. Vals spelen kan hier niet: er valt niets te winnen.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -803,6 +803,14 @@ export const nl = {
     'De link staat klaar om te plakken. Zet hem in een bericht aan je ouders.',
   'doorsturen.zelf': 'Versturen lukt niet op dit apparaat. Dit is de link:',
   'doorsturen.mail': 'Of mail het ze',
+  // Deel je uitslag, na een ronde (ADR-209). Zonder naam: het bericht reist
+  // via de telefoon van een ouder of WhatsApp.
+  'delen.knop': 'Deel je uitslag',
+  'delen.titel': '{onderwerp} op leer.nu',
+  'delen.bericht': 'Ik had {goed} van de {totaal} goed bij {onderwerp}. Kun jij dat ook?',
+  'delen.gedeeld': 'Gedeeld.',
+  'delen.gekopieerd': 'Gekopieerd. Plak het in een bericht.',
+  'delen.zelf': 'Delen lukt niet op dit apparaat. Dit is de link:',
   'premium.wat.vandaag':
     'Leer.nu zet elke dag klaar wat aan de beurt is. Dan hoef jij niet te bedenken waar je begint.',
   // Wat premium laat zien, sinds ADR-192. Steeds met de zin dat het al bewaard
