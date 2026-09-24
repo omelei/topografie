@@ -13,6 +13,7 @@ import { TopBar } from '@/features/shell/TopBar';
 import { MODULES, type Destination, type Module } from '@/features/shell/modules';
 import { useRoute } from '@/features/shell/useRoute';
 import { titelVoor } from '@/seo/paginas';
+import { tel, telBinnenkomst } from '@/store/teller';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
 import { ModuleScreen } from '@/features/module/ModuleScreen';
@@ -163,6 +164,17 @@ export default function App() {
     document.title = titelVoor(pathFor(route));
   }, [route]);
 
+  // Waar iemand binnenkwam en of de premiumpagina bekeken werd, als aantal per
+  // dag en zonder te weten door wie (ADR-210).
+  useEffect(() => {
+    telBinnenkomst(pathFor(route));
+    // Alleen het eerste adres: waar iemand binnenkwam, niet waar hij heen ging.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (route.name === 'premium') tel('premium');
+  }, [route.name]);
+
   // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
   // them here rather than inside the Shell keeps the frame ignorant of what a
   // screen is.
@@ -227,6 +239,13 @@ export default function App() {
     }
 
     setVisit(visit + 1);
+
+    // Een ronde begon, met of zonder naam, op dit onderwerp (ADR-210).
+    const rondeModule = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
+    tel(
+      boot.status === 'ready' && boot.profile ? 'ronde' : 'ronde-zonder-naam',
+      rondeModule ? pathFor({ name: 'module', module: rondeModule, setId: deel.setId }) : '',
+    );
 
     // Flags explore on a screen of their own, like the map, and the mix and
     // the child's own mistakes have nothing to explore (`forms.ts`).

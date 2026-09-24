@@ -9,13 +9,16 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ## Nu
 
-| Wat                                                                        | Wie           | Staat                    | Hangt af van         |
-| -------------------------------------------------------------------------- | ------------- | ------------------------ | -------------------- |
-| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Wacht op vier antwoorden | —                    |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen                  | —                    |
-| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)              | Claude        | Wacht op het adres       | Contactadres van jou |
-| Klassencode: € 300 inclusief of exclusief btw?                             | jij           | Te beslissen             | —                    |
-| Google Search Console voor www.leer.nu, en de sitemap insturen             | jij           | Te doen                  | —                    |
+| Wat                                                                                        | Wie           | Staat                    | Hangt af van         |
+| ------------------------------------------------------------------------------------------ | ------------- | ------------------------ | -------------------- |
+| Gezinsaccount live zetten (zie hieronder)                                                  | jij en Claude | Wacht op vier antwoorden | —                    |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder)                 | jij           | Te doen                  | —                    |
+| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)                              | Claude        | Wacht op het adres       | Contactadres van jou |
+| Klassencode: € 300 inclusief of exclusief btw?                                             | jij           | Te beslissen             | —                    |
+| Google Search Console voor www.leer.nu, en de sitemap insturen                             | jij           | Te doen                  | —                    |
+| De teller aanzetten: `tools/premium/schema.sql` opnieuw draaien in de SQL Editor (ADR-210) | jij           | Te doen                  | —                    |
+| Testaankoop in de kassa: komt de code aan? In de DNS staan geen records van Resend         | jij           | Te doen                  | —                    |
+| Werkbladen om te printen per onderwerp                                                     | Claude        | Bezig                    | —                    |
 
 ### Code afschermen
 
@@ -103,6 +106,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #144      | Een anonieme teller: per dag hoe vaak iemand binnenkwam, een ronde begon, een naam invulde, deelde of naar premium keek; nooit wie                                                        | 210      |
 | #143      | Deel je uitslag na een ronde, met een link naar hetzelfde onderwerp en zonder naam                                                                                                        | 209      |
 | #142      | Eerst een ronde proberen, daarna je naam: een onderwerp opent zonder naamveld, en de eerste kaart zegt wat leer.nu is                                                                     | 208      |
 | #141      | Vindbaar in Google: een eigen pagina met titel en tekst per vak en onderwerp, sitemap.xml en robots.txt                                                                                   | 207      |

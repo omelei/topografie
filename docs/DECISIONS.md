@@ -12652,6 +12652,50 @@ lichte eerste stap van Uitdagen (optie A, 23 september).
 score erin. Dat is Uitdagen, en dat blijft geparkeerd tot er gebruikers zijn
 die erom vragen. Vals spelen kan hier niet: er valt niets te winnen.
 
+## ADR-210 — Een anonieme teller: hoeveel, per dag, nooit wie
+
+**Status:** accepted. **Date:** 2026-09-24. Gekozen door de eigenaar ("ja,
+bouw de anonieme teller"). Een bewuste verruiming van ADR-015.
+
+**Waarom.** Na ADR-207 tot en met ADR-209 is de vraag niet meer wat er gebouwd
+moet worden, maar of het werkt: komt er iemand via Google, speelt die een
+ronde, vult die een naam in, deelt die, kijkt een ouder naar premium. Daar was
+geen enkel getal voor. Zonder getal wordt het volgende werk op gevoel gekozen.
+
+**Besluit.**
+
+- **Een tabel `teller` op de premiumserver**, met vier kolommen: dag,
+  gebeurtenis, adres en aantal. Geen apparaatnummer, geen naam, geen tijdstip,
+  geen IP-adres. Een rij zegt "op 24 september begonnen er 17 rondes op
+  /topografie/provincies", nooit wie.
+- **De app mag alleen tellen**, via de functie `teller_tel`, en alleen zeven
+  gebeurtenissen: `binnenkomst` (met het adres waar iemand binnenkwam),
+  `ronde` en `ronde-zonder-naam` (met het onderwerp), `naam`, `gedeeld` (met het
+  onderwerp), `premium` en `kassa`. Een andere gebeurtenis telt niet mee, en een
+  adres dat niet van leer.nu kan zijn, wordt leeg bewaard. Lezen kan alleen de
+  eigenaar, in de SQL Editor.
+- **Niets op het apparaat.** Geen cookie en geen opslag om iemand te herkennen.
+  Binnenkomst telt één keer per keer dat de app opent; wie herlaadt, telt
+  opnieuw. Dat is de prijs van niets achterlaten.
+- **"Do Not Track" en "Global Privacy Control" worden gerespecteerd**: dan
+  gaat er niets heen.
+- **De belofte op de premiumpagina is aangepast**: "Wat je kind oefent, blijft
+  op dit apparaat. Naar onze server gaan alleen de code en tellingen zonder
+  naam of apparaatnummer."
+- **De netwerktest laat precies dit ene adres toe**, en `teller.spec.ts` kijkt
+  na dat er alleen een gebeurtenis en een adres in het verzoek staan. De
+  SQL-controle draait nu ook `tools/premium/schema.sql` en kijkt de teller na.
+
+**Wat het niet is.** Geen analytics van een ander bedrijf, geen profiel van een
+bezoeker, en geen gegevens over wat een kind goed of fout had. Wel eerlijk:
+Supabase bewaart, zoals elke server, een paar dagen de toegangslogboeken met
+IP-adressen. Dat geldt al voor de premiumcode; de teller voegt geen nieuwe
+partij toe. De privacyverklaring noemt het, zodra die er is.
+
+**Voor de eigenaar.** Draai `tools/premium/schema.sql` opnieuw in de SQL
+Editor; zonder dat telt de server niets, en de app merkt daar niets van. De
+vragen om te lezen staan in `tools/premium/README.md`.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

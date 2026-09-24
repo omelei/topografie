@@ -1,3 +1,4 @@
+import { tel } from '@/store/teller';
 import { useId, type ComponentType } from 'react';
 import {
   CorrectIcon,
@@ -262,7 +263,7 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
       {teKoop ? (
         <>
           <div className="tk-etalage-knoppen">
-            <a className="tk-button tk-knop-licht" href={KASSA_PAD}>
+            <a className="tk-button tk-knop-licht" href={KASSA_PAD} onClick={() => tel('kassa')}>
               {t('premium.kopenKnop')}
             </a>
             <p className="tk-premium-etalage-prijs">
@@ -339,7 +340,7 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
           {teKoop ? (
             <>
               <div className="tk-premium-plan-knoppen">
-                <a className="tk-button" href={KASSA_PAD}>
+                <a className="tk-button" href={KASSA_PAD} onClick={() => tel('kassa')}>
                   {t('premium.kopenKnop')}
                 </a>
               </div>

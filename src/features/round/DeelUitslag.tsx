@@ -4,6 +4,7 @@ import { naamVan, type Onderdeel } from '@/features/module/onderdelen';
 import { pathFor } from '@/features/shell/routes';
 import { MODULES } from '@/features/shell/modules';
 import { t } from '@/i18n';
+import { tel } from '@/store/teller';
 
 /**
  * "Deel je uitslag" (ADR-209): na een ronde, met een link naar hetzelfde
@@ -30,12 +31,15 @@ export function DeelUitslag({
   if (!module) return null;
 
   const onderwerp = naamVan(deel);
-  const adres = `${window.location.origin}${pathFor({ name: 'module', module, setId: deel.setId })}`;
+  const pad = pathFor({ name: 'module', module, setId: deel.setId });
+  const adres = `${window.location.origin}${pad}`;
   const tekst = t('delen.bericht', { goed, totaal, onderwerp });
 
   async function deelNu() {
     setStand('bezig');
-    setStand(await delen({ titel: t('delen.titel', { onderwerp }), tekst, adres }));
+    const uitkomst = await delen({ titel: t('delen.titel', { onderwerp }), tekst, adres });
+    if (uitkomst !== 'handmatig') tel('gedeeld', pad);
+    setStand(uitkomst);
   }
 
   return (
