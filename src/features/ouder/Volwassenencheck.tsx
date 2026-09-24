@@ -81,7 +81,7 @@ export function Volwassenencheck({ onGoed }: { readonly onGoed: () => void }) {
       </button>
 
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {t('ouder.checkFout')}
         </p>
       ) : null}

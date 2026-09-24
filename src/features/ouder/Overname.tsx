@@ -297,7 +297,7 @@ function GekoppeldKind({
       )}
 
       {fout ? (
-        <p role="alert" className="text-lopend">
+        <p role="alert" className="tk-melding" data-soort="fout">
           {t(FOUT[fout])}
         </p>
       ) : null}
@@ -413,7 +413,7 @@ function Meenemen({
       </button>
 
       {fout ? (
-        <p role="alert" className="text-lopend">
+        <p role="alert" className="tk-melding" data-soort="fout">
           {t(FOUT[fout])}
         </p>
       ) : null}
@@ -495,7 +495,7 @@ function AlleenInAccount({
       ) : null}
 
       {fout ? (
-        <p role="alert" className="text-lopend">
+        <p role="alert" className="tk-melding" data-soort="fout">
           {t(FOUT[fout])}
         </p>
       ) : null}
@@ -577,14 +577,14 @@ function Inlogcode({
         {bezig ? t('account.bezig') : t('overname.wachtwoordKnop')}
       </button>
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {fout === 'te-kort' || fout === 'te-simpel' || fout === 'eigen-naam'
             ? t(WACHTWOORD_FOUT[fout], { naam })
             : t(FOUT[fout])}
         </p>
       ) : null}
       {klaar ? (
-        <p role="status" className="text-lopend">
+        <p role="status" className="tk-melding" data-soort="gelukt">
           {t('overname.wachtwoordKlaar', { naam })}
         </p>
       ) : null}

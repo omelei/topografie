@@ -184,12 +184,12 @@ function Herbevestigen({
       </button>
 
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {t(ACCOUNT_FOUT[fout])}
         </p>
       ) : null}
       {gemaild ? (
-        <p role="status" className="text-lopend">
+        <p role="status" className="tk-melding" data-soort="gelukt">
           {t('ouder.herstelGemaild', { email })}
         </p>
       ) : null}

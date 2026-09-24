@@ -197,7 +197,7 @@ function Formulier({
         </button>
 
         {fout ? (
-          <p id={melding} role="alert" className="text-lopend">
+          <p id={melding} role="alert" className="tk-melding" data-soort="fout">
             {/* Bij een herstelmail is er maar één veld, en "vul allebei in" zou
                 naar een wachtwoord vragen dat hier niet gevraagd wordt. */}
             {fout === 'leeg' && modus === 'herstellen'
@@ -206,7 +206,7 @@ function Formulier({
           </p>
         ) : null}
         {gemaild ? (
-          <p role="status" className="text-lopend">
+          <p role="status" className="tk-melding" data-soort="gelukt">
             {modus === 'herstellen' ? t('account.herstelGemaild') : t('account.gemaild')}
           </p>
         ) : null}

@@ -89,7 +89,7 @@ function Formulier({
           <CorrectIcon size={24} />
         </p>
         <h1 className="tk-titel">{t('herstel.titel')}</h1>
-        <p role="status" className="text-lopend">
+        <p role="status" className="tk-melding" data-soort="gelukt">
           {t('herstel.klaar')}
         </p>
         <a className="tk-button self-start" href="/ouder">
@@ -128,7 +128,7 @@ function Formulier({
       </button>
 
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {t(ACCOUNT_FOUT[fout])}
         </p>
       ) : null}
