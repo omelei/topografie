@@ -34,6 +34,9 @@ export const brand = {
   proof: 'Sofie onthoudt 9 van de 12 provincies.',
   conversion: 'Nooit meer overhoren.',
 
+  /** Waar een school of ouder ons mailt (ADR-216). */
+  contact: 'info@leer.nu',
+
   locale: 'nl-NL',
   /**
    * The floor, not the target — which is what the name promises and what this

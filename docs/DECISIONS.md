@@ -12814,6 +12814,39 @@ Het script (`tools/premium/teller-week.mjs`) kan ook `--voorbeeld`, om de
 opmaak zonder server te zien. Bestaat de tabel nog niet, dan faalt de run met
 de zin dat `schema.sql` gedraaid moet worden, en komt er geen leeg issue.
 
+## ADR-216 — Een pagina voor de klas, en aanvragen per mail aan info@leer.nu
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 4 van "de volgende tien". Op
+verzoek van de eigenaar: "Punt 4: gebruik info@leer.nu".
+
+**Context.** ADR-200 maakte de klassencode (stap A: een gezinscode met 40
+plekken, € 300 per jaar op factuur) en zette de pagina `/scholen` op de roadmap
+tot er een contactadres was.
+
+**Besluit.**
+
+- **`/scholen`** zegt wat een klassencode is, dat leer.nu en de leerkracht niets
+  van de kinderen zien, dat de werkbladen een klassenset hebben, dat een plek
+  een apparaat is, en wat het kost. Zonder naam te openen, net als de pagina
+  voor ouders, met een eigen pagina voor Google.
+- **Aanvragen gaat per mail** aan `info@leer.nu`, met de vragen al in het
+  bericht (school, plaats, groep, naam, factuuradres). Een formulier zou een
+  server en opslag van gegevens van leerkrachten vragen, voor iets wat een paar
+  keer per jaar gebeurt. Het adres staat ook als tekst op de pagina, voor wie
+  geen mailprogramma heeft ingesteld.
+- **Het adres staat één keer**, in `brand.contact`.
+- **De prijs staat zonder btw-vermelding**, zolang de eigenaar niet heeft
+  besloten of € 300 inclusief of exclusief btw is (roadmap).
+- De pagina voor ouders en de voordeur voor Google linken ernaar.
+
+**Gevolgen.**
+
+- `info@leer.nu` moet mail ontvangen. Nu wijst de MX van leer.nu nergens heen
+  (24 september); tot Google Workspace staat, komt een aanvraag niet aan.
+- Wie de pagina bezoekt, telt de teller als binnenkomst op `/scholen`. Een klik
+  op aanvragen telt niet: een nieuwe gebeurtenis zou `schema.sql` opnieuw
+  vragen, en de mails zelf zijn de telling.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

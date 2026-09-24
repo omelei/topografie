@@ -20,20 +20,20 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    insturen. Herinnering staat op 25 september.
 4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
    `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
-5. **Mail op @leer.nu** via Google Workspace, met `hallo@` als contactadres
-   (geparkeerd; de stappen staan in het gesprek van 24 september). Dat adres
-   maakt `/scholen` en de privacypagina mogelijk.
+5. **Mail op @leer.nu** via Google Workspace, met `info@` als contactadres
+   (geparkeerd; de stappen staan in het gesprek van 24 september). `/scholen`
+   vraagt een klassencode aan via `info@leer.nu` (ADR-216); tot de MX naar
+   Google wijst, komt die mail niet aan.
 6. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen.
 
 ### Lopend
 
-| Wat                                                                        | Wie           | Staat                    | Hangt af van         |
-| -------------------------------------------------------------------------- | ------------- | ------------------------ | -------------------- |
-| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Wacht op vier antwoorden | —                    |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen                  | —                    |
-| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)              | Claude        | Wacht op het adres       | Contactadres van jou |
-| Klassencode: € 300 inclusief of exclusief btw?                             | jij           | Te beslissen             | —                    |
+| Wat                                                                        | Wie    | Staat                   | Hangt af van |
+| -------------------------------------------------------------------------- | ------ | ----------------------- | ------------ |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij    | Te doen                 | —            |
+| Engels: woordjes voor groep 7 en 8                                         | Claude | Gekozen op 24 september | —            |
+| Klassencode: € 300 inclusief of exclusief btw?                             | jij    | Te beslissen            | —            |
 
 ### Code afschermen
 
@@ -55,10 +55,11 @@ vanuit deze repository.
    echt geheim moet blijven (premiumcodes controleren, de kassa), gebeurt
    daarom al op de server. Dat blijft de regel.
 
-### Gezinsaccount live zetten
+### Gezinsaccount live zetten (geparkeerd)
 
-De code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog moet,
-in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
+Geparkeerd op 24 september, samen met de privacypagina: de eigenaar komt erop
+terug. De code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog
+moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 1. **Vier antwoorden voor de privacyverklaring** — _jij_:
    - wie verantwoordelijk is (naam of bedrijf, KvK-nummer);
@@ -90,26 +91,28 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | -------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
 | Premium per gezin in plaats van per apparaat                                                                               | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
 | Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
-| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Besluit om te bouwen                  |
+| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Later (24 september)                  |
 | Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
 
-## Voorstel: de volgende tien (24 september, nog niet gekozen)
+## De volgende tien (24 september)
 
 Op volgorde van wat het oplevert voor bezoekers en omzet, tegen wat het kost.
-Na 8 oktober bijstellen op wat de teller laat zien.
+Na 8 oktober bijstellen op wat de teller laat zien. Keuzes van de eigenaar op
+24 september: 1 tot en met 5 bouwen, 6 en 7 geparkeerd, 8 ja, 9 later, 10 na de
+teller.
 
-| #   | Wat                                                                                                       | Waarom                                                                     | Omvang |
-| --- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------ |
-| 1   | QR-code en adres op elk werkblad, en een klassenset: 30 verschillende bladen in één keer printen          | Elk uitgedeeld blad wijst naar de app; een juf deelt uit aan een hele klas | Klein  |
-| 2   | Echte inhoud op de pagina's voor Google: de lijst (provincies met hoofdstad), uitleg, veelgestelde vragen | Dunne pagina's scoren slecht; inhoud is wat Google en ouders zoeken        | Middel |
-| 3   | Pagina voor ouders (`/ouders`): wat het is, hoe herhalen werkt, wat het kost, privacy                     | Wie via Google komt, weet nu niet waarom leer.nu beter is                  | Middel |
-| 4   | `/scholen` met de klassencode aanvragen                                                                   | Scholen zijn de snelste weg naar veel kinderen tegelijk                    | Klein  |
-| 5   | Wekelijks overzicht van de teller als issue in GitHub                                                     | Cijfers die niemand opzoekt, sturen niets                                  | Klein  |
-| 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  |
-| 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel |
-| 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  |
-| 9   | Betalen per maand, € 9,95                                                                                 | Lagere drempel dan een jaar vooruit                                        | Middel |
-| 10  | Uitdagen (A + D)                                                                                          | Pas als delen (ADR-209) laat zien dat kinderen elkaar opzoeken             | Middel |
+| #   | Wat                                                                                                       | Waarom                                                                     | Omvang | Staat         |
+| --- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------ | ------------- |
+| 1   | QR-code en adres op elk werkblad, en een klassenset: 30 verschillende bladen in één keer printen          | Elk uitgedeeld blad wijst naar de app; een juf deelt uit aan een hele klas | Klein  | Gedaan (#147) |
+| 2   | Echte inhoud op de pagina's voor Google: de lijst (provincies met hoofdstad), uitleg, veelgestelde vragen | Dunne pagina's scoren slecht; inhoud is wat Google en ouders zoeken        | Middel | Gedaan (#148) |
+| 3   | Pagina voor ouders (`/ouders`): wat het is, hoe herhalen werkt, wat het kost, privacy                     | Wie via Google komt, weet nu niet waarom leer.nu beter is                  | Middel | Gedaan (#149) |
+| 4   | `/scholen` met de klassencode aanvragen                                                                   | Scholen zijn de snelste weg naar veel kinderen tegelijk                    | Klein  | Gedaan (#151) |
+| 5   | Wekelijks overzicht van de teller als issue in GitHub                                                     | Cijfers die niemand opzoekt, sturen niets                                  | Klein  | Gedaan (#150) |
+| 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  | Geparkeerd    |
+| 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel | Geparkeerd    |
+| 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  | Gekozen       |
+| 9   | Betalen per maand, € 9,95                                                                                 | Lagere drempel dan een jaar vooruit                                        | Middel | Later         |
+| 10  | Uitdagen (A + D)                                                                                          | Pas als delen (ADR-209) laat zien dat kinderen elkaar opzoeken             | Middel | Na 8 oktober  |
 
 ## Geparkeerd
 
@@ -117,6 +120,8 @@ Na 8 oktober bijstellen op wat de teller laat zien.
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens                                              | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig                                                                                                                               |
 | Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). Vervalsen bij A uitgewerkt op 24 september. Delen van de uitslag is gebouwd als eerste stap (ADR-209). De eigenaar komt erop terug |
+| Privacypagina (`/privacy`)                                                                                                         | De eigenaar bepaalt later wat erin komt (24 september); de vier vragen staan bij het gezinsaccount                                                                                                                                  |
+| Gezinsaccount live zetten                                                                                                          | Later (24 september); de stappen staan hierboven                                                                                                                                                                                    |
 | Mail op @leer.nu via Google Workspace, en de DNS-records van Resend voor de kassa                                                  | Geparkeerd op 24 september; de stappen staan in het gesprek van die dag                                                                                                                                                             |
 | Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                                                                                                                               |
 | Proefperiode                                                                                                                       | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                                                                                                                                                      |
@@ -139,6 +144,7 @@ Na 8 oktober bijstellen op wat de teller laat zien.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #151      | Een pagina voor de klas (`/scholen`): wat een klassencode is, en aanvragen per mail aan info@leer.nu                                                                                      | 216      |
 | #150      | Elke maandag het weekoverzicht van de teller als issue in GitHub                                                                                                                          | 215      |
 | #149      | Een pagina voor ouders (`/voor-ouders`), en premium ook zonder naam te bekijken                                                                                                           | 214      |
 | #148      | "Over dit onderwerp": wat erin zit en de vragen van ouders, op de pagina voor Google en onder het onderwerp in de app                                                                     | 213      |

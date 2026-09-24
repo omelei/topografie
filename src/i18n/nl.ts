@@ -82,6 +82,33 @@ export const nl = {
   'ouders.kosten.premium':
     'Premium kost {prijs} per jaar. Dan plant leer.nu wat je kind vandaag moet herhalen, en staan alle manieren en de diploma’s open.',
   'profile.voorOuders': 'Voor ouders: zo werkt het',
+  'ouders.scholen': 'Voor de klas',
+  // Voor de klas (ADR-216): tegen de leerkracht, net zo rustig als tegen een
+  // ouder. Een klassencode is een gezinscode met 40 plekken (ADR-200).
+  'scholen.titel': 'leer.nu voor de klas',
+  'scholen.intro':
+    'Laat je hele klas oefenen met premium. Met één klassencode voor 40 apparaten, een jaar geldig.',
+  'scholen.aanvragen': 'Vraag een klassencode aan',
+  'scholen.werkt.kop': 'Zo werkt het',
+  'scholen.werkt.tekst':
+    'Je krijgt één code. Die deel je met de ouders. Zij vullen hem thuis in, en hun kind oefent met premium.',
+  'scholen.privacy.kop': 'Je ziet niets van de kinderen',
+  'scholen.privacy.tekst':
+    'leer.nu krijgt geen gegevens van leerlingen. Wat een kind oefent, blijft op zijn eigen apparaat. Daarom is er geen verwerkersovereenkomst nodig.',
+  'scholen.papier.kop': 'Werkbladen voor de klas',
+  'scholen.papier.tekst':
+    'Elk onderwerp heeft een werkblad om te printen. In één keer print je 30 verschillende bladen, met de antwoorden achteraan.',
+  'scholen.plekken.kop': 'Een plek is een apparaat',
+  'scholen.plekken.tekst':
+    'Een kind dat op een tablet en een laptop oefent, gebruikt twee plekken. Met 40 plekken past een klas van 30 ruim.',
+  'scholen.kosten.kop': 'Wat het kost',
+  'scholen.kosten.tekst': 'Een klassencode kost {prijs} per jaar. Je betaalt op factuur.',
+  'scholen.kosten.gratis': 'Oefenen zonder code is gratis, ook voor de klas.',
+  'scholen.mail': 'Of mail naar {adres}.',
+  'scholen.mail.onderwerp': 'Klassencode aanvragen',
+  'scholen.mail.bericht': 'Naam van de school:\nPlaats:\nGroep:\nJouw naam:\nFactuuradres:\n',
+  'scholen.prijs': '€ 300',
+  'seo.scholen.titel': 'Voor de klas: een klassencode voor 40 apparaten · leer.nu',
   // "Over dit onderwerp" (ADR-213): onderaan de pagina van een onderwerp en op
   // de pagina voor Google. De vragen zijn die van een ouder.
   'over.kop': 'Over {onderwerp}',

@@ -65,3 +65,17 @@ test('a parent reads what leer.nu is, and can look at premium without a name', a
   await expect(page).toHaveURL(/\/premium$/);
   await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
 });
+
+/**
+ * Voor de klas (ADR-216): een leerkracht leest wat een klassencode is en vraagt
+ * hem per mail aan, zonder naam.
+ */
+test('a teacher reads about the class code and finds how to ask for one', async ({ page }) => {
+  await page.goto('/voor-ouders');
+  await page.getByRole('button', { name: 'Voor de klas', exact: true }).click();
+  await expect(page).toHaveURL(/\/scholen$/);
+  await expect(page.getByRole('heading', { name: 'leer.nu voor de klas' })).toBeVisible();
+  await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
+  const aanvragen = page.getByRole('link', { name: 'Vraag een klassencode aan' });
+  await expect(aanvragen).toHaveAttribute('href', /^mailto:info@leer\.nu\?subject=/);
+});
