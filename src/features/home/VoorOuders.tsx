@@ -21,10 +21,13 @@ const BLOKKEN: readonly { readonly kop: TranslationKey; readonly tekst: Translat
 export function VoorOuders({
   onProberen,
   onPremium,
+  onScholen,
   onVak,
 }: {
   readonly onProberen: () => void;
   readonly onPremium: () => void;
+  /** Voor de leerkracht die hier binnenkomt (ADR-216). */
+  readonly onScholen: () => void;
   readonly onVak: (id: Module['id']) => void;
 }) {
   return (
@@ -63,6 +66,11 @@ export function VoorOuders({
       </section>
 
       <VakkenRaster onVak={onVak} />
+
+      <button type="button" className="tk-button tk-button-tertiary self-start" onClick={onScholen}>
+        {t('ouders.scholen')}
+        <NextIcon size={18} />
+      </button>
     </div>
   );
 }

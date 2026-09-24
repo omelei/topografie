@@ -212,6 +212,17 @@ test('a new password from the link in the mail', async ({ page }, testInfo) => {
   await shoot(page, size, '27-nieuw-wachtwoord');
 });
 
+/** De pagina's voor wie geen kind is, zonder naam (ADR-214, ADR-216). */
+test('for parents and for the class', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+  await page.goto('/voor-ouders');
+  await expect(page.getByRole('heading', { name: 'leer.nu voor ouders' })).toBeVisible(READY);
+  await shoot(page, size, '28-voor-ouders');
+  await page.goto('/scholen');
+  await expect(page.getByRole('heading', { name: 'leer.nu voor de klas' })).toBeVisible(READY);
+  await shoot(page, size, '29-scholen');
+});
+
 test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 

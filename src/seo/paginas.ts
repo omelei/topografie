@@ -112,6 +112,16 @@ export function seoPaginas(): SeoPagina[] {
     links: home.links,
   };
 
+  // Voor de klas (ADR-216): een klassencode aanvragen.
+  const scholen: SeoPagina = {
+    pad: pathFor({ name: 'scholen' }),
+    titel: t('seo.scholen.titel'),
+    beschrijving: t('scholen.intro'),
+    kop: t('scholen.titel'),
+    linksKop: t('seo.vakken'),
+    links: home.links,
+  };
+
   const vakken = BUILT_MODULES.flatMap((module): SeoPagina[] => {
     const vak = t(VAK_ZOEKNAAM[module.id]);
     // Midden in een zin zonder hoofdletter: "Meer topografie".
@@ -186,8 +196,19 @@ export function seoPaginas(): SeoPagina[] {
   });
 
   return [
-    { ...home, links: [...home.links, { pad: voorOuders.pad, naam: t('profile.voorOuders') }] },
-    voorOuders,
+    {
+      ...home,
+      links: [
+        ...home.links,
+        { pad: voorOuders.pad, naam: t('profile.voorOuders') },
+        { pad: scholen.pad, naam: t('ouders.scholen') },
+      ],
+    },
+    {
+      ...voorOuders,
+      links: [...voorOuders.links, { pad: scholen.pad, naam: t('ouders.scholen') }],
+    },
+    scholen,
     ...vakken,
   ];
 }

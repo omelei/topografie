@@ -15,6 +15,7 @@ import { useRoute } from '@/features/shell/useRoute';
 import { titelVoor } from '@/seo/paginas';
 import { tel, telBinnenkomst } from '@/store/teller';
 import { WerkbladScherm } from '@/features/werkblad/WerkbladScherm';
+import { Scholen } from '@/features/home/Scholen';
 import { VoorOuders } from '@/features/home/VoorOuders';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
@@ -499,6 +500,7 @@ export default function App() {
     route.name !== 'module' &&
     route.name !== 'werkblad' &&
     route.name !== 'voorOuders' &&
+    route.name !== 'scholen' &&
     route.name !== 'premium' &&
     screen.name === 'home'
   ) {
@@ -690,8 +692,18 @@ export default function App() {
             if (eerste && module) go({ name: 'module', module, setId: eerste.deel.setId });
           }}
           onPremium={() => go({ name: 'premium' })}
+          onScholen={() => go({ name: 'scholen' })}
           onVak={goModule}
         />
+      </Shell>
+    );
+  }
+
+  // Voor de klas (ADR-216): een klassencode aanvragen, zonder naam.
+  if (route.name === 'scholen') {
+    return (
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+        <Scholen />
       </Shell>
     );
   }
