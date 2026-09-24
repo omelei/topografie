@@ -120,5 +120,48 @@ zet), dan komt er een andere echte vorm bij.
   vooraan, dat geen id of woord dubbel voorkomt, dat een paar dat hetzelfde
   klinkt niet dezelfde zin heeft, en dat elke zwakke werkwoordsvorm is wat
   `werkwoordsvorm()` ervan maakt.
-- Engels komt in een eigen stap, in `content/taal/engels/`, met een eigen
-  afbakening in dit bestand.
+- Engels staat in `content/taal/engels/`; zie hieronder.
+
+## Engels: elf sets (ADR-217)
+
+Peildatum: **24 september 2026**. Voor **groep 7 en 8**, de jaren waarin
+Engels op de meeste basisscholen woordjes leren is. Het kind krijgt het
+Nederlandse woord en schrijft of kiest het Engelse, in een korte Engelse zin.
+De woorden staan in de PR ter beoordeling bij de product owner, net als de
+spelling toen.
+
+| Set         | Items | Groep | Voorbeeld                     |
+| ----------- | ----- | ----- | ----------------------------- |
+| getallen    | 16    | 7     | twaalf: twelve                |
+| dagen       | 18    | 7     | woensdag: Wednesday, mei: May |
+| kleuren     | 14    | 7     | grijs: grey                   |
+| kleding     | 16    | 8     | trui: jumper                  |
+| familie     | 16    | 7     | oma: grandmother              |
+| lichaam     | 17    | 7     | knie: knee                    |
+| dieren      | 18    | 7     | konijn: rabbit                |
+| eten        | 17    | 7     | aardappel: potato             |
+| huis        | 17    | 8     | badkamer: bathroom            |
+| school      | 16    | 8     | liniaal: ruler                |
+| werkwoorden | 18    | 8     | zwemmen: swim                 |
+
+**Brits Engels** is de norm, zoals op school: colour, grey, favourite,
+trousers. Waar het Amerikaans anders is, telt dat ook goed (`aliassen`: color,
+gray, pants). Een paar gewone tweede woorden tellen ook: grandpa naast
+grandfather, tummy naast belly.
+
+**Wat goed telt.** Hoofdletters tellen niet (monday is goed), en een lidwoord
+of "to" ervoor ook niet: "a dog", "the dog" en "to walk" zijn goed. Verder is
+het streng, zoals bij spelling: één letter anders is fout.
+
+**Wat er bewust niet in staat.**
+
+- Woorden die in beide talen hetzelfde zijn (winter, april, lamp, arm, bed):
+  daar valt niets te leren.
+- Nederlandse woorden met twee gewone vertalingen (kijken: look of watch, neef:
+  cousin of nephew, bank: bank of sofa): één vraag, één antwoord.
+- Zinnen en grammatica: dit is woordenschat, geen Engels als vak.
+
+De controle staat in `src/content/taal.content.test.ts`: elk Engels woord één
+keer in zijn zin en nooit vooraan, geen Nederlands of Engels woord dubbel, geen
+woord dat in beide talen gelijk is, en vier verschillende keuzes uit dezelfde
+set.

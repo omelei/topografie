@@ -16,6 +16,8 @@ export type TaalMode =
   | 'taal-flitsdictee'
   | 'taal-vorm-kiezen'
   | 'taal-vorm-typen'
+  | 'taal-engels-kiezen'
+  | 'taal-engels-typen'
   | 'overleven'
   | 'taal-diploma';
 
@@ -24,6 +26,8 @@ export const TAAL_ROUND_RULE: Record<TaalMode, RoundRule> = {
   'taal-flitsdictee': { kind: 'fixed', aantal: 10 },
   'taal-vorm-kiezen': { kind: 'fixed', aantal: 10 },
   'taal-vorm-typen': { kind: 'fixed', aantal: 10 },
+  'taal-engels-kiezen': { kind: 'fixed', aantal: 10 },
+  'taal-engels-typen': { kind: 'fixed', aantal: 10 },
   overleven: { kind: 'levens', levens: 3 },
   // Twintig woorden of vormen, of de hele set waar die kleiner is (ADR-168).
   'taal-diploma': { kind: 'fixed', aantal: DIPLOMA_VRAGEN },
@@ -33,9 +37,15 @@ export const TAAL_ROUND_RULE: Record<TaalMode, RoundRule> = {
 export const KIES_VORM: Readonly<Record<TaalDeel, TaalMode>> = {
   spelling: 'taal-letters',
   werkwoorden: 'taal-vorm-kiezen',
+  engels: 'taal-engels-kiezen',
 };
 
 /** Whether a way asks for the word or the form typed, rather than chosen. */
 export function typtHet(mode: TaalMode): boolean {
-  return mode === 'taal-flitsdictee' || mode === 'taal-vorm-typen' || mode === 'taal-diploma';
+  return (
+    mode === 'taal-flitsdictee' ||
+    mode === 'taal-vorm-typen' ||
+    mode === 'taal-engels-typen' ||
+    mode === 'taal-diploma'
+  );
 }

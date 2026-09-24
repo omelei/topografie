@@ -1,5 +1,6 @@
 import {
   sumUitgewerkt,
+  type EngelsItem,
   type Item,
   type KlokItem,
   type SpellingItem,
@@ -54,6 +55,9 @@ function regels(deel: Onderdeel): string[] {
   if (deel.moduleId === 'tafels') return (deel.items as readonly SumItem[]).map(sumUitgewerkt);
   if (deel.moduleId === 'klok') return (deel.items as readonly KlokItem[]).map(klokVoluit);
   if (deel.moduleId === 'vlaggen') return (deel.items as readonly VlagItem[]).map((v) => v.naam);
+  if (deel.setId.startsWith('taal-en-')) {
+    return (deel.items as readonly EngelsItem[]).map((item) => `${item.nl}: ${item.en}`);
+  }
   if (deel.setId.startsWith('taal-ww-')) {
     return [
       ...new Set(

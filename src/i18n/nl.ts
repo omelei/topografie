@@ -28,7 +28,7 @@ export const nl = {
   'home.vak.topo': 'Provincies, steden en landen',
   'home.vak.tafels': 'Tafels en sommen',
   'home.vak.klok': 'Klokkijken, van hele uren tot minuten',
-  'home.vak.woorden': 'Spelling en werkwoorden',
+  'home.vak.woorden': 'Spelling, werkwoorden en Engels',
   'home.vak.vlaggen': 'Vlaggen van Nederland en de wereld',
   // Wat Google leest (ADR-207): de titel in het tabblad en in de zoekresultaten,
   // de regel eronder, en de korte pagina per vak en onderwerp. Voor een ouder
@@ -43,7 +43,7 @@ export const nl = {
   'seo.vak.topo': 'Topografie',
   'seo.vak.tafels': 'Rekenen',
   'seo.vak.klok': 'Klokkijken',
-  'seo.vak.woorden': 'Spelling en werkwoorden',
+  'seo.vak.woorden': 'Spelling, werkwoorden en Engels',
   'seo.vak.vlaggen': 'Vlaggen',
   'seo.vak.beschrijving': '{uitleg}, voor {groepen}. Gratis, in korte rondes, zonder account.',
   'seo.vak.beschrijvingZonderGroep': '{uitleg}. Gratis, in korte rondes, zonder account.',
@@ -62,7 +62,7 @@ export const nl = {
   // over het kind in de derde persoon, rustig en precies.
   'ouders.titel': 'leer.nu voor ouders',
   'ouders.intro':
-    'Je kind oefent topografie, rekenen, klokkijken, vlaggen en taal. In korte rondes, op een telefoon, tablet of laptop. Zonder account.',
+    'Je kind oefent topografie, rekenen, klokkijken, vlaggen, taal en Engels. In korte rondes, op een telefoon, tablet of laptop. Zonder account.',
   'ouders.proberen': 'Laat je kind een ronde proberen',
   'ouders.premium': 'Wat premium is',
   'ouders.oefenen.kop': 'Oefenen in korte rondes',
@@ -153,6 +153,7 @@ export const nl = {
   'werkblad.opdracht.vlaggen': 'Schrijf onder elke vlag de naam.',
   'werkblad.opdracht.spelling': 'Vul de letters in.',
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
+  'werkblad.opdracht.engels': 'Schrijf het Engelse woord op de lijn.',
   'home.zo.titel': 'Zo werkt leer.nu',
   'home.zo.oefen.kop': 'Oefen een ronde',
   'home.zo.oefen.uitleg': 'Kies een vak en een onderwerp. Je doet het in je eigen tempo.',
@@ -687,7 +688,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 68 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
+    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
@@ -729,7 +730,7 @@ export const nl = {
     'Per som en per woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
   'premium.usp.zelf': 'Diploma’s halen en zichzelf overhoren',
   'premium.usp.zelfUit':
-    'Je kind kan alle 68 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
+    'Je kind kan alle 79 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
     'Eén code voor al je kinderen, op maximaal drie apparaten, een heel jaar lang.',
@@ -773,7 +774,7 @@ export const nl = {
   // `kast.test.ts` bindt het getal aan de lijst.
   'premium.regel.ringen': 'Alle diploma’s zien, en wanneer je kind klaar is voor de toets',
   'premium.regel.diplomas':
-    'Alle 68 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
+    'Alle 79 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
   'premium.regel.weekdoelen': 'Elke week eigen doelen kiezen en halen',
   'premium.regel.voortgang': 'Zien wat je kind inmiddels beheerst en hoe vaak het oefent',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
@@ -1233,6 +1234,7 @@ export const nl = {
   'deel.title': 'Welk deel?',
   'regio.spelling': 'Spelling',
   'regio.werkwoorden': 'Werkwoorden',
+  'regio.engels': 'Engels',
   'start.deel': 'deel',
   // Spelling: zes tegels. De vier soorten onthoudwoorden en de drie
   // woordeinden zijn elk één tegel, met knopjes eronder.
@@ -1258,6 +1260,23 @@ export const nl = {
   'onderwerp.taal.vd.uitleg': 'Ge- en een t of een d: gefietst, geleefd',
   'onderwerp.taal.werkwoordmix': 'Werkwoordmix',
   'onderwerp.taal.werkwoordmix.uitleg': 'Alle werkwoorden door elkaar',
+  // Engels (ADR-217): woordjes voor groep 7 en 8.
+  'onderwerp.taal.enTellen': 'Tellen en de kalender',
+  'onderwerp.taal.enTellen.uitleg': 'One, two, three, Monday, May',
+  'onderwerp.taal.enTellen.keuze': 'Welke woorden?',
+  'onderwerp.taal.enKleuren': 'Kleuren en kleding',
+  'onderwerp.taal.enKleuren.uitleg': 'Red, blue, a coat, a dress',
+  'onderwerp.taal.enKleuren.keuze': 'Welke woorden?',
+  'onderwerp.taal.enMensen': 'Mensen en dieren',
+  'onderwerp.taal.enMensen.uitleg': 'Mother, head, dog, horse',
+  'onderwerp.taal.enMensen.keuze': 'Welke woorden?',
+  'onderwerp.taal.enThuis': 'Eten, thuis en school',
+  'onderwerp.taal.enThuis.uitleg': 'Bread, kitchen, pencil',
+  'onderwerp.taal.enThuis.keuze': 'Welke woorden?',
+  'onderwerp.taal.enWerkwoorden': 'Werkwoorden in het Engels',
+  'onderwerp.taal.enWerkwoorden.uitleg': 'Walk, run, eat, sleep',
+  'onderwerp.taal.engelsmix': 'Engelse mix',
+  'onderwerp.taal.engelsmix.uitleg': 'Alle Engelse woorden door elkaar',
   // De naam van een set: wat de startbalk en de kaarten tonen.
   // Het korte woord staat op het knopje als de set een van meer is.
   'set.taal-sp-eiij': 'Ei of ij',
@@ -1286,12 +1305,37 @@ export const nl = {
   'set.taal-ww-vd': 'Voltooid deelwoord',
   'set.taal-ww-mix': 'Werkwoordmix',
   'set.taal-ww-fouten': 'Jouw fouten met werkwoorden',
+  'set.taal-en-getallen': 'Getallen in het Engels',
+  'set.taal-en-getallen.kort': 'getallen',
+  'set.taal-en-dagen': 'Dagen en maanden in het Engels',
+  'set.taal-en-dagen.kort': 'dagen en maanden',
+  'set.taal-en-kleuren': 'Kleuren in het Engels',
+  'set.taal-en-kleuren.kort': 'kleuren',
+  'set.taal-en-kleding': 'Kleding in het Engels',
+  'set.taal-en-kleding.kort': 'kleding',
+  'set.taal-en-familie': 'Familie in het Engels',
+  'set.taal-en-familie.kort': 'familie',
+  'set.taal-en-lichaam': 'Je lichaam in het Engels',
+  'set.taal-en-lichaam.kort': 'lichaam',
+  'set.taal-en-dieren': 'Dieren in het Engels',
+  'set.taal-en-dieren.kort': 'dieren',
+  'set.taal-en-eten': 'Eten en drinken in het Engels',
+  'set.taal-en-eten.kort': 'eten en drinken',
+  'set.taal-en-huis': 'In huis, in het Engels',
+  'set.taal-en-huis.kort': 'in huis',
+  'set.taal-en-school': 'Op school, in het Engels',
+  'set.taal-en-school.kort': 'op school',
+  'set.taal-en-werkwoorden': 'Werkwoorden in het Engels',
+  'set.taal-en-mix': 'Engelse mix',
+  'set.taal-en-fouten': 'Jouw fouten met Engels',
   // De manieren. Geen bliksemronde: spelling is nadenken, en een klok leert
   // gokken. Het flitsdictee heeft kijktijd, geen antwoordtijd.
   'mode.taal-letters': 'Kies de letters',
   'mode.taal-flitsdictee': 'Flitsdictee',
   'mode.taal-vorm-kiezen': 'Kies de vorm',
   'mode.taal-vorm-typen': 'Typ de vorm',
+  'mode.taal-engels-kiezen': 'Kies het woord',
+  'mode.taal-engels-typen': 'Typ het woord',
   // En het diploma (ADR-168): één woord voor allebei de delen, want het is op
   // allebei dezelfde toets — twintig keer zelf schrijven, negen op de tien goed.
   'mode.taal-diploma': 'Taaldiploma',
@@ -1299,6 +1343,8 @@ export const nl = {
   'way.taal-flitsdictee': 'Kijk 3 tellen en schrijf het woord dan zelf — net als bij een dictee',
   'way.taal-vorm-kiezen': 'Kies uit 3 vormen — de eerste stap naar typen',
   'way.taal-vorm-typen': 'Typ de vorm zelf — zoals op de toets',
+  'way.taal-engels-kiezen': 'Kies uit 4 Engelse woorden — de eerste stap naar typen',
+  'way.taal-engels-typen': 'Typ het Engelse woord zelf — zoals op de toets',
   'way.taal-diploma': 'De toets: 20 keer zelf schrijven, 9 van de 10 goed',
   'taal.diplomaEarned': 'Diploma gehaald: {naam}',
   'taal.diplomaMissed': 'Nog geen diploma. Met 9 van de 10 goed is hij van jou.',
@@ -1321,6 +1367,12 @@ export const nl = {
   'taal.vormTyp': 'Typ de vorm',
   'taal.vormVeld': 'De vorm van {infinitief}',
   'taal.infinitief': 'Het werkwoord is {infinitief}.',
+  'taal.engelsVraag': 'Welk Engels woord hoort erin?',
+  'taal.engelsTyp': 'Typ het Engelse woord',
+  'taal.engelsPrompt': 'Wat is {nl} in het Engels?',
+  'taal.engelsLabel': 'Kies het Engelse woord',
+  'taal.engelsVeld': 'Het Engelse woord voor {nl}',
+  'taal.engelsNl': 'In het Nederlands: {nl}.',
   // Na een antwoord. Het goede woord staat erbij, en na een fout de regel,
   // toegepast op dit woord.
   'taal.goed': 'Goed! {woord}.',

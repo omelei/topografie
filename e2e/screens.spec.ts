@@ -223,6 +223,24 @@ test('for parents and for the class', async ({ page }, testInfo) => {
   await shoot(page, size, '29-scholen');
 });
 
+/** Engels (ADR-217): het Nederlandse woord, de Engelse zin en vier keuzes. */
+test('an English word, chosen', async ({ page }, testInfo) => {
+  const size = testInfo.project.name;
+  await signIn(page, 'Noor');
+  await page.goto('/taal/engels-dieren');
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Kies het woord/ })
+    .click();
+  await start(page);
+  const keuzes = page.getByRole('group', { name: 'Kies het Engelse woord' });
+  await expect(keuzes).toBeVisible(READY);
+  await shoot(page, size, '30-engels');
+  await keuzes.getByRole('button').first().click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await shoot(page, size, '31-engels-antwoord');
+});
+
 test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 

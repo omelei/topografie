@@ -126,6 +126,10 @@ export type ModeId =
   | 'taal-flitsdictee'
   | 'taal-vorm-kiezen'
   | 'taal-vorm-typen'
+  // Engels (ADR-217): the Dutch word given, the English word chosen from four
+  // or typed in an English sentence.
+  | 'taal-engels-kiezen'
+  | 'taal-engels-typen'
   // En het taaldiploma (ADR-168), afgelegd zoals de oefentoets van dat deel
   // vraagt: het flitsdictee bij spelling, de vorm getypt bij werkwoorden.
   | 'taal-diploma';

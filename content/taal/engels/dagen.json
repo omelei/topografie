@@ -1,0 +1,134 @@
+{
+  "id": "taal-en-dagen",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-dagen-monday",
+      "nl": "maandag",
+      "en": "Monday",
+      "zin": "We have gym on Monday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-tuesday",
+      "nl": "dinsdag",
+      "en": "Tuesday",
+      "zin": "My birthday is on Tuesday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-wednesday",
+      "nl": "woensdag",
+      "en": "Wednesday",
+      "zin": "School ends early on Wednesday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-thursday",
+      "nl": "donderdag",
+      "en": "Thursday",
+      "zin": "We go swimming on Thursday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-friday",
+      "nl": "vrijdag",
+      "en": "Friday",
+      "zin": "On Friday we eat pizza.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-saturday",
+      "nl": "zaterdag",
+      "en": "Saturday",
+      "zin": "I play football on Saturday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-sunday",
+      "nl": "zondag",
+      "en": "Sunday",
+      "zin": "We visit grandma on Sunday.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-january",
+      "nl": "januari",
+      "en": "January",
+      "zin": "It is very cold in January.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-february",
+      "nl": "februari",
+      "en": "February",
+      "zin": "My dad has his birthday in February.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-march",
+      "nl": "maart",
+      "en": "March",
+      "zin": "The first flowers come out in March.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-may",
+      "nl": "mei",
+      "en": "May",
+      "zin": "My birthday is in May.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-june",
+      "nl": "juni",
+      "en": "June",
+      "zin": "The days are long in June.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-july",
+      "nl": "juli",
+      "en": "July",
+      "zin": "We go on holiday in July.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-august",
+      "nl": "augustus",
+      "en": "August",
+      "zin": "School starts again in August.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-october",
+      "nl": "oktober",
+      "en": "October",
+      "zin": "The leaves turn brown in October.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-spring",
+      "nl": "lente",
+      "en": "spring",
+      "zin": "The trees get new leaves in spring.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-summer",
+      "nl": "zomer",
+      "en": "summer",
+      "zin": "We go to the beach in summer.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dagen-autumn",
+      "nl": "herfst",
+      "en": "autumn",
+      "aliassen": ["fall"],
+      "zin": "It is windy in autumn.",
+      "groep": 7
+    }
+  ]
+}

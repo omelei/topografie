@@ -1,0 +1,121 @@
+{
+  "id": "taal-en-school",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-school-teacher",
+      "nl": "leraar",
+      "en": "teacher",
+      "zin": "Our teacher is very kind.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-class",
+      "nl": "klas",
+      "en": "class",
+      "zin": "There are twenty children in my class.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-pencil",
+      "nl": "potlood",
+      "en": "pencil",
+      "zin": "Can I borrow your pencil?",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-rubber",
+      "nl": "gum",
+      "en": "rubber",
+      "aliassen": ["eraser"],
+      "zin": "I need a rubber to fix this.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-book",
+      "nl": "boek",
+      "en": "book",
+      "zin": "I read a book every week.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-notebook",
+      "nl": "schrift",
+      "en": "notebook",
+      "zin": "Write it in your notebook.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-ruler",
+      "nl": "liniaal",
+      "en": "ruler",
+      "zin": "Draw a line with a ruler.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-scissors",
+      "nl": "schaar",
+      "en": "scissors",
+      "zin": "Cut the paper with scissors.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-lesson",
+      "nl": "les",
+      "en": "lesson",
+      "zin": "The lesson starts at nine.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-homework",
+      "nl": "huiswerk",
+      "en": "homework",
+      "zin": "I do my homework after dinner.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-break",
+      "nl": "pauze",
+      "en": "break",
+      "zin": "We play outside during the break.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-question",
+      "nl": "vraag",
+      "en": "question",
+      "zin": "Can I ask a question?",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-answer",
+      "nl": "antwoord",
+      "en": "answer",
+      "zin": "Do you know the answer?",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-maths",
+      "nl": "rekenen",
+      "en": "maths",
+      "aliassen": ["math"],
+      "zin": "My favourite subject is maths.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-gym",
+      "nl": "gymzaal",
+      "en": "gym",
+      "zin": "We play games in the gym.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-school-dictionary",
+      "nl": "woordenboek",
+      "en": "dictionary",
+      "zin": "Look up the word in a dictionary.",
+      "groep": 8
+    }
+  ]
+}

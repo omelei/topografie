@@ -108,6 +108,32 @@ export function TaalExploreScreen({
           ) : null}
 
           {set?.deel === 'werkwoorden' ? <RegelKaarten items={set.items} /> : null}
+
+          {/* Engels (ADR-217): het Nederlandse woord, het Engelse ernaast en
+              de zin eronder, op volgorde van het Nederlands. */}
+          {set?.deel === 'engels' ? (
+            <section className="flex flex-col gap-3" aria-label={t('taal.explore.woorden')}>
+              <h2 className="tk-sectie">{t('taal.explore.woorden')}</h2>
+              <ul className="tk-lijst">
+                {[...set.items]
+                  .sort((a, b) => a.nl.localeCompare(b.nl, 'nl'))
+                  .map((item) => (
+                    <li key={item.id}>
+                      <div className="tk-lijstrij">
+                        <span className="tk-lijstrij-tekst">
+                          <span className="tk-lijstrij-titel">
+                            {item.nl}: <mark className="tk-letters">{item.en}</mark>
+                          </span>
+                          <span className="tk-lijstrij-regel" lang="en">
+                            {item.zin}
+                          </span>
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </section>
+          ) : null}
         </div>
       </main>
     </div>

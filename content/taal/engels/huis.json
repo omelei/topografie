@@ -1,0 +1,126 @@
+{
+  "id": "taal-en-huis",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-huis-house",
+      "nl": "huis",
+      "en": "house",
+      "zin": "Our house has a red door.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-door",
+      "nl": "deur",
+      "en": "door",
+      "zin": "Please close the door.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-window",
+      "nl": "raam",
+      "en": "window",
+      "zin": "The cat looks out of the window.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-kitchen",
+      "nl": "keuken",
+      "en": "kitchen",
+      "zin": "Mum is cooking in the kitchen.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-bathroom",
+      "nl": "badkamer",
+      "en": "bathroom",
+      "zin": "The bathroom is upstairs.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-bedroom",
+      "nl": "slaapkamer",
+      "en": "bedroom",
+      "zin": "My bedroom is small.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-table",
+      "nl": "tafel",
+      "en": "table",
+      "zin": "Dinner is on the table.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-chair",
+      "nl": "stoel",
+      "en": "chair",
+      "zin": "Sit on the chair, please.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-stairs",
+      "nl": "trap",
+      "en": "stairs",
+      "zin": "I run up the stairs.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-garden",
+      "nl": "tuin",
+      "en": "garden",
+      "zin": "We play in the garden.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-roof",
+      "nl": "dak",
+      "en": "roof",
+      "zin": "There is a bird on the roof.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-wall",
+      "nl": "muur",
+      "en": "wall",
+      "zin": "A picture hangs on the wall.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-floor",
+      "nl": "vloer",
+      "en": "floor",
+      "zin": "The toys are on the floor.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-key",
+      "nl": "sleutel",
+      "en": "key",
+      "zin": "I cannot find my key.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-mirror",
+      "nl": "spiegel",
+      "en": "mirror",
+      "zin": "Look in the mirror.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-shower",
+      "nl": "douche",
+      "en": "shower",
+      "zin": "I take a shower every morning.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-huis-clock",
+      "nl": "klok",
+      "en": "clock",
+      "zin": "The clock in the hall is slow.",
+      "groep": 8
+    }
+  ]
+}

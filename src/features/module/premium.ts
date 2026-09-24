@@ -30,13 +30,15 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   // Ontdekken: the first meeting with an item, which asks nothing and so can
   // never be the thing a child is turned away from (ADR-122).
   'ontdekken',
-  // Meerkeuze. On Taal: the letters of the gap, or one of three forms.
+  // Meerkeuze. On Taal: the letters of the gap, one of three forms, or one of
+  // four English words (ADR-217).
   'meerkeuze',
   'som-meerkeuze',
   'klok-meerkeuze',
   'vlag-meerkeuze',
   'taal-letters',
   'taal-vorm-kiezen',
+  'taal-engels-kiezen',
 ]);
 
 /** A way of practising that is premium. The oefentoets is its own tile. */

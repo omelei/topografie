@@ -96,11 +96,12 @@ test('het deel Eigen woorden bestaat alleen als er een lijst is', async ({ page 
 
   await page.goto('/taal');
   const delen = page.getByRole('region', { name: 'Welk deel?' });
-  await expect(delen.getByRole('button')).toHaveCount(2);
+  // Spelling, Werkwoorden en Engels (ADR-217).
+  await expect(delen.getByRole('button')).toHaveCount(3);
 
   await maakLijst(page, 'Week 1', ['trein']);
   await page.goto('/taal');
-  await expect(delen.getByRole('button')).toHaveCount(3);
+  await expect(delen.getByRole('button')).toHaveCount(4);
 });
 
 /** Hetzelfde woord twee keer zou twee onderdelen met hetzelfde id geven. */

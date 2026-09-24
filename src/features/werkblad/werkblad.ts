@@ -2,6 +2,7 @@ import {
   sumText,
   sumUitgewerkt,
   zinDelen,
+  type EngelsItem,
   type Item,
   type KlokItem,
   type SpellingItem,
@@ -131,6 +132,20 @@ function werkwoord(item: WerkwoordItem): WerkbladVraag | null {
   };
 }
 
+/** Engels (ADR-217): de Engelse zin met een lijn, het Nederlandse woord erachter. */
+function engels(item: EngelsItem): WerkbladVraag | null {
+  const delen = zinDelen(item.zin, item.en);
+  if (delen === null) return null;
+  return {
+    soort: 'zin',
+    voor: delen.voor,
+    gat: LIJN,
+    na: delen.na,
+    hint: `(${item.nl})`,
+    antwoord: item.en,
+  };
+}
+
 export function werkbladVoor(deel: Onderdeel, zaad: number): Werkblad | null {
   if (!heeftWerkblad(deel)) return null;
 
@@ -176,14 +191,23 @@ export function werkbladVoor(deel: Onderdeel, zaad: number): Werkblad | null {
   }
 
   const werkwoorden = deel.setId.startsWith('taal-ww-');
+  const isEngels = deel.setId.startsWith('taal-en-');
   const vragen = kies(deel.items, deel.items.length, zaad)
     .map((item) =>
-      werkwoorden ? werkwoord(item as WerkwoordItem) : spelling(item as SpellingItem),
+      isEngels
+        ? engels(item as EngelsItem)
+        : werkwoorden
+          ? werkwoord(item as WerkwoordItem)
+          : spelling(item as SpellingItem),
     )
     .filter((vraag): vraag is WerkbladVraag => vraag !== null)
     .slice(0, HOOGSTENS.zin);
   return {
-    opdracht: werkwoorden ? 'werkblad.opdracht.werkwoorden' : 'werkblad.opdracht.spelling',
+    opdracht: isEngels
+      ? 'werkblad.opdracht.engels'
+      : werkwoorden
+        ? 'werkblad.opdracht.werkwoorden'
+        : 'werkblad.opdracht.spelling',
     vragen,
   };
 }

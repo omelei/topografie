@@ -197,9 +197,18 @@ function Vraag({
   const typen = typtHet(mode);
   const flits = mode === 'taal-flitsdictee';
   const werkwoord = vraag.soort === 'werkwoord';
-  // What stands in the sentence: the word, or the form of the verb.
-  const woord = vraag.soort === 'werkwoord' ? vraag.item.antwoord : vraag.item.woord;
+  const engels = vraag.soort === 'engels';
+  // What stands in the sentence: the word, the form of the verb, or the
+  // English word.
+  const woord =
+    vraag.soort === 'werkwoord'
+      ? vraag.item.antwoord
+      : vraag.soort === 'engels'
+        ? vraag.item.en
+        : vraag.item.woord;
   const delen = zinDelen(vraag.item.zin, woord) ?? { voor: vraag.item.zin, woord, na: '' };
+  // De zin van Engels is Engels, en een schermlezer leest hem zo voor (ADR-217).
+  const taalVanZin = engels ? 'en' : undefined;
 
   const [fase, setFase] = useState<FlitsFase>(flits ? 'kijken' : 'typen');
   const zinRef = useRef<HTMLParagraphElement>(null);
@@ -236,18 +245,24 @@ function Vraag({
     ? t('taal.flitsKijk')
     : flits
       ? t('taal.flitsTyp')
-      : werkwoord
+      : engels
         ? typen
-          ? t('taal.vormTyp')
-          : t('taal.vormVraag')
-        : t('taal.lettersVraag');
+          ? t('taal.engelsTyp')
+          : t('taal.engelsVraag')
+        : werkwoord
+          ? typen
+            ? t('taal.vormTyp')
+            : t('taal.vormVraag')
+          : t('taal.lettersVraag');
   const prompt = kijken
     ? t('taal.flitsKijkPrompt')
     : flits
       ? t('taal.flitsTypPrompt')
-      : werkwoord
-        ? t('taal.vormPrompt')
-        : t('taal.lettersPrompt');
+      : vraag.soort === 'engels'
+        ? t('taal.engelsPrompt', { nl: vraag.item.nl })
+        : werkwoord
+          ? t('taal.vormPrompt')
+          : t('taal.lettersPrompt');
 
   const given = state.given;
   const correct = state.lastCorrect;
@@ -258,6 +273,9 @@ function Vraag({
     : vraag.soort === 'spelling'
       ? t('taal.fout', { woord, letters: gatLetters(vraag.item) })
       : t('taal.foutVorm', { woord });
+  // Bij Engels staat het Nederlandse woord erbij na het antwoord (ADR-217).
+  const vertaling =
+    revealed && vraag.soort === 'engels' ? t('taal.engelsNl', { nl: vraag.item.nl }) : null;
 
   // What the child answered, quoted back: the letters they chose, or what they
   // typed with the letters that differ marked.
@@ -279,7 +297,9 @@ function Vraag({
         ? t('taal.jeSchreef', { getypt: given })
         : t('taal.jijKoos', { gegeven: gespeld(given) });
 
-  const gesproken = revealed ? [kop, subGesproken, regel ?? ''].join(' ').trim() : instruction;
+  const gesproken = revealed
+    ? [kop, vertaling ?? '', subGesproken, regel ?? ''].join(' ').trim()
+    : instruction;
 
   return (
     <>
@@ -298,6 +318,7 @@ function Vraag({
                 <UitkomstTeken uitkomst={correct ? 'goed' : 'fout'} />
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="tk-display text-sectiekop">{kop}</p>
+                  {vertaling === null ? null : <p className="text-lopend">{vertaling}</p>}
                   {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
                   {regel === null ? null : <p className="text-lopend">{regel}</p>}
                 </div>
@@ -316,7 +337,13 @@ function Vraag({
                 <div
                   className="tk-options"
                   role="group"
-                  aria-label={werkwoord ? t('taal.vormLabel') : t('taal.lettersLabel')}
+                  aria-label={
+                    engels
+                      ? t('taal.engelsLabel')
+                      : werkwoord
+                        ? t('taal.vormLabel')
+                        : t('taal.lettersLabel')
+                  }
                 >
                   {vraag.opties.map((optie) => (
                     <button
@@ -324,7 +351,9 @@ function Vraag({
                       type="button"
                       className="tk-option"
                       // "ei" and "ij" sound the same; the name spells them.
-                      aria-label={werkwoord ? undefined : gespeld(optie)}
+                      aria-label={vraag.soort === 'spelling' ? gespeld(optie) : undefined}
+                      // Een Engels woord, Engels uitgesproken door een schermlezer.
+                      lang={engels ? 'en' : undefined}
                       onClick={() => onChoose(optie)}
                     >
                       {optie}
@@ -347,7 +376,7 @@ function Vraag({
         <div className="tk-round-map">
           <div className="tk-zin-podium">
             {revealed ? (
-              <p className="tk-zin">
+              <p className="tk-zin" lang={taalVanZin}>
                 {delen.voor}
                 <Antwoord
                   vraag={vraag}
@@ -367,15 +396,18 @@ function Vraag({
             ) : typen ? (
               <ZinVeld
                 delen={delen}
+                lang={taalVanZin}
                 label={
                   vraag.soort === 'werkwoord'
                     ? t('taal.vormVeld', { infinitief: vraag.item.infinitief })
-                    : t('taal.flitsVeld')
+                    : vraag.soort === 'engels'
+                      ? t('taal.engelsVeld', { nl: vraag.item.nl })
+                      : t('taal.flitsVeld')
                 }
                 onSubmit={onSubmit}
               />
             ) : (
-              <p className="tk-zin">
+              <p className="tk-zin" lang={taalVanZin}>
                 {delen.voor}
                 {vraag.soort === 'spelling' ? (
                   <WoordMetGat woord={delen.woord} gat={vraag.item.gat} />
@@ -476,7 +508,7 @@ function Antwoord({
   if (typen && !correct && given !== null) {
     return <Stukken stukken={letterVerschil(given, delen.woord).goed} />;
   }
-  if (vraag.soort === 'werkwoord') return <mark className="tk-letters">{delen.woord}</mark>;
+  if (vraag.soort !== 'spelling') return <mark className="tk-letters">{delen.woord}</mark>;
 
   const [begin, eind] = vraag.item.gat;
   return (
@@ -498,10 +530,13 @@ function Antwoord({
  */
 function ZinVeld({
   delen,
+  lang,
   label,
   onSubmit,
 }: {
   readonly delen: ZinDelen;
+  /** De taal van de zin, als die niet Nederlands is. */
+  readonly lang?: string | undefined;
   readonly label: string;
   readonly onSubmit: (value: string) => void;
 }) {
@@ -523,10 +558,10 @@ function ZinVeld({
     <form onSubmit={handle} className="flex flex-col items-start gap-4">
       {/* The sentence with its gap, for a screen reader, as the field's
           description: the field's name says what goes in it. */}
-      <span id={zinId} className="tk-sr-only">
+      <span id={zinId} className="tk-sr-only" lang={lang}>
         {`${delen.voor}…${delen.na}`}
       </span>
-      <p className="tk-zin">
+      <p className="tk-zin" lang={lang}>
         {delen.voor}
         <input
           ref={input}

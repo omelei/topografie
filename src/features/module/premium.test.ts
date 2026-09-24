@@ -91,7 +91,7 @@ describe('the map a page opens on', () => {
 
   it('is Spelling on Taal, whose row asks which part (ADR-118)', () => {
     expect(regiosVan('woorden')).toBe(TAAL_DELEN);
-    expect(TAAL_DELEN.map((deel) => deel.id)).toEqual(['spelling', 'werkwoorden']);
+    expect(TAAL_DELEN.map((deel) => deel.id)).toEqual(['spelling', 'werkwoorden', 'engels']);
     expect(eersteRegio('woorden', TAAL_DELEN)).toBe('spelling');
     expect(regioVraag('woorden')).toBe('deel.title');
     expect(regioVraag('topo')).toBe('regio.title');

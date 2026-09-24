@@ -133,6 +133,8 @@ function regelZin(regel: WerkwoordRegel): string {
 
 /** The rule applied to the item a question is about, or null. */
 export function regelVoor(vraag: TaalVraag): string | null {
+  // Engels heeft geen regel: een woord is een woord (ADR-217).
+  if (vraag.soort === 'engels') return null;
   return vraag.soort === 'spelling' ? spellingRegel(vraag.item) : werkwoordRegelZin(vraag.item);
 }
 
