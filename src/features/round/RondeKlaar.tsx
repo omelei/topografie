@@ -22,6 +22,7 @@ import { behaaldDiploma, doelwitVan } from '@/features/home/doel';
 import { getActiveChild } from '@/store/children';
 import { leesWeekdoelen } from '@/store/weekdoelStore';
 import { HerhaalFouten } from './HerhaalFouten';
+import { DeelUitslag } from './DeelUitslag';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
 import { useVandaag } from '@/features/home/useVandaag';
 
@@ -248,6 +249,12 @@ export function RondeKlaar({
             </>
           )}
         </div>
+
+        {/* Deel je uitslag (ADR-209): een onderwerp met een eigen pagina, en
+            geen lijst met jouw fouten — die is van dit kind alleen. */}
+        {eigenDeel && beantwoord > 0 ? (
+          <DeelUitslag deel={eigenDeel} goed={goed} totaal={beantwoord} />
+        ) : null}
 
         {diploma !== null && uitreiking ? (
           <div className="tk-diplomavenster" data-uitreiking="ja">
