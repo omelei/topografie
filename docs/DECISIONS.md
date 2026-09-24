@@ -12599,6 +12599,35 @@ precies dat erin staat.
 laten zien, en die zet de eigenaar op. En het effect is traag: Google doet er
 weken over, en de concurrenten staan er al jaren.
 
+## ADR-208 — Eerst een ronde proberen, daarna je naam
+
+**Status:** accepted. **Date:** 2026-09-24. Volgt op ADR-207.
+
+**Wat er mis was.** Wie voor het eerst kwam, zag op elk adres eerst "Wie ben
+jij?" en een naamveld, zonder te weten wat leer.nu was. Wie via Google op
+/topografie/provincies landde, kwam dus niet bij de provincies maar bij een
+formulier. Dat is precies het moment waarop een nieuwe bezoeker afhaakt.
+
+**Besluit.**
+
+- **De pagina van een vak of onderwerp opent zonder naam.** Je kiest een manier
+  en speelt een ronde, zoals iedereen. Vandaag, Jij, Premium en de ouderpagina
+  vragen nog steeds eerst een naam: die gaan over wie je bent.
+- **Na de ronde vraagt de app de naam**, zodra je naar Vandaag gaat: "Hoe heet
+  je? Typ je naam. Dan blijft bewaard wat je net oefende." Het naamveld leest
+  zelf of er al een ronde gespeeld is, zodat het ook na herladen klopt.
+- **Wat je zonder naam oefent, hoort bij het eerste kind.** Zonder profiel
+  schrijft de app onder `SINGLETON_KEY`, en het eerste kind krijgt die sleutel
+  (`createChild`). Er hoeft niets verhuisd te worden.
+- **De eerste kaart zegt wat leer.nu is**, in één zin, en heeft een knop "Eerst
+  een ronde proberen". Die opent het eerste onderwerp uit `starters()`.
+- **Zonder naam vraagt de keuzepagina "Wat wil je oefenen?"**, zonder komma en
+  naam erachter.
+
+**Wat het niet doet.** Een gast heeft geen premium, dus alleen de gratis
+manieren (ADR-192). En wie zonder naam weggaat, laat zijn ronde op dit apparaat
+achter; die hoort bij wie daarna als eerste een naam typt.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

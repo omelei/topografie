@@ -448,20 +448,31 @@ export default function App() {
   // would flash rather than inform.
   if (boot.status === 'loading') return <div aria-busy="true" />;
 
-  if (boot.profile === null) {
-    return (
-      <ProfileGate
-        // "Ik ben een ouder" op de eerste vraag opent de premiumpagina in
-        // plaats van de voordeur (ADR-161, ADR-171): wat een ouder komt doen —
-        // kijken wat het is, een code invullen — staat daar. Het profiel is
-        // dan dat van het kind, want een ouder oefent niet (ADR-198).
-        onReady={(profile, naarOuder) => {
-          setBoot({ status: 'ready', profile });
-          if (naarOuder) go({ name: 'premium' });
-        }}
-      />
-    );
-  }
+  // Het naamveld, en wat er gebeurt als het is ingevuld.
+  const poort = (
+    <ProfileGate
+      // "Ik ben een ouder" op de eerste vraag opent de premiumpagina in
+      // plaats van de voordeur (ADR-161, ADR-171): wat een ouder komt doen —
+      // kijken wat het is, een code invullen — staat daar. Het profiel is
+      // dan dat van het kind, want een ouder oefent niet (ADR-198).
+      onReady={(profile, naarOuder) => {
+        setBoot({ status: 'ready', profile });
+        if (naarOuder) go({ name: 'premium' });
+      }}
+      // Eerst proberen (ADR-208): het eerste onderwerp om mee te beginnen,
+      // zonder naam.
+      onProberen={(deel: Onderdeel) => {
+        const module = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
+        if (module) go({ name: 'module', module, setId: deel.setId });
+      }}
+    />
+  );
+
+  // Zonder naam mag je de pagina van een vak of onderwerp zien en er een
+  // ronde spelen (ADR-208): wie via Google op /topografie/provincies komt,
+  // oefent eerst en typt daarna pas een naam. Al het andere vraagt eerst de
+  // naam, want het gaat over wie je bent.
+  if (boot.profile === null && route.name !== 'module' && screen.name === 'home') return poort;
 
   // Explore and practice are rounds, and a round has no navigation: no rail,
   // no bar, no tab bar, only the stop cross, the progress dots and the
@@ -582,6 +593,36 @@ export default function App() {
     );
   }
 
+  // A module's address is where you choose a round in it: what, then how, then
+  // a start button that says what it is starting. It is also why /topografie is
+  // not the home screen — the front door is every module, this is one of them.
+  if (route.name === 'module') {
+    return (
+      <Shell
+        bar={bar}
+        onNavigate={goTo}
+        onModule={goModule}
+        currentModule={route.module.id}
+        grond={route.module.id}
+      >
+        {/* Keyed on the module, so a way or a map chosen on one module's page
+            is not still chosen on the next one's. */}
+        <ModuleScreen
+          key={route.module.id}
+          module={route.module}
+          naam={boot.profile?.naam ?? ''}
+          setId={route.setId}
+          regio={route.regio ?? null}
+          onSet={(setId) => go({ name: 'module', module: route.module, setId })}
+          onStart={beginRonde}
+        />
+      </Shell>
+    );
+  }
+
+  // Wat hierna komt, gaat over wie je bent en heeft een naam nodig.
+  if (boot.profile === null) return poort;
+
   // "Bekijk alle diploma's" opent Jij met de kast in beeld — precies wat
   // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
   // stond; nu het diploma zelf de beloning is, staat het raster weer bij het
@@ -638,33 +679,6 @@ export default function App() {
         <CategoryScreen
           category={route.category}
           onOpen={(module) => go({ name: 'module', module, setId: null })}
-        />
-      </Shell>
-    );
-  }
-
-  // A module's address is where you choose a round in it: what, then how, then
-  // a start button that says what it is starting. It is also why /topografie is
-  // not the home screen — the front door is every module, this is one of them.
-  if (route.name === 'module') {
-    return (
-      <Shell
-        bar={bar}
-        onNavigate={goTo}
-        onModule={goModule}
-        currentModule={route.module.id}
-        grond={route.module.id}
-      >
-        {/* Keyed on the module, so a way or a map chosen on one module's page
-            is not still chosen on the next one's. */}
-        <ModuleScreen
-          key={route.module.id}
-          module={route.module}
-          naam={boot.profile.naam}
-          setId={route.setId}
-          regio={route.regio ?? null}
-          onSet={(setId) => go({ name: 'module', module: route.module, setId })}
-          onStart={beginRonde}
         />
       </Shell>
     );

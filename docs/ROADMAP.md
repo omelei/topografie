@@ -15,7 +15,6 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen                  | —                    |
 | Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)              | Claude        | Wacht op het adres       | Contactadres van jou |
 | Klassencode: € 300 inclusief of exclusief btw?                             | jij           | Te beslissen             | —                    |
-| Eerst proberen, daarna je naam: een ronde spelen vóór het naamveld         | Claude        | Bezig                    | —                    |
 | Deel je uitslag na een ronde, met een link naar hetzelfde onderwerp        | Claude        | Na het vorige punt       | —                    |
 | Google Search Console voor www.leer.nu, en de sitemap insturen             | jij           | Te doen                  | —                    |
 
@@ -105,6 +104,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #142      | Eerst een ronde proberen, daarna je naam: een onderwerp opent zonder naamveld, en de eerste kaart zegt wat leer.nu is                                                                     | 208      |
 | #141      | Vindbaar in Google: een eigen pagina met titel en tekst per vak en onderwerp, sitemap.xml en robots.txt                                                                                   | 207      |
 | #140      | De groep doet iets op Vandaag: eigen starters per groep, de groep in de kop, en de rij "Past bij groep" voor wie al geoefend heeft                                                        | 206      |
 | #139      | Meldingen na een knop (account, wachtwoord, pincode, code) als duidelijk vak: groen met vinkje, rood met uitroepteken                                                                     | 205      |

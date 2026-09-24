@@ -509,6 +509,8 @@ export const nl = {
   // niemand in het bijzonder is een formulier; aan Fem gevraagd is het een
   // vraag, en zij is degene die hem beantwoordt.
   'choose.title': 'Wat wil je oefenen, {naam}?',
+  // Zonder naam, voor wie eerst probeert (ADR-208).
+  'choose.titleZonderNaam': 'Wat wil je oefenen?',
   // "Waarover" was een woord dat niemand van tien hardop zegt. Deze zegt wat
   // de stap van je vraagt in plaats van waar hij over gaat.
   // De nummers staan niet meer in de tekst: de pagina telt zelf, want
@@ -1913,6 +1915,13 @@ export const nl = {
   'profile.placeholder': 'Je naam',
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
+  // Wie voor het eerst komt, leest wat dit is; wie zonder naam een ronde
+  // speelde, leest waarom de naam nu gevraagd wordt (ADR-208).
+  'profile.watIsHet':
+    'Oefen topografie, rekenen, klokkijken, vlaggen en taal. Gratis, in korte rondes.',
+  'profile.proberen': 'Eerst een ronde proberen',
+  'profile.naRonde.title': 'Hoe heet je?',
+  'profile.naRonde.help': 'Typ je naam. Dan blijft bewaard wat je net oefende.',
   // De volwassene die het apparaat als eerste in handen heeft, oefent niet en
   // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
   'profile.ouder': 'Ik ben een ouder',
