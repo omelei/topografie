@@ -72,16 +72,16 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | Premium per gezin in plaats van per apparaat                                                                               | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
 | Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
 | Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Besluit om te bouwen                  |
-| Uitdagen: een kind daagt een ander uit met een code (dezelfde vragen, offline); met premium de stand per tegenstander      | Claude        | Onderzocht: kan zonder server en zonder namen (zie het advies van 23 september)     | Besluit van de eigenaar               |
 | Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
 
 ## Geparkeerd
 
-| Wat                                                                                   | Waarom geparkeerd                                                                                     |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig |
-| Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                   | Kan pas met het gezinsaccount, en dan met toestemming                                                 |
-| Proefperiode                                                                          | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                        |
+| Wat                                                                                                                                | Waarom geparkeerd                                                                                                            |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens                                              | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig                        |
+| Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). De eigenaar komt erop terug |
+| Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                        |
+| Proefperiode                                                                                                                       | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                                               |
 
 ## Open beslissingen
 
@@ -101,6 +101,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #139      | Meldingen na een knop (account, wachtwoord, pincode, code) als duidelijk vak: groen met vinkje, rood met uitroepteken                                                                     | 205      |
 | #138      | Vandaag voor een nieuw kind: eerste ronde, vakken, hoe het werkt; menu onderin duidelijker; op een telefoon schuift de app niet meer weg                                                  | 203, 204 |
 | #137      | Grotere stip voor een stad, avatar naast je naam, 48 nieuwe avatars, diplomanamen breken netjes af, twee teksten                                                                          | 202      |
 | #136      | De kassa wordt door een workflow gedeployd, bij elke wijziging en met de hand                                                                                                             | 201      |

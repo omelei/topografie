@@ -194,7 +194,7 @@ function Veld({
       </button>
 
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {fout === 'te-vaak' ? t('ouder.fout.teVaak', { seconden: wacht }) : t(FOUT[fout])}
         </p>
       ) : null}

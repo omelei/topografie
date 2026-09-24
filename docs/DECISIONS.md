@@ -12499,6 +12499,24 @@ dat de vandaag pagina beter gevuld is. Zeker als er nog niet geoefend is" en
   rand op de pagina. Inkt en geen accentkleur: een bestemming is geen vak
   (ADR-093).
 
+## ADR-205 — Een melding na een knop is een vak, geen losse regel
+
+**Status:** accepted. **Date:** 2026-09-24. Gemeld door de eigenaar: de melding
+na "Account maken" of "Wachtwoord vergeten" was niet duidelijk leesbaar.
+
+**Besluit.** Wat er gebeurde nadat je op een knop drukte, staat in een vak:
+`.tk-melding` met `data-soort="gelukt"` (groen vlak, groene rand, een vinkje)
+of `data-soort="fout"` (rood vlak, rode rand, een uitroepteken). Het stond als
+een losse regel lopende tekst onder de knop en viel weg in het formulier. De
+kleur is nooit het enige: het teken en de woorden zeggen het ook, en de rollen
+`status` en `alert` blijven voor een schermlezer.
+
+Het geldt overal waar zo'n regel stond: account maken, inloggen, wachtwoord
+vergeten en een nieuw wachtwoord, de accountcheck, de pincode, de
+volwassenencheck, een code invullen, doorsturen naar je ouders en de overname
+van een kind. Niet bij het inlezen van eigen woordenlijsten: dat is een
+meldingsregel die er altijd staat, soms leeg.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

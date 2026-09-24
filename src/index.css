@@ -2269,6 +2269,59 @@
       width: 300px;
     }
   }
+  /* ---- Een melding na een knop (ADR-205) ----------------------------------
+   * Wat er gebeurde nadat je op een knop drukte: een mail is verstuurd, een
+   * pincode klopt niet. Het stond als losse regel tekst onder de knop en viel
+   * weg in het formulier. Nu een vak met een teken ervoor: groen met een vinkje
+   * als het lukte, rood met een uitroepteken als het niet lukte. De kleur is
+   * nooit het enige: het teken en de woorden zeggen het ook. */
+  .tk-melding {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin: 0;
+    padding: 12px 16px;
+    border: var(--stroke-active) solid var(--rand-licht);
+    border-radius: var(--radius-knop);
+    background: var(--kaart);
+    color: var(--inkt);
+    font-family: var(--font-tekst);
+    font-size: var(--type-lopend);
+    line-height: var(--type-lopend-lh);
+    font-weight: 400;
+  }
+  .tk-melding::before {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-top: -1px;
+    border-radius: var(--radius-pil);
+    color: var(--kaart);
+    font-family: var(--font-kop);
+    font-weight: 800;
+    line-height: 1;
+  }
+  .tk-melding[data-soort='gelukt'] {
+    border-color: var(--nadruk);
+    background: var(--nadruk-vlak);
+    color: var(--nadruk-tekst);
+  }
+  .tk-melding[data-soort='gelukt']::before {
+    content: '✓';
+    background: var(--nadruk);
+  }
+  .tk-melding[data-soort='fout'] {
+    border-color: var(--fout);
+    background: var(--fout-vlak);
+  }
+  .tk-melding[data-soort='fout']::before {
+    content: '!';
+    background: var(--fout);
+  }
+
   /* ---- Kennismaken op Vandaag (ADR-204) -----------------------------------
    * De eerste ronde als één grote kaart met een knop, de vakken als tegels in
    * hun eigen kleur, en drie genummerde stappen. Alles in de vormen die de app

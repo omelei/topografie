@@ -78,7 +78,7 @@ export function CodeVeld({
         {bezig ? t('premium.bezig') : t('premium.codeGebruiken')}
       </button>
       {fout ? (
-        <p id={melding} role="alert" className="text-lopend">
+        <p id={melding} role="alert" className="tk-melding" data-soort="fout">
           {t(FOUT[fout])}
         </p>
       ) : null}

@@ -94,7 +94,7 @@ export function Doorsturen() {
       <p className="text-lopend">{t('doorsturen.uitleg')}</p>
 
       {stand.soort === 'gedeeld' || stand.soort === 'gekopieerd' ? (
-        <p role="status" className="text-lopend">
+        <p role="status" className="tk-melding" data-soort="gelukt">
           {stand.soort === 'gedeeld' ? t('doorsturen.verstuurd') : t('doorsturen.gekopieerd')}
         </p>
       ) : (
