@@ -9,15 +9,31 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ## Nu
 
-| Wat                                                                                        | Wie           | Staat                    | Hangt af van         |
-| ------------------------------------------------------------------------------------------ | ------------- | ------------------------ | -------------------- |
-| Gezinsaccount live zetten (zie hieronder)                                                  | jij en Claude | Wacht op vier antwoorden | —                    |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder)                 | jij           | Te doen                  | —                    |
-| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)                              | Claude        | Wacht op het adres       | Contactadres van jou |
-| Klassencode: € 300 inclusief of exclusief btw?                                             | jij           | Te beslissen             | —                    |
-| Google Search Console voor www.leer.nu, en de sitemap insturen                             | jij           | Te doen                  | —                    |
-| De teller aanzetten: `tools/premium/schema.sql` opnieuw draaien in de SQL Editor (ADR-210) | jij           | Te doen                  | —                    |
-| Testaankoop in de kassa: komt de code aan? In de DNS staan geen records van Resend         | jij           | Te doen                  | —                    |
+### Actielijst voor jou, in deze volgorde
+
+1. **De teller aanzetten:** `tools/premium/schema.sql` opnieuw draaien in de SQL
+   Editor van Supabase (ADR-210, ADR-211). Zonder dat telt de server niets.
+2. **Testaankoop in de kassa.** De code staat na betalen op het scherm; de mail
+   met de code komt waarschijnlijk niet aan, want in de DNS staan geen records
+   van Resend. Zet die records erbij (Resend → Domains → leer.nu).
+3. **Google Search Console** voor www.leer.nu, en `https://www.leer.nu/sitemap.xml`
+   insturen. Herinnering staat op 25 september.
+4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
+   `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
+5. **Mail op @leer.nu** via Google Workspace, met `hallo@` als contactadres
+   (geparkeerd; de stappen staan in het gesprek van 24 september). Dat adres
+   maakt `/scholen` en de privacypagina mogelijk.
+6. **Op 8 oktober de teller uitlezen** (de vragen staan in
+   `tools/premium/README.md`) en samen het volgende kiezen.
+
+### Lopend
+
+| Wat                                                                        | Wie           | Staat                    | Hangt af van         |
+| -------------------------------------------------------------------------- | ------------- | ------------------------ | -------------------- |
+| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Wacht op vier antwoorden | —                    |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen                  | —                    |
+| Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)              | Claude        | Wacht op het adres       | Contactadres van jou |
+| Klassencode: € 300 inclusief of exclusief btw?                             | jij           | Te beslissen             | —                    |
 
 ### Code afschermen
 
@@ -76,6 +92,24 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
 | Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Besluit om te bouwen                  |
 | Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
+
+## Voorstel: de volgende tien (24 september, nog niet gekozen)
+
+Op volgorde van wat het oplevert voor bezoekers en omzet, tegen wat het kost.
+Na 8 oktober bijstellen op wat de teller laat zien.
+
+| #   | Wat                                                                                                       | Waarom                                                                     | Omvang |
+| --- | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ------ |
+| 1   | QR-code en adres op elk werkblad, en een klassenset: 30 verschillende bladen in één keer printen          | Elk uitgedeeld blad wijst naar de app; een juf deelt uit aan een hele klas | Klein  |
+| 2   | Echte inhoud op de pagina's voor Google: de lijst (provincies met hoofdstad), uitleg, veelgestelde vragen | Dunne pagina's scoren slecht; inhoud is wat Google en ouders zoeken        | Middel |
+| 3   | Pagina voor ouders (`/ouders`): wat het is, hoe herhalen werkt, wat het kost, privacy                     | Wie via Google komt, weet nu niet waarom leer.nu beter is                  | Middel |
+| 4   | `/scholen` met de klassencode aanvragen                                                                   | Scholen zijn de snelste weg naar veel kinderen tegelijk                    | Klein  |
+| 5   | Wekelijks overzicht van de teller als issue in GitHub                                                     | Cijfers die niemand opzoekt, sturen niets                                  | Klein  |
+| 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  |
+| 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel |
+| 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  |
+| 9   | Betalen per maand, € 9,95                                                                                 | Lagere drempel dan een jaar vooruit                                        | Middel |
+| 10  | Uitdagen (A + D)                                                                                          | Pas als delen (ADR-209) laat zien dat kinderen elkaar opzoeken             | Middel |
 
 ## Geparkeerd
 
