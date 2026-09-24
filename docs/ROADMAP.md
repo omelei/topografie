@@ -15,6 +15,9 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 | Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen                  | —                    |
 | Klassencode: pagina `/scholen` met een aanvraagknop (ADR-200)              | Claude        | Wacht op het adres       | Contactadres van jou |
 | Klassencode: € 300 inclusief of exclusief btw?                             | jij           | Te beslissen             | —                    |
+| Eerst proberen, daarna je naam: een ronde spelen vóór het naamveld         | Claude        | Bezig                    | —                    |
+| Deel je uitslag na een ronde, met een link naar hetzelfde onderwerp        | Claude        | Na het vorige punt       | —                    |
+| Google Search Console voor www.leer.nu, en de sitemap insturen             | jij           | Te doen                  | —                    |
 
 ### Code afschermen
 
@@ -80,6 +83,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens                                              | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig                                                                    |
 | Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). Vervalsen bij A uitgewerkt op 24 september. De eigenaar komt erop terug |
+| Mail op @leer.nu via Google Workspace, en de DNS-records van Resend voor de kassa                                                  | Geparkeerd op 24 september; de stappen staan in het gesprek van die dag                                                                                                  |
 | Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                                                                    |
 | Proefperiode                                                                                                                       | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                                                                                           |
 
@@ -101,6 +105,7 @@ in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #141      | Vindbaar in Google: een eigen pagina met titel en tekst per vak en onderwerp, sitemap.xml en robots.txt                                                                                   | 207      |
 | #140      | De groep doet iets op Vandaag: eigen starters per groep, de groep in de kop, en de rij "Past bij groep" voor wie al geoefend heeft                                                        | 206      |
 | #139      | Meldingen na een knop (account, wachtwoord, pincode, code) als duidelijk vak: groen met vinkje, rood met uitroepteken                                                                     | 205      |
 | #138      | Vandaag voor een nieuw kind: eerste ronde, vakken, hoe het werkt; menu onderin duidelijker; op een telefoon schuift de app niet meer weg                                                  | 203, 204 |

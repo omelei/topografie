@@ -12,6 +12,7 @@ import { Shell } from '@/features/shell/Shell';
 import { TopBar } from '@/features/shell/TopBar';
 import { MODULES, type Destination, type Module } from '@/features/shell/modules';
 import { useRoute } from '@/features/shell/useRoute';
+import { titelVoor } from '@/seo/paginas';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
 import { ModuleScreen } from '@/features/module/ModuleScreen';
@@ -47,7 +48,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { controleerOpnieuw } from '@/store/premium';
 import { zorgVoorUniekePogingen } from '@/store/sleutels';
-import type { Route } from '@/features/shell/routes';
+import { pathFor, type Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
 import { dagplan, isDiplomaVorm, type ModeId } from '@/game-core';
 import { geplaatst, onderdelen, startbareOnderdelen } from '@/features/module/onderdelen';
@@ -155,6 +156,12 @@ export default function App() {
   // de sessie afloopt terwijl die pagina openstaat, moet de deur weer dicht, en
   // dat is een keuze van de router en niet van het scherm erachter.
   const { ouder } = useOuder();
+
+  // Elk adres zijn eigen titel in het tabblad: dezelfde als die Google leest
+  // (ADR-207). Een ronde of Jij heet gewoon leer.nu.
+  useEffect(() => {
+    document.title = titelVoor(pathFor(route));
+  }, [route]);
 
   // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
   // them here rather than inside the Shell keeps the frame ignorant of what a
