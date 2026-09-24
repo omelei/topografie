@@ -139,6 +139,7 @@ Na 8 oktober bijstellen op wat de teller laat zien.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #147      | Een QR-code op elk werkblad en een klassenset van 30 verschillende bladen                                                                                                                 | 212      |
 | #145      | Een werkblad om te printen per onderwerp, met een blinde kaart, sommen, klokken, vlaggen of zinnen en de antwoorden erbij                                                                 | 211      |
 | #144      | Een anonieme teller: per dag hoe vaak iemand binnenkwam, een ronde begon, een naam invulde, deelde of naar premium keek; nooit wie                                                        | 210      |
 | #143      | Deel je uitslag na een ronde, met een link naar hetzelfde onderwerp en zonder naam                                                                                                        | 209      |

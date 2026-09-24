@@ -29,11 +29,16 @@ export function WerkbladScherm({
   readonly onTerug: () => void;
 }) {
   const [zaad, setZaad] = useState(() => zaadVan(setId));
+  // Een klassenset (ADR-212): 30 verschillende bladen, zodat buren niet van
+  // elkaar kunnen overschrijven, met de antwoorden achteraan.
+  const [klas, setKlas] = useState(false);
   const deel = startbareOnderdelen().find((kandidaat) => kandidaat.setId === setId);
-  const blad = deel ? werkbladVoor(deel, zaad) : null;
+  const bladen = deel
+    ? Array.from({ length: klas ? KLASSENSET : 1 }, (_, index) => werkbladVoor(deel, zaad + index))
+    : [];
 
   // Een adres zonder werkblad (een mix, jouw fouten): terug naar oefenen.
-  if (!deel || !blad) {
+  if (!deel || bladen.length === 0 || bladen.some((blad) => blad === null)) {
     return (
       <main className="tk-werkblad">
         <button type="button" className="tk-button" onClick={onTerug}>
@@ -44,7 +49,9 @@ export function WerkbladScherm({
   }
 
   const onderwerp = naamVan(deel);
-  const adres = `${window.location.host}${pathFor({ name: 'module', module, setId })}`;
+  const onderwerpPad = pathFor({ name: 'module', module, setId });
+  const adres = `${window.location.host}${onderwerpPad}`;
+  const qr = `${import.meta.env.BASE_URL}qr${onderwerpPad}.svg`.replace(/\/{2,}/g, '/');
 
   return (
     <main className="tk-werkblad" data-module={module.id} data-print="ja">
@@ -62,69 +69,101 @@ export function WerkbladScherm({
         <button
           type="button"
           className="tk-button tk-button-secondary"
-          onClick={() => setZaad((oud) => oud + 1)}
+          onClick={() => setZaad((oud) => oud + (klas ? KLASSENSET : 1))}
         >
           {t('werkblad.anders')}
+        </button>
+        <button
+          type="button"
+          className="tk-button tk-button-secondary"
+          aria-pressed={klas}
+          onClick={() => setKlas((oud) => !oud)}
+        >
+          {t('werkblad.klassenset', { aantal: KLASSENSET })}
         </button>
         <button type="button" className="tk-button tk-button-tertiary" onClick={onTerug}>
           {t('werkblad.terug')}
         </button>
       </div>
 
-      <article className="tk-werkblad-blad">
-        <header className="tk-werkblad-kop">
-          <div>
-            <p className="tk-werkblad-soort">{t('werkblad.soort')}</p>
-            <h1 className="tk-titel">{t('werkblad.kop', { onderwerp })}</h1>
-          </div>
-          <Wordmark height={28} />
-        </header>
-        <p className="tk-werkblad-regels">
-          <span>{t('werkblad.naam')}: ______________________</span>
-          <span>{t('werkblad.datum')}: ____________</span>
-        </p>
-        <p className="tk-werkblad-opdracht">{t(blad.opdracht)}</p>
+      {bladen.map((blad, index) =>
+        blad === null ? null : (
+          <article key={index} className="tk-werkblad-blad">
+            <header className="tk-werkblad-kop">
+              <div>
+                <p className="tk-werkblad-soort">
+                  {klas ? t('werkblad.soortNummer', { nummer: index + 1 }) : t('werkblad.soort')}
+                </p>
+                <h1 className="tk-titel">{t('werkblad.kop', { onderwerp })}</h1>
+              </div>
+              <Wordmark height={28} />
+            </header>
+            <p className="tk-werkblad-regels">
+              <span>{t('werkblad.naam')}: ______________________</span>
+              <span>{t('werkblad.datum')}: ____________</span>
+            </p>
+            <p className="tk-werkblad-opdracht">{t(blad.opdracht)}</p>
 
-        {blad.vragen[0]?.soort === 'plek' ? (
-          <div className="tk-werkblad-kaartblok">
-            <WerkbladKaart
-              setId={setId}
-              plekken={blad.vragen.flatMap((vraag) =>
-                vraag.soort === 'plek' ? [vraag.geometrieRef] : [],
-              )}
-            />
-            <ol className="tk-werkblad-lijnen">
-              {blad.vragen.map((_, index) => (
-                <li key={index}>______________________</li>
-              ))}
-            </ol>
-          </div>
-        ) : (
-          <ol className="tk-werkblad-vragen" data-soort={blad.vragen[0]?.soort}>
-            {blad.vragen.map((vraag, index) => (
-              <li key={index}>
-                <Vraag vraag={vraag} />
-              </li>
-            ))}
-          </ol>
-        )}
+            {blad.vragen[0]?.soort === 'plek' ? (
+              <div className="tk-werkblad-kaartblok">
+                <WerkbladKaart
+                  setId={setId}
+                  plekken={blad.vragen.flatMap((vraag) =>
+                    vraag.soort === 'plek' ? [vraag.geometrieRef] : [],
+                  )}
+                />
+                <ol className="tk-werkblad-lijnen">
+                  {blad.vragen.map((_, vraagIndex) => (
+                    <li key={vraagIndex}>______________________</li>
+                  ))}
+                </ol>
+              </div>
+            ) : (
+              <ol className="tk-werkblad-vragen" data-soort={blad.vragen[0]?.soort}>
+                {blad.vragen.map((vraag, vraagIndex) => (
+                  <li key={vraagIndex}>
+                    <Vraag vraag={vraag} />
+                  </li>
+                ))}
+              </ol>
+            )}
 
-        <p className="tk-werkblad-voet">{t('werkblad.voet', { adres })}</p>
-      </article>
+            {/* Wie de code scant, oefent hetzelfde onderwerp verder (ADR-212). */}
+            <footer className="tk-werkblad-voet">
+              <img className="tk-werkblad-qr" src={qr} alt="" width={72} height={72} />
+              <span>{t('werkblad.voet', { adres })}</span>
+            </footer>
+          </article>
+        ),
+      )}
 
       <article className="tk-werkblad-blad tk-werkblad-antwoorden">
         <h2 className="tk-sectie">
           {t('werkblad.antwoorden')} · {onderwerp}
         </h2>
-        <ol className="tk-werkblad-antwoordlijst">
-          {blad.vragen.map((vraag, index) => (
-            <li key={index}>{vraag.antwoord}</li>
-          ))}
-        </ol>
+        {bladen.map((blad, index) =>
+          blad === null ? null : (
+            <section key={index} className="tk-werkblad-antwoordblok">
+              {klas ? (
+                <h3 className="tk-werkblad-opdracht">
+                  {t('werkblad.soortNummer', { nummer: index + 1 })}
+                </h3>
+              ) : null}
+              <ol className="tk-werkblad-antwoordlijst">
+                {blad.vragen.map((vraag, vraagIndex) => (
+                  <li key={vraagIndex}>{vraag.antwoord}</li>
+                ))}
+              </ol>
+            </section>
+          ),
+        )}
       </article>
     </main>
   );
 }
+
+/** Een klas is ongeveer dertig kinderen. */
+const KLASSENSET = 30;
 
 function Vraag({ vraag }: { readonly vraag: WerkbladVraag }) {
   if (vraag.soort === 'som') return <span className="tk-werkblad-som">{vraag.tekst}</span>;

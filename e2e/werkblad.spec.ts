@@ -55,3 +55,14 @@ test('a worksheet of sums prints the questions, and another set on request', asy
   await page.getByRole('button', { name: 'Printen', exact: true }).click();
   expect(await page.evaluate(() => (window as unknown as { geprint: number }).geprint)).toBe(1);
 });
+
+test('a class set is thirty different sheets, each with a code to scan', async ({ page }) => {
+  await page.goto('/klokkijken/halve-uren/werkblad');
+  await expect(page.locator('.tk-werkblad-qr')).toHaveCount(1);
+  const qr = await page.locator('.tk-werkblad-qr').getAttribute('src');
+  expect((await page.request.get(qr ?? '')).status()).toBe(200);
+
+  await page.getByRole('button', { name: 'Klassenset van 30' }).click();
+  await expect(page.getByText('Werkblad 30', { exact: true }).first()).toBeVisible();
+  await expect(page.locator('.tk-werkblad-antwoordblok')).toHaveCount(30);
+});

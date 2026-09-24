@@ -4935,8 +4935,19 @@
     list-style: decimal;
   }
   .tk-werkblad-voet {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     color: var(--tekst-secundair);
     font-size: 0.9rem;
+  }
+  .tk-werkblad-qr {
+    flex: none;
+    width: 72px;
+    height: 72px;
+  }
+  .tk-werkblad-antwoordblok {
+    break-inside: avoid;
   }
   .tk-werkblad-antwoordlijst {
     columns: 2;
@@ -4965,6 +4976,10 @@
       padding: 0;
     }
     .tk-werkblad-antwoorden {
+      break-before: page;
+    }
+    /* In een klassenset begint elk blad op een eigen pagina. */
+    .tk-werkblad-blad + .tk-werkblad-blad {
       break-before: page;
     }
     body:has(.tk-werkblad) {

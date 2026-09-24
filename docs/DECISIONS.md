@@ -12738,6 +12738,26 @@ hele klas bij leer.nu. En een kind dat liever op papier oefent, kan dat nu ook.
 browser maakt er een van ("Opslaan als PDF"). En de wereldkaart met 25 landen
 is druk; dat is een eerste versie.
 
+## ADR-212 — Een QR-code op elk werkblad, en een klassenset van 30
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 1 van "de volgende tien" in
+de roadmap; de eigenaar zei "implementeer deze punten".
+
+**Besluit.**
+
+- **Onder elk werkblad staat een QR-code** naar de pagina van het onderwerp,
+  met `?van=werkblad`, en het adres in tekst ernaast. Een kind dat het blad mee
+  naar huis neemt, scant en oefent verder; een ouder die het ziet, weet waar
+  het vandaan komt.
+- **De codes worden bij het bouwen gemaakt** (`tools/seo-paginas.mjs`, met
+  `qrcode` als devDependency) en staan als SVG op `/qr/<vak>/<onderwerp>.svg`.
+  Er komt geen bibliotheek voor QR-codes in de app zelf.
+- **De teller telt `qr`** als iemand binnenkomt met `?van=werkblad` (ADR-210),
+  naast de gewone binnenkomst. Zo is te zien of papier bezoekers oplevert.
+- **"Klassenset van 30"** maakt dertig verschillende bladen van hetzelfde
+  onderwerp, elk op een eigen pagina, met alle antwoorden achteraan per blad.
+  Buren hebben zo niet hetzelfde blad; een juf print één keer voor de hele klas.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
