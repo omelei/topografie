@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
@@ -31,7 +32,7 @@ async function signIn(page: Page, naam: string) {
 /** Which part, what, which set where there is a choice, and how. */
 async function kies(
   page: Page,
-  deel: 'Spelling' | 'Werkwoorden',
+  deel: 'Spelling' | 'Werkwoorden' | 'Engels',
   onderwerp: RegExp,
   set: string | null,
   hoe: RegExp,
@@ -67,12 +68,15 @@ async function speel(page: Page) {
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
   const letters = page.getByRole('group', { name: 'Kies de letters' });
   const vormen = page.getByRole('group', { name: 'Kies de vorm' });
+  const engels = page.getByRole('group', { name: 'Kies het Engelse woord' });
   const veld = page.locator('.tk-zin-veld');
 
   for (let vraag = 0; vraag < 150; vraag++) {
-    await expect(klaar.or(volgende).or(letters).or(vormen).or(veld).first()).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(klaar.or(volgende).or(letters).or(vormen).or(engels).or(veld).first()).toBeVisible(
+      {
+        timeout: 10_000,
+      },
+    );
     if (await klaar.isVisible()) return;
     if (await volgende.isVisible()) {
       await volgende.click();
@@ -84,6 +88,10 @@ async function speel(page: Page) {
     }
     if (await vormen.isVisible()) {
       await vormen.getByRole('button').first().click();
+      continue;
+    }
+    if (await engels.isVisible()) {
+      await engels.getByRole('button').first().click();
       continue;
     }
     await veld.fill('x');
@@ -100,7 +108,8 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
 
   // Which part, in the row topography asks where on, with Spelling chosen.
   const welk = page.getByRole('region', { name: 'Welk deel?' });
-  await expect(welk.getByRole('button')).toHaveCount(2);
+  // Spelling, Werkwoorden en Engels (ADR-217).
+  await expect(welk.getByRole('button')).toHaveCount(3);
   await expect(welk.getByRole('button', { name: 'Spelling', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -140,6 +149,22 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
     await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
   }
   await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveCount(0);
+
+  await welk.getByRole('button', { name: 'Engels', exact: true }).click();
+  for (const naam of [
+    'Tellen en de kalender',
+    'Kleuren en kleding',
+    'Mensen en dieren',
+    'Eten, thuis en school',
+    'Werkwoorden in het Engels',
+    'Engelse mix',
+  ]) {
+    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+  }
+  for (const naam of ['Kies het woord', 'Typ het woord', 'Overleven', 'Oefentoets']) {
+    await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+  }
+  expect((await scan(page)).violations).toEqual([]);
 });
 
 test('the parts and the sets have addresses, and the page opens on them', async ({ page }) => {
@@ -160,8 +185,13 @@ test('the parts and the sets have addresses, and the page opens on them', async 
     'true',
   );
 
+  // Woordjes zijn Engels (ADR-217).
   await page.goto('/woordjes');
-  await expect(page).toHaveURL(/\/taal$/);
+  await expect(page).toHaveURL(/\/taal\/engels$/);
+  await expect(welk.getByRole('button', { name: 'Engels', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 
   await page.goto('/taal/ei-ij');
   await expect(wat.getByRole('button', { name: /^Onthoudwoorden/ })).toHaveAttribute(
@@ -365,4 +395,50 @@ test('Ontdekken on verbs: a card per rule, with examples from the set', async ({
 
   await page.getByRole('button', { name: 'Klaar' }).click();
   await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+});
+
+/**
+ * Engels (ADR-217): the third part. The Dutch word is given, the English word
+ * is chosen from four or typed in an English sentence, and "the dog" counts.
+ */
+const ENGELS = new Map<string, string>(
+  ['dieren', 'kleuren'].flatMap((set) =>
+    (
+      JSON.parse(readFileSync(`content/taal/engels/${set}.json`, 'utf8')) as {
+        items: { nl: string; en: string }[];
+      }
+    ).items.map((item): [string, string] => [item.nl, item.en]),
+  ),
+);
+
+test('Engels: four English words to choose from, played to the end', async ({ page }) => {
+  await signIn(page, 'Sem');
+  await kies(page, 'Engels', /^Mensen en dieren/, 'Dieren in het Engels', /^Kies het woord/);
+  await start(page);
+
+  await expect(page.getByRole('heading', { name: /in het Engels\?$/ })).toBeVisible();
+  await expect(
+    page.getByRole('group', { name: 'Kies het Engelse woord' }).getByRole('button'),
+  ).toHaveCount(4);
+  expect((await scan(page)).violations).toEqual([]);
+  await speel(page);
+});
+
+test('Engels: the word typed, with "the" in front, counts', async ({ page }) => {
+  await signIn(page, 'Lotte');
+  await kies(page, 'Engels', /^Kleuren en kleding/, 'Kleuren in het Engels', /^Typ het woord/);
+  await start(page);
+
+  const vraag = await page.getByRole('heading', { name: /in het Engels\?$/ }).textContent();
+  const nl = /^Wat is (.+) in het Engels\?$/.exec(vraag ?? '')?.[1] ?? '';
+  const en = ENGELS.get(nl);
+  expect(en, nl).toBeDefined();
+
+  const veld = page.locator('.tk-zin-veld');
+  await expect(veld).toBeFocused();
+  await veld.fill(`the ${en}`);
+  await veld.press('Enter');
+  await expect(page.locator('.tk-round-question')).toContainText(`Goed! ${en}.`);
+  await expect(page.locator('.tk-round-question')).toContainText(`In het Nederlands: ${nl}.`);
+  expect((await scan(page)).violations).toEqual([]);
 });

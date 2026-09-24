@@ -1,0 +1,123 @@
+{
+  "id": "taal-en-kleding",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-kleding-coat",
+      "nl": "jas",
+      "en": "coat",
+      "aliassen": ["jacket"],
+      "zin": "Put on your coat, it is cold.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-trousers",
+      "nl": "broek",
+      "en": "trousers",
+      "aliassen": ["pants"],
+      "zin": "My trousers are too long.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-skirt",
+      "nl": "rok",
+      "en": "skirt",
+      "zin": "She wears a blue skirt.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-dress",
+      "nl": "jurk",
+      "en": "dress",
+      "zin": "Her dress is very pretty.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-jumper",
+      "nl": "trui",
+      "en": "jumper",
+      "aliassen": ["sweater"],
+      "zin": "This jumper is warm.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-shirt",
+      "nl": "overhemd",
+      "en": "shirt",
+      "zin": "Dad wears a white shirt to work.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-shoe",
+      "nl": "schoen",
+      "en": "shoe",
+      "zin": "I lost my shoe in the park.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-sock",
+      "nl": "sok",
+      "en": "sock",
+      "zin": "There is a hole in my sock.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-boot",
+      "nl": "laars",
+      "en": "boot",
+      "zin": "My boot is full of water.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-hat",
+      "nl": "hoed",
+      "en": "hat",
+      "zin": "The farmer wears a straw hat.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-cap",
+      "nl": "pet",
+      "en": "cap",
+      "zin": "He wears a cap in the sun.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-scarf",
+      "nl": "sjaal",
+      "en": "scarf",
+      "zin": "Grandma made a scarf for me.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-glove",
+      "nl": "handschoen",
+      "en": "glove",
+      "zin": "I can only find one glove.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-belt",
+      "nl": "riem",
+      "en": "belt",
+      "zin": "His belt is black.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-pyjamas",
+      "nl": "pyjama",
+      "en": "pyjamas",
+      "aliassen": ["pajamas"],
+      "zin": "I wear my pyjamas in bed.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-kleding-bag",
+      "nl": "tas",
+      "en": "bag",
+      "zin": "My bag is heavy today.",
+      "groep": 8
+    }
+  ]
+}

@@ -375,7 +375,7 @@ export function rekenSetVanDiploma(id: string): string | null {
  * van het product.
  */
 export function isTaalDiplomaSet(setId: string): boolean {
-  return /^taal-(sp|ww)-/.test(setId) && !/-(mix|fouten)$/.test(setId);
+  return /^taal-(sp|ww|en)-/.test(setId) && !/-(mix|fouten)$/.test(setId);
 }
 
 export function taalDiplomaFor(snapshot: RewardSnapshot): string | null {

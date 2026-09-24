@@ -67,9 +67,11 @@ export function TaalResultScreen({
             <div className="tk-lijstrij">
               <span className="tk-lijstrij-tekst">
                 <span className="tk-lijstrij-titel">
-                  {'woord' in item ? item.woord : item.antwoord}
+                  {'woord' in item ? item.woord : 'en' in item ? item.en : item.antwoord}
                 </span>
-                <span className="tk-lijstrij-regel">{item.zin}</span>
+                <span className="tk-lijstrij-regel">
+                  {'en' in item ? t('taal.engelsNl', { nl: item.nl }) : item.zin}
+                </span>
               </span>
             </div>
           </li>

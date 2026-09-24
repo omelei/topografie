@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
+  beoordeelWoord,
   berekendAntwoord,
+  ENGELS_VOORAF,
+  engelsOpties,
   gatLetters,
   keerInZin,
   werkwoordOpties,
@@ -13,6 +16,7 @@ import {
   loadTaalSets,
   sterkeWerkwoorden,
   TAAL_MIX,
+  type EngelsSet,
   type SpellingSet,
   type WerkwoordSet,
 } from './loadTaal';
@@ -219,5 +223,97 @@ describe('the verb sets', () => {
       expect(opties, item.id).toContain(item.antwoord);
       for (const optie of opties) expect(echt, `${item.id}: ${optie}`).toContain(optie);
     }
+  });
+});
+
+/**
+ * Engels (ADR-217). Checked the way spelling is: the word in its sentence once
+ * and never first, nothing filed twice, and a Dutch word that asks for one
+ * English word only.
+ */
+describe('the English sets', () => {
+  const engels = sets.filter((set): set is EngelsSet => set.deel === 'engels');
+  const items = engels.flatMap((set) => set.items);
+
+  it('are the eleven the page offers, at the sizes AFBAKENING.md gives', () => {
+    const omvang = Object.fromEntries(engels.map((set) => [set.id, set.items.length]));
+    expect(omvang).toEqual({
+      'taal-en-getallen': 16,
+      'taal-en-dagen': 18,
+      'taal-en-kleuren': 14,
+      'taal-en-kleding': 16,
+      'taal-en-familie': 16,
+      'taal-en-lichaam': 17,
+      'taal-en-dieren': 18,
+      'taal-en-eten': 17,
+      'taal-en-huis': 17,
+      'taal-en-school': 16,
+      'taal-en-werkwoorden': 18,
+    });
+  });
+
+  it('files every word under its set, in groep 7 or 8', () => {
+    for (const set of engels) {
+      for (const item of set.items) {
+        expect(item.id.startsWith(`${set.id}-`), item.id).toBe(true);
+        expect([7, 8], item.id).toContain(item.groep);
+      }
+    }
+  });
+
+  it('puts every English word in its sentence once, and never as its first word', () => {
+    for (const item of items) {
+      expect(keerInZin(item.zin, item.en), item.id).toBe(1);
+      expect(zinDelen(item.zin, item.en)?.voor.trim(), item.id).not.toBe('');
+    }
+  });
+
+  it('gives no id, no Dutch word and no English word twice', () => {
+    expect(new Set(items.map((item) => item.id)).size).toBe(items.length);
+    expect(new Set(items.map((item) => item.nl)).size).toBe(items.length);
+    const engelseWoorden = items.flatMap((item) => [item.en, ...(item.aliassen ?? [])]);
+    expect(new Set(engelseWoorden.map((woord) => woord.toLowerCase())).size).toBe(
+      engelseWoorden.length,
+    );
+  });
+
+  it('never asks a word that is the same in both languages', () => {
+    for (const item of items) expect(item.en.toLowerCase(), item.id).not.toBe(item.nl);
+  });
+
+  it('counts "a dog", "to walk" and a second spelling right, and a letter out wrong', () => {
+    const opties = (woord: string) => {
+      const item = items.find((kandidaat) => kandidaat.en === woord);
+      if (!item) throw new Error(woord);
+      return { aliassen: item.aliassen ?? [], vooraf: ENGELS_VOORAF };
+    };
+    expect(beoordeelWoord('a dog', 'dog', opties('dog')).goed).toBe(true);
+    expect(beoordeelWoord('to walk', 'walk', opties('walk')).goed).toBe(true);
+    expect(beoordeelWoord('color', 'colour', opties('colour')).goed).toBe(true);
+    expect(beoordeelWoord('monday', 'Monday', opties('Monday')).goed).toBe(true);
+    expect(beoordeelWoord('dogs', 'dog', opties('dog')).goed).toBe(false);
+    expect(beoordeelWoord('coulor', 'colour', opties('colour')).goed).toBe(false);
+  });
+
+  it('offers four different words from the same set, the right one among them', () => {
+    for (const set of engels) {
+      for (const item of set.items) {
+        const keuzes = engelsOpties(item, set.items);
+        expect(keuzes, item.id).toHaveLength(4);
+        expect(new Set(keuzes).size, item.id).toBe(4);
+        expect(keuzes, item.id).toContain(item.en);
+        for (const keuze of keuzes) {
+          expect(
+            set.items.map((ander) => ander.en),
+            item.id,
+          ).toContain(keuze);
+        }
+      }
+    }
+  });
+
+  it('holds every English word once in the mix', () => {
+    const mix = loadTaalSet(TAAL_MIX.engels);
+    expect(mix?.items.map((item) => item.id).sort()).toEqual(items.map((item) => item.id).sort());
   });
 });

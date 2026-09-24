@@ -45,7 +45,7 @@ describe('the addresses', () => {
 
   it('opens Taal at the word the rail says, and each part at its own name', () => {
     // ADR-118. /taal is the address; /spelling and /werkwoorden open Taal on
-    // that part, and /woordjes, the placeholder, opens /taal.
+    // that part. /woordjes and /engels open Engels (ADR-217).
     const taal = routeFor('/taal');
     expect(taal).toMatchObject({ name: 'module', setId: null });
     if (taal.name !== 'module') throw new Error('expected a module');
@@ -58,8 +58,10 @@ describe('the addresses', () => {
     expect(pathFor(routeFor('/werkwoorden'))).toMatch(/\/taal\/werkwoorden$/);
 
     const woordjes = routeFor('/woordjes');
-    expect(woordjes).toMatchObject({ name: 'module', setId: null });
-    expect(pathFor(woordjes)).toMatch(/\/taal$/);
+    expect(woordjes).toMatchObject({ name: 'module', setId: null, regio: 'engels' });
+    expect(pathFor(woordjes)).toMatch(/\/taal\/engels$/);
+    expect(routeFor('/engels')).toMatchObject({ regio: 'engels', setId: null });
+    expect(routeFor('/taal/engels-kleuren')).toMatchObject({ setId: 'taal-en-kleuren' });
   });
 
   it('gives every set of Taal an address, and the two mixes their own names', () => {

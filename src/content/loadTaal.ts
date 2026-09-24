@@ -1,4 +1,10 @@
-import type { SpellingItem, SterkeWerkwoorden, TaalDeel, WerkwoordItem } from '@/game-core';
+import type {
+  EngelsItem,
+  SpellingItem,
+  SterkeWerkwoorden,
+  TaalDeel,
+  WerkwoordItem,
+} from '@/game-core';
 import { itemId, leesLijsten, setIdVan } from '@/store/woordlijsten';
 
 /**
@@ -32,12 +38,21 @@ interface WerkwoordBestand {
   readonly items: readonly WerkwoordItem[];
 }
 
+/** Engels (ADR-217): Dutch words to write in English, groep 7 and 8. */
+interface EngelsBestand {
+  readonly id: string;
+  readonly deel: 'engels';
+  readonly contentVersie: string;
+  readonly items: readonly EngelsItem[];
+}
+
 export type SpellingSet = SpellingBestand;
 export type WerkwoordSet = WerkwoordBestand;
-export type TaalSet = SpellingSet | WerkwoordSet;
+export type EngelsSet = EngelsBestand;
+export type TaalSet = SpellingSet | WerkwoordSet | EngelsSet;
 
 const bestanden = import.meta.glob<{ default: TaalSet }>(
-  '../../content/taal/{spelling,werkwoorden}/*.json',
+  '../../content/taal/{spelling,werkwoorden,engels}/*.json',
   { eager: true },
 );
 
@@ -65,12 +80,24 @@ export const TAAL_VOLGORDE = [
   'taal-ww-tt',
   'taal-ww-vt',
   'taal-ww-vd',
+  'taal-en-getallen',
+  'taal-en-dagen',
+  'taal-en-kleuren',
+  'taal-en-kleding',
+  'taal-en-familie',
+  'taal-en-lichaam',
+  'taal-en-dieren',
+  'taal-en-eten',
+  'taal-en-huis',
+  'taal-en-school',
+  'taal-en-werkwoorden',
 ] as const;
 
 /** Everything of one part under one name: the mix. Not a file. */
 export const TAAL_MIX: Readonly<Record<TaalDeel, string>> = {
   spelling: 'taal-sp-mix',
   werkwoorden: 'taal-ww-mix',
+  engels: 'taal-en-mix',
 };
 
 /**
@@ -80,6 +107,7 @@ export const TAAL_MIX: Readonly<Record<TaalDeel, string>> = {
 export const TAAL_FOUTEN: Readonly<Record<TaalDeel, string>> = {
   spelling: 'taal-sp-fouten',
   werkwoorden: 'taal-ww-fouten',
+  engels: 'taal-en-fouten',
 };
 
 export function loadTaalSets(): TaalSet[] {
@@ -89,10 +117,11 @@ export function loadTaalSets(): TaalSet[] {
   );
 }
 
-/** Which part a set belongs to, from its id: `taal-sp-…` or `taal-ww-…`. */
+/** Which part a set belongs to, from its id: `taal-sp-…`, `taal-ww-…` or `taal-en-…`. */
 export function taalDeelVan(setId: string): TaalDeel | null {
   if (setId.startsWith('taal-sp-')) return 'spelling';
   if (setId.startsWith('taal-ww-')) return 'werkwoorden';
+  if (setId.startsWith('taal-en-')) return 'engels';
   return null;
 }
 
@@ -118,6 +147,10 @@ function samen(deel: TaalDeel, id: string): TaalSet | undefined {
 
   if (deel === 'spelling') {
     const items = sets.flatMap((set) => (set.deel === 'spelling' ? set.items : []));
+    return { id, deel, contentVersie, items };
+  }
+  if (deel === 'engels') {
+    const items = sets.flatMap((set) => (set.deel === 'engels' ? set.items : []));
     return { id, deel, contentVersie, items };
   }
   const items = sets.flatMap((set) => (set.deel === 'werkwoorden' ? set.items : []));

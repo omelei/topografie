@@ -26,8 +26,8 @@ import type { Schedulable } from './leitner';
  * `klokVorm` makes for the clock (ADR-092).
  */
 
-/** The parts of the Taal page. Engels is the third, in a step of its own. */
-export type TaalDeel = 'spelling' | 'werkwoorden';
+/** The parts of the Taal page. Engels is the third (ADR-217). */
+export type TaalDeel = 'spelling' | 'werkwoorden' | 'engels';
 
 /**
  * The school year an item belongs to is a `Groep` (`groep.ts`), the same type a
@@ -84,6 +84,32 @@ export interface WerkwoordItem extends Schedulable {
   readonly sterk?: boolean;
   readonly groep: Groep;
 }
+
+/**
+ * An English word, for groep 7 and 8 (ADR-217): the Dutch word a child is
+ * given, the English word it writes, and an English sentence to write it in.
+ * The sentence does what it does for spelling: of the four animals on offer,
+ * "The ▢ sleeps in its basket" and "hond" leave one.
+ */
+export interface EngelsItem extends Schedulable {
+  /** `taal-en-dieren-dog`. Stable: a Leitner box is filed under it. */
+  readonly id: string;
+  /** The Dutch word, as the question gives it: `hond`. */
+  readonly nl: string;
+  /** The English word, British as school teaches it: `colour`. */
+  readonly en: string;
+  /** Other spellings that count: `color`, `gray`, `grandpa`. */
+  readonly aliassen?: readonly string[];
+  /** A short English sentence with the word in it once, never as its first word. */
+  readonly zin: string;
+  readonly groep: Groep;
+}
+
+/**
+ * What may stand in front of an English answer and is then left off: "a dog",
+ * "the dog" and "to walk" are the word a child was asked for.
+ */
+export const ENGELS_VOORAF: readonly string[] = ['a', 'an', 'the', 'to'];
 
 /** The forms of a strong verb that no rule makes. Content, not code. */
 export interface SterkWerkwoord {
@@ -526,6 +552,23 @@ export function werkwoordOpties(
   rng: () => number = Math.random,
 ): string[] {
   return schud([item.antwoord, ...werkwoordAfleiders(item, sterk)], rng);
+}
+
+/**
+ * Four English words to choose from: the answer and three others from the same
+ * set, so a child chooses between colours on the colours page and not between
+ * a colour and a cow.
+ */
+export function engelsOpties(
+  item: EngelsItem,
+  set: readonly EngelsItem[],
+  rng: () => number = Math.random,
+): string[] {
+  const goed = [item.en, ...(item.aliassen ?? [])].map((woord) => woord.toLowerCase());
+  const anderen = [...new Set(set.map((ander) => ander.en))].filter(
+    (woord) => !goed.includes(woord.toLowerCase()),
+  );
+  return schud([item.en, ...schud(anderen, rng).slice(0, 3)], rng);
 }
 
 /** The letter pieces for a spelling item, in the order shown. Dealt once. */

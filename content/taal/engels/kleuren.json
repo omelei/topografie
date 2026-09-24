@@ -1,0 +1,107 @@
+{
+  "id": "taal-en-kleuren",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-kleuren-red",
+      "nl": "rood",
+      "en": "red",
+      "zin": "The apple is red.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-blue",
+      "nl": "blauw",
+      "en": "blue",
+      "zin": "The sky is blue today.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-yellow",
+      "nl": "geel",
+      "en": "yellow",
+      "zin": "A banana is yellow.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-green",
+      "nl": "groen",
+      "en": "green",
+      "zin": "The grass is green.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-orange",
+      "nl": "oranje",
+      "en": "orange",
+      "zin": "Our football shirts are orange.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-purple",
+      "nl": "paars",
+      "en": "purple",
+      "zin": "She has a purple bag.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-pink",
+      "nl": "roze",
+      "en": "pink",
+      "zin": "My little sister loves pink.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-brown",
+      "nl": "bruin",
+      "en": "brown",
+      "zin": "The dog has brown eyes.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-black",
+      "nl": "zwart",
+      "en": "black",
+      "zin": "Our cat is black.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-white",
+      "nl": "wit",
+      "en": "white",
+      "zin": "Snow is white.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-grey",
+      "nl": "grijs",
+      "en": "grey",
+      "aliassen": ["gray"],
+      "zin": "The elephant is grey.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-gold",
+      "nl": "goud",
+      "en": "gold",
+      "zin": "She won a gold medal.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-silver",
+      "nl": "zilver",
+      "en": "silver",
+      "zin": "Dad has a silver car.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-kleuren-colour",
+      "nl": "kleur",
+      "en": "colour",
+      "aliassen": ["color"],
+      "zin": "What is your favourite colour?",
+      "groep": 7
+    }
+  ]
+}

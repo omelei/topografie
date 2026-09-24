@@ -106,14 +106,16 @@ const SET_SLUG: Record<string, string> = {
  * Taal has three (ADR-118). /spelling and /werkwoorden open Taal on that part
  * — spelling was a module of its own in the plan and is a part of Taal now —
  * and /woordjes, the word the rail's door answered to before Taal was built,
- * opens /taal. When Engels is there, /woordjes goes to Engels.
+ * opens /taal. Since Engels is there (ADR-217), /woordjes and /engels open
+ * Taal on Engels: woordjes leren is what a child in groep 7 does for English.
  */
 const MODULE_ALIAS: Record<
   string,
   { readonly module: Module['id']; readonly regio: string | null }
 > = {
   klok: { module: 'klok', regio: null },
-  woordjes: { module: 'woorden', regio: null },
+  woordjes: { module: 'woorden', regio: 'engels' },
+  engels: { module: 'woorden', regio: 'engels' },
   spelling: { module: 'woorden', regio: 'spelling' },
   werkwoorden: { module: 'woorden', regio: 'werkwoorden' },
 };
@@ -191,12 +193,25 @@ const TAAL_SLUG: Record<string, string> = {
   'taal-ww-vd': 'voltooid-deelwoord',
   'taal-ww-mix': 'werkwoordmix',
   'taal-ww-fouten': 'werkwoorden-fouten',
+  'taal-en-getallen': 'engels-getallen',
+  'taal-en-dagen': 'engels-dagen',
+  'taal-en-kleuren': 'engels-kleuren',
+  'taal-en-kleding': 'engels-kleding',
+  'taal-en-familie': 'engels-familie',
+  'taal-en-lichaam': 'engels-lichaam',
+  'taal-en-dieren': 'engels-dieren',
+  'taal-en-eten': 'engels-eten',
+  'taal-en-huis': 'engels-huis',
+  'taal-en-school': 'engels-school',
+  'taal-en-werkwoorden': 'engels-werkwoorden',
+  'taal-en-mix': 'engelse-mix',
+  'taal-en-fouten': 'engels-fouten',
 };
 
 const TAAL_SET = new Map(Object.entries(TAAL_SLUG).map(([id, slug]) => [slug, id]));
 
-/** Taal's two parts, which answer to their own name after /taal. */
-const TAAL_DELEN: readonly string[] = ['spelling', 'werkwoorden'];
+/** Taal's parts, which answer to their own name after /taal. */
+const TAAL_DELEN: readonly string[] = ['spelling', 'werkwoorden', 'engels'];
 
 export function setSlug(setId: string): string {
   if (setId === VLAG_PROVINCIES) return 'provincies';

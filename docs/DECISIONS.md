@@ -12847,6 +12847,46 @@ tot er een contactadres was.
   op aanvragen telt niet: een nieuwe gebeurtenis zou `schema.sql` opnieuw
   vragen, en de mails zelf zijn de telling.
 
+## ADR-217 — Engels: woordjes voor groep 7 en 8, als derde deel van Taal
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 8 van "de volgende tien". Op
+verzoek van de eigenaar: "Punt 8: ja".
+
+**Context.** ADR-118 hield een plek vrij voor Engels als derde deel van Taal:
+`beoordeelWoord` kende al `aliassen` en `vooraf`, en `/woordjes` zou naar Engels
+gaan zodra het er was.
+
+**Besluit.**
+
+- **Een derde deel van Taal**, geen zesde vak: naast Spelling en Werkwoorden,
+  op `/taal/engels`. Het deel volgt de vorm van de andere twee: sets in
+  `content/taal/engels/`, een mix, jouw fouten, en een diploma per set.
+- **Elf sets, 183 woorden**, in vijf tegels en de Engelse mix: tellen en de
+  kalender, kleuren en kleding, mensen en dieren, eten, thuis en school, en
+  werkwoorden. Groep 7 en 8. Wat erin staat en waarom, staat in
+  `content/taal/AFBAKENING.md`.
+- **De vraag**: het Nederlandse woord ("Wat is hond in het Engels?") en een
+  Engelse zin met een gat. De zin doet wat hij bij spelling doet: hij maakt
+  duidelijk welk woord er hoort.
+- **Vijf manieren**, dezelfde vijf als bij werkwoorden: kies uit vier Engelse
+  woorden uit dezelfde set (gratis), typ het woord (premium), ontdekken,
+  overleven en het diploma. De oefentoets typt.
+- **Nakijken** is streng zoals bij spelling, met twee uitzonderingen:
+  "a", "an", "the" of "to" ervoor telt goed, en een Amerikaanse spelling ook
+  (color naast colour). Hoofdletters tellen niet.
+- **`/woordjes` en `/engels`** openen Taal op Engels. Groep 8 begint Taal op
+  Vandaag met Engels (op school), want de werkwoorden zijn van groep 7.
+- Werkblad, "Over dit onderwerp" en de pagina's voor Google werken voor Engels
+  zoals voor de andere sets.
+
+**Gevolgen.**
+
+- Elf diploma's erbij: 79 in plaats van 68. De teksten op de premiumpagina en
+  de kassa zeggen 79.
+- Geen voorleesknop, net als bij de rest van Taal: een stem zou het woord
+  zeggen dat het kind moet schrijven, en de betere stemmen sturen de tekst naar
+  een server.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

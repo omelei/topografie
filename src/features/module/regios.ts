@@ -89,12 +89,13 @@ export function regiosVan(moduleId: Module['id']): readonly Regio[] {
 
 /**
  * Taal's parts. Spelling first, because it is where groep 5 starts and what a
- * child brings home from school most weeks. Engels is the third, in a step of
- * its own; until then it is not a chip, not even one that says "binnenkort".
+ * child brings home from school most weeks. Engels is the third (ADR-217): it
+ * starts in groep 7, after the other two.
  */
 export const TAAL_DELEN: readonly Regio[] = [
   { id: 'spelling', naam: 'regio.spelling', built: true },
   { id: 'werkwoorden', naam: 'regio.werkwoorden', built: true },
+  { id: 'engels', naam: 'regio.engels', built: true },
 ];
 
 /**

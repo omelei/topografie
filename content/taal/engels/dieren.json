@@ -1,0 +1,134 @@
+{
+  "id": "taal-en-dieren",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-dieren-dog",
+      "nl": "hond",
+      "en": "dog",
+      "zin": "The dog sleeps in its basket.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-cat",
+      "nl": "kat",
+      "en": "cat",
+      "zin": "Our cat likes milk.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-horse",
+      "nl": "paard",
+      "en": "horse",
+      "zin": "She rides a horse every week.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-cow",
+      "nl": "koe",
+      "en": "cow",
+      "zin": "The cow eats grass all day.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-pig",
+      "nl": "varken",
+      "en": "pig",
+      "zin": "The pig rolls in the mud.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-sheep",
+      "nl": "schaap",
+      "en": "sheep",
+      "zin": "The sheep has a thick coat of wool.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-chicken",
+      "nl": "kip",
+      "en": "chicken",
+      "aliassen": ["hen"],
+      "zin": "The chicken lays an egg.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-duck",
+      "nl": "eend",
+      "en": "duck",
+      "zin": "A duck swims in the pond.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-bird",
+      "nl": "vogel",
+      "en": "bird",
+      "zin": "A bird sings in the tree.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-fish",
+      "nl": "vis",
+      "en": "fish",
+      "zin": "My fish swims round and round.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-mouse",
+      "nl": "muis",
+      "en": "mouse",
+      "zin": "The mouse eats the cheese.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-rabbit",
+      "nl": "konijn",
+      "en": "rabbit",
+      "zin": "The rabbit has long ears.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-elephant",
+      "nl": "olifant",
+      "en": "elephant",
+      "zin": "The elephant has a long trunk.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-lion",
+      "nl": "leeuw",
+      "en": "lion",
+      "zin": "The lion sleeps under a tree.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-monkey",
+      "nl": "aap",
+      "en": "monkey",
+      "zin": "The monkey climbs up a tree.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-bear",
+      "nl": "beer",
+      "en": "bear",
+      "zin": "The bear likes honey.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-snake",
+      "nl": "slang",
+      "en": "snake",
+      "zin": "The snake is very long.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-dieren-frog",
+      "nl": "kikker",
+      "en": "frog",
+      "zin": "The frog jumps into the water.",
+      "groep": 7
+    }
+  ]
+}

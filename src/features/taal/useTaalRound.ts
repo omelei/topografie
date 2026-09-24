@@ -4,17 +4,26 @@ import {
   beoordeelWoord,
   isDiplomaVorm,
   composeRound,
+  ENGELS_VOORAF,
+  engelsOpties,
   gatLetters,
   letterOpties,
   metFouten,
   werkwoordOpties,
+  type EngelsItem,
   type ItemState,
   type RoundRule,
   type Schedulable,
   type SpellingItem,
   type WerkwoordItem,
 } from '@/game-core';
-import { isTaalFouten, loadTaalSet, sterkeWerkwoorden, type TaalSet } from '@/content/loadTaal';
+import {
+  isTaalFouten,
+  loadTaalSet,
+  sterkeWerkwoorden,
+  taalSetVanItem,
+  type TaalSet,
+} from '@/content/loadTaal';
 import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/useRoundCore';
 import { TAAL_ROUND_RULE, typtHet, type TaalMode } from './taalRegels';
 
@@ -36,7 +45,7 @@ import { TAAL_ROUND_RULE, typtHet, type TaalMode } from './taalRegels';
  * round, as everywhere (ADR-101).
  */
 
-export type TaalItem = SpellingItem | WerkwoordItem;
+export type TaalItem = SpellingItem | WerkwoordItem | EngelsItem;
 
 export type TaalVraag =
   | {
@@ -49,6 +58,12 @@ export type TaalVraag =
       readonly soort: 'werkwoord';
       readonly item: WerkwoordItem;
       /** Three real forms of the verb, in the order shown. Null when typed. */
+      readonly opties: readonly string[] | null;
+    }
+  | {
+      readonly soort: 'engels';
+      readonly item: EngelsItem;
+      /** Four English words from the set, in the order shown. Null when typed. */
       readonly opties: readonly string[] | null;
     };
 
@@ -68,6 +83,7 @@ const itemVan = (vraag: TaalVraag): TaalItem => vraag.item;
  */
 export function goedAntwoord(vraag: TaalVraag, typen: boolean): string {
   if (vraag.soort === 'werkwoord') return vraag.item.antwoord;
+  if (vraag.soort === 'engels') return vraag.item.en;
   return typen ? vraag.item.woord : gatLetters(vraag.item);
 }
 
@@ -107,11 +123,19 @@ export function useTaalRound(
               item,
               opties: typen ? null : letterOpties(item),
             }))
-          : kies(set.items).map((item): TaalVraag => ({
-              soort: 'werkwoord',
-              item,
-              opties: typen ? null : werkwoordOpties(item, sterkeWerkwoorden()),
-            }));
+          : set.deel === 'engels'
+            ? kies(set.items).map((item): TaalVraag => ({
+                soort: 'engels',
+                item,
+                // Keuzes uit de set waar het woord vandaan komt, ook in de mix:
+                // kleuren naast kleuren (ADR-217).
+                opties: typen ? null : engelsOpties(item, zelfdeSet(item, set.items)),
+              }))
+            : kies(set.items).map((item): TaalVraag => ({
+                soort: 'werkwoord',
+                item,
+                opties: typen ? null : werkwoordOpties(item, sterkeWerkwoorden()),
+              }));
 
       const items: readonly TaalItem[] = set.items;
       return { set, itemIds: items.map((item) => item.id), questions };
@@ -134,7 +158,12 @@ export function useTaalRound(
   const submit = useCallback(
     (getypt: string) => {
       if (!vraag) return;
-      const oordeel = beoordeelWoord(getypt, goedAntwoord(vraag, true));
+      // Engels telt "a dog" en "to walk" goed, en "color" naast "colour" (ADR-217).
+      const opties =
+        vraag.soort === 'engels'
+          ? { aliassen: vraag.item.aliassen ?? [], vooraf: ENGELS_VOORAF }
+          : {};
+      const oordeel = beoordeelWoord(getypt, goedAntwoord(vraag, true), opties);
       settle({
         correct: oordeel.goed,
         given: oordeel.getypt,
@@ -152,6 +181,13 @@ export function useTaalRound(
 
   const state: TaalRoundState = { ...kern, mode };
   return { state, choose, submit, giveUp, next, stop };
+}
+
+/** The items of the set an English word was written in: `taal-en-kleuren-red`. */
+function zelfdeSet(item: EngelsItem, items: readonly EngelsItem[]): readonly EngelsItem[] {
+  const set = taalSetVanItem(item.id);
+  const zelfde = items.filter((ander) => taalSetVanItem(ander.id) === set);
+  return zelfde.length >= 4 ? zelfde : items;
 }
 
 /**

@@ -602,6 +602,19 @@ const TAAL_NAAM: Record<string, { readonly naam: TranslationKey; readonly kort?:
     'taal-ww-vd': { naam: 'set.taal-ww-vd' },
     'taal-ww-mix': { naam: 'set.taal-ww-mix' },
     'taal-ww-fouten': { naam: 'set.taal-ww-fouten' },
+    'taal-en-getallen': { naam: 'set.taal-en-getallen', kort: 'set.taal-en-getallen.kort' },
+    'taal-en-dagen': { naam: 'set.taal-en-dagen', kort: 'set.taal-en-dagen.kort' },
+    'taal-en-kleuren': { naam: 'set.taal-en-kleuren', kort: 'set.taal-en-kleuren.kort' },
+    'taal-en-kleding': { naam: 'set.taal-en-kleding', kort: 'set.taal-en-kleding.kort' },
+    'taal-en-familie': { naam: 'set.taal-en-familie', kort: 'set.taal-en-familie.kort' },
+    'taal-en-lichaam': { naam: 'set.taal-en-lichaam', kort: 'set.taal-en-lichaam.kort' },
+    'taal-en-dieren': { naam: 'set.taal-en-dieren', kort: 'set.taal-en-dieren.kort' },
+    'taal-en-eten': { naam: 'set.taal-en-eten', kort: 'set.taal-en-eten.kort' },
+    'taal-en-huis': { naam: 'set.taal-en-huis', kort: 'set.taal-en-huis.kort' },
+    'taal-en-school': { naam: 'set.taal-en-school', kort: 'set.taal-en-school.kort' },
+    'taal-en-werkwoorden': { naam: 'set.taal-en-werkwoorden' },
+    'taal-en-mix': { naam: 'set.taal-en-mix' },
+    'taal-en-fouten': { naam: 'set.taal-en-fouten' },
   };
 
 function taalOnderdeel(set: TaalSet): Onderdeel {
@@ -760,6 +773,56 @@ const TAAL_VAKKEN: readonly TaalVak[] = [
     uitleg: 'onderwerp.taal.werkwoordmix.uitleg',
     keuze: null,
     sets: [TAAL_MIX.werkwoorden],
+  },
+  // Engels (ADR-217): elf sets in vijf tegels en de mix. Wat bij elkaar hoort
+  // in een schoolboek, staat onder één tegel met een chip per set.
+  {
+    id: 'engels-tellen',
+    deel: 'engels',
+    naam: 'onderwerp.taal.enTellen',
+    uitleg: 'onderwerp.taal.enTellen.uitleg',
+    keuze: 'onderwerp.taal.enTellen.keuze',
+    sets: ['taal-en-getallen', 'taal-en-dagen'],
+  },
+  {
+    id: 'engels-kleuren',
+    deel: 'engels',
+    naam: 'onderwerp.taal.enKleuren',
+    uitleg: 'onderwerp.taal.enKleuren.uitleg',
+    keuze: 'onderwerp.taal.enKleuren.keuze',
+    sets: ['taal-en-kleuren', 'taal-en-kleding'],
+  },
+  {
+    id: 'engels-mensen',
+    deel: 'engels',
+    naam: 'onderwerp.taal.enMensen',
+    uitleg: 'onderwerp.taal.enMensen.uitleg',
+    keuze: 'onderwerp.taal.enMensen.keuze',
+    sets: ['taal-en-familie', 'taal-en-lichaam', 'taal-en-dieren'],
+  },
+  {
+    id: 'engels-thuis',
+    deel: 'engels',
+    naam: 'onderwerp.taal.enThuis',
+    uitleg: 'onderwerp.taal.enThuis.uitleg',
+    keuze: 'onderwerp.taal.enThuis.keuze',
+    sets: ['taal-en-eten', 'taal-en-huis', 'taal-en-school'],
+  },
+  {
+    id: 'engels-werkwoorden',
+    deel: 'engels',
+    naam: 'onderwerp.taal.enWerkwoorden',
+    uitleg: 'onderwerp.taal.enWerkwoorden.uitleg',
+    keuze: null,
+    sets: ['taal-en-werkwoorden'],
+  },
+  {
+    id: 'engelsmix',
+    deel: 'engels',
+    naam: 'onderwerp.taal.engelsmix',
+    uitleg: 'onderwerp.taal.engelsmix.uitleg',
+    keuze: null,
+    sets: [TAAL_MIX.engels],
   },
 ];
 
@@ -1298,7 +1361,8 @@ const STARTERS_PER_GROEP: Readonly<Record<Groep, readonly string[]>> = {
   5: ['nl-provincies', 'tafel-3', 'klok-kwart', 'vlag-europa-bekend', 'taal-sp-eiij'],
   6: ['nl-provincies', 'keer-100', 'klok-vijf', 'vlag-nederland-provincies', 'taal-ww-tt'],
   7: ['nl-hoofdsteden', 'keer-1000', 'klok-vijf', 'vlag-europa-alle', 'taal-ww-vt'],
-  8: ['europa-landen', 'delen-1000', 'klok-vijf', 'vlag-wereld-alle', 'taal-ww-vd'],
+  // Groep 8 begint Taal met Engels (ADR-217): de werkwoorden zijn van groep 7.
+  8: ['europa-landen', 'delen-1000', 'klok-vijf', 'vlag-wereld-alle', 'taal-en-school'],
 };
 
 /** De vorm waarin een kaart begint: die van zijn module, en bij Taal die van zijn deel. */
@@ -1410,6 +1474,8 @@ const TAAL_MODES: readonly ModeId[] = [
   'taal-flitsdictee',
   'taal-vorm-kiezen',
   'taal-vorm-typen',
+  'taal-engels-kiezen',
+  'taal-engels-typen',
   'overleven',
   'taal-diploma',
 ];

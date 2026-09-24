@@ -29,11 +29,10 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ### Lopend
 
-| Wat                                                                        | Wie    | Staat                   | Hangt af van |
-| -------------------------------------------------------------------------- | ------ | ----------------------- | ------------ |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij    | Te doen                 | —            |
-| Engels: woordjes voor groep 7 en 8                                         | Claude | Gekozen op 24 september | —            |
-| Klassencode: € 300 inclusief of exclusief btw?                             | jij    | Te beslissen            | —            |
+| Wat                                                                        | Wie | Staat        | Hangt af van |
+| -------------------------------------------------------------------------- | --- | ------------ | ------------ |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij | Te doen      | —            |
+| Klassencode: € 300 inclusief of exclusief btw?                             | jij | Te beslissen | —            |
 
 ### Code afschermen
 
@@ -110,7 +109,7 @@ teller.
 | 5   | Wekelijks overzicht van de teller als issue in GitHub                                                     | Cijfers die niemand opzoekt, sturen niets                                  | Klein  | Gedaan (#150) |
 | 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  | Geparkeerd    |
 | 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel | Geparkeerd    |
-| 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  | Gekozen       |
+| 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  | Gedaan (#152) |
 | 9   | Betalen per maand, € 9,95                                                                                 | Lagere drempel dan een jaar vooruit                                        | Middel | Later         |
 | 10  | Uitdagen (A + D)                                                                                          | Pas als delen (ADR-209) laat zien dat kinderen elkaar opzoeken             | Middel | Na 8 oktober  |
 
@@ -144,6 +143,7 @@ teller.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #152      | Engels: 183 woordjes voor groep 7 en 8 als derde deel van Taal, met kiezen, typen, ontdekken, overleven, een diploma per set en een werkblad                                              | 217      |
 | #151      | Een pagina voor de klas (`/scholen`): wat een klassencode is, en aanvragen per mail aan info@leer.nu                                                                                      | 216      |
 | #150      | Elke maandag het weekoverzicht van de teller als issue in GitHub                                                                                                                          | 215      |
 | #149      | Een pagina voor ouders (`/voor-ouders`), en premium ook zonder naam te bekijken                                                                                                           | 214      |

@@ -611,6 +611,58 @@ export const WERKWOORD_FORMS: readonly PracticeForm[] = [
 ];
 
 /**
+ * Engels (ADR-217): the Dutch word given, the English word chosen or typed,
+ * in an English sentence. The same five as werkwoorden, for the same reasons:
+ * choose first, then type as a test asks; ontdekken is the list; overleven
+ * chooses over three lives; the diploma types.
+ */
+export const ENGELS_FORMS: readonly PracticeForm[] = [
+  {
+    id: 'taal-engels-kiezen',
+    name: 'mode.taal-engels-kiezen',
+    reason: 'way.taal-engels-kiezen',
+    icon: ChoiceIcon,
+    rule: TAAL_ROUND_RULE['taal-engels-kiezen'],
+    seconds: 8,
+  },
+  {
+    id: 'taal-engels-typen',
+    name: 'mode.taal-engels-typen',
+    reason: 'way.taal-engels-typen',
+    icon: KeyboardIcon,
+    rule: TAAL_ROUND_RULE['taal-engels-typen'],
+    seconds: 12,
+  },
+  {
+    id: 'ontdekken',
+    name: 'mode.ontdekken',
+    reason: 'way.ontdekken',
+    icon: ExploreIcon,
+    rule: null,
+    seconds: null,
+    geldtVoor: (setId) => !isTaalMix(setId) && !isTaalFouten(setId),
+  },
+  {
+    id: 'overleven',
+    name: 'mode.overleven',
+    reason: 'way.overleven',
+    icon: ShieldIcon,
+    rule: TAAL_ROUND_RULE.overleven,
+    seconds: null,
+  },
+  {
+    id: 'taal-diploma',
+    name: 'mode.taal-diploma',
+    reason: 'way.taal-diploma',
+    icon: DiplomaIcon,
+    rule: TAAL_ROUND_RULE['taal-diploma'],
+    seconds: 12,
+    vasteLengte: true,
+    geldtVoor: isTaalDiplomaSet,
+  },
+];
+
+/**
  * The way the oefentoets answers in: typing, because that is what a test asks
  * — the name unaided, the sum unaided, the time written out, the word after
  * the flitsdictee's three seconds, the verb form. The oefentoets is a tile of
@@ -618,7 +670,7 @@ export const WERKWOORD_FORMS: readonly PracticeForm[] = [
  * pick a way a test does not have (ADR-100).
  *
  * Per module, and per part where a module has parts: Taal's two parts type in
- * two different ways (ADR-118), and Engels will type in a third.
+ * two different ways (ADR-118), and Engels types in a third (ADR-217).
  *
  * Flags cannot type, so their toets asks both ways round instead (ADR-102).
  */
@@ -629,6 +681,7 @@ const TOETS_VORM: Record<string, ModeId> = {
   vlaggen: 'vlag-gemengd',
   spelling: 'taal-flitsdictee',
   werkwoorden: 'taal-vorm-typen',
+  engels: 'taal-engels-typen',
 };
 
 /**
@@ -654,6 +707,7 @@ export function formsFor(moduleId: string, deel: string | null = null): readonly
   if (moduleId === 'vlaggen') return VLAG_FORMS;
   if (moduleId === 'woorden') {
     if (deel === EIGEN_DEEL) return EIGEN_FORMS;
+    if (deel === 'engels') return ENGELS_FORMS;
     return deel === 'werkwoorden' ? WERKWOORD_FORMS : SPELLING_FORMS;
   }
   return TOPO_FORMS;

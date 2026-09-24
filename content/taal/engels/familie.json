@@ -1,0 +1,121 @@
+{
+  "id": "taal-en-familie",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-familie-mother",
+      "nl": "moeder",
+      "en": "mother",
+      "zin": "My mother works in a hospital.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-father",
+      "nl": "vader",
+      "en": "father",
+      "zin": "My father cooks dinner every day.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-brother",
+      "nl": "broer",
+      "en": "brother",
+      "zin": "My brother is older than me.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-sister",
+      "nl": "zus",
+      "en": "sister",
+      "zin": "I share a room with my sister.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-grandfather",
+      "nl": "opa",
+      "en": "grandfather",
+      "aliassen": ["grandpa", "granddad"],
+      "zin": "My grandfather has a big garden.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-grandmother",
+      "nl": "oma",
+      "en": "grandmother",
+      "aliassen": ["grandma", "granny"],
+      "zin": "My grandmother bakes great cakes.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-uncle",
+      "nl": "oom",
+      "en": "uncle",
+      "zin": "My uncle lives in London.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-aunt",
+      "nl": "tante",
+      "en": "aunt",
+      "zin": "My aunt has two dogs.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-parents",
+      "nl": "ouders",
+      "en": "parents",
+      "zin": "My parents are at work.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-children",
+      "nl": "kinderen",
+      "en": "children",
+      "zin": "The children are in the garden.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-son",
+      "nl": "zoon",
+      "en": "son",
+      "zin": "Their son is five years old.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-daughter",
+      "nl": "dochter",
+      "en": "daughter",
+      "zin": "Their daughter plays the piano.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-family",
+      "nl": "familie",
+      "en": "family",
+      "zin": "My family is very big.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-friend",
+      "nl": "vriend",
+      "en": "friend",
+      "zin": "Tom is my best friend.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-boy",
+      "nl": "jongen",
+      "en": "boy",
+      "zin": "The boy rides a bike.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-familie-girl",
+      "nl": "meisje",
+      "en": "girl",
+      "zin": "The girl reads a comic.",
+      "groep": 7
+    }
+  ]
+}

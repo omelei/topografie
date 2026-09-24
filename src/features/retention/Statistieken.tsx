@@ -8,6 +8,7 @@ import {
   type ItemState,
   type KlokItem,
   type Schedulable,
+  type EngelsItem,
   type SpellingItem,
   type SumItem,
   type VlagItem,
@@ -527,7 +528,8 @@ function itemNaam(moduleId: Module['id'], item: Schedulable): string {
   if (moduleId === 'klok') return klokVoluit(item as KlokItem);
   if (moduleId === 'vlaggen') return (item as VlagItem).naam;
   if (moduleId === 'woorden') {
-    const taalItem = item as SpellingItem | WerkwoordItem;
+    const taalItem = item as SpellingItem | WerkwoordItem | EngelsItem;
+    if ('en' in taalItem) return `${taalItem.nl}: ${taalItem.en}`;
     return 'woord' in taalItem ? taalItem.woord : taalItem.zin;
   }
   return (item as Item).naam;

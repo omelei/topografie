@@ -1,0 +1,133 @@
+{
+  "id": "taal-en-werkwoorden",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-werkwoorden-walk",
+      "nl": "lopen",
+      "en": "walk",
+      "zin": "We walk to school every day.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-run",
+      "nl": "rennen",
+      "en": "run",
+      "zin": "The dogs run in the park.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-jump",
+      "nl": "springen",
+      "en": "jump",
+      "zin": "Frogs can jump very far.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-swim",
+      "nl": "zwemmen",
+      "en": "swim",
+      "zin": "I swim in the sea in summer.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-eat",
+      "nl": "eten",
+      "en": "eat",
+      "zin": "We eat dinner at six.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-drink",
+      "nl": "drinken",
+      "en": "drink",
+      "zin": "Cows drink a lot of water.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-sleep",
+      "nl": "slapen",
+      "en": "sleep",
+      "zin": "Babies sleep a lot.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-read",
+      "nl": "lezen",
+      "en": "read",
+      "zin": "I read before I go to bed.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-write",
+      "nl": "schrijven",
+      "en": "write",
+      "zin": "Please write your name here.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-sing",
+      "nl": "zingen",
+      "en": "sing",
+      "zin": "Birds sing in the morning.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-dance",
+      "nl": "dansen",
+      "en": "dance",
+      "zin": "We dance at the party.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-play",
+      "nl": "spelen",
+      "en": "play",
+      "zin": "The children play outside.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-listen",
+      "nl": "luisteren",
+      "en": "listen",
+      "zin": "Please listen to the teacher.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-cook",
+      "nl": "koken",
+      "en": "cook",
+      "zin": "Dad and I cook pasta together.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-help",
+      "nl": "helpen",
+      "en": "help",
+      "zin": "Can you help me?",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-buy",
+      "nl": "kopen",
+      "en": "buy",
+      "zin": "We buy bread at the bakery.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-make",
+      "nl": "maken",
+      "en": "make",
+      "zin": "We make a card for grandma.",
+      "groep": 8
+    },
+    {
+      "id": "taal-en-werkwoorden-know",
+      "nl": "weten",
+      "en": "know",
+      "zin": "I know the answer.",
+      "groep": 8
+    }
+  ]
+}

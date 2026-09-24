@@ -171,7 +171,7 @@ describe('the ones to start with, for a group', () => {
       'europa-landen',
       'delen-1000',
       'vlag-wereld-alle',
-      'taal-ww-vd',
+      'taal-en-school',
       'klok-vijf',
     ]);
   });
@@ -182,9 +182,12 @@ describe('the ones to start with, for a group', () => {
   });
 
   it('asks a verb the way verbs are asked', () => {
-    const taal = starters(8).find((entry) => entry.deel.moduleId === 'woorden');
-    if (taal?.deel.setId.startsWith('taal-ww-')) expect(taal.mode).toBe('taal-vorm-kiezen');
-    else expect(taal?.mode).toBe('taal-letters');
+    const taal = starters(7).find((entry) => entry.deel.moduleId === 'woorden');
+    expect(taal?.deel.setId).toBe('taal-ww-vt');
+    expect(taal?.mode).toBe('taal-vorm-kiezen');
+    // En Engels op de manier van Engels (ADR-217).
+    const engels = starters(8).find((entry) => entry.deel.moduleId === 'woorden');
+    expect(engels?.mode).toBe('taal-engels-kiezen');
   });
 });
 

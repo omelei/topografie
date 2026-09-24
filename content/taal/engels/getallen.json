@@ -1,0 +1,119 @@
+{
+  "id": "taal-en-getallen",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-getallen-one",
+      "nl": "één",
+      "en": "one",
+      "zin": "I have one brother.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-two",
+      "nl": "twee",
+      "en": "two",
+      "zin": "We have two cats.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-three",
+      "nl": "drie",
+      "en": "three",
+      "zin": "She is three years old.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-four",
+      "nl": "vier",
+      "en": "four",
+      "zin": "A chair has four legs.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-five",
+      "nl": "vijf",
+      "en": "five",
+      "zin": "I have five fingers on each hand.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-six",
+      "nl": "zes",
+      "en": "six",
+      "zin": "The shop opens at six in the morning.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-seven",
+      "nl": "zeven",
+      "en": "seven",
+      "zin": "A week has seven days.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-eight",
+      "nl": "acht",
+      "en": "eight",
+      "zin": "A spider has eight legs.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-nine",
+      "nl": "negen",
+      "en": "nine",
+      "zin": "My sister is nine today.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-ten",
+      "nl": "tien",
+      "en": "ten",
+      "zin": "I can count to ten.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-eleven",
+      "nl": "elf",
+      "en": "eleven",
+      "zin": "A football team has eleven players.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-twelve",
+      "nl": "twaalf",
+      "en": "twelve",
+      "zin": "A year has twelve months.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-thirteen",
+      "nl": "dertien",
+      "en": "thirteen",
+      "zin": "My brother is thirteen years old.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-fifteen",
+      "nl": "vijftien",
+      "en": "fifteen",
+      "zin": "The bus comes in fifteen minutes.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-twenty",
+      "nl": "twintig",
+      "en": "twenty",
+      "zin": "There are twenty children in the park.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-getallen-hundred",
+      "nl": "honderd",
+      "en": "hundred",
+      "zin": "My great-grandma is almost a hundred.",
+      "groep": 7
+    }
+  ]
+}

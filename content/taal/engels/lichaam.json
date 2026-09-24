@@ -1,0 +1,127 @@
+{
+  "id": "taal-en-lichaam",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-lichaam-head",
+      "nl": "hoofd",
+      "en": "head",
+      "zin": "I wear a hat on my head.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-hair",
+      "nl": "haar",
+      "en": "hair",
+      "zin": "She has long hair.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-eye",
+      "nl": "oog",
+      "en": "eye",
+      "zin": "Close one eye and look.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-ear",
+      "nl": "oor",
+      "en": "ear",
+      "zin": "He has a pencil behind his ear.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-nose",
+      "nl": "neus",
+      "en": "nose",
+      "zin": "The clown has a red nose.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-mouth",
+      "nl": "mond",
+      "en": "mouth",
+      "zin": "Open your mouth, please.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-tooth",
+      "nl": "tand",
+      "en": "tooth",
+      "zin": "My tooth is loose.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-leg",
+      "nl": "been",
+      "en": "leg",
+      "zin": "He broke his leg.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-foot",
+      "nl": "voet",
+      "en": "foot",
+      "zin": "My foot hurts.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-finger",
+      "nl": "vinger",
+      "en": "finger",
+      "zin": "I cut my finger.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-knee",
+      "nl": "knie",
+      "en": "knee",
+      "zin": "She fell on her knee.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-belly",
+      "nl": "buik",
+      "en": "belly",
+      "aliassen": ["tummy"],
+      "zin": "My belly is full after dinner.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-back",
+      "nl": "rug",
+      "en": "back",
+      "zin": "I carry my bag on my back.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-shoulder",
+      "nl": "schouder",
+      "en": "shoulder",
+      "zin": "The parrot sits on his shoulder.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-neck",
+      "nl": "nek",
+      "en": "neck",
+      "zin": "The giraffe has a long neck.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-face",
+      "nl": "gezicht",
+      "en": "face",
+      "zin": "Wash your face, please.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-lichaam-toe",
+      "nl": "teen",
+      "en": "toe",
+      "zin": "I hit my toe on the door.",
+      "groep": 7
+    }
+  ]
+}

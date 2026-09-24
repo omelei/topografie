@@ -1,0 +1,126 @@
+{
+  "id": "taal-en-eten",
+  "deel": "engels",
+  "contentVersie": "2026-09-24",
+  "items": [
+    {
+      "id": "taal-en-eten-bread",
+      "nl": "brood",
+      "en": "bread",
+      "zin": "I eat bread for lunch.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-cheese",
+      "nl": "kaas",
+      "en": "cheese",
+      "zin": "Mice love cheese.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-milk",
+      "nl": "melk",
+      "en": "milk",
+      "zin": "I drink a glass of milk.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-apple",
+      "nl": "appel",
+      "en": "apple",
+      "zin": "I take an apple to school.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-banana",
+      "nl": "banaan",
+      "en": "banana",
+      "zin": "The monkey eats a banana.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-pear",
+      "nl": "peer",
+      "en": "pear",
+      "zin": "This pear is sweet.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-strawberry",
+      "nl": "aardbei",
+      "en": "strawberry",
+      "zin": "There is a strawberry on my cake.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-egg",
+      "nl": "ei",
+      "en": "egg",
+      "zin": "I eat an egg every morning.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-butter",
+      "nl": "boter",
+      "en": "butter",
+      "zin": "Put some butter on your toast.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-sugar",
+      "nl": "suiker",
+      "en": "sugar",
+      "zin": "Do you want sugar in your tea?",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-tea",
+      "nl": "thee",
+      "en": "tea",
+      "zin": "Grandma drinks tea with lemon.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-soup",
+      "nl": "soep",
+      "en": "soup",
+      "zin": "The soup is hot.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-meat",
+      "nl": "vlees",
+      "en": "meat",
+      "zin": "We do not eat meat.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-potato",
+      "nl": "aardappel",
+      "en": "potato",
+      "zin": "I peel a potato for dinner.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-carrot",
+      "nl": "wortel",
+      "en": "carrot",
+      "zin": "The rabbit eats a carrot.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-cake",
+      "nl": "taart",
+      "en": "cake",
+      "zin": "We eat cake at my party.",
+      "groep": 7
+    },
+    {
+      "id": "taal-en-eten-breakfast",
+      "nl": "ontbijt",
+      "en": "breakfast",
+      "zin": "What do you eat for breakfast?",
+      "groep": 7
+    }
+  ]
+}
