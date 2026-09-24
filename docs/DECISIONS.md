@@ -12758,6 +12758,26 @@ de roadmap; de eigenaar zei "implementeer deze punten".
   onderwerp, elk op een eigen pagina, met alle antwoorden achteraan per blad.
   Buren hebben zo niet hetzelfde blad; een juf print één keer voor de hele klas.
 
+## ADR-213 — "Over dit onderwerp": wat erin zit, en de vragen van ouders
+
+**Status:** accepted. **Date:** 2026-09-24. Punt 2 van "de volgende tien".
+
+**Wat er mis was.** De pagina's voor Google (ADR-207) hadden één regel tekst
+en een lijst links. Dat is dun, en het verdween ook nog zodra de app de pagina
+overnam: Google laat JavaScript draaien en leest wat er daarna staat.
+
+**Besluit.**
+
+- **Per onderwerp** (`src/seo/over.ts`): een lijst van wat erin zit, zoals het
+  is (hoofdsteden met hun provincie, de tafel voluit, de tijden in woorden, de
+  landen, de woorden), hooguit 60 regels met "En nog …" erachter, en vier
+  vragen van ouders: hoe je het oefent, voor welke groep, of er een werkblad is
+  en of het gratis is.
+- **Op twee plekken dezelfde tekst:** in de statische pagina voor Google, en
+  onderaan de pagina van het onderwerp in de app (`OverOnderwerp`). Zo staat
+  hij er ook na het draaien van de app, en heeft een ouder er zelf ook wat aan.
+- Niet bij een mix of jouw fouten.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

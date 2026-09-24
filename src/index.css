@@ -4799,6 +4799,33 @@
     }
   }
 
+  /* ---- Over dit onderwerp (ADR-213) ---------------------------------------
+   * Onderaan de pagina van een onderwerp: een lijst in kolommen en de vragen
+   * van ouders. Rustig, want het is naslag en geen knop. */
+  .tk-over {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-over-lijst {
+    columns: 3 12rem;
+    column-gap: 24px;
+    color: var(--tekst-secundair);
+  }
+  .tk-over-vragen {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-over-vragen dt {
+    font-weight: 700;
+  }
+  .tk-over-vragen dd {
+    color: var(--tekst-secundair);
+  }
+
   /* ---- Werkblad (ADR-211) -------------------------------------------------
    * Een blad papier: wit, inkt, geen schaduw en geen kleur die de printer
    * grijs maakt. Op het scherm staat het blad op de ruimte, met de knoppen

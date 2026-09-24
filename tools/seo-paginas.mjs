@@ -66,6 +66,21 @@ function pagina(p) {
     '<main>',
     `<h1>${html(p.kop)}</h1>`,
     `<p>${html(p.beschrijving)}</p>`,
+    ...(p.over
+      ? [
+          `<h2>${html(p.over.kop)}</h2>`,
+          `<h3>${html(p.over.lijstKop)}</h3>`,
+          '<ul>',
+          ...p.over.lijst.map((regel) => `<li>${html(regel)}</li>`),
+          '</ul>',
+          '<dl>',
+          ...p.over.vragen.flatMap(({ vraag, antwoord }) => [
+            `<dt>${html(vraag)}</dt>`,
+            `<dd>${html(antwoord)}</dd>`,
+          ]),
+          '</dl>',
+        ]
+      : []),
     `<h2>${html(p.linksKop)}</h2>`,
     '<ul>',
     ...p.links.map((link) => `<li><a href="${html(link.pad)}">${html(link.naam)}</a></li>`),

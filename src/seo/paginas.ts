@@ -5,6 +5,7 @@ import { naamVan, onderwerpenVan, type Onderdeel } from '@/features/module/onder
 import { pathFor } from '@/features/shell/routes';
 import { BUILT_MODULES, type Module } from '@/features/shell/modules';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
+import { overOnderwerp, type OverOnderwerp } from './over';
 
 /**
  * Wat Google van leer.nu te lezen krijgt (ADR-207).
@@ -33,6 +34,8 @@ export interface SeoPagina {
   readonly kop: string;
   readonly links: readonly SeoLink[];
   readonly linksKop: string;
+  /** Wat erin zit en de vragen van ouders, voor een onderwerp (ADR-213). */
+  readonly over?: OverOnderwerp;
 }
 
 /** Het vak zoals een ouder het in Google intikt, niet het korte woord van het menu. */
@@ -136,6 +139,7 @@ export function seoPaginas(): SeoPagina[] {
             ? t('seo.onderwerp.beschrijvingZonderGroep', { aantal })
             : t('seo.onderwerp.beschrijving', { aantal, groepen: groepenTekst(eigen) }),
         kop: t('seo.oefenen', { wat: naam }),
+        over: overOnderwerp(deel),
         linksKop: t('seo.meer', { vak: vakKlein }),
         links: [
           ...(heeftWerkblad(deel) ? [{ pad: werkbladPad(deel), naam: t('werkblad.knop') }] : []),

@@ -21,3 +21,15 @@ test('the sitemap lists the topics, and robots.txt points at it', async ({ reque
   const robots = await request.get('/robots.txt');
   expect(await robots.text()).toContain('Sitemap: https://www.leer.nu/sitemap.xml');
 });
+
+/**
+ * "Over dit onderwerp" (ADR-213): wat erin zit en de vragen van ouders staan ook
+ * in de app, onder het onderwerp, en dus ook nadat Google de app liet draaien.
+ */
+test('a topic page says what is in it and answers a parent', async ({ page }) => {
+  await page.goto('/topografie/hoofdsteden');
+  const over = page.getByRole('region', { name: 'Over Hoofdsteden van de provincies' });
+  await expect(over).toBeVisible();
+  await expect(over.getByText('Groningen (Groningen)')).toBeVisible();
+  await expect(over.getByText('Is het gratis?')).toBeVisible();
+});
