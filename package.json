@@ -19,7 +19,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "validate:content": "vitest run src/content",
-    "lighthouse": "lhci autorun"
+    "lighthouse": "lhci autorun",
+    "teksten:export": "node tools/teksten/export.mjs",
+    "teksten:import": "node tools/teksten/import.mjs"
   },
   "dependencies": {
     "idb": "^8.0.0",

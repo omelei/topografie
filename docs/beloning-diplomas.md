@@ -1,5 +1,8 @@
 # De diploma's — het beloningsprogramma van leer.nu
 
+> **Let op (25 september 2026):** de premiumgrens in dit document is herzien in
+> ADR-192. Wat premium is, staat daar en in `src/features/module/premium.ts`.
+
 **Status:** gebouwd. **Datum:** 2026-09-20. Op verzoek van de eigenaar.
 Vervangt de toren (ADR-158). Vastgelegd als ADR-167 (de ring en de kaart),
 ADR-168 (de modulepagina en de feedbackronde), ADR-169 (de toren weg, de reeks

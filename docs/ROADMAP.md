@@ -133,15 +133,13 @@ teller.
 
 ## Klein onderhoud
 
-- `docs/jij-indeling.md` en `docs/beloning-diplomas.md` beschrijven nog de oude
-  premiumgrens; een regel bovenaan dat ADR-192 die grens herzag.
-- In `WeekdoelenBlok` is de regel per diploma voor wie geen premium heeft dode
-  code sinds het hele blok premium is.
+Niets open.
 
 ## Gedaan (recent)
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #155      | Alle teksten als CSV exporteren en importeren (`npm run teksten:export` en `teksten:import`), en het klein onderhoud                                                                      | —        |
 | #154      | Een zin per diploma (79), en de tegels op de overzichtspagina's in de vorm van het diploma                                                                                                | 219      |
 | #153      | Het diploma liggend, naar het herontwerp: vakkleur, Denker, van wie, wat je kunt en de score                                                                                              | 218      |
 | #152      | Engels: 183 woordjes voor groep 7 en 8 als derde deel van Taal, met kiezen, typen, ontdekken, overleven, een diploma per set en een werkblad                                              | 217      |
