@@ -1,10 +1,12 @@
-import { DiplomaIcon } from '@/components/Icon';
+import type { CSSProperties } from 'react';
+import { DiplomaIcon, NextIcon } from '@/components/Icon';
 import { usePremium } from '@/features/premium/usePremium';
 import type { Module } from '@/features/shell/modules';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { datumVan, useDiplomaDatums } from './datums';
 import { afbreekbaar } from './afbreken';
 import { Embleem } from './Embleem';
+import { PATROON } from './patroon';
 import { useDiplomaStand } from './useDiplomaStand';
 import { kaartStandVan, vulling, type KaartStand, type Voortgang } from './voortgang';
 
@@ -45,6 +47,22 @@ export interface DiplomaVak {
  * dat die toets bij premium hoort. Dat is het moment waarop een kind het aan
  * zijn ouders vraagt.
  */
+/** Hoeveel tekeningen het vlak van een tegel draagt. */
+const TEKENINGEN = 12;
+
+/** De soort boven de naam: "Topodiploma", en bij rekenen tafel of som. */
+function soortVan(module: Module['id'], diplomaId: string): string {
+  const sleutel: Record<Module['id'], TranslationKey> = {
+    topo: 'diploma.soortTopo',
+    tafels: /^diploma-tafel-\d+$/.test(diplomaId) ? 'diploma.soortTafel' : 'diploma.soortReken',
+    klok: 'diploma.soortKlok',
+    vlaggen: 'diploma.soortVlag',
+    woorden: 'diploma.soortTaal',
+    tijdvakken: 'diploma.soortTopo',
+  };
+  return t(sleutel[module]);
+}
+
 export function DiplomaRaster({
   module,
   vakken,
@@ -72,19 +90,54 @@ export function DiplomaRaster({
           .filter((deel): deel is string => deel !== null && deel !== '')
           .join('. ');
 
+        // De ring loopt mee met wat je beheerst, maar alleen met een code
+        // (ADR-192); de tegel zegt het ook in woorden.
+        const procent = voortgang && actief && !vak.gehaald ? vulling(voortgang) : null;
+        // Eén ding om te doen, waar er een is: bekijken in de kast, of de
+        // toets als die klaar staat (ADR-219). Het is geen tweede knop: de
+        // hele tegel is de knop, dit zegt wat hij doet.
+        const actie =
+          kaartStand === 'gehaald' && onOpen
+            ? t('diploma.bekijk')
+            : kaartStand === 'rijp' && actief
+              ? t('diploma.toets')
+              : null;
+        const [Een, Twee] = PATROON[module];
+
         const inhoud = (
           <>
-            <Embleem
-              icon={DiplomaIcon}
-              module={module}
-              gehaald={vak.gehaald}
-              vul={voortgang && actief ? vulling(voortgang) : undefined}
-            />
-            <span className="tk-diploma-titel" aria-hidden="true">
-              {afbreekbaar(vak.titel)}
+            <span className="tk-diploma-vlak" aria-hidden="true">
+              {Array.from({ length: TEKENINGEN }, (_, index) =>
+                index % 2 === 0 ? <Een key={index} size={22} /> : <Twee key={index} size={22} />,
+              )}
             </span>
-            <span className="tk-diploma-stand" aria-hidden="true" data-stand={kaartStand}>
-              {zin}
+            <span className="tk-diploma-ring" aria-hidden="true">
+              {vak.gehaald ? (
+                <Embleem icon={DiplomaIcon} module={module} gehaald />
+              ) : (
+                <span
+                  className="tk-diploma-voortgang"
+                  data-leeg={procent === null || procent === 0 ? 'ja' : undefined}
+                  style={
+                    procent === null ? undefined : ({ '--vul': `${procent}%` } as CSSProperties)
+                  }
+                >
+                  {procent === null || procent === 0 ? null : `${procent}%`}
+                </span>
+              )}
+            </span>
+            <span className="tk-diploma-tekst" aria-hidden="true">
+              <span className="tk-diploma-soort">{soortVan(module, vak.diplomaId)}</span>
+              <span className="tk-diploma-titel">{afbreekbaar(vak.titel)}</span>
+              <span className="tk-diploma-stand" data-stand={kaartStand}>
+                {zin}
+              </span>
+              {actie === null ? null : (
+                <span className="tk-diploma-actie">
+                  {actie}
+                  <NextIcon size={16} />
+                </span>
+              )}
             </span>
           </>
         );
@@ -95,6 +148,8 @@ export function DiplomaRaster({
               <button
                 type="button"
                 className="tk-diploma"
+                data-module={module}
+                data-stand={kaartStand}
                 data-gehaald={vak.gehaald ? 'ja' : undefined}
                 aria-label={t('diploma.openLabel', { naam: vak.titel })}
                 onClick={() => {
@@ -113,6 +168,8 @@ export function DiplomaRaster({
               <button
                 type="button"
                 className="tk-diploma"
+                data-module={module}
+                data-stand={kaartStand}
                 data-gehaald={vak.gehaald ? 'ja' : undefined}
                 aria-label={label}
                 onClick={vak.onKies}
@@ -122,6 +179,8 @@ export function DiplomaRaster({
             ) : (
               <span
                 className="tk-diploma"
+                data-module={module}
+                data-stand={kaartStand}
                 data-gehaald={vak.gehaald ? 'ja' : undefined}
                 role="img"
                 aria-label={label}

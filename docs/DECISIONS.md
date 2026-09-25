@@ -12925,6 +12925,32 @@ niet als plaatje, want naam, onderwerp, datum en stand verschillen per kind.
   `GrootDiploma` krijgt nu de teller van de uitreiking mee.
 - `afzwemmen.printNaam`, `printZonderNaam` en `printDatum` zijn weg.
 
+## ADR-219 — Een zin per diploma, en tegels in de vorm van het diploma
+
+**Status:** accepted. **Date:** 2026-09-25. Op verzoek van de eigenaar: "ja
+schrijf zinnen per onderwerp. Pas ook de afbeeldingen van de diploma's op de
+overzicht pagina's aan", met ontwerpen van de tegels (gehaald, klaar voor de
+toets, even opfrissen, bezig, nog niet).
+
+**Besluit.**
+
+- **Elk van de 79 diploma's heeft een eigen zin** over wat je kunt als je hem
+  haalt: "Je rekent de hele tafel van 7 uit je hoofd. Ook 7 × 8." Ze staan in
+  `nl.ts` onder `diploma.zin.<set>`, en `diplomaZinnen.ts` koppelt set en
+  zin. Een toets eist er een voor elk diploma, beginnend met "Je" en hooguit
+  veertien woorden. De zin per vak (ADR-218) blijft als terugval.
+- **De tegels op de overzichtspagina's en in de kast** hebben de vorm van het
+  diploma: links een vlak met het patroon van het vak, op de naad het embleem
+  of de ring van wat je beheerst met het percentage, rechts de soort, de naam
+  en de stand in woorden. Gehaald is het vlak in de vakkleur met een volle
+  rand; klaar voor de toets licht in de vakkleur; de rest zand met een
+  streepjesrand.
+- **Eén ding om te doen staat op de tegel**, als label en niet als tweede
+  knop: "Bekijk" op een gehaald diploma in de kast, "Doe de toets" als hij
+  klaar staat en er een code is. De hele tegel blijft de knop.
+- **Op een telefoon** staat één tegel per rij, lager en smaller van binnen.
+- Zonder code blijft de ring leeg en staat er geen percentage (ADR-192).
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

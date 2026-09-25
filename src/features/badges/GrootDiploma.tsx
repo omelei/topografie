@@ -1,26 +1,13 @@
-import type { ComponentType } from 'react';
 import { Brandmark } from '@/components/Brandmark';
-import {
-  CorrectIcon,
-  DiplomaIcon,
-  FlagIcon,
-  GatIcon,
-  GlobeIcon,
-  HalfUurIcon,
-  KeerIcon,
-  PinIcon,
-  StarIcon,
-  TafelIcon,
-  UurIcon,
-  VormenIcon,
-  type IconProps,
-} from '@/components/Icon';
+import { CorrectIcon, DiplomaIcon } from '@/components/Icon';
 import { Wordmark } from '@/components/Wordmark';
 import { taalDeelVan } from '@/content/loadTaal';
 import type { TaalDeel } from '@/game-core';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
+import { DIPLOMA_ZIN } from './diplomaZinnen';
 import { Embleem } from './Embleem';
+import { PATROON } from './patroon';
 
 export interface DiplomaBeeld {
   readonly module: Module['id'];
@@ -43,18 +30,6 @@ export interface DiplomaBeeld {
   readonly standZin: string | null;
 }
 
-type Tekening = ComponentType<Omit<IconProps, 'children'>>;
-
-/** Het patroon op het vlak: twee tekeningen van het vak, om en om. */
-const PATROON: Record<Module['id'], readonly [Tekening, Tekening]> = {
-  topo: [PinIcon, GlobeIcon],
-  tafels: [TafelIcon, KeerIcon],
-  klok: [UurIcon, HalfUurIcon],
-  vlaggen: [FlagIcon, StarIcon],
-  woorden: [GatIcon, VormenIcon],
-  tijdvakken: [StarIcon, DiplomaIcon],
-};
-
 /** Hoeveel tekeningen het patroon heeft: genoeg voor het brede vlak. */
 const TEKENINGEN = 100;
 
@@ -75,6 +50,9 @@ const UITLEG_TAAL: Record<TaalDeel, TranslationKey> = {
 };
 
 function uitlegVan(beeld: DiplomaBeeld): string {
+  // Eerst de zin van dit diploma (ADR-219); die per vak is de terugval.
+  const eigen = DIPLOMA_ZIN[beeld.setId];
+  if (eigen) return t(eigen);
   if (beeld.module === 'woorden') return t(UITLEG_TAAL[taalDeelVan(beeld.setId) ?? 'spelling']);
   return t(UITLEG[beeld.module]);
 }

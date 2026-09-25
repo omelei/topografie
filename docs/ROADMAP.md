@@ -142,6 +142,7 @@ teller.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #154      | Een zin per diploma (79), en de tegels op de overzichtspagina's in de vorm van het diploma                                                                                                | 219      |
 | #153      | Het diploma liggend, naar het herontwerp: vakkleur, Denker, van wie, wat je kunt en de score                                                                                              | 218      |
 | #152      | Engels: 183 woordjes voor groep 7 en 8 als derde deel van Taal, met kiezen, typen, ontdekken, overleven, een diploma per set en een werkblad                                              | 217      |
 | #151      | Een pagina voor de klas (`/scholen`): wat een klassencode is, en aanvragen per mail aan info@leer.nu                                                                                      | 216      |
