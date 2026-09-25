@@ -465,6 +465,10 @@ test('a diploma passed goes on the wall, where the gaps are the point', async ({
   await expect(muur.getByRole('button', { name: 'Tafel van 1: diploma gehaald' })).toBeVisible();
   await expect(muur.getByRole('button', { name: 'Tafel van 7: nog geen diploma' })).toBeVisible();
   await expect(muur).toContainText('1 van de 12 gehaald');
+  // De tegels in de vorm van het diploma (ADR-219): gehaald in de vakkleur.
+  await expect(muur.locator('.tk-diploma[data-gehaald]')).toContainText('Tafeldiploma');
+  await muur.scrollIntoViewIfNeeded();
+  await muur.screenshot({ path: `screenshots/${testInfo.project.name}-34-diplomamuur.png` });
 });
 
 /**

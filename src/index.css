@@ -1024,50 +1024,140 @@
       conic-gradient(var(--embleem) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%)) border-box;
   }
 
-  /* ---- The wall of diplomas (ADR-064, ADR-104, ADR-112) ------------------
-   * One card per diploma, with the gaps showing: the emblem, the name at a
-   * button's size, and under it whether it is held, in words. On a module page
-   * each card is a way in; on Jij the same cards are only shown. */
+  /* ---- The wall of diplomas (ADR-064, ADR-104, ADR-112, ADR-219) ---------
+   * Eén tegel per diploma, in de vorm van het diploma zelf: links een vlak in
+   * de vakkleur met zijn tekeningen, op de naad het embleem of de ring van
+   * wat je beheerst, rechts de soort, de naam en de stand in woorden — zodat
+   * "nog niet" nooit alleen een tint is. Gehaald is het vlak vol kleur, klaar
+   * voor de toets licht, en de rest zand met een streepjesrand. */
   .tk-diplomas {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(8.5rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
     gap: 12px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .tk-diploma {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 28% 1fr;
     width: 100%;
     height: 100%;
-    padding: 16px 12px;
-    border: var(--stroke-hair) solid var(--rand-licht);
+    min-height: 168px;
+    overflow: hidden;
+    padding: 0;
+    border: var(--stroke-active) dashed var(--rand-sterk);
     border-radius: var(--kaart-radius);
     background: var(--kaart);
     color: var(--inkt);
-    text-align: center;
+    text-align: left;
+  }
+  .tk-diploma:is([data-gehaald], [data-stand='rijp']) {
+    border-style: solid;
+    border-color: var(--module);
   }
   button.tk-diploma {
     cursor: pointer;
   }
   button.tk-diploma:hover {
-    background: var(--vlak-hover);
     border-color: var(--tekst-tertiair);
+  }
+  /* Het patroon bepaalt de hoogte niet: de tekst doet dat, het vlak volgt. */
+  .tk-diploma-vlak {
+    contain: size;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 44px;
+    place-items: center;
+    align-content: start;
+    padding-top: 8px;
+    background: var(--balk-leeg);
+    color: var(--inkt);
+  }
+  .tk-diploma-vlak > * {
+    opacity: 0.12;
+  }
+  .tk-diploma-vlak > :nth-child(4n + 3),
+  .tk-diploma-vlak > :nth-child(4n + 4) {
+    transform: translateX(50%);
+  }
+  .tk-diploma[data-gehaald] .tk-diploma-vlak {
+    background: var(--module-vlak);
+    color: var(--kaart);
+  }
+  .tk-diploma[data-gehaald] .tk-diploma-vlak > * {
+    opacity: 0.3;
+  }
+  .tk-diploma[data-stand='rijp'] .tk-diploma-vlak {
+    background: var(--module-tint);
+    color: var(--module);
+  }
+  .tk-diploma[data-stand='rijp'] .tk-diploma-vlak > * {
+    opacity: 0.25;
+  }
+  .tk-diploma-ring {
+    position: absolute;
+    top: 50%;
+    left: 28%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    padding: 5px;
+    border-radius: 50%;
+    background: var(--kaart);
+  }
+  .tk-diploma-voortgang {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background:
+      radial-gradient(closest-side, var(--kaart) 76%, transparent 78%),
+      conic-gradient(var(--module-vlak) var(--vul, 0%), var(--balk-leeg) 0);
+    font-family: var(--font-kop);
+    font-size: var(--type-bijschrift);
+    font-weight: 700;
+    color: var(--module-tekst);
+  }
+  .tk-diploma-tekst {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    padding: 16px 16px 16px 48px;
+  }
+  .tk-diploma-soort {
+    font-family: var(--font-kop);
+    font-size: var(--type-bijschrift);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--tekst-secundair);
+  }
+  .tk-diploma:is([data-gehaald], [data-stand='rijp']) .tk-diploma-soort {
+    color: var(--module-tekst);
   }
   /* Een lang woord breekt af waar `afbreekbaar` het toestaat, en loopt nooit
    * buiten de tegel: als laatste redmiddel breekt het waar het moet (ADR-202). */
   .tk-diploma-titel {
     max-width: 100%;
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    line-height: var(--type-kaartkop-lh);
+    font-weight: var(--type-kaartkop-weight);
+    color: var(--tekst-secundair);
     hyphens: manual;
     overflow-wrap: break-word;
   }
+  .tk-diploma:is([data-gehaald], [data-stand='rijp']) .tk-diploma-titel {
+    color: var(--inkt);
+  }
   .tk-diploma-stand {
+    margin-top: auto;
     font-size: var(--type-bijschrift);
     line-height: var(--type-bijschrift-lh);
     color: var(--tekst-secundair);
@@ -1075,6 +1165,40 @@
   .tk-diploma[data-gehaald] .tk-diploma-stand {
     color: var(--inkt);
     font-weight: 600;
+  }
+  .tk-diploma-actie {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-knop);
+    background: var(--module-tint);
+    font-family: var(--font-kop);
+    font-weight: 700;
+    color: var(--module-tekst);
+  }
+  .tk-diploma[data-stand='rijp'] .tk-diploma-actie {
+    background: var(--module);
+    color: var(--kaart);
+  }
+  /* Op een telefoon staat één tegel per rij: dan is hij lager en smaller van
+   * binnen, zodat de kast met al zijn diploma's geen eindeloze lap wordt. */
+  @media (max-width: 560px) {
+    .tk-diploma {
+      min-height: 120px;
+      grid-template-columns: 22% 1fr;
+    }
+    .tk-diploma-ring {
+      left: 22%;
+    }
+    .tk-diploma-voortgang {
+      width: 44px;
+      height: 44px;
+    }
+    .tk-diploma-tekst {
+      padding: 12px 12px 12px 40px;
+    }
   }
 
   /* ---- Ronde klaar (ADR-112) -------------------------------------------------
