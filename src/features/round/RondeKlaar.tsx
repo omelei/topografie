@@ -263,12 +263,14 @@ export function RondeKlaar({
                 geluid={geluid}
                 beeld={{
                   module: moduleId,
+                  setId,
                   soort: t(`mode.${mode}` as TranslationKey),
                   naam: deel ? naamVan(deel) : diploma,
                   gehaald: true,
                   kindNaam,
                   datum: datumVan(now),
-                  vul: undefined,
+                  score: { goed, totaal: beantwoord },
+                  stand: null,
                   standZin: null,
                 }}
                 knoppen={

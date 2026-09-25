@@ -12887,6 +12887,44 @@ gaan zodra het er was.
   zeggen dat het kind moet schrijven, en de betere stemmen sturen de tekst naar
   een server.
 
+## ADR-218 — Het diploma, liggend, naar het herontwerp van de eigenaar
+
+**Status:** accepted. **Date:** 2026-09-25. Op verzoek van de eigenaar, met
+tien ontwerpen (vijf vakken, gehaald en nog niet): "Vervang nu de diploma
+afbeeldingen met bijgevoegde afbeeldingen".
+
+**Context.** Het diploma was staand, met een dubbele rand, een band in de
+vakkleur en het embleem als zegel. De ontwerpen zijn beelden met een
+voorbeeldkind (Sanne) en voorbeeldcijfers; ze zijn nagebouwd als component,
+niet als plaatje, want naam, onderwerp, datum en stand verschillen per kind.
+
+**Besluit.**
+
+- **Liggend, 3:2.** Links een vlak in de vakkleur met twee tekeningen van het
+  vak als patroon en Denker (juichen bij gehaald, zwaaien bij nog niet); rechts
+  "Gehaald!", het logo, "Dit diploma is van", de naam van het kind, het
+  onderwerp, wat je kunt, de score van de toets, en de lijnen voor de datum en
+  een handtekening. Op de naad het zegel.
+- **Nog niet gehaald is dezelfde kaart in zand**, met streepjes, "Dit wordt het
+  diploma van", en in het zegel hoeveel je al beheerst.
+- **Smal is staand.** Onder 600 pixels breed komt het vlak bovenaan
+  (`@container`): 3:2 op een telefoon is te klein om te lezen. Op papier is hij
+  liggend en in kleur.
+- **De woorden volgen de schrijfwijzer**, niet het ontwerp: "beheers je" in
+  plaats van "onthouden" ("14 van 20 beheers je"). De zin over wat je kunt, is
+  er één per vak en bij Taal per deel; het ontwerp had er één per onderwerp.
+- **De score staat er alleen bij de uitreiking**: die is er alleen dan. In de
+  kast staat een gehaald diploma zonder score.
+- **Eén Denker.** De losse regel "Gehaald!" met Denker onder het diploma bij de
+  uitreiking is weg; de beat `denker` laat nu de Denker op het diploma binnenkomen.
+
+**Gevolgen.**
+
+- Een fout mee opgelost: bij de uitreiking kregen de delen van het diploma
+  (soort, naam, zegel, van wie) nooit `data-aan`, dus ze bleven onzichtbaar.
+  `GrootDiploma` krijgt nu de teller van de uitreiking mee.
+- `afzwemmen.printNaam`, `printZonderNaam` en `printDatum` zijn weg.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
