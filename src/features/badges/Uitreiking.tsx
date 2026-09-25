@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Brandmark } from '@/components/Brandmark';
 import { t } from '@/i18n';
 import { leesRustig } from '@/features/player/settings';
 import { speelMoment } from '@/features/round/geluid';
@@ -81,13 +80,8 @@ export function Uitreiking({
   return (
     <section className="tk-uitreiking" aria-label={t('diploma.gehaaldKop')}>
       <div data-beat="diploma" data-aan={aan('diploma')} onPointerDown={overslaan}>
-        <GrootDiploma beeld={beeld} />
+        <GrootDiploma beeld={beeld} aan={aan} />
       </div>
-
-      <p className="tk-uitreiking-denker" data-beat="denker" data-aan={aan('denker')}>
-        <Brandmark size={44} uitdrukking="trots" />
-        <span className="tk-uitreiking-kop">{t('diploma.gehaaldKop')}</span>
-      </p>
 
       <div data-beat="knoppen" data-aan={aan('knoppen')}>
         {knoppen}

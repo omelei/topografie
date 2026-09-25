@@ -139,7 +139,9 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(kast.getByRole('region', { name: 'Klok' }).getByRole('button')).toHaveCount(4);
 });
 
-test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ page }) => {
+test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({
+  page,
+}, testInfo) => {
   await signIn(page, 'Fenna');
   await page.goto('/jij');
 
@@ -156,6 +158,8 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({ 
   await expect(venster.getByText('Tafeldiploma')).toBeVisible();
   await expect(venster.getByText('Je beheerst hier nog niets.', { exact: false })).toBeVisible();
   await expect(venster.getByRole('button', { name: 'Ga oefenen' })).toBeVisible();
+  await expect(venster).toContainText('Dit wordt het diploma van');
+  await page.screenshot({ path: `screenshots/${testInfo.project.name}-33-diploma-nog-niet.png` });
 
   // Escape sluit, en dan staat de kast er weer.
   await page.keyboard.press('Escape');

@@ -4665,7 +4665,7 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
-    max-width: 360px;
+    max-width: 760px;
   }
   .tk-diplomavenster-knoppen {
     display: flex;
@@ -4673,80 +4673,254 @@
     gap: 8px;
   }
 
-  /* ---- Het diploma, groot (het diplomaprogramma) -------------------------
-   * Hetzelfde object op het scherm en op papier. De dubbele rand van acht
-   * pixels komt van het printdiploma van ADR-149; nieuw zijn de band in de
-   * vakkleur langs de bovenrand — de enige plek waar het vak kleur krijgt — en
-   * het embleem als zegel rechtsonder.
-   *
-   * Staand 3:4, zodat hij op 393px onder de schermpadding past met de knoppen
-   * eronder in beeld. */
+  /* ---- Het diploma, groot (ADR-218) -------------------------------------
+   * Liggend, als een echt diploma: links een vlak in de vakkleur met de
+   * tekeningen van het vak en Denker, rechts van wie, waarvoor en wat je kunt,
+   * op de naad het zegel. Nog niet gehaald is dezelfde kaart in zand, met
+   * streepjes. Op een smal scherm staat het vlak bovenaan: 3:2 op 360 pixels
+   * is te klein om te lezen. De kaart is een container, zodat hij zich naar
+   * zijn eigen breedte richt en niet naar het scherm — op papier is hij breed. */
   .tk-grootdiploma {
+    container-type: inline-size;
+    width: 100%;
+  }
+  .tk-grootdiploma-kaart {
     position: relative;
     display: grid;
-    /* Vier rijen, en het zegel staat erin in plaats van eroverheen. Absoluut
-     * gepositioneerd liep de voettekst eronder door — met het oog meteen te
-     * zien en met geen enkele toets. De volgorde is ook de volgorde van de
-     * uitreiking: soort, naam, zegel, van wie en wanneer. */
-    grid-template-rows: auto 1fr auto auto;
-    justify-items: center;
-    gap: 12px;
-    aspect-ratio: 3 / 4;
-    max-width: 100%;
-    padding: 28px 20px 20px;
-    border: 8px double var(--inkt);
+    grid-template-columns: 1fr;
+    grid-template-rows: 150px auto;
+    overflow: hidden;
+    border: var(--stroke-active) solid var(--rand-licht);
+    border-radius: var(--radius-kaart);
     background: var(--kaart);
     color: var(--inkt);
-    text-align: center;
-    overflow: hidden;
   }
-  .tk-grootdiploma::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 12px;
-    background: var(--module);
-  }
-  .tk-grootdiploma:not([data-gehaald]) {
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-kaart {
     border-style: dashed;
-    border-width: 3px;
     border-color: var(--rand-sterk);
   }
-  .tk-grootdiploma:not([data-gehaald])::before {
+  .tk-grootdiploma-vlak {
+    position: relative;
+    overflow: hidden;
+    background: var(--module-vlak);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-vlak {
     background: var(--balk-leeg);
   }
+  .tk-grootdiploma-patroon {
+    position: absolute;
+    inset: -8px;
+    display: grid;
+    grid-template-columns: repeat(10, 48px);
+    grid-auto-rows: 48px;
+    place-items: center;
+    color: var(--kaart);
+    opacity: 0.28;
+  }
+  .tk-grootdiploma-patroon > :nth-child(20n + 11),
+  .tk-grootdiploma-patroon > :nth-child(20n + 12),
+  .tk-grootdiploma-patroon > :nth-child(20n + 13),
+  .tk-grootdiploma-patroon > :nth-child(20n + 14),
+  .tk-grootdiploma-patroon > :nth-child(20n + 15),
+  .tk-grootdiploma-patroon > :nth-child(20n + 16),
+  .tk-grootdiploma-patroon > :nth-child(20n + 17),
+  .tk-grootdiploma-patroon > :nth-child(20n + 18),
+  .tk-grootdiploma-patroon > :nth-child(20n + 19),
+  .tk-grootdiploma-patroon > :nth-child(20n + 20) {
+    transform: translateX(24px);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-patroon {
+    color: var(--inkt);
+    opacity: 0.1;
+  }
   .tk-grootdiploma-soort {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    margin: 0;
+    padding: 4px 16px;
+    border-radius: var(--radius-knop);
+    background: var(--kaart);
+    font-family: var(--font-kop);
+    font-size: var(--type-kaartkop);
+    font-weight: var(--type-kaartkop-weight);
+    line-height: var(--type-kaartkop-lh);
+    color: var(--module-tekst);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-soort {
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-denker {
+    position: absolute;
+    right: 8px;
+    bottom: 4px;
+    transform: scale(0.62);
+    transform-origin: bottom right;
+  }
+  .tk-grootdiploma-zegel {
+    position: absolute;
+    top: 150px;
+    left: 20px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--kaart);
+  }
+  .tk-grootdiploma-zegel .tk-embleem {
+    width: 100%;
+    height: 100%;
+  }
+  .tk-grootdiploma-teller {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border: 4px solid var(--balk-leeg);
+    border-radius: 50%;
+    font-size: var(--type-bijschrift);
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-getal {
+    font-family: var(--font-kop);
+    font-size: var(--type-sectiekop);
+    font-weight: var(--type-sectiekop-weight);
+    line-height: 1;
+    color: var(--inkt);
+  }
+  .tk-grootdiploma-tekst {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 60px 20px 20px;
+  }
+  .tk-grootdiploma-kop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .tk-grootdiploma-roep {
     margin: 0;
     font-family: var(--font-kop);
     font-size: var(--type-kaartkop);
-    line-height: var(--type-kaartkop-lh);
     font-weight: var(--type-kaartkop-weight);
     color: var(--module-tekst);
   }
+  .tk-grootdiploma-merk {
+    height: 28px;
+    width: auto;
+  }
+  .tk-grootdiploma-wie p,
+  .tk-grootdiploma-zin,
   .tk-grootdiploma-naam {
-    align-self: center;
     margin: 0;
-    font-family: var(--font-kop);
-    font-size: var(--type-sectiekop);
-    line-height: var(--type-sectiekop-lh);
-    letter-spacing: var(--type-sectiekop-ls);
-    font-weight: var(--type-sectiekop-weight);
   }
-  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-soort,
-  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-naam {
-    color: var(--tekst-tertiair);
-  }
-  .tk-grootdiploma-voet {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+  .tk-grootdiploma-van {
+    font-size: var(--type-bijschrift);
     color: var(--tekst-secundair);
   }
-  .tk-grootdiploma-voet p {
-    margin: 0;
+  .tk-grootdiploma-kind {
+    font-family: var(--font-kop);
+    font-size: var(--type-paginakop);
+    font-weight: 800;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
   }
-  .tk-grootdiploma-zegel {
+  .tk-grootdiploma-naam {
+    font-family: var(--font-kop);
+    font-size: var(--type-sectiekop);
+    font-weight: var(--type-sectiekop-weight);
+    line-height: var(--type-sectiekop-lh);
+    color: var(--module-tekst);
+  }
+  .tk-grootdiploma-zin {
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-pil {
     display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 6px 16px;
+    border-radius: var(--radius-knop);
+    background: var(--module-tint);
+    font-family: var(--font-kop);
+    font-weight: var(--type-kaartkop-weight);
+    color: var(--module-tekst);
+  }
+  .tk-grootdiploma:not([data-gehaald]) :is(.tk-grootdiploma-roep, .tk-grootdiploma-naam) {
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-kind {
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-pil {
+    background: var(--papier);
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-voet {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .tk-grootdiploma-lijn {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    font-size: var(--type-bijschrift);
+    color: var(--tekst-secundair);
+  }
+  .tk-grootdiploma-invul {
+    min-height: 1.6em;
+    border-bottom: var(--stroke-hair) solid var(--inkt);
+    font-family: var(--font-kop);
+    font-weight: var(--type-kaartkop-weight);
+    color: var(--inkt);
+    white-space: nowrap;
+  }
+  .tk-grootdiploma:not([data-gehaald]) .tk-grootdiploma-invul {
+    border-bottom-style: dashed;
+    border-bottom-color: var(--tekst-tertiair);
+  }
+
+  /* Breed genoeg om te liggen: het vlak links, het zegel op de naad. */
+  @container (min-width: 600px) {
+    .tk-grootdiploma-kaart {
+      grid-template-columns: 35% 1fr;
+      grid-template-rows: 1fr;
+      aspect-ratio: 3 / 2;
+    }
+    .tk-grootdiploma-denker {
+      right: auto;
+      left: 8%;
+      bottom: 4%;
+      transform: scale(1);
+      transform-origin: bottom left;
+    }
+    .tk-grootdiploma-zegel {
+      top: 30%;
+      left: 35%;
+      width: 128px;
+      height: 128px;
+      transform: translate(-50%, -50%);
+    }
+    .tk-grootdiploma-tekst {
+      justify-content: flex-start;
+      padding: 32px 36px 28px 84px;
+    }
+    .tk-grootdiploma-voet {
+      margin-top: auto;
+    }
   }
 
   /* De uitreiking: de enige beweging in dit programma, en zij neemt het
@@ -4757,16 +4931,6 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-  .tk-uitreiking-denker {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .tk-uitreiking-kop {
-    font-family: var(--font-kop);
-    font-size: var(--type-kaartkop);
-    font-weight: var(--type-kaartkop-weight);
   }
   .tk-uitreiking [data-beat]:not([data-aan]) {
     opacity: 0;
@@ -4787,15 +4951,12 @@
       left: 0;
       width: 100%;
     }
-    .tk-grootdiploma {
-      aspect-ratio: auto;
-      border-width: 8px;
-      border-style: double;
-      border-color: var(--inkt);
-      padding: 64px 32px;
-    }
-    .tk-grootdiploma::before {
-      display: none;
+    /* Liggend, met de kleur van het vak: een diploma is een plaat om op te
+     * hangen, en een printer die kleur kan, drukt hem zoals op het scherm. */
+    .tk-grootdiploma,
+    .tk-grootdiploma * {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
   }
 

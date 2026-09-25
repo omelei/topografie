@@ -6,12 +6,14 @@ import type { DiplomaBeeld } from './GrootDiploma';
 
 const BEELD: DiplomaBeeld = {
   module: 'tafels',
+  setId: 'tafel-7',
   soort: 'Tafeldiploma',
   naam: 'Tafel van 7',
   gehaald: true,
   kindNaam: 'Sanne',
   datum: '20 september 2026',
-  vul: undefined,
+  score: { goed: 10, totaal: 10 },
+  stand: null,
   standZin: null,
 };
 

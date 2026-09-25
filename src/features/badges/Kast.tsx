@@ -13,7 +13,7 @@ import { datumVan, useDiplomaDatums } from './datums';
 import { DiplomaDialoog } from './DiplomaDialoog';
 import { DiplomaRaster, type DiplomaVak } from './DiplomaRaster';
 import { useDiplomaStand } from './useDiplomaStand';
-import { kaartStandVan, vulling, type KaartStand, type Voortgang } from './voortgang';
+import { kaartStandVan, type KaartStand, type Voortgang } from './voortgang';
 
 const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
   tafeldiploma: 'diploma.soortTafel',
@@ -244,12 +244,17 @@ function Venster({
       onSluit={onSluit}
       beeld={{
         module: doelwit.deel.moduleId,
+        setId: doelwit.deel.setId,
         soort: soortSleutel ? t(soortSleutel) : '',
         naam,
         gehaald,
         kindNaam,
         datum: behaaldOp ? datumVan(behaaldOp) : null,
-        vul: voortgang && !opSlot ? vulling(voortgang) : undefined,
+        score: null,
+        stand:
+          voortgang && !opSlot && !gehaald
+            ? { bewezen: voortgang.bewezen, totaal: voortgang.totaal }
+            : null,
         standZin: gehaald || opSlot ? null : standZinVan(kaartStand, voortgang),
       }}
       knop={
@@ -303,7 +308,7 @@ function standZinVan(stand: KaartStand, voortgang: Voortgang | null): string {
   if (stand === 'rijp') return t('diploma.rijp');
   if (stand === 'opfrissen') return t('diploma.opfrissen');
   if (stand === 'nietsNog' || voortgang === null) return t('diploma.nogNiets');
-  return t('diploma.onthoudt', { bewezen: voortgang.bewezen, totaal: voortgang.totaal });
+  return t('diploma.nogTeGaan', { aantal: Math.max(1, voortgang.nodig - voortgang.bewezen) });
 }
 
 /** Het vak van de laatste afgemaakte ronde, of null. */

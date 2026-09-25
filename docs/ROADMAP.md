@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 24 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 25 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -20,10 +20,9 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    insturen. Herinnering staat op 25 september.
 4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
    `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
-5. **Mail op @leer.nu** via Google Workspace, met `info@` als contactadres
-   (geparkeerd; de stappen staan in het gesprek van 24 september). `/scholen`
-   vraagt een klassencode aan via `info@leer.nu` (ADR-216); tot de MX naar
-   Google wijst, komt die mail niet aan.
+5. **DMARC opschalen**: mail op @leer.nu werkt via Google Workspace sinds 25
+   september, met `p=none`. Zijn de rapporten na twee tot vier weken schoon,
+   dan `p=quarantine`; `p=reject` pas als de mail van Resend ook klopt.
 6. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen.
 
@@ -121,7 +120,7 @@ teller.
 | Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). Vervalsen bij A uitgewerkt op 24 september. Delen van de uitslag is gebouwd als eerste stap (ADR-209). De eigenaar komt erop terug |
 | Privacypagina (`/privacy`)                                                                                                         | De eigenaar bepaalt later wat erin komt (24 september); de vier vragen staan bij het gezinsaccount                                                                                                                                  |
 | Gezinsaccount live zetten                                                                                                          | Later (24 september); de stappen staan hierboven                                                                                                                                                                                    |
-| Mail op @leer.nu via Google Workspace, en de DNS-records van Resend voor de kassa                                                  | Geparkeerd op 24 september; de stappen staan in het gesprek van die dag                                                                                                                                                             |
+| De DNS-records van Resend voor de kassa                                                                                            | Geparkeerd op 25 september; de mail van Google Workspace werkt al. Resend op een eigen subdomein, bijvoorbeeld `send.leer.nu`                                                                                                       |
 | Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                                                                                                                               |
 | Proefperiode                                                                                                                       | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                                                                                                                                                      |
 
@@ -143,6 +142,7 @@ teller.
 
 | PR        | Wat                                                                                                                                                                                       | ADR      |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #153      | Het diploma liggend, naar het herontwerp: vakkleur, Denker, van wie, wat je kunt en de score                                                                                              | 218      |
 | #152      | Engels: 183 woordjes voor groep 7 en 8 als derde deel van Taal, met kiezen, typen, ontdekken, overleven, een diploma per set en een werkblad                                              | 217      |
 | #151      | Een pagina voor de klas (`/scholen`): wat een klassencode is, en aanvragen per mail aan info@leer.nu                                                                                      | 216      |
 | #150      | Elke maandag het weekoverzicht van de teller als issue in GitHub                                                                                                                          | 215      |

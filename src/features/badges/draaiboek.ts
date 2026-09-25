@@ -52,8 +52,8 @@ const VEERT = 240;
  *
  * Het diploma komt eerst leeg in beeld en vult zich daarna: soort, naam, en dan
  * het zegel dat gedrukt wordt — dat is het moment, en dat is het enige geluid.
- * Denker komt er pas daarna naast staan, want hij is de terugkoppeling en niet
- * de uitslag (ADR-159).
+ * Denker komt er pas daarna bij, op het diploma zelf (ADR-218), want hij is de
+ * terugkoppeling en niet de uitslag (ADR-159).
  *
  * De knoppen zijn de laatste beat, maar alleen in dekking: ze staan vanaf de
  * eerste frame in de documentvolgorde en zijn vanaf dan te gebruiken.

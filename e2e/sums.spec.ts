@@ -420,7 +420,9 @@ test('a diploma is passed or it is not, and one mistake ends the attempt', async
   await expect(page.getByText('Nog geen diploma. Alle 10 goed, dan is hij van jou.')).toBeVisible();
 });
 
-test('a diploma passed goes on the wall, where the gaps are the point', async ({ page }) => {
+test('a diploma passed goes on the wall, where the gaps are the point', async ({
+  page,
+}, testInfo) => {
   await signIn(page, 'Sanne');
 
   // A diploma is sat on a ripe page (ADR-149): the table practised, and then
@@ -448,6 +450,13 @@ test('a diploma passed goes on the wall, where the gaps are the point', async ({
   }
 
   await expect(page.getByText('Diploma gehaald: tafel van 1')).toBeVisible();
+  // Het diploma, groot (ADR-218): van wie, waarvoor, en de toets.
+  const diploma = page.locator('.tk-grootdiploma');
+  await expect(diploma).toContainText('Dit diploma is van');
+  await expect(diploma).toContainText('Sanne');
+  await expect(diploma).toContainText('10 van 10 goed');
+  await expect(page.locator('[data-beat="knoppen"][data-aan]')).toBeVisible();
+  await page.screenshot({ path: `screenshots/${testInfo.project.name}-32-diploma-gehaald.png` });
 
   await page.goto('/rekenen');
   // The wall is under the tables and nowhere else, so it waits for Tafels too.
