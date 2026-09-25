@@ -1,5 +1,8 @@
 # Jij opnieuw ingedeeld — voorstel
 
+> **Let op (25 september 2026):** de premiumgrens in dit voorstel is herzien in
+> ADR-192. Wat premium is, staat daar en in `src/features/module/premium.ts`.
+
 **Status:** goedgekeurd en gebouwd als ADR-172 (2026-09-21). De open vragen in §10 zijn beantwoord met de
 aanbeveling uit dit voorstel; wat bij het bouwen anders uitviel, staat in §11. **Datum:** 2026-09-21.
 **Codebasis:** `origin/main` 4db5bc0 (na #99, ADR-171). **Lezer van Jij:** het kind (6–12), met

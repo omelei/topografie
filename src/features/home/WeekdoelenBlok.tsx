@@ -12,7 +12,6 @@ import type { Groep, ItemState } from '@/game-core';
 import { naamVan, startbareOnderdelen } from '@/features/module/onderdelen';
 import { isPremiumVorm, metPremium } from '@/features/module/premium';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
-import { vraagOuders } from '@/features/premium/ouderVraag';
 import { PremiumSlot } from '@/features/premium/PremiumSlot';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
@@ -58,9 +57,8 @@ import { standen, weekZin, type DoelStand } from './weekdoel';
  * wilde en 12, 11 en 9 kreeg voorgesteld, kon niets anders kiezen. Drie
  * voorstellen zijn een goede eerste regel en een slecht menu. Dus staan ze er
  * nog, bovenaan onder "Dichtbij", en daaronder staat per vak alles wat er te
- * halen valt. Ook wat een code vraagt: die rij is dan geen doel maar de vraag
- * aan de ouders (ADR-163), net als elke andere premiumtegel in de app —
- * weglaten liet een kind denken dat het diploma niet bestond.
+ * halen valt. Het hele blok is premium sinds ADR-192, dus elk diploma in de
+ * lijst is ook echt te kiezen.
  *
  * **En het mag leeg blijven.** "Ik wil geen doelen" zet het blok weg, en het
  * vraagt daarna niet elke maandag opnieuw. Aanzetten kan bij de instellingen op
@@ -177,20 +175,16 @@ export function WeekdoelenBlok({
 
   const lijst = standen(stand.doelen, afgemaakt, behaald, now);
   const vol = stand.doelen.length >= MAX_DOELEN;
-  // Alle 68, ook de premiumdiploma's. Die worden niet weggelaten maar gemerkt:
-  // een kind dat de vlaggen van Europa wil, hoort te zien dát dat bestaat. En
-  // een doel dat met een code gezet is, houdt zo zijn naam ook als de code om
-  // is — met `actief` stond daar "Dit diploma bestaat niet meer".
+  // Alle diploma's, ook die met een premiumvorm: een doel dat met een code
+  // gezet is, houdt zo zijn naam ook als de code om is — met `actief` stond
+  // daar "Dit diploma bestaat niet meer".
   const alle = doelwitten(startbareOnderdelen(), true);
   // Wat nog open staat: niet gehaald, en niet al een doel van deze week.
   const openDoelwitten = alle.filter(
     (doelwit) => !behaald.has(doelwit.id) && !gekozen(stand.doelen, doelwit.id),
   );
-  // Voorgesteld wordt alleen wat dit kind vandaag ook kan doen: een voorstel
-  // dat op een slot uitloopt is geen voorstel. In de lijst eronder staat het
-  // wel, met het slot erbij.
   const dichtbij = suggesties(
-    openDoelwitten.filter((doelwit) => actief || !isPremiumVorm(doelwit.mode)),
+    openDoelwitten,
     new Set<string>(),
     states,
     now,
@@ -247,7 +241,6 @@ export function WeekdoelenBlok({
           onAnnuleer={() => setNieuw(null)}
           dichtbij={dichtbij}
           perVak={perVak}
-          premium={actief}
         />
       ) : (
         <div className="tk-doel-knoppen">
@@ -381,15 +374,13 @@ function Rij({
  * — dezelfde redenering als op Onthouden.
  *
  * Bij "een diploma" staat eerst wat dichtbij is en daaronder alles, per vak
- * (ADR-168). De lijst is lang — drieëndertig regels — en dat is precies wat er
- * gevraagd werd: elk diploma moet te kiezen zijn. Wat de lengte draagt is de
+ * (ADR-168). De lijst is lang, en dat is precies wat er gevraagd werd: elk diploma moet te kiezen zijn. Wat de lengte draagt is de
  * kop per vak en de volgorde van `MODULES`, dezelfde als in de rail.
  */
 function Toevoegen({
   soort,
   dichtbij,
   perVak,
-  premium,
   onSoort,
   onKies,
   onAnnuleer,
@@ -399,7 +390,6 @@ function Toevoegen({
   readonly dichtbij: readonly Doelwit[];
   /** Alles wat open staat, per vak, in de volgorde van de rail. */
   readonly perVak: readonly { readonly module: Module; readonly doelen: readonly Doelwit[] }[];
-  readonly premium: boolean;
   readonly onSoort: (soort: WeekdoelSoort) => void;
   readonly onKies: (doel: Weekdoel) => void;
   readonly onAnnuleer: () => void;
@@ -440,7 +430,6 @@ function Toevoegen({
               <DiplomaLijst
                 titel={t('weekdoel.diplomaDichtbij')}
                 doelen={dichtbij}
-                premium={premium}
                 onKies={onKies}
               />
             ) : null}
@@ -450,7 +439,6 @@ function Toevoegen({
                 key={module.id}
                 titel={t(module.name)}
                 doelen={doelen}
-                premium={premium}
                 onKies={onKies}
               />
             ))}
@@ -486,20 +474,17 @@ function Toevoegen({
 /**
  * Eén kop met de diploma's eronder: "Dichtbij", of de naam van een vak.
  *
- * Zonder code is een rij geen doel maar de vraag aan de ouders (ADR-163). Dat
- * is niet weggelaten en niet uitgeschakeld: uitschakelen laat een kind met een
- * grijze regel achter waar niemand iets van leert, en weglaten laat het denken
- * dat het diploma niet bestaat.
+ * Elke rij is een doel: het hele blok is premium (ADR-192), dus wat hier
+ * staat, is te kiezen. Het label zegt nog welke diploma's een premiumvorm
+ * vragen, zoals overal.
  */
 function DiplomaLijst({
   titel,
   doelen,
-  premium,
   onKies,
 }: {
   readonly titel: string;
   readonly doelen: readonly Doelwit[];
-  readonly premium: boolean;
   readonly onKies: (doel: Weekdoel) => void;
 }) {
   return (
@@ -509,7 +494,6 @@ function DiplomaLijst({
       <ul className="tk-lijst">
         {doelen.map((doelwit) => {
           const naam = t('weekdoel.diplomaDoel', { naam: naamVan(doelwit.deel) });
-          const opSlot = !premium && isPremiumVorm(doelwit.mode);
 
           return (
             <li key={doelwit.id}>
@@ -517,12 +501,8 @@ function DiplomaLijst({
                 type="button"
                 data-module={doelwit.deel.moduleId}
                 className="tk-lijstrij"
-                aria-label={metPremium(naam, isPremiumVorm(doelwit.mode), premium)}
+                aria-label={metPremium(naam, isPremiumVorm(doelwit.mode))}
                 onClick={() => {
-                  if (opSlot) {
-                    vraagOuders();
-                    return;
-                  }
                   onKies({
                     id: crypto.randomUUID(),
                     soort: 'diploma',
