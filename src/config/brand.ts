@@ -34,8 +34,10 @@ export const brand = {
   proof: 'Sofie onthoudt 9 van de 12 provincies.',
   conversion: 'Nooit meer overhoren.',
 
-  /** Waar een school of ouder ons mailt (ADR-216). */
+  /** Waar een ouder ons mailt (ADR-216). */
   contact: 'info@leer.nu',
+  /** Waar een school een klassencode aanvraagt. */
+  scholen: 'scholen@leer.nu',
 
   locale: 'nl-NL',
   /**

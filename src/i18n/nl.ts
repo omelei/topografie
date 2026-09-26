@@ -67,7 +67,7 @@ export const nl = {
   'ouders.premium': 'Wat premium is',
   'ouders.oefenen.kop': 'Oefenen in korte rondes',
   'ouders.oefenen.tekst':
-    'Je kind kiest een vak, een onderwerp en een manier. Een ronde duurt een paar minuten. Het ziet meteen wat goed is, en wat het juiste antwoord was.',
+    'Je kind kiest een vak, een onderwerp en een spelvorm. Een ronde duurt een paar minuten. Na de ronde ziet jouw kind wat hij/zij goed en fout heeft gedaan.',
   'ouders.herhalen.kop': 'Herhalen op het goede moment',
   'ouders.herhalen.tekst':
     'Wat je kind beheerst, komt pas later terug. Wat het bijna vergeten is, komt vandaag terug. Zo blijft het in het hoofd.',
@@ -89,12 +89,18 @@ export const nl = {
   'scholen.intro':
     'Laat je hele klas oefenen met premium. Met één klassencode voor 40 apparaten, een jaar geldig.',
   'scholen.aanvragen': 'Vraag een klassencode aan',
+  // De etalage, in de vorm van de premiumpagina (op verzoek van de eigenaar).
+  'scholen.etalageLabel': 'Klassencode',
+  'scholen.etalageKop': 'Eén code voor je hele klas',
+  'scholen.watTitel': 'Wat je krijgt',
   'scholen.werkt.kop': 'Zo werkt het',
   'scholen.werkt.tekst':
     'Je krijgt één code. Die deel je met de ouders. Zij vullen hem thuis in, en hun kind oefent met premium.',
   'scholen.privacy.kop': 'Je ziet niets van de kinderen',
   'scholen.privacy.tekst':
-    'leer.nu krijgt geen gegevens van leerlingen. Wat een kind oefent, blijft op zijn eigen apparaat. Daarom is er geen verwerkersovereenkomst nodig.',
+    // Waar zolang het gezinsaccount niet live staat (roadmap): daarmee gaan de
+    // voornaam en de voortgang wél naar de server.
+    'Leer.nu slaat geen persoonlijke gegevens op van kinderen. Daarom is er geen verwerkersovereenkomst nodig.',
   'scholen.papier.kop': 'Werkbladen voor de klas',
   'scholen.papier.tekst':
     'Elk onderwerp heeft een werkblad om te printen. In één keer print je 30 verschillende bladen, met de antwoorden achteraan.',
@@ -2166,14 +2172,14 @@ export const nl = {
   // wat je onthoudt, nooit voor meedoen alleen (ADR-040).
   // Profile
   'profile.title': 'Wie ben jij?',
-  'profile.help': 'Typ je naam. Die blijft op dit apparaat.',
+  // "Niet op onze servers" geldt zolang het gezinsaccount niet live staat
+  // (roadmap): een kind in een account heeft zijn voornaam op de server.
+  'profile.help': 'Jouw naam blijft opgeslagen op dit apparaat en niet op onze servers.',
   'profile.placeholder': 'Je naam',
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
-  // Wie voor het eerst komt, leest wat dit is; wie zonder naam een ronde
-  // speelde, leest waarom de naam nu gevraagd wordt (ADR-208).
-  'profile.watIsHet':
-    'Oefen topografie, rekenen, klokkijken, vlaggen en taal. Gratis, in korte rondes.',
+  // Wie zonder naam een ronde speelde, leest waarom de naam nu gevraagd wordt
+  // (ADR-208).
   'profile.proberen': 'Eerst een ronde proberen',
   'profile.naRonde.title': 'Hoe heet je?',
   'profile.naRonde.help': 'Typ je naam. Dan blijft bewaard wat je net oefende.',
@@ -2181,7 +2187,8 @@ export const nl = {
   // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
   'profile.ouder': 'Ik ben een ouder',
   'profile.ouder.title': 'Hoe heet je kind?',
-  'profile.ouder.help': 'Typ de naam van je kind. Die blijft op dit apparaat.',
+  'profile.ouder.help':
+    'De naam van je kind blijft opgeslagen op dit apparaat en niet op onze servers.',
   'profile.ouder.placeholder': 'Naam van je kind',
   'profile.ouder.submit': 'Verder',
   'profile.ouder.nameTooShort': 'Typ eerst de naam van je kind.',
@@ -2192,7 +2199,7 @@ export const nl = {
   // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
   'groep.vraag': 'In welke groep zit je?',
   'groep.uitleg':
-    'Dan zetten we de onderwerpen voor jouw groep bovenaan. Wat bij een andere groep hoort, kun je ook kiezen. Je groep blijft op dit apparaat.',
+    'We passen het niveau aan op jouw groep. Je kunt ook oefeningen van andere groepen doen.',
   'groep.knop': 'Groep {groep}',
   // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
   // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
