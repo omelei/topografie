@@ -189,7 +189,7 @@ test('without a code a child can still discover, choose, and repeat their misses
 
   // The table of one, chosen from four, so the round can be finished honestly
   // — and one answer given wrong on purpose, so there is something to repeat.
-  // Meerkeuze is free, typing is premium (ADR-192).
+  // Meerkeuze, so every answer is one of the four on the screen.
   await page.goto('/rekenen');
   await page
     .getByRole('region', { name: /Kies een onderwerp/ })
@@ -376,7 +376,7 @@ test('the day plan says how much without a code, and is the plan with one', asyn
 
   await page.goto('/');
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  await expect(vandaag).toContainText('die je bijna vergeten bent');
+  await expect(vandaag).toContainText('om te blijven onthouden');
   await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
   await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
 
@@ -400,7 +400,7 @@ test('the day plan says how much without a code, and is the plan with one', asyn
 
 /**
  * Een ronde tafel van 1, uit vier gekozen: elk antwoord is de vermenigvuldiger
- * zelf. Meerkeuze, want zonder code is typen premium (ADR-192).
+ * zelf. Meerkeuze, want dan staat het antwoord tussen de vier knoppen.
  */
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
@@ -485,7 +485,7 @@ test.describe('doorsturen naar de ouder', () => {
       .click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
-    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
+    await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
     await venster.getByRole('button', { name: 'Versturen' }).click();
     await expect(venster.getByRole('status')).toContainText('Verstuurd');
 
@@ -528,7 +528,7 @@ test.describe('doorsturen naar de ouder', () => {
       .click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
-    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
+    await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
     return venster;
   }
 

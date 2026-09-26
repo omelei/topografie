@@ -184,7 +184,10 @@ export function Shell({
           </div>
         ) : null}
 
-        <div className="flex min-h-0 flex-1">
+        {/* Geen min-h-0: in de rol die scrolt, kromp deze rij tot de hoogte
+            van het scherm en liep de pagina eroverheen, buiten het zand van
+            `main`, op het wit van de schil. */}
+        <div className="flex flex-1">
           {showModules ? (
             <nav aria-label={t('nav.modules')} className="tk-rail hidden desk:flex">
               {modules.map((module) => {

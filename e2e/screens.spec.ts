@@ -162,7 +162,7 @@ test.describe('zonder code', () => {
     await expect(venster).toBeVisible(READY);
     await shoot(page, size, '24-ouder-vraag');
 
-    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
+    await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
     await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible(READY);
     await shoot(page, size, '25-doorsturen');
   });

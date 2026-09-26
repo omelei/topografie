@@ -343,7 +343,7 @@ test.describe('het slot zonder code', () => {
     expect((await scan(page)).violations).toEqual([]);
 
     await venster.getByRole('button', { name: 'Terug', exact: true }).click();
-    await venster.getByRole('button', { name: 'Stuur het naar mijn ouders' }).click();
+    await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
     await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });

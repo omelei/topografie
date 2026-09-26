@@ -38,12 +38,12 @@ test('a visitor plays a topic first, and keeps the round after typing a name', a
   await expect(geoefend.getByRole('button', { name: /Provincies van Nederland/ })).toBeVisible();
 });
 
-test('the first card says what leer.nu is, and lets you try a round first', async ({ page }) => {
+test('the first card asks a name, and lets you try a round first', async ({ page }) => {
   await page.goto('/');
-  await expect(
-    page.getByText('Oefen topografie, rekenen, klokkijken, vlaggen en taal.'),
-  ).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toBeVisible();
+  await expect(
+    page.getByText('Jouw naam blijft opgeslagen op dit apparaat en niet op onze servers.'),
+  ).toBeVisible();
 
   await page.getByRole('button', { name: 'Eerst een ronde proberen' }).click();
   await expect(page).toHaveURL(/\/topografie\/provincies$/);
@@ -77,5 +77,5 @@ test('a teacher reads about the class code and finds how to ask for one', async 
   await expect(page.getByRole('heading', { name: 'leer.nu voor de klas' })).toBeVisible();
   await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
   const aanvragen = page.getByRole('link', { name: 'Vraag een klassencode aan' });
-  await expect(aanvragen).toHaveAttribute('href', /^mailto:info@leer\.nu\?subject=/);
+  await expect(aanvragen).toHaveAttribute('href', /^mailto:scholen@leer\.nu\?subject=/);
 });

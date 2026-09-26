@@ -239,7 +239,11 @@ export function ModuleScreen({
   // diploma staat apart, want het staat als laatste en het staat groter
   // (ADR-168).
   const tegels = forms.filter((candidate) => !candidate.alleenToets);
-  const gewoneTegels = tegels.filter((candidate) => !isDiplomaVorm(candidate.id));
+  // Eerst wat gratis is, dan wat premium is, elk in de volgorde van `forms.ts`:
+  // wie zonder code binnenkomt, ziet bovenaan wat hij meteen kan doen.
+  const gewoneTegels = tegels
+    .filter((candidate) => !isDiplomaVorm(candidate.id))
+    .sort((a, b) => Number(isPremiumVorm(a.id)) - Number(isPremiumVorm(b.id)));
   const diplomaVorm = tegels.find((candidate) => isDiplomaVorm(candidate.id)) ?? null;
   // No way until one is pressed (ADR-111).
   const gekozenManier = tegels.find((candidate) => candidate.id === formId) ?? null;

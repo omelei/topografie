@@ -107,8 +107,6 @@ export function ProfileGate({
       <div>
         <Wordmark height={40} />
         <p className="mt-1 text-tekst-secundair">{brand.slogan}</p>
-        {/* Wie hier voor het eerst komt, leest eerst wat dit is (ADR-208). */}
-        {naRonde ? null : <p className="mt-3 text-lopend">{t('profile.watIsHet')}</p>}
         {onVoorOuders && !naRonde ? (
           <button
             type="button"

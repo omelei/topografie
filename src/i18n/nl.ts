@@ -18,7 +18,7 @@ export const nl = {
   // opdracht met een plafond: tien, en dan ben je klaar. Niets in het product
   // stopt na tien.
   'home.welcome': 'Hoi {naam}!',
-  'home.todayOpen': 'Kies een vak, doe een ronde en kijk hoe het ging.',
+  'home.todayOpen': 'Kies een oefening en begin met leren.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
   'home.eerste.kop': 'Je eerste ronde',
@@ -67,7 +67,7 @@ export const nl = {
   'ouders.premium': 'Wat premium is',
   'ouders.oefenen.kop': 'Oefenen in korte rondes',
   'ouders.oefenen.tekst':
-    'Je kind kiest een vak, een onderwerp en een manier. Een ronde duurt een paar minuten. Het ziet meteen wat goed is, en wat het juiste antwoord was.',
+    'Je kind kiest een vak, een onderwerp en een spelvorm. Een ronde duurt een paar minuten. Na de ronde ziet jouw kind wat hij/zij goed en fout heeft gedaan.',
   'ouders.herhalen.kop': 'Herhalen op het goede moment',
   'ouders.herhalen.tekst':
     'Wat je kind beheerst, komt pas later terug. Wat het bijna vergeten is, komt vandaag terug. Zo blijft het in het hoofd.',
@@ -89,12 +89,18 @@ export const nl = {
   'scholen.intro':
     'Laat je hele klas oefenen met premium. Met één klassencode voor 40 apparaten, een jaar geldig.',
   'scholen.aanvragen': 'Vraag een klassencode aan',
+  // De etalage, in de vorm van de premiumpagina (op verzoek van de eigenaar).
+  'scholen.etalageLabel': 'Klassencode',
+  'scholen.etalageKop': 'Eén code voor je hele klas',
+  'scholen.watTitel': 'Wat je krijgt',
   'scholen.werkt.kop': 'Zo werkt het',
   'scholen.werkt.tekst':
     'Je krijgt één code. Die deel je met de ouders. Zij vullen hem thuis in, en hun kind oefent met premium.',
   'scholen.privacy.kop': 'Je ziet niets van de kinderen',
   'scholen.privacy.tekst':
-    'leer.nu krijgt geen gegevens van leerlingen. Wat een kind oefent, blijft op zijn eigen apparaat. Daarom is er geen verwerkersovereenkomst nodig.',
+    // Waar zolang het gezinsaccount niet live staat (roadmap): daarmee gaan de
+    // voornaam en de voortgang wél naar de server.
+    'Leer.nu slaat geen persoonlijke gegevens op van kinderen. Daarom is er geen verwerkersovereenkomst nodig.',
   'scholen.papier.kop': 'Werkbladen voor de klas',
   'scholen.papier.tekst':
     'Elk onderwerp heeft een werkblad om te printen. In één keer print je 30 verschillende bladen, met de antwoorden achteraan.',
@@ -195,8 +201,8 @@ export const nl = {
   'vandaag.titel': 'Vandaag herhalen',
   'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeten bent.',
   'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeten bent.',
-  'vandaag.eenVraag': 'Er is 1 vraag die je bijna vergeten bent.',
-  'vandaag.vragen': 'Er zijn {aantal} vragen die je bijna vergeten bent.',
+  'vandaag.eenVraag': 'Er is 1 vraag die herhaald moet worden om te blijven onthouden.',
+  'vandaag.vragen': 'Er zijn {aantal} vragen die herhaald moeten worden om te blijven onthouden.',
   'vandaag.ronde': '{aantal} vragen',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
@@ -685,7 +691,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
+    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
@@ -737,12 +743,13 @@ export const nl = {
   // manieren op elke modulepagina. Die drie toetsen, en dat staat er nu.
   'premium.vergelijkTitel': 'Basis en premium naast elkaar',
   'premium.vergelijkUitleg':
-    'Oefenen kan gratis: ontdekken en meerkeuze, in elk vak. De andere manieren van oefenen, de diploma’s, de voortgang en de weekdoelen zijn premium.',
+    'Oefenen kan gratis, in elk vak: ontdekken, aanwijzen, meerkeuze en zelf typen. De bliksemronde, overleven, de oefentoets, de diploma’s, de voortgang en de weekdoelen zijn premium.',
   'premium.basisNaam': 'Basis',
   'premium.basisPrijs': 'Gratis',
-  'premium.basisVoor': 'Ontdekken en meerkeuze, in elk vak. Voor altijd, zonder code.',
+  'premium.basisVoor':
+    'Ontdekken, aanwijzen, meerkeuze en zelf typen, in elk vak. Voor altijd, zonder code.',
   'premium.premiumVoor':
-    'Alles uit Basis, en daarbovenop: aanwijzen, zoeken en zelf typen, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
+    'Alles uit Basis, en daarbovenop: de bliksemronde, overleven, de oefentoets, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
   'premium.aanrader': 'Aanrader',
   'premium.tabelWat': 'Onderdeel',
   'premium.tabelJa': 'Zit erin',
@@ -757,10 +764,9 @@ export const nl = {
   // zonder code één onderwerp van één vak zag — de provincies van Nederland,
   // niet als keuze maar als lot. Nu kan het elk van zijn eigen vakken en
   // onderwerpen aanwijzen.
-  // De grens van ADR-192: ontdekken en meerkeuze zijn gratis, zoeken en zelf
-  // typen niet. Twee regels, want het zijn twee kanten van dezelfde grens.
-  'premium.regel.vormen': 'Ontdekken en meerkeuze',
-  'premium.regel.zoekenTypen': 'Aanwijzen op de kaart, klok en vlag zoeken, en zelf typen',
+  // Sinds ADR-224 is elke manier die leert gratis: ontdekken, zoeken, kiezen en
+  // typen. Eén regel; de regel "zoeken en typen" onder premium is weg.
+  'premium.regel.vormen': 'Ontdekken, aanwijzen, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde de fouten meteen overdoen',
   // "Een schatting" en niet "zien" (ADR-177): het is een vergeetcurve met een
   // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
@@ -871,7 +877,7 @@ export const nl = {
   // en het bepaalt alle drie de antwoorden.
   'ouderVraag.erbij': 'Mijn ouders zijn erbij',
   'ouderVraag.erbijRegel': 'Vul dan hier de code in',
-  'ouderVraag.sturen': 'Stuur het naar mijn ouders',
+  'ouderVraag.sturen': 'Vraag mijn ouders om een code',
   'ouderVraag.sturenRegel': 'Dan kunnen ze er later naar kijken',
   'ouderVraag.bekijken': 'Wat is premium?',
   'ouderVraag.bekijkenRegel': 'Lees eerst wat je ermee kunt',
@@ -886,7 +892,7 @@ export const nl = {
   // niets mee dan het adres: geen naam, geen voortgang, en ook niet welke
   // oefening het wilde doen. Zo'n bericht reist via de telefoon van iemand
   // anders.
-  'doorsturen.titel': 'Stuur het naar je ouders',
+  'doorsturen.titel': 'Vraag je ouders voor een code',
   'doorsturen.uitleg': 'Ze krijgen een link. Daar staat wat premium is en wat het kost.',
   'doorsturen.onderwerp': 'Iets van leer.nu',
   'doorsturen.bericht': 'Ik wil dit graag op leer.nu. Kijk je even?',
@@ -2166,14 +2172,14 @@ export const nl = {
   // wat je onthoudt, nooit voor meedoen alleen (ADR-040).
   // Profile
   'profile.title': 'Wie ben jij?',
-  'profile.help': 'Typ je naam. Die blijft op dit apparaat.',
+  // "Niet op onze servers" geldt zolang het gezinsaccount niet live staat
+  // (roadmap): een kind in een account heeft zijn voornaam op de server.
+  'profile.help': 'Jouw naam blijft opgeslagen op dit apparaat en niet op onze servers.',
   'profile.placeholder': 'Je naam',
   'profile.submit': 'Beginnen',
   'profile.nameTooShort': 'Typ eerst je naam.',
-  // Wie voor het eerst komt, leest wat dit is; wie zonder naam een ronde
-  // speelde, leest waarom de naam nu gevraagd wordt (ADR-208).
-  'profile.watIsHet':
-    'Oefen topografie, rekenen, klokkijken, vlaggen en taal. Gratis, in korte rondes.',
+  // Wie zonder naam een ronde speelde, leest waarom de naam nu gevraagd wordt
+  // (ADR-208).
   'profile.proberen': 'Eerst een ronde proberen',
   'profile.naRonde.title': 'Hoe heet je?',
   'profile.naRonde.help': 'Typ je naam. Dan blijft bewaard wat je net oefende.',
@@ -2181,7 +2187,8 @@ export const nl = {
   // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
   'profile.ouder': 'Ik ben een ouder',
   'profile.ouder.title': 'Hoe heet je kind?',
-  'profile.ouder.help': 'Typ de naam van je kind. Die blijft op dit apparaat.',
+  'profile.ouder.help':
+    'De naam van je kind blijft opgeslagen op dit apparaat en niet op onze servers.',
   'profile.ouder.placeholder': 'Naam van je kind',
   'profile.ouder.submit': 'Verder',
   'profile.ouder.nameTooShort': 'Typ eerst de naam van je kind.',
@@ -2192,7 +2199,7 @@ export const nl = {
   // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
   'groep.vraag': 'In welke groep zit je?',
   'groep.uitleg':
-    'Dan zetten we de onderwerpen voor jouw groep bovenaan. Wat bij een andere groep hoort, kun je ook kiezen. Je groep blijft op dit apparaat.',
+    'We passen het niveau aan op jouw groep. Je kunt ook oefeningen van andere groepen doen.',
   'groep.knop': 'Groep {groep}',
   // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
   // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
