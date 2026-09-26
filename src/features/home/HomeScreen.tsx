@@ -191,9 +191,13 @@ export function HomeScreen({
 
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
   // die zegt "druk hier, dan oefen je" (ADR-162).
-  const beginnen = (
-    <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
-  );
+  // Zonder naam staat "Hier begin je mee" er niet (ADR-231): de eerste ronde
+  // erboven zegt al waar je begint, en twee keer "begin hier" is er één te veel.
+  // Wie al geoefend heeft, ziet de rij als "Meest geoefend", ook zonder naam.
+  const beginnen =
+    naamloos && populair.length === 0 ? null : (
+      <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
+    );
 
   // Wat bij de groep past en nog niet gedaan is, onder wat het vaakst gedaan
   // is (ADR-206). Zo doet de groep ook iets voor wie al geoefend heeft.

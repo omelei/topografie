@@ -7,7 +7,7 @@ import {
   type ModeId,
   type PlanSet,
 } from '@/game-core';
-import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
+import { isFoutenOnderwerp, isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { formsFor } from '@/features/module/forms';
 import { EIGEN_DEEL } from '@/features/module/regios';
 import { taalDeelVan } from '@/content/loadTaal';
@@ -62,7 +62,9 @@ const DAG_MS = 86_400_000;
  */
 export function planSets(alles: readonly Onderdeel[]): readonly PlanSet<Onderdeel>[] {
   return alles
-    .filter((deel) => !deel.mix && !isPremiumOnderwerp(deel.setId))
+    .filter(
+      (deel) => !deel.mix && !(isPremiumOnderwerp(deel.setId) || isFoutenOnderwerp(deel.setId)),
+    )
     .map((deel) => ({ sleutel: deel.setId, set: deel, items: deel.items }));
 }
 

@@ -5,7 +5,7 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { taalDeelVan } from '@/content/loadTaal';
 import { formsFor, offeredForms, toetsVormVan } from '@/features/module/forms';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
-import { isPremiumOnderwerp } from '@/features/module/premium';
+import { isFoutenOnderwerp, isPremiumOnderwerp } from '@/features/module/premium';
 import { activeChildId } from '@/store/children';
 import { leesGeheugencheck } from '@/store/geheugencheck';
 import { loadEersteKeer } from '@/store/progress';
@@ -41,7 +41,11 @@ async function zoek(now: Date): Promise<CheckKlaar | null> {
   if ((await leesGeheugencheck(kindId)) !== null) return null;
 
   const sets = startbareOnderdelen()
-    .filter((deel) => !isPremiumOnderwerp(deel.setId) && toetsManier(deel) !== null)
+    .filter(
+      (deel) =>
+        !(isPremiumOnderwerp(deel.setId) || isFoutenOnderwerp(deel.setId)) &&
+        toetsManier(deel) !== null,
+    )
     .map((deel) => ({ set: deel, mix: deel.mix, items: deel.items }));
   const check = geheugencheckVoor(sets, await loadEersteKeer(kindId), now);
   if (check === null) return null;

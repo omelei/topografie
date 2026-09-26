@@ -357,7 +357,7 @@ test('plays a round: question, map, answer, feedback', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
 
   // All twelve provinces are reachable as controls, not just drawn.
-  for (const naam of ['Groningen', 'Fryslân', 'Zeeland', 'Limburg']) {
+  for (const naam of ['Groningen', 'Friesland', 'Zeeland', 'Limburg']) {
     await expect(page.getByRole('button', { name: naam })).toBeVisible();
   }
 

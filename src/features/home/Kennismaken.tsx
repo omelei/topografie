@@ -105,11 +105,12 @@ const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
 
 const STAPPEN: readonly { readonly kop: TranslationKey; readonly uitleg: TranslationKey }[] = [
   { kop: 'home.zo.oefen.kop', uitleg: 'home.zo.oefen.uitleg' },
-  { kop: 'home.zo.herhaal.kop', uitleg: 'home.zo.herhaal.uitleg' },
+  { kop: 'home.zo.fouten.kop', uitleg: 'home.zo.fouten.uitleg' },
+  { kop: 'home.zo.moeilijk.kop', uitleg: 'home.zo.moeilijk.uitleg' },
   { kop: 'home.zo.diploma.kop', uitleg: 'home.zo.diploma.uitleg' },
 ];
 
-/** Hoe leer.nu werkt, in drie stappen: oefenen, herhalen, je diploma halen. */
+/** Hoe leer.nu werkt, in vier stappen: oefenen, je fouten, wat moeilijk is, je diploma (ADR-231). */
 export function ZoWerktHet() {
   return (
     <section className="flex flex-col gap-3" aria-labelledby="zo-kop">
