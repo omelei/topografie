@@ -13060,6 +13060,36 @@ zwakker. Niet aangepast in dit besluit:
   de badge heeft geen rand, en `.tk-eerste` alleen `rand-licht`.
 - Groen en topo-tekst halen hun grens nog, maar met minder marge dan op melk.
 
+## ADR-222 — Een lijn op de grond krijgt zijn eigen kleur
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, als
+vervolg op ADR-221.
+
+**Aanleiding.** Sinds de grond zand is (ADR-221), staat de lijn onder een
+sectiekop (`.tk-sectie`) in de lichte lijn uit de gids (`--rand-licht`) op
+1.09 tegen de grond: op Vandaag, Jij, Premium en elke vakpagina bijna weg. Op
+een witte kaart is diezelfde lijn 1.33, en zo bedoelt de gids hem.
+
+**Besluit.**
+
+- **Nieuw roltoken `--rand-grond`** voor een lijn die direct op de grond
+  staat: `color-mix(in srgb, var(--rand-bediening) 15%, var(--rand-licht))`,
+  dat is `#dcc8b5`. Geen nieuwe hex: het is de lichte lijn met een vleug van
+  de bedieningsrand erin, dus even warm.
+- **`.tk-sectie` tekent zijn onderlijn in `--rand-grond`.** Dat zijn alle 28
+  sectielijnen in de app; ze staan allemaal op de grond, geen enkele op een
+  kaart.
+- Kaarten houden `--rand-licht`: daar is die 1.33, zoals de gids hem geeft.
+
+**Contrast.** `--rand-grond` is 1.32 op zand (was 1.09), vrijwel gelijk aan
+de lijn uit de gids op wit (1.33). Een lijn draagt geen tekst en is geen
+bediening, dus WCAG stelt geen eis; `contrast.test.ts` houdt hem op minstens
+1.3 en onder de bedieningsrand (5.67), zodat een lijn nooit zwaarder oogt dan
+iets dat je kunt indrukken.
+
+**Niet in dit besluit.** De vakbadge (`.tk-modulebadge`) en "Je eerste ronde"
+(`.tk-eerste`), die hun vorm op zand ook grotendeels verliezen (ADR-221).
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

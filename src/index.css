@@ -145,6 +145,11 @@
      * its light rule, which is 1.33 on a card and would fail WCAG 1.4.11 for
      * the one line that says "press here"; this stays the tertiary ink. */
     --rand-bediening: var(--tekst-tertiair);
+    /* A rule that stands on the ground rather than on a card: the line under
+     * a section heading. The guide's light rule is 1.33 on a card but 1.09 on
+     * zand (ADR-221); a touch of the control edge in it brings it to 1.32 on
+     * the ground, the weight the guide gives it on white. Carries no text. */
+    --rand-grond: color-mix(in srgb, var(--rand-bediening) 15%, var(--rand-licht));
     /* What a control turns to under the pointer, and the fill of a chosen row. */
     --vlak-hover: var(--papier);
     /* The empty part of a bar, an empty dot, and a switched-off button: the
@@ -679,7 +684,7 @@
     align-items: baseline;
     gap: 4px 12px;
     padding-bottom: 10px;
-    border-bottom: var(--stroke-hair) solid var(--rand-licht);
+    border-bottom: var(--stroke-hair) solid var(--rand-grond);
     font-family: var(--font-kop);
     font-size: var(--type-kaartkop);
     line-height: var(--type-kaartkop-lh);
