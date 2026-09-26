@@ -71,6 +71,21 @@ describe('de invoer, voordat er iets de deur uit gaat', () => {
   it('laat het door als het klopt', () => {
     expect(invoerFout('ouder@example.nl', 'wachtwoord')).toBeNull();
   });
+
+  /**
+   * De ondergrens stond in `oordeel.ts` en werd nergens in het echte pad
+   * gevraagd: `supabaseAccount` liet hem over aan Supabase, en dat project staat
+   * op zes omdat een kind er ook in zit. De toets hiervóór draaide tegen
+   * `nepAccount`, die wél streng was — groen op een regel die live niet gold.
+   */
+  it('houdt bij aanmelden een te kort wachtwoord tegen', () => {
+    expect(invoerFout('ouder@example.nl', 'zeven12', true)).toBe('te-kort');
+    expect(invoerFout('ouder@example.nl', 'achttien', true)).toBeNull();
+  });
+
+  it('houdt bij inloggen niemand tegen om zijn eigen wachtwoord', () => {
+    expect(invoerFout('ouder@example.nl', 'zeven12')).toBeNull();
+  });
 });
 
 describe('verlopen en verversen', () => {

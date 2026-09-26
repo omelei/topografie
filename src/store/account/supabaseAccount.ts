@@ -113,8 +113,9 @@ async function metWachtwoord(
   email: string,
   wachtwoord: string,
   now: Date,
+  nieuw: boolean,
 ): Promise<AccountUitkomst> {
-  const fout = invoerFout(email, wachtwoord);
+  const fout = invoerFout(email, wachtwoord, nieuw);
   if (fout !== null) return { ok: false, reden: fout };
   if (!isIngesteld()) return { ok: false, reden: 'niet-ingesteld' };
 
@@ -159,10 +160,11 @@ async function vernieuw(sessie: Sessie, now: Date): Promise<Sessie | null> {
 }
 
 export const supabaseAccount: Account = {
-  aanmelden: (email, wachtwoord) => metWachtwoord('/auth/v1/signup', email, wachtwoord, new Date()),
+  aanmelden: (email, wachtwoord) =>
+    metWachtwoord('/auth/v1/signup', email, wachtwoord, new Date(), true),
 
   inloggen: (email, wachtwoord) =>
-    metWachtwoord('/auth/v1/token?grant_type=password', email, wachtwoord, new Date()),
+    metWachtwoord('/auth/v1/token?grant_type=password', email, wachtwoord, new Date(), false),
 
   uitloggen: async () => {
     const sessie = leesSessie();

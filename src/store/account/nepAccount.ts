@@ -18,7 +18,6 @@ import {
   nieuwWachtwoordFout,
   normaliseerEmail,
   verlooptOp,
-  wachtwoordKort,
 } from './oordeel';
 import type { Account, AccountUitkomst, Sessie } from './types';
 
@@ -74,8 +73,8 @@ export function maakNepAccount(opties: NepOpties = {}): NepAccount {
     };
   }
 
-  function vooraf(email: string, wachtwoord: string): AccountUitkomst | null {
-    const fout = invoerFout(email, wachtwoord);
+  function vooraf(email: string, wachtwoord: string, nieuw = false): AccountUitkomst | null {
+    const fout = invoerFout(email, wachtwoord, nieuw);
     if (fout !== null) return { ok: false, reden: fout };
     if (nietIngesteld) return { ok: false, reden: 'niet-ingesteld' };
     if (offline) return { ok: false, reden: 'geen-verbinding' };
@@ -84,9 +83,8 @@ export function maakNepAccount(opties: NepOpties = {}): NepAccount {
 
   return {
     aanmelden: async (email, wachtwoord) => {
-      const mis = vooraf(email, wachtwoord);
+      const mis = vooraf(email, wachtwoord, true);
       if (mis !== null) return mis;
-      if (wachtwoordKort(wachtwoord)) return { ok: false, reden: 'te-kort' };
 
       const adres = normaliseerEmail(email);
       if (gebruikers.has(adres)) return { ok: false, reden: 'bestaat-al' };
