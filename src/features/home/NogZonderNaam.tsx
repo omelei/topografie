@@ -9,9 +9,10 @@ import { NaamVraag } from '@/features/player/NaamVraag';
 /**
  * Wat de voordeur zegt tegen wie nog geen naam heeft (ADR-229).
  *
- * Er stond een naamscherm vóór de voordeur, met drie uitwegen eronder: eerst
- * proberen, "Ik ben een ouder" en "Ik heb een inlogcode". Het naamscherm is
- * weg, dus proberen is gewoon de voordeur zelf, en de twee andere staan hier,
+ * Er stond een naamscherm vóór de voordeur, met de groep als tweede stap en
+ * drie uitwegen: eerst proberen, "Ik ben een ouder" en "Ik heb een inlogcode".
+ * Het naamscherm is weg, en de groep kies je op Jij. Proberen is gewoon de
+ * voordeur zelf, en de twee andere uitwegen staan hier,
  * als twee knoppen onder de eerste ronde. Een ouder gaat naar de pagina die
  * voor hem geschreven is (ADR-214); een kind met een code logt hier in.
  */
@@ -46,10 +47,10 @@ export function VoorWieNieuwIs({ onVoorOuders }: { readonly onVoorOuders: () => 
  * De uitnodiging om je naam te typen, na de eerste ronde (ADR-229).
  *
  * Geen poort: de rest van Vandaag staat eronder en werkt. "Niet nu" zet hem
- * voorgoed weg voor dit kind, zoals de vraag naar de groep (ADR-151); de naam
- * kan daarna nog op Jij, en de toets vraagt hem als het diploma eraan komt.
+ * voorgoed weg voor dit kind; de naam kan daarna nog op Jij, en de toets vraagt
+ * hem als het diploma eraan komt.
  *
- * **Niets tot het bekend is**, zoals `GroepVraag`: een vraag die even
+ * **Niets tot het bekend is**, zoals `VandaagBlok`: een vraag die even
  * verschijnt en dan verdwijnt, is een knop onder een vinger die weg is.
  */
 export function NaamUitnodiging() {

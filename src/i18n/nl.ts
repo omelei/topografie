@@ -2273,15 +2273,11 @@ export const nl = {
   // Op Vandaag, zolang er geen naam is: naar de pagina voor ouders (ADR-214).
   'naam.ikBenOuder': 'Ik ben een ouder',
 
-  // De groep (ADR-151). Op Vandaag, onder de eerste ronde, en altijd over te slaan. Het zegt wat de
-  // groep doet — wat bovenaan staat — en wat hij niet doet: niets gaat op slot.
-  // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
+  // De groep (ADR-151). Sinds ADR-229 alleen op Jij, bij de instellingen, en
+  // bij de ouder: niet meer als vraag op Vandaag. De vraag is de naam van de
+  // rij knoppen voor een schermlezer.
   'groep.vraag': 'In welke groep zit je?',
-  'groep.uitleg':
-    'We passen het niveau aan op jouw groep. Je kunt ook oefeningen van andere groepen doen.',
   'groep.knop': 'Groep {groep}',
-  // Eén keer op de voordeur, voor elk kind dat hem nog niet zag (ADR-229).
-  'groep.nietNu': 'Niet nu',
   // Op Jij, in de woorden van het kind (ADR-171), als rij bij de instellingen
   // die de knoppen opent (ADR-172). Met wat er op 1 augustus gebeurt, want dat
   // doet de app zonder te vragen.

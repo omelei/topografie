@@ -48,9 +48,10 @@ test('the front door opens without a name, with the first round on it', async ({
   await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toHaveCount(0);
 
-  // Vóór de eerste ronde vraagt Vandaag geen naam: alleen de groep, weg te klikken.
-  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toBeVisible();
+  // Vóór de eerste ronde vraagt Vandaag niets: geen naam en geen groep.
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
   await expect(page.getByRole('form', { name: 'Hoe heet je?' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
 
 test('"Niet nu" puts the invitation away for good, and Jij still asks', async ({ page }) => {

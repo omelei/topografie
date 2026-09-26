@@ -5,9 +5,8 @@ import { expect, type Page } from '@playwright/test';
  *
  * Er staat geen naamscherm meer vóór de voordeur: een kind oefent eerst zonder
  * naam en typt hem waar hij iets doet. De kortste weg is Jij, waar de vraag
- * bovenaan staat zolang er geen naam is. Daarna Vandaag, met de vraag naar de
- * groep weggeklikt: dat is de voordeur die het naamscherm achterliet, toen het
- * na de naam de groep vroeg en "Zeg ik niet" hem wegzette (ADR-151).
+ * bovenaan staat zolang er geen naam is. Daarna Vandaag, zonder groep: die
+ * kies je op Jij, en Vandaag vraagt er niet naar.
  */
 export async function signIn(page: Page, naam: string) {
   await page.goto('/jij');
@@ -19,7 +18,5 @@ export async function signIn(page: Page, naam: string) {
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 
   await page.goto('/');
-  const groep = page.getByRole('region', { name: 'In welke groep zit je?' });
-  await groep.getByRole('button', { name: 'Niet nu' }).click();
-  await expect(groep).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: `Hoi ${naam}!` })).toBeVisible();
 }

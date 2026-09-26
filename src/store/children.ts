@@ -147,17 +147,14 @@ export async function groepVanActiefKind(now: Date = new Date()): Promise<Groep 
 /**
  * Of een kind de vraag naar de groep al zag (ADR-151).
  *
- * Een kind dat bestond vóór die vraag, krijgt hem één keer op de voordeur. Een
- * keuze, en ook "Niet nu", zet deze vlag; daarna gaat het alleen nog via Voor
- * ouders. Per kind, zoals `doel:<kindId>`, want het tweede kind op dezelfde
- * iPad is niet gevraagd omdat het eerste antwoord gaf.
+ * De vraag stond op de voordeur, en een keuze of "Niet nu" zette deze vlag.
+ * Sinds ADR-229 staat hij daar niet meer: de groep kies je op Jij. De vlag
+ * wordt nog gezet, want het gezinsaccount stuurt hem mee (`gezin/rijen.ts`),
+ * en een apparaat met een oudere versie leest hem nog. Per kind, zoals
+ * `doel:<kindId>`.
  */
 function groepGevraagdSleutel(kindId: string): string {
   return `groepGevraagd:${kindId}`;
-}
-
-export async function groepAlGevraagd(kindId: string): Promise<boolean> {
-  return (await getSetting(groepGevraagdSleutel(kindId))) === 'ja';
 }
 
 /** Een keuze, "Zeg ik niet" of "Niet nu": dit kind is gevraagd. */

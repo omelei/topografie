@@ -51,11 +51,11 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   const size = testInfo.project.name;
 
   // De voordeur voor wie nog geen naam heeft (ADR-229): het naamscherm dat
-  // hier stond, is er niet meer. Wachten op de vraag naar de groep, die pas
-  // staat als het kind gelezen is.
+  // hier stond, is er niet meer. Wachten op de eerste ronde, die pas staat als
+  // de geschiedenis gelezen is.
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
   await shoot(page, size, '01-zonder-naam');
 
   // Jij zonder naam: de vraag bovenaan.

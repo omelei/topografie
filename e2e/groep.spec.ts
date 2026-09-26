@@ -34,13 +34,14 @@ async function wisselGroep(page: Page, knop: string) {
 }
 
 /**
- * De groep kiezen op Vandaag, waar een nieuw kind hem gevraagd wordt (ADR-229).
- * De vraag verdwijnt pas als de groep geschreven is: dat is het teken.
+ * De groep kiezen op Jij, de enige plek waar een kind hem kiest sinds ADR-229,
+ * en dan terug naar Vandaag.
  */
 async function kiesGroep(page: Page, knop: string) {
-  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
-  await vraag.getByRole('button', { name: knop, exact: true }).click();
-  await expect(vraag).toHaveCount(0);
+  await page.goto('/jij');
+  await openGroep(page);
+  await wisselGroep(page, knop);
+  await page.goto('/');
 }
 
 /**
@@ -112,18 +113,14 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
 }, testInfo) => {
   const project = testInfo.project.name;
 
-  // Op Vandaag, onder de eerste ronde, zonder naam (ADR-229): zes groepen en
-  // een uitweg. Nooit een leeftijd.
+  // Vandaag vraagt niets (ADR-229): geen naam en geen groep. De groep staat op
+  // Jij, bij de instellingen. Nooit een leeftijd.
   await page.goto('/');
-  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
-  await expect(vraag).toBeVisible();
-  await expect(vraag.getByRole('button', { name: 'Niet nu' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
   await expect(page.getByText(/leeftijd|geboren/i)).toHaveCount(0);
-  await foto(page, project, 'groep-stap');
 
   await kiesGroep(page, 'Groep 3');
-  // Wie hem beantwoordde, krijgt de vraag niet nog eens.
-  await expect(vraag).toHaveCount(0);
 
   await zaaiGelijkWachten(page);
   await page.reload();
@@ -211,9 +208,7 @@ test('"Ik ben een ouder" opent de pagina voor ouders, en maakt geen kind', async
   await expect(venster.getByRole('button', { name: /de beurt/ })).toHaveCount(0);
 });
 
-test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één keer', async ({
-  page,
-}) => {
+test('een kind van vóór de groep laadt zoals altijd, en krijgt geen vraag', async ({ page }) => {
   // Het profiel zoals het vóór ADR-151 werd geschreven: geen groep, geen vlag.
   // Eerst de app laten openen, zodat de database er staat.
   await page.goto('/');
@@ -252,18 +247,7 @@ test('een kind van vóór de groep laadt zoals altijd, en krijgt de vraag één 
   const begin = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
   await expect(begin.getByRole('button').first()).toContainText('Provincies van Nederland');
 
-  // De vraag staat er, rustig, en houdt niets tegen.
-  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
-  await expect(vraag).toBeVisible();
-  await vraag.getByRole('button', { name: 'Niet nu' }).click();
-  await expect(vraag).toHaveCount(0);
-
-  await page.reload();
-  // De knop in de balk is sinds ADR-173 de wisselaar, en draagt de naam van wie
-  // er oefent in zijn toegankelijke naam.
-  await expect(
-    page.getByRole('banner').getByRole('button', { name: /Nu oefent Oud/ }),
-  ).toBeVisible();
+  // Geen vraag naar de groep op Vandaag (ADR-229): die staat op Jij.
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
 

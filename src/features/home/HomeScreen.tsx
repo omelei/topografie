@@ -28,7 +28,6 @@ import { EersteRonde, VakkenRaster, ZoWerktHet } from './Kennismaken';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
-import { GroepVraag } from './GroepVraag';
 import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 import { WeekdoelenBlok } from './WeekdoelenBlok';
 
@@ -166,8 +165,8 @@ export function HomeScreen({
   // getal en een slot, en dat is geen opdracht: wie binnenkomt, ziet dan eerst
   // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
   //
-  // De sleutel is de groep: wie die op de voordeur kiest, ziet het plan meteen
-  // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151). Met de naam
+  // De sleutel is de groep: die wordt na het openen gelezen, en het plan volgt
+  // hem (ADR-151). Sinds ADR-229 kies je hem op Jij, niet op Vandaag. Met de naam
   // van het blok ervoor, want Vandaag en het doel staan naast elkaar in
   // dezelfde kolom en zouden anders dezelfde sleutel dragen.
   const { actief } = usePremium();
@@ -177,17 +176,13 @@ export function HomeScreen({
   const vandaagBoven = actief ? vandaag : null;
   const vandaagOnder = actief ? null : vandaag;
 
-  // Eén keer, voor een kind dat er al was vóór de vraag naar de groep: onder
-  // Vandaag, zodat het plan er eerst staat en niemand wacht (ADR-151).
-  const groepVraag = <GroepVraag onGekozen={setGroep} />;
-
   // En wat dit kind zich deze week voorneemt (ADR-162). Onder de rij waar het
   // mee begint en onder "Vandaag": eerst waar je kunt drukken, dan wat er nu
   // aan de beurt is, dan waar het deze week heen moet. Andersom leest de
   // voordeur als een doelstelling met huiswerk eronder.
   //
-  // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
-  // meteen de diploma's die erbij passen (ADR-153).
+  // Met de groep als sleutel, zoals Vandaag: de diploma's die erbij passen,
+  // zodra hij gelezen is (ADR-153).
   const weekdoelen = <WeekdoelenBlok key={`weekdoel-${groep ?? 'geen'}`} onDiplomas={onDiplomas} />;
 
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
@@ -215,24 +210,19 @@ export function HomeScreen({
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
   //
-  // Zonder naam staat de vraag naar de groep direct onder de eerste ronde: het
-  // naamscherm vroeg hem vóór alles, en hij kiest die ronde (ADR-151, ADR-229).
-  // Daaronder de twee uitwegen van dat scherm: voor een ouder en voor een kind
-  // met een inlogcode.
+  // Zonder naam staan onder de eerste ronde de twee uitwegen van het oude
+  // naamscherm: voor een ouder en voor een kind met een inlogcode (ADR-229).
+  // Een vraag naar de groep staat hier niet meer: die kies je op Jij.
   const gast = naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null;
   const kern = nieuw
     ? [
         blok('kop', kop),
         blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
-        // Eén sleutel voor de vraag, op welke plek hij ook staat: zo verhuist
-        // hij als de pagina van volgorde wisselt, in plaats van opnieuw te laden.
-        blok(naamloos ? 'groepVraag' : 'groepVraagHoog', naamloos ? groepVraag : null),
         blok('gast', gast),
         blok('vandaagBoven', vandaagBoven),
         blok('beginnen', beginnen),
         blok('vakken', vakken),
         blok('zo', <ZoWerktHet />),
-        blok(naamloos ? 'groepVraagLaag' : 'groepVraag', naamloos ? null : groepVraag),
         blok('weekdoelen', weekdoelen),
         blok('vandaagOnder', vandaagOnder),
       ]
@@ -247,7 +237,6 @@ export function HomeScreen({
         blok('beginnen', beginnen),
         blok('passend', passend),
         blok('vandaagBoven', vandaagBoven),
-        blok('groepVraag', groepVraag),
         blok('weekdoelen', weekdoelen),
         blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
         blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),

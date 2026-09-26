@@ -13355,7 +13355,7 @@ kind na een paar weken nog over is.
   wel na 30 dagen, de ronde zonder hulp, de winkels onveranderd, één keer, en de
   uitslag met het aanbod bij de ouder.
 
-## ADR-229 — Geen naam vooraf: de naam wordt gevraagd waar hij iets doet
+## ADR-229 — Geen naam en geen groep vooraf: de naam wordt gevraagd waar hij iets doet
 
 **Status:** accepted. **Date:** 2026-09-26. Volgt op ADR-208, op verzoek van de
 eigenaar.
@@ -13378,10 +13378,13 @@ kind op hetzelfde apparaat, en op de ouderpagina.
   naam (`zorgVoorKind`), onder `SINGLETON_KEY`, zodat alles wat het oefent bij
   hem blijft. De lijst met adressen zonder naam in `App.tsx` is weg, en het
   naamscherm (`ProfileGate`) ook.
-- **Vandaag zonder naam** zegt "Hoi!". De vraag naar de groep staat direct onder
-  de eerste ronde, want de groep kiest die ronde (ADR-151); hij is nog steeds weg
-  te klikken. Daaronder "Ik ben een ouder" (naar Voor ouders, ADR-214) en, met
-  een gezinsproject, "Ik heb een inlogcode" (ADR-190).
+- **Vandaag vraagt niets**, ook geen groep. Zonder naam zegt het "Hoi!", met de
+  eerste ronde en daaronder "Ik ben een ouder" (naar Voor ouders, ADR-214) en,
+  met een gezinsproject, "Ik heb een inlogcode" (ADR-190).
+- **De groep kies je op Jij**, bij de instellingen, en een ouder op de
+  ouderpagina. De vraag op Vandaag (ADR-151) is weg, ook voor een kind van vóór
+  die vraag (`GroepVraag`). Zonder groep kiest de grootte van het scherm de
+  eerste ronde, zoals bij "Zeg ik niet" altijd al.
 - **De naam wordt gevraagd waar hij iets doet**, met één component
   (`NaamVraag`), en de vraag zegt waarvoor:
   - **Na de eerste ronde op Vandaag**, als uitnodiging: "Dan staat je naam
@@ -13414,8 +13417,15 @@ kind op hetzelfde apparaat, en op de ouderpagina.
   IndexedDB. Dat kost niets en gaat nergens heen.
 - Wie nooit een naam typt en geen toets doet, oefent gewoon. Een diploma zonder
   naam kan niet meer ontstaan via de toets; `GrootDiploma` kon er al tegen.
+- De vlag `groepGevraagd` wordt nog gezet als een groep gekozen wordt, want het
+  gezinsaccount stuurt hem mee (`gezin/rijen.ts`); op het apparaat leest niets
+  hem meer.
+- Minder kinderen zullen een groep hebben, en dan zijn "Hier begin je mee" en
+  "Past bij groep" minder precies. Dat is de prijs van een voordeur zonder
+  vragen; de teller zegt niet hoeveel kinderen een groep kiezen, en dat hoeft
+  ook niet.
 - De e2e-tests beginnen met een gedeelde `signIn` in `e2e/naam.ts`: de naam op
-  Jij, dan de groepsvraag op Vandaag weggeklikt. `proberen.spec.ts` houdt het
+  Jij, dan Vandaag. `proberen.spec.ts` houdt het
   eerste bezoek vast, en er zijn tests voor de toets, de wisselaar en de
   ouderpagina zonder naam.
 - Na 8 oktober laat de teller zien hoeveel rondes zonder naam er zijn, en waar
