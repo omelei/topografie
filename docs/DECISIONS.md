@@ -13145,6 +13145,50 @@ waren.
 premium verkoopt, is nu wat over weken gaat en wat uitdaagt: herhalen op het
 goede moment, zien wat je kind beheerst, de diploma's en de oefentoets.
 
+## ADR-225 — Een code heeft een begindatum, en een klaspas loopt een schooljaar
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, de
+eerste van vier stappen rond premium en apparaten. Werkt ADR-200 bij: een
+klassencode loopt nu van 1 september tot en met 31 augustus in plaats van 365
+dagen vanaf de aankoop. De prijzen staan in het register (R-19 tot en met R-21)
+en niet hier.
+
+**Context.** Een code gold vanaf de dag dat hij gemaakt werd. Een school die in
+juni een klassencode voor volgend schooljaar bestelt, verloor zo de zomer, en
+een code die op 1 september in moet gaan, moest de eigenaar op 1 september
+maken.
+
+**Besluit.**
+
+- **`maak-codes.mjs` kent drie keuzes voor de datums.** `--van` en `--tot` zetten
+  de eerste en de laatste dag. `--klaspas [jaar]` zet een schooljaar: zonder jaar
+  het schooljaar van vandaag, met een jaar het schooljaar dat in dat jaar begint.
+  Een opgegeven datum gaat voor de klaspas, en alleen die datum. Zonder keuze
+  blijft het zoals het was: vanaf vandaag, een jaar lang. De rekensom staat los
+  in `tools/premium/datums.mjs`, zodat hij te toetsen is zonder het script te
+  draaien.
+- **`premium_codes` krijgt `geldig_van`.** Een code van vóór deze kolom geldt
+  sinds de dag waarop hij gemaakt is. Een code uit de kassa krijgt vandaag. Een
+  code die eindigt voordat hij begint, weigert de database.
+- **De controle eist `geldig_van ≤ vandaag ≤ geldig_tot`**, op een dag in
+  Nederland. In UTC begint 1 september om twee uur 's nachts, en daar kan een
+  ouder niets mee.
+- **Een code die nog niet ingaat, is geen fout.** De server antwoordt
+  `nog-niet` met de dag waarop hij wel ingaat. De ouder leest "Deze code geldt
+  vanaf 1 september 2027. Vul hem vanaf die dag in." De code neemt dan geen plek
+  en telt niet als een fout geraden code.
+
+**Gevolgen.**
+
+- **Voor de eigenaar:** `tools/premium/schema.sql` opnieuw draaien in de SQL
+  Editor. Het script vult de nieuwe kolom voor de codes die er al zijn.
+- De kassa verandert niet: een gekochte code gaat in op de dag van betalen, en
+  dat is de standaard van de kolom.
+- `supabase/tests/premium.sql` houdt de grenzen vast (morgen, vandaag, de laatste
+  dag, de dag erna), en draait in CI met de rest van het schema.
+- Een code die verloopt, verloopt nu om middernacht in Nederland in plaats van
+  om middernacht in UTC.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

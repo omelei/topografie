@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   activeer,
   dagenGeldig,
@@ -41,7 +41,19 @@ function stand(over: Partial<PremiumStand> = {}): PremiumStand {
 
 afterEach(() => {
   window.localStorage.clear();
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
 });
+
+/** Een premiumserver die één antwoord geeft, zonder netwerk. */
+function server(antwoord: unknown) {
+  vi.stubEnv('VITE_PREMIUM_URL', 'https://premium.leer.test');
+  vi.stubEnv('VITE_PREMIUM_KEY', 'sb_publishable_test');
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => new Response(JSON.stringify(antwoord), { status: 200 })),
+  );
+}
 
 describe('a premium code', () => {
   it('is the same code however it was typed', () => {
@@ -128,5 +140,23 @@ describe('een code die afloopt', () => {
     expect(dagenGeldig(null, nu)).toBeNull();
     expect(isVerlopen(null, nu)).toBe(false);
     expect(dagenGeldig(stand('geen datum', nu.toISOString()), nu)).toBeNull();
+  });
+});
+
+describe('een code die nog niet ingaat (ADR-225)', () => {
+  it('zegt op welke dag hij ingaat, en wordt niet bewaard', async () => {
+    server({ geldig: false, reden: 'nog-niet', geldig_van: '2027-09-01' });
+    expect(await activeer('LEER-7K3M-Q9TX')).toEqual({
+      ok: false,
+      reden: 'nog-niet',
+      geldigVan: '2027-09-01',
+    });
+    expect(leesStand()).toBeNull();
+  });
+
+  it('gaat open op de dag dat hij ingaat', async () => {
+    server({ geldig: true, geldig_tot: '2028-08-31' });
+    expect(await activeer('LEER-7K3M-Q9TX', NU)).toEqual({ ok: true, geldigTot: '2028-08-31' });
+    expect(leesStand()?.geldigTot).toBe('2028-08-31');
   });
 });

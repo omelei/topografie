@@ -1,5 +1,6 @@
 import { useId, useState, type FormEvent } from 'react';
-import { activeer, type PremiumReden } from '@/store/premium';
+import { activeer, type PremiumReden, type PremiumUitkomst } from '@/store/premium';
+import { leesbareDatum } from './usePremium';
 import { t, type TranslationKey } from '@/i18n';
 
 /**
@@ -19,6 +20,7 @@ const FOUT: Record<PremiumReden, TranslationKey> = {
   leeg: 'premium.fout.leeg',
   onbekend: 'premium.fout.onbekend',
   verlopen: 'premium.fout.verlopen',
+  'nog-niet': 'premium.fout.nog-niet',
   vol: 'premium.fout.vol',
   'te-vaak': 'premium.fout.te-vaak',
   'geen-verbinding': 'premium.fout.geen-verbinding',
@@ -35,7 +37,7 @@ export function CodeVeld({
 }) {
   const [invoer, setInvoer] = useState('');
   const [bezig, setBezig] = useState(false);
-  const [fout, setFout] = useState<PremiumReden | null>(null);
+  const [fout, setFout] = useState<Extract<PremiumUitkomst, { ok: false }> | null>(null);
   const veld = useId();
   const melding = useId();
 
@@ -49,7 +51,7 @@ export function CodeVeld({
       setInvoer('');
       onGelukt?.();
     } else {
-      setFout(uitkomst.reden);
+      setFout(uitkomst);
     }
   }
 
@@ -79,7 +81,9 @@ export function CodeVeld({
       </button>
       {fout ? (
         <p id={melding} role="alert" className="tk-melding" data-soort="fout">
-          {t(FOUT[fout])}
+          {fout.reden === 'nog-niet' && fout.geldigVan !== undefined
+            ? t('premium.fout.nog-niet', { datum: leesbareDatum(fout.geldigVan) })
+            : t(FOUT[fout.reden])}
         </p>
       ) : null}
     </form>

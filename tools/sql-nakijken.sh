@@ -26,10 +26,11 @@ done
 
 "${PSQL[@]}" -d "$DB" -f supabase/tests/gezin.sql
 
-# De premiumdatabase (ADR-116, ADR-210): een eigen project, met de hand in de
+# De premiumdatabase (ADR-116, ADR-210, ADR-225): een eigen project, met de hand in de
 # SQL Editor gedraaid. Ook twee keer, want dat belooft het script.
 echo "premium: tools/premium/schema.sql"
 "${PSQL[@]}" -d "$DB" -f tools/premium/schema.sql
 "${PSQL[@]}" -d "$DB" -f tools/premium/schema.sql
+"${PSQL[@]}" -d "$DB" -f supabase/tests/premium.sql
 "${PSQL[@]}" -d "$DB" -f supabase/tests/teller.sql
 "${PSQL[@]}" -d postgres -c "drop database ${DB}"
