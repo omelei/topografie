@@ -2,6 +2,7 @@ import type { ItemState, ModeId } from '@/game-core';
 import { getDb, SINGLETON_KEY, type AttemptRecord, type SessionRecord } from './db';
 import { activeChildId, ensureProgressPerChild } from './children';
 import { laatBijhouden } from './gezin/aanleiding';
+import { bewaarStilleSessie, neemStilleSessie, STIL } from './geheugencheck';
 
 /**
  * Reading and writing what a child has learned.
@@ -43,6 +44,10 @@ export async function startSession(
   itemIds: readonly string[],
   setId: string,
 ): Promise<string> {
+  // De geheugencheck schrijft niets in de winkels (ADR-228).
+  const stil = neemStilleSessie();
+  if (stil !== null) return stil;
+
   const db = await getDb();
   const session: SessionRecord = {
     id: crypto.randomUUID(),
@@ -65,6 +70,10 @@ export async function startSession(
  *                  early. Without it a mark cannot be worked out afterwards.
  */
 export async function finishSession(id: string, score: number, answered: number): Promise<void> {
+  if (id.startsWith(STIL)) {
+    await bewaarStilleSessie(id, score, answered);
+    return;
+  }
   const db = await getDb();
   const existing = await db.get('sessions', id);
   if (!existing) return;
@@ -281,6 +290,8 @@ export async function saveAnswer(params: {
   readonly chosen: string | null;
   readonly nextState: ItemState;
 }): Promise<void> {
+  // Een antwoord in de geheugencheck telt niet: geen poging, geen doos (ADR-228).
+  if (params.sessionId.startsWith(STIL)) return;
   await recordAttempt({
     sessionId: params.sessionId,
     kindId: await activeChildId(),
@@ -292,4 +303,22 @@ export async function saveAnswer(params: {
     tijdstip: new Date().toISOString(),
   });
   await saveItemState(params.nextState);
+}
+
+/**
+ * Wanneer dit kind elk onderdeel voor het eerst beantwoordde: de oudste poging
+ * per onderdeel (ADR-228). Voor de geheugencheck, die vraagt naar wat weken
+ * geleden nieuw was.
+ */
+export async function loadEersteKeer(kindId?: string): Promise<Map<string, string>> {
+  const db = await getDb();
+  const wie = kindId ?? (await activeChildId());
+  const eerste = new Map<string, string>();
+  for (const poging of await db.getAll('attempts')) {
+    if ((poging.kindId ?? SINGLETON_KEY) !== wie) continue;
+    const bekend = eerste.get(poging.itemId);
+    if (bekend === undefined || poging.tijdstip < bekend)
+      eerste.set(poging.itemId, poging.tijdstip);
+  }
+  return eerste;
 }

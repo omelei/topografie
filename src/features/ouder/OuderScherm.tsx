@@ -16,6 +16,7 @@ import {
 import { Apparaten } from './Apparaten';
 import { Bewaren } from './Bewaren';
 import { DezeWeek } from './DezeWeek';
+import { GeheugencheckUitslag } from './GeheugencheckUitslag';
 import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
 import { Overname } from './Overname';
@@ -84,6 +85,9 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
         {/* Wat het dagplan deze week deed (ADR-227). Ook zonder code: het plan
             rekent stil mee, en dit is waar een ouder ziet wat het zou doen. */}
         <DezeWeek key={`week-${versie}`} />
+
+        {/* Wat de geheugencheck liet zien, één keer per kind (ADR-228). */}
+        <GeheugencheckUitslag key={`check-${versie}`} />
 
         {/* Direct onder hoe het gaat: of wat de kinderen oefenen over een week
             nog staat, is de voorwaarde voor al het andere op deze pagina

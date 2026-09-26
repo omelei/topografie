@@ -21,6 +21,11 @@ export const nl = {
   'home.todayOpen': 'Kies een oefening en begin met leren.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
+  // De geheugencheck (ADR-228): één keer, zonder hulp. Geen woord over premium (R-11).
+  'home.check.kop': 'Weet je het nog?',
+  'home.check.zin':
+    '{aantal} vragen uit {onderwerp} die je een paar weken geleden oefende. Zonder hulp, één keer.',
+  'home.check.knop': 'Start',
   'home.eerste.kop': 'Je eerste ronde',
   'home.eerste.zin': '{onderwerp}, {manier}. Een ronde duurt maar een paar minuten.',
   'home.eerste.knop': 'Start',
@@ -1794,6 +1799,17 @@ export const nl = {
   'ouder.weekVandaag': 'vandaag',
   'ouder.weekMorgen': 'morgen',
   'ouder.weekEn': ' en ',
+  // De geheugencheck (ADR-228): de uitslag, en zonder code het aanbod.
+  'ouder.geheugencheck': 'Geheugencheck',
+  'ouder.geheugencheckVan': 'goed, van de {gevraagd} vragen',
+  'ouder.geheugencheckUitleg':
+    'Op {datum} deed {naam} een ronde zonder hulp, met vragen die {naam} 3 tot 8 weken geleden voor het eerst oefende.',
+  'ouder.geheugencheckUitlegOnderwerp':
+    'Op {datum} deed {naam} een ronde zonder hulp, met vragen uit {onderwerp} die {naam} 3 tot 8 weken geleden voor het eerst oefende.',
+  'ouder.geheugencheckAanbod':
+    'Wat na een paar weken wegzakt, laat premium op tijd terugkomen. Zo blijft het hangen.',
+  'ouder.geheugencheckMetPremium':
+    'Wat nog niet zit, zet het plan vanzelf weer klaar om te herhalen.',
   // Apparaten (ADR-226): welke apparaten de code gebruiken, en zelf vervangen.
   'ouder.apparaten': 'Apparaten',
   'ouder.apparatenDitMet': 'Dit apparaat heeft een plek op de code.',
