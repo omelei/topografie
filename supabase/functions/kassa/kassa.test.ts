@@ -154,9 +154,9 @@ describe('de code', () => {
 
 describe('het bedrag en de geldigheid', () => {
   it('staat op één plek en gaat naar Mollie met twee decimalen', () => {
-    expect(PRIJS_CENTEN).toBe(7995);
-    expect(bedragVoorMollie()).toBe('79.95');
-    expect(bedragVoorMens()).toBe('€ 79,95');
+    expect(PRIJS_CENTEN).toBe(5995);
+    expect(bedragVoorMollie()).toBe('59.95');
+    expect(bedragVoorMens()).toBe('€ 59,95');
   });
 
   it('staat in de app met hetzelfde bedrag als hier (ADR-124)', () => {
@@ -215,7 +215,7 @@ describe('een bestelling starten', () => {
 
     expect(uitkomst.checkoutUrl).toBe('https://mollie.test/checkout/tr_test1');
     expect(diensten.mollie.maakBetaling).toHaveBeenCalledWith(
-      expect.objectContaining({ bedrag: '79.95', valuta: 'EUR', email: 'ouder@example.nl' }),
+      expect.objectContaining({ bedrag: '59.95', valuta: 'EUR', email: 'ouder@example.nl' }),
     );
   });
 

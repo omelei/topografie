@@ -115,7 +115,9 @@ export const nl = {
   'scholen.plekken.tekst':
     'Een kind dat op een tablet en een laptop oefent, gebruikt twee plekken. Met 40 plekken past een klas van 30 ruim.',
   'scholen.kosten.kop': 'Wat het kost',
-  'scholen.kosten.tekst': 'Een klassencode kost {prijs} per jaar. Je betaalt op factuur.',
+  'scholen.kosten.tekst':
+    'Een klassencode kost {prijs} per jaar, exclusief btw. Je betaalt op factuur.',
+  'scholen.exclBtw': 'excl. btw',
   'scholen.kosten.gratis': 'Oefenen zonder code is gratis, ook voor de klas.',
   'scholen.mail': 'Of mail naar {adres}.',
   'scholen.mail.onderwerp': 'Klassencode aanvragen',
@@ -698,7 +700,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
+    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor 3 kinderen op 3 apparaten, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
@@ -743,7 +745,7 @@ export const nl = {
     'Je kind kan alle 79 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit':
-    'Eén code voor al je kinderen, op maximaal drie apparaten, een heel jaar lang.',
+    'Eén code voor 3 kinderen, op 3 apparaten, een heel jaar lang. Meer kinderen kun je erbij nemen.',
 
   // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
   // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
@@ -797,7 +799,7 @@ export const nl = {
   'premium.regel.bliksem': 'De bliksemronde en overleven',
   'premium.regel.lijsten': 'Oefenstof van school intypen of importeren',
   'premium.regel.kinderen': 'Tot drie kinderen op dit apparaat',
-  'premium.regel.gezin': 'Eén code voor al je kinderen, op maximaal drie apparaten',
+  'premium.regel.gezin': 'Eén code voor 3 kinderen, op 3 apparaten',
 
   // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen, en
   // alle vier controleerbaar, want dat is het punt. Sinds ADR-145 een kop en
@@ -823,9 +825,9 @@ export const nl = {
   // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
   // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
   // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
-  'premium.prijs': '€ 79,95',
+  'premium.prijs': '€ 59,95',
   'premium.kopenUitleg':
-    'Eenmalig, voor een heel jaar en al je kinderen. Je betaalt met iDEAL en krijgt je code meteen.',
+    'Eenmalig, voor een heel jaar, 3 kinderen en 3 apparaten. Je betaalt met iDEAL en krijgt je code meteen.',
   'premium.kopenKnop': 'Een code kopen',
   // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
   // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
@@ -836,7 +838,7 @@ export const nl = {
   'premium.perSchooljaarKort': 'per jaar',
   'premium.binnenkort': 'Binnenkort',
   'premium.maandUitleg': 'Binnenkort kun je ook per maand betalen, en elke maand opzeggen.',
-  'premium.jaarVoordeel': 'Een jaar in één keer kost minder dan negen losse maanden.',
+  'premium.jaarVoordeel': 'Een jaar in één keer kost minder dan zeven losse maanden.',
   'premium.ofPerMaand': 'Binnenkort ook {prijs} per maand, maandelijks opzegbaar.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
@@ -1799,7 +1801,14 @@ export const nl = {
   'ouder.premium': 'Premium',
   'ouder.premiumUit':
     'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in. Hij geldt meteen voor al je kinderen.',
-  'ouder.premiumAlleKinderen': 'De code geldt voor alle kinderen op dit apparaat.',
+  'ouder.premiumAlleKinderen': 'De code geldt voor 3 kinderen, op 3 apparaten.',
+  // Een extra kind (ADR-230). Alleen hier, achter de pincode (R-11), en als
+  // "binnenkort": de kassa verkoopt het nog niet, en er passen nu 3 kinderen op
+  // een apparaat.
+  'ouder.extraKind':
+    'Meer dan 3 kinderen? Een extra kind kost {jaar} per jaar of {maand} per maand. Dat kan binnenkort.',
+  'ouder.extraKindJaar': '€ 15',
+  'ouder.extraKindMaand': '€ 2,50',
   'ouder.bekijkPremium': 'Wat zit er in premium?',
   // Deze week (ADR-227): wat het dagplan stil deed, per kind, vanaf 5 onderdelen.
   'ouder.week': 'Deze week',

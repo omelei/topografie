@@ -162,6 +162,10 @@ function Terug({ naam }: { readonly naam: string }) {
 function Premium() {
   const { actief, stand } = usePremium();
   const verlopen = isVerlopen(stand, new Date());
+  const extraKind = t('ouder.extraKind', {
+    jaar: t('ouder.extraKindJaar'),
+    maand: t('ouder.extraKindMaand'),
+  });
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('ouder.premium')}>
@@ -174,6 +178,7 @@ function Premium() {
             {t('premium.aan', { datum: leesbareDatum(stand.geldigTot) })}
           </p>
           <p className="text-lopend text-tekst-secundair">{t('ouder.premiumAlleKinderen')}</p>
+          <p className="tk-hulp">{extraKind}</p>
           <button
             type="button"
             className="tk-button tk-button-secondary self-start"
@@ -194,6 +199,7 @@ function Premium() {
           )}
 
           <CodeVeld className="flex flex-col gap-3" />
+          <p className="tk-hulp">{extraKind}</p>
 
           <div className="flex flex-wrap gap-3">
             {isTeKoop() ? (

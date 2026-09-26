@@ -13432,6 +13432,41 @@ kind op hetzelfde apparaat, en op de ouderpagina.
   kinderen hun naam typen. Blijft de naam vooral weg, dan is dat geen probleem
   om op te lossen: dan doet hij voor die kinderen niets.
 
+## ADR-230 — Nieuwe prijzen: premium voor 3 kinderen op 3 apparaten, een extra kind erbij, en de klassencode exclusief btw
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar. Werkt
+de bedragen van ADR-196 en ADR-200 bij. De bedragen zelf staan in het register
+(R-19 tot en met R-21) en in de code, niet hier.
+
+**Besluit.**
+
+- **Premium per jaar en per maand** krijgen de nieuwe bedragen uit het register.
+  Het jaarbedrag staat op één plek in de code (`PRIJS_CENTEN` in de kassa), en
+  `kassa.test.ts` houdt de tekst op de premiumpagina daaraan gelijk. Per maand
+  blijft "binnenkort" (ADR-196).
+- **Premium is voor 3 kinderen op 3 apparaten.** Dat stond er als "al je
+  kinderen"; nu staat het aantal er. Er passen 3 kinderen op een apparaat
+  (ADR-173), dus in de app verandert er niets.
+- **Een extra kind is bij te kopen**, per jaar of per maand. De kassa verkoopt
+  dat nog niet, en er passen nog geen 4 kinderen op een apparaat. Daarom staat
+  het er als "binnenkort", en alleen waar een ouder het leest: de ouderpagina,
+  achter de pincode, en de kassapagina `/kopen` (R-11). Niet op de
+  premiumpagina, die een kind ook ziet.
+- **De klassencode is exclusief btw.** `/scholen` zegt het bij de prijs en bij
+  wat het kost. Daarmee is de open vraag op de roadmap beantwoord.
+- **"Een jaar kost minder dan zeven losse maanden"**, in plaats van negen: de
+  rekensom volgt het nieuwe jaarbedrag.
+
+**Gevolgen.**
+
+- De workflow **Kassa functie** rolt de kassa uit bij de merge, want die raakt
+  `supabase/functions/kassa`. Controleer daarna met één testbestelling dat
+  Mollie het nieuwe bedrag vraagt.
+- Een extra kind echt verkopen vraagt drie dingen: een tweede product in de
+  kassa, een code die meer dan 3 kinderen toestaat, en een grens per code in
+  plaats van per apparaat. Dat staat op de roadmap.
+- ADR-196 en ADR-200 houden hun oude bedragen als geschiedenis.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
