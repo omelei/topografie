@@ -1,3 +1,4 @@
+import { Geheugencheck, type CheckKlaar } from './Geheugencheck';
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
 import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
@@ -100,6 +101,8 @@ export interface HomeScreenProps {
   readonly onDiplomas: () => void;
   /** Naar de pagina van een vak, vanuit "Kies een vak" (ADR-204). */
   readonly onVak: (id: Module['id']) => void;
+  /** De geheugencheck, één keer per kind (ADR-228). */
+  readonly onGeheugencheck: (check: CheckKlaar) => void;
 }
 
 export function HomeScreen({
@@ -109,6 +112,7 @@ export function HomeScreen({
   onPlan,
   onDiplomas,
   onVak,
+  onGeheugencheck,
 }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   // Of de rondes gelezen zijn: pas dan is "nog niets geoefend" waar, en
@@ -216,6 +220,9 @@ export function HomeScreen({
     : [
         blok('kop', kop),
         blok('terug', terug),
+        // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
+        // en geen rij, en na één ronde is hij weg (ADR-228).
+        blok('check', <Geheugencheck onStart={onGeheugencheck} />),
         blok('beginnen', beginnen),
         blok('passend', passend),
         blok('vandaagBoven', vandaagBoven),

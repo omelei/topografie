@@ -51,6 +51,8 @@ import { wensVoor } from '@/features/premium/wens';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
 import { claimPlek, controleerOpnieuw, leesStand } from '@/store/premium';
+import { vergeetGeheugencheck, zetGeheugencheckKlaar } from '@/store/geheugencheck';
+import type { CheckKlaar } from '@/features/home/Geheugencheck';
 import { zorgVoorUniekePogingen } from '@/store/sleutels';
 import { pathFor, type Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
@@ -182,6 +184,7 @@ export default function App() {
   // them here rather than inside the Shell keeps the frame ignorant of what a
   // screen is.
   const goHome = () => {
+    vergeetGeheugencheck();
     go({ name: 'home' });
     setScreen({ name: 'home' });
   };
@@ -222,7 +225,12 @@ export default function App() {
     alleen: readonly string[] | null = null,
     naIntro = false,
     uitPlan = false,
+    geheugencheck = false,
   ) => {
+    // Alleen de ronde die als geheugencheck begint, is stil (ADR-228); elke
+    // andere ronde zet hem uit, voor het geval hij nog klaarstond.
+    if (!geheugencheck) vergeetGeheugencheck();
+
     // The one place every round starts, so the one place premium is asked
     // (ADR-116): a favourite, a line in the history or an unfinished round in
     // a premium way asks first. Sinds ADR-163 is dat een pop-up en niet meer
@@ -230,7 +238,9 @@ export default function App() {
     // etalage te staan, en de code die het nodig heeft ligt bij zijn ouders.
     const premiumStart =
       toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId) || uitPlan;
-    if (!premium && premiumStart && !uitPlan) {
+    // De geheugencheck is voor elk kind, met of zonder code: een oefentoets die
+    // één keer mag, en geen premiumstart (ADR-228).
+    if (!premium && premiumStart && !uitPlan && !geheugencheck) {
       // Met wat het kind wilde (ADR-193): het venster zegt het terug.
       vraagOuders({ wat: wensVoor(deel, mode, toetsstand), soort: 'wil' });
       return;
@@ -241,7 +251,7 @@ export default function App() {
     // al speelt het een gratis manier. Heeft dit apparaat al een plek, dan
     // wacht er niets. Anders één vraag aan de server, en is de code vol, dan
     // krijgt het kind een venster zonder prijs en zonder knop om te kopen.
-    if (premium && premiumStart && leesStand()?.plek !== true) {
+    if (premium && premiumStart && !geheugencheck && leesStand()?.plek !== true) {
       void claimPlek().then((uitkomst) => {
         if (uitkomst === 'ok') {
           beginRonde(deel, mode, aantal, toetsstand, alleen, naIntro, uitPlan);
@@ -335,6 +345,16 @@ export default function App() {
     // Afmaken is gratis (ADR-192): een ronde die in een premiummanier begon,
     // gaat zonder code verder op de eerste gratis manier van die set.
     beginRonde(deel, vrijeVorm(deel, mode, premium), rest.length, false, [...rest], false, uitPlan);
+  };
+
+  /**
+   * De geheugencheck (ADR-228): de manier van de oefentoets, zonder hulp, over
+   * precies de vragen die de check koos. De volgende sessie die begint, is
+   * stil: hij schrijft niets in de dozen, alleen de uitslag.
+   */
+  const startGeheugencheck = (check: CheckKlaar) => {
+    zetGeheugencheckKlaar(check.kindId, check.deel.setId);
+    beginRonde(check.deel, check.mode, check.ids.length, true, check.ids, true, false, true);
   };
 
   /** Een ronde uit het dagplan: premium, dus een premiumstart (ADR-226). */
@@ -828,6 +848,7 @@ export default function App() {
         onBegin={beginRonde}
         onVerder={maakAf}
         onPlan={uitHetPlan}
+        onGeheugencheck={startGeheugencheck}
         onDiplomas={goDiplomas}
         onVak={goModule}
       />

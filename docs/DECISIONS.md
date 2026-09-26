@@ -13309,6 +13309,52 @@ waarop het terug moet komen.
 - `DezeWeek.test.tsx` houdt de drempel en beide standen vast, `premium.spec.ts`
   dat de ouder het ziet en het kind niet.
 
+## ADR-228 — De geheugencheck: één ronde zonder hulp, en de ouder leest wat er nog zit
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, de
+laatste van vier stappen rond premium en apparaten. De prijzen staan in het
+register (R-19 tot en met R-21) en niet hier.
+
+**Context.** Wat premium verkoopt, is herhalen op het goede moment (ADR-224):
+wat je weken geleden leerde, komt terug voordat het weg is. Een ouder kan dat
+niet zien voordat hij betaalt. Wat hij wel kan zien, is wat er van zijn eigen
+kind na een paar weken nog over is.
+
+**Besluit.**
+
+- **Eén keer per kindprofiel**, zodra er minstens 8 vragen zijn die het kind 21
+  tot en met 60 dagen geleden voor het eerst oefende. De eerste keer is de
+  oudste poging per vraag. De regel staat puur in `game-core/geheugencheck.ts`.
+- **De 8 tellen per onderwerp**, want een ronde gaat over één onderwerp. Een
+  mix telt als één onderwerp. Bij gelijk wint een eigen onderwerp van een mix.
+  Hooguit 10 vragen, het langst geleden eerst. Een premiumonderwerp (jouw fouten,
+  de eigen woordenlijsten) telt niet mee.
+- **Op Vandaag staat een kaart**: "Weet je het nog?", met het aantal en het
+  onderwerp. Geen woord over premium, geen prijs, geen link (R-11).
+- **De ronde is zonder hulp**: de manier van de oefentoets, niets gezegd tot het
+  eind. Ook zonder code, en het is geen premiumstart: de check neemt geen plek
+  (ADR-226).
+- **Geen invloed op de dozen.** De ronde is stil: hij schrijft geen sessie, geen
+  poging en geen Leitner-stand, alleen de uitslag onder `geheugencheck:<kindId>`.
+  Welke sessie stil is, staat in haar id. Alleen de eerstvolgende sessie na de
+  kaart wordt stil, en elke andere start zet het uit.
+- **Een check die voor de 8e vraag stopt, telt niet**; dan komt de kaart terug.
+- **De ouder ziet de uitslag** op de ouderpagina, onder "Deze week": hoeveel van
+  de vragen goed waren, uit welk onderwerp, en wanneer. Zonder code staat het
+  aanbod erbij (achter de pincode), met code een zin over het plan.
+
+**Gevolgen.**
+
+- De uitslag staat op het apparaat en gaat niet mee naar een account. Het is
+  geen voortgang maar één meting.
+- Na de check kan het kind op de uitslag "Nog een keer" kiezen. Dat is een
+  gewone oefentoets die telt, en zonder code één keer een premiumronde. Dat is
+  met opzet niet dichtgezet: één ronde weegt minder dan een uitslagscherm dat
+  anders werkt dan alle andere.
+- `geheugencheck.spec.ts` houdt de hele keten vast: geen kaart op de dag zelf,
+  wel na 30 dagen, de ronde zonder hulp, de winkels onveranderd, één keer, en de
+  uitslag met het aanbod bij de ouder.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
