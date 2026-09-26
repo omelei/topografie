@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
 import { DiplomaIcon, NextIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
-import { aanDeBeurt, setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
+import { setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
 import { Embleem } from '@/features/badges/Embleem';
 import { datumVan, useDiplomaDatums } from '@/features/badges/datums';
 import { useDiplomaStand } from '@/features/badges/useDiplomaStand';
@@ -35,8 +35,9 @@ import { useVandaag } from '@/features/home/useVandaag';
  * slowly still sees what happened; each line carries an icon for the same
  * reason.
  *
- * Then **the way on**. When nothing is due any more anywhere, the page says
- * "Klaar voor vandaag" and the first button is Klaar: stopping is also done.
+ * Then **the way on**. When today's plan had something to repeat and it is
+ * all done, the page says "Klaar voor vandaag" and the first button is Klaar:
+ * stopping is also done.
  * "Nieuwe plaatjes" is the second, for a child who wants more, and it brings
  * pictures that are still empty rather than another go at what is not due —
  * which would change nothing on the page. Otherwise another round is first,
@@ -112,14 +113,13 @@ export function RondeKlaar({
   const ids = eigenDeel ? eigenDeel.items.map((item) => item.id) : [];
   const blik = vooruitblik(ids, na, now);
 
-  // Vandaag klaar: het plan van vandaag is af (ADR-139), of niets wat dit kind
-  // ooit begon is nu nog aan de beurt. Het tweede is voor wie geen plan ziet:
-  // stoppen is ook zonder code een goed moment (ADR-149). Niet na een ronde die
-  // halverwege stopte: wie na één vraag stopt, heeft vandaag niet afgemaakt.
+  // Vandaag klaar: alleen als er vandaag iets te herhalen was, en dat is gedaan
+  // (ADR-139, ADR-231). Het rekent ook zonder code mee. Eerder was het ook
+  // "klaar" zodra niets meer aan de beurt was, maar een goed antwoord komt pas
+  // morgen terug: wie nieuwe stof oefende, las dan na elke ronde, ook de eerste,
+  // dat hij klaar was.
   const vandaag = useVandaag();
-  const vandaagKlaar =
-    (vandaag?.voortgang.klaar ?? false) ||
-    (gestopt === null && na.size > 0 && aanDeBeurt([...na.keys()], na, now) === 0);
+  const vandaagKlaar = vandaag?.voortgang.klaar ?? false;
 
   // Het diploma klinkt niet meer hier: de uitreiking speelt het op de beat
   // waarop het zegel gedrukt wordt, en dát is het moment. Eén geluid, één keer.

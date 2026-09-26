@@ -13489,6 +13489,12 @@ testronde. Verruimt ADR-224: daar bleef "je fouten" premium.
   je diploma. Twee woorden volgen de schrijfwijzer: "manier" in plaats van
   "spelvorm", en "vragen" in plaats van "oefeningen" (zoals op Vandaag sinds
   ADR-224).
+- **"Klaar voor vandaag" alleen als er vandaag iets te herhalen was**, en dat
+  gedaan is. Het uitslagscherm zei het ook als er niets meer aan de beurt was.
+  Maar een goed antwoord komt pas morgen terug, dus wie nieuwe stof oefende, las
+  na elke ronde, ook de eerste, dat hij klaar was. Nu staat na zo'n ronde
+  "Nog een ronde" voorop. Dit werkt ook zonder code: het dagplan rekent stil mee
+  (ADR-227).
 - **Friesland in plaats van Fryslân**, bij de provincie, de vlag en de
   weetjes. Fryslân blijft goed als antwoord (een alias), en het weetje van de
   provincie noemt de Friese naam.

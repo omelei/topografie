@@ -134,6 +134,21 @@ test('als alles van vandaag gedaan is, staat dat er', async ({ page }) => {
     await volgende.click();
   }
 
+  // Het uitslagscherm zegt het ook, en Klaar gaat voorop (ADR-149).
+  await expect(page.getByRole('region', { name: 'Klaar voor vandaag' })).toBeVisible();
+
   await page.goto('/');
   await expect(blok.getByText('Klaar voor vandaag. Lekker bezig!')).toBeVisible();
+});
+
+/**
+ * Maar niet na een gewone ronde (ADR-231). Een goed antwoord komt pas morgen
+ * terug, dus na nieuwe stof staat er vandaag niets meer open. Dat is geen
+ * "klaar voor vandaag": er was vandaag niets te herhalen.
+ */
+test('na een ronde met nieuwe stof staat er geen "Klaar voor vandaag"', async ({ page }) => {
+  await signIn(page, 'Noor');
+  await oefenTafelVanEen(page);
+  await expect(page.getByRole('region', { name: 'Klaar voor vandaag' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Nog een ronde' })).toBeVisible();
 });
