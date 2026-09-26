@@ -138,7 +138,7 @@ export function KlokScreen({
 
   return (
     <div
-      className="flex h-screen flex-col bg-papier"
+      className="flex h-screen flex-col bg-grond"
       data-module="klok"
       data-accent="module"
       data-thema="ronde"

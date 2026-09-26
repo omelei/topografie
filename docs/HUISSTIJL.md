@@ -10,7 +10,8 @@ eigen deel:
   `src/assets/denker` er byte voor byte aan.
 - **Kleur en typografie** komen uit `docs/leer.nu Merk en stijlgids.dc.html`
   (ADR-179), met de vakkleuren, iconen en Denker uit `docs/leer.js` (ADR-180).
-  Room als ondergrond, witte kaarten, cacao als inkt, koraal voor de knop en
+  Melk als ondergrond (ADR-220), room als warm vlak, witte kaarten, cacao als
+  inkt, koraal voor de knop en
   het merkvlak, de kleur van het vak voor wat gekozen is, zon voor premium, en
   groen en framboos alleen voor goed en fout.
 - **Ruimte, vorm, iconen en trefmaten** komen uit de overdracht
@@ -43,8 +44,9 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 
 ## Een nieuw scherm
 
-1. **Kleur op rol, niet op waarde.** `bg-papier` voor de grond van een scherm,
-   `bg-kaart` voor een kaart of paneel, `text-inkt`, `text-tekst-secundair`,
+1. **Kleur op rol, niet op waarde.** `bg-grond` voor de grond van een scherm
+   (melk), `bg-papier` voor een warm vlak (room: hover, een gekozen rij, een
+   neutrale plaat), `bg-kaart` voor een kaart of paneel, `text-inkt`, `text-tekst-secundair`,
    `text-tekst-tertiair`, `border-rand-licht` voor een kaart en
    `border-rand-bediening` voor de rand van iets dat je kunt indrukken.
 2. **Typografie op rol.** Eén maat per rol, op elk scherm:
@@ -107,17 +109,18 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 
 9. **Eén grond, overal** (styleguide §01, die ADR-120 terugneemt). De
    paginabrede vaktint is weg: die maakte witte kaarten grauw. Elk scherm staat
-   op `papier`, en waar je bent lees je af aan de tegel van het vak. De tokens
+   op `grond`, en dat is melk (ADR-220); room (`papier`) is het vlak erop, niet
+   eronder. Waar je bent lees je af aan de tegel van het vak. De tokens
    `--topo-grond` en `--vandaag-grond` blijven bestaan — `Shell` zet nog steeds
-   `data-grond` — maar ze wijzen alle zeven naar `papier`, zodat een scherm het
+   `data-grond` — maar ze wijzen alle zeven naar `grond`, zodat een scherm het
    niet hoeft te weten. Maak er geen nieuwe hex voor.
 
 10. **Het merk, en waar koraal wel en niet mag.** Het logo is een plaatje:
     `Wordmark` voor het liggende logo met de naam. Denker is `Brandmark`, met
     een `uitdrukking` (denken, blij, juichen, bemoedigend, trots, slapen,
     zwaaien); onder 36 px tekent hij zichzelf eenvoudig. Teken ze niet na en
-    zet de naam nergens in een lettertype. Het logo staat op wit of op
-    `papier`, nooit kleiner dan 88 px breed. Een uitdrukking van Denker is
+    zet de naam nergens in een lettertype. Het logo staat op wit, op
+    `papier` of op `grond`, nooit kleiner dan 88 px breed. Een uitdrukking van Denker is
     terugkoppeling, hooguit één per scherm, en nooit in plaats van het logo.
 
     Koraal mag op drie plekken (ADR-179): de primaire knop (`actie`, met wit

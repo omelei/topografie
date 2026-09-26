@@ -12951,6 +12951,64 @@ toets, even opfrissen, bezig, nog niet).
 - **Op een telefoon** staat één tegel per rij, lager en smaller van binnen.
 - Zonder code blijft de ring leeg en staat er geen percentage (ADR-192).
 
+## ADR-220 — Grond wordt melk, room wordt vlak
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar (stap
+1d). Wijzigt ADR-120 en ADR-179: de grond van elk scherm is niet langer room.
+
+**Besluit.**
+
+- **Melk (`#faf7f3`) is de grond van elk scherm.** Nieuw in het tokenblok:
+  `--melk` en `--grond: var(--melk)`. `--papier` blijft room (`#fff3e6`) en
+  heeft voortaan één rol: het warme vlak, dus hover, de actieve navigatie,
+  tabelkoppen, neutrale en uitgeschakelde platen, chips, weekdagen en het
+  vakmenu. Die vlakken houden hun warmte en blijven afsteken tegen wit.
+- **Wat de grond is, leest `--grond`**: `body`, de ronde
+  (`[data-thema='ronde']`), `.tk-grond` en de uitslag (`.tk-uitslag`). Elke
+  andere `var(--papier)` blijft staan.
+- **De zeven grondtokens** (`--topo-grond` … `--vandaag-grond`) en
+  `--module-grond` wijzen naar `--grond` in plaats van naar `--papier`. Zonder
+  dat bleven Vandaag en elke vakpagina room: `Shell` zet `data-grond`, en
+  `.tk-grond[data-grond]` wint van `.tk-grond`. Ze waren al "de ene grond"
+  (§01); ze volgen die nu.
+- **De acht rondeschermen** (`PracticeScreen`, `ExploreScreen`, `KlokScreen`,
+  `SumScreen`, `TaalScreen`, `TaalExploreScreen`, `VlagScreen`,
+  `VlagExploreScreen`) zetten hun grond met `bg-grond` in plaats van
+  `bg-papier`; Tailwind kent daarvoor de kleur `grond`. Een utility-klasse wint
+  van de basisregel van de ronde, dus zonder dit bleef een ronde room.
+- **`--grond` is geen oude naam meer.** De overdracht verving `--grond` door
+  `--papier` (docs/MIGRATIE-STATUS.md) en `huisstijl.test.ts` weerde de naam.
+  Nu papier niet meer de grond is, keert die reden om: de naam komt terug in
+  de rol die hij altijd had.
+
+**Contrast op melk** (WCAG, gemeten uit de hex; `contrast.test.ts` houdt het
+vast):
+
+| Voorgrond                          | Op melk | Grens | Op room |
+| ---------------------------------- | ------- | ----- | ------- |
+| inkt `#2a1e17`                     | 15.17   | 4.5   | 14.82   |
+| tekst-secundair `#5e4a3e`          | 7.79    | 4.5   | 7.61    |
+| tekst-tertiair `#6b5548`           | 6.52    | 4.5   | 6.37    |
+| rand-bediening (= tertiair)        | 6.52    | 3     | 6.37    |
+| fout `#b81d3b`                     | 6.00    | 4.5   | 5.86    |
+| actie `#e34a2c` (de knop)          | 3.72    | 3     | 3.64    |
+| kaart `#ffffff` (vlak, geen tekst) | 1.07    | —     | 1.09    |
+| papier `#fff3e6` (vlak)            | 1.02    | —     | 1.00    |
+
+**Afgewogen nadeel: de kaart.** Wit op melk is 1.07, vlakker dan de 1.09 op
+room. Een kaart leunt nu helemaal op `--rand-licht` en, waar hij die heeft, de
+harde onderkant. Dat is bewust aanvaard: melk maakt de grond rustiger en laat
+room als vlak weer iets betekenen. De randen zijn in dit besluit niet
+aangepast. Wat nu zonder rand op melk staat, is de weekstrook op Jij
+(`.tk-weekdag`, room op melk 1.02, en `.tk-weekdag[data-geoefend='ja']`, wit
+op melk 1.07, beide met een transparante rand); een volgende stap beslist
+daarover.
+
+**Niet veranderd.** Het logo en Denker, `src/design/kleuren.css` (de kleuren
+van het logo, byte voor byte gelijk aan `docs/logo/code`), en
+`public/site.webmanifest`, dat `tools/merk-uit-leer.mjs` uit de logolevering
+tekent. Het opstartscherm van de geïnstalleerde app blijft daardoor room.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

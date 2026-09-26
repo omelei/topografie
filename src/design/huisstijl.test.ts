@@ -64,6 +64,7 @@ describe('the tokens are the styleguide’s', () => {
   it.each([
     ['canvas', '#f3e6d8'],
     ['papier', '#fff3e6'],
+    ['melk', '#faf7f3'],
     ['kaart', '#ffffff'],
     ['inkt', '#2a1e17'],
     ['tekst-secundair', '#5e4a3e'],
@@ -140,7 +141,7 @@ describe('the tokens are the styleguide’s', () => {
     ['vlaggen-grond'],
     ['vandaag-grond'],
   ])('--%s is the one ground', (name) => {
-    expect(rootValue(name)).toBe('var(--papier)');
+    expect(rootValue(name)).toBe('var(--grond)');
   });
 
   it.each([
@@ -365,9 +366,13 @@ describe('koraal stays the brand’s and the button’s', () => {
   });
 });
 
-/** The names the handoff replaced (docs/MIGRATIE-STATUS.md), gone for good. */
+/**
+ * The names the handoff replaced (docs/MIGRATIE-STATUS.md), gone for good.
+ * `--grond` is back since ADR-220, in the role it always named — the ground
+ * of a screen — now that papier (room) is a plane and melk is the ground.
+ */
 const OLD_TOKENS =
-  /(?<![\w-])--(paper|surface|sunken|grond|line|line-strong|ink|ink-2|ink-3|good|good-text|bad|attention|attention-text|neutral|shadow-1|shadow-2|shadow-menu|shadow-held|touch|touch-min|touch-board|control-height|card-radius|card-padding|row-gap|radius-card|radius-control|radius-field|radius-full|radius-flat|radius-plaat|radius-klein|radius-balk|type-(?:h1|h2|h3|body|label|small|score)(?:-lh|-ls)?)(?![\w-])/;
+  /(?<![\w-])--(paper|surface|sunken|line|line-strong|ink|ink-2|ink-3|good|good-text|bad|attention|attention-text|neutral|shadow-1|shadow-2|shadow-menu|shadow-held|touch|touch-min|touch-board|control-height|card-radius|card-padding|row-gap|radius-card|radius-control|radius-field|radius-full|radius-flat|radius-plaat|radius-klein|radius-balk|type-(?:h1|h2|h3|body|label|small|score)(?:-lh|-ls)?)(?![\w-])/;
 
 describe('the old vocabulary is gone', () => {
   it('from the stylesheet', () => {
@@ -383,7 +388,7 @@ describe('the old vocabulary is gone', () => {
     // exist in this project (tailwind.config.ts), so a class like these renders
     // nothing at all. Saying so here turns a silent miss into a failure.
     const stray =
-      /(?<![\w-])(?:[a-z0-9-]+:)*(?:(?:bg|text|border|fill|stroke|ring|outline|divide|decoration|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black|paper|surface|sunken|grond|line|line-strong|ink|ink-2|good|good-text|bad|attention|topo|tafels|klok|woorden|spelling|tijdvakken|vlaggen)(?:-\d{2,3})?|shadow(?:-(?:sm|md|lg|xl|2xl|inner|1|2))?|rounded(?:-(?:sm|md|lg|xl|2xl|3xl|full|control|card|field|flat))?|font-(?:sans|serif|mono|display)|text-(?:xs|sm|base|lg|xl|[2-9]xl|h1|h2|h3|body|label|small|score|eyebrow)|[hw]-touch(?:-min|-board)?)(?![\w-])/;
+      /(?<![\w-])(?:[a-z0-9-]+:)*(?:(?:bg|text|border|fill|stroke|ring|outline|divide|decoration|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black|paper|surface|sunken|line|line-strong|ink|ink-2|good|good-text|bad|attention|topo|tafels|klok|woorden|spelling|tijdvakken|vlaggen)(?:-\d{2,3})?|shadow(?:-(?:sm|md|lg|xl|2xl|inner|1|2))?|rounded(?:-(?:sm|md|lg|xl|2xl|3xl|full|control|card|field|flat))?|font-(?:sans|serif|mono|display)|text-(?:xs|sm|base|lg|xl|[2-9]xl|h1|h2|h3|body|label|small|score|eyebrow)|[hw]-touch(?:-min|-board)?)(?![\w-])/;
     expect(offenders(stray, sourceFiles(join(ROOT, 'src'), /\.tsx$/))).toEqual([]);
   });
 

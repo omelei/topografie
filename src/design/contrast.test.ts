@@ -103,6 +103,12 @@ describe('contrast', () => {
   it.each([
     ['inkt', 'kaart'],
     ['inkt', 'papier'],
+    // The ground is melk since ADR-220; papier (room) still carries text as a
+    // fill, so both are measured.
+    ['inkt', 'grond'],
+    ['tekst-secundair', 'grond'],
+    ['tekst-tertiair', 'grond'],
+    ['fout', 'grond'],
     ['tekst-secundair', 'kaart'],
     ['tekst-secundair', 'papier'],
     // The third ink is a text colour, and it is one: 6.96 on a card and 6.37 on
@@ -138,6 +144,7 @@ describe('contrast', () => {
   it.each([
     ['rand-bediening', 'kaart'],
     ['rand-bediening', 'papier'],
+    ['rand-bediening', 'grond'],
     ['nadruk', 'papier'],
     ['fout', 'papier'],
     ['accent', 'kaart'],
@@ -158,7 +165,8 @@ describe('contrast', () => {
   it('lets a button be koraal', () => {
     expect(ratio('kaart', 'actie'), 'large text on the button').toBeGreaterThanOrEqual(3);
     expect(ratio('actie', 'kaart'), 'the button on a card').toBeGreaterThanOrEqual(3);
-    expect(ratio('actie', 'papier'), 'the button on the ground').toBeGreaterThanOrEqual(3);
+    expect(ratio('actie', 'grond'), 'the button on the ground').toBeGreaterThanOrEqual(3);
+    expect(ratio('actie', 'papier'), 'the button on room').toBeGreaterThanOrEqual(3);
     expect(ratio('kaart', 'actie-hover')).toBeGreaterThanOrEqual(4.5);
     expect(ratio('actie-tekst', 'actie-tint')).toBeGreaterThanOrEqual(4.5);
     expect(ratio('actie-tekst', 'kaart')).toBeGreaterThanOrEqual(4.5);
@@ -241,8 +249,9 @@ describe('the subjects keep clear of wrong', () => {
  * its own tint; §01 of the styleguide takes that back — a page-wide subject
  * tint is what made the screens look grey — and every page now stands on the
  * one neutral ground. The tokens stay, so a screen still says bg-module-grond,
- * and this is what holds them to it: every ink that stands on papier stands on
- * each of them, because each of them is papier.
+ * and this is what holds them to it: every ink that stands on the ground stands
+ * on each of them, because each of them is the ground — melk since ADR-220,
+ * with room (papier) as the warm plane on it rather than under it.
  */
 describe('the ground under a page', () => {
   const GRONDEN = [...MODULES.map((name) => `${name}-grond`), 'vandaag-grond'];
@@ -262,7 +271,12 @@ describe('the ground under a page', () => {
   });
 
   it.each(GRONDEN.map((grond) => [grond] as const))('is the one ground: %s', (grond) => {
-    expect(token(grond)).toBe(token('papier'));
+    expect(token(grond)).toBe(token('grond'));
     expect(token(grond)).not.toBe(token('kaart'));
+  });
+
+  it('is melk, and room is a plane on it rather than the ground (ADR-220)', () => {
+    expect(token('grond')).toBe(token('melk'));
+    expect(token('grond')).not.toBe(token('papier'));
   });
 });

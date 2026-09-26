@@ -31,11 +31,12 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
-test('stands on the guide’s room and sets its headings in Baloo 2', async ({ page }) => {
+test('stands on melk and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  expect(ground).toBe('rgb(255, 243, 230)');
+  // Melk, the ground since ADR-220; room is the plane on it.
+  expect(ground).toBe('rgb(250, 247, 243)');
 
   const heading = page.getByRole('heading', { name: /^Hoi / });
   await expect(heading).toBeVisible();
@@ -58,7 +59,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(255, 243, 230)',
+    'rgb(250, 247, 243)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();
