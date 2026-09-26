@@ -298,8 +298,16 @@ Onder **Authentication → Providers → Email**:
   (**Project Settings → Authentication → SMTP**); de ingebouwde mailer van
   Supabase is bedoeld om mee te proberen en houdt het bij een handvol berichten
   per uur.
-- **Minimum password length: 6.** Dezelfde ondergrens als de app zelf aanhoudt,
-  en ADR-155 legt uit waarom het er niet meer zijn.
+- **Minimum password length: 6.** Niet omdat het wachtwoord van een ouder zo
+  kort mag zijn — daar houdt de app acht tekens aan — maar omdat een kind in
+  ditzelfde project staat. `kind-beheer` maakt een kind aan als gewone
+  auth-gebruiker, en voor dát wachtwoord is zes de ondergrens met een reden
+  (ADR-155, `_gezin/code.ts`): een eis die een kind van acht niet haalt, omzeilt
+  de ouder, en dan staat het wachtwoord met stift op de iPad.
+
+  Deze instelling geldt voor allebei, dus hij hoort op de laagste van de twee te
+  staan. Hem op 8 zetten wint niets — de acht tekens van de ouder worden in de
+  app afgedwongen, vóór er een verzoek uitgaat — en kan een kind buitensluiten.
 
 Onder **Authentication → URL Configuration**:
 

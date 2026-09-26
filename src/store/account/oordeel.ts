@@ -41,10 +41,18 @@ export function wachtwoordKort(wachtwoord: string): boolean {
   return wachtwoord.length < WACHTWOORD_MINIMUM;
 }
 
-/** Wat er aan de invoer mankeert, vóór er iets de deur uit gaat. */
-export function invoerFout(email: string, wachtwoord: string): AccountFout | null {
+/**
+ * Wat er aan de invoer mankeert, vóór er iets de deur uit gaat.
+ *
+ * `nieuw` is het verschil tussen aanmelden en inloggen, en het is er om dezelfde
+ * reden als bij `nieuwWachtwoordFout`: de acht tekens gelden voor een wachtwoord
+ * dat gekozen wordt. Bij inloggen zou dezelfde eis een ouder buitensluiten die
+ * er ooit een kortere koos, en dat oordeel is daar aan de server.
+ */
+export function invoerFout(email: string, wachtwoord: string, nieuw = false): AccountFout | null {
   if (normaliseerEmail(email).length === 0 || wachtwoord.length === 0) return 'leeg';
   if (!isEmail(email)) return 'geen-email';
+  if (nieuw && wachtwoordKort(wachtwoord)) return 'te-kort';
   return null;
 }
 
