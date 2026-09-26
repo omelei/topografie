@@ -10,7 +10,7 @@ eigen deel:
   `src/assets/denker` er byte voor byte aan.
 - **Kleur en typografie** komen uit `docs/leer.nu Merk en stijlgids.dc.html`
   (ADR-179), met de vakkleuren, iconen en Denker uit `docs/leer.js` (ADR-180).
-  Melk als ondergrond (ADR-220), room als warm vlak, witte kaarten, cacao als
+  Zand als ondergrond (ADR-221), room als warm vlak, witte kaarten, cacao als
   inkt, koraal voor de knop en
   het merkvlak, de kleur van het vak voor wat gekozen is, zon voor premium, en
   groen en framboos alleen voor goed en fout.
@@ -45,7 +45,7 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 ## Een nieuw scherm
 
 1. **Kleur op rol, niet op waarde.** `bg-grond` voor de grond van een scherm
-   (melk), `bg-papier` voor een warm vlak (room: hover, een gekozen rij, een
+   (zand), `bg-papier` voor een warm vlak (room: hover, een gekozen rij, een
    neutrale plaat), `bg-kaart` voor een kaart of paneel, `text-inkt`, `text-tekst-secundair`,
    `text-tekst-tertiair`, `border-rand-licht` voor een kaart en
    `border-rand-bediening` voor de rand van iets dat je kunt indrukken.
@@ -109,7 +109,7 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 
 9. **Eén grond, overal** (styleguide §01, die ADR-120 terugneemt). De
    paginabrede vaktint is weg: die maakte witte kaarten grauw. Elk scherm staat
-   op `grond`, en dat is melk (ADR-220); room (`papier`) is het vlak erop, niet
+   op `grond`, en dat is zand (ADR-221); room (`papier`) is het vlak erop, niet
    eronder. Waar je bent lees je af aan de tegel van het vak. De tokens
    `--topo-grond` en `--vandaag-grond` blijven bestaan — `Shell` zet nog steeds
    `data-grond` — maar ze wijzen alle zeven naar `grond`, zodat een scherm het

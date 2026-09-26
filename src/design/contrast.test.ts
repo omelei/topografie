@@ -103,7 +103,7 @@ describe('contrast', () => {
   it.each([
     ['inkt', 'kaart'],
     ['inkt', 'papier'],
-    // The ground is melk since ADR-220; papier (room) still carries text as a
+    // The ground is zand since ADR-221; papier (room) still carries text as a
     // fill, so both are measured.
     ['inkt', 'grond'],
     ['tekst-secundair', 'grond'],
@@ -250,7 +250,7 @@ describe('the subjects keep clear of wrong', () => {
  * tint is what made the screens look grey — and every page now stands on the
  * one neutral ground. The tokens stay, so a screen still says bg-module-grond,
  * and this is what holds them to it: every ink that stands on the ground stands
- * on each of them, because each of them is the ground — melk since ADR-220,
+ * on each of them, because each of them is the ground — zand since ADR-221,
  * with room (papier) as the warm plane on it rather than under it.
  */
 describe('the ground under a page', () => {
@@ -275,8 +275,8 @@ describe('the ground under a page', () => {
     expect(token(grond)).not.toBe(token('kaart'));
   });
 
-  it('is melk, and room is a plane on it rather than the ground (ADR-220)', () => {
-    expect(token('grond')).toBe(token('melk'));
+  it('is zand, and room is a plane on it rather than the ground (ADR-221)', () => {
+    expect(token('grond')).toBe(token('canvas'));
     expect(token('grond')).not.toBe(token('papier'));
   });
 });
