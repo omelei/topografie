@@ -123,6 +123,7 @@ export function HomeScreen({
   const [gelezen, setGelezen] = useState(false);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
+  const [groepGelezen, setGroepGelezen] = useState(false);
 
   useEffect(() => {
     void loadPlayedRounds().then((rondes) => {
@@ -130,7 +131,10 @@ export function HomeScreen({
       setGelezen(true);
     });
     void loadOpenRounds().then(setOpen);
-    void groepVanActiefKind().then(setGroep);
+    void groepVanActiefKind().then((gelezenGroep) => {
+      setGroep(gelezenGroep);
+      setGroepGelezen(true);
+    });
   }, []);
 
   // Over every set a round can be started on, mixes included: a round of the
@@ -214,36 +218,44 @@ export function HomeScreen({
   // naamscherm: voor een ouder en voor een kind met een inlogcode (ADR-229).
   // Een vraag naar de groep staat hier niet meer: die kies je op Jij.
   const gast = naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null;
-  const kern = nieuw
-    ? [
-        blok('kop', kop),
-        blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
-        blok('gast', gast),
-        blok('vandaagBoven', vandaagBoven),
-        blok('beginnen', beginnen),
-        blok('vakken', vakken),
-        blok('zo', <ZoWerktHet />),
-        blok('weekdoelen', weekdoelen),
-        blok('vandaagOnder', vandaagOnder),
-      ]
-    : [
-        blok('kop', kop),
-        // Na de eerste ronde, één keer: hoe heet je? Weg te klikken (ADR-229).
-        blok('naam', naamloos ? <NaamUitnodiging /> : null),
-        blok('terug', terug),
-        // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
-        // en geen rij, en na één ronde is hij weg (ADR-228).
-        blok('check', <Geheugencheck onStart={onGeheugencheck} />),
-        blok('beginnen', beginnen),
-        blok('passend', passend),
-        blok('vandaagBoven', vandaagBoven),
-        blok('weekdoelen', weekdoelen),
-        blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
-        blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
-        blok('vandaagOnder', vandaagOnder),
-        blok('vakken', vakken),
-        blok('gast', gast),
-      ];
+  // Pas als alles gelezen is, staat de rest er (ADR-229). Daarvoor alleen de
+  // kop: de pagina tekende eerst de indeling voor wie al oefende en wisselde
+  // dan naar die voor een nieuw kind, en alles onder de eerste ronde sprong een
+  // scherm omlaag. Sinds er geen naamscherm meer voor staat, is dat het eerste
+  // wat een nieuwe bezoeker ziet, en Lighthouse zag het ook (CLS 0,36).
+  const gelezenAlles = gelezen && open !== null && groepGelezen;
+  const kern = !gelezenAlles
+    ? [blok('kop', kop)]
+    : nieuw
+      ? [
+          blok('kop', kop),
+          blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
+          blok('gast', gast),
+          blok('vandaagBoven', vandaagBoven),
+          blok('beginnen', beginnen),
+          blok('vakken', vakken),
+          blok('zo', <ZoWerktHet />),
+          blok('weekdoelen', weekdoelen),
+          blok('vandaagOnder', vandaagOnder),
+        ]
+      : [
+          blok('kop', kop),
+          // Na de eerste ronde, één keer: hoe heet je? Weg te klikken (ADR-229).
+          blok('naam', naamloos ? <NaamUitnodiging /> : null),
+          blok('terug', terug),
+          // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
+          // en geen rij, en na één ronde is hij weg (ADR-228).
+          blok('check', <Geheugencheck onStart={onGeheugencheck} />),
+          blok('beginnen', beginnen),
+          blok('passend', passend),
+          blok('vandaagBoven', vandaagBoven),
+          blok('weekdoelen', weekdoelen),
+          blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
+          blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
+          blok('vandaagOnder', vandaagOnder),
+          blok('vakken', vakken),
+          blok('gast', gast),
+        ];
 
   // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
   return <div className="tk-home">{kern}</div>;
