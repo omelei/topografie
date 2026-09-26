@@ -79,7 +79,8 @@
      * docs/leer.nu Merk en stijlgids.dc.html §02. Room is the ground, white is
      * the card, cacao is the ink, and koraal is the energy: the brand's own
      * surface and the button you press. Leisteen's indigo (ADR-144) and its
-     * cool-turned-warm ladder (ADR-159) are gone.
+     * cool-turned-warm ladder (ADR-159) are gone. Since ADR-220 the ground is
+     * melk and room is the warm plane on it: hover, fills, the frame.
      *
      * Where a pair from the guide does not reach WCAG AA, the guide's own
      * deeper tone takes its place, and the comment says so. The guide measures
@@ -88,7 +89,9 @@
      * Ratios as text, on kaart / on papier.
      */
     --canvas: #f3e6d8; /* the guide's dashed rule: outside the screen, one step under */
-    --papier: #fff3e6; /* room, the ground of every screen */
+    --papier: #fff3e6; /* room: fills, hover, the warm plane — no longer the ground */
+    --melk: #faf7f3; /* neutral ground of every screen (1d)   inkt 15.17 · secundair 7.79 · tertiair 6.52 */
+    --grond: var(--melk);
     --kaart: #ffffff; /* card and panel, and the frame round the page */
     --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.82 */
     --tekst-secundair: #5e4a3e; /* cacao zacht                       8.32 / 7.61 */
@@ -228,7 +231,7 @@
     --module: var(--inkt);
     --module-tekst: var(--inkt);
     --module-tint: var(--balk-leeg);
-    --module-grond: var(--papier);
+    --module-grond: var(--grond);
 
     /* ---- The ground a page stands on --------------------------------------
      * One ground, everywhere. ADR-120 gave a module's page a soft version of
@@ -238,15 +241,15 @@
      * A child sees which subject they are in from the icon tile instead.
      *
      * The tokens stay, so a screen still says bg-module-grond and does not have
-     * to know: they all resolve to the one ground.
+     * to know: they all resolve to the one ground, which is melk since 1d.
      */
-    --topo-grond: var(--papier);
-    --tafels-grond: var(--papier);
-    --klok-grond: var(--papier);
-    --woorden-grond: var(--papier);
-    --tijdvakken-grond: var(--papier);
-    --vlaggen-grond: var(--papier);
-    --vandaag-grond: var(--papier);
+    --topo-grond: var(--grond);
+    --tafels-grond: var(--grond);
+    --klok-grond: var(--grond);
+    --woorden-grond: var(--grond);
+    --tijdvakken-grond: var(--grond);
+    --vlaggen-grond: var(--grond);
+    --vandaag-grond: var(--grond);
 
     /* ---- Typefaces (see @font-face) --------------------------------------- */
     --font-kop: 'Baloo 2', system-ui, sans-serif; /* 600, 700 and 800 */
@@ -507,7 +510,7 @@
   [data-thema='ronde'] {
     --knop-hoogte: var(--touch-ronde);
     --raak: var(--touch-ronde);
-    background: var(--papier);
+    background: var(--grond);
     color: var(--inkt);
   }
 
@@ -529,7 +532,7 @@
 
   body {
     margin: 0;
-    background: var(--papier);
+    background: var(--grond);
     color: var(--inkt);
     font-family: var(--font-tekst);
     font-size: var(--type-lopend);
@@ -1207,7 +1210,7 @@
   .tk-uitslag {
     min-height: 100vh;
     padding: var(--padding-scherm);
-    background: var(--papier);
+    background: var(--grond);
   }
   .tk-uitslag-kolom {
     display: flex;
@@ -1792,10 +1795,10 @@
    * app bar, the rail, the menu and the tab bar keep paper — they are the
    * frame, and the frame is not part of the page. */
   .tk-grond {
-    background: var(--papier);
+    background: var(--grond);
   }
   /* Where the ground used to say where you are (ADR-120). The styleguide's §01
-   * takes that back: the grounds all resolve to papier now, so these two rules
+   * takes that back: the grounds all resolve to --grond now, so these two rules
    * paint what every other page paints. They stay because the shell still sets
    * data-grond, and because giving a page its own ground again is then one
    * value rather than a hunt through the components. */

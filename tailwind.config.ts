@@ -40,6 +40,8 @@ export default {
       // dark values ([data-thema='ronde'] in index.css), so a component says
       // bg-kaart and is right in both.
       canvas: 'var(--canvas)',
+      // The ground of a screen (melk, ADR-220); papier is the warm plane on it.
+      grond: 'var(--grond)',
       papier: 'var(--papier)',
       kaart: 'var(--kaart)',
       inkt: 'var(--inkt)',

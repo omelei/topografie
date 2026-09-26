@@ -126,7 +126,7 @@ export function TaalScreen({
 
   return (
     <div
-      className="flex h-screen flex-col bg-papier"
+      className="flex h-screen flex-col bg-grond"
       data-module="woorden"
       data-accent="module"
       data-thema="ronde"
