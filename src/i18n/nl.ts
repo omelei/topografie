@@ -18,7 +18,7 @@ export const nl = {
   // opdracht met een plafond: tien, en dan ben je klaar. Niets in het product
   // stopt na tien.
   'home.welcome': 'Hoi {naam}!',
-  'home.todayOpen': 'Kies een vak, doe een ronde en kijk hoe het ging.',
+  'home.todayOpen': 'Kies een oefening en begin met leren.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
   'home.eerste.kop': 'Je eerste ronde',
@@ -195,8 +195,9 @@ export const nl = {
   'vandaag.titel': 'Vandaag herhalen',
   'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeten bent.',
   'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeten bent.',
-  'vandaag.eenVraag': 'Er is 1 vraag die je bijna vergeten bent.',
-  'vandaag.vragen': 'Er zijn {aantal} vragen die je bijna vergeten bent.',
+  'vandaag.eenVraag': 'Er is 1 oefening die herhaald moet worden om te blijven onthouden.',
+  'vandaag.vragen':
+    'Er zijn {aantal} oefeningen die herhaald moeten worden om te blijven onthouden.',
   'vandaag.ronde': '{aantal} vragen',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
@@ -685,7 +686,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis, met ontdekken en meerkeuze. Premium opent de andere manieren van oefenen en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
+    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor het hele gezin, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop':
@@ -737,12 +738,13 @@ export const nl = {
   // manieren op elke modulepagina. Die drie toetsen, en dat staat er nu.
   'premium.vergelijkTitel': 'Basis en premium naast elkaar',
   'premium.vergelijkUitleg':
-    'Oefenen kan gratis: ontdekken en meerkeuze, in elk vak. De andere manieren van oefenen, de diploma’s, de voortgang en de weekdoelen zijn premium.',
+    'Oefenen kan gratis, in elk vak: ontdekken, aanwijzen, meerkeuze en zelf typen. De bliksemronde, overleven, de oefentoets, de diploma’s, de voortgang en de weekdoelen zijn premium.',
   'premium.basisNaam': 'Basis',
   'premium.basisPrijs': 'Gratis',
-  'premium.basisVoor': 'Ontdekken en meerkeuze, in elk vak. Voor altijd, zonder code.',
+  'premium.basisVoor':
+    'Ontdekken, aanwijzen, meerkeuze en zelf typen, in elk vak. Voor altijd, zonder code.',
   'premium.premiumVoor':
-    'Alles uit Basis, en daarbovenop: aanwijzen, zoeken en zelf typen, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
+    'Alles uit Basis, en daarbovenop: de bliksemronde, overleven, de oefentoets, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
   'premium.aanrader': 'Aanrader',
   'premium.tabelWat': 'Onderdeel',
   'premium.tabelJa': 'Zit erin',
@@ -757,10 +759,9 @@ export const nl = {
   // zonder code één onderwerp van één vak zag — de provincies van Nederland,
   // niet als keuze maar als lot. Nu kan het elk van zijn eigen vakken en
   // onderwerpen aanwijzen.
-  // De grens van ADR-192: ontdekken en meerkeuze zijn gratis, zoeken en zelf
-  // typen niet. Twee regels, want het zijn twee kanten van dezelfde grens.
-  'premium.regel.vormen': 'Ontdekken en meerkeuze',
-  'premium.regel.zoekenTypen': 'Aanwijzen op de kaart, klok en vlag zoeken, en zelf typen',
+  // Sinds ADR-224 is elke manier die leert gratis: ontdekken, zoeken, kiezen en
+  // typen. Eén regel; de regel "zoeken en typen" onder premium is weg.
+  'premium.regel.vormen': 'Ontdekken, aanwijzen, meerkeuze en zelf typen',
   'premium.regel.herhaal': 'Na een ronde de fouten meteen overdoen',
   // "Een schatting" en niet "zien" (ADR-177): het is een vergeetcurve met een
   // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
@@ -871,7 +872,7 @@ export const nl = {
   // en het bepaalt alle drie de antwoorden.
   'ouderVraag.erbij': 'Mijn ouders zijn erbij',
   'ouderVraag.erbijRegel': 'Vul dan hier de code in',
-  'ouderVraag.sturen': 'Stuur het naar mijn ouders',
+  'ouderVraag.sturen': 'Vraag mijn ouders om een code',
   'ouderVraag.sturenRegel': 'Dan kunnen ze er later naar kijken',
   'ouderVraag.bekijken': 'Wat is premium?',
   'ouderVraag.bekijkenRegel': 'Lees eerst wat je ermee kunt',
@@ -886,7 +887,7 @@ export const nl = {
   // niets mee dan het adres: geen naam, geen voortgang, en ook niet welke
   // oefening het wilde doen. Zo'n bericht reist via de telefoon van iemand
   // anders.
-  'doorsturen.titel': 'Stuur het naar je ouders',
+  'doorsturen.titel': 'Vraag je ouders voor een code',
   'doorsturen.uitleg': 'Ze krijgen een link. Daar staat wat premium is en wat het kost.',
   'doorsturen.onderwerp': 'Iets van leer.nu',
   'doorsturen.bericht': 'Ik wil dit graag op leer.nu. Kijk je even?',

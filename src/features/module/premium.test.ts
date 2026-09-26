@@ -7,7 +7,7 @@ import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './r
  * map each page opens on.
  */
 describe('premium', () => {
-  it('leaves ontdekken and meerkeuze free, and marks everything else (ADR-192)', () => {
+  it('leaves every way that teaches free, and marks the rest (ADR-192, ADR-224)', () => {
     const gratis = [
       'ontdekken',
       'meerkeuze',
@@ -17,12 +17,8 @@ describe('premium', () => {
       // Taal's choosing (ADR-118).
       'taal-letters',
       'taal-vorm-kiezen',
-    ];
-    for (const vorm of gratis) {
-      expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
-    }
-    for (const vorm of [
-      // Zoeken and typen, free until ADR-192.
+      'taal-engels-kiezen',
+      // Zoeken and typen, premium from ADR-192 until ADR-224.
       'wijs-aan',
       'klok-welke-klok',
       'vlag-zoeken',
@@ -31,6 +27,12 @@ describe('premium', () => {
       'klok-typen',
       'taal-flitsdictee',
       'taal-vorm-typen',
+      'taal-engels-typen',
+    ];
+    for (const vorm of gratis) {
+      expect(isPremiumVorm(vorm as Parameters<typeof isPremiumVorm>[0]), vorm).toBe(false);
+    }
+    for (const vorm of [
       // Every diploma, the tafeldiploma too.
       'tafeldiploma',
       'reken-diploma',

@@ -2,18 +2,17 @@ import type { ModeId } from '@/game-core';
 import { t } from '@/i18n';
 
 /**
- * What premium opens (ADR-111, ADR-112, ADR-116, ADR-122, ADR-192).
+ * What premium opens (ADR-111, ADR-112, ADR-116, ADR-122, ADR-192, ADR-224).
  *
- * Since ADR-192 the line is **oefenen tegen alles wat over weken gaat**, drawn
- * tighter than ADR-122 drew it, on the owner's instruction. Free is the
- * gentlest practice there is, in every module: **ontdekken**, where a child
- * meets an item before anybody asks them anything, and **meerkeuze**, where the
- * answer is one of four in front of them. On Taal that is choosing the letters
- * of the gap, or one of three verb forms.
+ * Since ADR-192 the line is **oefenen tegen alles wat over weken gaat**. ADR-192
+ * drew the free side as ontdekken and meerkeuze only; since ADR-224, on the
+ * owner's instruction, it is **every way that teaches**, in every module:
+ * ontdekken, zoeken (aanwijzen on the map, the clock or the flag that goes with
+ * a name), meerkeuze and zelf typen. A child without a code can learn a subject
+ * all the way; premium is what comes on top.
  *
- * Everything else is premium: finding the place, the clock or the flag that
- * goes with a name (zoeken), typing the answer, the bliksemronde and overleven,
- * the oefentoets, every diploma — the tafeldiploma too, which ADR-122 had left
+ * Everything else is premium: the bliksemronde and overleven, the oefentoets,
+ * every diploma — the tafeldiploma too, which ADR-122 had left
  * free — the child's own collected mistakes, and the child's own word lists.
  * Those are gated here and in `App`, where a round starts, so a way into a
  * round from anywhere meets the same rule; the rest is gated where it is drawn,
@@ -39,6 +38,17 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'taal-letters',
   'taal-vorm-kiezen',
   'taal-engels-kiezen',
+  // Zoeken and zelf typen, premium from ADR-192 until ADR-224. On Taal typing
+  // is the flitsdictee, the typed verb form and the typed English word.
+  'wijs-aan',
+  'klok-welke-klok',
+  'vlag-zoeken',
+  'hoe-heet-dit',
+  'som-typen',
+  'klok-typen',
+  'taal-flitsdictee',
+  'taal-vorm-typen',
+  'taal-engels-typen',
 ]);
 
 /** A way of practising that is premium. The oefentoets is its own tile. */

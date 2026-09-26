@@ -13115,6 +13115,36 @@ own ground").
 **Niet in dit besluit.** "Je eerste ronde" (`.tk-eerste`): de topotint is 1.08
 op zand, maar het blok heeft een rand van 3 px en een harde onderkant.
 
+## ADR-224 — Elke manier die leert is gratis
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar. Verruimt
+de gratis kant van ADR-192; de rest van ADR-192 blijft staan.
+
+**Aanleiding.** Sinds ADR-192 waren alleen ontdekken en meerkeuze gratis. Op
+/topografie stonden daardoor Aanwijzen en Zelf typen, de twee manieren waarmee
+een kind een kaart echt leert, achter een slot, tussen de tegels die wel open
+waren.
+
+**Besluit.**
+
+- **Zoeken en zelf typen zijn gratis, in elk vak**: aanwijzen op de kaart, klok
+  zoeken, vlag zoeken, zelf typen bij topografie, rekenen en klok, en bij taal
+  het flitsdictee, de getypte werkwoordsvorm en het getypte Engelse woord. De
+  eigenaar koos voor elk vak en niet alleen topografie, zodat de regel één zin
+  blijft: elke manier die leert is gratis.
+- **Premium blijft**: de bliksemronde, overleven, de oefentoets, elk diploma,
+  je fouten, de eigen woordenlijsten, het dagplan, de voortgang en de
+  weekdoelen.
+- **Op een vakpagina staan de gratis manieren eerst**, dan de premium manieren,
+  elk in de volgorde van `forms.ts`. Op een kaart die te druk is om aan te
+  wijzen, blijft aanwijzen de laatste van de gratis manieren (ADR-087).
+- De premiumpagina zegt het mee: de regel "zoeken en typen" onder premium is
+  weg, en de gratis regel noemt de vier manieren.
+
+**Gevolg.** Minder reden om premium te nemen voor wie alleen wil oefenen. Wat
+premium verkoopt, is nu wat over weken gaat en wat uitdaagt: herhalen op het
+goede moment, zien wat je kind beheerst, de diploma's en de oefentoets.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

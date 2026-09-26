@@ -68,8 +68,6 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
       { tekst: 'premium.regel.vakken', basis: true },
       { tekst: 'premium.regel.vormen', basis: true },
       { tekst: 'premium.regel.herhaal', basis: true },
-      // Zoeken en typen zijn premium sinds ADR-192.
-      { tekst: 'premium.regel.zoekenTypen', basis: false },
     ],
   ],
   [

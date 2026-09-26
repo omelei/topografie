@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 25 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 26 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -129,7 +129,7 @@ teller.
 | Vraag                                                                                                     | Voorstel                                                       | Waar het staat |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
 | Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen | ADR-193        |
-| Mag het aantal vragen op Vandaag ("N vragen die je bijna vergeten bent") zonder code blijven?             | Laten staan als lokkertje                                      | ADR-192        |
+| Mag het aantal op Vandaag ("N oefeningen die herhaald moeten worden") zonder code blijven?                | Laten staan als lokkertje                                      | ADR-192        |
 
 ## Klein onderhoud
 

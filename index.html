@@ -30,6 +30,19 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>leer.nu</title>
+    <!-- The text the build puts in #root for search engines (tools/seo-paginas.mjs)
+         stays in the document but is not drawn. Drawn, it flashed as a bare page
+         of text until the app replaced it. -->
+    <style>
+      #root > [data-seo] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

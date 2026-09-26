@@ -15,8 +15,10 @@ import QRCode from 'qrcode';
  *
  * Elk bestand is `index.html` met een eigen titel, beschrijving en canonieke
  * link, en met een korte tekst in `#root`. Die tekst is wat Google leest; de
- * app vervangt hem zodra hij start. 404.html blijft de kale app, voor Jij, een
- * ronde en elk adres dat niet bestaat.
+ * app vervangt hem zodra hij start. Getekend wordt hij niet (`data-seo`, de
+ * stijl in `index.html`): anders stond hij tot de app er was als kale tekst in
+ * beeld. 404.html blijft de kale app, voor Jij, een ronde en elk adres dat niet
+ * bestaat.
  *
  * De pagina's komen uit de app zelf, via Vite, zodat de namen van onderwerpen,
  * de groepen en de adressen nooit uit elkaar lopen met wat de app toont.
@@ -63,7 +65,7 @@ function vervang(bron, zoek, door) {
 function pagina(p) {
   const url = `${oorsprong}${p.pad}`;
   const inhoud = [
-    '<main>',
+    '<main data-seo>',
     `<h1>${html(p.kop)}</h1>`,
     `<p>${html(p.beschrijving)}</p>`,
     ...(p.over

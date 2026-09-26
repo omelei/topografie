@@ -19,7 +19,7 @@ import {
   teDrukOmAanTeWijzen,
   toetsVormVan,
 } from './forms';
-import { isPremiumVorm } from './premium';
+import { isPremiumOnderwerp, isPremiumVorm } from './premium';
 
 describe('the oefentoets', () => {
   it('answers by typing, whatever the module', () => {
@@ -142,10 +142,11 @@ describe('the ways of practising', () => {
         forms.map((form) => form.id).join(', '),
       ).toBe(true);
     }
-    // De ene uitzondering: de eigen woordenlijsten. Die pagina heeft alleen
-    // premiummanieren, en daarom is het onderwerp zelf een slot
-    // (`isPremiumOnderwerp`), zodat een kind zonder code er niet op uitkomt.
-    expect(EIGEN_FORMS.every((form) => isPremiumVorm(form.id))).toBe(true);
+    // De eigen woordenlijsten: sinds ADR-224 is het flitsdictee gratis, maar
+    // het onderwerp zelf blijft een slot (`isPremiumOnderwerp`), want de lijsten
+    // maak je met premium.
+    expect(EIGEN_FORMS.every((form) => !isPremiumVorm(form.id))).toBe(true);
+    expect(isPremiumOnderwerp('eigen-lijsten')).toBe(true);
   });
 
   it('leaves ontdekken free, and the tafeldiploma premium, wherever they appear', () => {
