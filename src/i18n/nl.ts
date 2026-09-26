@@ -195,9 +195,8 @@ export const nl = {
   'vandaag.titel': 'Vandaag herhalen',
   'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeten bent.',
   'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeten bent.',
-  'vandaag.eenVraag': 'Er is 1 oefening die herhaald moet worden om te blijven onthouden.',
-  'vandaag.vragen':
-    'Er zijn {aantal} oefeningen die herhaald moeten worden om te blijven onthouden.',
+  'vandaag.eenVraag': 'Er is 1 vraag die herhaald moet worden om te blijven onthouden.',
+  'vandaag.vragen': 'Er zijn {aantal} vragen die herhaald moeten worden om te blijven onthouden.',
   'vandaag.ronde': '{aantal} vragen',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.

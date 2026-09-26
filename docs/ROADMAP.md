@@ -129,7 +129,7 @@ teller.
 | Vraag                                                                                                     | Voorstel                                                       | Waar het staat |
 | --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
 | Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen | ADR-193        |
-| Mag het aantal op Vandaag ("N oefeningen die herhaald moeten worden") zonder code blijven?                | Laten staan als lokkertje                                      | ADR-192        |
+| Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                    | Laten staan als lokkertje                                      | ADR-192        |
 
 ## Klein onderhoud
 
