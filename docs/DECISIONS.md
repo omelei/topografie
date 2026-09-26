@@ -13267,6 +13267,48 @@ de README een SQL-query om plekken met de hand vrij te maken.
 - `network.spec.ts` noemt wat er nu meegaat: de code, het nummer, het soort
   apparaat, en of er een plek gevraagd wordt.
 
+## ADR-227 — Het dagplan rekent zonder code stil mee, en de ouder ziet wat het zou doen
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, de
+derde van vier stappen rond premium en apparaten. Een uitzondering op ADR-192,
+die voortgang zonder code verbergt. De prijzen staan in het register (R-19 tot
+en met R-21) en niet hier.
+
+**Context.** Premium verkoopt sinds ADR-224 vooral het herhalen op het goede
+moment. Een ouder zonder code zag daar niets van: "Hoe gaat het?" is een slot,
+en het dagplan staat alleen bij het kind, en daar ook op slot. Toch loopt het
+plan in de gratis versie al mee: elk antwoord schuift een onderdeel naar de dag
+waarop het terug moet komen.
+
+**Besluit.**
+
+- **Een blok "Deze week" op de ouderpagina**, onder "Hoe gaat het?", per kind:
+  hoeveel verschillende vragen het kind sinds maandag oefende, en de volgende
+  twee dagen waarop het plan herhalen klaarzet. Wat al over tijd is, staat
+  vandaag klaar.
+- **Pas vanaf 5 onderdelen** in die week. Daaronder valt er niets te plannen dat
+  een ouder iets zegt.
+- **Zonder code is het het aanbod**: "Met premium zet het plan ze voor Fem klaar
+  om te herhalen: morgen en zondag 4 oktober." Daaronder één zin over wat
+  premium doet, de knop naar de kassa en de knop naar de premiumpagina. Met code
+  is het een feit, zonder aanbod.
+- **Het rekent met dezelfde sets als het dagplan** (`planSets`: geen mix, geen
+  premiumonderwerp) en alleen met wat al eens beantwoord is. De rekensom staat
+  puur in `game-core/weekoverzicht.ts`.
+- **Niets hiervan bij het kind.** Vandaag, Jij en de uitslag van een ronde
+  veranderen niet. Een prijs of een knop om te kopen staat alleen achter de
+  pincode (R-11).
+- **Waarom dit mag naast ADR-192:** het blok noemt geen beheersing, geen
+  schatting en geen verloop. Het zijn een aantal en twee dagen, en die zeggen
+  wat premium doet in plaats van wat het kind kan.
+
+**Gevolgen.**
+
+- De ouderpagina leest zonder code nu ook de dozen van elk kind. Dat blijft op
+  het apparaat; er gaat niets naar een server.
+- `DezeWeek.test.tsx` houdt de drempel en beide standen vast, `premium.spec.ts`
+  dat de ouder het ziet en het kind niet.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

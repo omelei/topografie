@@ -721,3 +721,37 @@ test('without a code the parents read what the child wanted, and what it is read
   await expect(hoe).toContainText('Fem wilde dit graag doen');
   await expect(hoe).toContainText('Bliksemronde bij Provincies van Nederland');
 });
+
+/**
+ * Deze week (ADR-227): het dagplan rekent zonder code stil mee, en de ouder
+ * ziet wat het zou doen. Het kind ziet er niets van.
+ */
+test('without a code the parent sees what the day plan did this week, and the child does not', async ({
+  page,
+}) => {
+  await stubGezin(page);
+  await signIn(page, 'Sem');
+  await oefenTafelVanEen(page);
+
+  // Bij het kind: geen dagen, geen aantal van de week.
+  await page.goto('/');
+  await expect(page.getByText(/verschillende vragen/)).toHaveCount(0);
+  await expect(page.getByText(/klaar om te herhalen:/)).toHaveCount(0);
+
+  await page
+    .getByRole('banner')
+    .getByRole('button', { name: /Wissel van profiel/ })
+    .click();
+  await page.getByRole('button', { name: 'Ouder' }).click();
+  await langsDePoort(page);
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+
+  const week = page.getByRole('region', { name: 'Deze week' });
+  await expect(week).toContainText('Sem oefende deze week 10 verschillende vragen.');
+  await expect(week).toContainText(
+    'Met premium zet het plan ze voor Sem klaar om te herhalen: morgen',
+  );
+  await expect(week.getByRole('button', { name: 'Wat zit er in premium?' })).toBeVisible();
+});
