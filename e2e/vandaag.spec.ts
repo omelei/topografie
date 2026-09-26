@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * The front door's "Maak af" (ADR-115) and the table on Jij that was Onthouden's
@@ -8,15 +9,6 @@ import { expect, test, type Page } from '@playwright/test';
  * picks up with only the questions it had not asked yet. And the table says
  * how often each place was answered, how much of that was right, and when.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** The provinces, pointed at: twelve questions, of which this answers one and stops. */
 async function eenProvincieEnStop(page: Page) {

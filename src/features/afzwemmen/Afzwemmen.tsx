@@ -12,9 +12,11 @@ import { doelwitVan, nodigVoor, standVan, type Stand } from '@/features/home/doe
 import { naamVan, type Onderdeel } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { MODULES } from '@/features/shell/modules';
+import { NaamVraag } from '@/features/player/NaamVraag';
 import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import { loadBehaald } from '@/store/rewardStore';
+import type { ProfileRecord } from '@/store/db';
 
 /** Ten sums of one table, in order: the tafeldiploma's round (`sums.ts`). */
 const TAFELDIPLOMA_VRAGEN = 10;
@@ -48,17 +50,26 @@ interface Voorkennis {
  * vaststaat dat er geen diploma uit kan komen, kan hier niet meer.
  *
  * Buiten het frame, zoals een ronde en zijn uitslag (ADR-041).
+ *
+ * **Zonder naam vraagt dit scherm hem eerst** (ADR-229). De naam komt op het
+ * diploma, en dit is het moment waarop hij iets doet: daarom hier, en niet op
+ * het eerste scherm van de app.
  */
 export function Afzwemmen({
   deel,
   mode,
   onBegin,
   onTerug,
+  naamNodig = false,
+  onNaam,
 }: {
   readonly deel: Onderdeel;
   readonly mode: ModeId;
   readonly onBegin: () => void;
   readonly onTerug: () => void;
+  /** Dit kind heeft nog geen naam, en die komt op het diploma (ADR-229). */
+  readonly naamNodig?: boolean;
+  readonly onNaam?: ((kind: ProfileRecord) => void) | undefined;
 }) {
   const [voorkennis, setVoorkennis] = useState<Voorkennis | null>(null);
   const [meekijken, setMeekijken] = useState(false);
@@ -167,7 +178,16 @@ export function Afzwemmen({
               ) : null}
             </section>
 
-            {voorkennis.stand.rijp ? (
+            {voorkennis.stand.rijp && naamNodig ? (
+              <>
+                <NaamVraag moment="toets" onKlaar={(kind) => onNaam?.(kind)} />
+                <div className="tk-uitslag-knoppen">
+                  <button type="button" className="tk-button tk-button-secondary" onClick={onTerug}>
+                    {t('afzwemmen.terug')}
+                  </button>
+                </div>
+              </>
+            ) : voorkennis.stand.rijp ? (
               <section className="flex flex-col gap-3" aria-label={t('afzwemmen.meekijkenVraag')}>
                 <h2 className="tk-sectie">{t('afzwemmen.meekijkenVraag')}</h2>
                 <p className="text-lopend">

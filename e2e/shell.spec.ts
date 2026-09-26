@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Naar de onderkant van de pagina, en hoe ver dat was.
@@ -23,17 +24,6 @@ async function naarOnder(page: Page): Promise<number> {
  * navigation model is different at four of them and the two rules below are
  * supposed to hold regardless.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function startRound(page: Page) {
   await page.goto('/topografie');

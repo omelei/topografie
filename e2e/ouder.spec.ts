@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * De ouder en het kind (ADR-173).
@@ -15,15 +16,6 @@ import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
  * nergens leesbaar in de opslag staat.
  */
 
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
-
 function wisselaar(page: Page) {
   return page.getByRole('banner').getByRole('button', { name: /Wissel van profiel/ });
 }
@@ -32,7 +24,7 @@ function wisselaar(page: Page) {
 async function maakOuder(page: Page, pin = '1234') {
   await stubGezin(page);
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill(pin);
   await page.getByLabel('Nog een keer').fill(pin);
@@ -58,7 +50,7 @@ test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
   await signIn(page, 'Sam');
 
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
 
   // Eerst de poort, en dán pas een pincode maken (ADR-176, ADR-178). Deze bouw
   // heeft een gezinsproject, dus de poort is het account.
@@ -81,6 +73,27 @@ test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
   expect(ruw).not.toContain('4821');
 });
 
+/**
+ * De ouderpagina gaat over een kind met een naam (ADR-229). Wie hem opent
+ * terwijl het kind er nog geen heeft, typt hem eerst, als ouder: "Hoe heet je
+ * kind?". Daarna is het de ouderpagina zoals altijd.
+ */
+test('zonder naam vraagt de ouderpagina eerst hoe het kind heet', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
+  await maakOuder(page);
+
+  const vraag = page.getByRole('form', { name: 'Hoe heet je kind?' });
+  await expect(vraag).toBeVisible();
+  await vraag.getByRole('button', { name: 'Verder' }).click();
+  await expect(page.getByRole('alert')).toHaveText('Typ eerst de naam van je kind.');
+
+  await vraag.getByLabel('Naam van je kind').fill('Mila');
+  await vraag.getByRole('button', { name: 'Verder' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Voor de ouder' })).toBeVisible();
+  await expect(wisselaar(page)).toHaveAccessibleName(/Nu oefent Mila/);
+});
+
 test('een verkeerde pincode komt er niet in, en de goede wel', async ({ page }) => {
   await signIn(page, 'Tess');
   await maakOuder(page, '4821');
@@ -90,7 +103,7 @@ test('een verkeerde pincode komt er niet in, en de goede wel', async ({ page }) 
   await expect(page).toHaveURL(/\/$/);
 
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   await expect(page.getByRole('heading', { name: 'Even je pincode' })).toBeVisible();
 
   const venster = page.getByRole('dialog');
@@ -133,7 +146,7 @@ test('een kind komt niet langs de poort en kan de pincode dus niet zetten', asyn
   );
 
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
 
   // Er staat geen pincodeveld: eerst de poort. En geen geboortejaar meer, want
   // dat is de terugval voor een bouw zonder project (ADR-178).
@@ -181,7 +194,7 @@ test('het kind komt met de sessie van zijn ouder de pincode niet opnieuw zetten'
   );
 
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
 
   // Geen pincodeveld: eerst het wachtwoord, ook al staat er een sessie.
@@ -197,7 +210,7 @@ test('het kind komt met de sessie van zijn ouder de pincode niet opnieuw zetten'
   // En de oude code doet het nog: er is niets weggehaald door te proberen.
   await page.goto('/');
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   await page.getByLabel('Pincode').fill('4821');
   await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page).toHaveURL(/\/ouder$/);
@@ -217,7 +230,7 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   await page.getByRole('button', { name: /Terug naar Roos/ }).click();
 
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
 
   // Ook hier staat de poort ervoor, en die is de hele bescherming. De sessie
@@ -236,7 +249,7 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   // En de oude code werkt niet meer.
   await page.getByRole('button', { name: /Terug naar Roos/ }).click();
   await wisselaar(page).click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
   const venster = page.getByRole('dialog');
   await venster.getByLabel('Pincode', { exact: true }).fill('4821');
   await venster.getByRole('button', { name: 'Verder', exact: true }).click();

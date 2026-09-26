@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, stubGezin, VERLOPEN_LINK } from './gezin';
+import { signIn } from './naam';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -19,18 +20,6 @@ async function scan(page: Page) {
   return new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
     .analyze();
-}
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
 /** The three topography sets these scans use, as the path through step 1. */
@@ -83,12 +72,15 @@ async function startRound(page: Page, set: Keuze, way: RegExp) {
   await page.locator('.tk-choose-start button').click();
 }
 
-test('the name screen has no violations', async ({ page }) => {
+// Zonder naam (ADR-229): de voordeur, en de vraag naar de naam op Jij.
+test('the front door without a name has no violations', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
 
-  const results = await scan(page);
-  expect(results.violations).toEqual([]);
+  await page.goto('/jij');
+  await expect(page.getByRole('form', { name: 'Hoe heet je?' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
 });
 
 test('the home screen has no violations', async ({ page }) => {

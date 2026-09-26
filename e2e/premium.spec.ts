@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
 import { alsOnthouden } from './zaai';
+import { signIn } from './naam';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -19,15 +20,6 @@ test.use({ storageState: { cookies: [], origins: [] } });
 
 const SERVER = 'https://premium.leer.test';
 const GOEDE_CODE = '7K3MQ9TX';
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** The premium server, as the browser will meet it: across origins, so with CORS. */
 async function beantwoord(route: Route, body: unknown) {

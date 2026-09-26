@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * The flows that exist today. Two of them are the point of the local-first
@@ -83,22 +84,12 @@ async function startChallenge(page: Page, naam: string) {
   await startRound(page, PROVINCIES, new RegExp(`^${naam}\\b`));
 }
 
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
-
-test('asks for a name on the first visit and never for anything else', async ({ page }) => {
+test('asks nothing on the first visit: the front door opens straight away', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toBeVisible();
+  // Geen naamscherm meer vóór de voordeur (ADR-229): een kind zonder naam.
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
+  await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
 
   // The two sentences that used to be asserted here — no adverts, no account
   // needed — are gone (ADR-046). The second stopped being true for the parent
@@ -112,8 +103,11 @@ test('asks for a name on the first visit and never for anything else', async ({ 
 });
 
 test('refuses an empty name', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Beginnen' }).click();
+  await page.goto('/jij');
+  await page
+    .getByRole('form', { name: 'Hoe heet je?' })
+    .getByRole('button', { name: 'Bewaren' })
+    .click();
   await expect(page.getByRole('alert')).toHaveText('Typ eerst je naam.');
 });
 

@@ -1,20 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
+import { signIn } from './naam';
 
 /**
  * The klokdiploma and the topodiploma (ADR-117): a wall on the module page
  * with the gaps showing, one press to sit one, nothing said until the end, and
  * the same wall on the child's own page.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /**
  * Een gewone ronde over de Waddeneilanden, aanwijzen, alles fout. Het gaat om
@@ -137,6 +129,35 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(kast.getByRole('region', { name: 'Topo' }).getByRole('button')).toHaveCount(12);
   await kast.getByRole('button', { name: /^Klok / }).click();
   await expect(kast.getByRole('region', { name: 'Klok' }).getByRole('button')).toHaveCount(4);
+});
+
+/**
+ * De naam komt op het diploma, dus de toets vraagt hem als hij er nog niet is
+ * (ADR-229). Een kind zonder naam kan oefenen tot het klaar is; pas dan, vóór
+ * de toets, staat de vraag er.
+ */
+test('zonder naam vraagt de toets eerst welke naam op het diploma komt', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
+  await wijsDeEilandenAan(page);
+  await alsOnthouden(page);
+
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: 'Jouw topodiploma’s' })
+    .getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+  await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
+
+  const vraag = page.getByRole('form', { name: 'Welke naam komt op je diploma?' });
+  await expect(vraag).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Nee, ik begin' })).toHaveCount(0);
+
+  await vraag.getByLabel('Je naam').fill('Isa');
+  await vraag.getByRole('button', { name: 'Bewaren' }).click();
+  await expect(vraag).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Nee, ik begin' })).toBeVisible();
 });
 
 test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({

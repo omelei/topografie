@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Klokkijken: the third module, and the first one that asks in two directions.
@@ -9,15 +10,6 @@ import { expect, test, type Page } from '@playwright/test';
  * that its steps have addresses, and that both directions of the exercise are
  * actually reachable from step 2.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Step 1, step 2, start. The one way into a round, whatever was chosen. */
 async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp) {

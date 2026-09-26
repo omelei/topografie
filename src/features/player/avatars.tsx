@@ -1,4 +1,4 @@
-import type { IconProps } from '@/components/Icon';
+import { PupilIcon, type IconProps } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 
 /**
@@ -128,6 +128,9 @@ export function AvatarTeken({
   readonly size?: number;
 }) {
   const avatar = avatarVan(id);
+  // Zonder avatar en zonder naam is er geen voorletter (ADR-229): dan het
+  // poppetje dat overal voor een kind staat.
+  if (avatar === null && naam.trim() === '') return <PupilIcon size={size} />;
   if (avatar === null) return <>{naam.slice(0, 1).toLocaleUpperCase('nl-NL')}</>;
 
   const Teken = avatar.teken;

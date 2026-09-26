@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Het slinkende dagplan (ADR-139).
@@ -9,15 +10,6 @@ import { expect, test, type Page } from '@playwright/test';
  * kijkt naar precies die twee dingen: gaat het door na een ronde, en heeft de
  * dag een bodem.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** De tafel van 1, helemaal uitgespeeld: tien onderdelen met een stand. */
 async function oefenTafelVanEen(page: Page) {

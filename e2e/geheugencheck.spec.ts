@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * De geheugencheck (ADR-228): één keer per kind, zodra er 8 vragen zijn die het
@@ -10,14 +11,6 @@ import { langsDePoort, stubGezin } from './gezin';
  * Zonder code, want daar is het aanbod voor.
  */
 test.use({ storageState: { cookies: [], origins: [] } });
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Tafel van 1 met meerkeuze: elk antwoord is de vermenigvuldiger zelf. */
 async function oefenTafelVanEen(page: Page) {

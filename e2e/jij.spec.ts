@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * Drie pagina's naast de oefeningen: Vandaag, Jij en Premium (ADR-171).
@@ -11,15 +12,6 @@ import { langsDePoort, stubGezin } from './gezin';
  * (ADR-172). Wat deze test vastlegt, is die indeling: waar alles staat, in
  * welke volgorde, en waar de oude adressen heen gaan.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /**
  * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en
@@ -233,7 +225,8 @@ test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
   await blok.getByRole('button', { name: 'Alles wissen' }).click();
   await blok.getByRole('button', { name: 'Ja, haal alles weg' }).click();
 
-  // Terug bij het begin: geen kind meer, en dus weer de vraag naar een naam.
-  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
+  // Terug bij het begin: geen kind meer, dus een nieuw kind zonder naam, zoals
+  // bij het eerste bezoek (ADR-229).
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
   await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toHaveCount(0);
 });

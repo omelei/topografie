@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, sessie, stubGezin, VERLOPEN_LINK } from './gezin';
+import { signIn } from './naam';
 
 /**
  * Inloggen was een aanbod en is sinds ADR-178 ook de poort.
@@ -23,15 +24,6 @@ import { antwoord, GEZIN, herstelLink, sessie, stubGezin, VERLOPEN_LINK } from '
  * voor de premiumserver doet. Het gedeelde antwoordapparaat staat in
  * `e2e/gezin.ts`.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Tot vóór de poort: de wisselaar in de balk en de rij met het hangslot. */
 async function naarDePoort(page: Page) {

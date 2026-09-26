@@ -93,6 +93,13 @@ where gebeurtenis = 'binnenkomst' and dag > current_date - 14
 group by pad
 order by aantal desc
 limit 20;
+
+-- Waar kinderen hun naam typen (ADR-229): /vandaag, /jij, /toets, /ouder of /wisselaar.
+select pad, sum(aantal) as aantal
+from public.teller
+where gebeurtenis = 'naam' and dag > current_date - 14
+group by pad
+order by aantal desc;
 ```
 
 Een browser met "Do Not Track" of "Global Privacy Control" aan telt niet mee,

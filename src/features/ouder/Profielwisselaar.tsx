@@ -6,9 +6,13 @@ import {
   createChild,
   listChildren,
   MAX_KINDEREN,
+  renameChild,
   switchChild,
 } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
+import { heeftNaam } from '@/store/profile';
+import { tel } from '@/store/teller';
+import { NAAM_MAX } from '@/features/player/NaamVraag';
 import { Pinslot } from './Pinslot';
 import { naarOuder } from './useOuder';
 import { sluitWisselaar, useWisselaar } from './wisselaar';
@@ -127,8 +131,11 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
   const [actief, setActief] = useState<string | null>(null);
   const [erbij, setErbij] = useState(false);
   const [naam, setNaam] = useState('');
+  // De naam van het kind zonder naam dat hier al oefent (ADR-229).
+  const [eigenNaam, setEigenNaam] = useState('');
   const [bezig, setBezig] = useState(false);
   const veld = useId();
+  const eigenVeld = useId();
 
   useEffect(() => {
     void Promise.all([listChildren(), activeChildId()]).then(([rijen, id]) => {
@@ -137,10 +144,18 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
     });
   }, []);
 
+  // Wie hier al zonder naam oefent (ADR-229). Bij een tweede kind moet je ze
+  // uit elkaar kunnen houden, dus dan krijgt het eerst een naam.
+  const naamloos = kinderen?.find((kind) => !heeftNaam(kind)) ?? null;
+
   async function voegToe(event: FormEvent) {
     event.preventDefault();
-    if (naam.trim() === '') return;
+    if (naam.trim() === '' || (naamloos !== null && eigenNaam.trim() === '')) return;
     setBezig(true);
+    if (naamloos !== null) {
+      await renameChild(naamloos.id, eigenNaam);
+      tel('naam', '/wisselaar');
+    }
     const kind = await createChild(naam);
     // Geweigerd betekent dat er in de tussentijd al drie stonden — op een ander
     // tabblad. Dan is de lijst het antwoord en niet een foutmelding.
@@ -170,6 +185,7 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
       <ul className="tk-lijst" aria-busy={kinderen === null}>
         {(kinderen ?? []).map((kind) => {
           const nu = kind.id === actief;
+          const wie = heeftNaam(kind) ? kind.naam : t('wisselaar.zonderNaam');
 
           return (
             <li key={kind.id}>
@@ -186,9 +202,9 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
                   <PupilIcon size={24} />
                 </span>
                 <span className="tk-lijstrij-tekst">
-                  <span className="tk-lijstrij-titel">{kind.naam}</span>
+                  <span className="tk-lijstrij-titel">{wie}</span>
                   <span className="tk-lijstrij-regel">
-                    {nu ? t('wisselaar.oefentNu') : t('wisselaar.geefBeurt', { naam: kind.naam })}
+                    {nu ? t('wisselaar.oefentNu') : t('wisselaar.geefBeurt', { naam: wie })}
                   </span>
                 </span>
                 <span className="tk-lijstrij-pijl">
@@ -220,6 +236,22 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
 
       {erbij ? (
         <form className="flex flex-wrap items-end gap-3" onSubmit={(event) => void voegToe(event)}>
+          {naamloos !== null ? (
+            <div className="flex flex-col gap-2">
+              <label htmlFor={eigenVeld} className="tk-label">
+                {t('wisselaar.naamNu')}
+              </label>
+              <input
+                id={eigenVeld}
+                className="tk-input max-w-xs"
+                value={eigenNaam}
+                onChange={(event) => setEigenNaam(event.target.value)}
+                autoComplete="off"
+                maxLength={NAAM_MAX}
+                autoFocus
+              />
+            </div>
+          ) : null}
           <div className="flex flex-col gap-2">
             <label htmlFor={veld} className="tk-label">
               {t('wisselaar.kindNaam')}
@@ -230,11 +262,15 @@ function Lijst({ kopId, onOuder }: { readonly kopId: string; readonly onOuder: (
               value={naam}
               onChange={(event) => setNaam(event.target.value)}
               autoComplete="off"
-              maxLength={24}
-              autoFocus
+              maxLength={NAAM_MAX}
+              autoFocus={naamloos === null}
             />
           </div>
-          <button type="submit" className="tk-button" disabled={bezig || naam.trim() === ''}>
+          <button
+            type="submit"
+            className="tk-button"
+            disabled={bezig || naam.trim() === '' || (naamloos !== null && eigenNaam.trim() === '')}
+          >
             {t('wisselaar.voegToe')}
           </button>
         </form>

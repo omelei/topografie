@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
 import { langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * Je doelen voor deze week (ADR-162).
@@ -10,15 +11,6 @@ import { langsDePoort, stubGezin } from './gezin';
  * een doel zelf maken, het zien meelopen, het diploma halen en dat terugzien op
  * het uitslagscherm — en het geheel uit kunnen zetten zonder dat het terugkomt.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /**
  * De ouderpagina openen: de wisselaar in de balk, de rij met het hangslot, en

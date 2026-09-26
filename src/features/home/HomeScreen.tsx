@@ -28,7 +28,7 @@ import { EersteRonde, VakkenRaster, ZoWerktHet } from './Kennismaken';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
-import { GroepVraag } from './GroepVraag';
+import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 import { WeekdoelenBlok } from './WeekdoelenBlok';
 
 /**
@@ -103,6 +103,8 @@ export interface HomeScreenProps {
   readonly onVak: (id: Module['id']) => void;
   /** De geheugencheck, één keer per kind (ADR-228). */
   readonly onGeheugencheck: (check: CheckKlaar) => void;
+  /** Naar de pagina voor ouders, voor wie nog geen naam heeft (ADR-229). */
+  readonly onVoorOuders: () => void;
 }
 
 export function HomeScreen({
@@ -113,6 +115,7 @@ export function HomeScreen({
   onDiplomas,
   onVak,
   onGeheugencheck,
+  onVoorOuders,
 }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   // Of de rondes gelezen zijn: pas dan is "nog niets geoefend" waar, en
@@ -120,6 +123,7 @@ export function HomeScreen({
   const [gelezen, setGelezen] = useState(false);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
+  const [groepGelezen, setGroepGelezen] = useState(false);
 
   useEffect(() => {
     void loadPlayedRounds().then((rondes) => {
@@ -127,7 +131,10 @@ export function HomeScreen({
       setGelezen(true);
     });
     void loadOpenRounds().then(setOpen);
-    void groepVanActiefKind().then(setGroep);
+    void groepVanActiefKind().then((gelezenGroep) => {
+      setGroep(gelezenGroep);
+      setGroepGelezen(true);
+    });
   }, []);
 
   // Over every set a round can be started on, mixes included: a round of the
@@ -135,12 +142,17 @@ export function HomeScreen({
   const alles = startbareOnderdelen();
   const gespeeld = geplaatst(played, alles);
   const populair = meestGeoefend(gespeeld);
+  // Een kind zonder naam oefent gewoon (ADR-229); de voordeur groet het zonder
+  // naam, en vraagt hem pas na de eerste ronde, als uitnodiging.
+  const naamloos = naam.trim() === '';
 
   const kop = (
     <div className="tk-home-kop">
       <div className="tk-home-welkom">
         <div className="tk-kop-denker">
-          <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
+          <h1 className="tk-titel">
+            {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
+          </h1>
           <Brandmark size={56} uitdrukking="zwaaien" />
         </div>
         <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
@@ -157,8 +169,8 @@ export function HomeScreen({
   // getal en een slot, en dat is geen opdracht: wie binnenkomt, ziet dan eerst
   // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
   //
-  // De sleutel is de groep: wie die op de voordeur kiest, ziet het plan meteen
-  // in de nieuwe volgorde, zonder de pagina te verlaten (ADR-151). Met de naam
+  // De sleutel is de groep: die wordt na het openen gelezen, en het plan volgt
+  // hem (ADR-151). Sinds ADR-229 kies je hem op Jij, niet op Vandaag. Met de naam
   // van het blok ervoor, want Vandaag en het doel staan naast elkaar in
   // dezelfde kolom en zouden anders dezelfde sleutel dragen.
   const { actief } = usePremium();
@@ -168,17 +180,13 @@ export function HomeScreen({
   const vandaagBoven = actief ? vandaag : null;
   const vandaagOnder = actief ? null : vandaag;
 
-  // Eén keer, voor een kind dat er al was vóór de vraag naar de groep: onder
-  // Vandaag, zodat het plan er eerst staat en niemand wacht (ADR-151).
-  const groepVraag = <GroepVraag onGekozen={setGroep} />;
-
   // En wat dit kind zich deze week voorneemt (ADR-162). Onder de rij waar het
   // mee begint en onder "Vandaag": eerst waar je kunt drukken, dan wat er nu
   // aan de beurt is, dan waar het deze week heen moet. Andersom leest de
   // voordeur als een doelstelling met huiswerk eronder.
   //
-  // Met de groep als sleutel, zoals Vandaag: wie hem op de voordeur kiest, ziet
-  // meteen de diploma's die erbij passen (ADR-153).
+  // Met de groep als sleutel, zoals Vandaag: de diploma's die erbij passen,
+  // zodra hij gelezen is (ADR-153).
   const weekdoelen = <WeekdoelenBlok key={`weekdoel-${groep ?? 'geen'}`} onDiplomas={onDiplomas} />;
 
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
@@ -205,34 +213,49 @@ export function HomeScreen({
   // van volgorde wisselt, verhuist React de blokken in plaats van ze opnieuw
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
-  const kern = nieuw
-    ? [
-        blok('kop', kop),
-        blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
-        blok('vandaagBoven', vandaagBoven),
-        blok('beginnen', beginnen),
-        blok('vakken', vakken),
-        blok('zo', <ZoWerktHet />),
-        blok('groepVraag', groepVraag),
-        blok('weekdoelen', weekdoelen),
-        blok('vandaagOnder', vandaagOnder),
-      ]
-    : [
-        blok('kop', kop),
-        blok('terug', terug),
-        // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
-        // en geen rij, en na één ronde is hij weg (ADR-228).
-        blok('check', <Geheugencheck onStart={onGeheugencheck} />),
-        blok('beginnen', beginnen),
-        blok('passend', passend),
-        blok('vandaagBoven', vandaagBoven),
-        blok('groepVraag', groepVraag),
-        blok('weekdoelen', weekdoelen),
-        blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
-        blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
-        blok('vandaagOnder', vandaagOnder),
-        blok('vakken', vakken),
-      ];
+  //
+  // Zonder naam staan onder de eerste ronde de twee uitwegen van het oude
+  // naamscherm: voor een ouder en voor een kind met een inlogcode (ADR-229).
+  // Een vraag naar de groep staat hier niet meer: die kies je op Jij.
+  const gast = naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null;
+  // Pas als alles gelezen is, staat de rest er (ADR-229). Daarvoor alleen de
+  // kop: de pagina tekende eerst de indeling voor wie al oefende en wisselde
+  // dan naar die voor een nieuw kind, en alles onder de eerste ronde sprong een
+  // scherm omlaag. Sinds er geen naamscherm meer voor staat, is dat het eerste
+  // wat een nieuwe bezoeker ziet, en Lighthouse zag het ook (CLS 0,36).
+  const gelezenAlles = gelezen && open !== null && groepGelezen;
+  const kern = !gelezenAlles
+    ? [blok('kop', kop)]
+    : nieuw
+      ? [
+          blok('kop', kop),
+          blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
+          blok('gast', gast),
+          blok('vandaagBoven', vandaagBoven),
+          blok('beginnen', beginnen),
+          blok('vakken', vakken),
+          blok('zo', <ZoWerktHet />),
+          blok('weekdoelen', weekdoelen),
+          blok('vandaagOnder', vandaagOnder),
+        ]
+      : [
+          blok('kop', kop),
+          // Na de eerste ronde, één keer: hoe heet je? Weg te klikken (ADR-229).
+          blok('naam', naamloos ? <NaamUitnodiging /> : null),
+          blok('terug', terug),
+          // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
+          // en geen rij, en na één ronde is hij weg (ADR-228).
+          blok('check', <Geheugencheck onStart={onGeheugencheck} />),
+          blok('beginnen', beginnen),
+          blok('passend', passend),
+          blok('vandaagBoven', vandaagBoven),
+          blok('weekdoelen', weekdoelen),
+          blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
+          blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
+          blok('vandaagOnder', vandaagOnder),
+          blok('vakken', vakken),
+          blok('gast', gast),
+        ];
 
   // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
   return <div className="tk-home">{kern}</div>;

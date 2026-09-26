@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * Een kind dat al oefende, meenemen naar het account van zijn ouder (ADR-187).
@@ -11,14 +12,6 @@ import { antwoord, GEZIN, langsDePoort, stubGezin } from './gezin';
  * vertrekt: de rijen van dit kind onder zijn nieuwe id, en niets wat alleen van
  * dit apparaat is.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Wat een kind na een paar rondes op dit apparaat heeft, met de hand neergezet. */
 async function zaaiVoortgang(page: Page) {
@@ -536,9 +529,10 @@ test('een fout wachtwoord zegt dat, zonder te zeggen of de code bestaat', async 
   await expect(page.getByRole('alert')).toHaveText(
     'Deze code en dit wachtwoord horen niet bij elkaar.',
   );
-  // Terug naar de naam kan altijd, en er is niemand aangemaakt.
-  await page.getByRole('button', { name: 'Terug' }).click();
-  await expect(page.getByPlaceholder('Je naam')).toBeVisible();
+  // Terug kan altijd, en er is niemand ingelogd: nog steeds zonder naam.
+  await page.getByRole('button', { name: 'Laat maar' }).click();
+  await expect(page.getByRole('button', { name: 'Ik heb een inlogcode' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
 });
 
 test('de ouder ziet de inlogcode en zet een wachtwoord voor het kind', async ({ page }) => {

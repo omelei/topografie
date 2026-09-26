@@ -11,6 +11,7 @@ import {
 import { Uitklap } from '@/components/Uitklap';
 import { AVATAR_SLEUTEL, renameChild, setAvatar } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
+import { heeftNaam } from '@/store/profile';
 import { Kast } from '@/features/badges/Kast';
 import type { ModeId } from '@/game-core';
 import type { Onderdeel } from '@/features/module/onderdelen';
@@ -18,6 +19,7 @@ import { usePremium } from '@/features/premium/usePremium';
 import { Statistieken } from '@/features/retention/Statistieken';
 import { AVATAR_GROEPEN, AVATARS, avatarNaam, AvatarTeken } from './avatars';
 import { EigenLijsten } from './EigenLijsten';
+import { NAAM_MAX, NaamVraag } from './NaamVraag';
 import { GroepInstelling } from './GroepInstelling';
 import { Jaaroverzicht } from './Jaaroverzicht';
 import {
@@ -81,6 +83,7 @@ export function ProfileScreen({
 }) {
   const kast = useRef<HTMLDivElement>(null);
   const { actief: premium } = usePremium();
+  const naamloos = !heeftNaam(profile);
 
   // Met premium staat "Wie oefent er?" boven de kast, dus is dit nog een sprong;
   // zonder is het er een van niets.
@@ -101,9 +104,17 @@ export function ProfileScreen({
         <header className="tk-etalage">
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
           <p className="tk-etalage-tekst text-lopend">
-            {t(premium ? 'you.intro' : 'you.introZonderCode', { naam: profile.naam })}
+            {naamloos
+              ? t(premium ? 'you.introZonderNaam' : 'you.introZonderNaamZonderCode')
+              : t(premium ? 'you.intro' : 'you.introZonderCode', { naam: profile.naam })}
           </p>
         </header>
+
+        {/* Zonder naam staat de vraag ernaar bovenaan (ADR-229): Jij is de
+            pagina over wie je bent. Geen "Niet nu": hij blijft staan tot er
+            een naam is, maar houdt niets tegen. Opnieuw laden, zoals
+            hernoemen, want de naam staat ook in de balk. */}
+        {naamloos ? <NaamVraag moment="jij" onKlaar={() => window.location.reload()} /> : null}
 
         {/* Wie je bent, bovenaan (ADR-177): je avatar, je naam, je groep en de
             schakelaars. Het stond onderaan sinds ADR-172, met het argument dat
@@ -232,7 +243,8 @@ function Instellingen({
       <h2 className="tk-sectie">{t('you.settings')}</h2>
       <ul className="tk-lijst">
         <Avatarkiezer profile={profile} onProfiel={onProfiel} />
-        <Naam profile={profile} />
+        {/* Zonder naam is de vraag bovenaan de plek ervoor (ADR-229). */}
+        {heeftNaam(profile) ? <Naam profile={profile} /> : null}
         <GroepInstelling />
         <li>
           <Switch
@@ -408,9 +420,6 @@ function Avatarkiezer({
     </li>
   );
 }
-
-/** Zo lang als het naamscherm toestaat (`ProfileGate`): één limiet, twee velden. */
-const NAAM_MAX = 24;
 
 /**
  * Je naam, als rij bij de instellingen (ADR-126, ADR-172).
