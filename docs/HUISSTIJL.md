@@ -47,7 +47,8 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 1. **Kleur op rol, niet op waarde.** `bg-grond` voor de grond van een scherm
    (zand), `bg-papier` voor een warm vlak (room: hover, een gekozen rij, een
    neutrale plaat), `bg-kaart` voor een kaart of paneel, `text-inkt`, `text-tekst-secundair`,
-   `text-tekst-tertiair`, `border-rand-licht` voor een kaart en
+   `text-tekst-tertiair`, `border-rand-licht` voor een kaart,
+   `--rand-grond` voor een lijn die direct op de grond staat (ADR-222) en
    `border-rand-bediening` voor de rand van iets dat je kunt indrukken.
 2. **Typografie op rol.** Eén maat per rol, op elk scherm:
 

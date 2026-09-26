@@ -275,6 +275,13 @@ describe('the ground under a page', () => {
     expect(token(grond)).not.toBe(token('kaart'));
   });
 
+  it('draws a rule on the ground as the guide draws its rule on a card (ADR-222)', () => {
+    // The line under a section heading stands on the ground. The guide's light
+    // rule is 1.33 on white and 1.09 on zand, so the ground gets its own.
+    expect(ratio('rand-grond', 'grond')).toBeGreaterThanOrEqual(1.3);
+    expect(ratio('rand-grond', 'grond')).toBeLessThan(ratio('rand-bediening', 'grond'));
+  });
+
   it('is zand, and room is a plane on it rather than the ground (ADR-221)', () => {
     expect(token('grond')).toBe(token('canvas'));
     expect(token('grond')).not.toBe(token('papier'));
