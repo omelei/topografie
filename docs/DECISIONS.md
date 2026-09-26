@@ -13090,6 +13090,31 @@ iets dat je kunt indrukken.
 **Niet in dit besluit.** De vakbadge (`.tk-modulebadge`) en "Je eerste ronde"
 (`.tk-eerste`), die hun vorm op zand ook grotendeels verliezen (ADR-221).
 
+## ADR-223 — De vakbadge krijgt een rand in de vakkleur
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, als
+vervolg op ADR-221 en ADR-222.
+
+**Aanleiding.** De vakbadge (`.tk-modulebadge`, "TOPO", "TAAL" boven een
+vakpagina, de uitslag en het afzwemmen) is een pil in de lichte vaktint,
+zonder rand. Op zand is die tint 1.00 (woorden) tot 1.09 (vlaggen): de vorm
+van de pil verdwijnt en alleen de tekst blijft over.
+
+**Besluit.**
+
+- **De badge krijgt een rand van 1 px in de vakkleur** (`--module`), zoals de
+  startbalk die al heeft. Zonder vak is dat cacao, net als zijn tekst.
+- **De padding gaat op elke kant 1 px omlaag**, zodat de badge even groot
+  blijft.
+
+**Contrast van de rand** (niet-tekst, WCAG 1.4.11 vraagt 3): op zand 4.61
+(topo) tot 13.21 (neutraal), op de eigen tint 4.99 tot 12.73. De vakkleuren op
+de grond worden al door `contrast.test.ts` gehouden ("lets %s speak on its
+own ground").
+
+**Niet in dit besluit.** "Je eerste ronde" (`.tk-eerste`): de topotint is 1.08
+op zand, maar het blok heeft een rand van 3 px en een harde onderkant.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

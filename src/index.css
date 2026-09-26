@@ -3040,7 +3040,11 @@
     align-items: center;
     align-self: flex-start;
     gap: 6px;
-    padding: 6px 12px 6px 10px;
+    /* One pixel less than before on every side: the rule takes it (ADR-223). */
+    padding: 5px 11px 5px 9px;
+    /* The tint alone is 1.00–1.09 on zand, so the pill's shape is drawn in the
+     * module's colour, as the start bar draws its own (ADR-223). */
+    border: var(--stroke-hair) solid var(--module);
     border-radius: var(--radius-pil);
     background: var(--module-tint);
     color: var(--module-tekst);
