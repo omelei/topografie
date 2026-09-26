@@ -89,7 +89,7 @@ async function naarOuder(page: Page) {
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder', exact: false }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
@@ -241,17 +241,17 @@ test('een ouder neemt zijn kind mee naar het account, met toestemming', async ({
   await zaaiVoortgang(page);
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await expect(blok).toContainText('Noor oefent op dit apparaat');
 
   // Zonder toestemming gaat de knop niet.
-  const knop = blok.getByRole('button', { name: 'Neem mee naar mijn account' });
+  const knop = blok.getByRole('button', { name: 'Zet in mijn account' });
   await expect(knop).toBeDisabled();
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
   await expect(knop).toBeEnabled();
   await knop.click();
 
-  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
   expect(gezin.beheer).toEqual([{ actie: 'opnemen', voornaam: 'Noor', groep: null }]);
 
   // Wat er vertrok: de afgeronde ronde en zijn poging, niet de ronde die nog
@@ -278,12 +278,12 @@ test('een kind uit het account halen laat het op dit apparaat staan', async ({ p
   await signIn(page, 'Noor');
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
-  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
-  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
+  await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
 
-  await blok.getByRole('button', { name: 'Haal uit mijn account' }).click();
+  await blok.getByRole('button', { name: 'Uit mijn account halen' }).click();
   await expect(blok).toContainText('Op dit apparaat blijft het gewoon staan');
   await blok.getByRole('button', { name: 'Ja, haal weg' }).click();
 
@@ -310,13 +310,13 @@ test('als het versturen hapert, is het kind er wel en kan het opnieuw', async ({
   await zaaiVoortgang(page);
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
-  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
+  await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('nog niet alles is verstuurd');
 
   await blok.getByRole('button', { name: 'Verstuur opnieuw' }).click();
-  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
   // Eén kind, niet twee.
   expect(gezin.beheer.filter((b) => (b as { actie: string }).actie === 'opnemen')).toHaveLength(1);
 });
@@ -332,10 +332,10 @@ test('wat er daarna geoefend wordt, gaat vanzelf mee, en alleen dat', async ({ p
   await zaaiVoortgang(page);
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
-  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
-  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
+  await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
   gezin.tabellen.sessies = [];
   gezin.tabellen.pogingen = [];
 
@@ -405,7 +405,7 @@ test('een kind uit het account komt op een tweede apparaat, met wat het daar dee
   await signIn(page, 'Sam');
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   const noor = blok.getByRole('list', { name: 'In je account, maar niet op dit apparaat' });
   await expect(noor).toContainText('Noor');
   // De twee keuzes staan op een scherm dat een ouder leest; axe kijkt mee, met
@@ -452,9 +452,9 @@ test('een kind dat hier al oefent, wordt gekoppeld aan het kind in het account',
   await zaaiVoortgang(page);
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await blok.getByRole('button', { name: 'Noortje is Noor' }).click();
-  await expect(blok).toContainText('In je account, bijgewerkt op');
+  await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
   await expect(
     blok.getByRole('list', { name: 'In je account, maar niet op dit apparaat' }),
   ).toHaveCount(0);
@@ -541,9 +541,9 @@ test('de ouder ziet de inlogcode en zet een wachtwoord voor het kind', async ({ 
   await signIn(page, 'Noor');
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Kinderen in je account' });
+  const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
-  await blok.getByRole('button', { name: 'Neem mee naar mijn account' }).click();
+  await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('Inlogcode: KIND-ABCD-2345');
 
   const veld = blok.getByLabel('Wachtwoord waarmee Noor zelf inlogt');

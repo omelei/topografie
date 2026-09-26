@@ -634,30 +634,22 @@ export function ModuleScreen({
                 gevraagd wordt. Alleen als er iets in zit (`MIN_FOUTEN`), want
                 een knop die "0 fouten" oefent, oefent niets.
 
-                Premium blijft het, en om de reden die `premium.ts` geeft: wat
-                je fout had is een administratie over rondes heen. De poort
-                staat hier en niet in `beginRonde`, want deze stand bestaat
-                alleen op deze pagina — een favoriet of een openstaande ronde
-                kan hem niet meedragen. */}
+                Gratis sinds ADR-231, ook hier (ADR-232): je fouten herhalen
+                hoort bij oefenen. Alleen het aantal blijft bij premium, want
+                dat is een telling over rondes heen (ADR-192). */}
             {kanFouten ? (
               <button
                 type="button"
                 className="tk-tegel"
                 // Zonder code geen aantal: hoeveel je fout had is een telling over
                 // rondes heen, en dat is voortgang (ADR-192).
-                aria-label={metPremium(
+                aria-label={
                   actief
                     ? `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`
-                    : t('choose.fouten'),
-                  true,
-                  actief,
-                )}
+                    : t('choose.fouten')
+                }
                 aria-pressed={alsFouten}
                 onClick={() => {
-                  if (!actief) {
-                    wilDit(t('choose.fouten'));
-                    return;
-                  }
                   // Een diploma over de helft van een set is geen diploma, en
                   // een oefentoets over je eigen fouten is geen toets: allebei
                   // gaan ze uit zodra dit aangaat.
@@ -670,7 +662,6 @@ export function ModuleScreen({
                   <WrongIcon size={24} />
                 </span>
                 <span className="min-w-0">{t('choose.fouten')}</span>
-                <PremiumLabel />
                 {alsFouten ? vink : null}
               </button>
             ) : null}

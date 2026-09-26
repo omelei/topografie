@@ -92,7 +92,7 @@ export const CATEGORIES: readonly Category[] = [
  * bestemming, met of zonder code, want daar staat ook tot wanneer het aanstaat.
  */
 export interface Destination {
-  readonly id: 'vandaag' | 'vrienden' | 'jij' | 'premium';
+  readonly id: 'vandaag' | 'vrienden' | 'jij' | 'premium' | 'ouders';
   readonly name: TranslationKey;
   readonly built: boolean;
 }
@@ -102,6 +102,9 @@ export const DESTINATIONS: readonly Destination[] = [
   { id: 'vrienden', name: 'nav.vrienden', built: false },
   { id: 'jij', name: 'nav.jij', built: true },
   { id: 'premium', name: 'nav.premium', built: true },
+  // De ouderpagina, achter de pincode (ADR-232): een ouder hoeft hem niet meer
+  // via de wisselaar te zoeken.
+  { id: 'ouders', name: 'nav.ouders', built: true },
 ];
 
 export const BUILT_DESTINATIONS = DESTINATIONS.filter((destination) => destination.built);

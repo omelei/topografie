@@ -1,12 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import { CorrectIcon, SlotIcon, StarIcon, TodayIcon } from '@/components/Icon';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { AccountBlok } from '@/features/account/AccountBlok';
 import { CodeVeld } from '@/features/premium/CodeVeld';
 import { leesbareDatum, naarPremium, usePremium } from '@/features/premium/usePremium';
 import { Wissen } from '@/features/player/Wissen';
 import { isTeKoop, isVerlopen, meldAf } from '@/store/premium';
-import { sluit, verleng } from '@/store/ouder';
+import {
+  SESSIE_KEUZES,
+  sessieMinuten,
+  sluit,
+  verleng,
+  zetPin,
+  zetSessieMinuten,
+  type OuderFout,
+} from '@/store/ouder';
 import {
   GEEN_DOELEN,
   leesWeekdoelen,
@@ -178,6 +186,12 @@ function Premium() {
             {t('premium.aan', { datum: leesbareDatum(stand.geldigTot) })}
           </p>
           <p className="text-lopend text-tekst-secundair">{t('ouder.premiumAlleKinderen')}</p>
+          {/* De code zelf (ADR-232): wie hem op een tweede apparaat wil
+              invullen, hoeft niet de mail terug te zoeken. Achter de pincode. */}
+          <p className="text-lopend">
+            {t('ouder.jouwCode', { code: `LEER-${stand.code.slice(0, 4)}-${stand.code.slice(4)}` })}
+          </p>
+          <p className="tk-hulp">{t('ouder.jouwCodeUitleg')}</p>
           <p className="tk-hulp">{extraKind}</p>
           <button
             type="button"
@@ -274,9 +288,135 @@ function Gezinsinstellingen() {
             </span>
           </button>
         </li>
+        <SessieDuur />
+        <PinWijzigen />
       </ul>
       <p className="tk-hulp">{t('ouder.instellingenUitleg')}</p>
     </section>
+  );
+}
+
+/**
+ * Hoe lang de ouderpagina openblijft zonder dat er iets gebeurt (ADR-232).
+ * Vijf minuten is de standaard; wie rustig iets leest, kiest er meer.
+ */
+function SessieDuur() {
+  const [minuten, setMinuten] = useState(sessieMinuten);
+  return (
+    <li className="tk-card flex flex-col gap-2">
+      <span className="tk-lijstrij-titel" id="sessie-kop">
+        {t('ouder.sessie')}
+      </span>
+      <span className="tk-hulp">{t('ouder.sessieRegel')}</span>
+      <div className="flex flex-wrap gap-2" role="group" aria-labelledby="sessie-kop">
+        {SESSIE_KEUZES.map((keuze) => (
+          <button
+            key={keuze}
+            type="button"
+            className="tk-chip"
+            aria-pressed={keuze === minuten}
+            onClick={() => {
+              zetSessieMinuten(keuze);
+              setMinuten(keuze);
+            }}
+          >
+            {t('ouder.sessieMinuten', { aantal: keuze })}
+          </button>
+        ))}
+      </div>
+    </li>
+  );
+}
+
+const PIN_FOUT: Record<OuderFout, TranslationKey> = {
+  'geen-cijfers': 'ouder.fout.geenCijfers',
+  ongelijk: 'ouder.fout.ongelijk',
+  onjuist: 'ouder.fout.onjuist',
+  'te-vaak': 'ouder.fout.teVaak',
+  'geen-kluis': 'ouder.fout.geenKluis',
+};
+
+/**
+ * Een nieuwe pincode, voor wie al binnen is (ADR-232). Binnen ben je alleen met
+ * de oude, dus hoeft die niet nog eens.
+ */
+function PinWijzigen() {
+  const [open, setOpen] = useState(false);
+  const [pin, setPin] = useState('');
+  const [herhaling, setHerhaling] = useState('');
+  const [uitkomst, setUitkomst] = useState<'goed' | OuderFout | null>(null);
+  const nieuw = useId();
+  const nogEens = useId();
+
+  async function bewaar(event: FormEvent) {
+    event.preventDefault();
+    const gedaan = await zetPin(pin, herhaling);
+    setPin('');
+    setHerhaling('');
+    setUitkomst(gedaan.ok ? 'goed' : gedaan.reden);
+    if (gedaan.ok) setOpen(false);
+  }
+
+  return (
+    <li>
+      <button
+        type="button"
+        className="tk-lijstrij"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen(!open);
+          setUitkomst(null);
+        }}
+      >
+        <span className="tk-plaat tk-plaat-neutraal">
+          <SlotIcon size={24} />
+        </span>
+        <span className="tk-lijstrij-tekst">
+          <span className="tk-lijstrij-titel">{t('ouder.pinWijzigen')}</span>
+          <span className="tk-lijstrij-regel">{t('ouder.pinWijzigenRegel')}</span>
+        </span>
+      </button>
+      {open ? (
+        <form className="tk-card flex flex-col gap-3" onSubmit={(event) => void bewaar(event)}>
+          <label htmlFor={nieuw} className="tk-label">
+            {t('ouder.pinNieuw')}
+          </label>
+          <input
+            id={nieuw}
+            className="tk-input max-w-[10rem]"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={4}
+            value={pin}
+            onChange={(event) => setPin(event.target.value.replace(/\D/g, ''))}
+          />
+          <label htmlFor={nogEens} className="tk-label">
+            {t('ouder.pinHerhaal')}
+          </label>
+          <input
+            id={nogEens}
+            className="tk-input max-w-[10rem]"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={4}
+            value={herhaling}
+            onChange={(event) => setHerhaling(event.target.value.replace(/\D/g, ''))}
+          />
+          <button type="submit" className="tk-button tk-button-secondary self-start">
+            {t('ouder.bewaarPin')}
+          </button>
+        </form>
+      ) : null}
+      {uitkomst === 'goed' ? (
+        <p role="status" className="tk-melding" data-soort="gelukt">
+          {t('ouder.pinGewijzigd')}
+        </p>
+      ) : uitkomst !== null ? (
+        <p role="alert" className="tk-melding" data-soort="fout">
+          {t(PIN_FOUT[uitkomst], { seconden: 0 })}
+        </p>
+      ) : null}
+    </li>
   );
 }
 

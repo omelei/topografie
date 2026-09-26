@@ -24,7 +24,7 @@ async function naarOuder(page: Page) {
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
@@ -142,14 +142,14 @@ test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Je kinderen' })).toHaveCount(0);
 });
 
-test('de navigatie gaat naar Vandaag, Jij en Premium', async ({ page }) => {
+test('de navigatie gaat naar Vandaag, Jij, Premium en Ouders', async ({ page }) => {
   await signIn(page, 'Ties');
 
   // Op elke maat staat één van de twee balken; welke, is CSS (Shell).
   const balk = page
     .getByRole('navigation', { name: 'Waar je heen kunt' })
     .filter({ visible: true });
-  await expect(balk.getByRole('button')).toHaveText(['Vandaag', 'Jij', 'Premium']);
+  await expect(balk.getByRole('button')).toHaveText(['Vandaag', 'Jij', 'Premium', 'Ouders']);
 
   await balk.getByRole('button', { name: 'Premium' }).click();
   await expect(page).toHaveURL(/\/premium$/);
@@ -157,6 +157,22 @@ test('de navigatie gaat naar Vandaag, Jij en Premium', async ({ page }) => {
     'aria-current',
     'page',
   );
+  // Eerst de deur: de premiumpagina is voor ouders (ADR-232).
+  await expect(page.getByRole('heading', { name: 'Deze pagina is voor ouders' })).toBeVisible();
+
+  // Ouders vraagt meteen om binnen te komen: zonder pincode eerst de poort,
+  // en deze bouw heeft een gezinsproject, dus dat is het account (ADR-178).
+  await balk.getByRole('button', { name: 'Ouders' }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
+  await expect(
+    page.getByRole('dialog').getByRole('heading', { name: 'Log in met je ouderaccount' }),
+  ).toBeVisible();
+  // Wie nog geen account heeft, leest een eigen kop.
+  await page.getByRole('dialog').getByRole('button', { name: 'Ik heb nog geen account' }).click();
+  await expect(
+    page.getByRole('dialog').getByRole('heading', { name: 'Maak een ouderaccount' }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
 
   await balk.getByRole('button', { name: 'Jij' }).click();
   await expect(page).toHaveURL(/\/jij$/);

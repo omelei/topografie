@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * Het einde van een jaar, aangekondigd in plaats van afgewacht (ADR-129).
@@ -37,6 +37,7 @@ test('een code die bijna om is zegt dat, op de premiumpagina', async ({ page }) 
   await signIn(page, 'Noor');
 
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await zetCode(page, dag(10));
   await expect(page.getByText(/Verleng hem vóór die dag/)).toBeVisible();
 });
@@ -47,6 +48,7 @@ test('een code die om is zegt dat de voortgang er nog staat, en biedt verlengen 
   await signIn(page, 'Noor');
 
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await zetCode(page, dag(-1));
   await expect(page.getByText(/staat nog op dit apparaat/)).toBeVisible();
   // En het aanbod staat er weer onder: verlengen is kopen.

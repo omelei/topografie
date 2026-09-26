@@ -13506,6 +13506,56 @@ testronde. Verruimt ADR-224: daar bleef "je fouten" premium.
 - De namen op de kaart komen uit de content, dus de kaart zegt ook Friesland.
   De bronbestanden onder `public/geo` houden hun `bronnaam`.
 
+## ADR-232 — Jij zonder premium, een deur voor de premiumpagina, en een ouderpagina met instellingen
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, na een
+testronde. Scherpt R-11 aan: een kind ziet geen prijs, geen knop om te kopen en
+ook het woord premium niet op zijn eigen pagina.
+
+**Besluit.**
+
+- **Jij.** De naam staat onder Instellingen, boven de avatar. Alle diplomavakken
+  in de kast staan dicht en gaan open en weer dicht met één knop. Het woord
+  premium staat nergens meer op Jij: geen label in de kast en geen verkoopkaart
+  onderaan. Een diploma op slot zegt dat je ouders de toets voor je kunnen
+  openzetten.
+- **Het diploma.** Op het voorbeeld tekent "papa, mama, juf of meester", in de
+  woorden van de eigenaar, en de knop heet "Ik wil dit diploma halen".
+- **Een deur voor de premiumpagina** (`PremiumPoort`). Daar staan de prijs en de
+  knop om te kopen, dus vraagt de pagina eerst het geboortejaar, zoals de
+  ouderpagina (ADR-176). Wie het niet weet, gaat terug naar Vandaag. De vraag
+  komt één keer per tabblad (`bevestigd.ts`), en wie daarna de pincode kiest,
+  krijgt hem geen tweede keer. Een vergeten pincode vraagt hem altijd opnieuw.
+- **Ouders in de navigatie.** Een ouder hoeft de ouderpagina niet meer via de
+  wisselaar te zoeken. De knop vraagt meteen de pincode.
+- **Het account-venster** heeft een eigen kop en zin voor inloggen, aanmelden
+  en een nieuw wachtwoord. De pincode-vensters zeggen waarom er een pincode is
+  en dat hij alleen op dit apparaat staat.
+- **De ouderpagina.**
+  - De intro is "Hier stel je je ouderaccount in."
+  - Het blok over kinderen in je account zegt in gewone woorden wat erin gaat en
+    wat dat doet.
+  - Zonder code staat er bij Hoe gaat het? een voorbeeld, met een verzonnen kind
+    (Sanne). Het toont nooit verzonnen cijfers over een echt kind.
+  - Met code staat de code erbij, zodat een ouder hem op een ander apparaat kan
+    invullen.
+  - Nieuwe instellingen: hoe lang de ouderpagina openblijft (5, 15 of 30
+    minuten) en de pincode wijzigen.
+- **Zo werkt leer.nu** staat in kaartjes uit de huisstijl, met een teken, een
+  label, een kop en een regel.
+- **Twee reparaties uit het review.**
+  - Zonder antwoord van de server over een plek (ADR-226) begint de ronde, en
+    vraagt het apparaat het pas bij de volgende start opnieuw. Eerst vroeg de app
+    het eindeloos, honderden keren per seconde.
+  - "Jouw fouten" op de vakpagina is gratis, zoals ADR-231 al besloot: zonder
+    slot en zonder label. Het aantal fouten blijft bij premium (ADR-192).
+
+**Gevolgen.**
+
+- De deur voor de premiumpagina is een hek en geen kluis, net als de check
+  zelf. Wie hem sterker wil, kijkt naar het gezinsaccount (ADR-178).
+- Een e2e-test die /premium opent, gaat eerst door de deur.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

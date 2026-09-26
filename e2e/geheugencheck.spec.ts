@@ -133,7 +133,7 @@ test('the memory check comes once, changes no box, and the parent reads the resu
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');

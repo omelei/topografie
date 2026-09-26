@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HomeScreen } from '@/features/home/HomeScreen';
 import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
@@ -43,6 +43,7 @@ import { loadPreferences, zetRustig } from '@/features/player/settings';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
+import { PremiumPoort } from '@/features/premium/PremiumPoort';
 import { OuderPoort, OuderScherm } from '@/features/ouder/OuderScherm';
 import { useOuder } from '@/features/ouder/useOuder';
 import { openWisselaar } from '@/features/ouder/wisselaar';
@@ -166,6 +167,8 @@ export default function App() {
   // de sessie afloopt terwijl die pagina openstaat, moet de deur weer dicht, en
   // dat is een keuze van de router en niet van het scherm erachter.
   const { ouder } = useOuder();
+  // Of dit apparaat de server al om een plek vroeg en 'ok' hoorde (ADR-232).
+  const plekGevraagd = useRef(false);
 
   // Elk adres zijn eigen titel in het tabblad: dezelfde als die Google leest
   // (ADR-207). Een ronde of Jij heet gewoon leer.nu.
@@ -207,9 +210,18 @@ export default function App() {
 
   const goTo = (id: Destination['id']) => {
     const next: Route =
-      id === 'jij' ? { name: 'you' } : id === 'premium' ? { name: 'premium' } : { name: 'home' };
+      id === 'jij'
+        ? { name: 'you' }
+        : id === 'premium'
+          ? { name: 'premium' }
+          : id === 'ouders'
+            ? { name: 'ouder' }
+            : { name: 'home' };
     go(next);
     setScreen({ name: 'home' });
+    // De ouderpagina vraagt meteen de pincode (ADR-232), in plaats van eerst
+    // een deur met een knop.
+    if (id === 'ouders' && !ouder) openWisselaar('slot');
   };
 
   /**
@@ -255,9 +267,21 @@ export default function App() {
     // al speelt het een gratis manier. Heeft dit apparaat al een plek, dan
     // wacht er niets. Anders één vraag aan de server, en is de code vol, dan
     // krijgt het kind een venster zonder prijs en zonder knop om te kopen.
-    if (premium && premiumStart && !geheugencheck && leesStand()?.plek !== true) {
+    //
+    // Zonder antwoord van de server (geen verbinding, te vaak, niet ingesteld)
+    // is de uitkomst ook 'ok', maar zonder plek. Dan begint de ronde, en vraagt
+    // dit apparaat het pas bij de volgende start van de app opnieuw: anders
+    // vraagt `beginRonde` zichzelf eindeloos (ADR-232).
+    if (
+      premium &&
+      premiumStart &&
+      !geheugencheck &&
+      leesStand()?.plek !== true &&
+      !plekGevraagd.current
+    ) {
       void claimPlek().then((uitkomst) => {
         if (uitkomst === 'ok') {
+          plekGevraagd.current = true;
           beginRonde(deel, mode, aantal, toetsstand, alleen, naIntro, uitPlan);
         } else if (uitkomst === 'vol') {
           vraagOudersOmPlek();
@@ -691,7 +715,11 @@ export default function App() {
         {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
             maar niemand komt hier om een toets te plannen, en de vergelijking
             tussen basis en premium heeft de breedte nodig. */}
-        <PremiumScreen />
+        {/* Alleen voor een ouder (ADR-232): hier staan de prijs en de knop om
+            te kopen, en die horen niet bij een kind (R-11). */}
+        <PremiumPoort onTerug={goHome}>
+          <PremiumScreen />
+        </PremiumPoort>
       </Shell>
     );
   }
@@ -748,7 +776,7 @@ export default function App() {
   // pagina die blijft staan.
   if (route.name === 'ouder') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} current="ouders" onNavigate={goTo} onModule={goModule}>
         {/* De ouderpagina gaat over een kind met een naam: wie hem opent
             terwijl dit kind er nog geen heeft, typt hem eerst (ADR-229). */}
         {ouder && !heeftNaam(boot.profile) ? (

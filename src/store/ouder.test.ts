@@ -9,13 +9,16 @@ import {
   PAUZE_SECONDEN,
   POGINGEN_VOOR_PAUZE,
   probeer,
+  SESSIE_KEUZES,
   SESSIE_MINUTEN,
+  sessieMinuten,
   SESSIE_SLEUTEL,
   sluit,
   vergeetOuder,
   verleng,
   wachtSeconden,
   zetPin,
+  zetSessieMinuten,
 } from './ouder';
 
 /**
@@ -221,5 +224,30 @@ describe('alles van dit apparaat halen', () => {
     expect(isPinGezet()).toBe(false);
     expect(isOuder(undefined, NU)).toBe(false);
     expect(wachtSeconden(NU)).toBe(0);
+  });
+});
+
+describe('hoe lang de ouderpagina openblijft (ADR-232)', () => {
+  it('is vijf minuten, tot een ouder iets anders kiest', () => {
+    expect(sessieMinuten()).toBe(SESSIE_MINUTEN);
+    zetSessieMinuten(30);
+    expect(sessieMinuten()).toBe(30);
+  });
+
+  it('kent alleen de keuzes op de pagina', () => {
+    zetSessieMinuten(999);
+    expect(sessieMinuten()).toBe(SESSIE_MINUTEN);
+    window.localStorage.setItem('leernu.oudersessieMinuten', '7');
+    expect(sessieMinuten()).toBe(SESSIE_MINUTEN);
+    expect(SESSIE_KEUZES).toContain(SESSIE_MINUTEN);
+  });
+
+  it('telt mee als de sessie verlengd wordt', async () => {
+    await zetPin('4821', '4821');
+    await probeer('4821', NU);
+    zetSessieMinuten(15);
+    verleng(NU);
+    expect(isOuder(undefined, new Date(NU.getTime() + 14 * 60_000))).toBe(true);
+    expect(isOuder(undefined, new Date(NU.getTime() + 16 * 60_000))).toBe(false);
   });
 });

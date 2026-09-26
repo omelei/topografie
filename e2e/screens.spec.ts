@@ -182,8 +182,10 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
 
   // De poort vóór de pincode. Deze bouw heeft een gezinsproject, dus het is het
   // account (ADR-178); zonder project staat hier het geboortejaar.
-  await page.getByRole('button', { name: 'Ouder' }).click();
-  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible(READY);
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
+  await expect(page.getByRole('heading', { name: 'Log in met je ouderaccount' })).toBeVisible(
+    READY,
+  );
   await shoot(page, size, '22-ouderpoort');
 
   await langsDePoort(page);
@@ -197,7 +199,7 @@ test('the switcher and the parent page', async ({ page }, testInfo) => {
   await shoot(page, size, '23-ouder');
 
   // Het blok waarmee een ouder zijn kinderen meeneemt naar het account (ADR-187).
-  const overname = page.getByRole('region', { name: 'Kinderen in je account' });
+  const overname = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
   await expect(overname).toContainText('oefent op dit apparaat', READY);
   await overname.scrollIntoViewIfNeeded();
   await shoot(page, size, '23c-overname');

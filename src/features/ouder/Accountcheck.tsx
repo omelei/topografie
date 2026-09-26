@@ -1,7 +1,7 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { SlotIcon } from '@/components/Icon';
-import { t } from '@/i18n';
-import { AccountBlok } from '@/features/account/AccountBlok';
+import { t, type TranslationKey } from '@/i18n';
+import { AccountBlok, type AccountModus } from '@/features/account/AccountBlok';
 import { ACCOUNT_FOUT } from '@/features/account/fouten';
 import { useAccount, type Aanmeldpoging, type Herstelpoging } from '@/features/account/useAccount';
 import type { AccountFout } from '@/store/account';
@@ -60,6 +60,15 @@ export function Accountcheck({ onGoed }: { readonly onGoed: () => void }) {
   return <Aanmelden binnen={sessie !== null} onGoed={onGoed} />;
 }
 
+const KOP: Record<
+  AccountModus,
+  { readonly titel: TranslationKey; readonly uitleg: TranslationKey }
+> = {
+  inloggen: { titel: 'ouder.inlogTitel', uitleg: 'ouder.inlogUitleg' },
+  aanmelden: { titel: 'ouder.accountTitel', uitleg: 'ouder.accountUitleg' },
+  herstellen: { titel: 'ouder.herstelTitel', uitleg: 'ouder.herstelKopUitleg' },
+};
+
 /**
  * Nog niemand ingelogd: het gewone formulier, met een zin erboven die zegt
  * waaróm er een adres gevraagd wordt.
@@ -72,17 +81,21 @@ function Aanmelden({ binnen, onGoed }: { readonly binnen: boolean; readonly onGo
   useEffect(() => {
     if (binnen) onGoed();
   }, [binnen, onGoed]);
+  // De kop past bij wat er openstaat (ADR-232): inloggen met een account dat
+  // je al hebt is iets anders dan er een maken, en een wachtwoord vergeten ook.
+  const [modus, setModus] = useState<AccountModus>('inloggen');
+  const kop = KOP[modus];
 
   return (
     <div className="flex flex-col gap-3">
       <p className="tk-kaartteken">
         <SlotIcon size={24} />
       </p>
-      <h2 className="tk-titel">{t('ouder.accountTitel')}</h2>
-      <p className="text-lopend">{t('ouder.accountUitleg')}</p>
-      <p className="tk-hulp">{t('ouder.accountHulp')}</p>
+      <h2 className="tk-titel">{t(kop.titel)}</h2>
+      <p className="text-lopend">{t(kop.uitleg)}</p>
+      {modus === 'aanmelden' ? <p className="tk-hulp">{t('ouder.accountHulp')}</p> : null}
 
-      <AccountBlok />
+      <AccountBlok onModus={setModus} />
     </div>
   );
 }

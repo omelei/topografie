@@ -732,6 +732,12 @@
   .tk-card-accented {
     background: var(--papier);
   }
+  /* Een voorbeeld van wat premium laat zien (ADR-232): een gestreepte rand, want
+   * het is geen echte kaart over het eigen kind. */
+  .tk-voorbeeld {
+    border-style: dashed;
+    margin: 0;
+  }
 
   /* ---- Buttons ---------------------------------------------------------
    * Three weights and no more. Primary is the way on and there is one per
@@ -3884,9 +3890,13 @@
     background: var(--kaart);
     border-top: var(--stroke-tegel) solid var(--rand-licht);
   }
+  /* Vier bestemmingen sinds Ouders erbij kwam (ADR-232): elk vak mag smaller
+   * worden dan zijn inhoud, zodat de balk bij 200% tekst niet buiten het
+   * scherm loopt. Het woord breekt dan af in plaats van de pagina. */
   .tk-tabbar-item {
     display: flex;
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -3899,13 +3909,16 @@
     font-size: var(--type-bijschrift);
     line-height: var(--type-bijschrift-lh);
     font-weight: 600;
+    text-align: center;
+    overflow-wrap: anywhere;
     cursor: pointer;
   }
   .tk-tabbar-teken {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 64px;
+    width: 100%;
+    max-width: 64px;
     height: 36px;
     border-radius: var(--radius-pil);
   }

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * De getallen over het oefenen, op Jij (ADR-148, ADR-171, ADR-172).
@@ -126,6 +126,7 @@ test('de getallen over het oefenen staan alleen op Jij', async ({ page }) => {
 
   // Niet op Premium, waar het adres van Voor ouders nu uitkomt (ADR-171).
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);

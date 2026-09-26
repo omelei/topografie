@@ -120,15 +120,14 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   await expect(kast).toBeVisible();
   // Nog niets gehaald: dan staat er de uitnodiging en nergens een nul.
-  await expect(
-    kast.getByText('Hier komen je diploma’s te hangen.', { exact: false }),
-  ).toBeVisible();
+  await expect(kast.getByText('Hier staan jouw diploma’s.', { exact: false })).toBeVisible();
 
-  // Het vak van de laatste ronde staat open, de andere drie als regel.
+  // Alle vakken staan dicht (ADR-232); één druk zet er een open.
   // Twaalf sinds ADR-168: de wereldkaart hoort er ook bij.
-  await expect(kast.getByRole('region', { name: 'Topo' }).getByRole('button')).toHaveCount(12);
+  await kast.getByRole('button', { name: /^Topo / }).click();
+  await expect(kast.getByRole('region', { name: 'Topo' }).locator('.tk-diploma')).toHaveCount(12);
   await kast.getByRole('button', { name: /^Klok / }).click();
-  await expect(kast.getByRole('region', { name: 'Klok' }).getByRole('button')).toHaveCount(4);
+  await expect(kast.getByRole('region', { name: 'Klok' }).locator('.tk-diploma')).toHaveCount(4);
 });
 
 /**
@@ -169,6 +168,7 @@ test('elke kaart in de kast opent het diploma groot, gehaald of niet', async ({
   // Zonder gespeelde ronde staat tafels open: het diploma dat een Nederlands
   // kind al kent voordat het deze app kent (ADR-122).
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
+  await kast.getByRole('button', { name: /^Rekenen / }).click();
   await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
   await kast.getByRole('button', { name: /^Bekijk je diploma: Tafel van 1$/ }).click();
 

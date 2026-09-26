@@ -165,7 +165,8 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   // En in de kast op Jij, waar alle diploma's staan die dit kind kan halen.
   await page.goto('/jij');
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
-  // Vlaggen staat open: het vak van de laatste ronde is het vak dat openstaat.
+  // Alle vakken staan dicht (ADR-232); één druk zet Vlaggen open.
   // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
-  await expect(kast.getByRole('region', { name: 'Vlaggen' }).getByRole('button')).toHaveCount(7);
+  await kast.getByRole('button', { name: /^Vlaggen / }).click();
+  await expect(kast.getByRole('region', { name: 'Vlaggen' }).locator('.tk-diploma')).toHaveCount(7);
 });
