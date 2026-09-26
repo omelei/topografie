@@ -13,7 +13,8 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 1. **De teller aanzetten:** `tools/premium/schema.sql` opnieuw draaien in de SQL
    Editor van Supabase (ADR-210, ADR-211). Zonder dat telt de server niets. Na
-   #162 opnieuw, voor de begindatum van een code (ADR-225).
+   #162 en na #163 opnieuw, voor de begindatum van een code en de plekken per
+   apparaat (ADR-225, ADR-226).
 2. **Testaankoop in de kassa.** De code staat na betalen op het scherm; de mail
    met de code komt waarschijnlijk niet aan, want in de DNS staan geen records
    van Resend. Zet die records erbij (Resend → Domains → leer.nu).
@@ -143,6 +144,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                            | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #163      | Een plek op de code wordt pas genomen als een kind premium start; de ouder ziet onder Apparaten welke apparaten de code gebruiken en vervangt er zelf een (3 keer per jaar); na 90 dagen zonder gebruik komt een plek vrij                                                     | 226      |
 | #162      | Een code heeft een begindatum; `maak-codes.mjs --klaspas` maakt een code voor een schooljaar, 1 september tot en met 31 augustus                                                                                                                                               | 225      |
 | #161      | Zoeken en zelf typen gratis in elk vak, gratis manieren eerst op een vakpagina, zand tot onderaan, geen tekstflits bij het openen, nieuwe teksten op Vandaag, bij de naam en de groep, voor ouders en in de vraag aan de ouders, en `/scholen` in de vorm van de premiumpagina | 224      |
 | #155      | Alle teksten als CSV exporteren en importeren (`npm run teksten:export` en `teksten:import`), en het klein onderhoud                                                                                                                                                           | —        |

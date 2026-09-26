@@ -13,6 +13,7 @@ import {
   schrijfWeekdoelen,
   type Weekdoelen,
 } from '@/store/weekdoelStore';
+import { Apparaten } from './Apparaten';
 import { Bewaren } from './Bewaren';
 import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
@@ -85,6 +86,9 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
         <Bewaren />
 
         <Premium />
+        {/* Welke apparaten de code gebruiken (ADR-226). Alleen met een code op
+            dit apparaat; de lijst komt pas na een druk op de knop. */}
+        <Apparaten />
         <Gezinsinstellingen />
 
         {/* Het account van het gezin. Zonder gezinsproject in de bouw tekent het

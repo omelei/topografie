@@ -60,9 +60,9 @@ export default defineConfig({
     locale: 'nl-NL',
     // Every test runs with premium on (ADR-116), because nearly every flow
     // here — the Onthouden page, the diplomas, the bliksemronde, a second
-    // child — is premium now. The code was "checked" in 2099, so the app never
-    // asks the server again during a run. `e2e/premium.spec.ts` clears this to
-    // test the locks and the code itself.
+    // child — is premium now. The code was "checked" in 2099 and this device
+    // has a place on it, so the app never asks the server again during a run.
+    // `e2e/premium.spec.ts` clears this to test the locks and the code itself.
     storageState: {
       cookies: [],
       origins: [
@@ -75,6 +75,8 @@ export default defineConfig({
                 code: 'E2ETESTS',
                 geldigTot: '2099-12-31',
                 gecontroleerd: '2099-01-01T00:00:00.000Z',
+                // Met een plek (ADR-226), zodat een premiumronde niets vraagt.
+                plek: true,
               }),
             },
           ],

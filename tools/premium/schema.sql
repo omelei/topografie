@@ -7,14 +7,17 @@
 --   * a code, as the SHA-256 of its eight letters and digits — never the code
 --     itself, so a copy of this table does not hand anyone a working code;
 --   * how long it is valid and on how many devices;
---   * per device a random number the app made up, and when it was last seen.
+--   * per device a random number the app made up, a coarse label ("iPad",
+--     "Chromebook"), the day it took a place and the day it was last seen;
+--   * per code the days on which a parent replaced a place (ADR-226).
 -- No name, no e-mail, nothing about a child. Progress never leaves the device
 -- (ADR-015), so there is none of it here to protect.
 --
--- The app can do three things and nothing else, each through a function:
--- check a code (and register this device on it), take a code off this device,
--- and ping. The tables themselves are closed to it: row level security is on
--- and there is no policy, so the public key reads and writes nothing directly.
+-- The app can do five things and nothing else, each through a function: check
+-- a code (and take a place for this device when a child starts premium), take a
+-- code off this device, show the devices of a code, replace a place, and ping.
+-- The tables themselves are closed to it: row level security is on and there
+-- is no policy, so the public key reads and writes nothing directly.
 
 create extension if not exists pgcrypto with schema extensions;
 
@@ -49,13 +52,63 @@ begin
 end
 $$;
 
+-- Een plek: een apparaat op een code (ADR-226). Een apparaat komt hier pas bij
+-- als er een kind premium op start, niet als een ouder de code invult. Van elk
+-- apparaat alleen een willekeurig nummer, een grof label, de dag dat het een
+-- plek nam en de dag dat het het laatst gezien is: dagen en geen tijdstippen,
+-- want meer is er niet nodig om een plek na negentig dagen vrij te geven.
 create table if not exists public.premium_apparaten (
   code_hash     text not null references public.premium_codes (code_hash) on delete cascade,
   apparaat      uuid not null,
-  eerst_gezien  timestamptz not null default now(),
-  laatst_gezien timestamptz not null default now(),
+  eerst_gezien  date not null default ((now() at time zone 'Europe/Amsterdam')::date),
+  laatst_gezien date not null default ((now() at time zone 'Europe/Amsterdam')::date),
   primary key (code_hash, apparaat)
 );
+
+-- Een tabel van vóór ADR-226 had tijdstippen. Die worden dagen, één keer.
+do $$
+begin
+  if (select data_type from information_schema.columns
+      where table_schema = 'public' and table_name = 'premium_apparaten'
+        and column_name = 'laatst_gezien') = 'timestamp with time zone' then
+    alter table public.premium_apparaten
+      alter column eerst_gezien drop default,
+      alter column laatst_gezien drop default,
+      alter column eerst_gezien type date
+        using (eerst_gezien at time zone 'Europe/Amsterdam')::date,
+      alter column laatst_gezien type date
+        using (laatst_gezien at time zone 'Europe/Amsterdam')::date,
+      alter column eerst_gezien set default ((now() at time zone 'Europe/Amsterdam')::date),
+      alter column laatst_gezien set default ((now() at time zone 'Europe/Amsterdam')::date);
+  end if;
+end
+$$;
+
+-- Het grove label: wat voor apparaat, zodat een ouder in de lijst herkent welk
+-- apparaat het is. Alleen woorden uit deze lijst, dus nooit een vrije tekst en
+-- nooit een naam die iemand zijn tablet gaf. De app kiest er één uit wat de
+-- browser zegt (`grofLabel` in src/store/premium.ts).
+alter table public.premium_apparaten add column if not exists label text;
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'premium_apparaten_label') then
+    alter table public.premium_apparaten add constraint premium_apparaten_label check (
+      label is null or label in (
+        'ipad', 'iphone', 'android-tablet', 'android-telefoon', 'chromebook',
+        'windows', 'mac', 'linux', 'onbekend'
+      )
+    );
+  end if;
+end
+$$;
+
+-- Wanneer een ouder een plek verving, per code (ADR-226): drie keer in twaalf
+-- maanden, daarna via info@leer.nu. Alleen de code en de dag.
+create table if not exists public.premium_vervangingen (
+  code_hash text not null references public.premium_codes (code_hash) on delete cascade,
+  dag       date not null default ((now() at time zone 'Europe/Amsterdam')::date)
+);
+create index if not exists premium_vervangingen_code on public.premium_vervangingen (code_hash, dag);
 
 -- Wrong codes, per device, for an hour: enough to stop a script guessing.
 create table if not exists public.premium_pogingen (
@@ -67,7 +120,9 @@ create index if not exists premium_pogingen_apparaat on public.premium_pogingen 
 alter table public.premium_codes enable row level security;
 alter table public.premium_apparaten enable row level security;
 alter table public.premium_pogingen enable row level security;
-revoke all on public.premium_codes, public.premium_apparaten, public.premium_pogingen
+alter table public.premium_vervangingen enable row level security;
+revoke all on public.premium_codes, public.premium_apparaten, public.premium_pogingen,
+  public.premium_vervangingen
   from anon, authenticated;
 
 -- The same normalisation as `normaliseerCode` in src/store/premium.ts:
@@ -91,7 +146,63 @@ as $$
   from (select upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9]', '', 'g')) as schoon) as c;
 $$;
 
-create or replace function public.premium_controleer(p_code text, p_apparaat uuid)
+-- Een label uit de lijst, of 'onbekend'. Nooit iets anders, wat de app ook stuurt.
+create or replace function public.premium_label(p_label text)
+returns text
+language sql
+immutable
+as $$
+  select case
+    when p_label in (
+      'ipad', 'iphone', 'android-tablet', 'android-telefoon', 'chromebook',
+      'windows', 'mac', 'linux'
+    ) then p_label
+    else 'onbekend'
+  end;
+$$;
+
+-- Hoe de app een plek aanwijst zonder het nummer van een ander apparaat te
+-- kennen: een hash van de code en dat nummer, zestien tekens. Wie de lijst
+-- ziet, kan er een plek mee vervangen en verder niets.
+create or replace function public.premium_plek_id(p_code_hash text, p_apparaat uuid)
+returns text
+language sql
+immutable
+set search_path = public, extensions
+as $$
+  select left(encode(extensions.digest(p_code_hash || ':' || p_apparaat::text, 'sha256'), 'hex'), 16);
+$$;
+
+-- Een plek die negentig dagen niet gebruikt is, komt vrij (ADR-226). Gedraaid
+-- voordat er geteld wordt, zodat een volle code nooit vol is door een apparaat
+-- dat al een kwartaal in een la ligt.
+create or replace function public.premium_vrijgeven(p_code_hash text)
+returns void
+language sql
+set search_path = public
+as $$
+  delete from public.premium_apparaten
+  where code_hash = p_code_hash
+    and laatst_gezien < (now() at time zone 'Europe/Amsterdam')::date - 90;
+$$;
+
+-- De controle kreeg er twee argumenten bij. De oude vorm gaat weg, anders
+-- weet PostgREST bij twee argumenten niet welke het moet nemen.
+drop function if exists public.premium_controleer(text, uuid);
+
+-- Een code controleren, en een plek nemen als er een kind premium start.
+--
+-- `p_claim` is de vraag om een plek (ADR-226). De app vraagt die pas bij de
+-- eerste premiumstart van een kind op dit apparaat; een ouder die de code
+-- invult, vraagt hem niet, en zijn telefoon neemt dus geen plek. De
+-- standaard is `true`, zodat een app van vóór ADR-226 die nog in een cache
+-- staat, doet wat hij altijd deed: een plek nemen bij het invullen.
+create or replace function public.premium_controleer(
+  p_code     text,
+  p_apparaat uuid,
+  p_claim    boolean default true,
+  p_label    text default null
+)
 returns json
 language plpgsql
 security definer
@@ -101,8 +212,8 @@ declare
   v_hash    text := public.premium_hash(p_code);
   v_vandaag date := (now() at time zone 'Europe/Amsterdam')::date;
   v_code    public.premium_codes%rowtype;
-  v_fout   integer;
-  v_aantal integer;
+  v_fout    integer;
+  v_aantal  integer;
 begin
   delete from public.premium_pogingen where tijdstip < now() - interval '1 day';
 
@@ -129,21 +240,192 @@ begin
     return json_build_object('geldig', false, 'reden', 'nog-niet', 'geldig_van', v_code.geldig_van);
   end if;
 
-  if exists (
-    select 1 from public.premium_apparaten where code_hash = v_hash and apparaat = p_apparaat
-  ) then
-    update public.premium_apparaten
-    set laatst_gezien = now()
-    where code_hash = v_hash and apparaat = p_apparaat;
-  else
-    select count(*) into v_aantal from public.premium_apparaten where code_hash = v_hash;
-    if v_aantal >= v_code.max_apparaten then
-      return json_build_object('geldig', false, 'reden', 'vol');
-    end if;
-    insert into public.premium_apparaten (code_hash, apparaat) values (v_hash, p_apparaat);
+  perform public.premium_vrijgeven(v_hash);
+
+  -- Staat dit apparaat er al op, dan is het gezien, en daarmee gebruikt.
+  update public.premium_apparaten
+  set laatst_gezien = v_vandaag,
+      label = case when p_label is null then label else public.premium_label(p_label) end
+  where code_hash = v_hash and apparaat = p_apparaat;
+  if found then
+    return json_build_object('geldig', true, 'geldig_tot', v_code.geldig_tot, 'plek', true);
   end if;
 
-  return json_build_object('geldig', true, 'geldig_tot', v_code.geldig_tot);
+  select count(*) into v_aantal from public.premium_apparaten where code_hash = v_hash;
+
+  -- Alleen controleren: de code klopt, en dit apparaat heeft (nog) geen plek.
+  if not p_claim then
+    return json_build_object(
+      'geldig', true, 'geldig_tot', v_code.geldig_tot, 'plek', false,
+      'bezet', v_aantal, 'plekken', v_code.max_apparaten
+    );
+  end if;
+
+  if v_aantal >= v_code.max_apparaten then
+    return json_build_object(
+      'geldig', false, 'reden', 'vol', 'geldig_tot', v_code.geldig_tot,
+      'bezet', v_aantal, 'plekken', v_code.max_apparaten
+    );
+  end if;
+  insert into public.premium_apparaten (code_hash, apparaat, label)
+  values (v_hash, p_apparaat, public.premium_label(p_label));
+
+  return json_build_object('geldig', true, 'geldig_tot', v_code.geldig_tot, 'plek', true);
+end;
+$$;
+
+-- De apparaten van een code, voor het blok "Apparaten" op de ouderpagina
+-- (ADR-226). Alleen voor een apparaat dat zelf een plek op die code heeft: wie
+-- alleen de code kent, ziet hoeveel plekken er bezet zijn en niet welke. Een
+-- klassencode kennen veertig gezinnen; welke tablets er bij een ander thuis
+-- liggen, gaat hen niets aan.
+create or replace function public.premium_apparaten_tonen(p_code text, p_apparaat uuid)
+returns json
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_hash    text := public.premium_hash(p_code);
+  v_vandaag date := (now() at time zone 'Europe/Amsterdam')::date;
+  v_code    public.premium_codes%rowtype;
+  v_fout    integer;
+  v_aantal  integer;
+begin
+  select count(*) into v_fout
+  from public.premium_pogingen
+  where apparaat = p_apparaat and tijdstip > now() - interval '1 hour';
+  if v_fout >= 10 then
+    return json_build_object('ok', false, 'reden', 'te-vaak');
+  end if;
+
+  select * into v_code from public.premium_codes where code_hash = v_hash;
+  if not found or v_code.ingetrokken then
+    insert into public.premium_pogingen (apparaat) values (p_apparaat);
+    return json_build_object('ok', false, 'reden', 'onbekend');
+  end if;
+  if v_code.geldig_tot < v_vandaag or v_code.geldig_van > v_vandaag then
+    return json_build_object('ok', false, 'reden', 'verlopen');
+  end if;
+
+  perform public.premium_vrijgeven(v_hash);
+  select count(*) into v_aantal from public.premium_apparaten where code_hash = v_hash;
+
+  if not exists (
+    select 1 from public.premium_apparaten where code_hash = v_hash and apparaat = p_apparaat
+  ) then
+    return json_build_object(
+      'ok', false, 'reden', 'geen-plek', 'bezet', v_aantal, 'plekken', v_code.max_apparaten
+    );
+  end if;
+
+  return json_build_object(
+    'ok', true,
+    'bezet', v_aantal,
+    'plekken', v_code.max_apparaten,
+    'vervangingen_over', greatest(0, 3 - (
+      select count(*) from public.premium_vervangingen
+      where code_hash = v_hash and dag > v_vandaag - interval '12 months'
+    )),
+    'apparaten', coalesce((
+      select json_agg(json_build_object(
+        'plek', public.premium_plek_id(v_hash, a.apparaat),
+        'label', coalesce(a.label, 'onbekend'),
+        'toegevoegd', a.eerst_gezien,
+        'laatst_gezien', a.laatst_gezien,
+        'dit_apparaat', a.apparaat = p_apparaat
+      ) order by a.apparaat = p_apparaat desc, a.laatst_gezien desc)
+      from public.premium_apparaten a
+      where a.code_hash = v_hash
+    ), '[]'::json)
+  );
+end;
+$$;
+
+-- Een plek vervangen (ADR-226): een ander apparaat gaat van de code af, en het
+-- eerstvolgende apparaat waarop een kind premium start, neemt zijn plek. Vanaf
+-- een apparaat dat zelf op de code staat, en in de app alleen achter de
+-- pincode van de ouder. Drie keer per code in twaalf maanden; daarna schrijft
+-- een ouder naar info@leer.nu. Zichzelf afmelden is `premium_afmelden`, en dat
+-- telt niet mee: daarvoor moet je het apparaat in handen hebben.
+create or replace function public.premium_plek_vervangen(
+  p_code     text,
+  p_apparaat uuid,
+  p_plek     text
+)
+returns json
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+declare
+  v_hash    text := public.premium_hash(p_code);
+  v_vandaag date := (now() at time zone 'Europe/Amsterdam')::date;
+  v_code    public.premium_codes%rowtype;
+  v_fout    integer;
+  v_gedaan  integer;
+begin
+  select count(*) into v_fout
+  from public.premium_pogingen
+  where apparaat = p_apparaat and tijdstip > now() - interval '1 hour';
+  if v_fout >= 10 then
+    return json_build_object('ok', false, 'reden', 'te-vaak');
+  end if;
+
+  select * into v_code from public.premium_codes where code_hash = v_hash;
+  if not found or v_code.ingetrokken then
+    insert into public.premium_pogingen (apparaat) values (p_apparaat);
+    return json_build_object('ok', false, 'reden', 'onbekend');
+  end if;
+
+  if not exists (
+    select 1 from public.premium_apparaten where code_hash = v_hash and apparaat = p_apparaat
+  ) then
+    return json_build_object('ok', false, 'reden', 'geen-plek');
+  end if;
+  if p_plek = public.premium_plek_id(v_hash, p_apparaat) then
+    return json_build_object('ok', false, 'reden', 'dit-apparaat');
+  end if;
+
+  -- Eén vervanging tegelijk per code, zodat twee ouders die tegelijk drukken
+  -- samen niet over de grens komen.
+  perform 1 from public.premium_codes where code_hash = v_hash for update;
+
+  select count(*) into v_gedaan
+  from public.premium_vervangingen
+  where code_hash = v_hash and dag > v_vandaag - interval '12 months';
+  if v_gedaan >= 3 then
+    return json_build_object('ok', false, 'reden', 'grens');
+  end if;
+
+  delete from public.premium_apparaten
+  where code_hash = v_hash and public.premium_plek_id(v_hash, apparaat) = p_plek;
+  if not found then
+    return json_build_object('ok', false, 'reden', 'weg');
+  end if;
+
+  insert into public.premium_vervangingen (code_hash) values (v_hash);
+  return json_build_object('ok', true, 'vervangingen_over', 2 - v_gedaan);
+end;
+$$;
+
+-- Elke nacht, met pg_cron: plekken die negentig dagen niet gebruikt zijn, en
+-- vervangingen die niet meer meetellen.
+create or replace function public.premium_apparaten_opschonen()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_vrij integer;
+begin
+  delete from public.premium_apparaten
+  where laatst_gezien < (now() at time zone 'Europe/Amsterdam')::date - 90;
+  get diagnostics v_vrij = row_count;
+  delete from public.premium_vervangingen
+  where dag <= (now() at time zone 'Europe/Amsterdam')::date - interval '12 months';
+  return v_vrij;
 end;
 $$;
 
@@ -172,12 +454,21 @@ as $$
 $$;
 
 revoke all on function public.premium_hash(text) from public, anon, authenticated;
-revoke all on function public.premium_controleer(text, uuid) from public;
+revoke all on function public.premium_label(text) from public, anon, authenticated;
+revoke all on function public.premium_plek_id(text, uuid) from public, anon, authenticated;
+revoke all on function public.premium_vrijgeven(text) from public, anon, authenticated;
+revoke all on function public.premium_controleer(text, uuid, boolean, text) from public;
 revoke all on function public.premium_afmelden(text, uuid) from public;
+revoke all on function public.premium_apparaten_tonen(text, uuid) from public;
+revoke all on function public.premium_plek_vervangen(text, uuid, text) from public;
+revoke all on function public.premium_apparaten_opschonen() from public, anon, authenticated;
 revoke all on function public.premium_ping() from public;
-grant execute on function public.premium_controleer(text, uuid) to anon;
+grant execute on function public.premium_controleer(text, uuid, boolean, text) to anon;
 grant execute on function public.premium_afmelden(text, uuid) to anon;
+grant execute on function public.premium_apparaten_tonen(text, uuid) to anon;
+grant execute on function public.premium_plek_vervangen(text, uuid, text) to anon;
 grant execute on function public.premium_ping() to anon;
+grant execute on function public.premium_apparaten_opschonen() to service_role;
 
 -- ---------------------------------------------------------------------------
 -- De kassa (ADR-123): van een betaling bij Mollie naar een code.
@@ -314,6 +605,16 @@ begin
     'premium-bestellingen-opschonen',
     '23 3 * * *',
     $cron$select public.premium_bestellingen_opschonen();$cron$
+  );
+  -- Plekken die negentig dagen niet gebruikt zijn, en vervangingen van meer
+  -- dan een jaar oud (ADR-226). De controle geeft een plek ook zelf vrij zodra
+  -- hij telt; dit haalt de rest weg, ook bij codes die niemand meer vraagt.
+  perform cron.unschedule('premium-apparaten-opschonen')
+  where exists (select 1 from cron.job where jobname = 'premium-apparaten-opschonen');
+  perform cron.schedule(
+    'premium-apparaten-opschonen',
+    '37 3 * * *',
+    $cron$select public.premium_apparaten_opschonen();$cron$
   );
 exception when others then
   raise notice 'pg_cron niet beschikbaar (%): ruim premium_bestellingen.code met de hand op.', sqlerrm;

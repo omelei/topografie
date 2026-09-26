@@ -838,7 +838,7 @@ export const nl = {
   // Een klaspas voor volgend schooljaar, al in juni uitgedeeld (ADR-225).
   'premium.fout.nog-niet': 'Deze code geldt vanaf {datum}. Vul hem vanaf die dag in.',
   'premium.fout.vol':
-    'Deze code staat al op drie apparaten. Haal hem eerst van een ander apparaat af.',
+    'Alle plekken van deze code zijn in gebruik. Vervang er een onder Apparaten op de ouderpagina.',
   'premium.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',
   'premium.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
   'premium.fout.niet-ingesteld': 'Premium is nog niet beschikbaar.',
@@ -888,6 +888,11 @@ export const nl = {
   'ouderVraag.terugVraag': 'Terug',
   'ouderVraag.terug': 'Nee, ik doe iets anders',
   'ouderVraag.sluit': 'Sluiten',
+  // De code is vol (ADR-226). Voor het kind: wat er is, en wie het regelt.
+  // Geen prijs en geen knop om te kopen (R-11).
+  'ouderVraag.plekUitleg':
+    'De code van je ouders staat al op genoeg apparaten. Je ouders kunnen dit regelen.',
+  'ouderVraag.plekTerug': 'Oké, terug',
 
   // Doorsturen (ADR-174). Het bericht is in de stem van het kind, want het kind
   // drukt op de knop — en het vraagt om te kijken en niet om te kopen. Er gaat
@@ -1779,6 +1784,39 @@ export const nl = {
     'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in. Hij geldt meteen voor al je kinderen.',
   'ouder.premiumAlleKinderen': 'De code geldt voor alle kinderen op dit apparaat.',
   'ouder.bekijkPremium': 'Wat zit er in premium?',
+  // Apparaten (ADR-226): welke apparaten de code gebruiken, en zelf vervangen.
+  'ouder.apparaten': 'Apparaten',
+  'ouder.apparatenDitMet': 'Dit apparaat heeft een plek op de code.',
+  'ouder.apparatenDitZonder': 'Dit apparaat heeft nog geen plek op de code.',
+  'ouder.apparatenUitleg':
+    'Een apparaat krijgt pas een plek als een kind er premium op start. Een plek die 90 dagen niet gebruikt is, komt vanzelf vrij.',
+  'ouder.apparatenBekijk': 'Bekijk de apparaten',
+  'ouder.apparatenBezet': '{bezet} van de {plekken} plekken zijn in gebruik.',
+  'ouder.apparatenGeenPlek':
+    '{bezet} van de {plekken} plekken zijn in gebruik. Welke apparaten dat zijn, zie je op een apparaat dat al een plek heeft. Daar kun je ook een plek vervangen.',
+  'ouder.apparaatDit': '{naam} (dit apparaat)',
+  'ouder.apparaatDatums': 'Sinds {sinds}, laatst gebruikt op {gezien}',
+  'ouder.apparaatVervang': 'Vervangen',
+  'ouder.apparaatVervangNaam': '{naam} vervangen',
+  'ouder.apparaatVervangZeker':
+    '{naam} gaat van de code af. Het volgende apparaat waarop een kind premium start, krijgt de plek.',
+  'ouder.apparaatVervangJa': 'Ja, vervangen',
+  'ouder.apparaatVervangNee': 'Annuleren',
+  'ouder.apparaatVervangen':
+    'De plek is vrij. Het volgende apparaat waarop een kind premium start, krijgt hem.',
+  'ouder.apparatenOver': 'Je kunt nog {aantal} keer een plek vervangen in 12 maanden.',
+  'ouder.apparatenGrens':
+    'Je hebt in 12 maanden al 3 keer een plek vervangen. Mail naar {adres}, dan helpen we je verder.',
+  'ouder.apparatenFout.anders': 'Dat lukte niet. Bekijk de apparaten nog een keer.',
+  'apparaat.ipad': 'iPad',
+  'apparaat.iphone': 'iPhone',
+  'apparaat.android-tablet': 'Android-tablet',
+  'apparaat.android-telefoon': 'Android-telefoon',
+  'apparaat.chromebook': 'Chromebook',
+  'apparaat.windows': 'Windows-computer',
+  'apparaat.mac': 'Mac',
+  'apparaat.linux': 'Linux-computer',
+  'apparaat.onbekend': 'Apparaat',
 
   'ouder.instellingen': 'Instellingen',
   'ouder.instellingenUitleg':

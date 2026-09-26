@@ -5,7 +5,7 @@ import { t } from '@/i18n';
 import { isTeKoop } from '@/store/premium';
 import { CodeVeld } from './CodeVeld';
 import { Doorsturen } from './Doorsturen';
-import { huidigeWens, sluitOuderVraag, useOuderVraag } from './ouderVraag';
+import { huidigeWens, isVraagOmPlek, sluitOuderVraag, useOuderVraag } from './ouderVraag';
 import { naarPremium, usePremium } from './usePremium';
 
 /**
@@ -65,9 +65,10 @@ export function OuderVraag() {
   }, [open]);
 
   // Een code die onderweg goedgekeurd wordt — hier, of op een ander tabblad —
-  // maakt de vraag zinloos. Dan gaat het venster vanzelf dicht.
+  // maakt de vraag zinloos. Dan gaat het venster vanzelf dicht. Niet als het
+  // over een volle code gaat: dan staat premium juist aan (ADR-226).
   useEffect(() => {
-    if (actief) sluitOuderVraag();
+    if (actief && !isVraagOmPlek()) sluitOuderVraag();
   }, [actief]);
 
   return (
@@ -123,6 +124,24 @@ function Inhoud() {
   // Wat het kind wilde (ADR-193): het venster zegt het terug, zodat de vraag
   // over dít gaat en niet over "een onderdeel".
   const [wens] = useState(huidigeWens);
+  const [omPlek] = useState(isVraagOmPlek);
+
+  // De code is vol (ADR-226): één zin, en terug. De ouder regelt het op de
+  // ouderpagina, achter de pincode.
+  if (omPlek) {
+    return (
+      <div className="tk-venster-body">
+        <p className="tk-kaartteken">
+          <FamilyIcon size={24} />
+        </p>
+        <h2 className="tk-titel">{t('ouderVraag.titel')}</h2>
+        <p className="text-lopend">{t('ouderVraag.plekUitleg')}</p>
+        <button type="button" className="tk-doel-ander self-start" onClick={sluitOuderVraag}>
+          {t('ouderVraag.plekTerug')}
+        </button>
+      </div>
+    );
+  }
 
   if (uitweg === 'code') {
     return (

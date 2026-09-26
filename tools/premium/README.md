@@ -2,8 +2,8 @@
 
 Premium zit achter een code die een ouder één keer invult (ADR-116). De app
 controleert de code bij een kleine database in Supabase. Er gaat alleen de code
-heen en een willekeurig nummer voor het apparaat; wat een kind oefent blijft op
-het apparaat.
+heen, een willekeurig nummer voor het apparaat en wat voor apparaat het is
+("iPad"); wat een kind oefent blijft op het apparaat.
 
 Zolang de stappen hieronder niet gedaan zijn, zegt de premiumpagina "Premium is
 nog niet beschikbaar" en blijft alles wat premium is op slot.
@@ -114,8 +114,14 @@ update public.premium_codes set geldig_tot = '2028-09-30' where notitie = 'famil
 update public.premium_codes set geldig_van = current_date where notitie = 'klas 6b De Regenboog';
 
 -- Welke apparaten een code gebruiken:
-select c.notitie, a.eerst_gezien, a.laatst_gezien
+select c.notitie, a.label, a.eerst_gezien, a.laatst_gezien
 from public.premium_apparaten a join public.premium_codes c using (code_hash);
+
+-- Een gezin dat al drie keer vervangen heeft en mailt (ADR-226): de teller
+-- van die code op nul.
+delete from public.premium_vervangingen v
+using public.premium_codes c
+where v.code_hash = c.code_hash and c.notitie = 'familie Jansen';
 ```
 
 ## Klassencode
@@ -133,17 +139,11 @@ node tools/premium/maak-codes.mjs --plekken 40 --klaspas 2027 1 "" klas 6b De Re
 ```
 
 Een plek is een apparaat, geen kind: een kind dat op een tablet en een laptop
-oefent, neemt er twee. Een plek komt alleen vrij als iemand zich op dat apparaat
-afmeldt. Raakt een klas vol met apparaten die niet meer meedoen, maak dan de
-plekken vrij die lang niet gezien zijn:
-
-```sql
-delete from public.premium_apparaten a
-using public.premium_codes c
-where a.code_hash = c.code_hash
-  and c.notitie = 'klas 6b De Regenboog'
-  and a.laatst_gezien < now() - interval '60 days';
-```
+oefent, neemt er twee. Sinds ADR-226 neemt een apparaat pas een plek als er een
+kind premium op start, dus de telefoon waarop een ouder de code invult, telt
+niet mee. Een plek komt vrij als iemand zich op dat apparaat afmeldt, als een
+ouder hem vervangt onder **Apparaten** op de ouderpagina (drie keer per code in
+twaalf maanden), of vanzelf na negentig dagen zonder gebruik.
 
 De factuur maak je met de hand, tot er een factuurroute is.
 
