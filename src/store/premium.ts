@@ -31,11 +31,23 @@ export interface PremiumStand {
 }
 
 export type PremiumReden =
-  'leeg' | 'onbekend' | 'verlopen' | 'vol' | 'te-vaak' | 'geen-verbinding' | 'niet-ingesteld';
+  | 'leeg'
+  | 'onbekend'
+  | 'verlopen'
+  | 'nog-niet'
+  | 'vol'
+  | 'te-vaak'
+  | 'geen-verbinding'
+  | 'niet-ingesteld';
 
 export type PremiumUitkomst =
   | { readonly ok: true; readonly geldigTot: string }
-  | { readonly ok: false; readonly reden: PremiumReden };
+  | {
+      readonly ok: false;
+      readonly reden: PremiumReden;
+      /** Bij `nog-niet`: de eerste dag waarop de code geldt, YYYY-MM-DD (ADR-225). */
+      readonly geldigVan?: string;
+    };
 
 export const PREMIUM_SLEUTEL = 'leernu.premium';
 const APPARAAT_SLEUTEL = 'leernu.apparaat';
@@ -215,10 +227,11 @@ function apparaatId(): string {
 interface ServerAntwoord {
   readonly geldig?: boolean;
   readonly geldig_tot?: string | null;
+  readonly geldig_van?: string | null;
   readonly reden?: string | null;
 }
 
-const REDENEN: readonly PremiumReden[] = ['onbekend', 'verlopen', 'vol', 'te-vaak'];
+const REDENEN: readonly PremiumReden[] = ['onbekend', 'verlopen', 'nog-niet', 'vol', 'te-vaak'];
 
 /**
  * How the public key goes along. A new Supabase project hands out a
@@ -257,6 +270,10 @@ async function vraag(functie: string, code: string): Promise<PremiumUitkomst> {
     return { ok: true, geldigTot: antwoord.geldig_tot.slice(0, 10) };
   }
   const reden = REDENEN.find((kandidaat) => kandidaat === antwoord.reden) ?? 'onbekend';
+  // Een code die nog niet ingaat, zegt op welke dag wel (ADR-225).
+  if (reden === 'nog-niet' && typeof antwoord.geldig_van === 'string') {
+    return { ok: false, reden, geldigVan: antwoord.geldig_van.slice(0, 10) };
+  }
   return { ok: false, reden };
 }
 
@@ -289,6 +306,7 @@ export async function controleerOpnieuw(now = new Date()): Promise<void> {
   } else if (
     uitkomst.reden === 'onbekend' ||
     uitkomst.reden === 'verlopen' ||
+    uitkomst.reden === 'nog-niet' ||
     uitkomst.reden === 'vol'
   ) {
     schrijf(null);

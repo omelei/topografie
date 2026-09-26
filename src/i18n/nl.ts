@@ -835,6 +835,8 @@ export const nl = {
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',
   'premium.fout.verlopen': 'Deze code is verlopen.',
+  // Een klaspas voor volgend schooljaar, al in juni uitgedeeld (ADR-225).
+  'premium.fout.nog-niet': 'Deze code geldt vanaf {datum}. Vul hem vanaf die dag in.',
   'premium.fout.vol':
     'Deze code staat al op drie apparaten. Haal hem eerst van een ander apparaat af.',
   'premium.fout.te-vaak': 'Te vaak geprobeerd. Probeer het over een uur opnieuw.',

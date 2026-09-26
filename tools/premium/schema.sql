@@ -27,6 +27,28 @@ create table if not exists public.premium_codes (
   aangemaakt    timestamptz not null default now()
 );
 
+-- Vanaf wanneer een code geldt (ADR-225). Een klaspas voor volgend schooljaar
+-- kan in juni gemaakt worden en gaat pas op 1 september in. Een code van vóór
+-- deze kolom geldt sinds de dag waarop hij gemaakt is, of sinds zijn laatste
+-- dag als die eerder lag. Het is een dag in Nederland, zoals de controle
+-- hieronder rekent: in UTC begint 1 september om twee uur 's nachts.
+alter table public.premium_codes add column if not exists geldig_van date;
+update public.premium_codes set geldig_van = least(aangemaakt::date, geldig_tot)
+  where geldig_van is null;
+alter table public.premium_codes
+  alter column geldig_van set default ((now() at time zone 'Europe/Amsterdam')::date),
+  alter column geldig_van set not null;
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'premium_codes_van_voor_tot'
+  ) then
+    alter table public.premium_codes
+      add constraint premium_codes_van_voor_tot check (geldig_van <= geldig_tot);
+  end if;
+end
+$$;
+
 create table if not exists public.premium_apparaten (
   code_hash     text not null references public.premium_codes (code_hash) on delete cascade,
   apparaat      uuid not null,
@@ -76,8 +98,9 @@ security definer
 set search_path = public, extensions
 as $$
 declare
-  v_hash   text := public.premium_hash(p_code);
-  v_code   public.premium_codes%rowtype;
+  v_hash    text := public.premium_hash(p_code);
+  v_vandaag date := (now() at time zone 'Europe/Amsterdam')::date;
+  v_code    public.premium_codes%rowtype;
   v_fout   integer;
   v_aantal integer;
 begin
@@ -96,8 +119,14 @@ begin
     return json_build_object('geldig', false, 'reden', 'onbekend');
   end if;
 
-  if v_code.geldig_tot < current_date then
+  -- Geldig van en met geldig_van tot en met geldig_tot, op een Nederlandse dag
+  -- (ADR-225). Een code die nog niet ingaat, is geen fout geraden code en
+  -- neemt geen plek: de ouder hoort op welke dag hij ingaat.
+  if v_code.geldig_tot < v_vandaag then
     return json_build_object('geldig', false, 'reden', 'verlopen', 'geldig_tot', v_code.geldig_tot);
+  end if;
+  if v_code.geldig_van > v_vandaag then
+    return json_build_object('geldig', false, 'reden', 'nog-niet', 'geldig_van', v_code.geldig_van);
   end if;
 
   if exists (

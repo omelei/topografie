@@ -44,7 +44,21 @@ Het script drukt de codes af (`LEER-XXXX-XXXX`) en de SQL om ze op te slaan.
 Plak die SQL in de SQL Editor. De database bewaart alleen een hash van elke
 code, dus een code die je kwijt bent is echt weg: maak dan een nieuwe.
 
-Een code geldt standaard een jaar en voor drie apparaten.
+Een code geldt standaard vanaf vandaag, een jaar lang, en voor drie apparaten.
+De datums zet je zelf met drie keuzes (ADR-225):
+
+- `--van 2027-09-01`: de eerste dag waarop de code geldt. Daarvoor zegt de app
+  bij het invullen op welke dag hij ingaat, en neemt hij geen plek.
+- `--tot 2028-08-31`: de laatste dag. Hetzelfde als de datum na het aantal.
+- `--klaspas [jaar]`: een schooljaar, 1 september tot en met 31 augustus. Zonder
+  jaar het schooljaar van vandaag; `--klaspas 2027` is 2027–2028.
+
+`--van` en `--tot` gaan voor de klaspas, elk voor zich:
+
+```bash
+# Volgend schooljaar, maar stoppen bij de zomervakantie:
+node tools/premium/maak-codes.mjs --klaspas 2027 --tot 2028-07-17 1 "" klas 6b
+```
 
 Dit is de weg met de hand, voor testgezinnen en voor als er iets misgaat bij een
 bestelling. Zet in de notitie voor wie een code is, zodat je hem later kunt
@@ -96,6 +110,9 @@ update public.premium_codes set ingetrokken = true where notitie = 'familie Jans
 -- Een code verlengen:
 update public.premium_codes set geldig_tot = '2028-09-30' where notitie = 'familie Jansen';
 
+-- Een code eerder laten ingaan:
+update public.premium_codes set geldig_van = current_date where notitie = 'klas 6b De Regenboog';
+
 -- Welke apparaten een code gebruiken:
 select c.notitie, a.eerst_gezien, a.laatst_gezien
 from public.premium_apparaten a join public.premium_codes c using (code_hash);
@@ -103,13 +120,16 @@ from public.premium_apparaten a join public.premium_codes c using (code_hash);
 
 ## Klassencode
 
-Een klas krijgt één code voor 40 apparaten, een jaar (365 dagen) geldig, voor
-€ 300 per jaar op factuur (ADR-200). De code werkt precies als een gezinscode:
-de leerkracht deelt hem met de ouders, en die vullen hem thuis in op de
-ouderpagina.
+Een klas krijgt één code voor 40 apparaten, voor € 300 per jaar op factuur
+(ADR-200). De code werkt precies als een gezinscode: de leerkracht deelt hem met
+de ouders, en die vullen hem thuis in op de ouderpagina.
+
+Een klassencode loopt een schooljaar, van 1 september tot en met 31 augustus
+(ADR-225). Een school die in juni bestelt, krijgt de code meteen en de klas kan
+hem vanaf 1 september gebruiken:
 
 ```bash
-node tools/premium/maak-codes.mjs --plekken 40 1 "" klas 6b De Regenboog
+node tools/premium/maak-codes.mjs --plekken 40 --klaspas 2027 1 "" klas 6b De Regenboog
 ```
 
 Een plek is een apparaat, geen kind: een kind dat op een tablet en een laptop
