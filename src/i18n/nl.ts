@@ -170,13 +170,18 @@ export const nl = {
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
   'werkblad.opdracht.engels': 'Schrijf het Engelse woord op de lijn.',
   'home.zo.titel': 'Zo werkt leer.nu',
-  'home.zo.oefen.kop': 'Oefen een ronde',
-  'home.zo.oefen.uitleg': 'Kies een vak en een onderwerp. Je doet het in je eigen tempo.',
-  'home.zo.herhaal.kop': 'Herhaal wat je bijna vergeten bent',
-  'home.zo.herhaal.uitleg':
-    'Wat je goed beheerst, komt pas later terug. Zo blijft het in je hoofd.',
+  // Zo werkt leer.nu, in vier stappen (ADR-231), in de woorden van de eigenaar.
+  'home.zo.oefen.kop': 'Begin met oefenen',
+  'home.zo.oefen.uitleg': 'Kies een vak, een onderwerp en een manier. Je begint direct met spelen.',
+  'home.zo.fouten.kop': 'Leer van je fouten',
+  'home.zo.fouten.uitleg':
+    'Je ziet direct wat je goed en fout hebt gedaan. Foute antwoorden kun je direct opnieuw oefenen.',
+  'home.zo.moeilijk.kop': 'Oefenen wat je moeilijk vindt',
+  'home.zo.moeilijk.uitleg':
+    'Wij zetten automatisch de vragen voor je klaar die je moeilijk vindt.',
   'home.zo.diploma.kop': 'Haal je diploma',
-  'home.zo.diploma.uitleg': 'Beheers je genoeg? Dan doe je de toets, en hangt je diploma op Jij.',
+  'home.zo.diploma.uitleg':
+    'Als je voldoende hebt geoefend, kun jij je officiële leer.nu-diploma halen.',
   // De rondes die je begon en niet afmaakte (ADR-115), in de plaats van de
   // moduletegels van "Verder oefenen". Tikken vraagt wat die ronde nog niet
   // had gevraagd, op dezelfde manier.

@@ -13467,6 +13467,39 @@ de bedragen van ADR-196 en ADR-200 bij. De bedragen zelf staan in het register
   plaats van per apparaat. Dat staat op de roadmap.
 - ADR-196 en ADR-200 houden hun oude bedragen als geschiedenis.
 
+## ADR-231 — Jouw fouten gratis in de gratis manieren, vier stappen op Vandaag, en Friesland
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, na een
+testronde. Verruimt ADR-224: daar bleef "je fouten" premium.
+
+**Besluit.**
+
+- **Jouw fouten is gratis in de gratis manieren.** Het onderwerp met de
+  verzamelde fouten per vak was premium, als iets wat over weken gaat. Het is nu
+  gratis, zoals "Herhaal je fouten" na een ronde dat al was (ADR-122). Een
+  premiummanier blijft ook hier premium. Alleen de eigen woordenlijsten zijn nog
+  een premiumonderwerp (`isPremiumOnderwerp`). De foutenlijsten blijven buiten
+  het dagplan, de geheugencheck en "Weet je het nog?" (`isFoutenOnderwerp`),
+  want ze zijn een dwarsdoorsnede van de andere onderwerpen en geen eigen set.
+- **Zonder naam staat "Hier begin je mee vandaag" er niet.** De eerste ronde
+  erboven zegt al waar je begint. Heeft een kind zonder naam al geoefend, dan
+  staat de rij er als "Meest geoefend".
+- **Zo werkt leer.nu heeft vier stappen**, in de woorden van de eigenaar:
+  begin met oefenen, leer van je fouten, oefenen wat je moeilijk vindt, en haal
+  je diploma. Twee woorden volgen de schrijfwijzer: "manier" in plaats van
+  "spelvorm", en "vragen" in plaats van "oefeningen" (zoals op Vandaag sinds
+  ADR-224).
+- **Friesland in plaats van Fryslân**, bij de provincie, de vlag en de
+  weetjes. Fryslân blijft goed als antwoord (een alias), en het weetje van de
+  provincie noemt de Friese naam.
+
+**Gevolgen.**
+
+- De premiumpagina zet "Alle fouten verzameld" nu bij Basis, en `/kopen` noemt
+  alleen nog de eigen woordenlijsten.
+- De namen op de kaart komen uit de content, dus de kaart zegt ook Friesland.
+  De bronbestanden onder `public/geo` houden hun `bronnaam`.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

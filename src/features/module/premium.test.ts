@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
+import { isFoutenOnderwerp, isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
 import { eersteRegio, regiosVan, regioVraag, TAAL_DELEN, TOPO_REGIOS } from './regios';
 
 /**
@@ -48,21 +48,23 @@ describe('premium', () => {
     }
   });
 
-  it("marks every module's collected list of mistakes, the own word lists, and nothing else", () => {
-    for (const id of [
-      'fouten',
-      'nl-fouten',
-      'wereld-fouten',
-      'klok-fouten',
-      'taal-sp-fouten',
-      // De eigen woordenlijsten (ADR-192): het onderwerp en zijn sets.
-      'eigen-lijsten',
-      'taal-eigen-abc123',
-    ]) {
+  it('marks the own word lists as premium, and nothing else', () => {
+    // De eigen woordenlijsten (ADR-192): het onderwerp en zijn sets.
+    for (const id of ['eigen-lijsten', 'taal-eigen-abc123']) {
       expect(isPremiumOnderwerp(id), id).toBe(true);
     }
-    for (const id of ['tafels', 'nl-mix', 'provincies', 'taal-sp-eiij']) {
+    // Jouw fouten is gratis in de gratis manieren (ADR-231).
+    for (const id of ['tafels', 'nl-mix', 'provincies', 'taal-sp-eiij', 'fouten', 'nl-fouten']) {
       expect(isPremiumOnderwerp(id), id).toBe(false);
+    }
+  });
+
+  it("knows every module's collected list of mistakes, so the plan can leave it out", () => {
+    for (const id of ['fouten', 'nl-fouten', 'wereld-fouten', 'klok-fouten', 'taal-sp-fouten']) {
+      expect(isFoutenOnderwerp(id), id).toBe(true);
+    }
+    for (const id of ['tafels', 'nl-mix', 'eigen-lijsten']) {
+      expect(isFoutenOnderwerp(id), id).toBe(false);
     }
   });
 

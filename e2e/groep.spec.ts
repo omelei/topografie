@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De groep van een kind (ADR-151): gevraagd na de naam, te wijzigen op Jij
@@ -156,7 +157,13 @@ test('nieuw kind kiest een groep, Vandaag volgt, en op Jij verandert het', async
  * "Past bij groep 6" met wat erbij past en nog niet gedaan is.
  */
 test('de groep staat in de kop, en na een ronde komt "Past bij groep"', async ({ page }) => {
+  // Zonder naam staat de rij om mee te beginnen er niet (ADR-231): de eerste
+  // ronde zegt al waar je begint.
   await page.goto('/');
+  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  await expect(page.getByRole('group', { name: /^Hier begin je mee/ })).toHaveCount(0);
+
+  await signIn(page, 'Sem');
   await kiesGroep(page, 'Groep 6');
 
   const begin = page.getByRole('group', { name: 'Hier begin je mee in groep 6' });

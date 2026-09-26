@@ -8,7 +8,7 @@ import {
   type ItemState,
   type ModeId,
 } from '@/game-core';
-import { isPremiumOnderwerp } from '@/features/module/premium';
+import { isFoutenOnderwerp, isPremiumOnderwerp } from '@/features/module/premium';
 import { startbareOnderdelen, type Gespeeld, type Onderdeel } from '@/features/module/onderdelen';
 import { t } from '@/i18n';
 import { loadItemStates, type PlayedRound } from '@/store/progress';
@@ -94,7 +94,7 @@ function eersteRonde(
 ): { readonly deel: Onderdeel; readonly ids: readonly string[] } | null {
   let beste: { deel: Onderdeel; ids: string[]; aantal: number } | null = null;
   for (const deel of startbareOnderdelen()) {
-    if (deel.mix || isPremiumOnderwerp(deel.setId)) continue;
+    if (deel.mix || isPremiumOnderwerp(deel.setId) || isFoutenOnderwerp(deel.setId)) continue;
     const terug = deel.items
       .map((item) => states.get(item.id))
       .filter((state): state is ItemState => state !== undefined && state.laatsteReview !== null)

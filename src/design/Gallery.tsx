@@ -271,7 +271,7 @@ export function Gallery() {
             </td>
           </tr>
           <tr>
-            <td>Fryslân</td>
+            <td>Friesland</td>
             <td className="tk-num">9</td>
             <td>
               <StatusLabel status="practising" />

@@ -57,23 +57,26 @@ export function isPremiumVorm(id: ModeId): boolean {
 }
 
 /**
- * A child's own collected list of mistakes, in any module: rekenen's `fouten`,
- * and `*-fouten`. Premium because it is a record kept across rounds. And the
- * child's own word lists (the `eigen-lijsten` subject and its `taal-eigen-*`
- * sets): the lists are made on Jij with premium, and without it the subject is
- * a lock rather than a page whose only way is premium (ADR-192).
+ * The child's own word lists (the `eigen-lijsten` subject and its
+ * `taal-eigen-*` sets): the lists are made on Jij with premium, and without it
+ * the subject is a lock rather than a page whose only way is premium (ADR-192).
  *
- * Not to be confused with "Herhaal je fouten" on the result page, which is free
- * since ADR-122: that one asks about the round that just ended and nothing
- * else, so it belongs to the round rather than to the record.
+ * Jouw fouten, the collected list of mistakes, was premium too, as a record
+ * kept across rounds. Since ADR-231 it is free in the free ways: going back
+ * over what you got wrong is how this product teaches, and the ways that are
+ * premium stay premium there as everywhere.
  */
 export function isPremiumOnderwerp(id: string): boolean {
-  return (
-    id === 'fouten' ||
-    id.endsWith('-fouten') ||
-    id === 'eigen-lijsten' ||
-    id.startsWith('taal-eigen-')
-  );
+  return id === 'eigen-lijsten' || id.startsWith('taal-eigen-');
+}
+
+/**
+ * A child's own collected list of mistakes, in any module: rekenen's `fouten`,
+ * and `*-fouten`. Not a set of its own but a cross-section of the others, so
+ * the day plan, the memory check and "Weet je het nog?" leave it out.
+ */
+export function isFoutenOnderwerp(id: string): boolean {
+  return id === 'fouten' || id.endsWith('-fouten');
 }
 
 /**

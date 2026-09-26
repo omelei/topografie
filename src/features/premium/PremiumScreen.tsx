@@ -89,7 +89,7 @@ const VERGELIJK: readonly (readonly [TranslationKey, readonly Regel[]])[] = [
       { tekst: 'premium.regel.voorspelling', basis: false },
       { tekst: 'premium.regel.plan', basis: false },
       { tekst: 'premium.regel.onthouden', basis: false },
-      { tekst: 'premium.regel.fouten', basis: false },
+      { tekst: 'premium.regel.fouten', basis: true },
     ],
   ],
   [
