@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * Naar de onderkant van de pagina, en hoe ver dat was.
@@ -377,7 +377,11 @@ test.describe('zonder code', () => {
       await page.goto(pad);
       await expect(page.locator('main')).toBeVisible();
       // Op Premium eerst de tabel: daar staan de labels die het misten.
-      if (pad === '/premium') await expect(page.getByRole('table').first()).toBeVisible();
+      // Sinds ADR-232 staat er eerst een deur voor ouders.
+      if (pad === '/premium') {
+        await doorDePremiumdeur(page);
+        await expect(page.getByRole('table').first()).toBeVisible();
+      }
       // Pas als alles staat: de pagina schuift in, en pas daarna rekent de
       // browser de labels mee.
       await page.evaluate(() =>
