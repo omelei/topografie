@@ -340,9 +340,16 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await page.getByRole('button', { name: 'Code gebruiken' }).click();
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 
-  // The code, normalised, and a device number: that is all that went.
+  // The code, normalised, a device number, what kind of device, and that no
+  // place is asked for (ADR-226): that is all that went.
   expect(gevraagd.at(-1)?.p_code).toBe(GOEDE_CODE);
-  expect(Object.keys(gevraagd.at(-1) ?? {}).sort()).toEqual(['p_apparaat', 'p_code']);
+  expect(Object.keys(gevraagd.at(-1) ?? {}).sort()).toEqual([
+    'p_apparaat',
+    'p_claim',
+    'p_code',
+    'p_label',
+  ]);
+  expect(gevraagd.at(-1)?.p_claim).toBe(false);
 
   await page.goto('/jij');
   await page.getByRole('button', { name: 'Laat de tabel zien' }).click();
@@ -356,6 +363,68 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await expect(page.getByText('€ 79,95')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
+});
+
+/**
+ * Een plek op de code (ADR-226). De ouder vult de code in en neemt daarmee
+ * geen plek; de eerste premiumronde van een kind vraagt er een. Is de code vol,
+ * dan leest het kind wie het regelt, zonder prijs en zonder knop om te kopen.
+ */
+test('the code takes a place at the first premium round, not when a parent types it', async ({
+  page,
+}) => {
+  const gevraagd: Record<string, unknown>[] = [];
+  await page.route(`${SERVER}/rest/v1/rpc/premium_controleer`, async (route) => {
+    const body = route.request().postDataJSON() as Record<string, unknown> | null;
+    if (route.request().method() !== 'OPTIONS' && body) gevraagd.push(body);
+    await beantwoord(
+      route,
+      body?.p_claim === true
+        ? { geldig: false, reden: 'vol', bezet: 3, plekken: 3 }
+        : { geldig: true, geldig_tot: '2099-09-13', plek: false },
+    );
+  });
+
+  await stubGezin(page);
+  await signIn(page, 'Noor');
+  await page.goto('/premium');
+  await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
+  await langsDePoort(page);
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await page.getByLabel('Typ de code').fill(GOEDE_CODE);
+  await page.getByRole('button', { name: 'Code gebruiken' }).click();
+  await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
+
+  // Alleen nagekeken, geen plek genomen.
+  expect(gevraagd.map((vraag) => vraag.p_claim)).toEqual([false]);
+  const apparaten = page.getByRole('region', { name: 'Apparaten' });
+  await expect(apparaten).toContainText('Dit apparaat heeft nog geen plek op de code.');
+
+  // Een ronde in een gratis manier is geen premiumstart.
+  await oefenTafelVanEen(page);
+  expect(gevraagd.map((vraag) => vraag.p_claim)).toEqual([false]);
+
+  // Een premiummanier wel. De code is vol: het venster zegt wie het regelt.
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
+    .click();
+  await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Bliksemronde/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
+  await expect(venster).toContainText('staat al op genoeg apparaten');
+  await expect(venster.getByRole('link')).toHaveCount(0);
+  await expect(venster.getByText(/€/)).toHaveCount(0);
+  expect(gevraagd.at(-1)?.p_claim).toBe(true);
+  expect(gevraagd.at(-1)?.p_label).toEqual(expect.any(String));
 });
 
 /**

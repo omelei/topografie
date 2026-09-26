@@ -14,8 +14,9 @@ import { expect, test, type Request } from '@playwright/test';
  * app, every single request went to our own origin. That is the claim, whole.
  *
  * With one exception since ADR-116, and it is narrow enough to say in a
- * sentence: when a parent types a premium code, and once a week after that,
- * the code and a random device number go to the premium server — nothing
+ * sentence: when a parent types a premium code, once a week after that, and at
+ * the first premium round on a device (ADR-226), the code, a random device
+ * number and what kind of device it is go to the premium server — nothing
  * about the child. Every run here has a code that was checked in 2099, so the
  * app has no reason to ask, and this test still sees nothing leave. The ask
  * itself is tested in `premium.spec.ts`, against a server that is not there.

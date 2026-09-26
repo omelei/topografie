@@ -19,6 +19,8 @@ import { onthoudWens, type Wens } from '@/store/wensen';
 
 let open = false;
 let huidig: Wens | null = null;
+/** Het venster gaat over een volle code, niet over iets wat bij premium hoort (ADR-226). */
+let omPlek = false;
 const luisteraars = new Set<() => void>();
 
 function meld(): void {
@@ -35,9 +37,28 @@ function meld(): void {
 export function vraagOuders(wens?: Wens): void {
   if (open) return;
   huidig = wens ?? null;
+  omPlek = false;
   open = true;
   meld();
   if (wens) void onthoudWens(wens);
+}
+
+/**
+ * Alle plekken van de code zijn in gebruik (ADR-226). Het venster zegt dat de
+ * ouders het kunnen regelen, en niets anders: geen code, geen prijs, geen knop
+ * om te kopen. Er valt niets te kopen; er moet een plek vrij (R-11).
+ */
+export function vraagOudersOmPlek(): void {
+  if (open) return;
+  huidig = null;
+  omPlek = true;
+  open = true;
+  meld();
+}
+
+/** Of het open venster over een volle code gaat. */
+export function isVraagOmPlek(): boolean {
+  return open && omPlek;
 }
 
 /** Wat het kind wilde, zolang het venster openstaat. */
@@ -49,6 +70,7 @@ export function sluitOuderVraag(): void {
   if (!open) return;
   open = false;
   huidig = null;
+  omPlek = false;
   meld();
 }
 

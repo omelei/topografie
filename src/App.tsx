@@ -46,11 +46,11 @@ import { PremiumScreen } from '@/features/premium/PremiumScreen';
 import { OuderPoort, OuderScherm } from '@/features/ouder/OuderScherm';
 import { useOuder } from '@/features/ouder/useOuder';
 import { openWisselaar } from '@/features/ouder/wisselaar';
-import { vraagOuders } from '@/features/premium/ouderVraag';
+import { vraagOuders, vraagOudersOmPlek } from '@/features/premium/ouderVraag';
 import { wensVoor } from '@/features/premium/wens';
 import { usePremium } from '@/features/premium/usePremium';
 import { isPremiumOnderwerp, isPremiumVorm } from '@/features/module/premium';
-import { controleerOpnieuw } from '@/store/premium';
+import { claimPlek, controleerOpnieuw, leesStand } from '@/store/premium';
 import { zorgVoorUniekePogingen } from '@/store/sleutels';
 import { pathFor, type Route } from '@/features/shell/routes';
 import { getProfile } from '@/store/profile';
@@ -221,15 +221,36 @@ export default function App() {
     toetsstand = false,
     alleen: readonly string[] | null = null,
     naIntro = false,
+    uitPlan = false,
   ) => {
     // The one place every round starts, so the one place premium is asked
     // (ADR-116): a favourite, a line in the history or an unfinished round in
     // a premium way asks first. Sinds ADR-163 is dat een pop-up en niet meer
     // de hele premiumpagina: een kind dat op een spel drukte hoort niet in een
     // etalage te staan, en de code die het nodig heeft ligt bij zijn ouders.
-    if (!premium && (toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId))) {
+    const premiumStart =
+      toetsstand || isPremiumVorm(mode) || isPremiumOnderwerp(deel.setId) || uitPlan;
+    if (!premium && premiumStart && !uitPlan) {
       // Met wat het kind wilde (ADR-193): het venster zegt het terug.
       vraagOuders({ wat: wensVoor(deel, mode, toetsstand), soort: 'wil' });
+      return;
+    }
+
+    // De eerste premiumstart op dit apparaat neemt een plek op de code
+    // (ADR-226). Een ronde uit het dagplan telt mee: het plan is premium, ook
+    // al speelt het een gratis manier. Heeft dit apparaat al een plek, dan
+    // wacht er niets. Anders één vraag aan de server, en is de code vol, dan
+    // krijgt het kind een venster zonder prijs en zonder knop om te kopen.
+    if (premium && premiumStart && leesStand()?.plek !== true) {
+      void claimPlek().then((uitkomst) => {
+        if (uitkomst === 'ok') {
+          beginRonde(deel, mode, aantal, toetsstand, alleen, naIntro, uitPlan);
+        } else if (uitkomst === 'vol') {
+          vraagOudersOmPlek();
+        } else {
+          vraagOuders({ wat: wensVoor(deel, mode, toetsstand), soort: 'wil' });
+        }
+      });
       return;
     }
 
@@ -309,12 +330,16 @@ export default function App() {
    * "Maak af" (ADR-115): the round a child left, picked up where it stopped —
    * the same set, the same way, and only the questions it had not asked yet.
    */
-  const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => {
+  const maakAf = (deel: Onderdeel, mode: ModeId, rest: readonly string[], uitPlan = false) => {
     if (rest.length === 0) return;
     // Afmaken is gratis (ADR-192): een ronde die in een premiummanier begon,
     // gaat zonder code verder op de eerste gratis manier van die set.
-    beginRonde(deel, vrijeVorm(deel, mode, premium), rest.length, false, [...rest]);
+    beginRonde(deel, vrijeVorm(deel, mode, premium), rest.length, false, [...rest], false, uitPlan);
   };
+
+  /** Een ronde uit het dagplan: premium, dus een premiumstart (ADR-226). */
+  const uitHetPlan = (deel: Onderdeel, mode: ModeId, ids: readonly string[]) =>
+    maakAf(deel, mode, ids, true);
 
   /**
    * De volgende ronde van vandaag, vanaf het uitslagscherm (ADR-139).
@@ -336,7 +361,7 @@ export default function App() {
       if (!ronde) return;
 
       const gespeeld = geplaatst(await loadPlayedRounds(), startbareOnderdelen());
-      maakAf(ronde.set, vormVoor(ronde.set, gespeeld), ronde.ids);
+      uitHetPlan(ronde.set, vormVoor(ronde.set, gespeeld), ronde.ids);
     })();
   };
 
@@ -802,7 +827,7 @@ export default function App() {
         naam={boot.profile.naam}
         onBegin={beginRonde}
         onVerder={maakAf}
-        onPlan={maakAf}
+        onPlan={uitHetPlan}
         onDiplomas={goDiplomas}
         onVak={goModule}
       />

@@ -13189,6 +13189,84 @@ maken.
 - Een code die verloopt, verloopt nu om middernacht in Nederland in plaats van
   om middernacht in UTC.
 
+## ADR-226 — Een plek is een apparaat waarop een kind premium start, en een ouder vervangt er zelf een
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar, de
+tweede van vier stappen rond premium en apparaten. Werkt ADR-116 en ADR-200 bij:
+een code nam een plek op het moment dat hij werd ingevuld, en een plek kwam
+alleen vrij als iemand zich op dat apparaat afmeldde. De prijzen staan in het
+register (R-19 tot en met R-21) en niet hier.
+
+**Context.** Een gezin heeft drie plekken. Een ouder die de code op zijn eigen
+telefoon invult om de ouderpagina te zien, verbruikte er een, en een tablet die
+kapotging, hield de zijne voorgoed. Voor een klas van veertig plekken schreef
+de README een SQL-query om plekken met de hand vrij te maken.
+
+**Besluit.**
+
+- **Een plek wordt pas genomen bij de eerste premiumstart van een kind.** Een
+  premiumstart is een ronde in een premiummanier, een premiumonderwerp, de
+  oefentoets, of een ronde uit het dagplan. Dat laatste telt mee omdat het plan
+  premium is, ook al speelt het een gratis manier. Een ouder die de code invult,
+  laat de server alleen nakijken of hij klopt (`p_claim` is `false`). Het
+  apparaat onthoudt of het een plek heeft; alleen zonder plek gaat er bij een
+  premiumstart één vraag naar de server.
+- **Zonder verbinding begint het kind toch.** Een ronde weigeren omdat de wifi
+  hapert, straft een kind voor het huis waar het zit. De volgende premiumstart
+  vraagt het opnieuw.
+- **Is de code vol, dan leest het kind wie het regelt**: "De code van je ouders
+  staat al op genoeg apparaten. Je ouders kunnen dit regelen." Geen code, geen
+  prijs, geen knop om te kopen (R-11): er valt niets te kopen, er moet een plek
+  vrij.
+- **Per apparaat alleen vier dingen**: een willekeurig nummer, een grof label
+  uit een vaste lijst ("iPad", "Chromebook", "Android-telefoon"), de dag dat het
+  een plek nam en de dag dat het het laatst gebruikt is. Dagen en geen
+  tijdstippen. Het label kiest de app uit wat de browser zegt; de database
+  weigert alles buiten de lijst, dus er komt nooit een vrije tekst in.
+- **Een plek die 90 dagen niet gebruikt is, komt vanzelf vrij.** De controle
+  geeft zo'n plek vrij voordat hij telt, en 's nachts ruimt pg_cron de rest op.
+  Gebruikt is gezien: de app kijkt de code wekelijks na, dus een apparaat
+  waarop geoefend wordt, blijft ruim binnen de grens.
+- **Twee nieuwe functies**, allebei voor de publieke sleutel:
+  - `premium_apparaten_tonen` geeft de lijst, maar alleen aan een apparaat dat
+    zelf een plek op de code heeft. Wie alleen de code kent, hoort hoeveel
+    plekken er bezet zijn en niet welke. Een klassencode kennen veertig gezinnen,
+    en welke tablets er bij een ander thuis liggen, gaat hen niets aan. Een plek
+    heet in de lijst naar een hash van de code en het apparaat, dus het nummer
+    van een ander apparaat gaat nooit mee.
+  - `premium_plek_vervangen` haalt een ander apparaat van de code; het volgende
+    apparaat waarop een kind premium start, neemt de plek. Drie keer per code in
+    twaalf maanden. Daarna zegt de ouderpagina: "Je hebt in 12 maanden al 3 keer
+    een plek vervangen. Mail naar info@leer.nu, dan helpen we je verder."
+    Zichzelf afmelden blijft `premium_afmelden` en telt niet mee: daarvoor moet
+    je het apparaat in handen hebben.
+- **Het blok "Apparaten" staat op de ouderpagina**, achter de pincode, onder
+  Premium. Het zegt of dit apparaat een plek heeft. De lijst komt pas na een druk
+  op de knop, want deze pagina vraagt uit zichzelf niemand iets. Vervangen vraagt
+  eerst of het zeker is.
+- **Een app van vóór deze wijziging blijft werken.** `p_claim` staat standaard
+  op `true`, dus een oude app in een cache neemt een plek bij het invullen, zoals
+  hij altijd deed.
+
+**Gevolgen.**
+
+- **Voor de eigenaar:** `tools/premium/schema.sql` opnieuw draaien in de SQL
+  Editor. Het zet de tijdstippen van bestaande plekken om naar dagen en laat de
+  plekken staan.
+- Vervangen gebeurt vanaf een apparaat met een plek. Een gezin van wie alle drie
+  de apparaten weg zijn, wacht op het vrijgeven na 90 dagen of mailt. De
+  eigenaar zet de teller dan terug; de query staat in `tools/premium/README.md`.
+- Een vervangen apparaat dat nog in gebruik is, neemt bij zijn volgende
+  premiumstart een plek terug als er een vrij is. Dat is met opzet niet
+  dichtgezet: vervangen is voor een apparaat dat weg is.
+- `supabase/tests/apparaten.sql` houdt vast: een ouder zonder kind neemt geen
+  plek, vol en vervangen, de grens van drie, 90 dagen, de lijst alleen met een
+  plek, en een oude app. `e2e/premium.spec.ts` houdt vast dat de code invullen
+  en een gratis ronde geen plek vragen, en dat een volle code het kind een
+  venster zonder link of prijs geeft.
+- `network.spec.ts` noemt wat er nu meegaat: de code, het nummer, het soort
+  apparaat, en of er een plek gevraagd wordt.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
