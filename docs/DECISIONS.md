@@ -13009,6 +13009,57 @@ van het logo, byte voor byte gelijk aan `docs/logo/code`), en
 `public/site.webmanifest`, dat `tools/merk-uit-leer.mjs` uit de logolevering
 tekent. Het opstartscherm van de geïnstalleerde app blijft daardoor room.
 
+## ADR-221 — Grond wordt zand, room wordt vlak
+
+**Status:** accepted. **Date:** 2026-09-26. Op verzoek van de eigenaar (stap
+1b). Wijzigt ADR-220: de grond is niet langer melk maar zand.
+
+**Besluit.**
+
+- **Zand (`--canvas`, `#f3e6d8`) is de grond van elk scherm.** `--grond`
+  wijst naar `--canvas` in plaats van naar `--melk`. Er komt geen kleur bij:
+  zand is de canvaskleur uit de gids, die in de app nergens meer gebruikt werd.
+  `--melk` blijft staan, zodat terug naar 1d één waarde is.
+- **Room blijft het vlak** (`--papier`): hover, de actieve navigatie,
+  tabelkoppen, platen, chips en de weekstrook. Room op zand is 1.12, dus die
+  vlakken zijn weer te zien; op melk was dat 1.02.
+- Alles wat ADR-220 aan `--grond` hing (body, de ronde, `.tk-grond`,
+  `.tk-uitslag`, de zeven grondtokens, `bg-grond` in de rondeschermen) volgt
+  vanzelf. Het logo, `kleuren.css` en het manifest blijven ongemoeid.
+
+**Contrast op zand** (WCAG, gemeten uit de hex; `contrast.test.ts` houdt het
+vast):
+
+| Voorgrond                   | Op zand | Grens | Op melk |
+| --------------------------- | ------- | ----- | ------- |
+| inkt `#2a1e17`              | 13.21   | 4.5   | 15.17   |
+| tekst-secundair `#5e4a3e`   | 6.78    | 4.5   | 7.79    |
+| tekst-tertiair `#6b5548`    | 5.67    | 4.5   | 6.52    |
+| rand-bediening (= tertiair) | 5.67    | 3     | 6.52    |
+| fout `#b81d3b`              | 5.22    | 4.5   | 6.00    |
+| nadruk `#147a3f` (groen)    | 4.41    | 3     | 5.06    |
+| actie `#e34a2c` (de knop)   | 3.24    | 3     | 3.72    |
+| topo-tekst `#0b7468`        | 4.61    | 4.5   | 5.30    |
+| kaart `#ffffff`             | 1.23    | —     | 1.07    |
+| papier `#fff3e6` (vlak)     | 1.12    | —     | 1.02    |
+| rand-licht `#f0dcc8` (lijn) | 1.09    | —     | 1.25    |
+
+**Wat het oplevert.** Kaarten gaan van 1.07 (melk) en 1.09 (room, vóór 1d)
+naar 1.23: een witte kaart staat weer los van de grond, ook waar hij alleen
+een lichte rand heeft.
+
+**Wat het kost.** Wat direct op de grond staat in een lichte kleur, wordt
+zwakker. Niet aangepast in dit besluit:
+
+- De lijn onder een sectiekop (`.tk-sectie`, `border-bottom` in `rand-licht`,
+  1.09) op Vandaag, Jij, Premium en de vakpagina's.
+- De vaktinten als vlak op de grond: de startbalk (`.tk-startbalk`), de
+  vakbadge (`.tk-modulebadge`), "Je eerste ronde" (`.tk-eerste`) en een
+  gekozen keuze (`.tk-keuze[aria-pressed]`). Woorden- en kloktint zijn 1.00
+  en 1.01 op zand. De startbalk en de keuze houden hun rand in de vakkleur;
+  de badge heeft geen rand, en `.tk-eerste` alleen `rand-licht`.
+- Groen en topo-tekst halen hun grens nog, maar met minder marge dan op melk.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

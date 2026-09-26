@@ -79,8 +79,9 @@
      * docs/leer.nu Merk en stijlgids.dc.html §02. Room is the ground, white is
      * the card, cacao is the ink, and koraal is the energy: the brand's own
      * surface and the button you press. Leisteen's indigo (ADR-144) and its
-     * cool-turned-warm ladder (ADR-159) are gone. Since ADR-220 the ground is
-     * melk and room is the warm plane on it: hover, fills, the frame.
+     * cool-turned-warm ladder (ADR-159) are gone. Since ADR-220 room is the
+     * warm plane (hover, fills), not the ground; since ADR-221 the ground is
+     * zand, the guide's own canvas.
      *
      * Where a pair from the guide does not reach WCAG AA, the guide's own
      * deeper tone takes its place, and the comment says so. The guide measures
@@ -88,10 +89,11 @@
      *
      * Ratios as text, on kaart / on papier.
      */
-    --canvas: #f3e6d8; /* the guide's dashed rule: outside the screen, one step under */
+    --canvas: #f3e6d8; /* zand: the guide's dashed rule, and since 1b the ground of every screen */
     --papier: #fff3e6; /* room: fills, hover, the warm plane — no longer the ground */
-    --melk: #faf7f3; /* neutral ground of every screen (1d)   inkt 15.17 · secundair 7.79 · tertiair 6.52 */
-    --grond: var(--melk);
+    --melk: #faf7f3; /* the ground of 1d (ADR-220), kept so going back is one value */
+    /* zand: ground of every screen (1b)   inkt 13.21 · secundair 6.78 · tertiair 5.67 · kaart 1.23 */
+    --grond: var(--canvas);
     --kaart: #ffffff; /* card and panel, and the frame round the page */
     --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.82 */
     --tekst-secundair: #5e4a3e; /* cacao zacht                       8.32 / 7.61 */
@@ -241,7 +243,7 @@
      * A child sees which subject they are in from the icon tile instead.
      *
      * The tokens stay, so a screen still says bg-module-grond and does not have
-     * to know: they all resolve to the one ground, which is melk since 1d.
+     * to know: they all resolve to the one ground, which is zand since 1b.
      */
     --topo-grond: var(--grond);
     --tafels-grond: var(--grond);
