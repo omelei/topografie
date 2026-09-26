@@ -13355,6 +13355,73 @@ kind na een paar weken nog over is.
   wel na 30 dagen, de ronde zonder hulp, de winkels onveranderd, één keer, en de
   uitslag met het aanbod bij de ouder.
 
+## ADR-229 — Geen naam vooraf: de naam wordt gevraagd waar hij iets doet
+
+**Status:** accepted. **Date:** 2026-09-26. Volgt op ADR-208, op verzoek van de
+eigenaar.
+
+**Wat er mis was.** ADR-208 liet een vak- of onderwerppagina openen zonder naam,
+maar de voordeur niet. Wie leer.nu opende, zag nog steeds eerst "Wie ben jij?"
+en een naamveld, met "Eerst een ronde proberen" als kleine knop eronder. Na een
+ronde zonder naam hield Vandaag je tegen tot je een naam typte, met de reden
+"Dan blijft bewaard wat je net oefende". Dat klopte niet: zonder naam schrijft
+de app al onder `SINGLETON_KEY`, en dat blijft. En `App.tsx` hield een lijst
+van adressen bij die zonder naam mochten; die werd met elke pagina langer.
+
+De oorzaak: "er is een profiel" en "er is een naam" waren hetzelfde. Een naam
+doet niets voor het oefenen zelf. Hij doet iets op het diploma, bij een tweede
+kind op hetzelfde apparaat, en op de ouderpagina.
+
+**Besluit.**
+
+- **Er is altijd een kind.** Wie de app opent zonder kind, krijgt er een zonder
+  naam (`zorgVoorKind`), onder `SINGLETON_KEY`, zodat alles wat het oefent bij
+  hem blijft. De lijst met adressen zonder naam in `App.tsx` is weg, en het
+  naamscherm (`ProfileGate`) ook.
+- **Vandaag zonder naam** zegt "Hoi!". De vraag naar de groep staat direct onder
+  de eerste ronde, want de groep kiest die ronde (ADR-151); hij is nog steeds weg
+  te klikken. Daaronder "Ik ben een ouder" (naar Voor ouders, ADR-214) en, met
+  een gezinsproject, "Ik heb een inlogcode" (ADR-190).
+- **De naam wordt gevraagd waar hij iets doet**, met één component
+  (`NaamVraag`), en de vraag zegt waarvoor:
+  - **Na de eerste ronde op Vandaag**, als uitnodiging: "Dan staat je naam
+    bovenaan en op je diploma’s." "Niet nu" zet hem voorgoed weg voor dit kind,
+    zoals de vraag naar de groep.
+  - **Op Jij**, bovenaan, zolang er geen naam is. Zonder "Niet nu", maar hij
+    houdt niets tegen.
+  - **Vóór de toets**: "Welke naam komt op je diploma?" Pas met een naam staan
+    de knoppen om te beginnen er.
+  - **Bij een tweede kind** in de wisselaar: eerst de naam van wie hier al
+    oefent, dan die van het nieuwe kind. Twee kinderen zonder naam zijn niet uit
+    elkaar te houden.
+  - **Op de ouderpagina**, na de pincode: "Hoe heet je kind?". Daarachter staat
+    alles over een kind met een naam (Kinderen, Deze week, de overname naar het
+    account), en die blijven zo.
+- **Een naam geven is het kind hernoemen**, nooit een nieuw kind maken. Wie met
+  een code inlogt, wordt het kind zonder naam dat hier al oefende
+  (`createProfile`), zoals ADR-208 al zei: wat er zonder naam geoefend is, hoort
+  bij wie als eerste een naam heeft.
+- **De teller telt waar de naam getypt werd**: `naam` met `/vandaag`, `/jij`,
+  `/toets`, `/ouder` of `/wisselaar` als adres. Geen naam, zoals altijd
+  (ADR-210). De server hoeft niet te veranderen: die adressen passen al in zijn
+  patroon.
+
+**Gevolgen.**
+
+- Een kind zonder naam heeft in de balk het poppetje en geen naam. In de
+  wisselaar heet het "Nog zonder naam".
+- Een apparaat dat alleen iemand kijken liet, heeft nu een leeg kind in
+  IndexedDB. Dat kost niets en gaat nergens heen.
+- Wie nooit een naam typt en geen toets doet, oefent gewoon. Een diploma zonder
+  naam kan niet meer ontstaan via de toets; `GrootDiploma` kon er al tegen.
+- De e2e-tests beginnen met een gedeelde `signIn` in `e2e/naam.ts`: de naam op
+  Jij, dan de groepsvraag op Vandaag weggeklikt. `proberen.spec.ts` houdt het
+  eerste bezoek vast, en er zijn tests voor de toets, de wisselaar en de
+  ouderpagina zonder naam.
+- Na 8 oktober laat de teller zien hoeveel rondes zonder naam er zijn, en waar
+  kinderen hun naam typen. Blijft de naam vooral weg, dan is dat geen probleem
+  om op te lossen: dan doet hij voor die kinderen niets.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

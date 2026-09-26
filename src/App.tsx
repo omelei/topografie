@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { HomeScreen } from '@/features/home/HomeScreen';
 import { PracticeScreen } from '@/features/practice/PracticeScreen';
 import { ExploreScreen } from '@/features/explore/ExploreScreen';
-import { ProfileGate } from '@/features/player/ProfileGate';
+import { NaamVraag } from '@/features/player/NaamVraag';
 import { naarBoven } from '@/features/shell/naarBoven';
 import { NieuwWachtwoord } from '@/features/account/NieuwWachtwoord';
 import { leesTerugkeer } from '@/store/account';
@@ -55,7 +55,7 @@ import { vergeetGeheugencheck, zetGeheugencheckKlaar } from '@/store/geheugenche
 import type { CheckKlaar } from '@/features/home/Geheugencheck';
 import { zorgVoorUniekePogingen } from '@/store/sleutels';
 import { pathFor, type Route } from '@/features/shell/routes';
-import { getProfile } from '@/store/profile';
+import { heeftNaam, zorgVoorKind } from '@/store/profile';
 import { dagplan, isDiplomaVorm, type ModeId } from '@/game-core';
 import { geplaatst, onderdelen, startbareOnderdelen, starters } from '@/features/module/onderdelen';
 import { loadItemStates, loadPlayedRounds } from '@/store/progress';
@@ -127,7 +127,11 @@ type Screen =
     }
   | { name: 'taal-ontdek'; setId: string }
   | { name: 'afzwemmen'; deel: Onderdeel; mode: ModeId };
-type Boot = { status: 'loading' } | { status: 'ready'; profile: ProfileRecord | null };
+/**
+ * Er is altijd een kind, zodra het gelezen is (ADR-229): zonder naam als er
+ * nog niemand een naam typte. Een scherm dat de naam nodig heeft, vraagt hem.
+ */
+type Boot = { status: 'loading' } | { status: 'ready'; profile: ProfileRecord };
 
 /**
  * Eight screens and a router of about sixty lines.
@@ -197,7 +201,7 @@ export default function App() {
   };
 
   const bar =
-    boot.status === 'ready' && boot.profile ? (
+    boot.status === 'ready' ? (
       <TopBar profile={boot.profile} onProfile={() => openWisselaar()} />
     ) : null;
 
@@ -277,7 +281,7 @@ export default function App() {
     // Een ronde begon, met of zonder naam, op dit onderwerp (ADR-210).
     const rondeModule = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
     tel(
-      boot.status === 'ready' && boot.profile ? 'ronde' : 'ronde-zonder-naam',
+      boot.status === 'ready' && heeftNaam(boot.profile) ? 'ronde' : 'ronde-zonder-naam',
       rondeModule ? pathFor({ name: 'module', module: rondeModule, setId: deel.setId }) : '',
     );
 
@@ -464,7 +468,7 @@ export default function App() {
   }, [screen.name, route.name]);
 
   useEffect(() => {
-    void getProfile().then((profile) => setBoot({ status: 'ready', profile: profile ?? null }));
+    void zorgVoorKind().then((profile) => setBoot({ status: 'ready', profile }));
   }, []);
 
   // Once a week, if there is a code on this device: is it still good? Nothing
@@ -515,43 +519,6 @@ export default function App() {
   // would flash rather than inform.
   if (boot.status === 'loading') return <div aria-busy="true" />;
 
-  // Het naamveld, en wat er gebeurt als het is ingevuld.
-  const poort = (
-    <ProfileGate
-      // "Ik ben een ouder" op de eerste vraag opent de premiumpagina in
-      // plaats van de voordeur (ADR-161, ADR-171): wat een ouder komt doen —
-      // kijken wat het is, een code invullen — staat daar. Het profiel is
-      // dan dat van het kind, want een ouder oefent niet (ADR-198).
-      onReady={(profile, naarOuder) => {
-        setBoot({ status: 'ready', profile });
-        if (naarOuder) go({ name: 'premium' });
-      }}
-      // Eerst proberen (ADR-208): het eerste onderwerp om mee te beginnen,
-      // zonder naam.
-      onVoorOuders={() => go({ name: 'voorOuders' })}
-      onProberen={(deel: Onderdeel) => {
-        const module = MODULES.find((kandidaat) => kandidaat.id === deel.moduleId);
-        if (module) go({ name: 'module', module, setId: deel.setId });
-      }}
-    />
-  );
-
-  // Zonder naam mag je de pagina van een vak of onderwerp zien en er een
-  // ronde spelen (ADR-208): wie via Google op /topografie/provincies komt,
-  // oefent eerst en typt daarna pas een naam. Al het andere vraagt eerst de
-  // naam, want het gaat over wie je bent.
-  if (
-    boot.profile === null &&
-    route.name !== 'module' &&
-    route.name !== 'werkblad' &&
-    route.name !== 'voorOuders' &&
-    route.name !== 'scholen' &&
-    route.name !== 'premium' &&
-    screen.name === 'home'
-  ) {
-    return poort;
-  }
-
   // Explore and practice are rounds, and a round has no navigation: no rail,
   // no bar, no tab bar, only the stop cross, the progress dots and the
   // read-aloud button. They are not wrapped in the Shell rather than having it
@@ -569,6 +536,10 @@ export default function App() {
         onBegin={() => beginRonde(screen.deel, screen.mode, null, false, null, true)}
         // Back to the page it was opened from, which the address still names.
         onTerug={() => setScreen({ name: 'home' })}
+        // De naam komt op het diploma, dus de toets vraagt hem als hij er nog
+        // niet is (ADR-229). De balk leest `boot.profile`, net als bij de avatar.
+        naamNodig={!heeftNaam(boot.profile)}
+        onNaam={(kind) => setBoot({ status: 'ready', profile: kind })}
       />
     );
   }
@@ -688,7 +659,7 @@ export default function App() {
         <ModuleScreen
           key={route.module.id}
           module={route.module}
-          naam={boot.profile?.naam ?? ''}
+          naam={boot.profile.naam}
           setId={route.setId}
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
@@ -753,9 +724,6 @@ export default function App() {
     );
   }
 
-  // Wat hierna komt, gaat over wie je bent en heeft een naam nodig.
-  if (boot.profile === null) return poort;
-
   // "Bekijk alle diploma's" opent Jij met de kast in beeld — precies wat
   // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
   // stond; nu het diploma zelf de beloning is, staat het raster weer bij het
@@ -781,7 +749,19 @@ export default function App() {
   if (route.name === 'ouder') {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
-        {ouder ? (
+        {/* De ouderpagina gaat over een kind met een naam: wie hem opent
+            terwijl dit kind er nog geen heeft, typt hem eerst (ADR-229). */}
+        {ouder && !heeftNaam(boot.profile) ? (
+          <div className="tk-page">
+            <div className="tk-page-main">
+              <NaamVraag
+                moment="ouder"
+                kop="h1"
+                onKlaar={(kind) => setBoot({ status: 'ready', profile: kind })}
+              />
+            </div>
+          </div>
+        ) : ouder ? (
           <OuderScherm naam={boot.profile.naam} />
         ) : (
           <OuderPoort onOpen={() => openWisselaar('slot')} />
@@ -851,6 +831,7 @@ export default function App() {
         onGeheugencheck={startGeheugencheck}
         onDiplomas={goDiplomas}
         onVak={goModule}
+        onVoorOuders={() => go({ name: 'voorOuders' })}
       />
     </Shell>
   );

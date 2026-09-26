@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, langsDePoort, stubGezin } from './gezin';
+import { signIn } from './naam';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -27,17 +28,6 @@ async function shoot(page: Page, project: string, naam: string) {
   await page.screenshot({ path: `screenshots/${project}-${naam}.png`, fullPage: false });
 }
 
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
-
 async function chooseAndStart(page: Page, way: RegExp) {
   await page.goto('/topografie');
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
@@ -60,9 +50,18 @@ async function start(page: Page) {
 test('the front door, the chooser and the profile', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
 
+  // De voordeur voor wie nog geen naam heeft (ADR-229): het naamscherm dat
+  // hier stond, is er niet meer. Wachten op de vraag naar de groep, die pas
+  // staat als het kind gelezen is.
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Wie ben jij?' })).toBeVisible();
-  await shoot(page, size, '01-naam');
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toBeVisible();
+  await shoot(page, size, '01-zonder-naam');
+
+  // Jij zonder naam: de vraag bovenaan.
+  await page.goto('/jij');
+  await expect(page.getByRole('form', { name: 'Hoe heet je?' })).toBeVisible();
+  await shoot(page, size, '01-jij-zonder-naam');
 
   await signIn(page, 'Fenna');
   // De voordeur leest uit IndexedDB, en op WebKit — beide iPads en de iPhone —

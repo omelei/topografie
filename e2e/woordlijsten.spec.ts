@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De lijst van school, zelf ingetypt (ADR-135), bij de instellingen op Jij (ADR-171).
@@ -8,15 +9,6 @@ import { expect, test, type Page } from '@playwright/test';
  * in de geschiedenis staat zoals elke andere. Dat is niet te bewijzen met een
  * pure test — die zou de omzetting testen en niet de belofte.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function maakLijst(page: Page, naam: string, woorden: readonly string[]) {
   await page.goto('/jij');

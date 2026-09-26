@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De getallen over het oefenen, op Jij (ADR-148, ADR-171, ADR-172).
@@ -9,15 +10,6 @@ import { expect, test, type Page } from '@playwright/test';
  * deel van Jij, en het oude adres komt daar uit. Premium staat aan via de
  * `storageState` van playwright.config.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** De provincies, aangewezen: één vraag beantwoord, en dan gestopt. */
 async function eenProvincieEnStop(page: Page) {

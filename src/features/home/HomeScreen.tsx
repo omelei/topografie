@@ -29,6 +29,7 @@ import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { GroepVraag } from './GroepVraag';
+import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 import { WeekdoelenBlok } from './WeekdoelenBlok';
 
 /**
@@ -103,6 +104,8 @@ export interface HomeScreenProps {
   readonly onVak: (id: Module['id']) => void;
   /** De geheugencheck, één keer per kind (ADR-228). */
   readonly onGeheugencheck: (check: CheckKlaar) => void;
+  /** Naar de pagina voor ouders, voor wie nog geen naam heeft (ADR-229). */
+  readonly onVoorOuders: () => void;
 }
 
 export function HomeScreen({
@@ -113,6 +116,7 @@ export function HomeScreen({
   onDiplomas,
   onVak,
   onGeheugencheck,
+  onVoorOuders,
 }: HomeScreenProps) {
   const [played, setPlayed] = useState<readonly PlayedRound[]>([]);
   // Of de rondes gelezen zijn: pas dan is "nog niets geoefend" waar, en
@@ -135,12 +139,17 @@ export function HomeScreen({
   const alles = startbareOnderdelen();
   const gespeeld = geplaatst(played, alles);
   const populair = meestGeoefend(gespeeld);
+  // Een kind zonder naam oefent gewoon (ADR-229); de voordeur groet het zonder
+  // naam, en vraagt hem pas na de eerste ronde, als uitnodiging.
+  const naamloos = naam.trim() === '';
 
   const kop = (
     <div className="tk-home-kop">
       <div className="tk-home-welkom">
         <div className="tk-kop-denker">
-          <h1 className="tk-titel">{t('home.welcome', { naam })}</h1>
+          <h1 className="tk-titel">
+            {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
+          </h1>
           <Brandmark size={56} uitdrukking="zwaaien" />
         </div>
         <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
@@ -205,20 +214,32 @@ export function HomeScreen({
   // van volgorde wisselt, verhuist React de blokken in plaats van ze opnieuw
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
+  //
+  // Zonder naam staat de vraag naar de groep direct onder de eerste ronde: het
+  // naamscherm vroeg hem vóór alles, en hij kiest die ronde (ADR-151, ADR-229).
+  // Daaronder de twee uitwegen van dat scherm: voor een ouder en voor een kind
+  // met een inlogcode.
+  const gast = naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null;
   const kern = nieuw
     ? [
         blok('kop', kop),
         blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
+        // Eén sleutel voor de vraag, op welke plek hij ook staat: zo verhuist
+        // hij als de pagina van volgorde wisselt, in plaats van opnieuw te laden.
+        blok(naamloos ? 'groepVraag' : 'groepVraagHoog', naamloos ? groepVraag : null),
+        blok('gast', gast),
         blok('vandaagBoven', vandaagBoven),
         blok('beginnen', beginnen),
         blok('vakken', vakken),
         blok('zo', <ZoWerktHet />),
-        blok('groepVraag', groepVraag),
+        blok(naamloos ? 'groepVraagLaag' : 'groepVraag', naamloos ? null : groepVraag),
         blok('weekdoelen', weekdoelen),
         blok('vandaagOnder', vandaagOnder),
       ]
     : [
         blok('kop', kop),
+        // Na de eerste ronde, één keer: hoe heet je? Weg te klikken (ADR-229).
+        blok('naam', naamloos ? <NaamUitnodiging /> : null),
         blok('terug', terug),
         // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
         // en geen rij, en na één ronde is hij weg (ADR-228).
@@ -232,6 +253,7 @@ export function HomeScreen({
         blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
         blok('vandaagOnder', vandaagOnder),
         blok('vakken', vakken),
+        blok('gast', gast),
       ];
 
   // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.

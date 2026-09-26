@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Two children on one device, ADR-046.
@@ -17,17 +18,6 @@ import { expect, test, type Page } from '@playwright/test';
  * Jij, en het zit niet meer achter premium: drie kinderen zijn gratis. Wat deze
  * test vastlegt verandert daar niet door — alleen waar je drukt.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function answerOne(page: Page) {
   await page.goto('/');
@@ -73,6 +63,34 @@ async function addChild(page: Page, naam: string) {
   // React state and none of it may survive the handover.
   await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
+
+/**
+ * Wie zonder naam oefent en er een broer of zus bij zet, geeft eerst zichzelf
+ * een naam (ADR-229): twee kinderen moet je uit elkaar kunnen houden, en wat
+ * er zonder naam geoefend is, blijft bij wie er al was.
+ */
+test('a child without a name gets one before a second child is added', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
+
+  await wisselaar(page).click();
+  const venster = page.getByRole('dialog');
+  await expect(venster.getByRole('button', { name: /Nog zonder naam/ })).toBeVisible();
+  await venster.getByRole('button', { name: 'Nog een kind erbij' }).click();
+
+  const toevoegen = venster.getByRole('button', { name: 'Toevoegen', exact: true });
+  await venster.getByLabel('Naam van het kind').fill('Bram');
+  await expect(toevoegen).toBeDisabled();
+  await venster.getByLabel('Naam van wie hier al oefent').fill('Anne');
+  await toevoegen.click();
+
+  await expect(page.getByRole('banner').getByRole('button', { name: /Bram/ })).toBeVisible();
+  await wisselaar(page).click();
+  await expect(page.getByRole('dialog').getByRole('button', { name: /Anne/ })).toBeVisible();
+  await expect(
+    page.getByRole('dialog').getByRole('button', { name: /Nog zonder naam/ }),
+  ).toHaveCount(0);
+});
 
 test('a second child starts with nothing, and the first keeps everything', async ({ page }) => {
   await signIn(page, 'Anne');

@@ -2,6 +2,7 @@ import { t } from '@/i18n';
 import { AvatarTeken } from '@/features/player/avatars';
 import { AVATAR_SLEUTEL } from '@/store/children';
 import type { ProfileRecord } from '@/store/db';
+import { heeftNaam } from '@/store/profile';
 
 /**
  * The right-hand end of the app bar: who is practising.
@@ -29,6 +30,9 @@ export function TopBar({
   readonly profile: ProfileRecord;
   readonly onProfile?: (() => void) | undefined;
 }) {
+  // Een kind zonder naam oefent al (ADR-229): de knop staat er, met het
+  // poppetje en zonder naam ernaast.
+  const naamloos = !heeftNaam(profile);
   return (
     <div className="ml-auto flex min-w-0 items-center gap-3">
       {/* The profile switch. It is the way to a sibling's turn (ADR-046), so it
@@ -38,7 +42,9 @@ export function TopBar({
       <button
         type="button"
         className="tk-profiel"
-        aria-label={t('wisselaar.knop', { naam: profile.naam })}
+        aria-label={
+          naamloos ? t('wisselaar.knopZonderNaam') : t('wisselaar.knop', { naam: profile.naam })
+        }
         onClick={onProfile}
       >
         {/* De avatar die het kind koos (ADR-177), met de voorletter als
@@ -47,7 +53,7 @@ export function TopBar({
         <span className="tk-profiel-letter" aria-hidden="true">
           <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={32} />
         </span>
-        <span className="tk-profiel-naam">{profile.naam}</span>
+        {naamloos ? null : <span className="tk-profiel-naam">{profile.naam}</span>}
       </button>
     </div>
   );

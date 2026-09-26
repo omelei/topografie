@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
+import { signIn } from './naam';
 
 /**
  * Rekenen: the second module, and the first thing in this product that is not a
@@ -11,17 +12,6 @@ import { alsOnthouden } from './zaai';
  * and that the rail exists at all, which it did not while there was one module
  * (ADR-037).
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  // The name is in the app bar now, beside the streak — K1 puts the profile
-  // switch top right, so that is where "you are signed in" is visible.
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function startTable(page: Page, tafel: number, hoe: RegExp) {
   await page.goto('/rekenen');

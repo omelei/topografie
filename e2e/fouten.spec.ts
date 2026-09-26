@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * "Je fouten" is een spelvorm op de gekozen set (ADR-103, ADR-168).
@@ -9,15 +10,6 @@ import { expect, test, type Page } from '@playwright/test';
  * niet meer tussen de onderwerpen: wát je oefent koos je in stap 2, en dit
  * zegt welk deel ervan gevraagd wordt.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function kies(page: Page, pad: string, onderwerp: RegExp, hoe: RegExp) {
   await page.goto(pad);

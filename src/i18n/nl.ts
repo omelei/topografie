@@ -18,6 +18,8 @@ export const nl = {
   // opdracht met een plafond: tien, en dan ben je klaar. Niets in het product
   // stopt na tien.
   'home.welcome': 'Hoi {naam}!',
+  // Voor een kind dat nog geen naam typte (ADR-229).
+  'home.welcomeZonderNaam': 'Hoi!',
   'home.todayOpen': 'Kies een oefening en begin met leren.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
@@ -81,7 +83,7 @@ export const nl = {
     'Elk onderwerp heeft een werkblad om te printen, met de antwoorden erbij. Voor de klas is er een set van 30 verschillende bladen.',
   'ouders.privacy.kop': 'Wat er met de gegevens gebeurt',
   'ouders.privacy.tekst':
-    'Wat je kind oefent, blijft op dit apparaat. We vragen alleen een voornaam, en die gaat nergens heen. Onze server telt alleen hoe vaak iets gebeurt, zonder naam.',
+    'Wat je kind oefent, blijft op dit apparaat. Een naam is niet nodig om te oefenen. Typt je kind een voornaam, dan gaat die nergens heen. Onze server telt alleen hoe vaak iets gebeurt, zonder naam.',
   'ouders.kosten.kop': 'Wat het kost',
   'ouders.kosten.gratis': 'Oefenen is gratis, in elk vak en elk onderwerp.',
   'ouders.kosten.premium':
@@ -1564,6 +1566,11 @@ export const nl = {
   // Zonder code (ADR-192): de cijfers staan er dan niet, en de zin belooft ze niet.
   'you.introZonderCode':
     'Je oefent als {naam}. Hieronder vind je je instellingen en jouw diploma’s. Met premium zie je ook welke stof je beheerst en hoe vaak je oefent.',
+  // Zonder naam (ADR-229): dezelfde zinnen, zonder "Je oefent als".
+  'you.introZonderNaam':
+    'Hieronder vind je je instellingen, jouw diploma’s, welke stof je beheerst en hoe vaak je oefent.',
+  'you.introZonderNaamZonderCode':
+    'Hieronder vind je je instellingen en jouw diploma’s. Met premium zie je ook welke stof je beheerst en hoe vaak je oefent.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
   // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
@@ -1636,6 +1643,11 @@ export const nl = {
   // je hem opent, en hij gaat over iedereen in huis — niet alleen over de
   // kinderen.
   'wisselaar.knop': 'Wissel van profiel. Nu oefent {naam}',
+  // Zonder naam (ADR-229): de knop, met het poppetje, en wie er oefent in de lijst.
+  'wisselaar.knopZonderNaam': 'Wissel van profiel',
+  'wisselaar.zonderNaam': 'Nog zonder naam',
+  // Bij een tweede kind krijgt het kind zonder naam er eerst een.
+  'wisselaar.naamNu': 'Naam van wie hier al oefent',
   'wisselaar.titel': 'Wie gebruikt de app?',
   'wisselaar.oefentNu': 'oefent nu',
   'wisselaar.geefBeurt': 'Geef {naam} de beurt',
@@ -2011,6 +2023,7 @@ export const nl = {
   // die van ADR-155: één zin voor een onbekende code en een fout wachtwoord.
   'inlog.knop': 'Ik heb een inlogcode',
   'inlog.titel': 'Inloggen met je code',
+  'inlog.terug': 'Laat maar',
   'inlog.uitleg':
     'Je ouders hebben een code en een wachtwoord voor je. Daarmee oefen je hier verder waar je gebleven was.',
   'inlog.code': 'Inlogcode',
@@ -2236,49 +2249,38 @@ export const nl = {
   //
   // "Op weg", voor je eerste ronde, bestaat niet meer: een stempel is er voor
   // wat je onthoudt, nooit voor meedoen alleen (ADR-040).
-  // Profile
-  'profile.title': 'Wie ben jij?',
-  // "Niet op onze servers" geldt zolang het gezinsaccount niet live staat
+  // De naam, gevraagd waar hij iets doet (ADR-229): na de eerste ronde op
+  // Vandaag, op Jij, vóór de toets en op de ouderpagina. Nooit meer vooraf.
+  // "Niet naar onze server" geldt zolang het gezinsaccount niet live staat
   // (roadmap): een kind in een account heeft zijn voornaam op de server.
-  'profile.help': 'Jouw naam blijft opgeslagen op dit apparaat en niet op onze servers.',
-  'profile.placeholder': 'Je naam',
-  'profile.submit': 'Beginnen',
-  'profile.nameTooShort': 'Typ eerst je naam.',
-  // Wie zonder naam een ronde speelde, leest waarom de naam nu gevraagd wordt
-  // (ADR-208).
-  'profile.proberen': 'Eerst een ronde proberen',
-  'profile.naRonde.title': 'Hoe heet je?',
-  'profile.naRonde.help': 'Typ je naam. Dan blijft bewaard wat je net oefende.',
-  // De volwassene die het apparaat als eerste in handen heeft, oefent niet en
-  // wordt geen profiel: hij typt de naam van zijn kind (ADR-198).
-  'profile.ouder': 'Ik ben een ouder',
-  'profile.ouder.title': 'Hoe heet je kind?',
-  'profile.ouder.help':
-    'De naam van je kind blijft opgeslagen op dit apparaat en niet op onze servers.',
-  'profile.ouder.placeholder': 'Naam van je kind',
-  'profile.ouder.submit': 'Verder',
-  'profile.ouder.nameTooShort': 'Typ eerst de naam van je kind.',
-  'profile.ouder.terug': 'Ik ben een kind',
+  'naam.titel': 'Hoe heet je?',
+  'naam.uitleg': 'Je naam blijft op dit apparaat en gaat niet naar onze server.',
+  // Op Vandaag zegt de vraag wat de naam doet, want oefenen kan ook zonder.
+  'naam.vandaag.uitleg':
+    'Dan staat je naam bovenaan en op je diploma’s. Hij blijft op dit apparaat.',
+  'naam.toets.titel': 'Welke naam komt op je diploma?',
+  'naam.veld': 'Je naam',
+  'naam.bewaar': 'Bewaren',
+  'naam.teKort': 'Typ eerst je naam.',
+  'naam.nietNu': 'Niet nu',
+  // Op de ouderpagina: tegen de ouder, over het kind (ADR-198).
+  'naam.ouder.titel': 'Hoe heet je kind?',
+  'naam.ouder.uitleg':
+    'Deze pagina gaat over je kind. De naam blijft op dit apparaat en gaat niet naar onze server.',
+  'naam.ouder.veld': 'Naam van je kind',
+  'naam.ouder.bewaar': 'Verder',
+  'naam.ouder.teKort': 'Typ eerst de naam van je kind.',
+  // Op Vandaag, zolang er geen naam is: naar de pagina voor ouders (ADR-214).
+  'naam.ikBenOuder': 'Ik ben een ouder',
 
-  // De groep (ADR-151). Na de naam, en altijd over te slaan. Het zegt wat de
+  // De groep (ADR-151). Op Vandaag, onder de eerste ronde, en altijd over te slaan. Het zegt wat de
   // groep doet — wat bovenaan staat — en wat hij niet doet: niets gaat op slot.
   // Zelfde belofte als bij de naam: hij blijft op dit apparaat.
   'groep.vraag': 'In welke groep zit je?',
   'groep.uitleg':
     'We passen het niveau aan op jouw groep. Je kunt ook oefeningen van andere groepen doen.',
   'groep.knop': 'Groep {groep}',
-  // De uitweg zegt nu wat hij doet in plaats van wat het kind tekortkomt.
-  // "Weet ik niet" was een bekentenis over een feit dat elk kind kent; dit is
-  // een keuze, en daarmee hetzelfde antwoord zonder de kleine vernedering.
-  'groep.zegIkNiet': 'Zeg ik niet',
-  // Een ouder is geen profiel (ADR-198): dezelfde vraag, over het kind.
-  'groep.ouder.vraag': 'In welke groep zit {naam}?',
-  'groep.ouder.uitleg':
-    'Dan zetten we de onderwerpen voor die groep bovenaan. Je kunt het later nog veranderen.',
-  'groep.ouder.overslaan': 'Sla over',
-  'groep.ouder.terug': 'Terug naar de naam',
-  'groep.terug': 'Terug naar je naam',
-  // Eén keer op de voordeur, voor een kind dat er al was vóór deze vraag.
+  // Eén keer op de voordeur, voor elk kind dat hem nog niet zag (ADR-229).
   'groep.nietNu': 'Niet nu',
   // Op Jij, in de woorden van het kind (ADR-171), als rij bij de instellingen
   // die de knoppen opent (ADR-172). Met wat er op 1 augustus gebeurt, want dat

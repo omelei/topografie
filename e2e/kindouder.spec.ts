@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De grens tussen kind en ouder, door het hele product (ADR-143). Sinds ADR-171
@@ -14,15 +15,6 @@ import { expect, test, type Page } from '@playwright/test';
  * probleem anders opgelost: niet door het raster te verbergen, maar door niet
  * te stapelen en nergens een nul af te drukken.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async ({ page }) => {
   await signIn(page, 'Fien');

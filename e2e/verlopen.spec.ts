@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Het einde van een jaar, aangekondigd in plaats van afgewacht (ADR-129).
@@ -28,15 +29,6 @@ async function zetCode(page: Page, geldigTot: string) {
     [geldigTot, new Date().toISOString()],
   );
   await page.reload();
-}
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
 }
 
 // Op de premiumpagina, sinds ADR-171 de enige plek: het blok op Voor ouders

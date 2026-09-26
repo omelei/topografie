@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De sleutel van een poging wordt een uuid (ADR-175).
@@ -11,14 +12,6 @@ import { expect, test, type Page } from '@playwright/test';
  * `groep.spec.ts` met een profiel van vóór de groep: een rij van de oude vorm
  * met de hand neerzetten, herladen, en kijken wat ervan geworden is.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Elke poging die er ligt, met alleen wat deze test erover te zeggen heeft. */
 async function pogingen(page: Page) {

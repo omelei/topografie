@@ -30,10 +30,11 @@ test('counts where someone came in and that a round began, and nothing about who
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
 
+  // Na de ronde nodigt Vandaag uit om een naam te typen (ADR-229).
   await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill('Noor');
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
+  const vraag = page.getByRole('form', { name: 'Hoe heet je?' });
+  await vraag.getByLabel('Je naam').fill('Noor');
+  await vraag.getByRole('button', { name: 'Bewaren' }).click();
   await expect(page.getByRole('heading', { name: 'Hoi Noor!' })).toBeVisible();
 
   await expect
@@ -43,6 +44,8 @@ test('counts where someone came in and that a round began, and nothing about who
     p_gebeurtenis: 'binnenkomst',
     p_pad: '/topografie/provincies',
   });
+  // Waar de naam getypt werd, zonder de naam zelf.
+  expect(tellingen).toContainEqual({ p_gebeurtenis: 'naam', p_pad: '/vandaag' });
   expect(tellingen).toContainEqual({
     p_gebeurtenis: 'ronde-zonder-naam',
     p_pad: '/topografie/provincies',

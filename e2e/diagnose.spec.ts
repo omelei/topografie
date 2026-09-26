@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Het meetinstrument achter #diagnose (ADR-128).
@@ -8,15 +9,6 @@ import { expect, test, type Page } from '@playwright/test';
  * er echt gespeeld en echt weggelopen, en daarna wordt geteld wat de app zelf
  * in IndexedDB heeft achtergelaten.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** De provincies: twaalf vragen, waarvan dit er één beantwoordt en dan stopt. */
 async function eenProvincieEnStop(page: Page) {

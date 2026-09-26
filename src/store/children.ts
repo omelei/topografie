@@ -166,6 +166,24 @@ export async function zetGroepGevraagd(kindId: string): Promise<void> {
 }
 
 /**
+ * Of een kind zonder naam de uitnodiging op Vandaag al wegklikte (ADR-229).
+ *
+ * Eén keer, zoals de vraag naar de groep: wie "Niet nu" zegt, ziet hem niet
+ * terug. De naam kan daarna nog op Jij, en het diploma vraagt hem vanzelf.
+ */
+function naamGevraagdSleutel(kindId: string): string {
+  return `naamGevraagd:${kindId}`;
+}
+
+export async function naamAlGevraagd(kindId: string): Promise<boolean> {
+  return (await getSetting(naamGevraagdSleutel(kindId))) === 'ja';
+}
+
+export async function zetNaamGevraagd(kindId: string): Promise<void> {
+  await setSetting(naamGevraagdSleutel(kindId), 'ja');
+}
+
+/**
  * Een kind hernoemen (ADR-126).
  *
  * Tot nu toe kon dat niet: `createChild` schreef de naam één keer en er was

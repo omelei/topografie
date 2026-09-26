@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * Flags: the fourth module, and one integration test per way of practising.
@@ -9,15 +10,6 @@ import { expect, test, type Page } from '@playwright/test';
  * scope of the content are tested without a browser, in
  * `src/game-core/vlaggen.test.ts` and `src/content/vlaggen.content.test.ts`.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /** Where, what, how, start: the one way into a round, whatever was chosen. */
 async function kies(page: Page, regio: string, onderwerp: RegExp, hoe: RegExp) {

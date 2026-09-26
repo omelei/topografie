@@ -1,20 +1,12 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
+import { signIn } from './naam';
 
 /**
  * The vlaggendiploma (ADR-104): six on the flags page with the gaps showing,
  * one press to sit one, nothing said until the end, and the six again on the
  * child's own page.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 /**
  * How the browser drew the flags to choose from, from the group up to the page:

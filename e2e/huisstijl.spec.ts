@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * The house style in the running app (ADR-109).
@@ -7,15 +8,6 @@ import { expect, test, type Page } from '@playwright/test';
  * the page actually uses them: the ground is room, headings are Baloo 2, and
  * a round stays on that paper with its controls at 56 on every size (ADR-112).
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function startRound(page: Page) {
   await page.goto('/topografie');

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * De ronde kondigt zichzelf aan (ADR-140).
@@ -8,15 +9,6 @@ import { expect, test, type Page } from '@playwright/test';
  * heeft — de zin waarmee dit product zijn eigen methode uitlegt, op het moment
  * dat die methode op een fout lijkt.
  */
-
-async function signIn(page: Page, naam: string) {
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill(naam);
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: naam })).toBeVisible();
-}
 
 async function kiesTafelVanEen(page: Page) {
   await page.goto('/rekenen');

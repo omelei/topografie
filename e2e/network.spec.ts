@@ -1,4 +1,5 @@
 import { expect, test, type Request } from '@playwright/test';
+import { signIn } from './naam';
 
 /**
  * The app asks nobody anything.
@@ -62,12 +63,7 @@ test('never asks a third party for anything', async ({ page, baseURL }) => {
   // A real run rather than a page load: the fonts, the map geometry and the
   // stylesheet all arrive at different moments, and a request made only when a
   // child answers a question is precisely the one worth catching.
-  await page.goto('/');
-  await page.getByPlaceholder('Je naam').fill('Sofie');
-  await page.getByRole('button', { name: 'Beginnen' }).click();
-  // De groep is een tweede stap, altijd over te slaan (ADR-151).
-  await page.getByRole('button', { name: 'Zeg ik niet' }).click();
-  await expect(page.getByRole('banner').getByRole('button', { name: 'Sofie' })).toBeVisible();
+  await signIn(page, 'Sofie');
 
   await page.goto('/topografie');
   await page
