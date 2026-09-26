@@ -51,7 +51,8 @@ export function Scholen() {
               {t('scholen.aanvragen')}
             </a>
             <p className="tk-premium-etalage-prijs">
-              <span className="tk-display">{t('scholen.prijs')}</span> {t('premium.perSchooljaar')}
+              <span className="tk-display">{t('scholen.prijs')}</span> {t('premium.perSchooljaar')},{' '}
+              {t('scholen.exclBtw')}
             </p>
           </div>
         </section>

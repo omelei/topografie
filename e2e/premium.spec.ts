@@ -258,7 +258,7 @@ test('without a code the premium page points at the kassa, and with one it does 
     // van de ouder.
     'Heb je al een code?',
   ]);
-  await expect(page.getByText('€ 79,95').first()).toBeVisible();
+  await expect(page.getByText('€ 59,95').first()).toBeVisible();
 
   // Twee manieren van betalen (ADR-164): het jaar als aanrader, de maand
   // ernaast. Per maand betalen bestaat nog niet (ADR-196), dus staat er
@@ -352,7 +352,7 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124).
   await page.goto('/premium');
   await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
-  await expect(page.getByText('€ 79,95')).toHaveCount(0);
+  await expect(page.getByText('€ 59,95')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 });

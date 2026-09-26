@@ -11,29 +11,25 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ### Actielijst voor jou, in deze volgorde
 
-1. **De teller aanzetten:** `tools/premium/schema.sql` opnieuw draaien in de SQL
-   Editor van Supabase (ADR-210, ADR-211). Zonder dat telt de server niets. Na
-   #162 en na #163 opnieuw, voor de begindatum van een code en de plekken per
-   apparaat (ADR-225, ADR-226).
-2. **Testaankoop in de kassa.** De code staat na betalen op het scherm; de mail
-   met de code komt waarschijnlijk niet aan, want in de DNS staan geen records
-   van Resend. Zet die records erbij (Resend → Domains → leer.nu).
-3. **Google Search Console** voor www.leer.nu, en `https://www.leer.nu/sitemap.xml`
+1. **Testaankoop in de kassa.** Kijk of Mollie het nieuwe jaarbedrag vraagt
+   (ADR-230). De code staat na betalen op het scherm; de mail met de code komt
+   waarschijnlijk niet aan, want in de DNS staan geen records van Resend. Zet
+   die records erbij (Resend → Domains → leer.nu).
+2. **Google Search Console** voor www.leer.nu, en `https://www.leer.nu/sitemap.xml`
    insturen. Herinnering staat op 25 september.
-4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
+3. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
    `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
-5. **DMARC opschalen**: mail op @leer.nu werkt via Google Workspace sinds 25
+4. **DMARC opschalen**: mail op @leer.nu werkt via Google Workspace sinds 25
    september, met `p=none`. Zijn de rapporten na twee tot vier weken schoon,
    dan `p=quarantine`; `p=reject` pas als de mail van Resend ook klopt.
-6. **Op 8 oktober de teller uitlezen** (de vragen staan in
+5. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen.
 
 ### Lopend
 
-| Wat                                                                        | Wie | Staat        | Hangt af van |
-| -------------------------------------------------------------------------- | --- | ------------ | ------------ |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij | Te doen      | —            |
-| Klassencode: € 300 inclusief of exclusief btw?                             | jij | Te beslissen | —            |
+| Wat                                                                        | Wie | Staat   | Hangt af van |
+| -------------------------------------------------------------------------- | --- | ------- | ------------ |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij | Te doen | —            |
 
 ### Code afschermen
 
@@ -90,12 +86,13 @@ moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Daarna
 
-| Wat                                                                                                                        | Wie           | Waarom                                                                              | Hangt af van                          |
-| -------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
-| Premium per gezin in plaats van per apparaat                                                                               | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
-| Opruimen van accounts na 24 maanden zonder gebruik                                                                         | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
-| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                 | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Later (24 september)                  |
-| Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
+| Wat                                                                                                                                                      | Wie           | Waarom                                                                              | Hangt af van                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
+| Premium per gezin in plaats van per apparaat                                                                                                             | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
+| Opruimen van accounts na 24 maanden zonder gebruik                                                                                                       | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
+| Een extra kind bijkopen, per jaar of per maand (ADR-230): een tweede product in de kassa, en de grens van 3 kinderen per code in plaats van per apparaat | Claude        | Staat nu als "binnenkort" op de ouderpagina en `/kopen`                             | Premium per gezin                     |
+| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                                               | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Later (24 september)                  |
+| Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur                               | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
 
 ## De volgende tien (24 september)
 

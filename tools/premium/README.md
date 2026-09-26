@@ -133,7 +133,7 @@ where v.code_hash = c.code_hash and c.notitie = 'familie Jansen';
 
 ## Klassencode
 
-Een klas krijgt één code voor 40 apparaten, voor € 300 per jaar op factuur
+Een klas krijgt één code voor 40 apparaten, voor € 300 per jaar exclusief btw, op factuur
 (ADR-200). De code werkt precies als een gezinscode: de leerkracht deelt hem met
 de ouders, en die vullen hem thuis in op de ouderpagina.
 
@@ -268,4 +268,4 @@ Dit is geen vrijgesteld onderwijs: daarvoor is erkend onderwijs én interactie
 tussen docent en leerling nodig, en een oefenprogramma heeft geen van beide.
 Reken op 21%, en laat het door je boekhouder bevestigen. Blijft de jaaromzet
 onder de € 20.000, dan kun je de kleineondernemersregeling gebruiken en draag je
-geen btw af — bij € 79,95 is dat ongeveer 250 codes.
+geen btw af — bij € 59,95 is dat ongeveer 330 codes.

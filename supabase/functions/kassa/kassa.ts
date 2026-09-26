@@ -23,7 +23,7 @@
  */
 
 /** Wat een jaar premium kost, in centen. Eén plek; ADR-123 legt uit waarom dit bedrag. */
-export const PRIJS_CENTEN = 7995;
+export const PRIJS_CENTEN = 5995;
 export const VALUTA = 'EUR';
 
 /** Wat er op het rekeningafschrift en in de Mollie-omschrijving staat. */
@@ -97,7 +97,7 @@ export function bedragVoorMollie(centen: number = PRIJS_CENTEN): string {
   return (centen / 100).toFixed(2);
 }
 
-/** Het bedrag zoals een ouder het leest: "€ 79,95". */
+/** Het bedrag zoals een ouder het leest: "€ 59,95". */
 export function bedragVoorMens(centen: number = PRIJS_CENTEN): string {
   return `€ ${(centen / 100).toFixed(2).replace('.', ',')}`;
 }
