@@ -1784,6 +1784,16 @@ export const nl = {
     'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in. Hij geldt meteen voor al je kinderen.',
   'ouder.premiumAlleKinderen': 'De code geldt voor alle kinderen op dit apparaat.',
   'ouder.bekijkPremium': 'Wat zit er in premium?',
+  // Deze week (ADR-227): wat het dagplan stil deed, per kind, vanaf 5 onderdelen.
+  'ouder.week': 'Deze week',
+  'ouder.weekGeoefend': '{naam} oefende deze week {aantal} verschillende vragen.',
+  'ouder.weekPlan': 'Het plan zet ze weer klaar om te herhalen: {dagen}.',
+  'ouder.weekPlanPremium': 'Met premium zet het plan ze voor {naam} klaar om te herhalen: {dagen}.',
+  'ouder.weekAanbod':
+    'Premium laat elke vraag terugkomen vlak voordat je kind hem vergeet. Zo blijft het hangen.',
+  'ouder.weekVandaag': 'vandaag',
+  'ouder.weekMorgen': 'morgen',
+  'ouder.weekEn': ' en ',
   // Apparaten (ADR-226): welke apparaten de code gebruiken, en zelf vervangen.
   'ouder.apparaten': 'Apparaten',
   'ouder.apparatenDitMet': 'Dit apparaat heeft een plek op de code.',
