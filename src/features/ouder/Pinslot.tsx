@@ -5,6 +5,7 @@ import { isGeldigePin, PIN_LENGTE, probeer, zetPin, type OuderFout } from '@/sto
 import { useAccount } from '@/features/account/useAccount';
 import { Accountcheck } from './Accountcheck';
 import { useOuder } from './useOuder';
+import { bevestigOuder, isOuderBevestigd } from './bevestigd';
 import { Volwassenencheck } from './Volwassenencheck';
 
 /**
@@ -70,7 +71,12 @@ type Stand = 'openen' | 'check' | 'zetten';
 export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
   const { pinGezet } = useOuder();
   const { ingesteld } = useAccount();
-  const [stand, setStand] = useState<Stand>(pinGezet ? 'openen' : 'check');
+  // Wie in dit tabblad net het geboortejaar gaf, bij de premiumpagina, krijgt
+  // die vraag geen tweede keer (ADR-232). Alleen zonder gezinsproject: daar is
+  // het account de poort, en een jaartal vervangt geen wachtwoord.
+  const [stand, setStand] = useState<Stand>(
+    pinGezet ? 'openen' : !ingesteld && isOuderBevestigd() ? 'zetten' : 'check',
+  );
 
   if (stand === 'check') {
     // Met een gezinsproject is het account de poort (ADR-178), en dan is een
@@ -83,7 +89,14 @@ export function Pinslot({ onOpen }: { readonly onOpen: () => void }) {
     // `Accountcheck` vraagt dan om het wachtwoord, en dat is het verschil
     // tussen "er is hier ooit een ouder ingelogd" en "er staat er nu een".
     if (ingesteld) return <Accountcheck onGoed={() => setStand('zetten')} />;
-    return <Volwassenencheck onGoed={() => setStand('zetten')} />;
+    return (
+      <Volwassenencheck
+        onGoed={() => {
+          bevestigOuder();
+          setStand('zetten');
+        }}
+      />
+    );
   }
 
   // De poort is gepasseerd. Geen aparte stand ervoor — wie erdoor is, hoort

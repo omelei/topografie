@@ -1,7 +1,7 @@
 import { expect, test, type Page, type Route } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
 import { alsOnthouden } from './zaai';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -41,28 +41,22 @@ test('without a code the premium parts are labelled once, and say what they do',
   await signIn(page, 'Noor');
 
   // Wat Onthouden was, staat op Jij (ADR-171). Sinds ADR-192 zijn wat je
-  // inmiddels kent en hoe vaak je oefent premium: zonder code staat er de vraag
-  // en niet de cijfers. Bewaard worden ze wel, dus met een code staan ze er
-  // meteen.
+  // inmiddels kent en hoe vaak je oefent premium: zonder code staan de cijfers
+  // er niet. Bewaard worden ze wel, dus met een code staan ze er meteen. En
+  // sinds ADR-232 staat er ook geen vraag naar premium meer (R-11).
   await page.goto('/jij');
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
-  await expect(
-    page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
-  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
+  await expect(page.locator('.tk-page-main')).not.toContainText(/premium/i);
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toHaveCount(0);
   await expect(page.getByRole('list', { name: 'Alles in één blik' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Hoe vaak oefen je?' })).toHaveCount(0);
   await expect(page.getByRole('table')).toHaveCount(0);
 
-  // En dat is de enige vraag op de pagina (ADR-124, ADR-172): geen slot bij elk
-  // blok, en de eigen woorden staan er zonder code niet.
-  await expect(page.getByRole('button', { name: 'Bekijk premium' })).toHaveCount(1);
+  // Geen slot bij elk blok, en de eigen woorden staan er zonder code niet.
+  await expect(page.getByRole('button', { name: 'Bekijk premium' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Hoe gaat het?' })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Eigen woorden' })).toHaveCount(0);
-
-  await page.getByRole('button', { name: 'Bekijk premium' }).first().click();
-  await expect(page).toHaveURL(/\/premium$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
 
   // Een premiummanier op een modulepagina wordt niet gekozen, maar vraagt het
   // even aan de ouders (ADR-163): een venster over de pagina heen, met een
@@ -120,21 +114,23 @@ test('without a code the premium parts are labelled once, and say what they do',
   // De kast hangt vol, ook zonder code (ADR-192). Sinds elk diploma premium
   // is, liet een kast zonder de ringen een kind lezen dat dit product geen
   // diploma's heeft. Nu staan ze er allemaal, en zegt het venster van een
-  // diploma dat je het met premium haalt.
+  // diploma dat je ouders de toets voor je kunnen openzetten.
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
-  await expect(kast.locator('.tk-diploma').first()).toBeVisible();
   for (const vak of ['Topo', 'Klok', 'Taal', 'Vlaggen']) {
     const rij = kast.getByRole('button', { name: new RegExp(`^${vak}`) });
     await expect(rij, vak).toContainText('diploma’s');
   }
   await expect(kast).not.toContainText('Hier zijn ook diploma’s');
+  await kast.getByRole('button', { name: /^Topo / }).click();
+  await expect(kast.locator('.tk-diploma').first()).toBeVisible();
 
   // En de weg eruit is de vraag aan de ouders, met het diploma erin (ADR-193).
   await kast.locator('.tk-diploma').first().click();
   const diploma = page.getByRole('dialog');
-  await expect(diploma).toContainText('Met premium haal je dit diploma');
+  await expect(diploma).toContainText('Een diploma haal je met een toets');
+  await expect(diploma).not.toContainText(/premium/i);
   await expect(diploma.getByRole('button', { name: 'Doe de toets' })).toHaveCount(0);
-  await diploma.getByRole('button', { name: 'Vraag het je ouders' }).click();
+  await diploma.getByRole('button', { name: 'Ik wil dit diploma halen' }).click();
   const vraag = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await expect(vraag).toContainText(/Het diploma .+ hoort bij premium\./);
 });
@@ -234,6 +230,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   await signIn(page, 'Tess');
 
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
 
   // De volgorde van de beslissing (ADR-124, ADR-145): in één zin wat het is en
   // wat het kost, wat het doet, basis en premium naast elkaar, waarom wij, en
@@ -315,6 +312,7 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   // Het veld staat bij de ouder (ADR-173), en de premiumpagina heeft er één
   // knop naartoe. Die knop is de parental gate die Apple en Google eisen.
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
@@ -349,7 +347,8 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Laatst geoefend' })).toBeVisible();
 
   // En er wordt niets meer verkocht: wie net betaald heeft hoeft geen prijs,
-  // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124).
+  // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124). De ouderpagina
+  // staat nog open, dus de deur vraagt niets (ADR-232).
   await page.goto('/premium');
   await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
   await expect(page.getByText('€ 59,95')).toHaveCount(0);
@@ -380,6 +379,7 @@ test('the code takes a place at the first premium round, not when a parent types
   await stubGezin(page);
   await signIn(page, 'Noor');
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
@@ -463,6 +463,54 @@ test('the day plan says how much without a code, and is the plan with one', asyn
  * Een ronde tafel van 1, uit vier gekozen: elk antwoord is de vermenigvuldiger
  * zelf. Meerkeuze, want dan staat het antwoord tussen de vier knoppen.
  */
+/**
+ * Zonder antwoord van de server begint de ronde toch, en één keer gevraagd is
+ * genoeg (ADR-226, ADR-232). Eerst vroeg `beginRonde` zichzelf opnieuw, en de
+ * server kreeg honderden verzoeken per seconde.
+ */
+test('without an answer about a place, the round starts and the server is asked once', async ({
+  page,
+}) => {
+  const claims: unknown[] = [];
+  await page.route(`${SERVER}/rest/v1/rpc/premium_controleer`, async (route) => {
+    const body = route.request().postDataJSON() as Record<string, unknown> | null;
+    if (body?.p_claim === true) {
+      claims.push(body);
+      await route.abort('internetdisconnected');
+      return;
+    }
+    await beantwoord(route, { geldig: true, geldig_tot: '2099-09-13', plek: false });
+  });
+
+  await stubGezin(page);
+  await signIn(page, 'Noor');
+  await page.goto('/premium');
+  await doorDePremiumdeur(page);
+  await page.getByRole('button', { name: 'Ik ben de ouder' }).click();
+  await langsDePoort(page);
+  await page.getByLabel('Nieuwe pincode').fill('1234');
+  await page.getByLabel('Nog een keer').fill('1234');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await page.getByLabel('Typ de code').fill(GOEDE_CODE);
+  await page.getByRole('button', { name: 'Code gebruiken' }).click();
+  await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
+
+  await page.goto('/rekenen');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Tafels/ })
+    .click();
+  await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Bliksemronde/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+
+  await expect(page.locator('.tk-sum')).toBeVisible();
+  expect(claims).toHaveLength(1);
+});
+
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
   await page
@@ -693,7 +741,7 @@ test('without a code the parents read what the child wanted, and what it is read
   await oefenTafelVanEen(page);
   const klaar = page.getByRole('region', { name: 'Je bent klaar voor de toets!' });
   await expect(klaar).toContainText('Je beheerst Tafel van 1 goed genoeg voor het diploma.');
-  await klaar.getByRole('button', { name: 'Vraag het je ouders' }).click();
+  await klaar.getByRole('button', { name: 'Ik wil dit diploma halen' }).click();
   await expect(vraag).toContainText('Je bent klaar voor de toets van Tafel van 1!');
   await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
 
@@ -703,7 +751,7 @@ test('without a code the parents read what the child wanted, and what it is read
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
@@ -734,7 +782,7 @@ test('without a code the parent sees what the day plan did this week, and the ch
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder' }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');

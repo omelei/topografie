@@ -1,7 +1,14 @@
 import type { ComponentType, ReactNode } from 'react';
 import { brand } from '@/config/brand';
 import { Wordmark } from '@/components/Wordmark';
-import { FamilyIcon, PupilIcon, StarIcon, TodayIcon, type IconProps } from '@/components/Icon';
+import {
+  FamilyIcon,
+  PupilIcon,
+  SlotIcon,
+  StarIcon,
+  TodayIcon,
+  type IconProps,
+} from '@/components/Icon';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import {
@@ -57,6 +64,7 @@ const DESTINATION_ICON: Record<Destination['id'], ComponentType<Omit<IconProps, 
   vrienden: FamilyIcon,
   jij: PupilIcon,
   premium: StarIcon,
+  ouders: SlotIcon,
 };
 
 export interface ShellProps {

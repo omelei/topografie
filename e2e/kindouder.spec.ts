@@ -27,7 +27,14 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   // die van alle vijf. Het bezwaar van ADR-158 ging over stapelen — "vier lege
   // wanden met een kop erboven" — en dit is de ingreep. Wat een kind zonder
   // code ziet, staat in premium.spec.
+  // Alle vakken staan dicht tot een kind er een opent (ADR-232).
+  await expect(kast.getByRole('region', { name: 'Rekenen' })).toHaveCount(0);
+  await kast.getByRole('button', { name: /^Rekenen / }).click();
   await expect(kast.getByRole('region', { name: 'Rekenen' })).toBeVisible();
+  // En weer dicht met dezelfde knop.
+  await kast.getByRole('button', { name: /^Rekenen / }).click();
+  await expect(kast.getByRole('region', { name: 'Rekenen' })).toHaveCount(0);
+  await kast.getByRole('button', { name: /^Rekenen / }).click();
   // Tweeëndertig sinds ADR-168: de twaalf tafels en de twintig andere rekensets.
   await expect(kast.locator('.tk-diploma')).toHaveCount(32);
   await expect(kast.getByRole('button', { name: /^Vlaggen / })).toBeVisible();
@@ -35,7 +42,7 @@ test('Jij toont de kast op dag één zonder ergens een nul af te drukken', async
   // En nergens een telling die nul is. Een kop die de afwezigheid uitrekent, is
   // wat "je hebt niets" letterlijk op het scherm zet; daar staat de uitnodiging.
   await expect(page.getByText('0 van de 12 gehaald')).toHaveCount(0);
-  await expect(kast).toContainText('Hier komen je diploma’s te hangen.');
+  await expect(kast).toContainText('Hier staan jouw diploma’s.');
 
   // De regel die hier stond, staat sinds ADR-177 in de uitleg één druk verder:
   // hij legde één voorwaarde uit op de plek waar een kind zijn stand komt

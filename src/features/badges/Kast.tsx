@@ -2,13 +2,11 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ModeId } from '@/game-core';
 import { doelwitten, type Doelwit } from '@/features/home/doel';
 import { naamVan, startbareOnderdelen, type Onderdeel } from '@/features/module/onderdelen';
-import { PremiumLabel } from '@/features/module/PremiumLabel';
 import { vraagOuders } from '@/features/premium/ouderVraag';
 import { usePremium } from '@/features/premium/usePremium';
 import { MODULES, type Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { getActiveChild } from '@/store/children';
-import { loadPlayedRounds } from '@/store/progress';
 import { datumVan, useDiplomaDatums } from './datums';
 import { DiplomaDialoog } from './DiplomaDialoog';
 import { DiplomaRaster, type DiplomaVak } from './DiplomaRaster';
@@ -36,10 +34,10 @@ const SOORT: Readonly<Record<ModeId, TranslationKey>> = {
  * een gat is de enige onverdiende zaak die dit product met opzet tekent, omdat
  * een kind erop kan mikken.
  *
- * **Eén vak open, de rest als regel.** Het bezwaar van ADR-158 ging over
- * stapelen — "vier lege wanden met een kop erboven" — en niet over een
- * onverdiend vakje. Dus staat er één vak open, standaard dat van de laatste
- * ronde, en de andere als regels die opengaan als je erop drukt.
+ * **Elk vak als regel die open- en dichtgaat.** Het bezwaar van ADR-158 ging
+ * over stapelen — "vier lege wanden met een kop erboven" — en niet over een
+ * onverdiend vakje. Dus staat er één vak tegelijk open. Sinds ADR-232 staan ze
+ * standaard allemaal dicht, en gaat een open vak met dezelfde druk weer dicht.
  *
  * **Sinds ADR-192 staat het hele raster er ook zonder code.** ADR-177 zette
  * de vakken zonder code als een regel zonder raster, omdat ADR-116 geen beloning
@@ -80,7 +78,6 @@ export function Kast({
   const { actief: premium } = usePremium();
   const stand = useDiplomaStand();
   const datums = useDiplomaDatums();
-  const laatsteVak = useLaatsteVak();
   const [open, setOpen] = useState<Module['id'] | null>(null);
   const [gekozen, setGekozen] = useState<Doelwit | null>(null);
   const [kindNaam, setKindNaam] = useState('');
@@ -111,20 +108,17 @@ export function Kast({
   );
   const alleTotaal = vakken.reduce((som, rij) => som + rij.doelen.length, 0);
 
-  // Het vak van je laatste ronde staat open. Zonder ronde: tafels, want dat is
-  // het diploma dat een Nederlands kind al wil voordat het deze app kent
-  // (ADR-122).
-  const heeftTafels = vakken.some((rij) => rij.module.id === 'tafels');
-  const openVak = open ?? laatsteVak ?? (heeftTafels ? 'tafels' : (vakken[0]?.module.id ?? null));
+  // Alle vakken staan dicht, en een vak gaat open en weer dicht als je erop
+  // drukt (ADR-232). Eerder stond het vak van je laatste ronde open, en kon je
+  // een vak alleen openen, nooit meer sluiten.
+  const openVak = open;
 
   return (
     <section className="flex flex-col gap-4" aria-label={t('kast.titel')}>
       <div className="flex flex-col gap-1">
+        {/* Geen premiumlabel: Jij noemt premium niet (ADR-232, R-11). */}
         <div className="tk-sectie">
           <h2>{t('kast.titel')}</h2>
-          {/* Halen is premium (ADR-192), en de muren op de vakpagina's zeggen
-              dat ook in hun kop. */}
-          {premium ? null : <PremiumLabel hoorbaar />}
         </div>
         <p className="text-lopend text-tekst-secundair">
           {gehaaldTotaal === 0
@@ -159,14 +153,14 @@ export function Kast({
         const gehaald = doelen.filter((doelwit) => datums.has(doelwit.id)).length;
         return (
           <section key={module.id} className="flex flex-col gap-3" aria-label={naam}>
-            <div className="tk-sectie">
-              <h3>{naam}</h3>
-              {gehaald > 0 ? (
-                <span className="tk-sectie-meta">
-                  {t('kast.stand', { aantal: gehaald, totaal: doelen.length })}
-                </span>
-              ) : null}
-            </div>
+            <button type="button" className="tk-vakrij" aria-expanded onClick={() => setOpen(null)}>
+              <span className="tk-vakrij-naam">{naam}</span>
+              <span className="tk-vakrij-meta">
+                {gehaald > 0
+                  ? t('kast.stand', { aantal: gehaald, totaal: doelen.length })
+                  : t('kast.vakAantal', { aantal: doelen.length })}
+              </span>
+            </button>
             <DiplomaRaster
               module={module.id}
               vakken={doelen.map((doelwit) => vakVan(doelwit, datums))}
@@ -262,10 +256,10 @@ function Venster({
           <div className="flex flex-col gap-3">
             {/* Klaar voor de toets is het moment om het te vragen (ADR-193).
                 Het venster gaat eerst dicht: de vraag aan de ouders is zelf een
-                venster, en twee over elkaar is er één te veel. */}
-            <p className="flex flex-wrap items-center gap-2 text-tekst-secundair">
-              <PremiumLabel hoorbaar />
-              {kaartStand === 'rijp' ? t('premium.wat.diplomaKlaar') : t('premium.wat.diploma')}
+                venster, en twee over elkaar is er één te veel. Zonder het
+                woord premium: dit ziet een kind (ADR-232, R-11). */}
+            <p className="text-lopend text-tekst-secundair">
+              {kaartStand === 'rijp' ? t('diploma.opSlotKlaar') : t('diploma.opSlot')}
             </p>
             <button
               type="button"
@@ -309,29 +303,4 @@ function standZinVan(stand: KaartStand, voortgang: Voortgang | null): string {
   if (stand === 'opfrissen') return t('diploma.opfrissen');
   if (stand === 'nietsNog' || voortgang === null) return t('diploma.nogNiets');
   return t('diploma.nogTeGaan', { aantal: Math.max(1, voortgang.nodig - voortgang.bewezen) });
-}
-
-/** Het vak van de laatste afgemaakte ronde, of null. */
-function useLaatsteVak(): Module['id'] | null {
-  const [vak, setVak] = useState<Module['id'] | null>(null);
-
-  useEffect(() => {
-    let levend = true;
-    void loadPlayedRounds().then((rondes) => {
-      if (!levend) return;
-      const delen = startbareOnderdelen();
-      for (const ronde of rondes) {
-        const deel = delen.find((kandidaat) => kandidaat.setId === ronde.setId);
-        if (deel) {
-          setVak(deel.moduleId);
-          return;
-        }
-      }
-    });
-    return () => {
-      levend = false;
-    };
-  }, []);
-
-  return vak;
 }

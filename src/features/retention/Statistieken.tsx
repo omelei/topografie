@@ -123,7 +123,9 @@ export function Statistieken() {
   // (ADR-192). Het wordt wel altijd bewaard — het herhaalschema heeft het
   // nodig — dus wie premium neemt, ziet meteen alles wat er al was. Zonder
   // code staat hier alleen de vraag, en niets van de getallen erachter.
-  return actief ? <Onthouden premium /> : <Etalage />;
+  // Zonder code staat hier niets meer (ADR-232): Jij noemt premium niet, want
+  // dit is de pagina van het kind (R-11). Wat premium laat zien, ziet de ouder.
+  return actief ? <Onthouden premium /> : null;
 }
 
 /**

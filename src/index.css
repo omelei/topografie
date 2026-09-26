@@ -732,6 +732,12 @@
   .tk-card-accented {
     background: var(--papier);
   }
+  /* Een voorbeeld van wat premium laat zien (ADR-232): een gestreepte rand, want
+   * het is geen echte kaart over het eigen kind. */
+  .tk-voorbeeld {
+    border-style: dashed;
+    margin: 0;
+  }
 
   /* ---- Buttons ---------------------------------------------------------
    * Three weights and no more. Primary is the way on and there is one per

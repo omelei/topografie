@@ -57,9 +57,17 @@ test('de klok biedt "Je fouten" pas aan als er fouten zijn, bij de manieren', as
   await weetHetNiet(page);
 
   // Nu staat hij er, bij de manieren, en hij start een ronde over dezelfde set.
+  // Zonder code, zonder label en zonder venster: je fouten zijn gratis (ADR-231,
+  // ADR-232).
   await page.goto('/klokkijken');
   await wat.getByRole('button', { name: /^Hele uren/ }).click();
+  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).not.toContainText(/premium/i);
   await hoe.getByRole('button', { name: /^Jouw fouten/ }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
   await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start button').click();
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();

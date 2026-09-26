@@ -110,12 +110,6 @@ export function ProfileScreen({
           </p>
         </header>
 
-        {/* Zonder naam staat de vraag ernaar bovenaan (ADR-229): Jij is de
-            pagina over wie je bent. Geen "Niet nu": hij blijft staan tot er
-            een naam is, maar houdt niets tegen. Opnieuw laden, zoals
-            hernoemen, want de naam staat ook in de balk. */}
-        {naamloos ? <NaamVraag moment="jij" onKlaar={() => window.location.reload()} /> : null}
-
         {/* Wie je bent, bovenaan (ADR-177): je avatar, je naam, je groep en de
             schakelaars. Het stond onderaan sinds ADR-172, met het argument dat
             een kind hier komt voor wat het gehaald heeft en niet om iets in te
@@ -241,10 +235,16 @@ function Instellingen({
   return (
     <section className="flex flex-col gap-3" aria-label={t('you.settings')} aria-busy={!loaded}>
       <h2 className="tk-sectie">{t('you.settings')}</h2>
+      {/* Je naam eerst, boven je avatar (ADR-232). Zonder naam staat hier de
+          vraag ernaar (ADR-229): geen "Niet nu", hij blijft staan tot er een
+          naam is, maar houdt niets tegen. Opnieuw laden, zoals hernoemen, want
+          de naam staat ook in de balk. */}
+      {heeftNaam(profile) ? null : (
+        <NaamVraag moment="jij" onKlaar={() => window.location.reload()} />
+      )}
       <ul className="tk-lijst">
-        <Avatarkiezer profile={profile} onProfiel={onProfiel} />
-        {/* Zonder naam is de vraag bovenaan de plek ervoor (ADR-229). */}
         {heeftNaam(profile) ? <Naam profile={profile} /> : null}
+        <Avatarkiezer profile={profile} onProfiel={onProfiel} />
         <GroepInstelling />
         <li>
           <Switch

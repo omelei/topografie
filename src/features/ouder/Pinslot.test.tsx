@@ -85,9 +85,8 @@ describe('de poort vóór de pincode', () => {
 
     expect(screen.getByTestId('accountformulier')).toBeInTheDocument();
     expect(screen.queryByLabelText('In welk jaar ben je geboren?')).toBeNull();
-    // En de zin zegt waaróm, want een mailadres vragen zonder reden leest als
-    // een product dat adressen verzamelt.
-    expect(screen.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeInTheDocument();
+    // Het formulier opent op inloggen, en de kop zegt dat ook (ADR-232).
+    expect(screen.getByRole('heading', { name: 'Log in met je ouderaccount' })).toBeInTheDocument();
   });
 
   it('laat een ingelogde ouder er niet zomaar langs, maar vraagt zijn wachtwoord', () => {

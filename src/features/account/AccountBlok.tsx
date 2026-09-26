@@ -31,9 +31,16 @@ import type { AccountFout } from '@/store/account';
 import { ACCOUNT_FOUT } from './fouten';
 import { useAccount, type Aanmeldpoging, type Herstelpoging, type Uitloggen } from './useAccount';
 
-type Modus = 'inloggen' | 'aanmelden' | 'herstellen';
+export type AccountModus = 'inloggen' | 'aanmelden' | 'herstellen';
+type Modus = AccountModus;
 
-export function AccountBlok() {
+/**
+ * @param onModus wie eromheen een eigen kop zet, hoort welk deel van het
+ *   formulier openstaat, zodat die kop past bij inloggen of aanmelden (ADR-232).
+ */
+export function AccountBlok({
+  onModus,
+}: { readonly onModus?: ((modus: AccountModus) => void) | undefined } = {}) {
   const { sessie, ingesteld, inloggen, aanmelden, uitloggen, herstel } = useAccount();
 
   if (!ingesteld) return null;
@@ -42,7 +49,12 @@ export function AccountBlok() {
     <section className="flex flex-col gap-3" aria-label={t('account.titel')}>
       <h2 className="tk-sectie">{t('account.titel')}</h2>
       {sessie === null ? (
-        <Formulier onInloggen={inloggen} onAanmelden={aanmelden} onHerstel={herstel} />
+        <Formulier
+          onInloggen={inloggen}
+          onAanmelden={aanmelden}
+          onHerstel={herstel}
+          onModus={onModus}
+        />
       ) : (
         <Ingelogd email={sessie.email} onUitloggen={uitloggen} />
       )}
@@ -91,7 +103,9 @@ function Formulier({
   onInloggen,
   onAanmelden,
   onHerstel,
+  onModus,
 }: {
+  readonly onModus?: ((modus: Modus) => void) | undefined;
   readonly onInloggen: Aanmeldpoging;
   readonly onAanmelden: Aanmeldpoging;
   readonly onHerstel: Herstelpoging;
@@ -136,6 +150,7 @@ function Formulier({
 
   function wissel(naar: Modus) {
     setModus(naar);
+    onModus?.(naar);
     setFout(null);
     setGemaild(false);
   }

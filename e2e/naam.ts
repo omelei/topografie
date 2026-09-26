@@ -8,6 +8,16 @@ import { expect, type Page } from '@playwright/test';
  * bovenaan staat zolang er geen naam is. Daarna Vandaag, zonder groep: die
  * kies je op Jij, en Vandaag vraagt er niet naar.
  */
+/**
+ * De deur voor de premiumpagina (ADR-232): het geboortejaar van een ouder,
+ * één keer per tabblad. Daarna vraagt het ouderslot het niet nog eens.
+ */
+export async function doorDePremiumdeur(page: Page) {
+  await page.getByLabel('In welk jaar ben je geboren?').fill('1980');
+  await page.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Premium' })).toBeVisible();
+}
+
 export async function signIn(page: Page, naam: string) {
   await page.goto('/jij');
   const vraag = page.getByRole('form', { name: 'Hoe heet je?' });

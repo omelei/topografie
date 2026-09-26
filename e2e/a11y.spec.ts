@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, stubGezin, VERLOPEN_LINK } from './gezin';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -160,6 +160,13 @@ test('the Jij page has no violations', async ({ page }) => {
   // vallen — precies het raster waar "nog niet" het vaakst gezegd wordt.
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // Een vak open, want dicht staat er geen kaart (ADR-232).
+  await page
+    .getByRole('region', { name: 'Jouw diploma’s' })
+    .getByRole('button', { name: /^Rekenen / })
+    .click();
   expect((await scan(page)).violations).toEqual([]);
 
   // En met een diploma groot open, want dat is een dialoog: een eigen laag met
@@ -371,8 +378,8 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
   // De poort staat er sinds ADR-176 vóór, en die is een eigen scherm met een
   // eigen foutmelding. Deze bouw heeft een gezinsproject, dus het is het
   // account (ADR-178) en niet het geboortejaar.
-  await page.getByRole('button', { name: 'Ouder' }).click();
-  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
+  await expect(page.getByRole('heading', { name: 'Log in met je ouderaccount' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   const blok = page.getByRole('region', { name: 'Account', exact: true });
@@ -409,7 +416,7 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
     .getByRole('region', { name: 'Je kinderen' })
     .getByRole('button', { name: /^Fenna/ })
     .click();
-  await expect(page.getByRole('region', { name: 'Kinderen in je account' })).toContainText(
+  await expect(page.getByRole('region', { name: 'Voortgang bewaren in je account' })).toContainText(
     'Fenna oefent op dit apparaat',
   );
   expect((await scan(page)).violations).toEqual([]);
@@ -455,6 +462,7 @@ test('choosing a new password has no violations', async ({ page }) => {
 test('the premium page has no violations once a code is in', async ({ page }) => {
   await signIn(page, 'Vera');
   await page.goto('/premium');
+  await doorDePremiumdeur(page);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 });
@@ -465,16 +473,15 @@ test.describe('zonder code', () => {
   test('the premium page has no violations while it is still selling', async ({ page }) => {
     await signIn(page, 'Wout');
     await page.goto('/premium');
+    await doorDePremiumdeur(page);
     await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });
 
-  test('the Jij page has no violations while it asks for premium', async ({ page }) => {
+  test('the Jij page has no violations without a code', async ({ page }) => {
     await signIn(page, 'Wout');
     await page.goto('/jij');
-    await expect(
-      page.getByRole('heading', { name: 'Wil je zien wat je inmiddels beheerst?' }),
-    ).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });
 });

@@ -1,5 +1,13 @@
+import type { ReactNode } from 'react';
 import type { Groep, ModeId } from '@/game-core';
-import { NextIcon } from '@/components/Icon';
+import {
+  DiplomaIcon,
+  GoIcon,
+  LadderIcon,
+  NextIcon,
+  ShieldIcon,
+  type IconProps,
+} from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { naamVan, starters, type Onderdeel } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -103,30 +111,37 @@ const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
   tijdvakken: 'home.vak.topo',
 };
 
-const STAPPEN: readonly { readonly kop: TranslationKey; readonly uitleg: TranslationKey }[] = [
-  { kop: 'home.zo.oefen.kop', uitleg: 'home.zo.oefen.uitleg' },
-  { kop: 'home.zo.fouten.kop', uitleg: 'home.zo.fouten.uitleg' },
-  { kop: 'home.zo.moeilijk.kop', uitleg: 'home.zo.moeilijk.uitleg' },
-  { kop: 'home.zo.diploma.kop', uitleg: 'home.zo.diploma.uitleg' },
+const STAPPEN: readonly {
+  readonly kop: TranslationKey;
+  readonly uitleg: TranslationKey;
+  readonly Teken: (props: Omit<IconProps, 'children'>) => ReactNode;
+}[] = [
+  { kop: 'home.zo.oefen.kop', uitleg: 'home.zo.oefen.uitleg', Teken: GoIcon },
+  { kop: 'home.zo.fouten.kop', uitleg: 'home.zo.fouten.uitleg', Teken: ShieldIcon },
+  { kop: 'home.zo.moeilijk.kop', uitleg: 'home.zo.moeilijk.uitleg', Teken: LadderIcon },
+  { kop: 'home.zo.diploma.kop', uitleg: 'home.zo.diploma.uitleg', Teken: DiplomaIcon },
 ];
 
-/** Hoe leer.nu werkt, in vier stappen: oefenen, je fouten, wat moeilijk is, je diploma (ADR-231). */
+/**
+ * Hoe leer.nu werkt, in vier stappen: oefenen, je fouten, wat moeilijk is, je
+ * diploma (ADR-231). Elke stap is een kaartje uit de huisstijl, met een teken,
+ * een label, een kop en een regel (ADR-232).
+ */
 export function ZoWerktHet() {
   return (
     <section className="flex flex-col gap-3" aria-labelledby="zo-kop">
       <h2 id="zo-kop" className="tk-sectie">
         {t('home.zo.titel')}
       </h2>
-      <ol className="tk-uitlegstappen">
-        {STAPPEN.map((stap, index) => (
-          <li key={stap.kop} className="tk-uitlegstap">
-            <span className="tk-uitlegstap-nummer" aria-hidden="true">
-              {index + 1}
+      <ol className="tk-kaarten">
+        {STAPPEN.map(({ kop, uitleg, Teken }, index) => (
+          <li key={kop} className="tk-kaartje">
+            <span className="tk-kaartteken" aria-hidden="true">
+              <Teken size={28} />
             </span>
-            <span className="flex flex-col gap-1">
-              <span className="tk-kaart-titel">{t(stap.kop)}</span>
-              <span className="text-tekst-secundair">{t(stap.uitleg)}</span>
-            </span>
+            <span className="tk-label">{t('home.zo.stap', { nummer: index + 1 })}</span>
+            <span className="tk-kaartje-kop">{t(kop)}</span>
+            <span className="tk-hulp">{t(uitleg)}</span>
           </li>
         ))}
       </ol>

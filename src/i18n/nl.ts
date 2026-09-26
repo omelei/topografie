@@ -170,6 +170,7 @@ export const nl = {
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
   'werkblad.opdracht.engels': 'Schrijf het Engelse woord op de lijn.',
   'home.zo.titel': 'Zo werkt leer.nu',
+  'home.zo.stap': 'Stap {nummer}',
   // Zo werkt leer.nu, in vier stappen (ADR-231), in de woorden van de eigenaar.
   'home.zo.oefen.kop': 'Begin met oefenen',
   'home.zo.oefen.uitleg': 'Kies een vak, een onderwerp en een manier. Je begint direct met spelen.',
@@ -357,6 +358,7 @@ export const nl = {
   'nav.vrienden': 'Vrienden',
   'nav.jij': 'Jij',
   'nav.premium': 'Premium',
+  'nav.ouders': 'Ouders',
   // De rail draagt korte woorden, zoals K1 ze tekent: "topo", niet
   // "Topografie". Een rail van 88 breed leest als een lijst en niet als proza.
   'module.topo': 'Topo',
@@ -883,7 +885,7 @@ export const nl = {
   'wens.vorm': '{vorm} bij {naam}',
   'wens.diploma': 'Het diploma {naam}',
   'wens.oefentoets': 'De oefentoets bij {naam}',
-  'premium.vraagKnop': 'Vraag het je ouders',
+  'premium.vraagKnop': 'Ik wil dit diploma halen',
   'result.klaarVoorToets': 'Je bent klaar voor de toets!',
   'result.klaarVoorToetsUitleg':
     'Je beheerst {naam} goed genoeg voor het diploma. De toets hoort bij premium: vraag het even aan je ouders.',
@@ -938,9 +940,6 @@ export const nl = {
   // wordt: wie premium neemt, begint niet op nul.
   'premium.wat.voortgang':
     'Met premium zie je per kind wat het inmiddels beheerst en hoe vaak het oefent. Leer.nu bewaart het nu al, dus het staat er meteen.',
-  'premium.wat.diploma': 'Met premium haal je dit diploma: je doet de toets, en je naam komt erop.',
-  'premium.wat.diplomaKlaar':
-    'Je bent klaar voor de toets! Met premium doe je hem, en komt je naam op het diploma.',
   'premium.wat.weekdoelen':
     'Met premium kies je elke week je eigen doelen, en zie je hoe ver je ermee bent.',
 
@@ -1572,12 +1571,11 @@ export const nl = {
     'Je oefent als {naam}. Hieronder vind je je instellingen, jouw diploma’s, welke stof je beheerst en hoe vaak je oefent.',
   // Zonder code (ADR-192): de cijfers staan er dan niet, en de zin belooft ze niet.
   'you.introZonderCode':
-    'Je oefent als {naam}. Hieronder vind je je instellingen en jouw diploma’s. Met premium zie je ook welke stof je beheerst en hoe vaak je oefent.',
+    'Je oefent als {naam}. Hieronder vind je je instellingen en jouw diploma’s.',
   // Zonder naam (ADR-229): dezelfde zinnen, zonder "Je oefent als".
   'you.introZonderNaam':
     'Hieronder vind je je instellingen, jouw diploma’s, welke stof je beheerst en hoe vaak je oefent.',
-  'you.introZonderNaamZonderCode':
-    'Hieronder vind je je instellingen en jouw diploma’s. Met premium zie je ook welke stof je beheerst en hoe vaak je oefent.',
+  'you.introZonderNaamZonderCode': 'Hieronder vind je je instellingen en jouw diploma’s.',
   // De naam wijzigen is een rij bij de instellingen (ADR-172): iets wat je bijna
   // nooit doet, en de naam zelf staat al in de kop.
   // De avatar (ADR-177). Acht vormen, want de kleuren van dit product zijn
@@ -1757,8 +1755,7 @@ export const nl = {
   // account dat in F3 komt, en twee woorden voor twee verschillende sloten is
   // precies wat er nodig is zodra ze allebei bestaan.
   'ouder.titel': 'Voor de ouder',
-  'ouder.intro':
-    'Hier regel je wat er voor je kinderen aanstaat, en hier vul je de code in. Doe je vijf minuten niets, dan gaat de app terug naar je kind.',
+  'ouder.intro': 'Hier stel je je ouderaccount in.',
   'ouder.terugNaarKind': 'Terug naar {naam}',
 
   'ouder.kinderen': 'Je kinderen',
@@ -1789,6 +1786,10 @@ export const nl = {
   'ouder.hoeGaatHetUitleg':
     'Per kind, over alle vakken bij elkaar. Per som en per woord kijk je op Jij, bij je kind zelf.',
   'ouder.kindNogNiets': '{naam} heeft nog niets geoefend.',
+  // Een voorbeeld van wat premium hier laat zien (ADR-232), met een verzonnen
+  // kind: nooit verzonnen cijfers bij het eigen kind.
+  'ouder.voorbeeldLabel': 'Voorbeeld',
+  'ouder.voorbeeldNaam': 'Sanne',
   // Over het kind in de derde persoon: de ouder leest dit, en "je" op deze
   // pagina is de ouder. Dezelfde vorm als op Jij, met de naam erin: "90 — kent
   // Fem inmiddels — van de 120 die Fem geoefend heeft".
@@ -1804,8 +1805,18 @@ export const nl = {
     'Zonder oefenen is daar over drie weken naar schatting nog {procent}% van over.',
 
   'ouder.premium': 'Premium',
-  'ouder.premiumUit':
-    'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in. Hij geldt meteen voor al je kinderen.',
+  'ouder.premiumUit': 'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in.',
+  // Instellingen van de ouder (ADR-232).
+  'ouder.sessie': 'De ouderpagina sluit na',
+  'ouder.sessieRegel': 'Doe je zo lang niets, dan gaat de app terug naar je kind.',
+  'ouder.sessieMinuten': '{aantal} minuten',
+  'ouder.pinWijzigen': 'Pincode wijzigen',
+  'ouder.pinWijzigenRegel': 'Kies een nieuwe pincode van vier cijfers.',
+  'ouder.pinGewijzigd': 'Je nieuwe pincode is bewaard.',
+  // De code op dit apparaat (ADR-232), om hem op een ander apparaat in te vullen.
+  'ouder.jouwCode': 'Je code: {code}',
+  'ouder.jouwCodeUitleg':
+    'Vul deze code in op een ander apparaat om daar ook premium te gebruiken.',
   'ouder.premiumAlleKinderen': 'De code geldt voor 3 kinderen, op 3 apparaten.',
   // Een extra kind (ADR-230). Alleen hier, achter de pincode (R-11), en als
   // "binnenkort": de kassa verkoopt het nog niet, en er passen nu 3 kinderen op
@@ -1878,9 +1889,9 @@ export const nl = {
   // het moment dat iemand hem kwijt is, is hem te laat noemen.
   'ouder.maakTitel': 'Maak een ouderpagina',
   'ouder.maakUitleg':
-    'Kies een pincode van vier cijfers. Daarmee kom je bij de instellingen, bij premium en bij hoe het met je kinderen gaat.',
+    'Maak je ouderpagina aan om de voortgang van je kind(eren) te zien. Kies een pincode zodat alleen jij hierbij kunt. Jouw kinderen hebben geen toegang tot je ouderpagina zonder jouw pincode.',
   'ouder.maakHulp':
-    'De pincode staat alleen op dit apparaat en gaat nergens heen. Raak je hem kwijt, dan kun je hier een nieuwe zetten.',
+    'Je pincode wordt alleen op dit apparaat opgeslagen. Raak je hem kwijt, dan kun je hier een nieuwe instellen.',
   'ouder.slotTitel': 'Even je pincode',
   'ouder.slotUitleg': 'Vier cijfers, en je bent er.',
   'ouder.pin': 'Pincode',
@@ -1899,9 +1910,16 @@ export const nl = {
   // zet er een ronde buiten dit apparaat tussen. Wat hij daarnaast oplevert —
   // een vergeten pincode van overal herstellen — staat erbij, want dat is voor
   // een gezin waarschijnlijk het echte argument.
+  // De kop boven het accountformulier, per deel (ADR-232).
+  'ouder.inlogTitel': 'Log in met je ouderaccount',
+  'ouder.inlogUitleg':
+    'Heb je al een ouderaccount? Log dan in met je e-mailadres en wachtwoord. Daarna kies je een pincode voor dit apparaat.',
   'ouder.accountTitel': 'Maak een ouderaccount',
   'ouder.accountUitleg':
-    'Hierachter staan de instellingen, premium en hoe het met je kinderen gaat. Daarvoor maak je een account met je e-mailadres. We sturen je een mail met een link. Pas als je daarop klikt, kun je verder.',
+    'Maak een account met je e-mailadres. We sturen je een mail met een link. Klik op die link, dan kun je verder.',
+  'ouder.herstelTitel': 'Wachtwoord vergeten',
+  'ouder.herstelKopUitleg':
+    'Vul je e-mailadres in. We sturen je een mail om een nieuw wachtwoord te kiezen.',
   'ouder.accountHulp':
     'Zo weten we dat er een volwassene meekijkt. En raak je later je pincode kwijt, dan kom je er met dit account overal weer in — niet alleen op dit apparaat.',
 
@@ -1921,6 +1939,11 @@ export const nl = {
   // weggegooid, en de hulpregel zegt dat — een ouder die dit product om zijn
   // privacy koos, hoort niet te moeten raden.
   'ouder.checkTitel': 'Ben je een volwassene?',
+  // De deur voor de premiumpagina (ADR-232): alleen voor een ouder.
+  'premium.poortTitel': 'Deze pagina is voor ouders',
+  'premium.poortUitleg':
+    'Hier staat wat premium is en wat het kost. Ben je een ouder? Vul dan je geboortejaar in.',
+  'premium.poortTerug': 'Terug naar Vandaag',
   'ouder.checkUitleg':
     'Hierachter staan de instellingen, premium en hoe het met je kinderen gaat. Dat is niet voor kinderen.',
   'ouder.checkVraag': 'In welk jaar ben je geboren?',
@@ -2000,22 +2023,23 @@ export const nl = {
   // De kinderen van dit apparaat, meegenomen naar het account (ADR-187). Dit is
   // het moment van toestemming (artikel 8 AVG): wat er op de server komt, staat
   // erbij, en ook dat het er weer af kan.
-  'overname.titel': 'Kinderen in je account',
+  // Herschreven (ADR-232): eerst wat het oplevert, dan wat het doet.
+  'overname.titel': 'Voortgang bewaren in je account',
   'overname.uitleg':
-    'Staat een kind in je account, dan staat wat het oefent ook veilig op onze server, en niet alleen op dit apparaat. Na elke ronde komt daar bij wat er nieuw is.',
+    'Zet een kind in je account. Dan wordt wat het oefent ook op onze server bewaard. Zo raak je niets kwijt als dit apparaat stuk of leeg raakt, en kan je kind op een ander apparaat verder. Na elke ronde wordt het bijgewerkt.',
   'overname.en': 'en',
   'overname.hierEen': '{namen} oefent op dit apparaat, maar staat nog niet in je account.',
   'overname.hierMeer': '{namen} oefenen op dit apparaat, maar staan nog niet in je account.',
-  'overname.wie': 'Wie neem je mee?',
+  'overname.wie': 'Welke kinderen zet je in je account?',
   'overname.toestemmingUitleg':
-    'Dan komt op onze server te staan, binnen de EU: de voornaam, de groep, de antwoorden, de diploma’s en de doelen. Niets anders, en nooit voor iemand anders. Je kunt een kind er altijd weer uit halen: dan verdwijnt alles van dat kind van de server, en blijft het op dit apparaat staan.',
+    'Op onze server, binnen de EU, komt dan te staan: de voornaam, de groep, de antwoorden, de diploma’s en de doelen. Niets anders, en we delen het met niemand. Je kunt een kind altijd weer uit je account halen. Dan verdwijnt alles van dat kind van de server, en blijft het op dit apparaat staan.',
   'overname.toestemming': 'Ik ben hun ouder of voogd, en ik geef toestemming.',
-  'overname.knop': 'Neem mee naar mijn account',
+  'overname.knop': 'Zet in mijn account',
   'overname.bezig': 'Bezig met {naam}…',
-  'overname.nietVerstuurd': 'In je account, maar nog niet alles is verstuurd.',
-  'overname.verstuurd': 'In je account, bijgewerkt op {datum}.',
+  'overname.nietVerstuurd': 'Staat in je account, maar nog niet alles is verstuurd.',
+  'overname.verstuurd': 'Staat in je account. Bijgewerkt op {datum}.',
   'overname.opnieuw': 'Verstuur opnieuw',
-  'overname.haalWeg': 'Haal uit mijn account',
+  'overname.haalWeg': 'Uit mijn account halen',
   'overname.haalWegVraag':
     'Alles van {naam} verdwijnt dan van onze server. Op dit apparaat blijft het gewoon staan.',
   'overname.haalWegJa': 'Ja, haal weg',
@@ -2024,7 +2048,7 @@ export const nl = {
   'overname.nietHier': 'In je account, maar niet op dit apparaat.',
   'overname.zetHier': 'Zet {naam} op dit apparaat',
   'overname.ofKoppel':
-    'Oefent {naam} hier al, onder deze of een andere naam? Kies wie het is, dan voegen we ze samen.',
+    'Oefent {naam} op dit apparaat al, misschien onder een andere naam? Kies dan die naam. Dan voegen we alles samen tot één kind.',
   'overname.koppel': '{hier} is {daar}',
   'overname.opnieuwLaden': 'Probeer opnieuw',
   'overname.fout.geen-verbinding': 'Er is nu geen verbinding. Probeer het zo nog eens.',
@@ -2092,7 +2116,8 @@ export const nl = {
   'diploma.nogNiet': 'Nog niet',
   // Rijp: de pagina is ver genoeg om af te zwemmen (ADR-141, ADR-149).
   // Zonder code: klaar voor de toets, en die hoort bij premium (ADR-192).
-  'diploma.rijpMetPremium': 'Klaar voor de toets, met premium',
+  // Zonder het woord premium (ADR-232): een ring ziet het kind.
+  'diploma.rijpMetPremium': 'Klaar voor de toets',
   'diploma.rijp': 'Klaar voor de toets',
 
   // Wat er onder een diplomakaart staat, per stand. Vijf zinnen, en nooit een
@@ -2127,7 +2152,7 @@ export const nl = {
   'diploma.beheers': '{bewezen} van {totaal} beheers je',
   'diploma.nogTeGaan': 'Nog {aantal} te gaan. Dan mag je de toets doen, en kleurt dit diploma in.',
   'diploma.datum': 'Datum',
-  'diploma.handtekening': 'Handtekening van papa, mama of juf',
+  'diploma.handtekening': 'Handtekening van papa, mama, juf of meester',
   'diploma.uitleg.topo': 'Je vindt ze allemaal zonder hulp op de kaart.',
   'diploma.uitleg.tafels': 'Je rekent ze allemaal uit je hoofd.',
   'diploma.uitleg.klok': 'Je leest de klok zonder hulp.',
@@ -2252,9 +2277,12 @@ export const nl = {
 
   // De diplomakast op Jij: alle diploma's, één vak open en de rest als regel.
   'kast.titel': 'Jouw diploma’s',
+  // In het venster van een diploma dat je nog niet kunt halen (ADR-232). Voor
+  // het kind, dus zonder het woord premium (R-11).
+  'diploma.opSlot': 'Een diploma haal je met een toets. Die kunnen je ouders voor je openzetten.',
+  'diploma.opSlotKlaar': 'Je bent klaar voor de toets! Je ouders kunnen hem voor je openzetten.',
   'kast.stand': '{aantal} van de {totaal} gehaald.',
-  'kast.leeg':
-    'Hier komen je diploma’s te hangen. Druk op een diploma om te zien hoe je het haalt.',
+  'kast.leeg': 'Hier staan jouw diploma’s. Klik op een diploma om te zien hoe je het kunt halen.',
   'kast.vakAantal': '{aantal} diploma’s',
 
   // Reisstempels. Elk criterium staat erbij, want een stempel die je niet kunt

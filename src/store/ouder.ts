@@ -361,9 +361,28 @@ export function isOuder(ruw: string | null = leesRuw(), now: Date = new Date()):
  * hij openstaat, is een pagina zonder slot.
  */
 export function verleng(now: Date = new Date()): void {
-  const tot = new Date(now.getTime() + SESSIE_MINUTEN * MINUUT_MS);
+  const tot = new Date(now.getTime() + sessieMinuten() * MINUUT_MS);
   schrijf(sessie(), SESSIE_SLEUTEL, tot.toISOString());
   meld();
+}
+
+/**
+ * Hoe lang de ouderpagina openblijft zonder dat er iets gebeurt (ADR-232).
+ * Een instelling van de ouder, op dit apparaat: vijf minuten is de standaard,
+ * en wie rustig iets wil lezen, kiest er meer.
+ */
+export const SESSIE_KEUZES = [5, 15, 30] as const;
+const SESSIE_DUUR_SLEUTEL = 'leernu.oudersessieMinuten';
+
+export function sessieMinuten(): number {
+  const ruw = Number(lees(lokaal(), SESSIE_DUUR_SLEUTEL));
+  return (SESSIE_KEUZES as readonly number[]).includes(ruw) ? ruw : SESSIE_MINUTEN;
+}
+
+export function zetSessieMinuten(minuten: number): void {
+  if (!(SESSIE_KEUZES as readonly number[]).includes(minuten)) return;
+  schrijf(lokaal(), SESSIE_DUUR_SLEUTEL, String(minuten));
+  verleng();
 }
 
 /** Terug naar het kind. Ook wat de knop op de ouderpagina doet. */

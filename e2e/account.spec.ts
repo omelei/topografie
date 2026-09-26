@@ -31,7 +31,7 @@ async function naarDePoort(page: Page) {
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder', exact: false }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   return page.getByRole('region', { name: 'Account', exact: true });
 }
 
@@ -77,7 +77,7 @@ test('wie inlogt, ziet dat, en logt weer uit', async ({ page }) => {
     .getByRole('banner')
     .getByRole('button', { name: /Wissel van profiel/ })
     .click();
-  await page.getByRole('button', { name: 'Ouder', exact: false }).click();
+  await page.getByRole('button', { name: /^Ouder(?!s)/ }).click();
   await expect(page.getByLabel('Pincode')).toBeVisible();
 });
 

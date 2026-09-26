@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 
 /**
  * De ouder en het kind (ADR-173).
@@ -24,7 +24,10 @@ function wisselaar(page: Page) {
 async function maakOuder(page: Page, pin = '1234') {
   await stubGezin(page);
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill(pin);
   await page.getByLabel('Nog een keer').fill(pin);
@@ -50,11 +53,15 @@ test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
   await signIn(page, 'Sam');
 
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
 
   // Eerst de poort, en dán pas een pincode maken (ADR-176, ADR-178). Deze bouw
-  // heeft een gezinsproject, dus de poort is het account.
-  await expect(page.getByRole('heading', { name: 'Maak een ouderaccount' })).toBeVisible();
+  // heeft een gezinsproject, dus de poort is het account. Het venster opent op
+  // inloggen, en de kop zegt dat (ADR-232).
+  await expect(page.getByRole('heading', { name: 'Log in met je ouderaccount' })).toBeVisible();
   await langsDePoort(page);
 
   await expect(page.getByRole('heading', { name: 'Maak een ouderpagina' })).toBeVisible();
@@ -103,7 +110,10 @@ test('een verkeerde pincode komt er niet in, en de goede wel', async ({ page }) 
   await expect(page).toHaveURL(/\/$/);
 
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   await expect(page.getByRole('heading', { name: 'Even je pincode' })).toBeVisible();
 
   const venster = page.getByRole('dialog');
@@ -146,7 +156,10 @@ test('een kind komt niet langs de poort en kan de pincode dus niet zetten', asyn
   );
 
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
 
   // Er staat geen pincodeveld: eerst de poort. En geen geboortejaar meer, want
   // dat is de terugval voor een bouw zonder project (ADR-178).
@@ -194,7 +207,10 @@ test('het kind komt met de sessie van zijn ouder de pincode niet opnieuw zetten'
   );
 
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
 
   // Geen pincodeveld: eerst het wachtwoord, ook al staat er een sessie.
@@ -210,7 +226,10 @@ test('het kind komt met de sessie van zijn ouder de pincode niet opnieuw zetten'
   // En de oude code doet het nog: er is niets weggehaald door te proberen.
   await page.goto('/');
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   await page.getByLabel('Pincode').fill('4821');
   await page.getByRole('button', { name: 'Verder', exact: true }).click();
   await expect(page).toHaveURL(/\/ouder$/);
@@ -230,7 +249,10 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   await page.getByRole('button', { name: /Terug naar Roos/ }).click();
 
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   await page.getByRole('button', { name: 'Pincode vergeten?' }).click();
 
   // Ook hier staat de poort ervoor, en die is de hele bescherming. De sessie
@@ -249,7 +271,10 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   // En de oude code werkt niet meer.
   await page.getByRole('button', { name: /Terug naar Roos/ }).click();
   await wisselaar(page).click();
-  await page.getByRole('dialog').getByRole('button', { name: 'Ouder' }).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
   const venster = page.getByRole('dialog');
   await venster.getByLabel('Pincode', { exact: true }).fill('4821');
   await venster.getByRole('button', { name: 'Verder', exact: true }).click();
@@ -377,6 +402,7 @@ test.describe('zonder code', () => {
     await stubGezin(page);
     await signIn(page, 'Wout');
     await page.goto('/premium');
+    await doorDePremiumdeur(page);
 
     await expect(page.getByLabel('Typ de code')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Code gebruiken' })).toHaveCount(0);
@@ -443,4 +469,47 @@ test('het laatste kind kan niet weg', async ({ page }) => {
   await kinderen.getByRole('button', { name: /^Noor/ }).click();
   await expect(kinderen.getByLabel('Naam')).toBeVisible();
   await expect(kinderen.getByRole('button', { name: /van dit apparaat/ })).toHaveCount(0);
+});
+
+/**
+ * Twee instellingen voor de ouder zelf (ADR-232): hoe lang de ouderpagina
+ * openblijft, en een nieuwe pincode zonder de poort opnieuw.
+ */
+test('de ouder kiest hoe lang de pagina openblijft en wijzigt de pincode', async ({ page }) => {
+  await signIn(page, 'Lot');
+  await maakOuder(page, '4821');
+  await expect(page.getByText('Hier stel je je ouderaccount in.')).toBeVisible();
+
+  const duur = page.getByRole('group', { name: 'De ouderpagina sluit na' });
+  await expect(duur.getByRole('button', { name: '5 minuten', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await duur.getByRole('button', { name: '15 minuten', exact: true }).click();
+  await page.reload();
+  await expect(duur.getByRole('button', { name: '15 minuten', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.getByRole('button', { name: /^Pincode wijzigen/ }).click();
+  await page.getByLabel('Nieuwe pincode').fill('1357');
+  await page.getByLabel('Nog een keer').fill('1357');
+  await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
+  await expect(page.getByText('Je nieuwe pincode is bewaard.')).toBeVisible();
+
+  // Terug naar het kind, en dan opent alleen de nieuwe pincode de deur.
+  await page.getByRole('button', { name: /Terug naar Lot/ }).click();
+  await wisselaar(page).click();
+  await page
+    .getByRole('dialog')
+    .getByRole('button', { name: /^Ouder(?!s)/ })
+    .click();
+  const venster = page.getByRole('dialog');
+  await venster.getByLabel('Pincode', { exact: true }).fill('4821');
+  await venster.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(venster.getByRole('alert')).toContainText('niet de pincode van dit apparaat');
+  await venster.getByLabel('Pincode', { exact: true }).fill('1357');
+  await venster.getByRole('button', { name: 'Verder', exact: true }).click();
+  await expect(page).toHaveURL(/\/ouder$/);
 });

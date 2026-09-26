@@ -28,7 +28,16 @@ import { isVolwassenJaar } from '@/store/ouder';
  * tikt een jaartal in. Wat het koopt is dat de zevenjarige er niet in wandelt
  * en dat de ouder de deur houdt.
  */
-export function Volwassenencheck({ onGoed }: { readonly onGoed: () => void }) {
+export function Volwassenencheck({
+  onGoed,
+  titel = t('ouder.checkTitel'),
+  uitleg = t('ouder.checkUitleg'),
+}: {
+  readonly onGoed: () => void;
+  /** Voor een andere deur dan de ouderpagina, zoals premium (ADR-232). */
+  readonly titel?: string;
+  readonly uitleg?: string;
+}) {
   const [jaar, setJaar] = useState('');
   const [fout, setFout] = useState(false);
   const veld = useId();
@@ -49,8 +58,8 @@ export function Volwassenencheck({ onGoed }: { readonly onGoed: () => void }) {
       <p className="tk-kaartteken">
         <SlotIcon size={24} />
       </p>
-      <h2 className="tk-titel">{t('ouder.checkTitel')}</h2>
-      <p className="text-lopend">{t('ouder.checkUitleg')}</p>
+      <h2 className="tk-titel">{titel}</h2>
+      <p className="text-lopend">{uitleg}</p>
 
       <label htmlFor={veld} className="tk-label">
         {t('ouder.checkVraag')}

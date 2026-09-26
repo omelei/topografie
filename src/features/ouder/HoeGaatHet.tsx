@@ -103,6 +103,7 @@ export function HoeGaatHet() {
       <section className="flex flex-col gap-3" aria-label={t('ouder.hoeGaatHet')}>
         <h2 className="tk-sectie">{t('ouder.hoeGaatHet')}</h2>
         <Wensen />
+        <Voorbeeld />
         <PremiumSlot wat="premium.wat.voortgang" />
       </section>
     );
@@ -156,6 +157,36 @@ export function HoeGaatHet() {
         </ul>
       )}
     </section>
+  );
+}
+
+/**
+ * Wat dit blok met premium laat zien, als voorbeeld (ADR-232).
+ *
+ * Een slot zegt wát er achter zit; een voorbeeld laat het zien. Met een
+ * voorbeeldkind en voorbeeldcijfers, nooit die van het eigen kind: een getal
+ * over je eigen kind dat verzonnen is, is erger dan geen getal. Het staat er als
+ * voorbeeld, in woorden en in beeld.
+ */
+function Voorbeeld() {
+  const naam = t('ouder.voorbeeldNaam');
+  return (
+    <figure
+      className="tk-card tk-voorbeeld flex flex-col gap-2"
+      aria-label={t('ouder.voorbeeldLabel')}
+    >
+      <figcaption className="tk-pil self-start">{t('ouder.voorbeeldLabel')}</figcaption>
+      <h3 className="tk-sectie">{naam}</h3>
+      <p className="tk-reeks-getal">
+        <span className="tk-reeks-aantal">90</span>
+        <span className="tk-reeks-zin">{t('ouder.kindKent', { naam })}</span>
+      </p>
+      <p className="tk-hulp">{t('ouder.kindKentVan', { aantal: 120, naam })}</p>
+      <p className="text-lopend">{t('ouder.kindDagen', { dagen: 4, naam })}</p>
+      <p className="text-lopend text-tekst-secundair">
+        {t('ouder.kindSchatting', { procent: 85 })}
+      </p>
+    </figure>
   );
 }
 
