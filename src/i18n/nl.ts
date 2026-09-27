@@ -132,7 +132,7 @@ export const nl = {
   'over.vragen': 'Vragen van ouders',
   'over.vraag.hoe': 'Hoe oefen je {onderwerp}?',
   'over.antwoord.hoe':
-    'Kies een manier en start een ronde. Een ronde duurt een paar minuten, en je ziet meteen wat goed is.',
+    'Kies een spelvorm en start een ronde. Een ronde duurt een paar minuten, en je ziet meteen wat goed is.',
   'over.vraag.groep': 'Voor welke groep is dit?',
   'over.antwoord.groep': 'Voor {groepen} van de basisschool.',
   'over.vraag.werkblad': 'Kan mijn kind dit ook op papier oefenen?',
@@ -685,7 +685,7 @@ export const nl = {
   'start.onderwerp': 'onderwerp',
   'start.som': 'som',
   'start.welke': 'welke',
-  'start.manier': 'manier',
+  'start.manier': 'spelvorm',
   'start.ronde': 'ronde',
   'start.stand': 'stand',
   'start.vragen': '{aantal} vragen',
@@ -1762,7 +1762,7 @@ export const nl = {
   // account dat in F3 komt, en twee woorden voor twee verschillende sloten is
   // precies wat er nodig is zodra ze allebei bestaan.
   'ouder.titel': 'Ouderpagina',
-  'ouder.intro': 'Hier stel je je ouderaccount in.',
+  'ouder.intro': 'Hier vind je je ouderinstellingen.',
   'ouder.terugNaarKind': 'Terug naar {naam}',
 
   'ouder.kinderen': 'Je kinderen',

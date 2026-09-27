@@ -64,7 +64,7 @@ Eén begrip, één woord, overal.
 | ------------------------------------------------ | -------------------------------- | ----------------------------- |
 | Wat je oefent: Provincies, Tafel van 7, Europa   | **onderwerp**                    | set, lijst, reeks             |
 | Het vak: Topo, Rekenen, Klok, Vlaggen, Taal      | **vak**                          | module                        |
-| Hoe je oefent: Meerkeuze, Zelf typen, Aanwijzen  | **manier**                       | vorm, spelvorm, modus         |
+| Hoe je oefent: Meerkeuze, Zelf typen, Aanwijzen  | **spelvorm**                     | vorm, manier, modus           |
 | Een reeks vragen achter elkaar                   | **ronde**                        | potje, oefening, spel, sessie |
 | De toets voor een diploma                        | **toets**                        | afzwemmen, examen, proefwerk  |
 | Oefenen zoals op school, zonder hulp, met cijfer | **oefentoets**                   | proeftoets                    |
