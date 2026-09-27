@@ -13684,6 +13684,65 @@ ADR-234 en ADR-235.
 - **De klassencode per schooljaar.** Dat hangt af van hoe de klassencode
   verkocht wordt, en dat is een besluit van de eigenaar.
 
+## ADR-237 — Denker in stijl Strip: witte ogen, geen losse punt, elf uitdrukkingen
+
+**Status:** accepted. **Date:** 2026-09-27. **Volgt op** ADR-182 en ADR-183. Op
+verzoek van de eigenaar: het herontwerp van Denker ("stijl Strip", na review
+aangeleverd als elf geanimeerde SVG's met een stylesheet) doorvoeren in de app
+en de documentatie.
+
+### Context
+
+Denker v2 (ADR-182) had kleine ogen in cacao, wenkbrauwen en een losse punt
+boven zijn hoofd. Het herontwerp maakt hem ronder en symmetrisch, geeft hem
+grote witte ogen met een pupil in nacht (`#1B2A5E`), oogleden voor de
+gevoelige uitdrukkingen, armen met een rand, en vier nieuwe uitdrukkingen. De
+punt en de wenkbrauwen zijn weg. De levering noemt `denken` het beeldmerk.
+
+### Besluit
+
+- **De tekening staat in `docs/leer.js`,** niet in losse bestanden. `leer.js`
+  tekent Denker zoals de levering: `tools/merk-uit-leer.mjs` schrijft er de
+  uitdrukkingen, het logo, het beeldmerk, het app-icoon en de PNG's uit, en
+  elk van de elf uitdrukkingen is in Chromium pixel voor pixel gelijk aan het
+  aangeleverde bestand. De regel van ADR-182 blijft: niets met de hand.
+- **Elf uitdrukkingen:** denken, blij, juichen, bemoedigend, trots, slapen,
+  zwaaien, en nieuw verdrietig, jaloers, verbaasd en verward (in de war).
+  Elk ook eenvoudig onder 36 px: glans, wangen, schaduw en de lichtjes in de
+  ogen vallen weg. De levering had geen kleine versie; dit is alleen
+  weglaten, niets nieuws tekenen.
+- **Het beeldmerk is de nieuwe Denker die denkt,** ook in het liggende en
+  staande logo en in het app-icoon. Zonder punt was elke kleurversie van
+  Denker los gelijk; er is nu één `beeldmerk/denker.svg`. Het logo is lager
+  geworden (viewBox 4231 × 855), dus `Wordmark` rekent met die verhouding. Het
+  app-icoon is het gezicht van de nieuwe Denker op de koraal tegel, zoals het
+  oude het gezicht van de oude was.
+- **Nacht is een merkkleur** (`--leernu-nacht` in `kleuren.css`), alleen voor
+  de tekening. De app gebruikt hem nergens anders.
+- **De bewegingen komen uit de levering,** als `tk-denker-*` in `index.css`
+  met de nieuwe draaipunten: knipperen, zwaaien, juichen, duim, ademen,
+  z's, en nieuw een traan, gluren, schrikken, wiebelen en een wiebelend
+  vraagteken. Het zweven van de punt en het twinkelen van de ster zijn weg.
+  Waar beweging uit staat, staat alles stil en blijven z's, traan en
+  vraagteken zichtbaar.
+- **Het feest bij goed** (ADR-183) blijft. De sterren komen nu boven het hoofd
+  van Denker vandaan, tussen zijn juichende armen, want er is geen ster meer
+  om uit te springen. De punt die naar de voortgang vliegt, blijft.
+- **Verward staat bij wat niet laadt:** op het foutscherm naast de kop, en
+  boven "De kaart laadt niet" in topografie, tafels en klok. Daar stond geen
+  Denker, dus het blijft één per scherm.
+- **Verdrietig en jaloers gaan nooit over het kind.** Na een fout blijft
+  Denker bemoedigend. Verdrietig is voor iets dat niet aan het kind ligt,
+  jaloers alleen voor een spel of verhaal. Verbaasd is voor iets nieuws. Ze
+  staan in de LEESMIJ en de stijlgids, maar nog nergens in de app.
+
+### Wat bewust niet is meegenomen
+
+- **Denker die met de muis meekijkt.** `leer.js` kan het (`volg`), de app deed
+  het niet en doet het nog steeds niet.
+- **De nieuwe uitdrukkingen op meer schermen.** Waar verdrietig, jaloers en
+  verbaasd iets toevoegen, is een ontwerpvraag voor het herontwerp van de app.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -6,8 +6,8 @@ import { sterren, vlieg } from './feest';
 /**
  * Denker naast de terugkoppeling in een ronde (Merk en stijlgids §05, ADR-183).
  *
- * Na een goed antwoord juicht hij: er springen sterren uit zijn ster, en een
- * punt vliegt van hem naar het bolletje van de voortgang dat net gevuld is.
+ * Na een goed antwoord juicht hij: er springen sterren boven zijn hoofd uit, en
+ * een punt vliegt van hem naar het bolletje van de voortgang dat net gevuld is.
  * Na een fout of een bijna is hij bemoedigend — "dat komt nog" — en danst er
  * verder niets: een fout hoort te landen.
  *

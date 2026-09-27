@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { brand } from '@/config/brand';
+import { Brandmark } from '@/components/Brandmark';
 import { Wordmark } from '@/components/Wordmark';
 import { t } from '@/i18n';
 
@@ -18,7 +19,8 @@ import { t } from '@/i18n';
  * geschreven had — `dagstandStore`, `weekdoelStore`, `testPlan` deden dat al —
  * maar dat dekt alleen de rij die ze zelf lezen.
  *
- * **Wat hier staat is een zin en twee knoppen**, en geen foutmelding. De tekst
+ * **Wat hier staat is een zin en twee knoppen**, met Denker die in de war is
+ * naast de kop (ADR-237), en geen foutmelding. De tekst
  * van een uitzondering zegt een kind niets en een ouder bijna niets; wat allebei
  * verder helpt is "probeer opnieuw" en "ga terug naar het begin". De fout gaat
  * wél naar de console, want daar hoort hij, en daar kijkt degene die hem moet
@@ -61,9 +63,12 @@ export class Foutscherm extends Component<{ readonly children: ReactNode }, Staa
         </div>
 
         <section className="tk-card flex flex-col gap-4" aria-labelledby="fout-kop">
-          <h1 id="fout-kop" className="tk-titel">
-            {t('fout.titel')}
-          </h1>
+          <div className="tk-kop-denker">
+            <h1 id="fout-kop" className="tk-titel">
+              {t('fout.titel')}
+            </h1>
+            <Brandmark size={64} uitdrukking="verward" />
+          </div>
           <p className="text-lopend">{t('fout.uitleg')}</p>
           <p className="text-lopend text-tekst-secundair">{t('fout.bewaard')}</p>
 

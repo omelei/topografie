@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { t } from '@/i18n';
 import { sumInWoorden, sumText, sumUitgewerkt } from '@/game-core';
+import { Brandmark } from '@/components/Brandmark';
 import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
 import { RoundProgress } from '@/features/practice/RoundProgress';
@@ -77,6 +78,7 @@ export function SumScreen({
   if (state.error !== null) {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-6">
+        <Brandmark size={96} uitdrukking="verward" />
         <p className="tk-display text-sectiekop">{t('practice.mapFailed')}</p>
         <button type="button" className="tk-button" onClick={onHome}>
           {t('result.home')}

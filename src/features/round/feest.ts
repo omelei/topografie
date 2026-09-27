@@ -29,10 +29,11 @@ function laag(): HTMLDivElement {
 }
 
 /**
- * Twaalf sterren in een kring uit een punt van `bron` (standaard rechtsboven,
- * waar de punt van Denker zit). 700–950 ms, en dan weg.
+ * Twaalf sterren in een kring uit een punt van `bron` (standaard boven het
+ * hoofd van Denker, tussen zijn juichende armen; sinds ADR-237 heeft hij geen
+ * losse punt of ster meer). 700–950 ms, en dan weg.
  */
-export function sterren(bron: Element | null, { ox = 0.85, oy = 0.12 } = {}): void {
+export function sterren(bron: Element | null, { ox = 0.5, oy = 0.2 } = {}): void {
   if (!bron || !kanBewegen()) return;
   const r = bron.getBoundingClientRect();
   const x0 = r.left + r.width * ox;

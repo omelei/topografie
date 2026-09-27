@@ -3,10 +3,10 @@
 De huisstijl van leer.nu staat in drie bronnen, en elk is definitief voor zijn
 eigen deel:
 
-- **Het logo** is de levering in `docs/logo`, versie 2.0 (ADR-182): getekend
-  door `tools/merk-uit-leer.mjs` uit `docs/leer.js`, nooit met de hand. Die map
-  bepaalt het merk: Denker en zijn zeven uitdrukkingen, het woordbeeld, de
-  app-iconen en de merkkleuren. `logo.test.ts` houdt elke kopie in `public` en
+- **Het logo** is de levering in `docs/logo`, versie 3.0 (ADR-182, ADR-237):
+  getekend door `tools/merk-uit-leer.mjs` uit `docs/leer.js`, nooit met de
+  hand. Die map bepaalt het merk: Denker in stijl Strip en zijn elf
+  uitdrukkingen, het woordbeeld, de app-iconen en de merkkleuren. `logo.test.ts` houdt elke kopie in `public` en
   `src/assets/denker` er byte voor byte aan.
 - **Kleur en typografie** komen uit `docs/leer.nu Merk en stijlgids.dc.html`
   (ADR-179), met de vakkleuren, iconen en Denker uit `docs/leer.js` (ADR-180).
@@ -33,8 +33,8 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
   daaronder de telefoon, VO, de modules en het blok `[data-thema='ronde']`.
 - **`src/design/kleuren.css`** is de enige plek die een kleur van het _logo_
   noemt, en het is het bestand van de ontwerper zelf: `--leernu-koraal`,
-  `--leernu-koraal-diep`, `--leernu-cacao`, `--leernu-room` en de drie
-  `--denker-*` die de sprite inkleuren. Verder zijn er geen stylesheets, en dat
+  `--leernu-koraal-diep`, `--leernu-cacao`, `--leernu-nacht` (de ogen en de
+  mond van Denker), `--leernu-room` en `--leernu-zon`. Verder zijn er geen stylesheets, en dat
   is een regel die `huisstijl.test.ts` bewaakt: een derde is waar een tweede
   palet begint.
 - **`tailwind.config.ts`** vertaalt de tokens naar klassen. Kleuren, fonts,
@@ -119,7 +119,10 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 10. **Het merk, en waar koraal wel en niet mag.** Het logo is een plaatje:
     `Wordmark` voor het liggende logo met de naam. Denker is `Brandmark`, met
     een `uitdrukking` (denken, blij, juichen, bemoedigend, trots, slapen,
-    zwaaien); onder 36 px tekent hij zichzelf eenvoudig. Teken ze niet na en
+    zwaaien, verdrietig, jaloers, verbaasd, verward); onder 36 px tekent hij
+    zichzelf eenvoudig. Verdrietig en jaloers gaan nooit over wat een kind deed:
+    na een fout is hij bemoedigend. Verward staat bij een scherm of kaart die
+    niet laadt. Teken ze niet na en
     zet de naam nergens in een lettertype. Het logo staat op wit, op
     `papier` of op `grond`, nooit kleiner dan 88 px breed. Een uitdrukking van Denker is
     terugkoppeling, hooguit één per scherm, en nooit in plaats van het logo.
