@@ -173,7 +173,8 @@ export const nl = {
   'home.zo.stap': 'Stap {nummer}',
   // Zo werkt leer.nu, in vier stappen (ADR-231), in de woorden van de eigenaar.
   'home.zo.oefen.kop': 'Begin met oefenen',
-  'home.zo.oefen.uitleg': 'Kies een vak, een onderwerp en een spelvorm. Je begint direct met spelen.',
+  'home.zo.oefen.uitleg':
+    'Kies een vak, een onderwerp en een spelvorm. Je begint direct met spelen.',
   'home.zo.fouten.kop': 'Leer van je fouten',
   'home.zo.fouten.uitleg':
     'Je ziet direct wat je goed en fout hebt gedaan. Foute antwoorden kun je direct opnieuw oefenen.',
