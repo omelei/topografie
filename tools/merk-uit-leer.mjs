@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The logo delivery v2, drawn from docs/leer.js (ADR-182).
+ * The logo delivery, drawn from docs/leer.js (ADR-182; v3 since ADR-237).
  *
  * leer.js is the Merk en stijlgids's own code: web components that draw
  * Denker, the logo, the app icon and the avatars into a shadow root. This runs
@@ -99,7 +99,8 @@ function schrijf(pad, inhoud) {
 /* ---- The delivery ---------------------------------------------------------- */
 
 const KLEUREN = ['kleur', 'cacao', 'wit'];
-const UITDRUKKINGEN = ['denken', 'blij', 'juichen', 'bemoedigend', 'trots', 'slapen', 'zwaaien'];
+// Elf sinds het herontwerp in stijl Strip (ADR-237); leer.js houdt de lijst.
+const UITDRUKKINGEN = [...window.LEER_UITDRUKKINGEN];
 
 rmSync(join(DOCS, 'logo'), { recursive: true, force: true });
 rmSync(join(DOCS, 'beeldmerk'), { recursive: true, force: true });
@@ -110,11 +111,14 @@ for (const kleur of KLEUREN) {
     const svg = alsBestand(teken('leer-logo', { variant, kleur, height: 100 }));
     schrijf(join(DOCS, 'logo', `leernu-logo-${variant}-${kleur}.svg`), svg);
   }
-  schrijf(
-    join(DOCS, 'beeldmerk', `denker-${kleur}.svg`),
-    alsBestand(teken('leer-logo', { variant: 'beeldmerk', kleur, height: 100 })),
-  );
 }
+
+// Denker los. Sinds v3 heeft hij geen losse punt meer, en die punt was het enige
+// dat per kleurversie verschilde: er is één beeldmerk.
+schrijf(
+  join(DOCS, 'beeldmerk', 'denker.svg'),
+  alsBestand(teken('leer-logo', { variant: 'beeldmerk', height: 100 })),
+);
 
 // The name alone: leer.js has its shapes but no variant for them.
 const WORD = /const WORD = '([^']+)'/.exec(source)[1];
@@ -129,9 +133,9 @@ for (const kleur of KLEUREN) {
 }
 
 /*
- * The expressions, as the app draws them. The gradient id is written as
- * `denker-verloop` so Denker.tsx can make it unique per instance; the class
- * names stay, because index.css animates them.
+ * The expressions, as the app draws them. The ids are written as
+ * `denker-verloop` and `denker-oog-39`/`-61` so Brandmark can make them unique
+ * per instance; the class names stay, because index.css animates them.
  */
 for (const uitdrukking of UITDRUKKINGEN) {
   for (const simpel of [false, true]) {
@@ -140,7 +144,9 @@ for (const uitdrukking of UITDRUKKINGEN) {
     const svg = alsBestand(teken('leer-denker', attrs), { titel: '' })
       .replace(/ aria-hidden="true"/, '')
       .replace(/id="b\d+"/g, 'id="denker-verloop"')
-      .replace(/url\(#b\d+\)/g, 'url(#denker-verloop)');
+      .replace(/url\(#b\d+\)/g, 'url(#denker-verloop)')
+      .replace(/id="o\d+_(\d+)"/g, 'id="denker-oog-$1"')
+      .replace(/url\(#o\d+_(\d+)\)/g, 'url(#denker-oog-$1)');
     const naam = simpel ? `denker-${uitdrukking}-klein.svg` : `denker-${uitdrukking}.svg`;
     schrijf(join(DOCS, 'beeldmerk', 'uitdrukkingen', naam), svg);
   }
@@ -186,6 +192,7 @@ schrijf(
   --leernu-koraal: #FF6A4D;
   --leernu-koraal-diep: #C8412A;
   --leernu-cacao: #2A1E17;
+  --leernu-nacht: #1B2A5E;
   --leernu-room: #FFF3E6;
   --leernu-zon: #FFC93C;
 }
@@ -194,7 +201,14 @@ schrijf(
 schrijf(
   join(DOCS, 'code', 'kleuren.json'),
   `${JSON.stringify(
-    { koraal: '#FF6A4D', koraalDiep: '#C8412A', cacao: '#2A1E17', room: '#FFF3E6', zon: '#FFC93C' },
+    {
+      koraal: '#FF6A4D',
+      koraalDiep: '#C8412A',
+      cacao: '#2A1E17',
+      nacht: '#1B2A5E',
+      room: '#FFF3E6',
+      zon: '#FFC93C',
+    },
     null,
     2,
   )}\n`,
@@ -204,7 +218,10 @@ rmSync(join(DOCS, 'code', 'denker-sprite.svg'), { force: true });
 /* ---- PNGs, through Chromium ------------------------------------------------ */
 
 const { chromium } = await import('playwright');
-const browser = await chromium.launch();
+// CHROMIUM points at a browser of another Playwright version, where the pinned one is not installed.
+const browser = await chromium.launch(
+  process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {},
+);
 const page = await browser.newPage();
 
 async function png(svg, breedte, hoogte, { achtergrond = null, marge = 0 } = {}) {
@@ -221,11 +238,11 @@ async function png(svg, breedte, hoogte, { achtergrond = null, marge = 0 } = {})
 
 const logoKleur = readFileSync(join(DOCS, 'logo', 'leernu-logo-liggend-kleur.svg'), 'utf8');
 const staandKleur = readFileSync(join(DOCS, 'logo', 'leernu-logo-staand-kleur.svg'), 'utf8');
-schrijf(join(DOCS, 'logo', 'leernu-logo-liggend-kleur.png'), await png(logoKleur, 1200, 266));
-schrijf(join(DOCS, 'logo', 'leernu-logo-staand-kleur.png'), await png(staandKleur, 800, 465));
+schrijf(join(DOCS, 'logo', 'leernu-logo-liggend-kleur.png'), await png(logoKleur, 1200, 242));
+schrijf(join(DOCS, 'logo', 'leernu-logo-staand-kleur.png'), await png(staandKleur, 800, 443));
 schrijf(
-  join(DOCS, 'beeldmerk', 'denker-kleur.png'),
-  await png(readFileSync(join(DOCS, 'beeldmerk', 'denker-kleur.svg'), 'utf8'), 512, 512),
+  join(DOCS, 'beeldmerk', 'denker.png'),
+  await png(readFileSync(join(DOCS, 'beeldmerk', 'denker.svg'), 'utf8'), 512, 512),
 );
 
 const opIcoon = {
@@ -288,4 +305,4 @@ for (const naam of readdirSync(join(DOCS, 'beeldmerk', 'uitdrukkingen'))) {
 // van 48 van de eigenaar, rechtstreeks in public/avatars. Dit script schreef er
 // acht uit leer.js en gooide de map eerst leeg; dat zou de set nu wissen.
 
-console.log('Logolevering v2 geschreven uit docs/leer.js.');
+console.log('Logolevering v3 geschreven uit docs/leer.js.');

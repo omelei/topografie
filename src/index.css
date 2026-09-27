@@ -5329,10 +5329,10 @@
     }
   }
 
-  /* ---- Denker (ADR-182) ----------------------------------------------------
+  /* ---- Denker (ADR-182, stijl Strip sinds ADR-237) ------------------------
    * The mascot, drawn inline by Brandmark from the delivery's own drawings.
-   * The drawing overflows its box on purpose: the dot, the arms and the star
-   * reach past Denker's body, as they do in the guide. */
+   * The drawing overflows its box on purpose: the arms, the z's and the
+   * question mark reach past Denker's body, as they do in the guide. */
   .tk-denker {
     display: inline-block;
     flex: none;
@@ -5400,7 +5400,8 @@
     height: 100%;
     overflow: visible;
   }
-  /* Asleep, the z's stand still where motion is off. */
+  /* Asleep or confused, the z's and the question mark stand still where
+   * motion is off; so does the tear. */
   .tk-denker .z {
     opacity: 1;
   }
@@ -5534,39 +5535,31 @@
         transform var(--beweeg-vlot) var(--beweeg-veer);
     }
 
-    /* Denker leeft (§05): hij knippert af en toe, de punt zweeft, en elke
-     * uitdrukking heeft haar eigen gebaar. Allemaal lussen op --beweeg-golf,
-     * en allemaal weg waar beweging uit staat. */
+    /* Denker leeft (§05, stijl Strip sinds ADR-237): hij knippert af en toe,
+     * en elke uitdrukking heeft haar eigen gebaar. Allemaal lussen die op rust
+     * beginnen en eindigen, en allemaal weg waar beweging uit staat. */
     :root:not([data-beweging='rustig']) .tk-denker .eye {
       transform-box: fill-box;
       transform-origin: center;
       animation: tk-denker-knipper 5.2s infinite;
     }
-    :root:not([data-beweging='rustig']) .tk-denker .dot {
-      animation: tk-denker-zweef 2.4s var(--beweeg-golf) infinite;
-    }
-    :root:not([data-beweging='rustig']) .tk-denker .sleepdot {
-      animation: none;
+    :root:not([data-beweging='rustig']) .tk-denker .eye + .eye {
+      animation-delay: 0.04s;
     }
     :root:not([data-beweging='rustig']) .tk-denker .wave {
-      transform-origin: 76px 50px;
+      transform-origin: 84px 46px;
       animation: tk-denker-zwaai 1.8s var(--beweeg-golf) infinite;
     }
     :root:not([data-beweging='rustig']) .tk-denker .armL {
-      transform-origin: 14px 50px;
+      transform-origin: 17px 54px;
       animation: tk-denker-juich-links 0.9s ease-in-out infinite;
     }
     :root:not([data-beweging='rustig']) .tk-denker .armR {
-      transform-origin: 74px 46px;
+      transform-origin: 83px 54px;
       animation: tk-denker-juich-rechts 0.9s ease-in-out infinite;
     }
-    :root:not([data-beweging='rustig']) .tk-denker .star {
-      transform-box: fill-box;
-      transform-origin: center;
-      animation: tk-denker-twinkel 1.8s ease-in-out infinite;
-    }
     :root:not([data-beweging='rustig']) .tk-denker .thumb {
-      transform-origin: 78px 70px;
+      transform-origin: 82px 74px;
       animation: tk-denker-duim 2.4s ease-in-out infinite;
     }
     :root:not([data-beweging='rustig']) .tk-denker .z {
@@ -5576,13 +5569,32 @@
     :root:not([data-beweging='rustig']) .tk-denker .z2 {
       animation-delay: 1.2s;
     }
+    :root:not([data-beweging='rustig']) .tk-denker .tear {
+      animation: tk-denker-traan 2.4s ease-in infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker .q {
+      transform-box: fill-box;
+      transform-origin: center bottom;
+      animation: tk-denker-vraag 2.8s ease-in-out infinite;
+    }
     :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='juichen'] .lijf {
-      transform-origin: 44px 94px;
+      transform-origin: 50px 94px;
       animation: tk-denker-hop 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) infinite;
     }
     :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='slapen'] .lijf {
-      transform-origin: 44px 94px;
+      transform-origin: 50px 94px;
       animation: tk-denker-adem 3.6s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='jaloers'] .pupil {
+      animation: tk-denker-gluur 3.4s ease-in-out infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='verbaasd'] .lijf {
+      transform-origin: 50px 94px;
+      animation: tk-denker-schrik 2.6s cubic-bezier(0.3, 1.6, 0.5, 1) infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='verward'] .lijf {
+      transform-origin: 50px 94px;
+      animation: tk-denker-wiebel 2.8s ease-in-out infinite;
     }
 
     /* Denker komt na het antwoord binnen met een plop (§05: pop, 200 ms). */
@@ -5620,15 +5632,6 @@
   }
   95.5% {
     transform: scaleY(0.12);
-  }
-}
-@keyframes tk-denker-zweef {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
   }
 }
 @keyframes tk-denker-zwaai {
@@ -5680,15 +5683,6 @@
     transform: rotate(14deg);
   }
 }
-@keyframes tk-denker-twinkel {
-  0%,
-  100% {
-    transform: rotate(0) scale(1);
-  }
-  50% {
-    transform: rotate(18deg) scale(1.12);
-  }
-}
 @keyframes tk-denker-duim {
   0%,
   70%,
@@ -5722,6 +5716,66 @@
   100% {
     opacity: 0;
     transform: translate(6px, -10px);
+  }
+}
+
+@keyframes tk-denker-traan {
+  0% {
+    transform: translateY(-3px);
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(9px);
+    opacity: 0;
+  }
+}
+@keyframes tk-denker-gluur {
+  0%,
+  35%,
+  100% {
+    transform: translateX(0);
+  }
+  50%,
+  85% {
+    transform: translateX(5px);
+  }
+}
+@keyframes tk-denker-schrik {
+  0%,
+  70%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  78% {
+    transform: translateY(-6px) scale(0.97, 1.04);
+  }
+  88% {
+    transform: translateY(0) scale(1.02, 0.98);
+  }
+}
+@keyframes tk-denker-wiebel {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes tk-denker-vraag {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(10deg) translateY(-3px);
   }
 }
 
@@ -5839,7 +5893,7 @@
 }
 
 /* De Denker boven de tekst die na hem komt (ADR-194). Zijn lussen — knipperen,
- * zweven, zwaaien — geven hem in Chrome een eigen laag, en alles wat daarna
+ * zwaaien, juichen — geven hem in Chrome een eigen laag, en alles wat daarna
  * getekend wordt en hem zou kunnen raken, kreeg er ook een ("Overlap"): op
  * Vandaag de welkomstzin, de weekdoelen en de profielknop. Tekst in zo'n laag
  * verliest op Windows ClearType en wordt grijs en zacht; op een telefoon is

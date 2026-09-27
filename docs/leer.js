@@ -32,8 +32,10 @@
   }
   const CALM_CSS = ':host([calm]) *, :host([calm]) *::before{animation:none!important;transition:none!important}';
 
-  /* ---------- Denker ---------- */
-  const BODY = 'M46 18C68 18 80 32 80 55C80 78 66 94 43 94C20 94 6 80 6 57C6 33 22 18 46 18Z';
+  /* ---------- Denker (stijl Strip, v3) ---------- */
+  const BODY = 'M50 17C73 17 87 33 87 56C87 79 71 94 50 94C29 94 13 79 13 56C13 33 27 17 50 17Z';
+  const NACHT = '#1B2A5E', LID = '#F4603F', ARMRAND = '#D94A30';
+  const DENKER_FONT = "'Baloo 2', 'Arial Rounded MT Bold', sans-serif";
   let uid = 0;
   function star(cx, cy, r, fill, cls) {
     let p = '';
@@ -43,78 +45,114 @@
     }
     return `<path class="${cls || ''}" d="${p}Z" fill="${fill}" stroke="${C.geelDiep}" stroke-width="1.6" stroke-linejoin="round"/>`;
   }
-  function arm(cx, cy, rot, cls) {
-    return `<g class="${cls || ''}"><ellipse cx="${cx}" cy="${cy}" rx="5.2" ry="10.5" transform="rotate(${rot} ${cx} ${cy})" fill="url(#b)"/></g>`;
+  function arm(cx, cy, rot, cls, ry) {
+    return `<g${cls ? ` class="${cls}"` : ''}><ellipse cx="${cx}" cy="${cy}" rx="5.4" ry="${ry || 10.5}" transform="rotate(${rot} ${cx} ${cy})" fill="url(#b)" stroke="${ARMRAND}" stroke-width="1.2"/></g>`;
   }
-  function denkerSVG(expr, id, simple, px) {
-    const o = C.cacao, S = [];
-    const eyeUp = (x, y, sx, sy) => `<g class="eye"><ellipse cx="${x}" cy="${y}" rx="5.4" ry="7.8" transform="rotate(-12 ${x} ${y})" fill="${o}"/>${simple ? '' : `<circle cx="${x + sx}" cy="${y + sy}" r="1.9" fill="#fff"/>`}</g>`;
-    const eyeFwd = (x, y) => `<g class="eye"><ellipse cx="${x}" cy="${y}" rx="5" ry="7" fill="${o}"/>${simple ? '' : `<circle cx="${x + 1.6}" cy="${y - 2.6}" r="1.8" fill="#fff"/>`}</g>`;
-    const arc = (x, y, up) => `<path d="M${x - 6} ${y} Q${x} ${y + (up ? -8 : 6)} ${x + 6} ${y}" fill="none" stroke="${o}" stroke-width="4.4" stroke-linecap="round"/>`;
-    const line = (d, w) => `<path d="${d}" fill="none" stroke="${o}" stroke-width="${w || 3.4}" stroke-linecap="round"/>`;
-    const cheeks = simple ? '' : `<ellipse cx="33" cy="63" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><ellipse cx="72" cy="59" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/>`;
-    const dot = (x, y, r) => `<circle class="dot" cx="${x}" cy="${y}" r="${r || 6.5}" fill="${o}"/>`;
+  /* Een oog: wit, met een rand in nacht, een pupil die binnen het wit blijft en
+     eventueel een ooglid in koraal. o = { s: maat, pr: pupil, dx, dy: blik, lid: [links, rechts] } */
+  function eye(x, id, simple, o) {
+    const y = 50, s = o.s || 1, rx = +(9 * s).toFixed(3), ry = +(10.4 * s).toFixed(3), pr = o.pr || 7.8975;
+    const px = x + (o.dx || 0), py = y + (o.dy || 0), clip = `o${id}_${x}`;
+    const vorm = `cx="${x}" cy="${y}" rx="${rx}" ry="${ry}"`;
+    const glans = simple ? '' : `<circle cx="${+(px + 0.33 * pr).toFixed(3)}" cy="${+(py - 0.37 * pr).toFixed(3)}" r="2.2" fill="#fff"/><circle cx="${+(px - 0.4 * pr).toFixed(3)}" cy="${+(py + 0.42 * pr).toFixed(3)}" r="1" fill="#fff"/>`;
+    const top = +(y - ry - 3).toFixed(3);
+    const lid = o.lid ? `<path d="M${x - 12} ${top}L${x + 12} ${top}L${x + 12} ${o.lid[1]}L${x - 12} ${o.lid[0]}Z" fill="${LID}"/><path d="M${x - 12} ${o.lid[0]}L${x + 12} ${o.lid[1]}" fill="none" stroke="${NACHT}" stroke-width="2.4" stroke-linecap="round"/>` : '';
+    return `<g class="eye"><clipPath id="${clip}"><ellipse ${vorm}/></clipPath><ellipse ${vorm} fill="#fff"/><g clip-path="url(#${clip})"><g class="pupil"><circle cx="${px}" cy="${py}" r="${pr}" fill="${NACHT}"/>${glans}</g>${lid}</g><ellipse ${vorm} fill="none" stroke="${NACHT}" stroke-width="3"/></g>`;
+  }
+  const lijn = (d, w) => `<path d="${d}" fill="none" stroke="${NACHT}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const vlak = (d) => `<path d="${d}" fill="${NACHT}"/>`;
+  const tong = (cx, cy, rx, ry) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#FF7A8A"/>`;
+  const teken = (cls, x, y, maat, t) => `<text class="${cls}" x="${x}" y="${y}" font-family="${DENKER_FONT}" font-weight="800" font-size="${maat}" fill="${NACHT}">${t}</text>`;
+  const LACH = 'M41 63.5 Q50 73 59 63.5';
+  const DICHT_BLIJ = lijn('M32 52 Q39 43 46 52', 3.96) + lijn('M54 52 Q61 43 68 52', 3.96);
+  const OPEN_MOND = 'M39 61.5 Q50 63.5 61 61.5 Q60 76 50 76 Q40 76 39 61.5Z';
+  /* De delen van Denker per uitdrukking: wat achter het lijf zit (back), het gezicht,
+     wat ervoor zit (front) en wat buiten het lijf zweeft (extra). */
+  function denkerDelen(expr, id, simple) {
+    const ogen = (links, rechts) => eye(39, id, simple, links) + eye(61, id, simple, rechts || links);
     let face = '', front = '', back = '', extra = '';
     switch (expr) {
       case 'blij':
-        face = `<g class="pupils">${eyeFwd(43, 49)}${eyeFwd(61, 47)}</g>${line('M37 36 Q43 33 49 35')}${line('M56 33 Q62 31 67 33')}${line('M44 64 Q53 72 63 62', 3.8)}`;
-        extra = dot(86, 16); break;
+        face = ogen({ dy: 0.5 }) + lijn(LACH, 4.18); break;
       case 'juichen':
-        face = `${arc(43, 50, true)}${arc(61, 48, true)}<path d="M42 60 Q53 61 64 58 Q63 75 53 75 Q43 75 42 60Z" fill="${o}"/><ellipse cx="53" cy="70.5" rx="5" ry="3" fill="#FF7A8A"/>`;
-        back = arm(4, 38, -38, 'armL') + arm(84, 32, 38, 'armR');
-        extra = `<g class="star">${star(89, 11, 11, C.geel)}</g>`; break;
+        face = DICHT_BLIJ + vlak(OPEN_MOND) + tong(50, 71.5, 5, 3);
+        back = arm(8, 44, -42, 'armL', 13) + arm(92, 44, 42, 'armR', 13); break;
       case 'bemoedigend':
-        face = `<g class="pupils">${eyeFwd(43, 49)}${eyeFwd(61, 47)}</g>${line('M37 38 Q42 34 48 35')}${line('M57 33 Q62 32 67 35')}${line('M46 64 Q53 69 61 63', 3.6)}`;
-        front = `<g class="thumb">${arm(83, 60, 18)}<ellipse cx="86" cy="47" rx="3.4" ry="5.6" fill="url(#b)"/></g>`;
-        extra = dot(86, 16); break;
+        face = ogen({ dy: 1, lid: [46.8, 46.8] }) + lijn('M43 64.5 Q50 70 57 64.5', 3.96);
+        front = `<g class="thumb">${arm(86, 64, 16)}<ellipse cx="88.6" cy="51" rx="3.4" ry="5.6" fill="url(#b)" stroke="${ARMRAND}" stroke-width="1.2"/></g>`; break;
       case 'trots':
-        face = `${arc(43, 48, true)}${arc(61, 46, true)}${line('M43 61 Q53 70 64 60', 3.8)}`;
-        back = arm(5, 70, 35) + arm(81, 67, -35);
-        extra = `<g class="star">${star(88, 12, 10.5, C.geel)}</g>`; break;
+        face = DICHT_BLIJ + lijn(LACH, 4.18);
+        back = arm(9, 70, 35) + arm(91, 70, -35); break;
       case 'slapen':
-        face = `${arc(42, 54, false)}${arc(60, 52, false)}<ellipse cx="52" cy="66" rx="3" ry="2.4" fill="${o}"/>`;
-        extra = `<circle class="dot sleepdot" cx="80" cy="24" r="5" fill="${o}"/><text class="z z1" x="86" y="16" font-family="Baloo 2, sans-serif" font-weight="800" font-size="12" fill="${o}">z</text><text class="z z2" x="93" y="6" font-family="Baloo 2, sans-serif" font-weight="800" font-size="9" fill="${o}">z</text>`; break;
+        face = lijn('M32 50 Q39 56 46 50', 3.74) + lijn('M54 50 Q61 56 68 50', 3.74) + lijn('M46 66 Q50 68.5 54 66', 3.52);
+        extra = teken('z z1', 80, 18, 13, 'z') + teken('z z2', 88, 7, 10, 'z'); break;
       case 'zwaaien':
-        face = `<g class="pupils">${eyeFwd(43, 49)}${eyeFwd(61, 47)}</g>${line('M37 36 Q43 33 49 35')}${line('M56 33 Q62 31 67 33')}${line('M44 63 Q53 72 63 61', 3.8)}`;
-        back = `<g class="wave">${arm(84, 34, 30)}</g>`;
-        extra = dot(88, 12, 5.5); break;
-      default: // denken
-        face = `<g class="pupils">${eyeUp(47.5, 44.5, 1.8, -3.9)}${eyeUp(64.5, 42.5, 1.8, -3.9)}</g>${simple ? '' : line('M40 31 Q45 27 51 29') + line('M58 26 Q63 23 69 25.5') + line('M49 66 Q54 67.5 59 64.5', 3.2)}`;
-        extra = dot(86, 16);
+        face = ogen({ dy: 0.5 }) + vlak('M42 62.5 Q50 64 58 62.5 Q57 72.5 50 72.5 Q43 72.5 42 62.5Z') + tong(50, 69.2, 3.6, 2);
+        back = `<g class="wave">${arm(90, 33, 30)}</g>`; break;
+      case 'verdrietig':
+        face = ogen({ dy: 3, lid: [47, 43] }, { dy: 3, lid: [43, 47] }) + lijn('M42 70 Q50 62.5 58 70', 3.96) +
+          '<path class="tear" d="M31 58 Q27.5 63.5 31 65.5 Q34.5 63.5 31 58Z" fill="#7CC6FF"/>'; break;
+      case 'jaloers':
+        face = ogen({ dx: -3.2, dy: 1, lid: [49, 49] }) + lijn('M44 67.5 L56 65', 3.96);
+        front = arm(41, 84, 70, '', 11) + arm(59, 84, -70, '', 11); break;
+      case 'verbaasd':
+        face = ogen({ s: 1.18, pr: 6.075 }) + `<ellipse cx="50" cy="68" rx="4.6" ry="5.8" fill="${NACHT}"/>`; break;
+      case 'verward':
+        face = ogen({ s: 1.12, pr: 6.075, dx: -2.5, dy: -3.5 }, { s: 0.9, pr: 6.98625, dx: 2.5, dy: 2.5 }) +
+          lijn('M41 67 Q44.5 63.5 48 67 Q51.5 70.5 55 67 Q57 65 59 66', 3.74);
+        extra = `<text class="q" x="78" y="20" font-family="${DENKER_FONT}" font-weight="800" font-size="22" fill="${NACHT}">?</text>`; break;
+      default: // denken: de pupillen kijken omhoog, naar wat hij probeert te onthouden
+        face = ogen({ dx: 0.8, dy: -4.6 }) + lijn('M45 66.5 Q50 69 55 65.8', 3.74);
     }
-    const shade = simple ? `<path d="${BODY}" fill="${C.koraal}"/>` :
-      `<path d="${BODY}" fill="url(#b)"/><ellipse cx="29" cy="35" rx="10" ry="5.5" transform="rotate(-38 29 35)" fill="#fff" opacity=".32"/>`;
-    return `<svg viewBox="-8 -6 116 108" width="${px}" height="${px}" aria-hidden="true" style="overflow:visible;display:block">
-      <defs><radialGradient id="b" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FF8C70"/><stop offset=".55" stop-color="#FF6A4D"/><stop offset="1" stop-color="#EE5236"/></radialGradient></defs>
-      ${simple ? '' : '<ellipse class="shadow" cx="44" cy="99" rx="28" ry="3.5" fill="#2A1E17" opacity=".12"/>'}
-      <g class="lijf">${back}${shade}${cheeks}<g class="face">${face}</g>${front}</g>${extra}</svg>`.replace(/url\(#b\)/g, `url(#b${id})`).replace('id="b"', `id="b${id}"`);
+    const huid = simple ? `<path d="${BODY}" fill="url(#b)"/>` :
+      `<path d="${BODY}" fill="url(#b)"/><ellipse cx="33" cy="31" rx="10" ry="5.5" transform="rotate(-32 33 31)" fill="#fff" opacity=".32"/><ellipse cx="27" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><ellipse cx="73" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/>`;
+    const verloop = (gid) => `<defs><radialGradient id="${gid}" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#FF8C70"/><stop offset=".55" stop-color="#FF6A4D"/><stop offset="1" stop-color="#EE5236"/></radialGradient></defs>`;
+    const eigen = (s) => s.replace(/url\(#b\)/g, `url(#b${id})`);
+    return {
+      defs: verloop(`b${id}`),
+      shadow: simple ? '' : '<ellipse class="shadow" cx="50" cy="99" rx="28" ry="3.5" fill="#2A1E17" opacity=".12"/>',
+      lijf: eigen(`<g class="lijf">${back}${huid}<g class="face">${face}</g>${front}</g>`),
+      extra,
+    };
+  }
+  function denkerSVG(expr, id, simple, px) {
+    const d = denkerDelen(expr, id, simple);
+    return `<svg viewBox="-12 -10 124 116" width="${px}" height="${px}" aria-hidden="true" style="overflow:visible;display:block">
+      ${d.defs}${d.shadow}${d.lijf}${d.extra}</svg>`;
   }
   const DENKER_CSS = `:host{display:inline-block;line-height:0;vertical-align:middle}
     .eye{transform-box:fill-box;transform-origin:center;animation:blink 5.2s infinite}
-    .eye:nth-child(2){animation-delay:.04s}
+    .eye+.eye{animation-delay:.04s}
     @keyframes blink{0%,93%,100%{transform:scaleY(1)}95.5%{transform:scaleY(.12)}}
-    .dot{animation:float 2.4s cubic-bezier(.45,0,.55,1) infinite}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-    .pupils{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
-    .wave{transform-origin:76px 50px;animation:wave 1.8s cubic-bezier(.45,0,.55,1) infinite}
+    .pupil{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+    .wave{transform-origin:84px 46px;animation:wave 1.8s cubic-bezier(.45,0,.55,1) infinite}
     @keyframes wave{0%,60%,100%{transform:rotate(0)}12%,36%{transform:rotate(-26deg)}24%,48%{transform:rotate(8deg)}}
-    :host([expr=juichen]) .lijf{transform-origin:44px 94px;animation:hop .9s cubic-bezier(.3,1.5,.5,1) infinite}
+    :host([expr=juichen]) .lijf{transform-origin:50px 94px;animation:hop .9s cubic-bezier(.3,1.5,.5,1) infinite}
     @keyframes hop{0%,55%,100%{transform:translateY(0) scale(1,1)}10%{transform:translateY(0) scale(1.06,.92)}28%{transform:translateY(-9px) scale(.96,1.05)}45%{transform:translateY(0) scale(1.04,.96)}}
-    .armL{transform-origin:14px 50px;animation:cheerL .9s ease-in-out infinite}.armR{transform-origin:74px 46px;animation:cheerR .9s ease-in-out infinite}
+    .armL{transform-origin:17px 54px;animation:cheerL .9s ease-in-out infinite}.armR{transform-origin:83px 54px;animation:cheerR .9s ease-in-out infinite}
     @keyframes cheerL{0%,100%{transform:rotate(0)}30%{transform:rotate(-14deg)}}@keyframes cheerR{0%,100%{transform:rotate(0)}30%{transform:rotate(14deg)}}
-    .star{transform-box:fill-box;transform-origin:center;animation:twinkle 1.8s ease-in-out infinite}
-    @keyframes twinkle{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(18deg) scale(1.12)}}
-    .thumb{transform-origin:78px 70px;animation:thumb 2.4s ease-in-out infinite}
+    .thumb{transform-origin:82px 74px;animation:thumb 2.4s ease-in-out infinite}
     @keyframes thumb{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-10deg)}90%{transform:rotate(4deg)}}
-    :host([expr=slapen]) .lijf{transform-origin:44px 94px;animation:breathe 3.6s ease-in-out infinite}
+    :host([expr=slapen]) .lijf{transform-origin:50px 94px;animation:breathe 3.6s ease-in-out infinite}
     @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03,.98)}}
-    .sleepdot{animation:none}
     .z{animation:zz 3.6s ease-out infinite;opacity:0}.z2{animation-delay:1.2s}
     @keyframes zz{0%{opacity:0;transform:translate(0,4px)}25%{opacity:1}100%{opacity:0;transform:translate(6px,-10px)}}
     :host([calm]) .z{opacity:1}
+    .tear{animation:tear 2.4s ease-in infinite}
+    @keyframes tear{0%{transform:translateY(-3px);opacity:0}20%,75%{opacity:1}100%{transform:translateY(9px);opacity:0}}
+    :host([calm]) .tear{opacity:1}
+    :host([expr=jaloers]) .pupil{animation:glance 3.4s ease-in-out infinite}
+    @keyframes glance{0%,35%,100%{transform:translateX(0)}50%,85%{transform:translateX(5px)}}
+    :host([expr=verbaasd]) .lijf{transform-origin:50px 94px;animation:gasp 2.6s cubic-bezier(.3,1.6,.5,1) infinite}
+    @keyframes gasp{0%,70%,100%{transform:translateY(0) scale(1)}78%{transform:translateY(-6px) scale(.97,1.04)}88%{transform:translateY(0) scale(1.02,.98)}}
+    :host([expr=verward]) .lijf{transform-origin:50px 94px;animation:wobble 2.8s ease-in-out infinite}
+    @keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+    .q{transform-box:fill-box;transform-origin:center bottom;animation:qbob 2.8s ease-in-out infinite}
+    @keyframes qbob{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg) translateY(-3px)}}
     :host([pop]) svg{animation:pop .5s cubic-bezier(.3,1.6,.5,1) both}
     @keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
     ${CALM_CSS}`;
+  window.LEER_UITDRUKKINGEN = ['denken', 'blij', 'juichen', 'bemoedigend', 'trots', 'slapen', 'zwaaien', 'verdrietig', 'jaloers', 'verbaasd', 'verward'];
   class Denker extends Base {
     static get observedAttributes() { return ['expr', 'size', 'simple']; }
     constructor() { super(); this._id = ++uid; this._mv = (e) => this.look(e); }
@@ -122,10 +160,10 @@
     disconnectedCallback() { super.disconnectedCallback(); window.removeEventListener('pointerdown', this._mv); window.removeEventListener('pointermove', this._mv); }
     look(e) {
       if (window.leerKalm()) return;
-      const p = this.shadowRoot && this.shadowRoot.querySelector('.pupils'); if (!p) return;
+      const ps = this.shadowRoot ? this.shadowRoot.querySelectorAll('.pupil') : []; if (!ps.length) return;
       const r = this.getBoundingClientRect(); const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
       const d = Math.hypot(dx, dy) || 1; const k = Math.min(1, d / 300) * 3;
-      p.style.transform = `translate(${(dx / d) * k}px, ${(dy / d) * k}px)`;
+      ps.forEach((p) => { p.style.transform = `translate(${(dx / d) * k}px, ${(dy / d) * k}px)`; });
     }
     render() {
       const s = this.a('size', '64'); this.style.setProperty('--s', /\D/.test(s) ? s : s + 'px');
@@ -138,12 +176,10 @@
   /* ---------- Logo ---------- */
   const WORD = 'M177 11Q88 11 44.0 -38.5Q0 -88 0 -186V-637Q0 -675 19.5 -694.5Q39 -714 76 -714Q112 -714 131.5 -694.5Q151 -675 151 -637V-192Q151 -151 168.5 -131.5Q186 -112 215 -112Q223 -112 230.0 -113.0Q237 -114 245 -114Q261 -116 267.5 -104.5Q274 -93 274 -59Q274 -29 262.0 -13.5Q250 2 225 7Q215 8 202.0 9.5Q189 11 177 11ZM571 11Q484 11 421.5 -20.5Q359 -52 325.5 -109.5Q292 -167 292 -245Q292 -321 324.0 -378.5Q356 -436 413.5 -468.5Q471 -501 544 -501Q597 -501 640.0 -483.5Q683 -466 714.0 -433.5Q745 -401 761.0 -354.5Q777 -308 777 -251Q777 -232 765.0 -222.5Q753 -213 730 -213H435Q442 -165 469 -138Q504 -102 574 -102Q598 -102 629.0 -108.0Q660 -114 687 -127Q710 -138 728.0 -134.5Q746 -131 756.0 -118.0Q766 -105 767.5 -88.0Q769 -71 760.0 -54.5Q751 -38 730 -27Q696 -8 653.5 1.5Q611 11 571 11ZM435 -291H652Q650 -323 640 -346Q628 -373 605.5 -387.0Q583 -401 550 -401Q513 -401 487.0 -384.0Q461 -367 447 -335Q438 -315 435 -291ZM1108 11Q1021 11 958.5 -20.5Q896 -52 862.5 -109.5Q829 -167 829 -245Q829 -321 861.0 -378.5Q893 -436 950.5 -468.5Q1008 -501 1081 -501Q1134 -501 1177.0 -483.5Q1220 -466 1251.0 -433.5Q1282 -401 1298.0 -354.5Q1314 -308 1314 -251Q1314 -232 1302.0 -222.5Q1290 -213 1267 -213H972Q979 -165 1006 -138Q1041 -102 1111 -102Q1135 -102 1166.0 -108.0Q1197 -114 1224 -127Q1247 -138 1265.0 -134.5Q1283 -131 1293.0 -118.0Q1303 -105 1304.5 -88.0Q1306 -71 1297.0 -54.5Q1288 -38 1267 -27Q1233 -8 1190.5 1.5Q1148 11 1108 11ZM972 -291H1189Q1187 -323 1177 -346Q1165 -373 1142.5 -387.0Q1120 -401 1087 -401Q1050 -401 1024.0 -384.0Q998 -367 984 -335Q975 -315 972 -291ZM1468 9Q1430 9 1410.0 -11.0Q1390 -31 1390 -68V-423Q1390 -460 1409.5 -479.5Q1429 -499 1464 -499Q1500 -499 1519.0 -479.5Q1538 -460 1538 -423V-405Q1552 -441 1581 -464Q1622 -497 1687 -501Q1712 -503 1725.5 -488.5Q1739 -474 1740 -441Q1742 -410 1727.5 -392.0Q1713 -374 1679 -370L1656 -368Q1599 -363 1571.5 -335.0Q1544 -307 1544 -254V-68Q1544 -31 1524.5 -11.0Q1505 9 1468 9ZM2090 9Q2053 9 2033.5 -11.0Q2014 -31 2014 -68V-423Q2014 -460 2033.5 -479.5Q2053 -499 2088 -499Q2124 -499 2143.0 -479.5Q2162 -460 2162 -423V-419Q2184 -454 2220 -475Q2265 -501 2323 -501Q2382 -501 2420.0 -478.5Q2458 -456 2477.0 -410.5Q2496 -365 2496 -295V-68Q2496 -31 2476.5 -11.0Q2457 9 2420 9Q2384 9 2364.5 -11.0Q2345 -31 2345 -68V-288Q2345 -339 2326.5 -361.5Q2308 -384 2270 -384Q2222 -384 2193.5 -354.0Q2165 -324 2165 -274V-68Q2165 9 2090 9ZM2778 11Q2716 11 2675.0 -12.0Q2634 -35 2614.5 -81.5Q2595 -128 2595 -197V-423Q2595 -461 2614.5 -480.0Q2634 -499 2670.0 -499.0Q2706 -499 2726.0 -480.0Q2746 -461 2746 -423V-193Q2746 -149 2764.0 -127.5Q2782 -106 2821 -106Q2864 -106 2891.5 -136.5Q2919 -167 2919 -217V-423Q2919 -461 2938.5 -480.0Q2958 -499 2994 -499Q3031 -499 3050.5 -480.0Q3070 -461 3070 -423V-68Q3070 9 2997 9Q2961 9 2942 -11Q2923 -31 2923 -67Q2904 -37 2875 -17Q2834 11 2778 11Z';
   const WDOT = 'M1839 5Q1799 5 1775.5 -19.0Q1752 -43 1752 -81Q1752 -118 1775.5 -141.5Q1799 -165 1839 -165Q1879 -165 1901.5 -141.5Q1924 -118 1924 -81Q1924 -43 1901.5 -19.0Q1879 5 1839 5Z';
-  function logoDenker(id, ink) {
-    return `<defs><radialGradient id="lg${id}" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FF8C70"/><stop offset=".55" stop-color="#FF6A4D"/><stop offset="1" stop-color="#EE5236"/></radialGradient></defs>
-      <path d="${BODY}" fill="url(#lg${id})"/><ellipse cx="29" cy="35" rx="10" ry="5.5" transform="rotate(-38 29 35)" fill="#fff" opacity=".3"/>
-      <g class="eyes"><ellipse cx="47.5" cy="44.5" rx="5.4" ry="7.8" transform="rotate(-12 47.5 44.5)" fill="${C.cacao}"/><ellipse cx="64.5" cy="42.5" rx="5.4" ry="7.8" transform="rotate(-12 64.5 42.5)" fill="${C.cacao}"/>
-      <circle cx="49.3" cy="40.6" r="1.8" fill="#fff"/><circle cx="66.3" cy="38.6" r="1.8" fill="#fff"/></g>
-      <circle class="tdot" cx="86" cy="16" r="6.5" fill="${ink}"/>`;
+  /* Het beeldmerk is Denker die denkt, zonder schaduw: de ogen kijken omhoog. */
+  function logoDenker(id) {
+    const d = denkerDelen('denken', id, false);
+    return d.defs + d.lijf;
   }
   class Logo extends Base {
     static get observedAttributes() { return ['variant', 'kleur', 'height']; }
@@ -153,21 +189,20 @@
       const ink = k === 'wit' ? '#FFFFFF' : C.cacao; const pdot = k === 'kleur' ? C.koraal : ink;
       let svg;
       if (v === 'icoon') {
-        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><defs><linearGradient id="ig${this._id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8466"/><stop offset="1" stop-color="#F0553A"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#ig${this._id})"/><ellipse cx="30" cy="26" rx="18" ry="8" transform="rotate(-30 30 26)" fill="#fff" opacity=".18"/>
-          <ellipse cx="44" cy="52" rx="6.5" ry="9.5" transform="rotate(-12 44 52)" fill="${C.cacao}"/><ellipse cx="64" cy="49" rx="6.5" ry="9.5" transform="rotate(-12 64 49)" fill="${C.cacao}"/><circle cx="46.2" cy="47.4" r="2.2" fill="#fff"/><circle cx="66.2" cy="44.4" r="2.2" fill="#fff"/>
-          <ellipse cx="34" cy="68" rx="6" ry="3.6" fill="#FF3D6E" opacity=".28"/><ellipse cx="75" cy="63" rx="6" ry="3.6" fill="#FF3D6E" opacity=".28"/><circle class="tdot" cx="80" cy="22" r="6.5" fill="${C.cacao}"/></svg>`;
+        const id = this._id;
+        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><defs><linearGradient id="ig${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8466"/><stop offset="1" stop-color="#F0553A"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#ig${id})"/><ellipse cx="30" cy="26" rx="18" ry="8" transform="rotate(-30 30 26)" fill="#fff" opacity=".18"/>
+          <g transform="translate(50 52) scale(1.3) translate(-50 -55)"><ellipse cx="27" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><ellipse cx="73" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><g class="face">${eye(39, 'i' + id, false, { dx: 0.8, dy: -4.6 })}${eye(61, 'i' + id, false, { dx: 0.8, dy: -4.6 })}${lijn('M45 66.5 Q50 69 55 65.8', 3.74)}</g></g></svg>`;
       } else if (v === 'beeldmerk') {
-        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu">${logoDenker(this._id, ink)}</svg>`;
+        svg = `<svg viewBox="0 5.5 100 100" height="${h}" role="img" aria-label="leer.nu">${logoDenker(this._id)}</svg>`;
       } else if (v === 'staand') {
-        svg = `<svg viewBox="-40 -1800 3150 1830" height="${h}" role="img" aria-label="leer.nu"><g transform="translate(990 -1780) scale(11.5)">${logoDenker(this._id, ink)}</g><path d="${WORD}" fill="${ink}"/><path class="wdot" d="${WDOT}" fill="${pdot}"/></svg>`;
+        svg = `<svg viewBox="-40 -1715 3150 1745" height="${h}" role="img" aria-label="leer.nu"><g transform="translate(960 -1780) scale(11.5)">${logoDenker(this._id)}</g><path d="${WORD}" fill="${ink}"/><path class="wdot" d="${WDOT}" fill="${pdot}"/></svg>`;
       } else {
-        svg = `<svg viewBox="0 -922.75 4231.13 936.75" height="${h}" role="img" aria-label="leer.nu"><g transform="translate(-66.51 -1028.06) scale(11.09)">${logoDenker(this._id, ink)}</g><g transform="translate(1161.13 0)"><path d="${WORD}" fill="${ink}"/><path class="wdot" d="${WDOT}" fill="${pdot}"/></g></svg>`;
+        svg = `<svg viewBox="0 -840 4231.13 855" height="${h}" role="img" aria-label="leer.nu"><g transform="translate(-144.17 -1028.06) scale(11.09)">${logoDenker(this._id)}</g><g transform="translate(1161.13 0)"><path d="${WORD}" fill="${ink}"/><path class="wdot" d="${WDOT}" fill="${pdot}"/></g></svg>`;
       }
       this.shadowRoot.innerHTML = `<style>:host{display:inline-block;line-height:0}svg{display:block;overflow:visible}
-        .tdot{animation:float 2.4s cubic-bezier(.45,0,.55,1) infinite}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
         .wdot{transform-box:fill-box;transform-origin:bottom center}:host(:hover) .wdot{animation:hop .6s cubic-bezier(.3,1.6,.5,1)}
         @keyframes hop{0%,100%{transform:translateY(0) scale(1)}15%{transform:scale(1.2,.8)}45%{transform:translateY(-120%) scale(.9,1.1)}75%{transform:scale(1.1,.9)}}
-        .eyes{transform-box:fill-box;transform-origin:center;animation:blink 6s infinite}@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.15)}}
+        .eye{transform-box:fill-box;transform-origin:center;animation:blink 6s infinite}@keyframes blink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.15)}}
         ${CALM_CSS}</style>${svg}`;
     }
   }

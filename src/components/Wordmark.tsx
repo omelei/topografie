@@ -13,8 +13,8 @@ import { brand } from '@/config/brand';
  * Never smaller than 88px wide: below that, Denker alone.
  */
 
-/** Width over height of leernu-logo-liggend-*.svg (viewBox 4231.13 × 936.75). */
-const VERHOUDING = 4231.13 / 936.75;
+/** Width over height of leernu-logo-liggend-*.svg (viewBox 4231.13 × 855). */
+const VERHOUDING = 4231.13 / 855;
 
 const BESTAND = {
   ink: '/logo/leernu-logo-liggend-kleur.svg',
