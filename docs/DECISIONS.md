@@ -13577,6 +13577,34 @@ vouw, en moest een kind zelf zoeken waar het verder moest.
 laat de pagina staan. Wil de eigenaar dat elke keuze doorschuift, dan is dat
 dezelfde ingreep op de volgende onderdelen.
 
+## ADR-234 — Spelvorm, premium bij het kind, en de ouderpagina als instellingen
+
+**Status:** accepted. **Date:** 2026-09-27. Besluiten van de eigenaar op de
+review van kind en ouder (`docs/review-kind-en-ouder.md`). Draait één regel uit
+ADR-231 terug.
+
+**Besluit.**
+
+- **Spelvorm is het woord** voor hoe je oefent: meerkeuze, zelf typen,
+  aanwijzen. ADR-231 koos "manier". De woordenlijst in de schrijfwijzer zegt
+  nu "spelvorm", met "manier" onder _niet_. De startbalk en de vraag "Hoe oefen
+  je?" op de onderwerppagina volgen.
+- **Het woord premium mag op schermen van het kind staan.** Een label
+  "Premium" op een tegel en een blok dat zegt wat premium doet, zijn geen
+  aankoopprikkel in de zin van R-11. R-11 blijft gaan over een prijs en een
+  knop om te kopen: die staan alleen achter de ouderpincode. Jij blijft zonder
+  premium (ADR-232).
+- **De prijs mag op `/voor-ouders`** staan, zonder deur. Het is de openbare
+  pagina voor ouders, en de prijs hoort bij wat een ouder daar wil weten.
+- **De ouderpagina opent met "Hier vind je je ouderinstellingen."** De vorige
+  zin noemde een ouderaccount, en dat bestaat live nog niet.
+
+**Gevolgen.**
+
+- De koopknop in het venster van het kind blijft een punt voor R-11, want dat
+  is een knop om te kopen zonder pincode. Die staat onder "Daarna".
+- Het voorstel om premium van de kindschermen te halen, vervalt.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -292,3 +292,32 @@ dat al genomen is:
    Houden tot het gezinsaccount live is, of nu aanpassen?
 4. **Het cijfer bij oefenen.** Alleen bij de oefentoets, of ook onder gewone
    rondes op Vandaag?
+
+## Besluiten van de eigenaar (27 september)
+
+Vastgelegd in ADR-234.
+
+1. **Spelvorm**, overal. De woordenlijst en de startbalk zijn aangepast.
+2. **Premium op kindschermen mag**, en de prijs op `/voor-ouders` ook.
+   Bevinding 4 vervalt. Bevinding 2, de koopknop zonder pincode, blijft staan.
+3. **`ouder.intro`** wordt "Hier vind je je ouderinstellingen."
+4. **Het cijfer bij oefenen:** zie de aanbeveling hieronder.
+
+### Aanbeveling: het cijfer alleen bij de oefentoets
+
+Onder een gewone ronde op Vandaag staat nu "Cijfer 4,0 · 4 van de 12 goed". Het
+advies is om daar alleen "4 van de 12 goed" te laten staan, en het cijfer te
+bewaren voor de oefentoets. Drie redenen:
+
+- **De woordenlijst** zegt het al. Een oefentoets is "oefenen zoals op
+  school, zonder hulp, met cijfer". Daarmee is het cijfer het kenmerk van de
+  toets, en niet van oefenen.
+- **Fout is informatie, geen oordeel.** Een 4,0 onder een ronde waarin een
+  kind net nieuwe stof zag, is een oordeel over een oefenmoment. Voor een kind
+  van 8 tot 12 dat thuis alleen oefent, is dat een reden om te stoppen.
+- **Meerkeuze is geen toets.** Met vier knoppen is 25% goed gokken. Een cijfer
+  op meerkeuze meet dus iets anders dan hetzelfde cijfer op de oefentoets, waar
+  het kind zelf typt.
+
+Het risico: een kind of ouder die het cijfer als motivatie gebruikte, mist het.
+Wie wil weten hoe het ervoor staat, heeft de oefentoets.
