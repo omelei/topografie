@@ -1,8 +1,7 @@
-import { tel } from '@/store/teller';
 import { useEffect, useRef, useState } from 'react';
 import { FamilyIcon, NextIcon, OogIcon, SlotIcon } from '@/components/Icon';
 import { t } from '@/i18n';
-import { isTeKoop } from '@/store/premium';
+import { openWisselaar } from '@/features/ouder/wisselaar';
 import { CodeVeld } from './CodeVeld';
 import { Doorsturen } from './Doorsturen';
 import { huidigeWens, isVraagOmPlek, sluitOuderVraag, useOuderVraag } from './ouderVraag';
@@ -46,9 +45,6 @@ import { naarPremium, usePremium } from './usePremium';
  * het venster opengaat, en daarmee is elke keer dat hij opengaat ook een vers
  * veld in plaats van de tekst die er de vorige keer nog in stond.
  */
-
-/** De kassa, als adres, zoals op de premiumpagina (ADR-123). */
-const KASSA_PAD = '/kopen/';
 
 export function OuderVraag() {
   const open = useOuderVraag();
@@ -149,17 +145,20 @@ function Inhoud() {
         <h2 className="tk-titel">{t('ouderVraag.codeTitel')}</h2>
         <p className="text-lopend">{t('ouderVraag.codeUitleg')}</p>
         <CodeVeld className="flex flex-col gap-3" onGelukt={sluitOuderVraag} />
-        {isTeKoop() ? (
-          <div className="tk-venster-knoppen">
-            <a
-              className="tk-button tk-button-secondary"
-              href={KASSA_PAD}
-              onClick={() => tel('kassa')}
-            >
-              {t('premium.kopenKnop')}
-            </a>
-          </div>
-        ) : null}
+        {/* Geen knop om te kopen: die staat achter de ouderpincode (R-11,
+            ADR-236). Wie hier geen code heeft, gaat als ouder naar binnen. */}
+        <div className="tk-venster-knoppen">
+          <button
+            type="button"
+            className="tk-button tk-button-secondary"
+            onClick={() => {
+              sluitOuderVraag();
+              openWisselaar('slot');
+            }}
+          >
+            {t('premium.ikBenOuder')}
+          </button>
+        </div>
         <Terug onTerug={() => setUitweg('vraag')} />
       </div>
     );

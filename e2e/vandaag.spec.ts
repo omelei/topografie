@@ -50,10 +50,37 @@ test('a round stopped halfway waits under Maak af, and asks only what was left',
   await expect(kaart).toContainText('Nog 11 van de 12 vragen');
   await kaart.click();
 
-  // Eleven questions, not twelve: stopping at once says so.
-  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+  // Eleven questions, not twelve: stopping after one says so.
+  await page.getByRole('button', { name: 'Ik weet het niet' }).click();
+  await page.getByRole('button', { name: 'Volgende vraag' }).click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  await expect(page.getByText('Je stopte na 0 van de 11 vragen.')).toBeVisible();
+  await expect(page.getByText('Je stopte na 1 van de 11 vragen.')).toBeVisible();
+});
+
+/**
+ * Stoppen voor de eerste vraag is geen ronde (ADR-236): geen "Ronde klaar",
+ * geen nullen, alleen dat stoppen mag.
+ */
+test('stoppen voor de eerste vraag geeft geen uitslag met nullen', async ({ page }) => {
+  await signIn(page, 'Mila');
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Meerkeuze/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Gestopt' })).toBeVisible();
+  await expect(page.getByText('Je hebt nog niets beantwoord. Stoppen mag.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toHaveCount(0);
+  await expect(page.getByText(/0 vragen/)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Nog een ronde' }).click();
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
 });
 
 test('the table on Jij counts the answers, the share right, and the days since', async ({
@@ -81,4 +108,27 @@ test('the table on Jij counts the answers, the share right, and the days since',
   const blik = page.getByRole('region', { name: 'Alles in één blik' });
   await expect(page.getByText('Vandaag op de rol')).toHaveCount(0);
   await expect(blik.getByText('Bijna vergeten', { exact: true })).toBeVisible();
+});
+
+/**
+ * De terugknop van de browser tijdens een ronde gaat echt terug (ADR-236).
+ * Eerst veranderde alleen het adres, en bleef de ronde staan.
+ */
+test('de terugknop in een ronde gaat terug naar de vakpagina', async ({ page }) => {
+  await signIn(page, 'Jip');
+  await page.goto('/topografie');
+  await page
+    .getByRole('region', { name: /Kies een onderwerp/ })
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await page
+    .getByRole('region', { name: /Hoe wil je/ })
+    .getByRole('button', { name: /^Meerkeuze/ })
+    .click();
+  await page.locator('.tk-choose-start button').click();
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
+
+  await page.goBack();
+  await expect(page.getByRole('button', { name: 'Stoppen' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen/ })).toBeVisible();
 });

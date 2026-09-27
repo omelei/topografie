@@ -40,20 +40,30 @@ type Modus = AccountModus;
  */
 export function AccountBlok({
   onModus,
-}: { readonly onModus?: ((modus: AccountModus) => void) | undefined } = {}) {
+  inDePoort = false,
+}: {
+  readonly onModus?: ((modus: AccountModus) => void) | undefined;
+  /**
+   * In de poort vóór de pincode (ADR-236). Daar zegt het venster zelf al wat
+   * het vraagt, en een account is er geen keuze: de kop en de uitleg ("Zonder
+   * account werkt alles gewoon") vallen weg.
+   */
+  readonly inDePoort?: boolean;
+} = {}) {
   const { sessie, ingesteld, inloggen, aanmelden, uitloggen, herstel } = useAccount();
 
   if (!ingesteld) return null;
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('account.titel')}>
-      <h2 className="tk-sectie">{t('account.titel')}</h2>
+      {inDePoort ? null : <h2 className="tk-sectie">{t('account.titel')}</h2>}
       {sessie === null ? (
         <Formulier
           onInloggen={inloggen}
           onAanmelden={aanmelden}
           onHerstel={herstel}
           onModus={onModus}
+          metUitleg={!inDePoort}
         />
       ) : (
         <Ingelogd email={sessie.email} onUitloggen={uitloggen} />
@@ -104,8 +114,10 @@ function Formulier({
   onAanmelden,
   onHerstel,
   onModus,
+  metUitleg,
 }: {
   readonly onModus?: ((modus: Modus) => void) | undefined;
+  readonly metUitleg: boolean;
   readonly onInloggen: Aanmeldpoging;
   readonly onAanmelden: Aanmeldpoging;
   readonly onHerstel: Herstelpoging;
@@ -157,7 +169,7 @@ function Formulier({
 
   return (
     <>
-      <p className="text-lopend text-tekst-secundair">{t('account.uitleg')}</p>
+      {metUitleg ? <p className="text-lopend text-tekst-secundair">{t('account.uitleg')}</p> : null}
       {/*
         Geen browservalidatie: `type="email"` zou het formulier zelf tegenhouden,
         met een ballon die per browser anders is en die niet in het meldingsvak

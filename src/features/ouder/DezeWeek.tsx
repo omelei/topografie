@@ -3,10 +3,8 @@ import { dayKey, WEEK_DREMPEL, weekOverzicht, type WeekOverzicht } from '@/game-
 import { t } from '@/i18n';
 import { startbareOnderdelen } from '@/features/module/onderdelen';
 import { planSets } from '@/features/home/useVandaag';
-import { naarPremium, usePremium } from '@/features/premium/usePremium';
+import { usePremium } from '@/features/premium/usePremium';
 import { listChildren } from '@/store/children';
-import { isTeKoop } from '@/store/premium';
-import { tel } from '@/store/teller';
 import { loadItemStates } from '@/store/progress';
 
 /**
@@ -101,27 +99,9 @@ export function DezeWeek() {
       </ul>
 
       {actief ? null : (
-        <div className="flex flex-col gap-3">
-          <p className="tk-hulp">{t('ouder.weekAanbod')}</p>
-          <div className="flex flex-wrap gap-3">
-            {isTeKoop() ? (
-              <a
-                className="tk-button tk-button-secondary"
-                href="/kopen/"
-                onClick={() => tel('kassa')}
-              >
-                {t('premium.kopenKnop')}
-              </a>
-            ) : null}
-            <button
-              type="button"
-              className="tk-button tk-button-tertiary"
-              onClick={() => naarPremium()}
-            >
-              {t('ouder.bekijkPremium')}
-            </button>
-          </div>
-        </div>
+        // Eén premiumblok per pagina (ADR-124, ADR-236): de knoppen staan in
+        // het blok Premium verderop, hier alleen wat premium hier zou doen.
+        <p className="tk-hulp">{t('ouder.weekAanbod')}</p>
       )}
     </section>
   );

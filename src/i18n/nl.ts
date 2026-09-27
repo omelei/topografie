@@ -74,7 +74,7 @@ export const nl = {
   'ouders.premium': 'Wat premium is',
   'ouders.oefenen.kop': 'Oefenen in korte rondes',
   'ouders.oefenen.tekst':
-    'Je kind kiest een vak, een onderwerp en een spelvorm. Een ronde duurt een paar minuten. Na de ronde ziet jouw kind wat hij/zij goed en fout heeft gedaan.',
+    'Je kind kiest een vak, een onderwerp en een spelvorm. Een ronde duurt een paar minuten. Na de ronde ziet je kind wat het goed en fout had.',
   'ouders.herhalen.kop': 'Herhalen op het goede moment',
   'ouders.herhalen.tekst':
     'Wat je kind beheerst, komt pas later terug. Wat het bijna vergeten is, komt vandaag terug. Zo blijft het in het hoofd.',
@@ -396,11 +396,13 @@ export const nl = {
   // gaat over antwoorden die je gaf, dat over wat blijft.
   'retention.totaal':
     'Alles bij elkaar: {rondes} keer geoefend en {vragen} vragen beantwoord, waarvan {procent}% goed.',
+  'retention.totaalEenVraag':
+    'Alles bij elkaar: {rondes} keer geoefend en 1 vraag beantwoord, waarvan {procent}% goed.',
   'retention.grafiek': 'Vragen per week',
   'retention.grafiekWk': 'wk {nummer}',
   'retention.grafiekNu': 'nu',
-  'retention.grafiekZin': 'Week {nummer}: {goed} van de {totaal} vragen goed.',
-  'retention.grafiekDezeZin': 'Deze week: {goed} van de {totaal} vragen goed.',
+  'retention.grafiekZin': 'Week {nummer}: {goed} van de {totaal} goed.',
+  'retention.grafiekDezeZin': 'Deze week: {goed} van de {totaal} goed.',
   'retention.grafiekGoed': 'goed',
   'retention.grafiekFout': 'fout',
   // "Per onderwerp" was een eigen kop met een eigen blok en is weg (ADR-177):
@@ -712,10 +714,11 @@ export const nl = {
     'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor 3 kinderen op 3 apparaten, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
-  'premium.etalageKop':
-    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft de stof hangen.',
+  'premium.etalageKop': 'Oefenen is gratis. Premium plant het herhalen en opent de diploma’s.',
   'premium.perSchooljaar': 'per jaar',
   'premium.codeTitel': 'Heb je al een code?',
+  // Met een code is dat geen vraag meer (ADR-236).
+  'premium.codeTitelAan': 'Je code',
   'premium.codeLabel': 'Typ de code',
   'premium.codePlaceholder': 'LEER-XXXX-XXXX',
   'premium.codeGebruiken': 'Code gebruiken',
@@ -727,7 +730,7 @@ export const nl = {
   'premium.verlopen':
     'Je code is verlopen op {datum}. Alles wat je kinderen hebben geoefend, staat nog op dit apparaat. Verleng je, dan komt alles terug.',
   'premium.afmelden': 'Code van dit apparaat halen',
-  'premium.afmeldenUitleg': 'Dan komt er een plek vrij voor een ander apparaat.',
+  'premium.afmeldenUitleg': 'Had dit apparaat een plek, dan komt die vrij voor een ander apparaat.',
   // Wat premium dóét, in vier klussen (ADR-124), sinds ADR-145 als kaarten met
   // een teken. De kop is wat het oplevert, de regel eronder hoe.
   'premium.watTitel': 'Wat premium voor je doet',
@@ -767,7 +770,6 @@ export const nl = {
     'Ontdekken, aanwijzen, meerkeuze en zelf typen, in elk vak. Voor altijd, zonder code.',
   'premium.premiumVoor':
     'Alles uit Basis, en daarbovenop: de bliksemronde, overleven, de oefentoets, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
-  'premium.aanrader': 'Aanrader',
   'premium.tabelWat': 'Onderdeel',
   'premium.tabelJa': 'Zit erin',
   'premium.tabelNee': 'Zit er niet in',
@@ -1007,6 +1009,7 @@ export const nl = {
   'practice.typeQuestion': 'Typ de naam',
   'practice.chooseQuestion': 'Kies de naam',
   'practice.dontKnow': 'Ik weet het niet',
+  'practice.dontKnowSub': 'Geen probleem. Deze komt later nog terug.',
   // Inzoomen op de wereldkaart (ADR-146). Werelddelen zoals het regio-rijtje ze
   // noemt, en de delen zoals een Nederlandse atlas ze zou noemen.
   'zoom.label': 'Inzoomen op de kaart',
@@ -1034,7 +1037,7 @@ export const nl = {
   'practice.typePlaceholder': 'Naam',
   'practice.check': 'Kijk na',
   'practice.loading': 'Even laden…',
-  'practice.mapFailed': 'Deze ronde laadt even niet.',
+  'practice.mapFailed': 'De kaart laadt niet. Is er internet? Probeer het zo nog eens.',
 
   // Rekenen. De tafels van 1 tot 12 en tien sommen per tafel, allebei uit het
   // app-ontwerp v2. Het oefenscherm zelf is daar niet getekend (ADR-049).
@@ -1509,6 +1512,9 @@ export const nl = {
   // achievement — and the register rule is that we talk about the work, never
   // about the child.
   'result.title': 'Ronde klaar',
+  // Gestopt voor de eerste vraag (ADR-236): geen uitslag, want er was geen ronde.
+  'result.gestoptTitel': 'Gestopt',
+  'result.gestoptLeeg': 'Je hebt nog niets beantwoord. Stoppen mag.',
   'result.practiceMore': 'Deze komen nog terug',
   'result.home': 'Terug naar Vandaag',
   'result.stoppedEarly': 'Je stopte na {gedaan} van de {totaal} vragen.',
@@ -1560,7 +1566,7 @@ export const nl = {
   'result.onthoud': 'Doe je niets, dan weet je hier over drie weken nog ongeveer {procent}% van.',
   'result.again': 'Nog een ronde',
   // Alleen wat er in deze ronde fout ging, meteen nog een keer (ADR-111).
-  'result.herhaalFouten': 'Herhaal je fouten',
+  'result.herhaalFouten': 'Oefen jouw fouten',
 
   // K10. Twee schakelaars in plaats van drie: de leesmodus verviel (ADR-025).
   // School en woonplaats staan er niet en komen er niet — dat zijn de twee
@@ -1569,8 +1575,7 @@ export const nl = {
   // Onder de titel, in de kop die de etalage van premium is (ADR-150). Met de
   // naam erin, want wie je bent is het eerste wat Jij zegt (ADR-126), en in de
   // volgorde van de pagina eronder (ADR-172).
-  'you.intro':
-    'Je oefent als {naam}. Hieronder vind je je instellingen, jouw diploma’s, welke stof je beheerst en hoe vaak je oefent.',
+  'you.intro': 'Je oefent als {naam}. Hier staan je instellingen, je diploma’s en wat je beheerst.',
   // Zonder code (ADR-192): de cijfers staan er dan niet, en de zin belooft ze niet.
   'you.introZonderCode':
     'Je oefent als {naam}. Hieronder vind je je instellingen en jouw diploma’s.',
@@ -1662,8 +1667,8 @@ export const nl = {
   'wisselaar.kindNaam': 'Naam van het kind',
   'wisselaar.voegToe': 'Toevoegen',
   'wisselaar.vol':
-    'Er passen {aantal} kinderen op dit apparaat. Wil je er een kind bij? Haal dan eerst een kind weg bij Ouder.',
-  'wisselaar.ouder': 'Ouder',
+    'Er passen {aantal} kinderen op dit apparaat. Wil je er een kind bij? Haal dan eerst een kind weg op de ouderpagina.',
+  'wisselaar.ouder': 'Ouderpagina',
   'wisselaar.ouderRegel': 'Instellingen, premium en hoe het gaat',
   'wisselaar.terugLijst': 'Terug naar de lijst',
   'wisselaar.sluit': 'Sluiten',
@@ -1756,7 +1761,7 @@ export const nl = {
   // De pincode wordt nergens een wachtwoord genoemd. Dat woord is van het
   // account dat in F3 komt, en twee woorden voor twee verschillende sloten is
   // precies wat er nodig is zodra ze allebei bestaan.
-  'ouder.titel': 'Voor de ouder',
+  'ouder.titel': 'Ouderpagina',
   'ouder.intro': 'Hier vind je je ouderinstellingen.',
   'ouder.terugNaarKind': 'Terug naar {naam}',
 
@@ -1831,8 +1836,8 @@ export const nl = {
   // Deze week (ADR-227): wat het dagplan stil deed, per kind, vanaf 5 onderdelen.
   'ouder.week': 'Deze week',
   'ouder.weekGeoefend': '{naam} oefende deze week {aantal} verschillende vragen.',
-  'ouder.weekPlan': 'Het plan zet ze weer klaar om te herhalen: {dagen}.',
-  'ouder.weekPlanPremium': 'Met premium zet het plan ze voor {naam} klaar om te herhalen: {dagen}.',
+  'ouder.weekPlan': 'Het plan zet ze {dagen} weer klaar om te herhalen.',
+  'ouder.weekPlanPremium': 'Met premium zet het plan ze voor {naam} {dagen} klaar om te herhalen.',
   'ouder.weekAanbod':
     'Premium laat elke vraag terugkomen vlak voordat je kind hem vergeet. Zo blijft het in het hoofd.',
   'ouder.weekVandaag': 'vandaag',
@@ -2035,7 +2040,7 @@ export const nl = {
   'overname.wie': 'Welke kinderen zet je in je account?',
   'overname.toestemmingUitleg':
     'Op onze server, binnen de EU, komt dan te staan: de voornaam, de groep, de antwoorden, de diploma’s en de doelen. Niets anders, en we delen het met niemand. Je kunt een kind altijd weer uit je account halen. Dan verdwijnt alles van dat kind van de server, en blijft het op dit apparaat staan.',
-  'overname.toestemming': 'Ik ben hun ouder of voogd, en ik geef toestemming.',
+  'overname.toestemming': 'Ik ben de ouder of voogd, en ik geef toestemming.',
   'overname.knop': 'Zet in mijn account',
   'overname.bezig': 'Bezig met {naam}…',
   'overname.nietVerstuurd': 'Staat in je account, maar nog niet alles is verstuurd.',

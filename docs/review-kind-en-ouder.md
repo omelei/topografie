@@ -321,3 +321,21 @@ bewaren voor de oefentoets. Drie redenen:
 
 Het risico: een kind of ouder die het cijfer als motivatie gebruikte, mist het.
 Wie wil weten hoe het ervoor staat, heeft de oefentoets.
+
+## Uitgevoerd (27 september)
+
+Vastgelegd in ADR-235 en ADR-236.
+
+| Bevinding                              | Stand                                                                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1, 3, 10: onware beloftes en teksten   | Hersteld in #171                                                                                                      |
+| 2: koopknop zonder pincode             | Hersteld: "Ik ben de ouder" in plaats van "Een code kopen"                                                            |
+| 4: premium op kindschermen             | Vervalt (besluit, ADR-234)                                                                                            |
+| 5: `ouder.intro`                       | Hersteld in #173: "Hier vind je je ouderinstellingen."                                                                |
+| 6: stoppen voor de eerste vraag        | Hersteld: "Gestopt · Stoppen mag." zonder nullen                                                                      |
+| 7: terugknop in een ronde              | Hersteld: terug gaat terug, de ronde staat bij "Maak af"                                                              |
+| 8: poorten en beloftes met een account | Deels: geen accountuitleg meer in de poort. De premiumdeur en de beloftes staan op de checklist van het gezinsaccount |
+| 9: vijf koopoproepen op de ouderpagina | Hersteld: één premiumblok                                                                                             |
+| Topo zonder "Geen probleem"            | Hersteld                                                                                                              |
+| Cijfer bij oefenen                     | Hersteld in #172 (ADR-235)                                                                                            |
+| Flow 2 zonder test                     | Hersteld: `e2e/kind-ingelogd.spec.ts`                                                                                 |

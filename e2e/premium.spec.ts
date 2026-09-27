@@ -212,7 +212,7 @@ test('without a code a child can still discover, choose, and repeat their misses
   await expect(page.getByText(/Doe je niets, dan weet je hier over drie weken/)).toHaveCount(0);
 
   // And going back over what just went wrong is free.
-  await page.getByRole('button', { name: 'Herhaal je fouten' }).click();
+  await page.getByRole('button', { name: 'Oefen jouw fouten' }).click();
   await expect(page).not.toHaveURL(/\/premium$/);
   await expect(opties).toBeVisible();
 });
@@ -245,7 +245,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen kan gratis. Met premium haalt je kind diploma’s en blijft de stof hangen.',
+    'Oefenen is gratis. Premium plant het herhalen en opent de diploma’s.',
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',
@@ -791,7 +791,8 @@ test('without a code the parent sees what the day plan did this week, and the ch
   const week = page.getByRole('region', { name: 'Deze week' });
   await expect(week).toContainText('Sem oefende deze week 10 verschillende vragen.');
   await expect(week).toContainText(
-    'Met premium zet het plan ze voor Sem klaar om te herhalen: morgen',
+    'Met premium zet het plan ze voor Sem morgen klaar om te herhalen',
   );
-  await expect(week.getByRole('button', { name: 'Wat zit er in premium?' })).toBeVisible();
+  // De knop staat één keer op de pagina, in het blok Premium (ADR-236).
+  await expect(week.getByRole('button', { name: 'Wat zit er in premium?' })).toHaveCount(0);
 });

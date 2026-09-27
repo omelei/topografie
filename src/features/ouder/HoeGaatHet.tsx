@@ -104,7 +104,7 @@ export function HoeGaatHet() {
         <h2 className="tk-sectie">{t('ouder.hoeGaatHet')}</h2>
         <Wensen />
         <Voorbeeld />
-        <PremiumSlot wat="premium.wat.voortgang" />
+        <PremiumSlot wat="premium.wat.voortgang" zonderKnop />
       </section>
     );
   }

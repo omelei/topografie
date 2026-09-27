@@ -144,5 +144,11 @@ test('the memory check comes once, changes no box, and the parent reads the resu
   await expect(check).toContainText('goed, van de 10 vragen');
   await expect(check).toContainText('vragen uit Tafel van 1 die Lotte 3 tot 8 weken geleden');
   await expect(check).toContainText('laat premium op tijd terugkomen');
-  await expect(check.getByRole('button', { name: 'Wat zit er in premium?' })).toBeVisible();
+  // De knop staat één keer op de pagina, in het blok Premium (ADR-236).
+  await expect(check.getByRole('button', { name: 'Wat zit er in premium?' })).toHaveCount(0);
+  await expect(
+    page.getByRole('region', { name: 'Premium', exact: true }).getByRole('button', {
+      name: 'Wat zit er in premium?',
+    }),
+  ).toBeVisible();
 });

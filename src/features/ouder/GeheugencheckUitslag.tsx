@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { t } from '@/i18n';
 import { naamVanSet } from '@/features/module/onderdelen';
-import { leesbareDatum, naarPremium, usePremium } from '@/features/premium/usePremium';
+import { leesbareDatum, usePremium } from '@/features/premium/usePremium';
 import { listChildren } from '@/store/children';
 import { leesGeheugencheck, type GeheugencheckUitslag as Uitslag } from '@/store/geheugencheck';
-import { isTeKoop } from '@/store/premium';
-import { tel } from '@/store/teller';
 
 /**
  * De uitslag van de geheugencheck, op de ouderpagina (ADR-228).
@@ -80,27 +78,8 @@ export function GeheugencheckUitslag() {
       {actief ? (
         <p className="tk-hulp">{t('ouder.geheugencheckMetPremium')}</p>
       ) : (
-        <div className="flex flex-col gap-3">
-          <p className="tk-hulp">{t('ouder.geheugencheckAanbod')}</p>
-          <div className="flex flex-wrap gap-3">
-            {isTeKoop() ? (
-              <a
-                className="tk-button tk-button-secondary"
-                href="/kopen/"
-                onClick={() => tel('kassa')}
-              >
-                {t('premium.kopenKnop')}
-              </a>
-            ) : null}
-            <button
-              type="button"
-              className="tk-button tk-button-tertiary"
-              onClick={() => naarPremium()}
-            >
-              {t('ouder.bekijkPremium')}
-            </button>
-          </div>
-        </div>
+        // Eén premiumblok per pagina (ADR-124, ADR-236), zie DezeWeek.
+        <p className="tk-hulp">{t('ouder.geheugencheckAanbod')}</p>
       )}
     </section>
   );

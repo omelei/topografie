@@ -82,7 +82,7 @@ test('the result screen repeats the round’s mistakes', async ({ page }) => {
   await kies(page, '/klokkijken', /^Hele uren/, /^Meerkeuze/);
   await weetHetNiet(page);
 
-  await page.getByRole('button', { name: 'Herhaal je fouten' }).click();
+  await page.getByRole('button', { name: 'Oefen jouw fouten' }).click();
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();
 });
 

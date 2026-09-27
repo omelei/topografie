@@ -70,7 +70,7 @@ test('de ouder zit achter een pincode, en het kind niet', async ({ page }) => {
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
 
   await expect(page).toHaveURL(/\/ouder$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Voor de ouder' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Ouderpagina' })).toBeVisible();
 
   // En de cijfers staan nergens in de opslag (ADR-173): wat er staat is een
   // afleiding met een salt. Vier cijfers zijn geen geheim, maar ze mogen ook
@@ -97,7 +97,7 @@ test('zonder naam vraagt de ouderpagina eerst hoe het kind heet', async ({ page 
 
   await vraag.getByLabel('Naam van je kind').fill('Mila');
   await vraag.getByRole('button', { name: 'Verder' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Voor de ouder' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Ouderpagina' })).toBeVisible();
   await expect(wisselaar(page)).toHaveAccessibleName(/Nu oefent Mila/);
 });
 

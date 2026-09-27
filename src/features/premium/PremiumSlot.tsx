@@ -31,9 +31,15 @@ import { useNaarPremium } from './usePremium';
  */
 export function PremiumSlot({
   kaal = false,
+  zonderKnop = false,
   wat,
 }: {
   readonly kaal?: boolean;
+  /**
+   * Zonder knop, op een pagina die zelf al één plek voor premium heeft, zoals
+   * de ouderpagina (ADR-236): dan zegt het slot alleen wat het zou doen.
+   */
+  readonly zonderKnop?: boolean;
   /** Wat dít ding voor je doet, in één zin. Verplicht: zie hierboven. */
   readonly wat: TranslationKey;
 }) {
@@ -45,13 +51,15 @@ export function PremiumSlot({
         <PremiumLabel hoorbaar />
         {t(wat)}
       </p>
-      <button
-        type="button"
-        className="tk-button tk-button-secondary self-start"
-        onClick={naarPremium}
-      >
-        {t('premium.slotKnop')}
-      </button>
+      {zonderKnop ? null : (
+        <button
+          type="button"
+          className="tk-button tk-button-secondary self-start"
+          onClick={naarPremium}
+        >
+          {t('premium.slotKnop')}
+        </button>
+      )}
     </div>
   );
 }

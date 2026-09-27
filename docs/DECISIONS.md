@@ -13630,6 +13630,60 @@ vlag niet. Zij tellen als oefenen en krijgen dus geen cijfer.
 `pakket.ts` noemt zijn kolommen zelf. Een ronde die van een ander apparaat komt,
 staat daardoor zonder cijfer op Vandaag.
 
+## ADR-236 — De verbeteringen uit de review van kind en ouder
+
+**Status:** accepted. **Date:** 2026-09-27. Op verzoek van de eigenaar: de
+voorstellen uit `docs/review-kind-en-ouder.md` doorvoeren, na de besluiten in
+ADR-234 en ADR-235.
+
+**Besluit.**
+
+- **Geen koopknop in het venster van het kind (R-11).** Na "Mijn ouders zijn
+  erbij" staat het codeveld, met "Ik ben de ouder" in plaats van "Een code
+  kopen". Die knop opent de pincode. Kopen kan achter de pincode, op de
+  ouderpagina en de premiumpagina.
+- **Stoppen voor de eerste vraag is geen ronde.** De uitslag zegt dan
+  "Gestopt · Je hebt nog niets beantwoord. Stoppen mag.", met "Nog een ronde"
+  en "Terug naar Vandaag". Er staat geen "Ronde klaar", geen blije Denker en
+  geen nul.
+- **De terugknop in een ronde gaat terug.** Een ronde heeft geen eigen adres.
+  Daarom veranderde "terug" alleen het adres, en bleef de ronde staan. Nu laat
+  `popstate` de ronde los. Wat beantwoord is, is al bewaard, en de ronde staat
+  bij "Maak af".
+- **Eén premiumblok op de ouderpagina** (ADR-124). Hoe gaat het?, Deze week en
+  de geheugencheck zeggen wat premium daar zou doen, zonder eigen knop. De
+  knoppen staan in het blok Premium. `PremiumSlot` kreeg daarvoor `zonderKnop`.
+- **Topo zegt ook "Geen probleem. Deze komt later nog terug."** na "Ik weet het
+  niet", zoals de andere vakken.
+- **De poort vóór de pincode** toont met een gezinsproject alleen het
+  formulier, zonder de kop en de uitleg van het accountblok ("Zonder account
+  werkt alles gewoon").
+- **Teksten:**
+  - "Oefen jouw fouten" in plaats van "Herhaal je fouten".
+  - "Ouderpagina" in de wisselaar en als kop van de ouderpagina. De tabbalk
+    houdt "Ouders", want vier bestemmingen moeten passen bij 200% tekst
+    (ADR-232).
+  - Het plan in Deze week zonder dubbele punt.
+  - Enkelvoud bij één vraag op Jij.
+  - Kortere intro op Jij.
+  - Een foutmelding die zegt wat een kind kan doen als de kaart niet laadt.
+  - "Je code" boven een code die al aanstaat.
+  - Op de premiumpagina geen verkoopzin en geen label "Aanrader".
+  - "de ouder of voogd" bij de toestemming.
+- **Een e2e-reis voor flow 2**, een kind met een ingelogde ouder en zonder
+  code, want die had geen enkele test.
+
+**Niet gedaan, en waarom.**
+
+- **De premiumdeur als pincode met een gezinsproject, en de naam- en
+  wisbelofte met een account.** Dat verandert pas iets als het gezinsaccount
+  live gaat. Het staat daarom op die checklist in de roadmap.
+- **Een e2e-test voor de geboortejaar-poort vóór de pincode.** De e2e-bouw heeft
+  een gezinsproject, dus die poort bestaat daar niet. Hij blijft getoetst in
+  `Pinslot.test.tsx` en `Volwassenencheck.test.tsx`.
+- **De klassencode per schooljaar.** Dat hangt af van hoe de klassencode
+  verkocht wordt, en dat is een besluit van de eigenaar.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

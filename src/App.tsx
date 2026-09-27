@@ -187,6 +187,17 @@ export default function App() {
     if (route.name === 'premium') tel('premium');
   }, [route.name]);
 
+  // De terugknop tijdens een ronde (ADR-236). Een ronde heeft geen eigen adres,
+  // dus "terug" veranderde het adres en liet de ronde staan: het kind drukte en
+  // er gebeurde niets. Nu gaat terug ook echt terug, naar de pagina van het
+  // adres. Wat beantwoord is, is al bewaard, en de ronde staat bij "Maak af".
+  useEffect(() => {
+    if (screen.name === 'home') return;
+    const terug = () => setScreen({ name: 'home' });
+    window.addEventListener('popstate', terug);
+    return () => window.removeEventListener('popstate', terug);
+  }, [screen.name]);
+
   // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
   // them here rather than inside the Shell keeps the frame ignorant of what a
   // screen is.

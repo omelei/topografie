@@ -93,8 +93,8 @@ test('na één ronde staan het geheugen, hoe vaak je oefent en per vak er', asyn
   const verloop = page.getByRole('region', { name: vaak });
   const weken = verloop.getByRole('list', { name: 'Vragen per week' }).getByRole('listitem');
   await expect(weken).toHaveCount(8);
-  await expect(weken.last()).toContainText(/Deze week: [01] van de 1 vragen goed\./);
-  await expect(verloop).toContainText('1 keer geoefend en 1 vragen beantwoord');
+  await expect(weken.last()).toContainText(/Deze week: [01] van de 1 goed\./);
+  await expect(verloop).toContainText('1 keer geoefend en 1 vraag beantwoord');
   await expect(page.getByRole('region', { name: 'Week na week' })).toHaveCount(0);
 
   // Per vak en Per onderwerp zijn de zoom binnen Je geheugen geworden

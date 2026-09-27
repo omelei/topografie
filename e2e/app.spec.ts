@@ -408,8 +408,9 @@ test('asks about every province, and lets a child stop early', async ({ page }) 
   await expect(page.getByRole('progressbar')).toHaveAttribute('aria-valuetext', 'vraag 1 van 12');
 
   await page.getByRole('button', { name: 'Stoppen' }).click();
-  // K8: the heading is what changed, and the score is a line underneath it.
-  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+  // Voor de eerste vraag gestopt is geen ronde (ADR-236): geen uitslag met
+  // nullen, maar dat stoppen mag, en de weg terug.
+  await expect(page.getByRole('heading', { name: 'Gestopt' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Terug naar Vandaag' })).toBeVisible();
 });
 

@@ -361,6 +361,7 @@ function feedbackSentence(state: State, naam: string, chosen: string): string {
   if (state.verdict?.kind === 'near-miss') {
     return `${t('practice.almost')} ${t('practice.almostSub', { gekozen: state.verdict.confusedWith.naam, naam })}`;
   }
+  if (state.wistHetNiet) return `${t('practice.wrong', { naam })} ${t('practice.dontKnowSub')}`;
   return `${t('practice.wrong', { naam })} ${chosen ? t('practice.wrongSub', { gekozen: chosen }) : ''}`;
 }
 
@@ -371,6 +372,8 @@ function feedbackDetail(state: State, naam: string, chosen: string): string {
   if (state.verdict?.kind === 'near-miss') {
     return t('practice.almostSub', { gekozen: state.verdict.confusedWith.naam, naam });
   }
+  // "Ik weet het niet" krijgt geen oordeel, zoals in de andere vakken (ADR-236).
+  if (state.wistHetNiet) return `${t('practice.dontKnowSub')} ${weetje}`.trim();
   // Pointing names what was pointed at; typing has nothing sensible to quote
   // back, because whatever was typed was not a place we teach.
   return chosen ? `${t('practice.wrongSub', { gekozen: chosen })} ${weetje}` : weetje;
