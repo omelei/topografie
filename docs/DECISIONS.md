@@ -13556,6 +13556,27 @@ ook het woord premium niet op zijn eigen pagina.
   zelf. Wie hem sterker wil, kijkt naar het gezinsaccount (ADR-178).
 - Een e2e-test die /premium opent, gaat eerst door de deur.
 
+## ADR-233 — Een keuze in het eerste onderdeel van een vakpagina springt naar het tweede
+
+**Status:** accepted. **Date:** 2026-09-27. Op verzoek van de eigenaar.
+
+**Besluit.** Kiest een kind in het eerste onderdeel van een vakpagina, dan
+schuift de pagina meteen naar het tweede. Op een telefoon stond dat onder de
+vouw, en moest een kind zelf zoeken waar het verder moest.
+
+- Het eerste onderdeel is de regio waar een vak die heeft (Topo: "Waar op de
+  kaart?"). Dan springt de keuze naar de onderwerpen.
+- Heeft een vak geen regio, dan is het onderwerp het eerste onderdeel. De keuze
+  springt dan naar de vervolgvraag (welke tafel), of anders naar de manieren.
+- Een onderwerp dat op slot zit en het venster voor de ouders opent, springt
+  niet.
+- De sprong is direct, zonder animatie, en landt onder het vakmenu dat onder
+  1200 bovenaan blijft staan (`scroll-margin-top` op `.tk-kies`).
+
+**Gevolgen.** Verder springt niets vanzelf: een keuze in het tweede onderdeel
+laat de pagina staan. Wil de eigenaar dat elke keuze doorschuift, dan is dat
+dezelfde ingreep op de volgende onderdelen.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
