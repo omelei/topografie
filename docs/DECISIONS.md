@@ -13605,6 +13605,31 @@ ADR-231 terug.
   is een knop om te kopen zonder pincode. Die staat onder "Daarna".
 - Het voorstel om premium van de kindschermen te halen, vervalt.
 
+## ADR-235 — Een cijfer op Vandaag alleen bij een toets
+
+**Status:** accepted. **Date:** 2026-09-27. Op advies van de review van kind
+en ouder, en met akkoord van de eigenaar.
+
+**Besluit.** Onder "Recent geoefend" op Vandaag staat bij een gewone ronde
+"4 van de 12 goed", en geen cijfer meer. Een cijfer staat er alleen bij een
+toets: de oefentoets of een diploma. Dat zijn de rondes zonder hulp onderweg.
+Het is dezelfde grens als op het uitslagscherm, waar `RoundMark` alleen bij een
+toets een cijfer geeft.
+
+- **De woordenlijst.** De oefentoets is "oefenen zoals op school, zonder hulp,
+  met cijfer". Het cijfer hoort bij de toets.
+- **Fout is informatie, geen oordeel.** Een 4,0 onder een eerste ronde met
+  nieuwe stof is een oordeel over een oefenmoment.
+- **Meerkeuze meet iets anders.** Bij vier knoppen is 25% goed gokken.
+
+**Hoe.** Een sessie schrijft bij de start of het een toets is (`toets` op
+`SessionRecord`, uit `toetsstand`). Rondes van vóór dit besluit hebben die
+vlag niet. Zij tellen als oefenen en krijgen dus geen cijfer.
+
+**Gevolgen.** Het veld gaat niet mee naar het gezinsaccount: `sessieRij` in
+`pakket.ts` noemt zijn kolommen zelf. Een ronde die van een ander apparaat komt,
+staat daardoor zonder cijfer op Vandaag.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

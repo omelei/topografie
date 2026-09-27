@@ -43,6 +43,7 @@ export async function startSession(
   mode: ModeId,
   itemIds: readonly string[],
   setId: string,
+  toets = false,
 ): Promise<string> {
   // De geheugencheck schrijft niets in de winkels (ADR-228).
   const stil = neemStilleSessie();
@@ -58,6 +59,7 @@ export async function startSession(
     score: null,
     gestart: new Date().toISOString(),
     geeindigd: null,
+    ...(toets ? { toets: true } : {}),
   };
   await db.put('sessions', session);
   return session.id;
@@ -97,6 +99,8 @@ export interface PlayedRound {
   readonly correct: number;
   readonly answered: number;
   readonly at: string;
+  /** Een toets, met een cijfer; anders was het oefenen (ADR-235). */
+  readonly toets?: boolean;
 }
 
 /**
@@ -136,6 +140,7 @@ export async function loadPlayedRounds(kindId?: string): Promise<PlayedRound[]> 
       correct: session.score,
       answered,
       at: session.geeindigd,
+      toets: session.toets === true,
     });
   }
 
