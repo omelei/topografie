@@ -89,11 +89,17 @@ beforeEach(() => {
 });
 
 describe('useRoundCore', () => {
+  it('schrijft in de sessie of het een toets is, voor het cijfer op Vandaag (ADR-235)', async () => {
+    const { result } = ronde({ ids: ['a', 'b'], toetsstand: true });
+    await waitFor(() => expect(result.current.kern.phase).toBe('asking'));
+    expect(vi.mocked(startSession)).toHaveBeenCalledWith('meerkeuze', ['a', 'b'], 'test', true);
+  });
+
   it('asks what it was given, in order, and finishes after the last', async () => {
     const { result } = ronde({ ids: ['a', 'b'] });
     await waitFor(() => expect(result.current.kern.phase).toBe('asking'));
 
-    expect(vi.mocked(startSession)).toHaveBeenCalledWith('meerkeuze', ['a', 'b'], 'test');
+    expect(vi.mocked(startSession)).toHaveBeenCalledWith('meerkeuze', ['a', 'b'], 'test', false);
     expect(result.current.kern.total).toBe(2);
     expect(result.current.kern.question?.item.id).toBe('a');
 

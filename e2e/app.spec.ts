@@ -169,10 +169,11 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
-  // One answer, so the mark is a 10,0 or a 1,0 and never anything between —
-  // which is exactly what "over what was answered" means.
+  // One answer, and a telling rather than a mark: a round with help on the way
+  // gets no cijfer on the front door, only the oefentoets does (ADR-235).
   const tegel = recent.getByRole('button', { name: /Provincies van Nederland/ });
-  await expect(tegel).toContainText(/Cijfer (10,0|1,0)/);
+  await expect(tegel).toContainText(/[01] van de 1 goed/);
+  await expect(tegel).not.toContainText('Cijfer');
   await expect(tegel).toContainText('Aanwijzen');
 
   // The tile is the shortcut it looks like: same set, same way, no chooser.
@@ -334,6 +335,14 @@ test('the oefentoets asks without answering, and marks at the end', async ({ pag
   // is. What is being checked is that there is one at all.
   await expect(page.getByText('Zonder hulp onderweg, net als op school.')).toBeVisible();
   await expect(page.locator('.tk-toetscijfer')).toContainText(/1,0|10,0/);
+
+  // En op Vandaag staat dat cijfer erbij, want dit was een toets (ADR-235).
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
+  await expect(
+    page
+      .getByRole('region', { name: 'Recent geoefend' })
+      .getByRole('button', { name: /Provincies van Nederland/ }),
+  ).toContainText(/Cijfer (1,0|10,0)/);
 });
 
 /**
