@@ -8,6 +8,7 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
+import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import {
   FLITS_KIJKTIJD_MS,
@@ -313,26 +314,33 @@ function Vraag({
       <div className="tk-round-body">
         <div className="tk-round-question">
           {revealed ? (
-            <>
-              <div className="flex items-start gap-4">
-                <UitkomstTeken uitkomst={correct ? 'goed' : 'fout'} />
-                <div className="flex min-w-0 flex-col gap-1">
-                  <p className="tk-display text-sectiekop">{kop}</p>
-                  {vertaling === null ? null : <p className="text-lopend">{vertaling}</p>}
-                  {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
-                  {regel === null ? null : <p className="text-lopend">{regel}</p>}
-                </div>
-                <RondeDenker uitkomst={correct ? 'goed' : 'fout'} />
+            <div className="tk-terugkoppeling">
+              <UitkomstTeken uitkomst={correct ? 'goed' : 'fout'} />
+              <div className="tk-terugkoppeling-tekst flex min-w-0 flex-col gap-1">
+                <p className="tk-display text-sectiekop">{kop}</p>
+                {vertaling === null ? null : <p className="text-lopend">{vertaling}</p>}
+                {sub === null ? null : <p className="text-lopend text-tekst-secundair">{sub}</p>}
+                {regel === null ? null : <p className="text-lopend">{regel}</p>}
               </div>
+              <RondeDenker uitkomst={correct ? 'goed' : 'fout'} />
 
-              <button ref={nextButton} type="button" className="tk-button mt-4" onClick={onNext}>
+              <button
+                ref={nextButton}
+                type="button"
+                className="tk-button tk-terugkoppeling-knop"
+                onClick={onNext}
+              >
                 {t('practice.next')}
+                <NextIcon size={20} />
               </button>
-            </>
+            </div>
           ) : (
             <>
-              <p className="tk-label">{instruction}</p>
-              <h1 className="tk-display mt-1 text-vraag">{prompt}</h1>
+              <div className="tk-vraagblok">
+                <span className="tk-vraagblok-vorm" aria-hidden="true" />
+                <p className="tk-label">{instruction}</p>
+                <h1 className="tk-display text-vraag">{prompt}</h1>
+              </div>
               {!typen && vraag.opties ? (
                 <div
                   className="tk-options"

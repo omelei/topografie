@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import type { KlokItem } from '@/game-core';
 import { Brandmark } from '@/components/Brandmark';
@@ -188,45 +189,50 @@ export function KlokScreen({
       <div className="tk-round-body">
         <div className="tk-round-question">
           {revealed ? (
-            <>
-              <div className="flex items-start gap-4">
-                <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
-                <div className="min-w-0">
-                  <p className="tk-display text-sectiekop">
-                    {state.lastCorrect
-                      ? t('klok.correct', { tijd: klokVoluit(tijd) })
-                      : t('klok.wrong', { tijd: klokVoluit(tijd) })}
-                  </p>
-                  <p className="text-lopend text-tekst-secundair">
-                    {state.lastCorrect
-                      ? ''
-                      : gegeven === null || gegeven === ''
-                        ? t('klok.dontKnowSub')
-                        : t('klok.wrongSub', { gegeven })}
-                  </p>
-                </div>
-                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+            <div className="tk-terugkoppeling">
+              <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+              <div className="tk-terugkoppeling-tekst min-w-0">
+                <p className="tk-display text-sectiekop">
+                  {state.lastCorrect
+                    ? t('klok.correct', { tijd: klokVoluit(tijd) })
+                    : t('klok.wrong', { tijd: klokVoluit(tijd) })}
+                </p>
+                <p className="text-lopend text-tekst-secundair">
+                  {state.lastCorrect
+                    ? ''
+                    : gegeven === null || gegeven === ''
+                      ? t('klok.dontKnowSub')
+                      : t('klok.wrongSub', { gegeven })}
+                </p>
               </div>
+              <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
 
               {/* A timed round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (
-                <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
+                <button
+                  ref={nextButton}
+                  type="button"
+                  className="tk-button tk-terugkoppeling-knop"
+                  onClick={next}
+                >
                   {t('practice.next')}
+                  <NextIcon size={20} />
                 </button>
               )}
-            </>
+            </div>
           ) : (
             <>
-              <p className="tk-label">{instruction}</p>
-              {/* The card carries a heading like every other question card, so
-                  a screen reader gets one and the eye has somewhere to land.
-                  On the mode that asks the other way round, the heading *is*
-                  the question: the time, in words, and nothing on the stage
-                  but the four faces to choose between. */}
-              <h1 className="tk-display mt-1 text-vraag">
-                {andersom ? woorden : t('klok.prompt')}
-              </h1>
+              <div className="tk-vraagblok">
+                <span className="tk-vraagblok-vorm" aria-hidden="true" />
+                <p className="tk-label">{instruction}</p>
+                {/* The card carries a heading like every other question card, so
+                    a screen reader gets one and the eye has somewhere to land.
+                    On the mode that asks the other way round, the heading *is*
+                    the question: the time, in words, and nothing on the stage
+                    but the four faces to choose between. */}
+                <h1 className="tk-display text-vraag">{andersom ? woorden : t('klok.prompt')}</h1>
+              </div>
               {typing ? <KlokField key={state.index} onSubmit={submit} /> : null}
               {/* Four times in words, on the two-of-three ways that show a
                   face. The mode that asks the other way round has its answers

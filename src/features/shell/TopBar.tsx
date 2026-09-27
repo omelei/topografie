@@ -51,7 +51,7 @@ export function TopBar({
             terugval. Op een telefoon staat hij er alleen, want daar past de
             naam niet; vanaf 768 staat hij naast de naam (ADR-202). */}
         <span className="tk-profiel-letter" aria-hidden="true">
-          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={32} />
+          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={40} />
         </span>
         {naamloos ? null : <span className="tk-profiel-naam">{profile.naam}</span>}
       </button>

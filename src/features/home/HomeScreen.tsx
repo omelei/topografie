@@ -6,7 +6,7 @@ import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { vrijeVorm } from './useVandaag';
+import { useVandaag, vrijeVorm } from './useVandaag';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
@@ -146,17 +146,24 @@ export function HomeScreen({
   // naam, en vraagt hem pas na de eerste ronde, als uitnodiging.
   const naamloos = naam.trim() === '';
 
+  // Het welkomstvlak (Kleurblokken, ADR-238): het merkvlak van de pagina, met
+  // Denker die zwaait over de rand. De vormen zijn versiering, staan stil en
+  // dragen geen tekst.
   const kop = (
-    <div className="tk-home-kop">
-      <div className="tk-home-welkom">
-        <div className="tk-kop-denker">
-          <h1 className="tk-titel">
-            {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
-          </h1>
-          <Brandmark size={56} uitdrukking="zwaaien" />
-        </div>
-        <p className="text-lopend text-tekst-secundair">{t('home.todayOpen')}</p>
+    <div className="tk-etalage tk-welkom">
+      <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+      <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+      <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
+      <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
+      <div className="tk-welkom-tekst">
+        <h1 className="tk-welkom-kop">
+          {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
+        </h1>
+        <WelkomRegel />
       </div>
+      <span className="tk-welkom-denker">
+        <Brandmark size={136} uitdrukking="zwaaien" />
+      </span>
     </div>
   );
 
@@ -263,6 +270,28 @@ export function HomeScreen({
 
   // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
   return <div className="tk-home">{kern}</div>;
+}
+
+/**
+ * De zin onder de begroeting. Met premium en vragen die vandaag terug moeten:
+ * hoeveel dat er zijn, want dat is wat er nu klaarstaat (ADR-238). Anders de
+ * zin van altijd. Zonder code is dat getal een feit en geen wachtrij
+ * (ADR-124), dus dan staat het alleen in het blok Vandaag herhalen.
+ */
+function WelkomRegel() {
+  const { actief } = usePremium();
+  const vandaag = useVandaag();
+  const vragen = actief && vandaag !== null && !vandaag.voortgang.klaar ? vandaag.plan.vragen : 0;
+
+  return (
+    <p className="tk-welkom-tekstregel">
+      {vragen === 0
+        ? t('home.todayOpen')
+        : vragen === 1
+          ? t('home.welkomKlaarEen')
+          : t('home.welkomKlaar', { aantal: vragen })}
+    </p>
+  );
 }
 
 /**
@@ -520,13 +549,13 @@ function MaakAf({
             key={`${deel.setId}-${ronde.mode}`}
             type="button"
             data-module={deel.moduleId}
-            className="tk-kaart"
+            className="tk-kaart tk-maakaf"
             onClick={() => onVerder(deel, vrijeVorm(deel, ronde.mode, premium), ronde.rest)}
           >
             <span className="tk-plaat tk-plaat-groot">
               <ModuleIcon size={24} />
             </span>
-            <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
+            <span className="tk-kaart-titel">{naamVan(deel)}</span>
             <span className="tk-kaart-regel">
               {t(`mode.${vrijeVorm(deel, ronde.mode, premium)}` as TranslationKey)}
             </span>

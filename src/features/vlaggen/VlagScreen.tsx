@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import type { VlagItem } from '@/game-core';
 import { SpeakButton } from '@/components/SpeakButton';
@@ -170,38 +171,43 @@ export function VlagScreen({
       <div className="tk-round-body">
         <div className="tk-round-question">
           {revealed ? (
-            <>
-              <div className="flex items-start gap-4">
-                <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
-                <div className="min-w-0">
-                  <p className="tk-display text-sectiekop">
-                    {state.lastCorrect
-                      ? t('vlag.correct', { naam: vlag.naam })
-                      : t('vlag.wrong', { naam: vlag.naam })}
-                  </p>
-                  <p className="text-lopend text-tekst-secundair">
-                    {feedbackSub(state.lastCorrect, state.given, zoeken)}
-                  </p>
-                </div>
-                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+            <div className="tk-terugkoppeling">
+              <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+              <div className="tk-terugkoppeling-tekst min-w-0">
+                <p className="tk-display text-sectiekop">
+                  {state.lastCorrect
+                    ? t('vlag.correct', { naam: vlag.naam })
+                    : t('vlag.wrong', { naam: vlag.naam })}
+                </p>
+                <p className="text-lopend text-tekst-secundair">
+                  {feedbackSub(state.lastCorrect, state.given, zoeken)}
+                </p>
               </div>
+              <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
 
               {/* A bliksemronde moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (
-                <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
+                <button
+                  ref={nextButton}
+                  type="button"
+                  className="tk-button tk-terugkoppeling-knop"
+                  onClick={next}
+                >
                   {t('practice.next')}
+                  <NextIcon size={20} />
                 </button>
               )}
-            </>
+            </div>
           ) : (
             <>
-              <p className="tk-label">{instruction}</p>
-              {/* The heading is the question when a name is asked for a flag:
-                  the name itself, and flags on the stage to choose from. */}
-              <h1 className="tk-display mt-1 text-vraag">
-                {zoeken ? vlag.naam : t('vlag.prompt')}
-              </h1>
+              <div className="tk-vraagblok">
+                <span className="tk-vraagblok-vorm" aria-hidden="true" />
+                <p className="tk-label">{instruction}</p>
+                {/* The heading is the question when a name is asked for a flag:
+                    the name itself, and flags on the stage to choose from. */}
+                <h1 className="tk-display text-vraag">{zoeken ? vlag.naam : t('vlag.prompt')}</h1>
+              </div>
               {zoeken ? null : (
                 <div className="tk-options" role="group" aria-label={t('vlag.namenLabel')}>
                   {opties.map((optie) => (

@@ -5,7 +5,7 @@ import { signIn } from './naam';
  * The house style in the running app (ADR-109).
  *
  * The unit tests hold the tokens to the styleguide's values; this holds that
- * the page actually uses them: the ground is room, headings are Baloo 2, and
+ * the page actually uses them: the ground is melk, headings are Baloo 2, and
  * a round stays on that paper with its controls at 56 on every size (ADR-112).
  */
 
@@ -23,12 +23,12 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
-test('stands on zand and sets its headings in Baloo 2', async ({ page }) => {
+test('stands on melk and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  // Zand, the ground since ADR-221; room is the plane on it.
-  expect(ground).toBe('rgb(243, 230, 216)');
+  // Melk, the ground since Kleurblokken (ADR-238); room is the plane on it.
+  expect(ground).toBe('rgb(250, 247, 243)');
 
   const heading = page.getByRole('heading', { name: /^Hoi / });
   await expect(heading).toBeVisible();
@@ -51,7 +51,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(243, 230, 216)',
+    'rgb(250, 247, 243)',
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();

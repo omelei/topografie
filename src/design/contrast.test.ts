@@ -103,7 +103,7 @@ describe('contrast', () => {
   it.each([
     ['inkt', 'kaart'],
     ['inkt', 'papier'],
-    // The ground is zand since ADR-221; papier (room) still carries text as a
+    // The ground is melk since ADR-238; papier (room) still carries text as a
     // fill, so both are measured.
     ['inkt', 'grond'],
     ['tekst-secundair', 'grond'],
@@ -188,6 +188,31 @@ describe('contrast', () => {
   });
 });
 
+/**
+ * Kleurblokken (ADR-238): a subject's deep tone is a surface with white words
+ * on it — a tile on Vandaag, the question in a round — and the circle behind
+ * the question is a lighter step of it that the words can cross. Outside a
+ * subject the accent is nacht.
+ */
+describe('the colour blocks', () => {
+  it.each(MODULES.map((name) => [name] as const))('carries white words on %s', (name) => {
+    expect(ratio('kaart', name), 'the tile and the question').toBeGreaterThanOrEqual(4.5);
+    expect(
+      ratio('kaart', `${name}-vraag`),
+      'the circle behind the question',
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(`${name}-schaduw`, name), 'the lower edge is darker').toBeGreaterThan(1);
+  });
+
+  it('draws the accent outside a subject in nacht', () => {
+    expect(token('accent')).toBe(token('nacht'));
+    expect(ratio('nacht', 'kaart')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio('nacht', 'grond')).toBeGreaterThanOrEqual(4.5);
+    expect(ratio('nacht', 'balk-leeg')).toBeGreaterThanOrEqual(3);
+    expect(ratio('kaart', 'nacht')).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
 describe('the colours outside the styleguide’s table', () => {
   /**
    * A module's pictogram on its own tint: the plate, §03's standard strength
@@ -250,7 +275,7 @@ describe('the subjects keep clear of wrong', () => {
  * tint is what made the screens look grey — and every page now stands on the
  * one neutral ground. The tokens stay, so a screen still says bg-module-grond,
  * and this is what holds them to it: every ink that stands on the ground stands
- * on each of them, because each of them is the ground — zand since ADR-221,
+ * on each of them, because each of them is the ground — melk since ADR-238,
  * with room (papier) as the warm plane on it rather than under it.
  */
 describe('the ground under a page', () => {
@@ -282,8 +307,8 @@ describe('the ground under a page', () => {
     expect(ratio('rand-grond', 'grond')).toBeLessThan(ratio('rand-bediening', 'grond'));
   });
 
-  it('is zand, and room is a plane on it rather than the ground (ADR-221)', () => {
-    expect(token('grond')).toBe(token('canvas'));
+  it('is melk, and room is a plane on it rather than the ground (ADR-238)', () => {
+    expect(token('grond')).toBe(token('melk'));
     expect(token('grond')).not.toBe(token('papier'));
   });
 });

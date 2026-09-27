@@ -126,7 +126,7 @@ export function Shell({
   }));
 
   return (
-    <div className="tk-schil bg-kaart">
+    <div className="tk-schil bg-grond">
       {/* Op een telefoon scrolt dit deel, en staat het menu eronder in plaats
           van eroverheen (zie `.tk-schil` in index.css). Vanaf 1200 is het
           gewoon de pagina. */}

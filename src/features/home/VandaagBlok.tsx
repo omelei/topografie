@@ -7,6 +7,9 @@ import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import { t } from '@/i18n';
 import { useVandaag, vormVoor } from './useVandaag';
 
+/** Hoeveel rondes van vandaag als vaktegel staan; de rest is een lijst (ADR-238). */
+const TEGELS = 3;
+
 /**
  * "Vandaag": wat er klaarstaat om te herhalen (ADR-126).
  *
@@ -61,61 +64,108 @@ export function VandaagBlok({
 
   if (plan.vragen === 0) return null;
 
+  // Hooguit drie rondes als vaktegel (Kleurblokken, ADR-238); wat er meer is,
+  // staat eronder als de lijst van altijd.
+  const tegels = plan.rondes.slice(0, TEGELS);
+  const rest = plan.rondes.slice(TEGELS);
+
   return (
     <section className="tk-vandaag" aria-label={t('vandaag.titel')}>
       <div className="flex flex-col gap-1">
-        <h2 className="tk-sectie">{t('vandaag.titel')}</h2>
+        <div className="tk-sectie">
+          <h2>{t('vandaag.titel')}</h2>
+          {actief ? <span className="tk-sectie-meta">{t('vandaag.bijschrift')}</span> : null}
+        </div>
         {/* Twee zinnen, elk waar op zijn eigen plek. Met een code staan de
-            vragen echt klaar — er is een knop. Zonder code is het een feit over
-            dit kind en geen wachtrij: die vragen zijn gewoon te oefenen in hun
-            eigen set, alleen niet met één druk vanaf hier. */}
+            vragen echt klaar — er is een knop, en het welkomstvlak zegt al
+            hoeveel (ADR-238). Zonder code is het een feit over dit kind en
+            geen wachtrij: die vragen zijn gewoon te oefenen in hun eigen set,
+            alleen niet met één druk vanaf hier. */}
         {voortgang.gedaan > 0 ? (
           <p className="text-tekst-secundair">
             {t('vandaag.gedaan', { gedaan: voortgang.gedaan, totaal: voortgang.totaal })}
           </p>
         ) : null}
-        <p className="text-lopend">
-          {actief
-            ? plan.vragen === 1
-              ? t('vandaag.eenKlaar')
-              : t('vandaag.klaar', { aantal: plan.vragen })
-            : plan.vragen === 1
+        {actief ? null : (
+          <p className="text-lopend">
+            {plan.vragen === 1
               ? t('vandaag.eenVraag')
               : t('vandaag.vragen', { aantal: plan.vragen })}
-        </p>
+          </p>
+        )}
       </div>
 
       {actief ? (
-        <ul className="tk-lijst">
-          {plan.rondes.map(({ set, ids }) => {
-            const mode = vormVoor(set, gespeeld);
-            const ModuleIcon = MODULE_ICON[set.moduleId];
+        <>
+          <ul className="tk-herhaaltegels">
+            {tegels.map(({ set, ids }, plek) => {
+              const mode = vormVoor(set, gespeeld);
+              const ModuleIcon = MODULE_ICON[set.moduleId];
 
-            return (
-              <li key={set.setId}>
-                <button
-                  type="button"
-                  data-module={set.moduleId}
-                  className="tk-lijstrij"
-                  onClick={() => onPlan(set, mode, ids)}
-                >
-                  <span className="tk-plaat tk-plaat-klein">
-                    <ModuleIcon size={20} />
-                  </span>
-                  <span className="tk-lijstrij-tekst">
-                    <span className="tk-lijstrij-titel">{naamVan(set)}</span>
-                    <span className="tk-lijstrij-regel">
-                      {t('vandaag.ronde', { aantal: ids.length })}
+              return (
+                <li key={set.setId}>
+                  <button
+                    type="button"
+                    data-module={set.moduleId}
+                    className="tk-herhaaltegel"
+                    onClick={() => onPlan(set, mode, ids)}
+                  >
+                    <span className="tk-herhaaltegel-vorm" aria-hidden="true" />
+                    {plek === 0 ? (
+                      <span className="tk-herhaaltegel-stip" aria-hidden="true" />
+                    ) : null}
+                    <span className="tk-plaat tk-plaat-tegel">
+                      <ModuleIcon size={28} />
                     </span>
-                  </span>
-                  <span className="tk-lijstrij-pijl">
-                    <NextIcon size={20} />
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                    <span className="tk-herhaaltegel-tekst">
+                      <span className="tk-herhaaltegel-titel">{naamVan(set)}</span>
+                      <span className="tk-herhaaltegel-regel">
+                        {t('vandaag.ronde', { aantal: ids.length })}
+                      </span>
+                    </span>
+                    {plek === 0 ? (
+                      <span className="tk-herhaaltegel-pijl" aria-hidden="true">
+                        <NextIcon size={22} />
+                      </span>
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          {rest.length === 0 ? null : (
+            <ul className="tk-lijst">
+              {rest.map(({ set, ids }) => {
+                const mode = vormVoor(set, gespeeld);
+                const ModuleIcon = MODULE_ICON[set.moduleId];
+
+                return (
+                  <li key={set.setId}>
+                    <button
+                      type="button"
+                      data-module={set.moduleId}
+                      className="tk-lijstrij"
+                      onClick={() => onPlan(set, mode, ids)}
+                    >
+                      <span className="tk-plaat tk-plaat-klein">
+                        <ModuleIcon size={20} />
+                      </span>
+                      <span className="tk-lijstrij-tekst">
+                        <span className="tk-lijstrij-titel">{naamVan(set)}</span>
+                        <span className="tk-lijstrij-regel">
+                          {t('vandaag.ronde', { aantal: ids.length })}
+                        </span>
+                      </span>
+                      <span className="tk-lijstrij-pijl">
+                        <NextIcon size={20} />
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </>
       ) : (
         <PremiumSlot wat="premium.wat.vandaag" />
       )}

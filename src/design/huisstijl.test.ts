@@ -73,6 +73,7 @@ describe('the tokens are the styleguide’s', () => {
     ['rand-sterk', '#e6d6c6'],
     ['balk-leeg', '#efe2d4'],
     ['koraal', '#ff6a4d'],
+    ['koraal-vorm', '#ff8466'],
     ['actie', '#e34a2c'],
     ['actie-hover', '#a8331d'],
     ['actie-tint', '#ffe9e1'],
@@ -88,6 +89,7 @@ describe('the tokens are the styleguide’s', () => {
     ['zon-rand', '#d69a00'],
     ['zon-tint', '#fff4d1'],
     ['zon-tekst', '#8a6300'],
+    ['nacht', '#1b2a5e'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
@@ -116,6 +118,20 @@ describe('the tokens are the styleguide’s', () => {
     ['vlaggen-vlak', '#f5a01a'],
     ['vlaggen', '#935700'],
     ['vlaggen-tint', '#fff0d6'],
+    // Kleurblokken (ADR-238): the lower edge of a subject tile, and the circle
+    // behind the question in a round.
+    ['topo-schaduw', '#06463f'],
+    ['topo-vraag', '#0e8577'],
+    ['tafels-schaduw', '#0d3f7a'],
+    ['tafels-vraag', '#3774c2'],
+    ['klok-schaduw', '#27297f'],
+    ['klok-vraag', '#4f59c9'],
+    ['woorden-schaduw', '#521d75'],
+    ['woorden-vraag', '#8d4dbe'],
+    ['tijdvakken-schaduw', '#651b5b'],
+    ['tijdvakken-vraag', '#aa489a'],
+    ['vlaggen-schaduw', '#5f3800'],
+    ['vlaggen-vraag', '#a06b30'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
