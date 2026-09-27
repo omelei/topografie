@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 26 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 27 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -141,6 +141,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #170      | Een keuze in het eerste onderdeel van een vakpagina springt naar het tweede                                                                                                                                                                                                                                                          | 233      |
 | #169      | Jij zonder premium en met dichte diplomavakken; een deur voor de premiumpagina; Ouders in de navigatie; account- en pincodevensters met eigen teksten; ouderpagina met voorbeeld, code en instellingen (sessieduur, pincode); Zo werkt leer.nu in de huisstijl; geen eindeloze plekvraag offline; Jouw fouten gratis op de vakpagina | 232      |
 | #168      | Jouw fouten gratis in de gratis manieren; zonder naam geen "Hier begin je mee"; Zo werkt leer.nu in vier stappen; "Klaar voor vandaag" alleen als er vandaag iets te herhalen was; Friesland in plaats van Fryslân                                                                                                                   | 231      |
 | #167      | Nieuwe prijzen: premium per jaar in de kassa en op de site, voor 3 kinderen op 3 apparaten; een extra kind als binnenkort op de ouderpagina en `/kopen`; de klassencode exclusief btw                                                                                                                                                | 230      |
