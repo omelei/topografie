@@ -101,6 +101,12 @@ export interface SessionRecord {
    * A round knows what it was about; it should say so rather than be guessed at.
    */
   setId?: string;
+  /**
+   * Of het een toets was: de oefentoets of een diploma, zonder hulp onderweg.
+   * Alleen dan hoort er een cijfer bij op Vandaag (ADR-235). Afwezig op rijen
+   * van daarvoor, en dan geldt de ronde als oefenen.
+   */
+  toets?: boolean;
   /** The questions and their answer key. Unused in v1; see ADR-003. */
   itemSet: unknown;
   score: number | null;
