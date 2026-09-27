@@ -3067,6 +3067,9 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    /* Wie hierheen springt (ADR-233), landt onder het vakmenu dat onder 1200
+     * bovenaan blijft plakken, niet erachter. */
+    scroll-margin-top: 88px;
   }
   /* The number in the module's text colour: the page's own order, told in the
    * module it belongs to. The question beside it stays ink. */

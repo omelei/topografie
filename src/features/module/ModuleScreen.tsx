@@ -1,6 +1,6 @@
 import { OverOnderwerp } from './OverOnderwerp';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@/components/Button';
 import { CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
 import {
@@ -216,6 +216,16 @@ export function ModuleScreen({
   const regioStap = heeftRegio ? 1 : 0;
   const watStap = regioStap + 1;
   const keuzeStap = heeftKeuze ? watStap + 1 : 0;
+  // Een keuze in het eerste onderdeel springt naar het tweede: zonder die
+  // sprong moest een kind op een telefoon zelf naar beneden zoeken (ADR-233).
+  // Het eerste onderdeel is de regio waar die er is, anders het onderwerp.
+  const watSectie = useRef<HTMLElement>(null);
+  const keuzeSectie = useRef<HTMLElement>(null);
+  const hoeSectie = useRef<HTMLElement>(null);
+  // Na de render: dan staat wat bij de keuze hoort er al.
+  const springNaar = (sectie: { readonly current: HTMLElement | null }) =>
+    requestAnimationFrame(() => sectie.current?.scrollIntoView({ block: 'start' }));
+
   const stap = {
     regio: regioStap,
     wat: watStap,
@@ -445,6 +455,7 @@ export function ModuleScreen({
                       // A set on another map is not chosen on this one, and
                       // the address should stop saying it is.
                       if (adresVak && adresVak.regio !== kandidaat.id) onSet(null);
+                      springNaar(watSectie);
                     }}
                   >
                     <RegioIcon size={20} />
@@ -461,7 +472,7 @@ export function ModuleScreen({
           </section>
         ) : null}
 
-        <section className="tk-kies" aria-label={t('choose.stepWhat')}>
+        <section ref={watSectie} className="tk-kies" aria-label={t('choose.stepWhat')}>
           <Stap nummer={stap.wat} label={t('choose.stepWhat')} />
 
           {/* Tegels, op elk vak (ADR-168). Rekenen tekende zijn onderwerpen als
@@ -511,6 +522,7 @@ export function ModuleScreen({
                       setVakId(null);
                       onSet(vak.sets[0]?.setId ?? '');
                     }
+                    if (!heeftRegio) springNaar(vraagtWelke(vak) ? keuzeSectie : hoeSectie);
                   }}
                 >
                   <span className="tk-plaat">
@@ -538,7 +550,7 @@ export function ModuleScreen({
             a range, a level or which cities are chips. The keypad has no mix
             square: the Rekenmix is one step up already (ADR-100). */}
         {onderwerp && heeftKeuze && onderwerp.keuze ? (
-          <section className="tk-kies" aria-label={t(onderwerp.keuze)}>
+          <section ref={keuzeSectie} className="tk-kies" aria-label={t(onderwerp.keuze)}>
             <Stap nummer={stap.keuze} label={t(onderwerp.keuze)} />
 
             {isKeypad(onderwerp) ? (
@@ -577,7 +589,7 @@ export function ModuleScreen({
           </section>
         ) : null}
 
-        <section className="tk-kies" aria-label={t('choose.stepHow')}>
+        <section ref={hoeSectie} className="tk-kies" aria-label={t('choose.stepHow')}>
           {/* The order of the ways is the argument, and the tile is the name.
               What each is for is in its label, so tabbing through them never
               costs a child the thing that tells them apart (ADR-061).
