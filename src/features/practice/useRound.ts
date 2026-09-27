@@ -608,6 +608,7 @@ export function useRound(
           practiceMode,
           round.map((question) => question.item.id),
           setId,
+          toetsstand,
         );
         if (cancelled) return;
 
@@ -632,7 +633,7 @@ export function useRound(
     return () => {
       cancelled = true;
     };
-  }, [setId, rule, practiceMode, alleen]);
+  }, [setId, rule, practiceMode, alleen, toetsstand]);
 
   const namesById = useMemo(() => {
     const map = new Map<string, string>();

@@ -430,7 +430,9 @@ function Recent({
         <ul className="tk-lijst">
           {recent.map(({ deel, ronde }) => {
             const ModuleIcon = MODULE_ICON[deel.moduleId];
-            const cijfer = grade(ronde.correct, ronde.answered);
+            // Een cijfer alleen bij een toets (ADR-235): een oefenronde, met
+            // hulp onderweg, krijgt geen oordeel maar een telling.
+            const cijfer = ronde.toets === true ? grade(ronde.correct, ronde.answered) : null;
             const vorm = vrijeVorm(deel, ronde.mode, premium);
             const uit = { goed: ronde.correct, totaal: ronde.answered };
 

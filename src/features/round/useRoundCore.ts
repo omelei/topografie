@@ -173,6 +173,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
           mode,
           opzet.questions.map((question) => itemVan(question).id),
           setId,
+          toetsstand,
         );
         if (cancelled) return;
 
@@ -193,7 +194,7 @@ export function useRoundCore<S, Q, T extends Schedulable, A>(opties: RondeKernOp
     return () => {
       cancelled = true;
     };
-  }, [setId, mode, rule, itemVan]);
+  }, [setId, mode, rule, itemVan, toetsstand]);
 
   const question = questions[index] ?? null;
 
