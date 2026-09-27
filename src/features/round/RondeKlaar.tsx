@@ -139,6 +139,30 @@ export function RondeKlaar({
   const gedaan =
     beantwoord === 1 ? t('result.gedaanEen', { goed }) : t('result.gedaan', { beantwoord, goed });
 
+  // Gestopt voordat er iets beantwoord was (ADR-236): geen "Ronde klaar", geen
+  // blije Denker en geen nullen, want er was geen ronde. Alleen dat stoppen mag,
+  // en de twee wegen verder.
+  if (gestopt !== null && beantwoord === 0) {
+    return (
+      <main className="tk-uitslag" data-module={moduleId} data-accent="module">
+        <div className="tk-uitslag-kolom">
+          <header className="flex flex-col gap-3">
+            <h1 className="tk-titel">{t('result.gestoptTitel')}</h1>
+            <p className="text-lopend text-tekst-secundair">{t('result.gestoptLeeg')}</p>
+          </header>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" className="tk-button" onClick={onAgain}>
+              {t('result.again')}
+            </button>
+            <button type="button" className="tk-button tk-button-secondary" onClick={onHome}>
+              {t('result.home')}
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="tk-uitslag" data-module={moduleId} data-accent="module">
       <div className="tk-uitslag-kolom">

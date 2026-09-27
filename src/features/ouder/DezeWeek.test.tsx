@@ -49,16 +49,18 @@ describe('deze week', () => {
     standen.mockReset();
   });
 
-  it('zegt zonder code wat het plan zou doen, met het aanbod erbij', async () => {
+  it('zegt zonder code wat het plan zou doen, zonder eigen koopknop (ADR-236)', async () => {
     standen.mockResolvedValue(geoefend(6));
     render(<DezeWeek />);
     expect(
       await screen.findByText('Fem oefende deze week 6 verschillende vragen.'),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Met premium zet het plan ze voor Fem klaar/)).toHaveTextContent(
-      / en /,
-    );
-    expect(screen.getByRole('button', { name: 'Wat zit er in premium?' })).toBeInTheDocument();
+    expect(
+      screen.getByText(/Met premium zet het plan ze voor Fem .+ klaar om te herhalen/),
+    ).toHaveTextContent(/ en /);
+    // Het aanbod staat één keer op de ouderpagina, in het blok Premium.
+    expect(screen.getByText(/Premium laat elke vraag terugkomen/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Wat zit er in premium?' })).toBeNull();
   });
 
   it('staat er niet onder 5 onderdelen', async () => {
@@ -82,7 +84,7 @@ describe('deze week', () => {
     );
     standen.mockResolvedValue(geoefend(5));
     render(<DezeWeek />);
-    expect(await screen.findByText(/Het plan zet ze weer klaar/)).toBeInTheDocument();
+    expect(await screen.findByText(/Het plan zet ze .+ weer klaar/)).toBeInTheDocument();
     expect(screen.queryByText(/Met premium/)).toBeNull();
     expect(screen.queryByRole('button', { name: 'Wat zit er in premium?' })).toBeNull();
   });

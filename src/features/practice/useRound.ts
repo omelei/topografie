@@ -417,6 +417,8 @@ export interface RoundState {
   readonly total: number;
   readonly correctCount: number;
   readonly chosenId: string | null;
+  /** De laatste vraag kreeg "Ik weet het niet". */
+  readonly wistHetNiet: boolean;
   readonly lastCorrect: boolean;
   /** Present after a typed answer: how it was judged (ADR-017). */
   readonly verdict: AnswerVerdict | null;
@@ -493,6 +495,8 @@ export function useRound(
   const { geluid: geluidAan } = usePreferences();
   const [phase, setPhase] = useState<RoundPhase>('loading');
   const [chosenId, setChosen] = useState<string | null>(null);
+  // "Ik weet het niet" krijgt zijn eigen terugkoppeling, zoals in elk vak (ADR-236).
+  const [wistHetNiet, setWistHetNiet] = useState(false);
   const [lastCorrect, setLastCorrect] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [answeredCount, setAnswered] = useState(0);
@@ -668,6 +672,7 @@ export function useRound(
 
       setChosen(params.chosenForMap);
       setVerdict(params.judged);
+      setWistHetNiet(params.recorded === 'weet-niet');
       setLastCorrect(correct);
       // De snelste terugkoppeling die er is, sneller dan lezen (ADR-134). Niet
       // in een toets: die zegt niets tot het einde, ook niet met een toon.
@@ -930,6 +935,7 @@ export function useRound(
     total: questions.length,
     correctCount,
     chosenId,
+    wistHetNiet,
     lastCorrect,
     verdict,
     missed,

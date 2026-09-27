@@ -82,6 +82,7 @@ test('na een ronde staat er hoeveel er nog van vandaag over is', async ({ page }
     .click();
   await page.locator('.tk-choose-start button').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
@@ -93,6 +94,8 @@ test('na een ronde staat er hoeveel er nog van vandaag over is', async ({ page }
 
   // De eerste ronde van vandaag, vanaf de voordeur.
   await blok.getByRole('button').first().click();
+  // Eén vraag, want een ronde zonder antwoord is geen ronde (ADR-236).
+  await page.getByRole('button', { name: 'Ik weet het niet' }).click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 

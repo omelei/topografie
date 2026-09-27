@@ -95,7 +95,7 @@ function Aanmelden({ binnen, onGoed }: { readonly binnen: boolean; readonly onGo
       <p className="text-lopend">{t(kop.uitleg)}</p>
       {modus === 'aanmelden' ? <p className="tk-hulp">{t('ouder.accountHulp')}</p> : null}
 
-      <AccountBlok onModus={setModus} />
+      <AccountBlok onModus={setModus} inDePoort />
     </div>
   );
 }

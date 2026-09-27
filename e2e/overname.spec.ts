@@ -247,7 +247,7 @@ test('een ouder neemt zijn kind mee naar het account, met toestemming', async ({
   // Zonder toestemming gaat de knop niet.
   const knop = blok.getByRole('button', { name: 'Zet in mijn account' });
   await expect(knop).toBeDisabled();
-  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: /Ik ben de ouder of voogd/ }).click();
   await expect(knop).toBeEnabled();
   await knop.click();
 
@@ -279,7 +279,7 @@ test('een kind uit het account halen laat het op dit apparaat staan', async ({ p
   await naarOuder(page);
 
   const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
-  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: /Ik ben de ouder of voogd/ }).click();
   await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
 
@@ -311,7 +311,7 @@ test('als het versturen hapert, is het kind er wel en kan het opnieuw', async ({
   await naarOuder(page);
 
   const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
-  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: /Ik ben de ouder of voogd/ }).click();
   await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('nog niet alles is verstuurd');
 
@@ -333,7 +333,7 @@ test('wat er daarna geoefend wordt, gaat vanzelf mee, en alleen dat', async ({ p
   await naarOuder(page);
 
   const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
-  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: /Ik ben de ouder of voogd/ }).click();
   await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('Staat in je account. Bijgewerkt op');
   gezin.tabellen.sessies = [];
@@ -542,7 +542,7 @@ test('de ouder ziet de inlogcode en zet een wachtwoord voor het kind', async ({ 
   await naarOuder(page);
 
   const blok = page.getByRole('region', { name: 'Voortgang bewaren in je account' });
-  await blok.getByRole('button', { name: /Ik ben hun ouder of voogd/ }).click();
+  await blok.getByRole('button', { name: /Ik ben de ouder of voogd/ }).click();
   await blok.getByRole('button', { name: 'Zet in mijn account' }).click();
   await expect(blok).toContainText('Inlogcode: KIND-ABCD-2345');
 

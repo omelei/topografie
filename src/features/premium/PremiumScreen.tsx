@@ -179,8 +179,8 @@ export function PremiumScreen({ now = new Date() }: { readonly now?: Date }) {
 /** Voor wie al betaald heeft: de stand, en de weg terug. Verder niets. */
 function Aan({ tot }: { readonly tot: string }) {
   return (
-    <section className="flex flex-col gap-3" aria-label={t('premium.codeTitel')}>
-      <h2 className="tk-sectie">{t('premium.codeTitel')}</h2>
+    <section className="flex flex-col gap-3" aria-label={t('premium.codeTitelAan')}>
+      <h2 className="tk-sectie">{t('premium.codeTitelAan')}</h2>
       <div className="tk-card flex flex-col gap-3">
         <p className="flex items-center gap-2 text-lopend">
           <CorrectIcon size={24} />
@@ -310,10 +310,9 @@ function Vergelijking({ teKoop }: { readonly teKoop: boolean }) {
         </div>
 
         <div className="tk-premium-plan" data-premium="">
-          <p className="flex flex-wrap items-center justify-between gap-2">
-            <span className="tk-premium-plan-naam">{t('premium.titel')}</span>
-            <span className="tk-pil">{t('premium.aanrader')}</span>
-          </p>
+          {/* Geen label "Aanrader": een verkoopwoord, en de gouden rand zegt al
+              welk plan de pagina aanraadt (HUISSTIJL, ADR-236). */}
+          <p className="tk-premium-plan-naam">{t('premium.titel')}</p>
           {/* Twee manieren om hetzelfde te krijgen, naast elkaar (ADR-164). Ze
               staan in één kaart en niet in twee, want het is één product: wat
               verschilt is wanneer je betaalt, niet wat je koopt. Het jaar

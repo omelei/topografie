@@ -347,7 +347,8 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
     await shoot(page, size, naam);
 
     await page.getByRole('button', { name: 'Stoppen' }).click();
-    await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+    // Niets beantwoord, dus "Gestopt" en geen uitslag (ADR-236).
+    await expect(page.getByRole('heading', { name: 'Gestopt' })).toBeVisible();
   }
 });
 

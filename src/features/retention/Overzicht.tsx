@@ -508,7 +508,9 @@ function Weken({ verloop, rondes }: { readonly verloop: Verloop; readonly rondes
 
       {procentGoed === null ? null : (
         <p className="text-tekst-secundair">
-          {t('retention.totaal', { rondes, vragen, procent: procentGoed })}
+          {vragen === 1
+            ? t('retention.totaalEenVraag', { rondes, procent: procentGoed })
+            : t('retention.totaal', { rondes, vragen, procent: procentGoed })}
         </p>
       )}
     </>
