@@ -73,6 +73,6 @@ test('voor de ronde staat er hoeveel je er eerder gehad hebt', async ({ page }) 
 
   await kiesTafelVanEen(page);
   await expect(
-    page.getByText(/heb je al eerder gehad. Zo blijft het in je hoofd./).first(),
+    page.getByText(/heb je er \d+ al eerder gehad. Zo blijft het in je hoofd./).first(),
   ).toBeVisible();
 });

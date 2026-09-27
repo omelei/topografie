@@ -117,7 +117,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.
   await page.goto('/topografie/provincies');
   const terug = page.getByText(
-    /komt hier vandaag terug|komen hier vandaag terug|voorlopig niets terug|Morgen \d+/,
+    /Hier komt vandaag|Hier komen vandaag|voorlopig niets terug|Morgen \d+/,
   );
   await expect(terug.first()).toBeVisible(READY);
   await terug.first().scrollIntoViewIfNeeded();

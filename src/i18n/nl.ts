@@ -20,7 +20,7 @@ export const nl = {
   'home.welcome': 'Hoi {naam}!',
   // Voor een kind dat nog geen naam typte (ADR-229).
   'home.welcomeZonderNaam': 'Hoi!',
-  'home.todayOpen': 'Kies een oefening en begin met leren.',
+  'home.todayOpen': 'Kies een onderwerp en begin met leren.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
   // De geheugencheck (ADR-228): één keer, zonder hulp. Geen woord over premium (R-11).
@@ -87,7 +87,7 @@ export const nl = {
   'ouders.kosten.kop': 'Wat het kost',
   'ouders.kosten.gratis': 'Oefenen is gratis, in elk vak en elk onderwerp.',
   'ouders.kosten.premium':
-    'Premium kost {prijs} per jaar. Dan plant leer.nu wat je kind vandaag moet herhalen, en staan alle manieren en de diploma’s open.',
+    'Premium kost {prijs} per jaar, voor 3 kinderen op 3 apparaten. Dan plant leer.nu wat je kind vandaag moet herhalen, en staan de bliksemronde, overleven, de oefentoets en de diploma’s open.',
   'profile.voorOuders': 'Voor ouders: zo werkt het',
   'ouders.scholen': 'Voor de klas',
   // Voor de klas (ADR-216): tegen de leerkracht, net zo rustig als tegen een
@@ -173,7 +173,8 @@ export const nl = {
   'home.zo.stap': 'Stap {nummer}',
   // Zo werkt leer.nu, in vier stappen (ADR-231), in de woorden van de eigenaar.
   'home.zo.oefen.kop': 'Begin met oefenen',
-  'home.zo.oefen.uitleg': 'Kies een vak, een onderwerp en een manier. Je begint direct met spelen.',
+  'home.zo.oefen.uitleg':
+    'Kies een vak, een onderwerp en een spelvorm. Je begint direct met spelen.',
   'home.zo.fouten.kop': 'Leer van je fouten',
   'home.zo.fouten.uitleg':
     'Je ziet direct wat je goed en fout hebt gedaan. Foute antwoorden kun je direct opnieuw oefenen.',
@@ -216,8 +217,9 @@ export const nl = {
   'vandaag.titel': 'Vandaag herhalen',
   'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeten bent.',
   'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeten bent.',
-  'vandaag.eenVraag': 'Er is 1 vraag die herhaald moet worden om te blijven onthouden.',
-  'vandaag.vragen': 'Er zijn {aantal} vragen die herhaald moeten worden om te blijven onthouden.',
+  'vandaag.eenVraag': 'Er is 1 vraag die vandaag terug moet komen. Zo blijft het in je hoofd.',
+  'vandaag.vragen':
+    'Er zijn {aantal} vragen die vandaag terug moeten komen. Zo blijft het in je hoofd.',
   'vandaag.ronde': '{aantal} vragen',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
@@ -266,7 +268,7 @@ export const nl = {
   // Het begin van een ronde (ADR-140): de zin waarmee dit product zijn eigen
   // methode uitlegt, op het moment dat die methode op een fout lijkt.
   'start.eerderGehad':
-    '{eerder} van de {totaal} heb je al eerder gehad. Zo blijft het in je hoofd.',
+    'Van de {totaal} heb je er {eerder} al eerder gehad. Zo blijft het in je hoofd.',
 
   'home.recentTitle': 'Recent geoefend',
   'home.recentNone': 'Nog niets geoefend. Na je eerste ronde staat het hier.',
@@ -281,8 +283,8 @@ export const nl = {
   // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.
   'terug.titel': 'Welkom terug',
   'terug.zin': 'Alles wat je geoefend hebt, staat er nog.',
-  'terug.klaar': '{aantal} vragen komen vandaag terug.',
-  'terug.klaarEen': '1 vraag komt vandaag terug.',
+  'terug.klaar': 'Vandaag komen er {aantal} vragen terug.',
+  'terug.klaarEen': 'Vandaag komt er 1 vraag terug.',
   'terug.minuutEen': 'De eerste ronde duurt ongeveer 1 minuut.',
   'terug.minuten': 'De eerste ronde duurt ongeveer {minuten} minuten.',
   'terug.knop': 'Herhalen',
@@ -751,8 +753,7 @@ export const nl = {
   'premium.usp.zelfUit':
     'Je kind kan alle 79 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
-  'premium.usp.gezinUit':
-    'Eén code voor 3 kinderen, op 3 apparaten, een heel jaar lang. Meer kinderen kun je erbij nemen.',
+  'premium.usp.gezinUit': 'Eén code voor 3 kinderen, op 3 apparaten, een heel jaar lang.',
 
   // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
   // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
@@ -817,8 +818,9 @@ export const nl = {
     'Dat hoef je niet op ons woord te geloven: de broncode is openbaar, dus je kunt het zelf controleren.',
   'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
   'premium.waarom.apparaatUit':
-    // Sinds ADR-210 gaat er ook een telling heen, zonder naam of apparaatnummer.
-    'Wat je kind oefent, blijft op dit apparaat. Naar onze server gaan alleen de code en tellingen zonder naam of apparaatnummer.',
+    // Sinds ADR-210 gaat er ook een telling heen, zonder naam. Sinds ADR-226
+    // stuurt de controle van de code een willekeurig nummer voor dit apparaat mee.
+    'Wat je kind oefent, blijft op dit apparaat. Naar onze server gaan alleen de code, een willekeurig nummer voor dit apparaat en tellingen zonder naam.',
   // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
   // waar een prijs per maand op staat (ADR-164), en de plek gaat naar de belofte
   // die dit product wél onderscheidt en die nergens anders stond.
@@ -915,7 +917,7 @@ export const nl = {
   // niets mee dan het adres: geen naam, geen voortgang, en ook niet welke
   // oefening het wilde doen. Zo'n bericht reist via de telefoon van iemand
   // anders.
-  'doorsturen.titel': 'Vraag je ouders voor een code',
+  'doorsturen.titel': 'Vraag je ouders om een code',
   'doorsturen.uitleg': 'Ze krijgen een link. Daar staat wat premium is en wat het kost.',
   'doorsturen.onderwerp': 'Iets van leer.nu',
   'doorsturen.bericht': 'Ik wil dit graag op leer.nu. Kijk je even?',
@@ -1404,8 +1406,8 @@ export const nl = {
   'taal.jijKoos': 'Jouw antwoord: {gegeven}.',
   'taal.jeSchreef': 'Jouw antwoord: {getypt}.',
   'taal.weetNiet': 'Geen probleem. Deze komt later nog terug.',
-  'taal.practiceMore': 'Deze woorden moet je nog oefenen',
-  'taal.practiceMoreVormen': 'Deze werkwoorden moet je nog oefenen',
+  'taal.practiceMore': 'Deze woorden komen nog terug',
+  'taal.practiceMoreVormen': 'Deze werkwoorden komen nog terug',
   // De regel van een spellingset, toegepast op één woord.
   'taal.regel.onthoud': 'Hier helpt geen regel: je hoort het niet. Onthoud {woord}, met {letters}.',
   'taal.regel.dt':
@@ -1735,8 +1737,8 @@ export const nl = {
   'you.lijstenGenoeg': 'Meer lijsten passen er niet bij.',
   'retention.kaartLabel': 'De kaart van {wat}, met per plek hoe het ervoor staat.',
 
-  'module.terugVandaag': '{aantal} vragen komen hier vandaag terug.',
-  'module.terugVandaagEen': '1 vraag komt hier vandaag terug.',
+  'module.terugVandaag': 'Hier komen vandaag {aantal} vragen terug.',
+  'module.terugVandaagEen': 'Hier komt vandaag 1 vraag terug.',
   'module.terugMorgen': 'Hier komt vandaag niets terug. Morgen {aantal}.',
   'module.terugNiets': 'Hier komt voorlopig niets terug.',
 
@@ -1832,7 +1834,7 @@ export const nl = {
   'ouder.weekPlan': 'Het plan zet ze weer klaar om te herhalen: {dagen}.',
   'ouder.weekPlanPremium': 'Met premium zet het plan ze voor {naam} klaar om te herhalen: {dagen}.',
   'ouder.weekAanbod':
-    'Premium laat elke vraag terugkomen vlak voordat je kind hem vergeet. Zo blijft het hangen.',
+    'Premium laat elke vraag terugkomen vlak voordat je kind hem vergeet. Zo blijft het in het hoofd.',
   'ouder.weekVandaag': 'vandaag',
   'ouder.weekMorgen': 'morgen',
   'ouder.weekEn': ' en ',
@@ -1844,7 +1846,7 @@ export const nl = {
   'ouder.geheugencheckUitlegOnderwerp':
     'Op {datum} deed {naam} een ronde zonder hulp, met vragen uit {onderwerp} die {naam} 3 tot 8 weken geleden voor het eerst oefende.',
   'ouder.geheugencheckAanbod':
-    'Wat na een paar weken wegzakt, laat premium op tijd terugkomen. Zo blijft het hangen.',
+    'Wat na een paar weken wegzakt, laat premium op tijd terugkomen. Zo blijft het in het hoofd.',
   'ouder.geheugencheckMetPremium':
     'Wat nog niet zit, zet het plan vanzelf weer klaar om te herhalen.',
   // Apparaten (ADR-226): welke apparaten de code gebruiken, en zelf vervangen.
@@ -1854,9 +1856,9 @@ export const nl = {
   'ouder.apparatenUitleg':
     'Een apparaat krijgt pas een plek als een kind er premium op start. Een plek die 90 dagen niet gebruikt is, komt vanzelf vrij.',
   'ouder.apparatenBekijk': 'Bekijk de apparaten',
-  'ouder.apparatenBezet': '{bezet} van de {plekken} plekken zijn in gebruik.',
+  'ouder.apparatenBezet': 'Er zijn {bezet} van de {plekken} plekken in gebruik.',
   'ouder.apparatenGeenPlek':
-    '{bezet} van de {plekken} plekken zijn in gebruik. Welke apparaten dat zijn, zie je op een apparaat dat al een plek heeft. Daar kun je ook een plek vervangen.',
+    'Er zijn {bezet} van de {plekken} plekken in gebruik. Welke apparaten dat zijn, zie je op een apparaat dat al een plek heeft. Daar kun je ook een plek vervangen.',
   'ouder.apparaatDit': '{naam} (dit apparaat)',
   'ouder.apparaatDatums': 'Sinds {sinds}, laatst gebruikt op {gezien}',
   'ouder.apparaatVervang': 'Vervangen',

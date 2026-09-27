@@ -437,7 +437,7 @@ test('the day plan says how much without a code, and is the plan with one', asyn
 
   await page.goto('/');
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  await expect(vandaag).toContainText('om te blijven onthouden');
+  await expect(vandaag).toContainText('vandaag terug moet');
   await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
   await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
 
