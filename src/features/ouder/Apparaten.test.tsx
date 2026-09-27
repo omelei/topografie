@@ -99,7 +99,7 @@ describe('apparaten op de ouderpagina', () => {
     tonen.mockResolvedValue({ ok: false, reden: 'geen-plek', bezet: 3, plekken: 3 });
     render(<Apparaten />);
     fireEvent.click(screen.getByRole('button', { name: 'Bekijk de apparaten' }));
-    expect(await screen.findByText(/3 van de 3 plekken zijn in gebruik/)).toBeInTheDocument();
+    expect(await screen.findByText(/Er zijn 3 van de 3 plekken in gebruik/)).toBeInTheDocument();
     expect(screen.queryByText(/Chromebook/)).toBeNull();
   });
 });
