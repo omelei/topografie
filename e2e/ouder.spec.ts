@@ -478,7 +478,7 @@ test('het laatste kind kan niet weg', async ({ page }) => {
 test('de ouder kiest hoe lang de pagina openblijft en wijzigt de pincode', async ({ page }) => {
   await signIn(page, 'Lot');
   await maakOuder(page, '4821');
-  await expect(page.getByText('Hier stel je je ouderaccount in.')).toBeVisible();
+  await expect(page.getByText('Hier vind je je ouderinstellingen.')).toBeVisible();
 
   const duur = page.getByRole('group', { name: 'De ouderpagina sluit na' });
   await expect(duur.getByRole('button', { name: '5 minuten', exact: true })).toHaveAttribute(
