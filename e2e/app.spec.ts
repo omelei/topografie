@@ -397,8 +397,9 @@ test('every button meets the 44px touch target', async ({ page }) => {
 
   for (const control of await page.getByRole('button').all()) {
     const box = await control.boundingBox();
-    expect(box?.height ?? 0, await control.getAttribute('class')).toBeGreaterThanOrEqual(44);
-    expect(box?.width ?? 0, await control.getAttribute('class')).toBeGreaterThanOrEqual(44);
+    const naam = (await control.getAttribute('class')) ?? '';
+    expect(box?.height ?? 0, naam).toBeGreaterThanOrEqual(44);
+    expect(box?.width ?? 0, naam).toBeGreaterThanOrEqual(44);
   }
 });
 
