@@ -78,8 +78,6 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
     '.tk-lijstrij[data-module]:not(.tk-weekdoel-rij) .tk-lijstrij-pijl',
     'the way into a subject, from a row that names it',
   ],
-  ['.tk-vakmenu-knop[data-module]', 'the button that names the subject you are in'],
-  ['.tk-vakmenu-knop[data-module] .tk-plaat', 'its plate, as every plate is'],
   ['.tk-stap-nummer', 'the page’s own order, told in its subject'],
   ['.tk-keuze', 'a chip on a subject’s page, not yet chosen'],
   [".tk-keuze:not(:disabled):not([aria-pressed='true']):hover", 'the same chip under the pointer'],
@@ -102,6 +100,9 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
   ['.tk-vakrij[data-module]:hover', 'the same row under the pointer'],
   ['.tk-vakrij[data-module] .tk-vakrij-naam', 'its name'],
   ['.tk-vakrij[data-module] .tk-vakrij-meta', 'how many diplomas it has'],
+  // ADR-241: a subject's card on /oefenen, a door into it like a card on Vandaag.
+  ['.tk-vakkaart', 'a subject’s card on Oefenen, a door into it'],
+  ['.tk-vakkaart:hover', 'the same card under the pointer'],
 ]);
 
 /**

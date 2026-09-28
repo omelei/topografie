@@ -19,6 +19,7 @@ import { Scholen } from '@/features/home/Scholen';
 import { VoorOuders } from '@/features/home/VoorOuders';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
+import { OefenenScherm } from '@/features/shell/OefenenScherm';
 import { ModuleScreen } from '@/features/module/ModuleScreen';
 import { SumScreen } from '@/features/sums/SumScreen';
 import { KlokScreen } from '@/features/klok/KlokScreen';
@@ -198,9 +199,9 @@ export default function App() {
     return () => window.removeEventListener('popstate', terug);
   }, [screen.name]);
 
-  // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
-  // them here rather than inside the Shell keeps the frame ignorant of what a
-  // screen is.
+  // The destinations: Vandaag, Oefenen, Jij, Premium and Ouders (ADR-171,
+  // ADR-241). Mapping them here rather than inside the Shell keeps the frame
+  // ignorant of what a screen is.
   const goHome = () => {
     vergeetGeheugencheck();
     go({ name: 'home' });
@@ -223,11 +224,13 @@ export default function App() {
     const next: Route =
       id === 'jij'
         ? { name: 'you' }
-        : id === 'premium'
-          ? { name: 'premium' }
-          : id === 'ouders'
-            ? { name: 'ouder' }
-            : { name: 'home' };
+        : id === 'oefenen'
+          ? { name: 'oefenen' }
+          : id === 'premium'
+            ? { name: 'premium' }
+            : id === 'ouders'
+              ? { name: 'ouder' }
+              : { name: 'home' };
     go(next);
     setScreen({ name: 'home' });
     // De ouderpagina vraagt meteen de pincode (ADR-232), in plaats van eerst
@@ -699,6 +702,7 @@ export default function App() {
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
           onWerkblad={(setId) => go({ name: 'werkblad', module: route.module, setId })}
+          onOefenen={() => go({ name: 'oefenen' })}
           onStart={beginRonde}
         />
       </Shell>
@@ -836,6 +840,16 @@ export default function App() {
         grond={route.module.id}
       >
         <ModuleSoon module={route.module} onOpen={goModule} />
+      </Shell>
+    );
+  }
+
+  // De vakken bij elkaar (ADR-241): een kaart per vak, die de startpagina van
+  // dat vak opent.
+  if (route.name === 'oefenen') {
+    return (
+      <Shell bar={bar} current="oefenen" onNavigate={goTo} onModule={goModule}>
+        <OefenenScherm onOpen={goModule} />
       </Shell>
     );
   }

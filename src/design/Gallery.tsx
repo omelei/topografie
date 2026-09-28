@@ -296,29 +296,24 @@ export function Gallery() {
         <p className="mt-2 text-tekst-secundair">Zelfde gewicht, midden op het scherm.</p>
       </div>
 
-      <h2 className={HEADING}>Kopbalk, rail en tabbalk</h2>
+      <h2 className={HEADING}>Kopbalk, zijbalk en tabbalk</h2>
       <div className="tk-appbar">
         <Wordmark className="tk-logo" />
       </div>
       <div className="mt-3 flex">
-        <div className="tk-rail">
-          <button type="button" className="tk-tabbar-item" aria-current="page">
-            <FreezerIcon size={24} />
-            Topo
+        <div className="tk-zijbalk flex">
+          <button type="button" className="tk-zijbalk-rij" aria-current="page">
+            <span className="tk-plaat tk-plaat-neutraal tk-zijbalk-plaat">
+              <FreezerIcon size={20} />
+            </span>
+            Vandaag
           </button>
         </div>
-        <div className="flex-1 p-4 text-tekst-secundair">Rail 88 breed.</div>
-      </div>
-      {/* On a tablet the rail lies down: a bar of 72 with 88x56 targets. */}
-      <div className="tk-rail tk-rail-bar mt-3">
-        <button type="button" className="tk-tabbar-item" aria-current="page">
-          <FreezerIcon size={24} />
-          Topo
-        </button>
+        <div className="flex-1 p-4 text-tekst-secundair">Zijbalk 248 breed.</div>
       </div>
 
       <div className="tk-tabbar mt-3">
-        {['Vandaag', 'Jij', 'Premium'].map((item, index) => (
+        {['Vandaag', 'Oefenen', 'Jij'].map((item, index) => (
           <button
             key={item}
             type="button"

@@ -447,12 +447,11 @@ test('the day plan says how much without a code, and is the plan with one', asyn
   const slot = await vandaag.boundingBox();
   expect(slot?.y ?? -1).toBeGreaterThan(recent?.y ?? Infinity);
 
-  // En Premium staat in de navigatie, op elke pagina: sinds ADR-171 een van de
-  // drie bestemmingen, in plaats van een groene knop in de balk. Exact, want
-  // "Bekijk premium" in het blok hierboven bevat hetzelfde woord.
+  // En Premium staat in de kop, op elke pagina: sinds ADR-171 een bestemming
+  // en sinds ADR-241 de ene knop in de kop die opvalt. Exact, want "Bekijk
+  // premium" in het blok hierboven bevat hetzelfde woord.
   const inDeNavigatie = page
-    .getByRole('navigation', { name: 'Waar je heen kunt' })
-    .filter({ visible: true })
+    .getByRole('banner')
     .getByRole('button', { name: 'Premium', exact: true });
   await expect(inDeNavigatie).toBeVisible();
   await page.goto('/jij');

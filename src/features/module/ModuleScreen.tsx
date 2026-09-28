@@ -2,7 +2,7 @@ import { OverOnderwerp } from './OverOnderwerp';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@/components/Button';
-import { CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
+import { ChevronDownIcon, CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
 import {
   aanDeBeurt,
   countMastered,
@@ -114,6 +114,7 @@ export function ModuleScreen({
   regio: adresRegio = null,
   onSet,
   onWerkblad,
+  onOefenen,
   onStart,
 }: {
   readonly module: Module;
@@ -127,6 +128,8 @@ export function ModuleScreen({
   readonly onSet: (setId: string | null) => void;
   /** Opent het werkblad om te printen van dit onderwerp (ADR-211). */
   readonly onWerkblad?: (setId: string) => void;
+  /** Terug naar Oefenen, op een telefoon boven de kop (ADR-241). */
+  readonly onOefenen?: () => void;
   readonly onStart: (
     deel: Onderdeel,
     mode: ModeId,
@@ -409,36 +412,51 @@ export function ModuleScreen({
       {/* What is chosen here wears the module's colour (ADR-112). The child's
           own column beside it does not: it is about the child, not the module. */}
       <div className="tk-page-main" data-accent="module">
-        {/* Het vlak waar de pagina van een vak mee begint (Kleurblokken,
+        <div className="tk-vakkop">
+          {/* Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat
+            boven de kop (ADR-241). */}
+          {onOefenen ? (
+            <button
+              type="button"
+              className="tk-terugknop desk:hidden"
+              aria-label={t('module.terugOefenen')}
+              onClick={onOefenen}
+            >
+              <ChevronDownIcon size={20} />
+              {t('nav.oefenen')}
+            </button>
+          ) : null}
+          {/* Het vlak waar de pagina van een vak mee begint (Kleurblokken,
             ADR-238): de vorm van het welkomstvlak op Vandaag, in de diepe
             kleur van het vak met witte woorden. De vormen zijn versiering. */}
-        <div className="tk-etalage tk-welkom tk-vakvlak">
-          <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
-          <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
-          <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
-          <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
-          <div className="tk-welkom-tekst">
-            {/* Which module this is, as a badge in its own tint. On a phone and
-                a tablet the rail is not drawn, and the menu above says it too;
-                here it is the page saying it about itself. */}
-            <p className="tk-modulebadge">
-              <ModuleIcon size={16} />
-              {t(module.name)}
-            </p>
+          <div className="tk-etalage tk-welkom tk-vakvlak">
+            <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+            <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+            <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
+            <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
+            <div className="tk-welkom-tekst">
+              {/* Which module this is, as a badge in its own tint. On a phone and
+                a tablet the side bar is not drawn; here it is the page saying
+                it about itself. */}
+              <p className="tk-modulebadge">
+                <ModuleIcon size={16} />
+                {t(module.name)}
+              </p>
 
-            {/* By name, the way the front door greets them — on every size. The
+              {/* By name, the way the front door greets them — on every size. The
                 handoff drops the name on a phone; a chooser that asks "wat wil
                 je oefenen?" of nobody in particular is a form, and asked of Fem
                 it is a question (ADR-095). */}
-            <h1 className="tk-display tk-welkom-kop">
-              {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
-            </h1>
-          </div>
+              <h1 className="tk-display tk-welkom-kop">
+                {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
+              </h1>
+            </div>
 
-          {/* Hier stond "Hier gaat je toets over", met een knop die de hele
+            {/* Hier stond "Hier gaat je toets over", met een knop die de hele
               module als toets oefende. Het hing aan een toetsdatum, en die
               wordt sinds ADR-162 nergens meer ingevoerd. De oefentoets zelf
               staat er nog, bij de manieren, waar hij altijd stond. */}
+          </div>
         </div>
 
         {/* Where on the map, or which part of Taal, and only where there is

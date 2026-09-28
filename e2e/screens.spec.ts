@@ -74,6 +74,11 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(page.getByRole('region', { name: 'Je doelen voor deze week' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
+  // Oefenen (ADR-241): de vakken als kaarten, drie of twee naast elkaar.
+  await page.goto('/oefenen');
+  await expect(page.getByRole('heading', { level: 1, name: 'Oefenen' })).toBeVisible();
+  await shoot(page, size, '03b-oefenen');
+
   await page.goto('/topografie');
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
   await shoot(page, size, '03-kiezen');

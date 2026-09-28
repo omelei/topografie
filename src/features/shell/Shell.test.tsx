@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Shell } from './Shell';
 import { DESTINATIONS, MODULES } from './modules';
 
@@ -15,6 +15,9 @@ import { DESTINATIONS, MODULES } from './modules';
  * ever prove that nothing renders.
  */
 describe('the shell', () => {
+  // De stand van Oefenen staat in localStorage (ADR-241); elke test begint open.
+  beforeEach(() => window.localStorage.clear());
+
   it('offers no navigation while there is one of everything', () => {
     // One of each, written here rather than read from the real lists. Those
     // grow — this test started failing the moment K9 became a second
@@ -38,12 +41,11 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    expect(screen.getByRole('navigation', { name: 'Vakken' })).toBeInTheDocument();
+    expect(screen.getByRole('list', { name: 'Vakken' })).toBeInTheDocument();
 
-    // Two of them, and that is the design rather than an accident: the same
-    // four destinations stand in the app bar from a tablet up and lie along
-    // the bottom on a phone, and CSS displays exactly one at any width. jsdom
-    // applies no stylesheet, so both are in the tree here.
+    // Two of them, and that is the design rather than an accident: the side
+    // bar at a desk and the tab bar on a phone, and CSS displays exactly one
+    // at any width. jsdom applies no stylesheet, so both are in the tree here.
     expect(screen.getAllByRole('navigation', { name: 'Waar je heen kunt' })).toHaveLength(2);
   });
 
@@ -54,7 +56,7 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    const rail = screen.getByRole('navigation', { name: 'Vakken' });
+    const rail = screen.getByRole('list', { name: 'Vakken' });
     const names = [...rail.querySelectorAll('button')].map((button) => button.textContent);
 
     // ADR-029. Clock reading is third because that is where the plan puts it,
@@ -72,7 +74,7 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    const rail = screen.getByRole('navigation', { name: 'Vakken' });
+    const rail = screen.getByRole('list', { name: 'Vakken' });
     const buttons = [...rail.querySelectorAll('button')];
 
     // data-module is the whole mechanism: the CSS resolves --accent from it, so
@@ -99,8 +101,9 @@ describe('the shell', () => {
     // both. Marking a destination in the tab bar and a different one in the app
     // bar is the failure this is worded to catch.
     for (const bar of screen.getAllByRole('navigation', { name: 'Waar je heen kunt' })) {
-      const current = [...bar.querySelectorAll('[aria-current="page"]')];
+      const current = [...bar.querySelectorAll('[aria-current]')];
       expect(current).toHaveLength(1);
+      expect(current[0]).toHaveAttribute('aria-current', 'page');
       expect(current[0]).toHaveTextContent('Jij');
     }
   });
@@ -115,13 +118,92 @@ describe('the shell', () => {
       </Shell>,
     );
 
-    for (const bar of screen.getAllByRole('navigation', { name: 'Waar je heen kunt' })) {
-      expect(bar.querySelectorAll('[aria-current="page"]')).toHaveLength(0);
+    const [zijbalk] = screen.getAllByRole('navigation', { name: 'Waar je heen kunt' });
+    const destinations = [...(zijbalk?.children ?? [])].filter((el) => el.tagName !== 'UL');
+    for (const el of destinations) {
+      expect(el.querySelectorAll('[aria-current]')).toHaveLength(0);
     }
 
-    // The rail still says which module, because that part is true.
-    const rail = screen.getByRole('navigation', { name: 'Vakken' });
-    expect(rail.querySelectorAll('[aria-current="page"]')).toHaveLength(1);
+    // The side bar still says which module, because that part is true.
+    const rail = screen.getByRole('list', { name: 'Vakken' });
+    const hier = rail.querySelectorAll('[aria-current="page"]');
+    expect(hier).toHaveLength(1);
+    expect(hier[0]).toHaveTextContent('Rekenen');
+  });
+
+  it('folds the modules away under Oefenen, and remembers it (ADR-241)', () => {
+    const seen: string[] = [];
+    const { unmount } = render(
+      <Shell
+        modules={MODULES}
+        destinations={DESTINATIONS}
+        currentModule="klok"
+        onNavigate={(id) => seen.push(id)}
+      >
+        <p>klok</p>
+      </Shell>,
+    );
+
+    // Open by default, and the chevron says what it will do.
+    const chevron = screen.getByRole('button', { name: 'Vakken inklappen' });
+    expect(chevron).toHaveAttribute('aria-expanded', 'true');
+    const lijst = document.getElementById(chevron.getAttribute('aria-controls') ?? '');
+    expect(lijst).toBe(screen.getByRole('list', { name: 'Vakken' }));
+
+    // Folded: the list is gone, and in a vak the Oefenen row says where you are.
+    fireEvent.click(chevron);
+    expect(chevron).toHaveAttribute('aria-expanded', 'false');
+    expect(chevron).toHaveAccessibleName('Vakken uitklappen');
+    expect(lijst).not.toBeVisible();
+    const oefenen = screen.getAllByRole('button', { name: 'Oefenen' })[0];
+    expect(oefenen).toHaveAttribute('aria-current', 'true');
+    expect(seen).toEqual([]);
+    expect(window.localStorage.getItem('nav.oefenenOpen')).toBe('false');
+
+    // The next page keeps it folded.
+    unmount();
+    render(
+      <Shell
+        modules={MODULES}
+        destinations={DESTINATIONS}
+        currentModule="klok"
+        onNavigate={(id) => seen.push(id)}
+      >
+        <p>klok</p>
+      </Shell>,
+    );
+    expect(screen.getByRole('button', { name: 'Vakken uitklappen' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+
+    // Oefenen itself goes to /oefenen and always opens the list.
+    fireEvent.click(screen.getAllByRole('button', { name: 'Oefenen' })[0] as HTMLElement);
+    expect(seen).toEqual(['oefenen']);
+    expect(screen.getByRole('button', { name: 'Vakken inklappen' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(screen.getByRole('list', { name: 'Vakken' })).toBeVisible();
+  });
+
+  it('puts premium in the bar, as the one loud button (ADR-241)', () => {
+    const seen: string[] = [];
+    render(
+      <Shell
+        modules={MODULES}
+        destinations={DESTINATIONS}
+        current="premium"
+        onNavigate={(id) => seen.push(id)}
+      >
+        <p>premium</p>
+      </Shell>,
+    );
+
+    const premium = within(screen.getByRole('banner')).getByRole('button', { name: 'Premium' });
+    expect(premium).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(premium);
+    expect(seen).toEqual(['premium']);
   });
 
   it('names the product once, in the bar', () => {
@@ -166,105 +248,49 @@ describe('the shell', () => {
     expect(screen.getByRole('button', { name: 'leer.nu, naar Vandaag' })).toBeInTheDocument();
   });
 
-  it('opens the modules as a list below 1200, and gives focus back when it closes', () => {
-    // ADR-093. CSS decides which of the rail and the menu is displayed; jsdom
-    // applies no stylesheet, so both are in the tree and this checks the menu.
+  it('lays Vandaag, Oefenen and Jij along the bottom, and Oefenen holds every vak (ADR-241)', () => {
+    render(
+      <Shell modules={MODULES} destinations={DESTINATIONS} currentModule="woorden">
+        <p>taal</p>
+      </Shell>,
+    );
+
+    const [, tabbalk] = screen.getAllByRole('navigation', { name: 'Waar je heen kunt' });
+    const tabs = within(tabbalk as HTMLElement).getAllByRole('button');
+    expect(tabs.map((tab) => tab.textContent)).toEqual(['Vandaag', 'Oefenen', 'Jij']);
+
+    // In een vak is Oefenen de tab waar je bent, als deel en niet als pagina.
+    expect(tabs[1]).toHaveAttribute('aria-current', 'true');
+    expect(tabs[0]).not.toHaveAttribute('aria-current');
+  });
+
+  it('puts premium, Ouders and the child in the bar on a phone (ADR-241)', () => {
     const seen: string[] = [];
     render(
       <Shell
         modules={MODULES}
         destinations={DESTINATIONS}
-        currentModule="klok"
-        onModule={(id) => seen.push(id)}
+        current="ouders"
+        onNavigate={(id) => seen.push(id)}
+        bar={<button type="button">Fem</button>}
       >
-        <p>klok</p>
+        <p>ouders</p>
       </Shell>,
     );
 
-    const knop = screen.getByRole('button', { name: 'vak Klok' });
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
+    const balk = within(screen.getByRole('banner'));
+    // In de volgorde van het ontwerp: premium, Ouders, het kind.
+    expect(
+      balk
+        .getAllByRole('button')
+        .map((knop) => knop.getAttribute('aria-label') ?? knop.textContent),
+    ).toEqual(['leer.nu, naar Vandaag', 'Premium', 'Ouders', 'Fem']);
+    const ouders = balk.getByRole('button', { name: 'Ouders' });
+    expect(ouders).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(ouders);
+    expect(seen).toEqual(['ouders']);
 
-    // Closed, the list is not in the document at all, so the rail is the one
-    // navigation called "Vakken" — never two at once at a width that shows one.
-    expect(screen.getAllByRole('navigation', { name: 'Vakken' })).toHaveLength(1);
-
-    fireEvent.click(knop);
-    expect(knop).toHaveAttribute('aria-expanded', 'true');
-
-    const lijst = document.getElementById(knop.getAttribute('aria-controls') ?? '');
-    expect(lijst).not.toBeNull();
-    const hier = within(lijst as HTMLElement).getByRole('button', { name: 'Klok' });
-
-    // Open on the module you are in, and marked the way the rail marks it.
-    expect(hier).toHaveAttribute('aria-current', 'page');
-    expect(hier).toHaveFocus();
-
-    // Escape closes it and puts focus back on the button that opened it.
-    fireEvent.keyDown(hier, { key: 'Escape' });
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-    expect(knop).toHaveFocus();
-
-    // A choice closes it too, and goes where it was asked to — a module not
-    // built yet as well, which answers "binnenkort" (ADR-051). Taal was the
-    // example until it was built (ADR-118).
-    fireEvent.click(knop);
-    const opnieuw = document.getElementById(knop.getAttribute('aria-controls') ?? '');
-    fireEvent.click(within(opnieuw as HTMLElement).getByRole('button', { name: 'Tijdvakken' }));
-    expect(seen).toEqual(['tijdvakken']);
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('moves through the list with the arrow keys', () => {
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS} currentModule="topo">
-        <p>topografie</p>
-      </Shell>,
-    );
-
-    const knop = screen.getByRole('button', { name: 'vak Topo' });
-    fireEvent.click(knop);
-    const lijst = within(
-      document.getElementById(knop.getAttribute('aria-controls') ?? '') as HTMLElement,
-    );
-
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Topo' }), { key: 'ArrowDown' });
-    expect(lijst.getByRole('button', { name: 'Rekenen' })).toHaveFocus();
-
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Rekenen' }), { key: 'End' });
-    expect(lijst.getByRole('button', { name: 'Vlaggen' })).toHaveFocus();
-
-    // Round again from the end, rather than stopping at a wall.
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Vlaggen' }), { key: 'ArrowDown' });
-    expect(lijst.getByRole('button', { name: 'Topo' })).toHaveFocus();
-  });
-
-  it('names its own job where no module is open', () => {
-    // ADR-121: where you are in no vak the control is not a read-out but the
-    // way to a round, and it says so — on its face and to a screen reader.
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS}>
-        <p>vandaag</p>
-      </Shell>,
-    );
-
-    const knop = screen.getByRole('button', { name: 'Oefenen' });
-    expect(knop).toHaveTextContent('Oefenen');
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('is stuck to the top of the glass below 1200', () => {
-    // The sticky lives on the wrapper in Shell, not on the menu's own root: a
-    // sticky box travels only inside its containing block, and on the root that
-    // block is the wrapper itself. jsdom applies no stylesheet, so what is
-    // checked is that the class the rule hangs on is where it has to be.
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS}>
-        <p>vandaag</p>
-      </Shell>,
-    );
-
-    const houder = document.querySelector('.tk-vakmenu-houder');
-    expect(houder).not.toBeNull();
-    expect(houder?.querySelector('.tk-vakmenu')).not.toBeNull();
+    // Er is geen vakmenu meer onder de kop.
+    expect(document.querySelector('.tk-vakmenu')).toBeNull();
   });
 });

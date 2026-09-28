@@ -317,12 +317,22 @@ function hue(hex: string): number {
  * the chosen tile is the subject's colour, so a subject within 30 degrees of
  * fout would make "chosen" and "wrong" one colour apart from their shapes.
  * The first tijdvakken pink sat 16 degrees away; its magenta sits 40.
+ *
+ * Klok is the one exception (ADR-241): the navigation design made it pink,
+ * 19 degrees from fout, and the owner chose the design. Fout is still a
+ * hatched area with a cross and chosen never is, so the shape tells them
+ * apart; klok is held to 15 so it cannot slide any closer.
  */
+const AFSTAND_TOT_FOUT: Record<string, number> = { klok: 15 };
+
 describe('the subjects keep clear of wrong', () => {
-  it.each(MODULES.map((name) => [name] as const))('%s is 30 degrees or more from fout', (name) => {
-    const verschil = Math.abs(hue(token(name)) - hue(token('fout')));
-    expect(Math.min(verschil, 360 - verschil)).toBeGreaterThanOrEqual(30);
-  });
+  it.each(MODULES.map((name) => [name, AFSTAND_TOT_FOUT[name] ?? 30] as const))(
+    '%s is %i degrees or more from fout',
+    (name, minimum) => {
+      const verschil = Math.abs(hue(token(name)) - hue(token('fout')));
+      expect(Math.min(verschil, 360 - verschil)).toBeGreaterThanOrEqual(minimum);
+    },
+  );
 });
 
 /**

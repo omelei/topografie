@@ -119,13 +119,16 @@ test('typing a time takes every way a child writes one', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
 });
 
-test('the clock is a door in the rail like the other two', async ({ page }, testInfo) => {
-  // Below 1200 the same door is in the menu (ADR-093); shell.spec.ts opens it.
-  test.skip(!['chromebook', 'desktop-1440'].includes(testInfo.project.name), 'no rail below 1200');
+test('the clock is a door in the side bar like the others', async ({ page }, testInfo) => {
+  // Below 1200 the way in is Oefenen (ADR-241); shell.spec.ts walks it.
+  test.skip(
+    !['chromebook', 'desktop-1440'].includes(testInfo.project.name),
+    'no side bar below 1200',
+  );
 
   await signIn(page, 'Timo');
 
-  const rail = page.getByRole('navigation', { name: 'Vakken' });
+  const rail = page.getByRole('list', { name: 'Vakken' });
   await rail.getByRole('button', { name: 'Klok', exact: true }).click();
 
   // A door that is open opens onto the chooser, not onto "binnenkort".

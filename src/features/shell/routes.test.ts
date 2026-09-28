@@ -98,6 +98,7 @@ describe('the addresses', () => {
   it('round-trips every route through its own path', () => {
     expect(routeFor(pathFor({ name: 'home' }))).toEqual({ name: 'home' });
     expect(routeFor(pathFor({ name: 'you' }))).toEqual({ name: 'you' });
+    expect(routeFor(pathFor({ name: 'oefenen' }))).toEqual({ name: 'oefenen' });
     expect(routeFor(pathFor({ name: 'premium' }))).toEqual({ name: 'premium' });
 
     for (const module of MODULES) {
@@ -263,5 +264,11 @@ describe('the addresses', () => {
     expect(OUDER_SLUG).toBe('ouder');
     expect(routeFor('/ouder')).toEqual({ name: 'ouder' });
     expect(pathFor(routeFor('/ouder'))).toBe('/ouder');
+  });
+
+  // De vakken bij elkaar (ADR-241): een eigen adres, dat geen vak is.
+  it('gives Oefenen an address of its own', () => {
+    expect(routeFor('/oefenen')).toEqual({ name: 'oefenen' });
+    expect(pathFor({ name: 'oefenen' })).toBe('/oefenen');
   });
 });

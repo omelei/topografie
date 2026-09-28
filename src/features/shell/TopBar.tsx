@@ -22,6 +22,10 @@ import { heeftNaam } from '@/store/profile';
  * vraag die hoort bij de naam die erop staat: wie zit hier achter het scherm —
  * dit kind, een broer of zus, of de ouder. De naam blijft de toegankelijke
  * naam van de knop, want het is nog steeds de knop van wie er oefent.
+ *
+ * Sinds ADR-241 staat hij als laatste in de kop, na premium: een pil in perzik
+ * aan een bureau, alleen de avatar in een witte cirkel op een telefoon. De rij
+ * eromheen is van `Shell`.
  */
 export function TopBar({
   profile,
@@ -34,27 +38,25 @@ export function TopBar({
   // poppetje en zonder naam ernaast.
   const naamloos = !heeftNaam(profile);
   return (
-    <div className="ml-auto flex min-w-0 items-center gap-3">
-      {/* The profile switch. It is the way to a sibling's turn (ADR-046), so it
-          is a control and not a label. On a phone it is the avatar alone and
-          the name is said rather than shown — the label below keeps the name in
-          the accessible name, so it is still the child's own button. */}
-      <button
-        type="button"
-        className="tk-profiel"
-        aria-label={
-          naamloos ? t('wisselaar.knopZonderNaam') : t('wisselaar.knop', { naam: profile.naam })
-        }
-        onClick={onProfile}
-      >
-        {/* De avatar die het kind koos (ADR-177), met de voorletter als
-            terugval. Op een telefoon staat hij er alleen, want daar past de
-            naam niet; vanaf 768 staat hij naast de naam (ADR-202). */}
-        <span className="tk-profiel-letter" aria-hidden="true">
-          <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={40} />
-        </span>
-        {naamloos ? null : <span className="tk-profiel-naam">{profile.naam}</span>}
-      </button>
-    </div>
+    // The profile switch. It is the way to a sibling's turn (ADR-046), so it is
+    // a control and not a label. On a phone it is the avatar alone and the name
+    // is said rather than shown — the label below keeps the name in the
+    // accessible name, so it is still the child's own button.
+    <button
+      type="button"
+      className="tk-profiel"
+      aria-label={
+        naamloos ? t('wisselaar.knopZonderNaam') : t('wisselaar.knop', { naam: profile.naam })
+      }
+      onClick={onProfile}
+    >
+      {/* De avatar die het kind koos (ADR-177), met de voorletter als
+          terugval. Op een telefoon staat hij er alleen, want daar past de naam
+          niet; aan een bureau staat hij naast de naam (ADR-202, ADR-241). */}
+      <span className="tk-profiel-letter" aria-hidden="true">
+        <AvatarTeken id={profile.avatarConfig[AVATAR_SLEUTEL]} naam={profile.naam} size={40} />
+      </span>
+      {naamloos ? null : <span className="tk-profiel-naam">{profile.naam}</span>}
+    </button>
   );
 }
