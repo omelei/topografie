@@ -87,6 +87,9 @@ describe('the tokens are the styleguide’s', () => {
     ['fout-vlak', '#fde2e7'],
     ['zon', '#ffc93c'],
     ['zon-rand', '#d69a00'],
+    // ADR-241: the premium pill in the navigation, under the pointer and chosen.
+    ['zon-hover', '#ffd466'],
+    ['nacht-diep', '#0e1838'],
     ['zon-tint', '#fff4d1'],
     ['zon-tekst', '#8a6300'],
     ['nacht', '#1b2a5e'],
@@ -100,51 +103,52 @@ describe('the tokens are the styleguide’s', () => {
   });
 
   /**
-   * The six subjects, from the LEER_VAK table in docs/leer.js (ADR-180): the
-   * bright fill of the tile, the deep tone and the light tint. The words are
-   * the deep tone itself.
+   * The six subjects, from the LEER_VAK table in docs/leer.js (ADR-180), and
+   * since ADR-241 the five built ones from the navigation design: the bright
+   * fill of the tile, the deep tone and the light tint. The words are the deep
+   * tone itself.
    */
   it.each([
-    ['topo-vlak', '#12b3a0'],
-    ['topo', '#0b7468'],
-    ['topo-tint', '#ddf6f1'],
-    ['tafels-vlak', '#2e8bf2'],
-    ['tafels', '#1560b8'],
-    ['tafels-tint', '#ddeeff'],
-    ['klok-vlak', '#5c5fe6'],
-    ['klok', '#3d3fbf'],
-    ['klok-tint', '#e6e7ff'],
-    ['woorden-vlak', '#b15be6'],
-    ['woorden', '#7e2fb3'],
-    ['woorden-tint', '#f3e3fc'],
+    ['topo-vlak', '#18a566'],
+    ['topo', '#0b6b41'],
+    ['topo-tint', '#dcf4e7'],
+    ['tafels-vlak', '#2f7cf0'],
+    ['tafels', '#1651ad'],
+    ['tafels-tint', '#dfeafd'],
+    ['klok-vlak', '#d9408f'],
+    ['klok', '#991c5c'],
+    ['klok-tint', '#fbe2ef'],
+    ['woorden-vlak', '#8c4fe0'],
+    ['woorden', '#5f27a6'],
+    ['woorden-tint', '#eee4fc'],
     ['tijdvakken-vlak', '#d65bc6'],
     ['tijdvakken', '#9c2a8c'],
     ['tijdvakken-tint', '#fae3f6'],
-    ['vlaggen-vlak', '#f5a01a'],
-    ['vlaggen', '#935700'],
+    ['vlaggen-vlak', '#f29d0c'],
+    ['vlaggen', '#8a5300'],
     ['vlaggen-tint', '#fff0d6'],
     // Kleurblokken (ADR-238): the lower edge of a subject tile, and the circle
     // behind the question in a round.
-    ['topo-schaduw', '#06463f'],
-    ['topo-vraag', '#0e8577'],
-    ['tafels-schaduw', '#0d3f7a'],
-    ['tafels-vraag', '#3774c2'],
-    ['klok-schaduw', '#27297f'],
-    ['klok-vraag', '#4f59c9'],
-    ['woorden-schaduw', '#521d75'],
-    ['woorden-vraag', '#8d4dbe'],
+    ['topo-schaduw', '#043f25'],
+    ['topo-vraag', '#357c56'],
+    ['tafels-schaduw', '#092f6a'],
+    ['tafels-vraag', '#3467b8'],
+    ['klok-schaduw', '#5d0d36'],
+    ['klok-vraag', '#a83e6e'],
+    ['woorden-schaduw', '#381465'],
+    ['woorden-vraag', '#7046b2'],
     ['tijdvakken-schaduw', '#651b5b'],
     ['tijdvakken-vraag', '#aa489a'],
-    ['vlaggen-schaduw', '#5f3800'],
-    ['vlaggen-vraag', '#a06b30'],
-    // Kleur erin (ADR-239): the rule of a card, a tile or a chip, the -vlak
-    // colour at 35% in white.
-    ['topo-rand', '#ace5de'],
-    ['tafels-rand', '#b6d7fb'],
-    ['klok-rand', '#c6c7f7'],
-    ['woorden-rand', '#e4c6f7'],
+    ['vlaggen-schaduw', '#533000'],
+    ['vlaggen-vraag', '#98672e'],
+    // Kleur erin (ADR-239): the rule of a card, a tile or a chip, the design's
+    // light tone (ADR-241).
+    ['topo-rand', '#a6e0c3'],
+    ['tafels-rand', '#b5cdf8'],
+    ['klok-rand', '#f2b5d4'],
+    ['woorden-rand', '#d4c1f5'],
     ['tijdvakken-rand', '#f1c6eb'],
-    ['vlaggen-rand', '#fcdeaf'],
+    ['vlaggen-rand', '#fcdcaa'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });

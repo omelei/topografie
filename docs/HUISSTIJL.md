@@ -172,10 +172,25 @@ bent en wat je nu doet. Elk niveau heeft één kleur:
   welkomstvlak op Vandaag (`tk-welkom`) of de etalage van een pagina. Een
   vakvlak is een herhaaltegel (`tk-herhaaltegel`), het vakvlak bovenaan een
   vakpagina (`tk-vakvlak`) of de vraag in een ronde (`tk-vraagblok`).
+- **De vakkleuren** (ADR-241) liggen ongeveer 70° uit elkaar op het
+  kleurenwiel. Vlak, diep, tint en rand komen uit het navigatieontwerp;
+  `-schaduw` en `-vraag` zijn daaruit afgeleid (zie `src/index.css`).
+
+  | vak     | naam    | vlak      | diep      | tint      | rand      |
+  | ------- | ------- | --------- | --------- | --------- | --------- |
+  | topo    | Topo    | `#18a566` | `#0b6b41` | `#dcf4e7` | `#a6e0c3` |
+  | tafels  | Rekenen | `#2f7cf0` | `#1651ad` | `#dfeafd` | `#b5cdf8` |
+  | klok    | Klok    | `#d9408f` | `#991c5c` | `#fbe2ef` | `#f2b5d4` |
+  | woorden | Taal    | `#8c4fe0` | `#5f27a6` | `#eee4fc` | `#d4c1f5` |
+  | vlaggen | Vlaggen | `#f29d0c` | `#8a5300` | `#fff0d6` | `#fcdcaa` |
+
+  Klok ligt 19° van fout in plaats van 30°: de eigenaar koos het ontwerp, en
+  de vorm (arcering en kruis) zegt wat fout is.
+
 - **Per vak vijf tonen:** `-vlak` (helder, voor vormen en het vakicoon),
   de diepe toon (het vlak zelf, met wit erop), `-schaduw` (de harde onderkant
   van een vaktegel), `-vraag` (de cirkel achter de vraag, 12 % lichter en
-  nog steeds 4,5 onder wit) en `-rand` (de `-vlak`-kleur voor 35 % in wit: de
+  nog steeds 4,5 onder wit) en `-rand` (de lichte toon uit het ontwerp: de
   rand van een kaart, tegel of chip die niet gekozen is, ADR-239). `-tint`
   blijft het spoor van een balk en de grond van wat gekozen is.
 - **Een tint per instelling** (ADR-239): op Jij draagt elke rij bij de

@@ -13953,6 +13953,41 @@ toon) in een tegel en in de rail, in plaats van oranje.
   is gewild: zo ziet een tegel eruit als een witte kaart met een gekleurde
   voet, en niet als een getinte tegel.
 
+## ADR-241 — Nieuwe vakkleuren en een nieuwe navigatie
+
+**Status:** accepted. **Date:** 2026-09-28. Op verzoek van de eigenaar, uit het
+klikbare ontwerp `Navigatie.dc.html` (bureau en mobiel). Wijzigt ADR-180 (de
+vakkleuren uit `docs/leer.js`) en ADR-184 (afstand tot fout).
+
+**Aanleiding.** Drie vakken lagen dicht bij elkaar op het kleurenwiel: klok
+(indigo) en taal (paars) scheelden 40°, tafels (blauw) en klok 25°. In een
+rij van vijf vakken las je het vak niet meer aan de kleur af.
+
+### De vakkleuren
+
+**Besluit.** De vijf gebouwde vakken krijgen de kleuren van het ontwerp, ongeveer
+70° uit elkaar: topo groen, rekenen blauw, klok roze, taal paars, vlaggen
+oranje. Vlak, diep, tint en rand zijn die van het ontwerp; `-schaduw` (de diepe
+toon op 70 % van zijn oklch-lichtheid en -chroma) en `-vraag` (de diepe toon
+voor 88 % in wit, in oklch) zijn hier afgeleid. Tijdvakken is niet gebouwd en
+houdt zijn magenta. Er komen twee tokens bij: `--zon-hover` (`#ffd466`) en
+`--nacht-diep` (`#0e1838`).
+
+**Contrast** (`contrast.test.ts`): wit op de diepe toon 6,33 (vlaggen) tot
+9,02 (taal), wit op de vraagcirkel 4,87 tot 6,55, de diepe toon op zijn tint
+5,63 tot 7,36 en op `--kop` 5,63 tot 8,03.
+
+**Afwegingen.**
+
+- **Klok ligt 19° van fout** (framboos), onder de 30° van ADR-184. De eigenaar
+  koos het ontwerp. Wat een gekozen tegel van fout onderscheidt, is de vorm:
+  fout is gearceerd met een kruis, gekozen nooit. `contrast.test.ts` houdt klok
+  op minstens 15°, zodat hij niet verder opschuift.
+- **Tijdvakken ligt 21° van klok.** Het vak is niet gebouwd en staat niet in de
+  navigatie; het krijgt een eigen kleur als het gebouwd wordt.
+- **`docs/leer.js` houdt de oude kleuren.** Het is het bestand van de
+  ontwerper; `src/index.css` is de plek die de app volgt.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
