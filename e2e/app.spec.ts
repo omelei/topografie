@@ -389,12 +389,16 @@ test('announces the question and the outcome to a screen reader', async ({ page 
   await expect(live).toContainText(/Goed!|ligt hier\./);
 });
 
-test('every button meets the 48px touch target', async ({ page }) => {
+// De vloer van het product is 44 (brand.minTouchTargetPx, ADR-032). Deze
+// test vroeg 48; de navigatie van ADR-241 zet premium, Ouders, het kind en de
+// pijl bij Oefenen bewust op 44 bij 44, en alles eromheen is groter.
+test('every button meets the 44px touch target', async ({ page }) => {
   await page.goto('/');
 
   for (const control of await page.getByRole('button').all()) {
     const box = await control.boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+    expect(box?.height ?? 0, await control.getAttribute('class')).toBeGreaterThanOrEqual(44);
+    expect(box?.width ?? 0, await control.getAttribute('class')).toBeGreaterThanOrEqual(44);
   }
 });
 
