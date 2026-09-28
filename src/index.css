@@ -99,9 +99,9 @@
      * what papier was while melk was the ground.
      *                                inkt 13.69 · secundair 7.03 · tertiair 5.88 */
     --perzik: #ffe8d4;
-    /* The bar at the top of every screen, the sticky subject menu under it and
-     * the start bar on a phone (ADR-240): the warm cream of the vlaggen page,
-     * the same on every page, with no subject tint.
+    /* The start bar on a phone (ADR-240): the warm cream of the vlaggen page,
+     * the same on every page, with no subject tint. It was the bar at the top
+     * and the subject menu too, until ADR-241 put the bar on the ground.
      *                  inkt 14.41 · secundair 7.40 · a subject's words 5.63+ */
     --kop: #fff0d6;
     --kaart: #ffffff; /* card and panel, and the frame round the page */
@@ -2771,17 +2771,13 @@
     box-shadow: 0 var(--onderkant-klein) 0 var(--module);
     color: var(--kaart);
   }
-  /* Het vak waar je nu in bent, in de rail en in het menu dat de rail onder
-   * 1200 wordt, houdt zijn heldere plaat (ADR-240): de diepe toon maakte het
+  /* Het vak waar je nu in bent, in de zijbalk, houdt zijn heldere plaat
+   * (ADR-240): de diepe toon maakte het
    * pictogram van vlaggen bruin in plaats van oranje. Wat de actieve staat
    * draagt, is de tint achter het vak en het woord in de vakkleur. */
   .tk-plaat-groot {
     width: 44px;
     height: 44px;
-  }
-  .tk-plaat-rail {
-    width: 36px;
-    height: 36px;
   }
   .tk-plaat-klein {
     width: 36px;
@@ -4013,25 +4009,20 @@
   }
 
   /* ---- Frame -----------------------------------------------------------
-   * Three postures and one component (ADR-093).
+   * Two postures and one component (ADR-093, ADR-241).
    *
-   * From 1200 up the app bar carries the wordmark and the destinations, the
-   * modules stand in a rail of 96 on the left, and nothing lies along the
-   * bottom. Below 1200 — a tablet either way up, and a phone — the app bar is
-   * the mark, the streak and the child; the modules are one control under it
-   * that opens into a list; and the destinations lie along the bottom, where a
+   * From 1200 up the bar is white and carries the wordmark, premium and the
+   * child; the destinations and the vakken stand in a side bar of 248 on the
+   * left, and nothing lies along the bottom. Below 1200 — a tablet either way
+   * up, and a phone — the bar stands on the ground with the mark and three
+   * round buttons, and Vandaag, Oefenen and Jij lie along the bottom, where a
    * thumb is.
-   *
-   * 1200 rather than the 1280 this used to be. The Chromebook (1366) and the
-   * laptop (1440) keep the rail, the iPads (1080 and 810) and the phones get the
-   * menu, and no size the app is tested at sits between the two numbers — so
-   * the handoff's value moves no device and is the one the design is drawn to.
    *
    * Which of each pair is displayed is Tailwind's `desk:` on the element, not a
    * rule here: a component-layer `display` would lose to the utility anyway,
    * and one place deciding it is the point.
    *
-   * All three disappear during a round. A round screen is not wrapped in the
+   * All of it disappears during a round. A round screen is not wrapped in the
    * Shell at all (ADR-041).
    */
   /* De schil van elke pagina buiten een ronde. Op een telefoon precies zo hoog
@@ -4144,8 +4135,7 @@
    * in een balk van 64 is 181 pixels breed, en dan is het merk niet het eerste
    * wat je ziet maar het enige. **De helft van de balkhoogte** is de maat die
    * het wel doet — 28 in 56, 32 in 64 — want dan staat er boven en onder het
-   * merk evenveel lucht als naast de knoppen ernaast, en lijnt de onderkant van
-   * het woordbeeld op met de onderkant van de bestemmingen (`.tk-navbar-item`).
+   * merk evenveel lucht als naast de knoppen ernaast.
    *
    * Eén verhouding voor beide maten en niet twee losse getallen: een balk die
    * later een andere hoogte krijgt, houdt dan dezelfde verdeling. */
@@ -4161,61 +4151,6 @@
     .tk-logo {
       height: 30px;
     }
-  }
-
-  /* The destinations, standing in the app bar from 1200. At a reader's 200%
-   * text the row can be wider than the bar, and it scrolls inside the bar
-   * rather than pushing the page sideways.
-   *
-   * De rij loopt van boven naar beneden door de balk (ADR-160), zodat de plek
-   * waar je bent een streep onder zich krijgt op de rand van de balk —
-   * dezelfde streep als in de tabbalk onderaan een telefoon, daar boven de
-   * woorden. Eén manier om "hier ben je" te zeggen op beide maten, en een
-   * streep is wat een navigatie daarvoor gebruikt sinds er navigaties zijn.
-   * Het vlak eronder blijft: een lichtheid en een gewicht, zodat geen kleur
-   * het alleen draagt (§A).
-   */
-  .tk-navbar {
-    align-self: stretch;
-    align-items: stretch;
-    gap: 4px;
-    min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .tk-navbar::-webkit-scrollbar {
-    display: none;
-  }
-  .tk-navbar-item {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--raak);
-    padding: 0 16px;
-    border: 0;
-    /* Even dik als de streep van de tabbalk, en altijd aanwezig: een rand die
-     * pas verschijnt als je ergens bent, verschuift de woorden eromheen. */
-    border-bottom: var(--stroke-active) solid transparent;
-    border-radius: var(--radius-kaart) var(--radius-kaart) 0 0;
-    background: transparent;
-    color: var(--tekst-secundair);
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-  }
-  .tk-navbar-item:hover {
-    background: var(--vlak-hover);
-    color: var(--inkt);
-  }
-  /* Where you are: a rule along the bar's edge, a surface under the word and
-   * the word in ink at a heavier weight. A lightness, a weight and a line, so
-   * no hue carries it (§A). */
-  .tk-navbar-item[aria-current='page'] {
-    border-bottom-color: var(--nacht);
-    background: var(--perzik);
-    color: var(--inkt);
-    font-weight: 700;
   }
 
   /* Premium in de kop (ADR-241): de enige knop in de navigatie die opvalt.
@@ -4383,49 +4318,6 @@
       clip: rect(0, 0, 0, 0);
       border: 0;
     }
-  }
-
-  /* The rail, from 1200: 96 wide, five doors, and no mark at its head — the
-   * handoff draws none, and the wordmark is a hand's width away in the bar. */
-  .tk-rail {
-    flex: none;
-    flex-direction: column;
-    gap: 6px;
-    width: 96px;
-    padding: 16px 8px;
-    /* White, a panel beside the page (ADR-240). */
-    background: var(--kaart);
-  }
-  .tk-rail-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 72px;
-    padding: 8px 4px;
-    border: 0;
-    border-radius: var(--radius-knop);
-    background: transparent;
-    color: var(--tekst-secundair);
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .tk-rail-item:hover {
-    background: var(--vlak-hover);
-  }
-  /* The module entrance is one of the things an accent may colour, and the
-   * rail is where it does most of its work.
-   *
-   * Het vak waar je in zit draagt zijn eigen tint, en de plaat erin zijn volle
-   * kleur (§03, de tweede sterkte). Dat laatste is wat het teken draagt: de
-   * plaat van elk ánder vak is de zachte tegel, en een bleke tint op een bleke
-   * tint zou geen teken meer zijn. */
-  .tk-rail-item[aria-current='page'] {
-    background: var(--module-tint);
-    color: var(--module-tekst);
   }
 
   /* ---- De zijbalk, vanaf 1200 (ADR-241) ----------------------------------
@@ -4625,153 +4517,6 @@
       font-size: 1.625rem; /* 26px */
       line-height: 2rem;
     }
-  }
-
-  /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------
-   * A row under the app bar with one button across it; open, a panel in the
-   * flow of the page under that, holding a card of five rows. In the flow
-   * rather than over it, so nothing under it is covered while it is open and
-   * nothing has to be told to stop scrolling.
-   *
-   * ADR-121: below 1200 this is the only way to a vak, and as drawn it was a
-   * hairline pill hugging its own words, level with everything else on the
-   * screen and gone as soon as the page moved. It is now the widest control
-   * under the app bar, ruled in ink, and stuck to the top of the glass.
-   */
-
-  /* What sticks. The row *and*, while it is open, its panel: one box, because
-   * the panel is anchored to the flow and a row that travelled without it would
-   * open a list somewhere the page has already scrolled past.
-   *
-   * The app bar above it is deliberately not sticky. 56 of height on a phone is
-   * the mark and the streak, and the thing worth keeping in reach the whole way
-   * down a page is the way to a vak — so the bar scrolls off and the menu
-   * arrives at the top exactly as it goes. */
-  .tk-vakmenu-houder {
-    position: sticky;
-    top: 0;
-    /* Over the page that runs under it, and over the start bar stuck to the
-     * foot of a module page, which is 1. */
-    z-index: 2;
-    /* Opaque on purpose: a sticky box with no ground of its own shows the page
-     * through itself. The colour of the bar above it (ADR-240). */
-    background: var(--kop);
-  }
-  .tk-vakmenu-rij {
-    display: flex;
-    align-items: center;
-    padding: 10px 16px;
-    /* The screen's frame rather than the light rule. This is the edge a page
-     * scrolls under, and 1.40:1 against a moving ground reads as nothing. */
-    border-bottom: var(--stroke-hair) solid var(--rand-sterk);
-  }
-  /* Across the row rather than around its words, at the height of a button and
-   * ruled in two pixels of ink. Not the ink *fill* of a primary button: §C
-   * allows one of those per screen and a module page already spends it on
-   * "Start". A wide outline is the next thing down, and there is nothing else
-   * on a phone drawn this way. */
-  .tk-vakmenu-knop {
-    display: flex;
-    flex: 1;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-    min-height: var(--knop-hoogte);
-    padding: 0 14px 0 10px;
-    border-radius: var(--radius-pil);
-    border: var(--stroke-active) solid var(--inkt);
-    background: var(--kaart);
-    color: var(--inkt);
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .tk-vakmenu-knop:hover {
-    background: var(--vlak-hover);
-  }
-  /* Open: the ground drops to the page's, and the chevron turns over. The rule
-   * is already ink, so it has nowhere left to go. */
-  .tk-vakmenu-knop[aria-expanded='true'] {
-    background: var(--vlak-hover);
-  }
-  /* Kleur erin (ADR-239). Inside a subject the button wears it: its rule and
-   * its words in the subject's colour, its plate the bright fill that every
-   * plate has. Outside one, the plate that says "kies een vak" is zon. */
-  .tk-vakmenu-knop[data-module] {
-    border-color: var(--module);
-    color: var(--module-tekst);
-  }
-  .tk-vakmenu-knop[data-module] .tk-plaat {
-    background: var(--module-vlak);
-    box-shadow: 0 var(--onderkant-klein) 0 var(--module);
-  }
-  .tk-vakmenu-knop .tk-plaat-neutraal {
-    background: var(--zon);
-    color: var(--inkt);
-  }
-  /* The name takes the width the mark and the chevron leave, and wraps rather
-   * than being cut: at a reader's 200% "Tijdvakken" is wider than the pill, and
-   * a button whose min-height is a floor can simply grow. */
-  .tk-vakmenu-naam {
-    flex: 1;
-    min-width: 0;
-    text-align: left;
-  }
-  /* The ground of the box it opens in: room, or a subject's tint (ADR-239). */
-  .tk-vakmenu-paneel {
-    padding: 10px 16px 14px;
-    background: transparent;
-    border-bottom: var(--stroke-hair) solid var(--rand-sterk);
-  }
-  @media (min-width: 768px) {
-    .tk-vakmenu-rij {
-      padding: 10px 20px;
-    }
-    .tk-vakmenu-paneel {
-      padding: 10px 20px 14px;
-    }
-  }
-  .tk-vakmenu-lijst {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    list-style: none;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--radius-kaart);
-    background: var(--kaart);
-  }
-  .tk-vakmenu-lijst li + li {
-    border-top: var(--stroke-hair) solid var(--rand-licht);
-  }
-  .tk-vakmenu-optie {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    min-height: var(--knop-hoogte);
-    padding: 0 14px;
-    border: 0;
-    background: transparent;
-    color: var(--inkt);
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
-    font-weight: 600;
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-vakmenu-optie:hover {
-    background: var(--vlak-hover);
-  }
-  /* Inside the card's own edge, because the card clips what stands outside
-   * it and a focus ring that is cut off is not a focus ring. */
-  .tk-vakmenu-optie:focus-visible {
-    outline-offset: -4px;
-  }
-  .tk-vakmenu-optie[aria-current='page'] {
-    background: var(--module-tint);
-    color: var(--module-tekst);
-    font-weight: 700;
   }
 
   /* ---- The tab bar, below 1200 ------------------------------------------
@@ -6572,8 +6317,8 @@
         .tk-tafel,
         .tk-module-card,
         .tk-profiel,
-        .tk-rail-item,
-        .tk-vakmenu-optie,
+        .tk-zijbalk-rij,
+        .tk-vakkaart,
         .tk-doel-ander,
         .tk-weekdoel-weg,
         .tk-herhaaltegel

@@ -13,7 +13,7 @@ eigen deel:
   Room als ondergrond (ADR-239), perzik als warm vlak, witte kaarten, cacao
   als inkt, koraal voor de knop en
   het merkvlak, de kleur van het vak voor wat gekozen is en voor de kop binnen
-  een vak, nacht voor voortgang en de actieve tab buiten een vak, zon voor
+  een vak, nacht voor voortgang en waar je bent in de navigatie, zon voor
   premium en voor wat gehaald is, en groen en framboos alleen voor goed en
   fout. Hoe die kleuren als blokken samenvallen, staat onder
   [Kleurblokken](#kleurblokken).
@@ -99,14 +99,14 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    iets indrukbaars mag zijn is `raak`: 44 onder een muis, 48 op een tablet, 56
    onder een duim en altijd 56 in een ronde. Nooit een vaste maat eronder.
 6. **De kleur van een vak** (ADR-180). Binnen een vak — de vakpagina, de
-   ronde, de rail, de uitslag — dragen de voortgang en wat gekozen is de kleur
+   ronde, de zijbalk, de uitslag — dragen de voortgang en wat gekozen is de kleur
    van dat vak: zet `data-module` en `data-accent="module"` op de wortel.
    Buiten een vak is dat nacht (ADR-238). Sinds ADR-239 dragen kaarten,
    tegels, chips, het stapnummer en een diploma dat je nog niet hebt de lichte
-   toon of de tint van hun vak. De kop draagt geen vaktint (ADR-240): de
-   appbalk, het vakmenu en de startbalk op een telefoon staan op elke pagina op
-   `--kop`, en de rail is wit. Buiten een vak
-   is de actieve tab nacht, met zijn teken in zon. De tegel van een vak (`tk-plaat`) is de heldere
+   toon of de tint van hun vak. De kop draagt geen vaktint (ADR-240): hij is
+   wit aan een bureau en staat op de grond op een telefoon (ADR-241); de
+   startbalk op een telefoon staat op `--kop`. Hoe de navigatie zegt waar je
+   bent, staat onder [Navigatie](#navigatie). De tegel van een vak (`tk-plaat`) is de heldere
    `-vlak`-kleur met het pictogram in wit en staat altijd naast de naam van het
    vak, die hem draagt. Wat je indrukt is overal koraal (`actie`). Goed is
    altijd groen en fout altijd framboos, in welk vak ook.
@@ -126,9 +126,9 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 9. **Eén grond, overal** (styleguide §01, die ADR-120 terugneemt). De
    paginabrede vaktint is weg: die maakte witte kaarten grauw. Elk scherm staat
    op `grond`, en dat is room (`papier`, ADR-239; melk onder ADR-238, waarop
-   kinderen de app grijs vonden); perzik is het vlak erop, niet eronder. De kop
-   is geen grond maar een balk: `--kop` (`#fff0d6`), op elke pagina dezelfde
-   (ADR-240). Waar je bent lees je af aan de tegel van het vak. De tokens
+   kinderen de app grijs vonden); perzik is het vlak erop, niet eronder. Aan
+   een bureau is de kop een witte balk; op een telefoon staat hij op de grond
+   (ADR-241). Waar je bent lees je af aan de tegel van het vak. De tokens
    `--topo-grond` en `--vandaag-grond` blijven bestaan — `Shell` zet nog steeds
    `data-grond` — maar ze wijzen alle zeven naar `grond`, zodat een scherm het
    niet hoeft te weten. Maak er geen nieuwe hex voor.
@@ -160,12 +160,12 @@ bent en wat je nu doet. Elk niveau heeft één kleur:
 | niveau    | kleur                                                                                                     |
 | --------- | --------------------------------------------------------------------------------------------------------- |
 | grond     | room `--grond` (`#fff3e6`); perzik `--perzik` is het warme vlak erop                                      |
-| kop       | `--kop` (`#fff0d6`) op elke pagina, zonder vaktint; de rail ernaast is wit (ADR-240)                      |
+| kop       | wit met een lijn eronder aan een bureau, de grond op een telefoon; de zijbalk is wit (ADR-241)            |
 | vlak      | merkkoraal met cacao (`tk-etalage`), of de diepe vakkleur met wit                                         |
 | kaart     | wit `--kaart`; binnen een vak met de lichte vaktoon (`--module-rand`) eromheen, anders de lichte lijn     |
 | tegel     | wit, rand `--module-rand`, onderkant `-vlak`, de plaat van het vak: op Vandaag en op een vakpagina gelijk |
 | bediening | koraal voor één knop per scherm; een vaktegel is zelf een knop                                            |
-| accent    | nacht `--nacht` buiten een vak (ook de actieve tab), de diepe vakkleur (`--module`) erbinnen              |
+| accent    | nacht `--nacht` buiten een vak, de diepe vakkleur (`--module`) erbinnen                                   |
 | feest     | zon `--zon`: premium, een geoefende dag, het diploma om te halen, en iets wat gehaald is                  |
 
 - **Hooguit één merkvlak en drie vakvlakken per scherm.** Het merkvlak is het
@@ -210,6 +210,36 @@ bent en wat je nu doet. Elk niveau heeft één kleur:
   antwoord staat er een witte kaart met een neutrale rand. De uitslag staat in
   het teken en op de kaart, niet in de rand.
 - **De arcering van 45° is van fout** en komt nergens anders als versiering.
+
+## Navigatie
+
+Het ontwerp is `Navigatie.dc.html` (ADR-241); `Shell.tsx` bouwt het, met één
+breekpunt op 1200. Drie regels:
+
+- **"Hier ben je" ziet er overal hetzelfde uit:** een tint achter de hele rij
+  of tab. Een bestemming: `--nacht-tint` met het woord in nacht. Een vak: de
+  vaktint met het woord in de diepe vakkleur. In `aria-current` is dat `page`
+  voor de pagina zelf en `true` voor Oefenen als je in een vak bent.
+- **Het teken van een bestemming** (Vandaag, Oefenen, Jij, Ouders) is een
+  lijnicoon uit `Icon.tsx`, secundair op perzik, en verandert niet als je er
+  bent. Het teken van een vak is het gevulde teken, wit op de plaat in de
+  vakkleur met een onderkant in de diepe toon.
+- **Premium is de enige knop die opvalt:** zon met een onderkant in
+  `--zon-rand`, onder de muis `--zon-hover`; waar je bent nacht op
+  `--nacht-diep`, het woord wit en de ster in zon.
+
+| deel         | bureau (vanaf 1200)                                                                   | telefoon en tablet                                                         |
+| ------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| kop          | 64 hoog, wit, lijn eronder; logo 30; rechts premium (pil) en het kind (pil in perzik) | op de grond; logo 24; drie ronde knoppen van 44: premium, Ouders, het kind |
+| bestemmingen | zijbalk van 248: Vandaag, Oefenen met de vakken eronder, een lijn, Jij, Ouders        | tabbalk op de grond: Vandaag, Oefenen, Jij                                 |
+| vakken       | onder Oefenen, in- en uitklapbaar (`nav.oefenenOpen` in localStorage)                 | via Oefenen (`/oefenen`); een vakpagina heeft "‹ Oefenen" boven de kop     |
+| rij of tab   | min. 52 hoog, radius 18, plaat 36, Baloo 700 18                                       | min. 60 hoog, radius 20, teken 24, Baloo 700 15; actief wit met lijn       |
+
+Oefenen aan een bureau is twee knoppen in één rij: het woord gaat naar
+`/oefenen` en klapt de vakken open, de pijl (44 bij 44, met `aria-expanded`)
+klapt ze alleen in of uit. Staat de lijst dicht terwijl je in een vak bent, dan
+draagt Oefenen de tint. `/oefenen` toont de vakken als kaarten (`tk-vakkaart`):
+wit, met de lichte vaktoon als rand, de plaat linksboven en de naam onderaan.
 
 ## Wat het bewaakt
 

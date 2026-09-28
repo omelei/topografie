@@ -832,24 +832,6 @@ export function TodayIcon(props: Omit<IconProps, 'children'>) {
   );
 }
 
-/**
- * The modules, closed: three rows with a dot before each.
- *
- * Not the three bare stripes a menu usually is, because that drawing is
- * `FreezerIcon` and §E does not let one silhouette mean two things. A list with
- * its bullets is also what the control opens into.
- */
-export function MenuIcon(props: Omit<IconProps, 'children'>) {
-  return (
-    <Icon {...props}>
-      <circle cx="4.5" cy="7" r="1.5" fill="currentColor" />
-      <circle cx="4.5" cy="12" r="1.5" fill="currentColor" />
-      <circle cx="4.5" cy="17" r="1.5" fill="currentColor" />
-      <path d="M9 7h11M9 12h11M9 17h11" />
-    </Icon>
-  );
-}
-
 /*
  * Four chevrons: open, close, and one step either way along a row.
  *

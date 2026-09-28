@@ -78,8 +78,6 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
     '.tk-lijstrij[data-module]:not(.tk-weekdoel-rij) .tk-lijstrij-pijl',
     'the way into a subject, from a row that names it',
   ],
-  ['.tk-vakmenu-knop[data-module]', 'the button that names the subject you are in'],
-  ['.tk-vakmenu-knop[data-module] .tk-plaat', 'its plate, as every plate is'],
   ['.tk-stap-nummer', 'the page’s own order, told in its subject'],
   ['.tk-keuze', 'a chip on a subject’s page, not yet chosen'],
   [".tk-keuze:not(:disabled):not([aria-pressed='true']):hover", 'the same chip under the pointer'],

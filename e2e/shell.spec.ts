@@ -83,7 +83,7 @@ test('a round has no navigation in the document at all', async ({ page }) => {
   // Not "hidden": absent. A round screen is not wrapped in the Shell, so there
   // is nothing to tab into and nothing to mis-tap with the map under a thumb.
   await expect(page.getByRole('navigation')).toHaveCount(0);
-  await expect(page.locator('.tk-rail')).toHaveCount(0);
+  await expect(page.locator('.tk-zijbalk')).toHaveCount(0);
   await expect(page.locator('.tk-tabbar')).toHaveCount(0);
   await expect(page.locator('.tk-appbar')).toHaveCount(0);
 

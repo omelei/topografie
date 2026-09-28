@@ -353,13 +353,6 @@ export const nl = {
   // eerste wat er staat. "Naar de inhoud" en niet "Skip to content": de app is
   // Nederlands, ook waar alleen een schermlezer meeleest.
   'nav.overslaan': 'Naar de inhoud',
-  // Het vakmenu onder de balk op een tablet en een telefoon, waar de rail niet
-  // staat. De knop zegt welk vak je open hebt; waar je in geen vak bent noemt
-  // hij wat hij doet, want daar is hij de weg naar een ronde (ADR-121). De naam
-  // voor een schermlezer zet het woord "vak" voor het vak, omdat "Topo" alleen
-  // niet zegt waarvan het er een is.
-  'nav.vakKies': 'Oefenen',
-  'nav.vakHuidig': 'vak {vak}',
   'nav.vandaag': 'Vandaag',
   // De vakken bij elkaar (ADR-241): een rij in de zijbalk die open- en
   // dichtklapt, een tab op een telefoon en een eigen pagina, /oefenen.

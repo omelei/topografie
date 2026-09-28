@@ -199,9 +199,9 @@ export default function App() {
     return () => window.removeEventListener('popstate', terug);
   }, [screen.name]);
 
-  // The tab bar's destinations: Vandaag, Jij and Premium (ADR-171). Mapping
-  // them here rather than inside the Shell keeps the frame ignorant of what a
-  // screen is.
+  // The destinations: Vandaag, Oefenen, Jij, Premium and Ouders (ADR-171,
+  // ADR-241). Mapping them here rather than inside the Shell keeps the frame
+  // ignorant of what a screen is.
   const goHome = () => {
     vergeetGeheugencheck();
     go({ name: 'home' });
