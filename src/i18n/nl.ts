@@ -222,6 +222,7 @@ export const nl = {
   'vandaag.vragen':
     'Er zijn {aantal} vragen die vandaag terug moeten komen. Zo blijft het in je hoofd.',
   'vandaag.ronde': '{aantal} vragen',
+  'vandaag.rondeEen': '1 vraag',
   // Naast de kop, als de rondes als tegels klaarstaan (ADR-238).
   'vandaag.bijschrift': 'wat je bijna vergeten bent',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent

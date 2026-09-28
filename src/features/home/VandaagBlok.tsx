@@ -120,7 +120,9 @@ export function VandaagBlok({
                     <span className="tk-herhaaltegel-tekst">
                       <span className="tk-herhaaltegel-titel">{naamVan(set)}</span>
                       <span className="tk-herhaaltegel-regel">
-                        {t('vandaag.ronde', { aantal: ids.length })}
+                        {ids.length === 1
+                          ? t('vandaag.rondeEen')
+                          : t('vandaag.ronde', { aantal: ids.length })}
                       </span>
                     </span>
                     {plek === 0 ? (
@@ -153,7 +155,9 @@ export function VandaagBlok({
                       <span className="tk-lijstrij-tekst">
                         <span className="tk-lijstrij-titel">{naamVan(set)}</span>
                         <span className="tk-lijstrij-regel">
-                          {t('vandaag.ronde', { aantal: ids.length })}
+                          {ids.length === 1
+                            ? t('vandaag.rondeEen')
+                            : t('vandaag.ronde', { aantal: ids.length })}
                         </span>
                       </span>
                       <span className="tk-lijstrij-pijl">
