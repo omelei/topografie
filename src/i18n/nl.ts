@@ -1523,7 +1523,8 @@ export const nl = {
   'result.home': 'Terug naar Vandaag',
   'result.stoppedEarly': 'Je stopte na {gedaan} van de {totaal} vragen.',
   'result.mapLabel': 'Kaart met wat nog terugkomt',
-  'result.mapHelp': 'De blauwe plekken komen nog terug.',
+  // Geen kleur in de zin: de plekken dragen de kleur van het vak (ADR-238).
+  'result.mapHelp': 'Deze komen nog terug.',
   // De ronde in getallen, als tegels bovenaan "Ronde klaar" (ADR-112).
   'result.samenvatting': 'Hoe de ronde ging',
   // Wat je deed, en wat terugkomen oplevert.
