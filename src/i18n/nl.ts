@@ -366,6 +366,7 @@ export const nl = {
   'nav.oefenen': 'Oefenen',
   'nav.vakkenInklappen': 'Vakken inklappen',
   'nav.vakkenUitklappen': 'Vakken uitklappen',
+  'oefenen.titel': 'Oefenen',
   'nav.vrienden': 'Vrienden',
   'nav.jij': 'Jij',
   'nav.premium': 'Premium',

@@ -259,6 +259,8 @@ export type Route =
   | { readonly name: 'home' }
   /** Jij: wie je bent, al je cijfers en je diploma's (ADR-171). */
   | { readonly name: 'you' }
+  /** Oefenen: de vakken bij elkaar, als kaarten (ADR-241). */
+  | { readonly name: 'oefenen' }
   /** A module that exists, opened on one of its sets or on its own first. */
   | {
       readonly name: 'module';
@@ -286,6 +288,9 @@ export type Route =
 export const PREMIUM_SLUG = 'premium';
 
 export const YOU_SLUG = 'jij';
+
+/** Het overzicht van de vakken (ADR-241). */
+export const OEFENEN_SLUG = 'oefenen';
 
 /** Voor ouders (ADR-214). Niet /ouder: dat is de ouderpagina achter de pincode. */
 export const VOOR_OUDERS_SLUG = 'voor-ouders';
@@ -362,6 +367,7 @@ export function routeFor(pathname: string): Route {
   const slug = withoutBase(pathname);
   if (slug === '') return { name: 'home' };
   if (slug === YOU_SLUG || slug === RETENTION_SLUG) return { name: 'you' };
+  if (slug === OEFENEN_SLUG) return { name: 'oefenen' };
   if (slug === PREMIUM_SLUG) return { name: 'premium' };
   if (slug === OUDER_SLUG) return { name: 'ouder' };
   if (slug === VOOR_OUDERS_SLUG) return { name: 'voorOuders' };
@@ -397,6 +403,7 @@ export function routeFor(pathname: string): Route {
 function slugFor(route: Route): string {
   if (route.name === 'home') return '';
   if (route.name === 'you') return YOU_SLUG;
+  if (route.name === 'oefenen') return OEFENEN_SLUG;
   if (route.name === 'premium') return PREMIUM_SLUG;
   if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'voorOuders') return VOOR_OUDERS_SLUG;

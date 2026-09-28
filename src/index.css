@@ -4490,6 +4490,89 @@
     border-top: var(--stroke-hair) solid var(--rand-licht);
   }
 
+  /* ---- Oefenen, op /oefenen (ADR-241) -----------------------------------
+   * De vakken als kaarten: drie naast elkaar aan een bureau, twee op een
+   * telefoon. Een witte kaart met de lichte vaktoon als rand, linksboven de
+   * plaat van het vak en onderaan zijn naam; onder de muis de vaktint. */
+  .tk-oefenen-titel {
+    font-size: 1.875rem; /* 30px */
+    line-height: 2.25rem;
+    font-weight: 800;
+  }
+  .tk-vakkaarten {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-vakkaart {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    min-height: 132px;
+    padding: 16px;
+    border: var(--stroke-active) solid var(--module-rand);
+    border-radius: var(--radius-tegel);
+    background: var(--kaart);
+    color: var(--inkt);
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-vakkaart:hover {
+    background: var(--module-tint);
+  }
+  .tk-vakkaart-plaat {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+  .tk-vakkaart-plaat svg {
+    width: 28px;
+    height: 28px;
+  }
+  .tk-vakkaart-naam {
+    font-family: var(--font-kop);
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.625rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+  }
+  @media (min-width: 1200px) {
+    .tk-oefenen-titel {
+      font-size: 2.25rem; /* 36px */
+      line-height: 2.75rem;
+    }
+    .tk-vakkaarten {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .tk-vakkaart {
+      min-height: 180px;
+      padding: 24px;
+      border-width: var(--stroke-hair);
+      border-radius: var(--radius-kaart);
+    }
+    .tk-vakkaart-plaat {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+    }
+    .tk-vakkaart-plaat svg {
+      width: 36px;
+      height: 36px;
+    }
+    .tk-vakkaart-naam {
+      font-size: 1.625rem; /* 26px */
+      line-height: 2rem;
+    }
+  }
+
   /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------
    * A row under the app bar with one button across it; open, a panel in the
    * flow of the page under that, holding a card of five rows. In the flow

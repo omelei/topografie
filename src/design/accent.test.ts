@@ -102,6 +102,9 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
   ['.tk-vakrij[data-module]:hover', 'the same row under the pointer'],
   ['.tk-vakrij[data-module] .tk-vakrij-naam', 'its name'],
   ['.tk-vakrij[data-module] .tk-vakrij-meta', 'how many diplomas it has'],
+  // ADR-241: a subject's card on /oefenen, a door into it like a card on Vandaag.
+  ['.tk-vakkaart', 'a subject’s card on Oefenen, a door into it'],
+  ['.tk-vakkaart:hover', 'the same card under the pointer'],
 ]);
 
 /**
