@@ -361,6 +361,11 @@ export const nl = {
   'nav.vakKies': 'Oefenen',
   'nav.vakHuidig': 'vak {vak}',
   'nav.vandaag': 'Vandaag',
+  // De vakken bij elkaar (ADR-241): een rij in de zijbalk die open- en
+  // dichtklapt, een tab op een telefoon en een eigen pagina, /oefenen.
+  'nav.oefenen': 'Oefenen',
+  'nav.vakkenInklappen': 'Vakken inklappen',
+  'nav.vakkenUitklappen': 'Vakken uitklappen',
   'nav.vrienden': 'Vrienden',
   'nav.jij': 'Jij',
   'nav.premium': 'Premium',

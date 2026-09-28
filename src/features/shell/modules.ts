@@ -85,6 +85,11 @@ export const CATEGORIES: readonly Category[] = [
  * Same rule as the rail: a destination that does not exist is not offered.
  * Vrienden needs the friend layer and a backend (ADR-015).
  *
+ * Sinds ADR-241 staan ze niet meer in één rij: Vandaag, Oefenen, Jij en
+ * Ouders in de zijbalk aan een bureau, Vandaag, Oefenen en Jij in de tabbalk op
+ * een telefoon, en Premium (op een telefoon ook Ouders) in de kop. `Shell`
+ * kiest per plek welke er staan.
+ *
  * **Drie pagina's naast de oefeningen** (ADR-171): Vandaag, Jij en Premium.
  * Onthouden is een deel van Jij geworden, want Jij is waar je al je cijfers
  * ziet, en Voor ouders is weg: ouders loggen niet in, kinderen wel. Premium was
@@ -92,13 +97,16 @@ export const CATEGORIES: readonly Category[] = [
  * bestemming, met of zonder code, want daar staat ook tot wanneer het aanstaat.
  */
 export interface Destination {
-  readonly id: 'vandaag' | 'vrienden' | 'jij' | 'premium' | 'ouders';
+  readonly id: 'vandaag' | 'oefenen' | 'vrienden' | 'jij' | 'premium' | 'ouders';
   readonly name: TranslationKey;
   readonly built: boolean;
 }
 
 export const DESTINATIONS: readonly Destination[] = [
   { id: 'vandaag', name: 'nav.vandaag', built: true },
+  // Oefenen (ADR-241): de vakken bij elkaar, op /oefenen, met de vakken eronder
+  // in de zijbalk en als tab in het midden op een telefoon.
+  { id: 'oefenen', name: 'nav.oefenen', built: true },
   { id: 'vrienden', name: 'nav.vrienden', built: false },
   { id: 'jij', name: 'nav.jij', built: true },
   { id: 'premium', name: 'nav.premium', built: true },

@@ -4087,11 +4087,22 @@
       padding: 0 20px;
     }
   }
+  /* Aan een bureau (ADR-241): een witte balk van 64 met een lijn eronder, het
+   * logo links en rechts alleen premium en het kind. */
   @media (min-width: 1200px) {
     .tk-appbar {
       gap: 24px;
       padding: 0 24px;
+      border-bottom: var(--stroke-hair) solid var(--rand-licht);
+      background: var(--kaart);
     }
+  }
+  .tk-appbar-acties {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    margin-inline-start: auto;
   }
 
   /* The logo, which is the way back to the front door. A button that looks
@@ -4126,7 +4137,7 @@
   .tk-brand:hover,
   .tk-brand:active,
   .tk-brand:focus {
-    background: var(--kop);
+    background: transparent;
     -webkit-tap-highlight-color: transparent;
   }
   /* Het liggende logo in de balk: 28 op een telefoon, 32 vanaf 768 (ADR-154,
@@ -4209,6 +4220,39 @@
     font-weight: 700;
   }
 
+  /* Premium in de kop (ADR-241): de enige knop in de navigatie die opvalt.
+   * Zon op een onderkant in zijn diepe toon, de ster en het woord in inkt
+   * (10.55, onder de muis 11.46). Waar je bent: nacht op zijn diepe toon, het
+   * woord wit (13.64) en de ster in zon (8.88). */
+  .tk-premium-pil {
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 20px 0 14px;
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: var(--zon);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--zon-rand);
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .tk-premium-pil:hover {
+    background: var(--zon-hover);
+  }
+  .tk-premium-pil[aria-current='page'] {
+    background: var(--nacht);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--nacht-diep);
+    color: var(--kaart);
+  }
+  .tk-premium-pil[aria-current='page'] svg {
+    color: var(--zon);
+  }
+
   /* The profile switch: the child's hero and their name, in a pill with a
    * rule round it. On a phone it is the hero alone — the name stays the
    * button's accessible name, drawn nowhere, which is what .tk-sr-only does
@@ -4221,21 +4265,22 @@
     align-items: center;
     gap: 8px;
     min-width: 0;
-    min-height: var(--raak);
-    padding: 0 16px 0 4px;
-    /* Kleurblokken (ADR-238): white on the ground with the light rule round
-     * it. The avatar and the name say what it is; the rule only holds them. */
-    border: var(--stroke-hair) solid var(--rand-licht);
+    height: 44px;
+    padding: 0 16px 0 2px;
+    /* Een pil in perzik zonder rand (ADR-241), naast premium; onder de muis de
+     * lichte lijn. De avatar en de naam zeggen wat het is. */
+    border: 0;
     border-radius: var(--radius-pil);
-    background: var(--kaart);
+    background: var(--perzik);
     color: var(--inkt);
+    font-family: var(--font-kop);
     font-size: 1.0625rem; /* 17px */
     line-height: var(--type-knop-lh);
     font-weight: 700;
     cursor: pointer;
   }
   .tk-profiel:hover {
-    background: var(--vlak-hover);
+    background: var(--rand-licht);
   }
   .tk-profiel-naam {
     min-width: 0;
@@ -4333,6 +4378,116 @@
   .tk-rail-item[aria-current='page'] {
     background: var(--module-tint);
     color: var(--module-tekst);
+  }
+
+  /* ---- De zijbalk, vanaf 1200 (ADR-241) ----------------------------------
+   * 248 breed, wit, met een lijn rechts. Vandaag, Oefenen met de vakken
+   * eronder, een lijn, Jij en Ouders. Een rij is een plaat van 36 en een woord
+   * in Baloo; onder de muis perzik. Waar je bent is een tint achter de hele
+   * rij: nacht-tint met het woord in nacht (11.15) voor een bestemming, de
+   * vaktint met het woord in de diepe vakkleur (5.63+) voor een vak. De plaat
+   * van een bestemming blijft perzik met het teken in secundair (7.03), ook als
+   * je er bent. */
+  .tk-zijbalk {
+    flex: none;
+    flex-direction: column;
+    gap: 4px;
+    width: 248px;
+    padding: 16px 12px;
+    border-right: var(--stroke-hair) solid var(--rand-licht);
+    background: var(--kaart);
+  }
+  .tk-zijbalk-rij {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    padding: 6px 12px 6px 8px;
+    border: 0;
+    border-radius: var(--radius-knop);
+    background: transparent;
+    color: var(--tekst-secundair);
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.5rem;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-zijbalk-rij:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-zijbalk-rij[aria-current] {
+    background: var(--nacht-tint);
+    color: var(--nacht);
+  }
+  .tk-zijbalk-rij[data-module][aria-current='page'] {
+    background: var(--module-tint);
+    color: var(--module-tekst);
+  }
+  .tk-zijbalk-plaat {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-chip);
+  }
+  /* Oefenen: twee knoppen in één rij. De rij draagt de achtergrond, zodat
+   * hover en "hier ben je" over allebei liggen. */
+  .tk-zijbalk-oefenen {
+    display: flex;
+    align-items: center;
+    border-radius: var(--radius-knop);
+  }
+  .tk-zijbalk-oefenen:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-zijbalk-oefenen[data-hier] {
+    background: var(--nacht-tint);
+  }
+  .tk-zijbalk-oefenen .tk-zijbalk-rij {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+  }
+  .tk-zijbalk-chevron {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-right: 4px;
+    border: 0;
+    border-radius: var(--radius-chip-groot);
+    background: transparent;
+    color: var(--tekst-secundair);
+    cursor: pointer;
+  }
+  .tk-zijbalk-chevron:hover {
+    background: var(--rand-licht);
+  }
+  .tk-zijbalk-chevron svg {
+    transition: transform var(--beweeg-vlot) var(--beweeg-uit);
+  }
+  .tk-zijbalk-chevron[aria-expanded='false'] svg {
+    transform: rotate(-90deg);
+  }
+  .tk-zijbalk-vakken {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0 0 0 12px;
+    list-style: none;
+  }
+  .tk-zijbalk-vakken[hidden] {
+    display: none;
+  }
+  .tk-zijbalk-lijn {
+    height: 0;
+    margin: 12px 8px;
+    border: 0;
+    border-top: var(--stroke-hair) solid var(--rand-licht);
   }
 
   /* ---- The menu the rail becomes below 1200 (ADR-093, ADR-121) -----------

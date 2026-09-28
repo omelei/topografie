@@ -78,7 +78,7 @@ test('the rail is the map of the product, not a list of what is finished', async
   // ADR-051. Five doors, of which three are not open yet — a rail with only
   // the two built ones does not read as a short list, it reads as the whole
   // product, and a child could not tell what leer.nu is for.
-  const rail = page.getByRole('navigation', { name: 'Vakken' });
+  const rail = page.getByRole('list', { name: 'Vakken' });
   await expect(rail.getByRole('button')).toHaveCount(5);
 
   for (const naam of ['Topo', 'Rekenen', 'Klok', 'Taal', 'Vlaggen']) {

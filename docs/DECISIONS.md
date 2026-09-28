@@ -13957,13 +13957,14 @@ toon) in een tegel en in de rail, in plaats van oranje.
 
 **Status:** accepted. **Date:** 2026-09-28. Op verzoek van de eigenaar, uit het
 klikbare ontwerp `Navigatie.dc.html` (bureau en mobiel). Wijzigt ADR-180 (de
-vakkleuren uit `docs/leer.js`) en ADR-184 (afstand tot fout).
+vakkleuren uit `docs/leer.js`), ADR-184 (afstand tot fout), ADR-093 en
+ADR-121 (de rail en het vakmenu) en ADR-240 (de kleur van de kop).
+
+### De vakkleuren
 
 **Aanleiding.** Drie vakken lagen dicht bij elkaar op het kleurenwiel: klok
 (indigo) en taal (paars) scheelden 40°, tafels (blauw) en klok 25°. In een
 rij van vijf vakken las je het vak niet meer aan de kleur af.
-
-### De vakkleuren
 
 **Besluit.** De vijf gebouwde vakken krijgen de kleuren van het ontwerp, ongeveer
 70° uit elkaar: topo groen, rekenen blauw, klok roze, taal paars, vlaggen
@@ -13987,6 +13988,44 @@ houdt zijn magenta. Er komen twee tokens bij: `--zon-hover` (`#ffd466`) en
   navigatie; het krijgt een eigen kleur als het gebouwd wordt.
 - **`docs/leer.js` houdt de oude kleuren.** Het is het bestand van de
   ontwerper; `src/index.css` is de plek die de app volgt.
+
+### De navigatie
+
+**Aanleiding.** De bestemmingen stonden aan een bureau als tabs in de kop en
+de vakken in een smalle rail van 96 ernaast; op een telefoon stonden de vakken
+in een uitklapmenu onder de kop en vier bestemmingen onderaan. "Hier ben je"
+zag er op elke plek anders uit (een streep, een pil, een tint), en premium was
+een tab tussen de andere.
+
+**Besluit.**
+
+- **Eén manier om te zeggen waar je bent:** een tint achter de hele rij of tab.
+  Nacht-tint met het woord in nacht voor een bestemming, de vaktint met het
+  woord in de diepe vakkleur voor een vak. Het teken van een bestemming blijft
+  secundair op perzik, ook als je er bent.
+- **Premium is de enige knop die opvalt:** een pil in zon met een onderkant in
+  zijn diepe toon; waar je bent nacht met de ster in zon.
+- **Aan een bureau** is de kop wit, 64 hoog, met het logo links en rechts
+  alleen premium en het kind. Links staat een zijbalk van 248: Vandaag,
+  Oefenen met de vijf vakken eronder, een lijn, Jij en Ouders. Oefenen is twee
+  knoppen in één rij: het woord gaat naar `/oefenen` en klapt de vakken open,
+  de pijl klapt ze alleen in of uit. De stand staat op dit apparaat
+  (`nav.oefenenOpen`). In een vak met de lijst dicht draagt Oefenen de tint.
+- **Oefenen is een pagina** (`/oefenen`): de vijf vakken als kaarten, drie
+  naast elkaar aan een bureau en twee op een telefoon.
+- **Op een telefoon** (en een tablet, onder 1200) staat de kop op de grond:
+  het logo en drie ronde knoppen, premium, Ouders en het kind. Onderaan staan
+  drie tabs, Vandaag, Oefenen en Jij; Oefenen is actief op `/oefenen` en in
+  elk vak. Het vakmenu onder de kop is weg; een vakpagina heeft een
+  terugknop naar Oefenen.
+
+**Afwegingen.**
+
+- **Een vak is één druk verder op een telefoon:** eerst Oefenen, dan het vak.
+  Daar staat tegenover dat de kop rustig is en dat Vandaag en de tegels op
+  Vandaag de snelste weg naar een ronde blijven.
+- **De kop is niet meer `--kop`** (ADR-240): wit aan een bureau, de grond op
+  een telefoon.
 
 ## Deferred with accounts and commerce (ADR-014)
 
