@@ -13907,6 +13907,52 @@ Het haalt de 4,5, en de waarde in het commentaar is rechtgezet.
   weg. Een schermlezer hoort "1, Waar op de kaart?": er staat een verborgen
   komma tussen.
 
+## ADR-240 — Witte tegels zoals op Vandaag, een witte rail en één kopkleur
+
+**Status:** accepted. **Date:** 2026-09-28. Op verzoek van de eigenaar, na
+ADR-239 op de live site. Wijzigt ADR-239 op drie punten.
+
+**Aanleiding.** Op /topografie, /rekenen, /klokkijken en /taal leken de tegels
+niet wit, op /vlaggen wel. De tegels wáren overal wit, maar hun rand en
+onderkant stonden allebei in de lichte vaktoon (`-rand`) en hun plaat op de
+vaktint. Bij teal, blauw en paars kleurt dan de hele tegel mee; bij vlaggen
+is die toon crème en valt hij weg. Ook waren de randen niet gelijk: een kaart
+op Vandaag had een onderkant in de heldere vakkleur, een vaktegel en "Je
+eerste ronde" de lichte lijn, een tegel de lichte vaktoon en een vierkant op
+/rekenen nog de lichte lijn. En het pictogram van vlaggen was bruin (de diepe
+toon) in een tegel en in de rail, in plaats van oranje.
+
+**Besluit.**
+
+- **Elke tegel die je indrukt is een kaart zoals op Vandaag:** wit, een rand
+  van 3 px in `--module-rand`, een onderkant van `--onderkant` in de heldere
+  `-vlak`-kleur, en de gewone plaat van het vak (heldere vulling, wit
+  pictogram). Dat geldt voor `tk-kaart`, `tk-vaktegel`, `tk-eerste` (die zijn
+  tint houdt), `tk-tegel` en `tk-tafel`. Onder de muis wordt de rand de diepe
+  toon. Gekozen blijft een tegel wat hij was: de diepe rand, de tint en het
+  vinkje. Chips houden rand en onderkant in de lichte vaktoon.
+- **De actieve plaat in de rail en in het vakmenu** blijft de heldere
+  vulling; de actieve staat draagt de tint achter het vak en het woord.
+- **De rail is wit** (`--kaart`), een paneel naast de pagina.
+- **De kop heeft één kleur op elke pagina:** `--kop` (`#fff0d6`, de kleur die
+  de kop op /vlaggen had) voor de appbalk, het plakkende vakmenu en de
+  startbalk op een telefoon. De kop draagt geen vaktint meer, dus `Shell` zet
+  daar geen `data-module` meer. De vakknop in het menu houdt zijn eigen
+  vakkleur.
+
+**Contrast** (`contrast.test.ts`): op `--kop` haalt inkt 14,41, secundair
+7,40, tertiair 6,19, nacht 12,14 en de woorden van een vak 5,03 (topo) tot
+7,02 (klok).
+
+**Afwegingen.**
+
+- **Kop en grond liggen dicht bij elkaar** (1,03). De kop is te onderscheiden
+  aan de lijn onder het vakmenu en aan de plaats, niet aan het contrast; dat
+  was bij vlaggen al zo, en de eigenaar koos dit.
+- **De onderkant in de heldere vakkleur is sterker** dan een lichte toon. Dat
+  is gewild: zo ziet een tegel eruit als een witte kaart met een gekleurde
+  voet, en niet als een getinte tegel.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

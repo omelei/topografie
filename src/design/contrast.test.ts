@@ -197,6 +197,21 @@ describe('contrast', () => {
     expect(ratio(foreground, background)).toBeGreaterThanOrEqual(4.5);
   });
 
+  /**
+   * The bar at the top, the sticky subject menu and the start bar on a phone
+   * stand on one cream on every page (ADR-240), and carry ink, nacht and, in
+   * the start bar, a subject's words.
+   */
+  it.each([
+    'inkt',
+    'tekst-secundair',
+    'tekst-tertiair',
+    'nacht',
+    ...MODULES.map((name) => `${name}-text`),
+  ])('lets %s speak on the bar at the top (ADR-240)', (foreground) => {
+    expect(ratio(foreground, 'kop')).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('draws the chosen tab’s icon in zon on nacht (ADR-239)', () => {
     expect(ratio('zon', 'nacht')).toBeGreaterThanOrEqual(3);
   });

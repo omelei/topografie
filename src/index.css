@@ -99,6 +99,11 @@
      * what papier was while melk was the ground.
      *                                inkt 13.69 · secundair 7.03 · tertiair 5.88 */
     --perzik: #ffe8d4;
+    /* The bar at the top of every screen, the sticky subject menu under it and
+     * the start bar on a phone (ADR-240): the warm cream of the vlaggen page,
+     * the same on every page, with no subject tint.
+     *                  inkt 14.41 · secundair 7.40 · a subject's words 5.03+ */
+    --kop: #fff0d6;
     --kaart: #ffffff; /* card and panel, and the frame round the page */
     --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.82 */
     --tekst-secundair: #5e4a3e; /* cacao zacht                       8.32 / 7.61 */
@@ -273,8 +278,9 @@
     --vlaggen-tint: #fff0d6;
     --vlaggen-schaduw: #5f3800;
     --vlaggen-vraag: #a06b30;
-    /* Kleur erin (ADR-239): the rule round a subject's card, tile or chip, and
-     * its lower edge where it is not chosen — the -vlak colour at 35% in white.
+    /* Kleur erin (ADR-239): the rule round a subject's card, tile or chip —
+     * the -vlak colour at 35% in white. A chip's lower edge is the same tone;
+     * a card's and a tile's is the bright -vlak itself, as on Vandaag (ADR-240).
      * A rule and no more: 1.30 (vlaggen) to 1.63 (klok) on a card, so it never
      * carries a state on its own. */
     --topo-rand: #ace5de;
@@ -1250,8 +1256,8 @@
     gap: 12px;
     margin: 0 -16px -16px;
     padding: 12px 16px;
-    border-top: var(--stroke-hair) solid var(--module-rand);
-    background: var(--module-tint);
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+    background: var(--kop);
   }
   .tk-startbalk-mobiel .tk-hulp {
     color: var(--module-tekst);
@@ -2758,14 +2764,9 @@
     color: var(--kaart);
   }
   /* Het vak waar je nu in bent, in de rail en in het menu dat de rail onder
-   * 1200 wordt: de volle vulling, met het pictogram in het licht. Dat is de
-   * tweede sterkte uit §03, en het enige wat de actieve staat van de rest
-   * onderscheidt nu de tegel zelf zacht is — 3,5 tot 3,9 tegen zijn eigen tint. */
-  .tk-rail-item[aria-current='page'] .tk-plaat,
-  .tk-vakmenu-optie[aria-current='page'] .tk-plaat {
-    background: var(--module);
-    color: var(--kaart);
-  }
+   * 1200 wordt, houdt zijn heldere plaat (ADR-240): de diepe toon maakte het
+   * pictogram van vlaggen bruin in plaats van oranje. Wat de actieve staat
+   * draagt, is de tint achter het vak en het woord in de vakkleur. */
   .tk-plaat-groot {
     width: 44px;
     height: 44px;
@@ -3018,9 +3019,9 @@
     align-items: center;
     gap: 16px 20px;
     padding: var(--kaart-padding);
-    border: var(--stroke-tegel) solid var(--rand-licht);
+    border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--kaart-radius);
-    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
     background: var(--module-tint);
   }
   .tk-eerste-tekst {
@@ -3044,16 +3045,16 @@
     width: 100%;
     height: 100%;
     padding: 16px;
-    border: var(--stroke-tegel) solid var(--rand-licht);
+    border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--kaart-radius);
-    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
     background: var(--kaart);
     color: var(--inkt);
     text-align: left;
     cursor: pointer;
   }
   .tk-vaktegel:hover {
-    border-color: var(--tekst-tertiair);
+    border-color: var(--module);
   }
   .tk-vaktegel-tekst {
     display: flex;
@@ -3712,10 +3713,10 @@
   }
 
   /* ---- Tiles: which subject, and how to practise ---------------------------
-   * A plate and a title, one column below 1200 and two from it. The plate is
-   * grey until the tile is chosen; chosen, the tile takes the module's colour
-   * as a double rule over its soft ground, the plate takes the module's tint,
-   * and a tick stands at the end.
+   * A plate and a title, one column below 1200 and two from it. White, with
+   * the subject's light rule and its bright lower edge, as a card on Vandaag
+   * (ADR-240); chosen, the tile takes the module's colour as a double rule over
+   * its soft ground, and a tick stands at the end.
    *
    * These are bigger than the tiles ADR-089 made to save a tablet's height,
    * and that is deliberate (ADR-095): the handoff draws them this size, and a
@@ -3739,7 +3740,7 @@
     padding: 18px;
     border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--radius-tegel);
-    box-shadow: 0 var(--onderkant) 0 var(--module-rand);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
     background: var(--kaart);
     color: var(--inkt);
     /* The words of a control, as a chip, a row and a button have them: a tile
@@ -3751,13 +3752,8 @@
     text-align: left;
     cursor: pointer;
   }
-  /* The plate on the subject's tint (ADR-239), and the bright fill once the
-   * tile is chosen. */
-  .tk-tegel .tk-plaat {
-    background: var(--module-tint);
-    box-shadow: none;
-    color: var(--module-tekst);
-  }
+  /* The plate is every plate: the subject's bright fill with the glyph in
+   * white, as on Vandaag (ADR-240). */
   @media (min-width: 1200px) {
     .tk-tegel .tk-plaat {
       width: 44px;
@@ -3773,11 +3769,6 @@
     border-color: var(--accent);
     box-shadow: 0 var(--onderkant) 0 var(--accent);
     background: var(--accent-tint);
-  }
-  .tk-tegel[aria-pressed='true'] .tk-plaat {
-    background: var(--module-vlak);
-    box-shadow: 0 var(--onderkant-klein) 0 var(--module);
-    color: var(--kaart);
   }
   .tk-tegel-vink {
     display: inline-flex;
@@ -3882,9 +3873,9 @@
     gap: 6px;
     aspect-ratio: 1;
     min-height: var(--raak);
-    border: var(--stroke-tegel) solid var(--rand-licht);
+    border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--radius-tegel);
-    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
     background: var(--kaart);
     color: var(--inkt);
     font-family: var(--font-kop);
@@ -3895,8 +3886,7 @@
     cursor: pointer;
   }
   .tk-tafel:not([aria-pressed='true']):hover {
-    background: var(--vlak-hover);
-    border-color: var(--tekst-tertiair);
+    border-color: var(--module);
   }
   .tk-tafel[aria-pressed='true'] {
     border-color: var(--accent);
@@ -4078,15 +4068,10 @@
     height: 56px;
     /* 16 on a phone, which is the margin §D gives that size. */
     padding: 0 16px;
-    /* Kleurblokken (ADR-238): the bar is the ground it stands on, with no
-     * white strip and no rule under it. The page starts under the logo. */
-    background: var(--grond);
-  }
-  /* Kleur erin (ADR-239): inside a subject the bar, the logo's button and the
-   * sticky menu under it stand on the subject's tint. */
-  .tk-appbar[data-module],
-  .tk-vakmenu-houder[data-module] {
-    background: var(--module-tint);
+    /* No white strip and no rule under it (Kleurblokken, ADR-238). Since
+     * ADR-240 the bar is the one cream of --kop on every page, inside a
+     * subject or not. */
+    background: var(--kop);
   }
   @media (min-width: 768px) {
     .tk-appbar {
@@ -4133,11 +4118,8 @@
   .tk-brand:hover,
   .tk-brand:active,
   .tk-brand:focus {
-    background: var(--grond);
+    background: var(--kop);
     -webkit-tap-highlight-color: transparent;
-  }
-  .tk-appbar[data-module] .tk-brand {
-    background: var(--module-tint);
   }
   /* Het liggende logo in de balk: 28 op een telefoon, 32 vanaf 768 (ADR-154,
    * bijgesteld in ADR-168).
@@ -4310,7 +4292,8 @@
     gap: 6px;
     width: 96px;
     padding: 16px 8px;
-    background: var(--grond);
+    /* White, a panel beside the page (ADR-240). */
+    background: var(--kaart);
   }
   .tk-rail-item {
     display: flex;
@@ -4371,8 +4354,8 @@
      * foot of a module page, which is 1. */
     z-index: 2;
     /* Opaque on purpose: a sticky box with no ground of its own shows the page
-     * through itself. The page's own ground since Kleurblokken (ADR-238). */
-    background: var(--grond);
+     * through itself. The colour of the bar above it (ADR-240). */
+    background: var(--kop);
   }
   .tk-vakmenu-rij {
     display: flex;
@@ -4381,9 +4364,6 @@
     /* The screen's frame rather than the light rule. This is the edge a page
      * scrolls under, and 1.40:1 against a moving ground reads as nothing. */
     border-bottom: var(--stroke-hair) solid var(--rand-sterk);
-  }
-  .tk-vakmenu-houder[data-module] .tk-vakmenu-rij {
-    border-bottom-color: var(--module-rand);
   }
   /* Across the row rather than around its words, at the height of a button and
    * ruled in two pixels of ink. Not the ink *fill* of a primary button: §C
