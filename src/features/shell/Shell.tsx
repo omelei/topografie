@@ -150,7 +150,7 @@ export function Shell({
           {t('nav.overslaan')}
         </a>
 
-        <header className="tk-appbar flex-none" data-module={currentModule}>
+        <header className="tk-appbar flex-none">
           {/* The logo, and the way back to the front door: Denker and the name,
             at every width (ADR-154). */}
           <button
@@ -187,7 +187,7 @@ export function Shell({
           that block is this wrapper, which is exactly as tall as the menu, and
           it would not move at all. Here the block is the page's column. */}
         {showModules ? (
-          <div className="tk-vakmenu-houder flex-none desk:hidden" data-module={currentModule}>
+          <div className="tk-vakmenu-houder flex-none desk:hidden">
             <VakMenu modules={modules} current={currentModule} onModule={onModule} />
           </div>
         ) : null}

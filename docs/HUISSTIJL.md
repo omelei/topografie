@@ -78,9 +78,13 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    een chip en een pil. Wat je indrukt staat op een harde onderkant van
    `--onderkant` (5 px, een chip 3) in zijn eigen donkere kleur en zakt daarop
    als je drukt; wat je niet kunt indrukken heeft er geen. Een tegel heeft een
-   rand van 3 px (`--stroke-tegel`). Binnen een vak zijn de rand en de
-   onderkant van een kaart, tegel of chip die niet gekozen is de lichte vaktoon
-   `--module-rand` (ADR-239); buiten een vak is dat de lichte lijn. Verder geen schaduw, behalve
+   rand van 3 px (`--stroke-tegel`). Elke tegel die je indrukt — een kaart op
+   Vandaag (`tk-kaart`, `tk-vaktegel`), een tegel of vierkant op een vakpagina
+   (`tk-tegel`, `tk-tafel`) — is wit, met een rand in de lichte vaktoon
+   `--module-rand` (ADR-239) en een onderkant in de heldere `-vlak`-kleur, en
+   de plaat erin is de gewone plaat van het vak (ADR-240). Een chip heeft rand
+   en onderkant in de lichte vaktoon. Buiten een vak is de lichte vaktoon de
+   lichte lijn. Verder geen schaduw, behalve
    `drop-shadow-beloning` op een beloningsafbeelding.
 4. **Bouwstenen.** Een sectie is een `h2.tk-sectie` met eronder de inhoud; een
    lijst is `ul.tk-lijst` met `tk-lijstrij` per rij (plaat, titel, regel, stand,
@@ -97,10 +101,11 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
 6. **De kleur van een vak** (ADR-180). Binnen een vak — de vakpagina, de
    ronde, de rail, de uitslag — dragen de voortgang en wat gekozen is de kleur
    van dat vak: zet `data-module` en `data-accent="module"` op de wortel.
-   Buiten een vak is dat nacht (ADR-238). Sinds ADR-239 draagt ook de kop van
-   een vakpagina de vaktint (`Shell` zet `data-module` op de appbalk en het
-   vakmenu), en dragen kaarten, tegels, chips, het stapnummer en een diploma
-   dat je nog niet hebt de lichte toon of de tint van hun vak. Buiten een vak
+   Buiten een vak is dat nacht (ADR-238). Sinds ADR-239 dragen kaarten,
+   tegels, chips, het stapnummer en een diploma dat je nog niet hebt de lichte
+   toon of de tint van hun vak. De kop draagt geen vaktint (ADR-240): de
+   appbalk, het vakmenu en de startbalk op een telefoon staan op elke pagina op
+   `--kop`, en de rail is wit. Buiten een vak
    is de actieve tab nacht, met zijn teken in zon. De tegel van een vak (`tk-plaat`) is de heldere
    `-vlak`-kleur met het pictogram in wit en staat altijd naast de naam van het
    vak, die hem draagt. Wat je indrukt is overal koraal (`actie`). Goed is
@@ -122,7 +127,8 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    paginabrede vaktint is weg: die maakte witte kaarten grauw. Elk scherm staat
    op `grond`, en dat is room (`papier`, ADR-239; melk onder ADR-238, waarop
    kinderen de app grijs vonden); perzik is het vlak erop, niet eronder. De kop
-   van een vakpagina is geen grond maar een vlak: die draagt de vaktint. Waar je bent lees je af aan de tegel van het vak. De tokens
+   is geen grond maar een balk: `--kop` (`#fff0d6`), op elke pagina dezelfde
+   (ADR-240). Waar je bent lees je af aan de tegel van het vak. De tokens
    `--topo-grond` en `--vandaag-grond` blijven bestaan — `Shell` zet nog steeds
    `data-grond` — maar ze wijzen alle zeven naar `grond`, zodat een scherm het
    niet hoeft te weten. Maak er geen nieuwe hex voor.
@@ -151,15 +157,16 @@ Richting 1b (ADR-238), met kleur erin (ADR-239). Een scherm is een grond van
 room met witte kaarten erop, en een paar gekleurde vlakken die zeggen waar je
 bent en wat je nu doet. Elk niveau heeft één kleur:
 
-| niveau    | kleur                                                                                                 |
-| --------- | ----------------------------------------------------------------------------------------------------- |
-| grond     | room `--grond` (`#fff3e6`); perzik `--perzik` is het warme vlak erop                                  |
-| kop       | de grond buiten een vak, de vaktint (`--module-tint`) erbinnen                                        |
-| vlak      | merkkoraal met cacao (`tk-etalage`), of de diepe vakkleur met wit                                     |
-| kaart     | wit `--kaart`; binnen een vak met de lichte vaktoon (`--module-rand`) eromheen, anders de lichte lijn |
-| bediening | koraal voor één knop per scherm; een vaktegel is zelf een knop                                        |
-| accent    | nacht `--nacht` buiten een vak (ook de actieve tab), de diepe vakkleur (`--module`) erbinnen          |
-| feest     | zon `--zon`: premium, een geoefende dag, het diploma om te halen, en iets wat gehaald is              |
+| niveau    | kleur                                                                                                     |
+| --------- | --------------------------------------------------------------------------------------------------------- |
+| grond     | room `--grond` (`#fff3e6`); perzik `--perzik` is het warme vlak erop                                      |
+| kop       | `--kop` (`#fff0d6`) op elke pagina, zonder vaktint; de rail ernaast is wit (ADR-240)                      |
+| vlak      | merkkoraal met cacao (`tk-etalage`), of de diepe vakkleur met wit                                         |
+| kaart     | wit `--kaart`; binnen een vak met de lichte vaktoon (`--module-rand`) eromheen, anders de lichte lijn     |
+| tegel     | wit, rand `--module-rand`, onderkant `-vlak`, de plaat van het vak: op Vandaag en op een vakpagina gelijk |
+| bediening | koraal voor één knop per scherm; een vaktegel is zelf een knop                                            |
+| accent    | nacht `--nacht` buiten een vak (ook de actieve tab), de diepe vakkleur (`--module`) erbinnen              |
+| feest     | zon `--zon`: premium, een geoefende dag, het diploma om te halen, en iets wat gehaald is                  |
 
 - **Hooguit één merkvlak en drie vakvlakken per scherm.** Het merkvlak is het
   welkomstvlak op Vandaag (`tk-welkom`) of de etalage van een pagina. Een
@@ -170,7 +177,7 @@ bent en wat je nu doet. Elk niveau heeft één kleur:
   van een vaktegel), `-vraag` (de cirkel achter de vraag, 12 % lichter en
   nog steeds 4,5 onder wit) en `-rand` (de `-vlak`-kleur voor 35 % in wit: de
   rand van een kaart, tegel of chip die niet gekozen is, ADR-239). `-tint`
-  blijft het spoor van een balk, en is de kop van een vakpagina.
+  blijft het spoor van een balk en de grond van wat gekozen is.
 - **Een tint per instelling** (ADR-239): op Jij draagt elke rij bij de
   instellingen, en elke getaltegel onder "Hoe vaak oefen je?", met `data-tint`
   koraal, zon of nacht: de lichte toon met de diepe erop. Koraal is hier het
