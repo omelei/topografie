@@ -13768,6 +13768,10 @@ van cacao.
   vastgelegd zodat `contrast.test.ts` hem meet; voor topo is het `#0e8577` uit
   het ontwerp, omdat de menging daar 4,43 onder wit gaf. En `--koraal-vorm`
   (`#ff8466`) voor de cirkel op het welkomstvlak.
+- **Zachte tinten blijven warm.** Wat uit de vakkleur wordt gemengd (de
+  standtegels en de weekstrook op Jij, de ring, de tabel), mengt buiten een
+  vak uit cacao (`--module-meng`) en niet uit nacht: nacht met wit wordt koud
+  grijsblauw op een warme pagina. De lijn en de vulling zelf zijn nacht.
 - **Vlakken.** Vandaag opent met een welkomstvlak in koraal (Denker zwaait over
   de rand), de rondes van vandaag zijn hooguit drie vaktegels in de diepe
   vakkleur met witte woorden (de rest is de lijst van altijd), een vakpagina

@@ -277,6 +277,10 @@
     --module-tint: var(--balk-leeg);
     --module-schaduw: var(--inkt);
     --module-vraag: var(--nacht);
+    /* What a soft tint is mixed from: the subject's own colour inside a
+     * subject, and outside one still cacao, so the planes on Jij and the
+     * result stay warm now that the accent itself is nacht (ADR-238). */
+    --module-meng: var(--inkt);
     --module-grond: var(--grond);
 
     /* ---- The ground a page stands on --------------------------------------
@@ -498,6 +502,7 @@
     --module-tint: var(--topo-tint);
     --module-schaduw: var(--topo-schaduw);
     --module-vraag: var(--topo-vraag);
+    --module-meng: var(--topo);
     --module-grond: var(--topo-grond);
   }
   [data-module='tafels'] {
@@ -507,6 +512,7 @@
     --module-tint: var(--tafels-tint);
     --module-schaduw: var(--tafels-schaduw);
     --module-vraag: var(--tafels-vraag);
+    --module-meng: var(--tafels);
     --module-grond: var(--tafels-grond);
   }
   [data-module='klok'] {
@@ -516,6 +522,7 @@
     --module-tint: var(--klok-tint);
     --module-schaduw: var(--klok-schaduw);
     --module-vraag: var(--klok-vraag);
+    --module-meng: var(--klok);
     --module-grond: var(--klok-grond);
   }
   [data-module='woorden'] {
@@ -525,6 +532,7 @@
     --module-tint: var(--woorden-tint);
     --module-schaduw: var(--woorden-schaduw);
     --module-vraag: var(--woorden-vraag);
+    --module-meng: var(--woorden);
     --module-grond: var(--woorden-grond);
   }
   [data-module='tijdvakken'] {
@@ -534,6 +542,7 @@
     --module-tint: var(--tijdvakken-tint);
     --module-schaduw: var(--tijdvakken-schaduw);
     --module-vraag: var(--tijdvakken-vraag);
+    --module-meng: var(--tijdvakken);
     --module-grond: var(--tijdvakken-grond);
   }
   [data-module='vlaggen'] {
@@ -543,6 +552,7 @@
     --module-tint: var(--vlaggen-tint);
     --module-schaduw: var(--vlaggen-schaduw);
     --module-vraag: var(--vlaggen-vraag);
+    --module-meng: var(--vlaggen);
     --module-grond: var(--vlaggen-grond);
   }
 
@@ -3073,7 +3083,7 @@
     border-radius: var(--radius-pil);
     background: conic-gradient(
       var(--module) 0 var(--vul, 0%),
-      color-mix(in srgb, var(--module) 16%, var(--kaart)) var(--vul, 0%)
+      color-mix(in srgb, var(--module-meng) 16%, var(--kaart)) var(--vul, 0%)
     );
   }
   .tk-ring::before {
@@ -3187,15 +3197,15 @@
   }
   .tk-standtegel[data-status='remembered'] {
     border-left-color: var(--module);
-    background: color-mix(in srgb, var(--module) 16%, var(--kaart));
+    background: color-mix(in srgb, var(--module-meng) 16%, var(--kaart));
   }
   .tk-standtegel[data-status='refresh'] {
-    border-left-color: color-mix(in srgb, var(--module) 62%, var(--kaart));
-    background: color-mix(in srgb, var(--module) 11%, var(--kaart));
+    border-left-color: color-mix(in srgb, var(--module-meng) 62%, var(--kaart));
+    background: color-mix(in srgb, var(--module-meng) 11%, var(--kaart));
   }
   .tk-standtegel[data-status='practising'] {
-    border-left-color: color-mix(in srgb, var(--module) 34%, var(--kaart));
-    background: color-mix(in srgb, var(--module) 6%, var(--kaart));
+    border-left-color: color-mix(in srgb, var(--module-meng) 34%, var(--kaart));
+    background: color-mix(in srgb, var(--module-meng) 6%, var(--kaart));
   }
   .tk-standtegel-getal {
     font-family: var(--font-kop);
@@ -3234,10 +3244,10 @@
   .tk-vakkleur .tk-table th {
     background: var(--module-tint);
     color: var(--module-tekst);
-    border-bottom-color: color-mix(in srgb, var(--module) 45%, var(--kaart));
+    border-bottom-color: color-mix(in srgb, var(--module-meng) 45%, var(--kaart));
   }
   .tk-vakkleur .tk-table tbody tr:nth-child(even) {
-    background: color-mix(in srgb, var(--module) 5%, var(--kaart));
+    background: color-mix(in srgb, var(--module-meng) 5%, var(--kaart));
   }
 
   /* ---- De laatste zeven dagen -------------------------------------------
@@ -3268,7 +3278,7 @@
     background: var(--papier);
   }
   .tk-weekdag[data-geoefend='ja'] {
-    background: color-mix(in srgb, var(--module) 16%, var(--kaart));
+    background: color-mix(in srgb, var(--module-meng) 16%, var(--kaart));
   }
   .tk-weekdag[data-vandaag='ja'] {
     border-color: var(--module);
