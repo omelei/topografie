@@ -5041,12 +5041,12 @@
     color: var(--inkt);
   }
   /* De weg naar de volgende ronde van vandaag, op het uitslagscherm (ADR-139).
-   * Een rij zoals op de voordeur, zodat een kind hem herkent, maar met de
-   * groene nadruk langs de voorkant: hier gaat de dag verder. Dezelfde reden
-   * als `.tk-vandaag` op de voordeur — daar begint een ronde, hier gaat er een
-   * door. */
+   * Een rij zoals op de voordeur, zodat een kind hem herkent, met een rand
+   * langs de voorkant: hier gaat de dag verder. In nacht en niet in groen
+   * (ADR-238): groen betekent alleen goed, en vandaag gaat over alle vakken,
+   * dus is het accent van buiten een vak. */
   .tk-vandaag-verder {
-    border-left: 8px solid var(--nadruk);
+    border-left: 8px solid var(--nacht);
     background: var(--kaart);
   }
 
