@@ -248,105 +248,49 @@ describe('the shell', () => {
     expect(screen.getByRole('button', { name: 'leer.nu, naar Vandaag' })).toBeInTheDocument();
   });
 
-  it('opens the modules as a list below 1200, and gives focus back when it closes', () => {
-    // ADR-093. CSS decides which of the rail and the menu is displayed; jsdom
-    // applies no stylesheet, so both are in the tree and this checks the menu.
+  it('lays Vandaag, Oefenen and Jij along the bottom, and Oefenen holds every vak (ADR-241)', () => {
+    render(
+      <Shell modules={MODULES} destinations={DESTINATIONS} currentModule="woorden">
+        <p>taal</p>
+      </Shell>,
+    );
+
+    const [, tabbalk] = screen.getAllByRole('navigation', { name: 'Waar je heen kunt' });
+    const tabs = within(tabbalk as HTMLElement).getAllByRole('button');
+    expect(tabs.map((tab) => tab.textContent)).toEqual(['Vandaag', 'Oefenen', 'Jij']);
+
+    // In een vak is Oefenen de tab waar je bent, als deel en niet als pagina.
+    expect(tabs[1]).toHaveAttribute('aria-current', 'true');
+    expect(tabs[0]).not.toHaveAttribute('aria-current');
+  });
+
+  it('puts premium, Ouders and the child in the bar on a phone (ADR-241)', () => {
     const seen: string[] = [];
     render(
       <Shell
         modules={MODULES}
         destinations={DESTINATIONS}
-        currentModule="klok"
-        onModule={(id) => seen.push(id)}
+        current="ouders"
+        onNavigate={(id) => seen.push(id)}
+        bar={<button type="button">Fem</button>}
       >
-        <p>klok</p>
+        <p>ouders</p>
       </Shell>,
     );
 
-    const knop = screen.getByRole('button', { name: 'vak Klok' });
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
+    const balk = within(screen.getByRole('banner'));
+    // In de volgorde van het ontwerp: premium, Ouders, het kind.
+    expect(
+      balk
+        .getAllByRole('button')
+        .map((knop) => knop.getAttribute('aria-label') ?? knop.textContent),
+    ).toEqual(['leer.nu, naar Vandaag', 'Premium', 'Ouders', 'Fem']);
+    const ouders = balk.getByRole('button', { name: 'Ouders' });
+    expect(ouders).toHaveAttribute('aria-current', 'page');
+    fireEvent.click(ouders);
+    expect(seen).toEqual(['ouders']);
 
-    // Closed, the list is not in the document at all.
-    expect(screen.queryAllByRole('navigation', { name: 'Vakken' })).toHaveLength(0);
-
-    fireEvent.click(knop);
-    expect(knop).toHaveAttribute('aria-expanded', 'true');
-
-    const lijst = document.getElementById(knop.getAttribute('aria-controls') ?? '');
-    expect(lijst).not.toBeNull();
-    const hier = within(lijst as HTMLElement).getByRole('button', { name: 'Klok' });
-
-    // Open on the module you are in, and marked the way the rail marks it.
-    expect(hier).toHaveAttribute('aria-current', 'page');
-    expect(hier).toHaveFocus();
-
-    // Escape closes it and puts focus back on the button that opened it.
-    fireEvent.keyDown(hier, { key: 'Escape' });
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-    expect(knop).toHaveFocus();
-
-    // A choice closes it too, and goes where it was asked to — a module not
-    // built yet as well, which answers "binnenkort" (ADR-051). Taal was the
-    // example until it was built (ADR-118).
-    fireEvent.click(knop);
-    const opnieuw = document.getElementById(knop.getAttribute('aria-controls') ?? '');
-    fireEvent.click(within(opnieuw as HTMLElement).getByRole('button', { name: 'Tijdvakken' }));
-    expect(seen).toEqual(['tijdvakken']);
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('moves through the list with the arrow keys', () => {
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS} currentModule="topo">
-        <p>topografie</p>
-      </Shell>,
-    );
-
-    const knop = screen.getByRole('button', { name: 'vak Topo' });
-    fireEvent.click(knop);
-    const lijst = within(
-      document.getElementById(knop.getAttribute('aria-controls') ?? '') as HTMLElement,
-    );
-
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Topo' }), { key: 'ArrowDown' });
-    expect(lijst.getByRole('button', { name: 'Rekenen' })).toHaveFocus();
-
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Rekenen' }), { key: 'End' });
-    expect(lijst.getByRole('button', { name: 'Vlaggen' })).toHaveFocus();
-
-    // Round again from the end, rather than stopping at a wall.
-    fireEvent.keyDown(lijst.getByRole('button', { name: 'Vlaggen' }), { key: 'ArrowDown' });
-    expect(lijst.getByRole('button', { name: 'Topo' })).toHaveFocus();
-  });
-
-  it('names its own job where no module is open', () => {
-    // ADR-121: where you are in no vak the control is not a read-out but the
-    // way to a round, and it says so — on its face and to a screen reader.
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS}>
-        <p>vandaag</p>
-      </Shell>,
-    );
-
-    const menu = document.querySelector('.tk-vakmenu') as HTMLElement;
-    const knop = within(menu).getByRole('button', { name: 'Oefenen' });
-    expect(knop).toHaveTextContent('Oefenen');
-    expect(knop).toHaveAttribute('aria-expanded', 'false');
-  });
-
-  it('is stuck to the top of the glass below 1200', () => {
-    // The sticky lives on the wrapper in Shell, not on the menu's own root: a
-    // sticky box travels only inside its containing block, and on the root that
-    // block is the wrapper itself. jsdom applies no stylesheet, so what is
-    // checked is that the class the rule hangs on is where it has to be.
-    render(
-      <Shell modules={MODULES} destinations={DESTINATIONS}>
-        <p>vandaag</p>
-      </Shell>,
-    );
-
-    const houder = document.querySelector('.tk-vakmenu-houder');
-    expect(houder).not.toBeNull();
-    expect(houder?.querySelector('.tk-vakmenu')).not.toBeNull();
+    // Er is geen vakmenu meer onder de kop.
+    expect(document.querySelector('.tk-vakmenu')).toBeNull();
   });
 });

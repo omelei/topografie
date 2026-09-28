@@ -209,67 +209,85 @@ test('keeps the wordmark and the question legible at 200% text', async ({ page }
   ).toBeLessThanOrEqual(0);
 });
 
-test('below 1200 the modules are a menu under the app bar', async ({ page }, testInfo) => {
-  // ADR-093: the rail stands up at a desk and nowhere else. On both iPads and
-  // both phones the way to a module is this one control.
-  test.skip(['chromebook', 'desktop-1440'].includes(testInfo.project.name), 'the rail, at a desk');
+test('below 1200 a vak is reached through Oefenen', async ({ page }, testInfo) => {
+  // ADR-241: the vak menu under the bar is gone. Oefenen is the middle tab, it
+  // opens the vakken as cards, and it stays marked inside every vak.
+  test.skip(
+    ['chromebook', 'desktop-1440'].includes(testInfo.project.name),
+    'the side bar, at a desk',
+  );
 
   await signIn(page, 'Ilse');
+  await expect(page.locator('.tk-vakmenu')).toHaveCount(0);
 
-  const knop = page.locator('.tk-vakmenu-knop');
-  // In no vak it names its own job rather than asking a question (ADR-121).
-  await expect(knop).toHaveText('Oefenen');
-  await expect(knop).toHaveAccessibleName('Oefenen');
-  await expect(knop).toHaveAttribute('aria-expanded', 'false');
+  const tabbalk = page
+    .getByRole('navigation', { name: 'Waar je heen kunt' })
+    .filter({ visible: true });
+  await expect(tabbalk.getByRole('button')).toHaveText(['Vandaag', 'Oefenen', 'Jij']);
+  const oefenen = tabbalk.getByRole('button', { name: 'Oefenen', exact: true });
 
-  await knop.click();
-  await expect(knop).toHaveAttribute('aria-expanded', 'true');
-  await page
-    .getByRole('navigation', { name: 'Vakken' })
-    .getByRole('button', { name: 'Klok', exact: true })
-    .click();
+  await oefenen.click();
+  await expect(page).toHaveURL(/\/oefenen$/);
+  await expect(oefenen).toHaveAttribute('aria-current', 'page');
 
-  // Where it was asked to go, closed again, and saying so on its own face.
+  await page.getByRole('main').getByRole('button', { name: 'Klok', exact: true }).click();
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
-  await expect(knop).toHaveAccessibleName('vak Klok');
-  await expect(knop).toHaveAttribute('aria-expanded', 'false');
+  await expect(oefenen).toHaveAttribute('aria-current', 'true');
 
-  // And it lets go on Escape, with focus back on the control that opened it.
-  await knop.click();
-  await page.keyboard.press('Escape');
-  await expect(knop).toHaveAttribute('aria-expanded', 'false');
-  await expect(knop).toBeFocused();
+  // And back, from above the heading.
+  await page.getByRole('button', { name: 'Terug naar Oefenen' }).click();
+  await expect(page).toHaveURL(/\/oefenen$/);
 });
 
 /**
- * ADR-121: below 1200 the vak menu is the only way to a vak, and it used to
- * scroll away with the page. Checked on a page long enough to scroll on every
- * size that gets the menu — a module page, which carries the chips, the modes
- * and the start bar.
+ * ADR-241: at a desk the vakken stand under Oefenen in the side bar, and fold
+ * away. The fold is kept on this device, and a vak you are in while they are
+ * folded is said by Oefenen.
  */
-test('below 1200 the vak menu stays on the glass while the page scrolls', async ({
+test('at a desk the vakken fold away under Oefenen, and stay folded', async ({
   page,
 }, testInfo) => {
-  test.skip(['chromebook', 'desktop-1440'].includes(testInfo.project.name), 'the rail, at a desk');
+  test.skip(
+    !['chromebook', 'desktop-1440'].includes(testInfo.project.name),
+    'no side bar below 1200',
+  );
 
   await signIn(page, 'Ilse');
-  await page.goto('/topografie');
+  const zijbalk = page
+    .getByRole('navigation', { name: 'Waar je heen kunt' })
+    .filter({ visible: true });
+  const vakken = zijbalk.getByRole('list', { name: 'Vakken' });
+  await expect(vakken.getByRole('button')).toHaveText([
+    'Topo',
+    'Rekenen',
+    'Klok',
+    'Taal',
+    'Vlaggen',
+  ]);
+
+  await vakken.getByRole('button', { name: 'Taal', exact: true }).click();
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
 
-  const knop = page.locator('.tk-vakmenu-knop');
-  const voor = await knop.boundingBox();
+  // The chevron is its own button, reached with Tab after Oefenen.
+  const oefenen = zijbalk.getByRole('button', { name: 'Oefenen', exact: true });
+  const chevron = zijbalk.getByRole('button', { name: /^Vakken (in|uit)klappen$/ });
+  await expect(chevron).toHaveAccessibleName('Vakken inklappen');
+  await oefenen.focus();
+  await page.keyboard.press('Tab');
+  await expect(chevron).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(chevron).toHaveAttribute('aria-expanded', 'false');
+  await expect(chevron).toHaveAccessibleName('Vakken uitklappen');
+  await expect(vakken).toBeHidden();
+  await expect(oefenen).toHaveAttribute('aria-current', 'true');
 
-  const gescrold = await naarOnder(page);
-  expect(
-    gescrold,
-    'the page has to be longer than the screen for this to mean anything',
-  ).toBeGreaterThan(0);
-
-  // Still on the glass, and higher up it than it started: the app bar above it
-  // has gone and the menu has taken its place at the top.
-  await expect(knop).toBeInViewport();
-  expect(voor?.y ?? 0).toBeGreaterThan(0);
-  expect((await knop.boundingBox())?.y ?? -1).toBeLessThan(voor?.y ?? 0);
+  // Folded on the next page too, and Oefenen itself opens them again.
+  await page.goto('/jij');
+  await expect(chevron).toHaveAttribute('aria-expanded', 'false');
+  await oefenen.click();
+  await expect(page).toHaveURL(/\/oefenen$/);
+  await expect(vakken).toBeVisible();
+  await expect(oefenen).toHaveAttribute('aria-current', 'page');
 });
 
 /**

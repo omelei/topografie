@@ -142,27 +142,34 @@ test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Je kinderen' })).toHaveCount(0);
 });
 
-test('de navigatie gaat naar Vandaag, Jij, Premium en Ouders', async ({ page }) => {
+test('de navigatie gaat naar Vandaag, Oefenen, Jij, Premium en Ouders', async ({ page }) => {
   await signIn(page, 'Ties');
 
-  // Op elke maat staat één van de twee balken; welke, is CSS (Shell).
+  // Op elke maat staat één van de twee: de zijbalk of de tabbalk (ADR-241).
   const balk = page
     .getByRole('navigation', { name: 'Waar je heen kunt' })
     .filter({ visible: true });
-  await expect(balk.getByRole('button')).toHaveText(['Vandaag', 'Jij', 'Premium', 'Ouders']);
+  for (const naam of ['Vandaag', 'Oefenen', 'Jij']) {
+    await expect(balk.getByRole('button', { name: naam, exact: true })).toBeVisible();
+  }
 
-  await balk.getByRole('button', { name: 'Premium' }).click();
+  // Premium staat in de kop, op elke maat, als de ene knop die opvalt.
+  const premium = page.getByRole('banner').getByRole('button', { name: 'Premium', exact: true });
+  await premium.click();
   await expect(page).toHaveURL(/\/premium$/);
-  await expect(balk.getByRole('button', { name: 'Premium' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(premium).toHaveAttribute('aria-current', 'page');
   // Eerst de deur: de premiumpagina is voor ouders (ADR-232).
   await expect(page.getByRole('heading', { name: 'Deze pagina is voor ouders' })).toBeVisible();
 
-  // Ouders vraagt meteen om binnen te komen: zonder pincode eerst de poort,
-  // en deze bouw heeft een gezinsproject, dus dat is het account (ADR-178).
-  await balk.getByRole('button', { name: 'Ouders' }).click();
+  // Ouders staat in de zijbalk aan een bureau en in de kop op een telefoon;
+  // er is er altijd precies één te zien. Hij vraagt meteen om binnen te komen:
+  // zonder pincode eerst de poort, en deze bouw heeft een gezinsproject, dus
+  // dat is het account (ADR-178).
+  const ouders = page
+    .getByRole('button', { name: 'Ouders', exact: true })
+    .filter({ visible: true });
+  await expect(ouders).toHaveCount(1);
+  await ouders.click();
   await expect(page).toHaveURL(/\/ouder$/);
   await expect(
     page.getByRole('dialog').getByRole('heading', { name: 'Log in met je ouderaccount' }),
@@ -174,9 +181,13 @@ test('de navigatie gaat naar Vandaag, Jij, Premium en Ouders', async ({ page }) 
   ).toBeVisible();
   await page.keyboard.press('Escape');
 
-  await balk.getByRole('button', { name: 'Jij' }).click();
+  await balk.getByRole('button', { name: 'Jij', exact: true }).click();
   await expect(page).toHaveURL(/\/jij$/);
   await expect(page.getByRole('region', { name: 'Je geheugen' })).toBeVisible();
+
+  await balk.getByRole('button', { name: 'Oefenen', exact: true }).click();
+  await expect(page).toHaveURL(/\/oefenen$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Oefenen' })).toBeVisible();
 
   // De groene knop in de balk is weg: Premium is nu een bestemming, en twee
   // knoppen naar dezelfde pagina is er één te veel.

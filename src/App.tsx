@@ -702,6 +702,7 @@ export default function App() {
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
           onWerkblad={(setId) => go({ name: 'werkblad', module: route.module, setId })}
+          onOefenen={() => go({ name: 'oefenen' })}
           onStart={beginRonde}
         />
       </Shell>

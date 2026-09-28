@@ -4069,29 +4069,21 @@
     }
   }
 
+  /* Onder 1200 heeft de balk geen eigen vlak (ADR-241): het logo en drie
+   * ronde knoppen staan op de grond, met de inzet van een iPhone erboven. */
   .tk-appbar {
     display: flex;
     align-items: center;
-    gap: 16px;
-    height: 56px;
-    /* 16 on a phone, which is the margin §D gives that size. */
-    padding: 0 16px;
-    /* No white strip and no rule under it (Kleurblokken, ADR-238). Since
-     * ADR-240 the bar is the one cream of --kop on every page, inside a
-     * subject or not. */
-    background: var(--kop);
-  }
-  @media (min-width: 768px) {
-    .tk-appbar {
-      height: 64px;
-      padding: 0 20px;
-    }
+    gap: 8px;
+    padding: calc(20px + env(safe-area-inset-top)) 16px 10px;
+    background: transparent;
   }
   /* Aan een bureau (ADR-241): een witte balk van 64 met een lijn eronder, het
    * logo links en rechts alleen premium en het kind. */
   @media (min-width: 1200px) {
     .tk-appbar {
       gap: 24px;
+      height: 64px;
       padding: 0 24px;
       border-bottom: var(--stroke-hair) solid var(--rand-licht);
       background: var(--kaart);
@@ -4100,9 +4092,14 @@
   .tk-appbar-acties {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     min-width: 0;
     margin-inline-start: auto;
+  }
+  @media (min-width: 1200px) {
+    .tk-appbar-acties {
+      gap: 12px;
+    }
   }
 
   /* The logo, which is the way back to the front door. A button that looks
@@ -4152,14 +4149,15 @@
    *
    * Eén verhouding voor beide maten en niet twee losse getallen: een balk die
    * later een andere hoogte krijgt, houdt dan dezelfde verdeling. */
-  /* Kleurblokken (ADR-238): 26 and 30, a touch under half the bar, so the
-   * logo sits lighter on a bar that is no longer a white strip. */
+  /* Kleurblokken (ADR-238): a touch under half the bar, so the logo sits
+   * lighter. Since ADR-241 24 on the ground below 1200 and 30 in the white bar
+   * at a desk. */
   .tk-logo {
     display: block;
     width: auto;
-    height: 26px;
+    height: 24px;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 1200px) {
     .tk-logo {
       height: 30px;
     }
@@ -4225,10 +4223,14 @@
    * (10.55, onder de muis 11.46). Waar je bent: nacht op zijn diepe toon, het
    * woord wit (13.64) en de ster in zon (8.88). */
   .tk-premium-pil {
+    display: inline-flex;
+    flex: none;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    width: 44px;
     height: 44px;
-    padding: 0 20px 0 14px;
+    padding: 0;
     border: 0;
     border-radius: var(--radius-pil);
     background: var(--zon);
@@ -4241,8 +4243,54 @@
     white-space: nowrap;
     cursor: pointer;
   }
+  @media (max-width: 1199px) {
+    .tk-premium-pil-naam {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+  }
+  @media (min-width: 1200px) {
+    .tk-premium-pil {
+      width: auto;
+      padding: 0 20px 0 14px;
+    }
+    .tk-premium-pil svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
   .tk-premium-pil:hover {
     background: var(--zon-hover);
+  }
+  /* Ouders in de balk onder 1200 (ADR-241): een witte ronde knop met de lijn
+   * eromheen en het slot in secundair (8.32). Waar je bent: nacht-tint met een
+   * rand in nacht; het slot blijft secundair (6.80 op nacht-tint). */
+  .tk-balkknop {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: var(--stroke-active) solid var(--rand-licht);
+    border-radius: var(--radius-pil);
+    background: var(--kaart);
+    color: var(--tekst-secundair);
+    cursor: pointer;
+  }
+  .tk-balkknop:hover {
+    background: var(--perzik);
+  }
+  .tk-balkknop[aria-current='page'] {
+    border-color: var(--nacht);
+    background: var(--nacht-tint);
   }
   .tk-premium-pil[aria-current='page'] {
     background: var(--nacht);
@@ -4298,8 +4346,8 @@
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-pil);
     background: var(--perzik);
     color: var(--tekst-secundair);
@@ -4311,19 +4359,19 @@
     width: 100%;
     height: 100%;
   }
-  @media (min-width: 768px) {
-    .tk-profiel-letter {
-      width: 40px;
-      height: 40px;
-    }
-  }
-  @media (max-width: 767px) {
+  /* Onder 1200 (ADR-241): de avatar alleen, in een witte cirkel met de lijn
+   * eromheen, net zo groot als premium en Ouders ernaast. */
+  @media (max-width: 1199px) {
     .tk-profiel {
+      flex: none;
       justify-content: center;
-      min-width: var(--raak);
+      width: 44px;
       padding: 0;
-      border: 0;
-      background: transparent;
+      border: var(--stroke-active) solid var(--rand-licht);
+      background: var(--kaart);
+    }
+    .tk-profiel:hover {
+      background: var(--perzik);
     }
     .tk-profiel-naam {
       position: absolute;
@@ -4494,6 +4542,9 @@
    * De vakken als kaarten: drie naast elkaar aan een bureau, twee op een
    * telefoon. Een witte kaart met de lichte vaktoon als rand, linksboven de
    * plaat van het vak en onderaan zijn naam; onder de muis de vaktint. */
+  .tk-oefenen {
+    gap: 16px;
+  }
   .tk-oefenen-titel {
     font-size: 1.875rem; /* 30px */
     line-height: 2.25rem;
@@ -4544,6 +4595,9 @@
     overflow-wrap: anywhere;
   }
   @media (min-width: 1200px) {
+    .tk-oefenen {
+      gap: 24px;
+    }
     .tk-oefenen-titel {
       font-size: 2.25rem; /* 36px */
       line-height: 2.75rem;
@@ -4721,90 +4775,89 @@
   }
 
   /* ---- The tab bar, below 1200 ------------------------------------------
-   * A mark and a word per destination. Where you are is a rule across the
-   * top, a surface and a heavier word — and in ink, where the handoff draws it
-   * in topography's blue: a destination is not a module, and §B does not let
-   * an accent say which one you are on (ADR-093).
+   * Drie tabs, Vandaag, Oefenen en Jij (ADR-241), op de grond met een lijn
+   * erboven. Het teken is altijd secundair; waar je bent is de tab wit met de
+   * lijn eromheen en het woord in nacht (13.64), zoals een rij in de zijbalk
+   * een tint achter zich krijgt. Oefenen is de tab van elk vak.
+   *
+   * Altijd in beeld op een telefoon (op verzoek van de eigenaar): hij staat
+   * onder `.tk-schil-rol`, dat zelf scrolt, en dus nooit over de inhoud heen.
+   * In een ronde staat hij er niet, want een ronde tekent de Shell niet. De
+   * onderste inzet houdt de knoppen boven de veegbalk van een iPhone.
    */
-  /* Altijd in beeld op een telefoon (op verzoek van de eigenaar). Hij stond
-   * onder aan de pagina, en dan zag je hem pas als je helemaal naar beneden had
-   * gescrold. Hij staat nu onder `.tk-schil-rol`, dat zelf scrolt, en dus nooit
-   * over de inhoud heen: geen knop verdwijnt half achter hem, en de startbalk
-   * van een modulepagina plakt vlak boven hem in plaats van eronder. In een
-   * ronde staat hij er niet, want een ronde tekent de Shell niet. De onderste
-   * inzet houdt de knoppen boven de veegbalk van een iPhone. */
-  /* Duidelijker gemaakt op verzoek van de eigenaar (ADR-204): waar je bent is
-   * een pil in inkt achter het teken, zoals een gekozen keuze in de app een
-   * pil is, en het woord eronder is groter. Inkt en geen accent, om dezelfde
-   * reden als hierboven. De balk zelf ligt met een dikke rand op de pagina. */
   .tk-tabbar {
-    display: flex;
-    align-items: stretch;
-    padding: 6px 8px env(safe-area-inset-bottom);
-    background: var(--kaart);
-    border-top: var(--stroke-tegel) solid var(--rand-licht);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+    background: var(--grond);
   }
-  /* Vier bestemmingen sinds Ouders erbij kwam (ADR-232): elk vak mag smaller
-   * worden dan zijn inhoud, zodat de balk bij 200% tekst niet buiten het
-   * scherm loopt. Het woord breekt dan af in plaats van de pagina. */
   .tk-tabbar-item {
     display: flex;
-    flex: 1 1 0;
     min-width: 0;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    /* 72 with the bar's own padding, 80 from 768 (Kleurblokken, ADR-238). */
+    gap: 2px;
     min-height: 60px;
-    padding: 4px 4px 6px;
-    border: 0;
+    padding: 6px 4px;
+    border: var(--stroke-active) solid transparent;
+    border-radius: var(--radius-kaart-telefoon);
     background: transparent;
     color: var(--tekst-secundair);
-    font-size: var(--type-vlaklabel);
-    line-height: var(--type-vlaklabel-lh);
-    font-weight: 600;
+    font-family: var(--font-kop);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem;
+    font-weight: 700;
     text-align: center;
     overflow-wrap: anywhere;
     cursor: pointer;
   }
   .tk-tabbar-teken {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 16px;
-    border-radius: var(--radius-pil);
+    color: var(--tekst-secundair);
   }
-  .tk-tabbar-teken svg {
-    width: 22px;
-    height: 22px;
+  .tk-tabbar-item:not([aria-current]):hover {
+    background: var(--perzik);
   }
-  @media (min-width: 768px) {
-    .tk-tabbar-item {
-      min-height: 68px;
-      font-size: var(--type-bijschrift);
-      line-height: var(--type-bijschrift-lh);
-    }
-    .tk-tabbar-teken {
-      padding: 4px 18px;
-    }
-    .tk-tabbar-teken svg {
-      width: 24px;
-      height: 24px;
-    }
-  }
-  .tk-tabbar-item:not([aria-current='page']):hover .tk-tabbar-teken {
-    background: var(--vlak-hover);
-  }
-  .tk-tabbar-item[aria-current='page'] {
+  .tk-tabbar-item[aria-current] {
+    border-color: var(--rand-licht);
+    background: var(--kaart);
     color: var(--nacht);
-    font-weight: 700;
   }
-  /* Nacht since Kleurblokken (ADR-238), with the icon in zon since Kleur erin
-   * (ADR-239): 8.88. */
-  .tk-tabbar-item[aria-current='page'] .tk-tabbar-teken {
-    background: var(--nacht);
-    color: var(--zon);
+
+  /* De terugknop boven een vakpagina onder 1200 (ADR-241): "‹ Oefenen" in
+   * secundair, zonder vlak. De pijl is die van het uitklappen, een kwartslag
+   * gedraaid. */
+  .tk-vakkop {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tk-terugknop {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 4px;
+    height: 44px;
+    padding: 0 12px 0 4px;
+    margin-inline-start: -4px;
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: transparent;
+    color: var(--tekst-secundair);
+    font-family: var(--font-kop);
+    font-size: 1rem; /* 16px */
+    line-height: 1.5rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .tk-terugknop:hover {
+    color: var(--inkt);
+  }
+  .tk-terugknop svg {
+    transform: rotate(90deg);
   }
 
   /* ---- The round, on four sizes (K3) -----------------------------------

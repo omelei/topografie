@@ -20,7 +20,7 @@ export function OefenenScherm({
 }) {
   return (
     <div className="tk-page">
-      <div className="tk-page-main">
+      <div className="tk-page-main tk-oefenen">
         <h1 className="tk-oefenen-titel">{t('oefenen.titel')}</h1>
 
         <ul className="tk-vakkaarten">

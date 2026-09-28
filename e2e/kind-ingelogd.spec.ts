@@ -14,10 +14,8 @@ test('een kind met een ingelogde ouder en zonder code', async ({ page }) => {
   await signIn(page, 'Noor');
 
   // De ouder logt in en kiest een pincode, en geeft het apparaat terug.
-  const balk = page
-    .getByRole('navigation', { name: 'Waar je heen kunt' })
-    .filter({ visible: true });
-  await balk.getByRole('button', { name: 'Ouders' }).click();
+  // In de zijbalk of, op een telefoon, in de kop (ADR-241).
+  await page.getByRole('button', { name: 'Ouders', exact: true }).filter({ visible: true }).click();
   await langsDePoort(page);
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');

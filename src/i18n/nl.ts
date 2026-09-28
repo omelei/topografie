@@ -367,6 +367,9 @@ export const nl = {
   'nav.vakkenInklappen': 'Vakken inklappen',
   'nav.vakkenUitklappen': 'Vakken uitklappen',
   'oefenen.titel': 'Oefenen',
+  // De terugknop boven een vakpagina op een telefoon. Zichtbaar staat er
+  // "Oefenen" met een pijl; de naam zegt waar hij heen gaat.
+  'module.terugOefenen': 'Terug naar Oefenen',
   'nav.vrienden': 'Vrienden',
   'nav.jij': 'Jij',
   'nav.premium': 'Premium',

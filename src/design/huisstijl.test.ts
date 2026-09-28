@@ -173,16 +173,17 @@ describe('the tokens are the styleguide’s', () => {
     expect(rootValue('module-meng')).toBe('var(--nacht)');
   });
 
-  it('puts the bar on --kop, the rail on white and every tile on a bright edge (ADR-240)', () => {
+  it('puts the bar on the ground, the side bar on white and every tile on a bright edge (ADR-240, ADR-241)', () => {
     const rule = (selector: string) => {
       const start = cssCode.indexOf(`${selector} {`);
       return cssCode.slice(start, cssCode.indexOf('}', start));
     };
-    expect(rule('  .tk-appbar')).toContain('background: var(--kop)');
-    expect(rule('  .tk-vakmenu-houder')).toContain('background: var(--kop)');
-    expect(rule('  .tk-rail')).toContain('background: var(--kaart)');
+    // Onder 1200 staat de balk op de grond; aan een bureau is hij wit.
+    expect(rule('  .tk-appbar')).toContain('background: transparent');
+    expect(rule('    .tk-appbar')).toContain('background: var(--kaart)');
+    expect(rule('  .tk-zijbalk')).toContain('background: var(--kaart)');
     // No subject tints the bar any more.
-    expect(cssCode).not.toMatch(/\.tk-(appbar|vakmenu-houder)\[data-module\]/);
+    expect(cssCode).not.toMatch(/\.tk-appbar\[data-module\]/);
     for (const tegel of ['.tk-kaart', '.tk-tegel', '.tk-tafel', '.tk-vaktegel']) {
       expect(rule(`  ${tegel}`), tegel).toContain('background: var(--kaart)');
       expect(rule(`  ${tegel}`), tegel).toContain(

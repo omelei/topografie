@@ -21,7 +21,6 @@ import {
   type Destination,
   type Module,
 } from './modules';
-import { VakMenu } from './VakMenu';
 
 /**
  * The frame around everything that is not a round, in two postures (ADR-093,
@@ -32,17 +31,19 @@ import { VakMenu } from './VakMenu';
  * in a side bar on the left: Vandaag, Oefenen with the five modules under it
  * (it folds away), a rule, Jij and Ouders.
  *
- * **Below 1200** — a tablet either way up, and a phone — the app bar is the
- * mark, the streak and the child. The modules are one control under it that
- * opens into the same list, and the destinations lie along the bottom where a
- * thumb is.
+ * **Below 1200** — a tablet either way up, and a phone — the bar stands on
+ * the ground: the mark, and three round buttons for premium, Ouders and the
+ * child. Vandaag, Oefenen and Jij lie along the bottom where a thumb is, and
+ * a vak is reached through Oefenen (`/oefenen`), which stays marked inside
+ * every vak.
  *
  * "Hier ben je" looks the same everywhere (ADR-241): a tint behind the whole
  * row or tab. A destination's icon keeps its own colour when it is the one you
  * are on; only the row and the word change. Premium is the one loud button.
  *
- * Exactly one of each pair is displayed at any width — side bar or menu, app
- * bar row or tab bar — so nothing is offered twice. Which one is CSS.
+ * Exactly one of each pair is displayed at any width — side bar or tab bar,
+ * Ouders in the side bar or in the bar — so nothing is offered twice. Which
+ * one is CSS.
  *
  * **Nothing here appears during a round.** Not hidden: not rendered. A round
  * screen is not wrapped in this component at all (ADR-041), and
@@ -73,8 +74,8 @@ const DESTINATION_ICON: Record<Destination['id'], ComponentType<Omit<IconProps, 
 /** Wat in de zijbalk staat, boven en onder de lijn (ADR-241). */
 const ZIJBALK_BOVEN: readonly Destination['id'][] = ['vandaag', 'oefenen'];
 const ZIJBALK_ONDER: readonly Destination['id'][] = ['jij', 'ouders'];
-/** Wat onderaan een telefoon staat. */
-const TABBALK: readonly Destination['id'][] = ['vandaag', 'jij', 'premium', 'ouders'];
+/** Wat onderaan een telefoon staat: Oefenen in het midden. */
+const TABBALK: readonly Destination['id'][] = ['vandaag', 'oefenen', 'jij'];
 
 /**
  * Of de vakken onder Oefenen openstaan, bewaard op dit apparaat (ADR-241).
@@ -168,6 +169,7 @@ export function Shell({
     });
 
   const premium = showDestinations ? bestemming('premium') : null;
+  const ouders = showDestinations ? bestemming('ouders') : null;
   // In een vak ben je in Oefenen. De rij van dat vak zegt het in de zijbalk;
   // staat de lijst dicht, of staat het vak er niet in, dan zegt Oefenen het.
   const inVak = currentModule !== undefined;
@@ -263,32 +265,35 @@ export function Shell({
 
           <div className="tk-appbar-acties">
             {/* Premium, de ene knop die opvalt (ADR-241): zon, en nacht als je
-                er bent. Op een telefoon staat hij nog in de tabbalk. */}
+                er bent. Een pil met het woord aan een bureau, een ronde knop
+                op een telefoon; het woord blijft dan de naam. */}
             {premium ? (
               <button
                 type="button"
                 aria-current={current === 'premium' ? 'page' : undefined}
-                className="tk-premium-pil hidden desk:inline-flex"
+                className="tk-premium-pil"
                 onClick={() => onNavigate?.('premium')}
               >
-                <PremiumFilledIcon size={22} />
-                {premium.label}
+                <PremiumFilledIcon size={24} />
+                <span className="tk-premium-pil-naam">{premium.label}</span>
+              </button>
+            ) : null}
+            {/* Ouders staat aan een bureau in de zijbalk, en hier alleen onder
+                1200. */}
+            {ouders ? (
+              <button
+                type="button"
+                aria-current={current === 'ouders' ? 'page' : undefined}
+                aria-label={ouders.label}
+                className="tk-balkknop desk:hidden"
+                onClick={() => onNavigate?.('ouders')}
+              >
+                <ouders.Icon size={20} />
               </button>
             ) : null}
             {bar}
           </div>
         </header>
-
-        {/* The vak menu, and the box that keeps it on the glass (ADR-121). The
-          sticky is here rather than inside VakMenu because a sticky box can
-          only travel inside its containing block: on the component's own root
-          that block is this wrapper, which is exactly as tall as the menu, and
-          it would not move at all. Here the block is the page's column. */}
-        {showModules ? (
-          <div className="tk-vakmenu-houder flex-none desk:hidden">
-            <VakMenu modules={modules} current={currentModule} onModule={onModule} />
-          </div>
-        ) : null}
 
         {/* Geen min-h-0: in de rol die scrolt, kromp deze rij tot de hoogte
             van het scherm en liep de pagina eroverheen, buiten het zand van
@@ -348,7 +353,11 @@ export function Shell({
             <button
               key={id}
               type="button"
-              aria-current={id === current ? 'page' : undefined}
+              // Oefenen is de tab van elk vak: daar ben je in Oefenen, al is het
+              // niet de pagina zelf.
+              aria-current={
+                id === current ? 'page' : id === 'oefenen' && inVak ? 'true' : undefined
+              }
               className="tk-tabbar-item"
               onClick={() => onNavigate?.(id)}
             >
