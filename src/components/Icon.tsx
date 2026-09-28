@@ -896,13 +896,42 @@ export function ChevronRightIcon(props: Omit<IconProps, 'children'>) {
  * a star is anyway. It was also the reward for ten correct answers (ADR-096),
  * which is hidden with the rest of the journey since ADR-112.
  */
+const STER = 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z';
+
 export function StarIcon(props: Omit<IconProps, 'children'>) {
   return (
     <Icon {...props}>
-      <path
-        d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6l-5.4 2.9 1.2-6-4.5-4.2 6.1-.7z"
-        strokeLinejoin="round"
-      />
+      <path d={STER} strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/**
+ * Premium in de navigatie (ADR-241): dezelfde ster, dicht. Hij staat op een
+ * pil in zon of nacht, en daar is een open ster te dun om als knop te lezen.
+ * Het is de ene vulling naast de punt die §E toelaat, en het blijft
+ * `currentColor`: de pil zegt welke kleur.
+ */
+export function PremiumFilledIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <path d={STER} fill="currentColor" strokeLinejoin="round" />
+    </Icon>
+  );
+}
+
+/**
+ * Oefenen (ADR-241): vier afgeronde vakjes, de vakken bij elkaar. Anders dan
+ * `ChoiceIcon`, dat ook vier vakjes is, staat er geen punt in: hier is niets
+ * gekozen, het is de kast waar de vakken in staan.
+ */
+export function OefenenIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <rect x="3.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="3.5" width="7" height="7" rx="2" />
+      <rect x="3.5" y="13.5" width="7" height="7" rx="2" />
+      <rect x="13.5" y="13.5" width="7" height="7" rx="2" />
     </Icon>
   );
 }
