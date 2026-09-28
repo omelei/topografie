@@ -13817,6 +13817,96 @@ De opdracht noemde 15,4 voor cacao op melk; gemeten is het 15,17.
   "Er staan n vragen klaar die je bijna vergeten bent" in het blok is daarom
   weg; het blok zegt nu "wat je bijna vergeten bent" naast de kop.
 
+## ADR-239 — Kleur erin: room als grond, de vakkleur in de kop, nacht voor de actieve tab en zon op een geoefende dag
+
+**Status:** accepted. **Date:** 2026-09-28. Op verzoek van de eigenaar
+(ontwerp "Kleur erin"). Wijzigt vier regels uit ADR-238 en `HUISSTIJL.md`.
+Alleen kleur: er verschuift niets, er komt geen functie bij en er verdwijnt
+er geen. De enige tekstwijziging is de `·` tussen stapnummer en vraag.
+
+**Aanleiding.** Kinderen vonden leer.nu "te saai, te steriel, te grijs". Na
+ADR-238 stond elk scherm op melk, waren de kaarten wit met een lichte lijn,
+en mengde alles wat zacht was buiten een vak uit cacao. Dat laatste was waar
+het grijs op Jij vandaan kwam.
+
+**Besluit.** Vier regels veranderen:
+
+- **De grond is room** (`--grond: var(--papier)`, `#fff3e6`, de kleur uit het
+  logo) in plaats van melk. `--melk` blijft staan, zodat terug één waarde is.
+  Omdat room nu de grond is, is het warme vlak erop **perzik** (`--perzik`,
+  `#ffe8d4`): `--vlak-hover`, `.tk-plaat-neutraal`, en alles wat papier op de
+  grond zette (`.tk-profiel-letter`, `.tk-embleem`, `.tk-standtegel`,
+  `.tk-card-accented`, `.tk-cijfer`, de actieve `.tk-navbar-item`). Het
+  paneel van het vakmenu neemt de grond van zijn kop over.
+- **De kop binnen een vak draagt de vaktint.** `Shell` zet `data-module` op de
+  appbalk en het vakmenu wanneer er een vak is; die staan dan op `--module-tint`,
+  het logo erop ook, en de vakknop draagt de vakkleur. De startbalk op de
+  telefoon staat op dezelfde tint.
+- **De actieve tab is nacht** in plaats van inkt: het label in nacht, het
+  teken als nachtblauwe pil met het pictogram in zon.
+- **Zon mag ook op een geoefende dag en op het diploma.** Een geoefende dag in
+  de weekstrook is zon met een onderkant in `--zon-rand`, de diplomategel op
+  een vakpagina staat op `--zon-tint` met een plaat in zon, en het label
+  premium is zon.
+
+Daarnaast, binnen de bestaande regels:
+
+- **Per vak een zesde toon, `-rand`:** de `-vlak`-kleur voor 35 % in wit. Hij
+  is de rand en de onderkant van een kaart, tegel of chip die niet gekozen is,
+  en de rand van een vakrij in de kast. Buiten een vak is `--module-rand` de
+  lichte lijn. `--module-meng` is buiten een vak nacht in plaats van cacao.
+- **Kaarten, tegels en chips dragen hun vak.** Een kaart op Vandaag heeft een
+  rand in `-rand` en een onderkant in `-vlak`; een tegel een plaat op de tint,
+  gekozen de heldere vulling; een pijl in een vakrij een ronde stip op de tint;
+  een stapnummer een munt in de diepe toon met witte cijfers; een diploma dat
+  je nog niet hebt een vlak op de tint en woorden in de vakkleur.
+- **Elke instelling op Jij een tint** (koraal, zon of nacht, met `data-tint`),
+  en dezelfde drie op de getaltegels onder "Hoe vaak oefen je?". Daarvoor komt
+  `--nacht-tint` (`#e4e8f5`). De etalage van Jij krijgt de vormen van het
+  welkomstvlak. Een schakelaar die aan staat, zegt "aan" in groen.
+
+**Contrast** (WCAG, gemeten uit de hex; `contrast.test.ts` houdt het vast):
+
+| Paar                                  | Ratio               |
+| ------------------------------------- | ------------------- |
+| inkt / secundair / tertiair op room   | 14.82 / 7.61 / 6.37 |
+| inkt / secundair / tertiair op perzik | 13.69 / 7.03 / 5.88 |
+| nacht op nacht-tint                   | 11.15               |
+| actie-tekst op actie-tint             | 5.70                |
+| zon-tekst op zon-tint                 | 4.94                |
+| vaktekst op vaktint (topo … klok)     | 4.99 tot 6.48       |
+| inkt op zon                           | 10.55               |
+| zon op nacht (het teken van de tab)   | 8.88                |
+| nadruk-tekst op kaart ("aan")         | 7.88                |
+| `-rand` op kaart                      | 1.30 tot 1.63       |
+
+Het commentaar bij `--zon-tekst` noemde 5,31 op de tint; gemeten is het 4,94.
+Het haalt de 4,5, en de waarde in het commentaar is rechtgezet.
+
+**Afwegingen.**
+
+- **Een chip heeft geen rand van 3:1 meer.** De rand van `.tk-keuze` was
+  `--rand-bediening`, met opzet, voor WCAG 1.4.11. Nu is hij de lichte vaktoon
+  (1,30 tot 1,63 op wit), met een onderkant in dezelfde toon. Een chip draagt
+  zijn eigen woord en staat in een rij onder een genummerde vraag: wat er te
+  kiezen is, lees je aan het woord en aan de vorm, niet aan de rand. Dat is
+  hetzelfde argument waarmee een tegel al sinds ADR-180 een lichte rand heeft.
+  De gekozen stand houdt zijn diepe rand en onderkant. Buiten een vak (de
+  weekdoelen, de groepkiezer) is de rand de lichte lijn.
+- **De onderkant van een vakrij in de kast is `--onderkant` (5 px)**, niet de
+  4 px uit het ontwerp: er is één harde onderkant, en `huisstijl.test.ts`
+  houdt dat vast.
+- **Koraal blijft de knop, de etalage en het logo.** Een instelling en een
+  getaltegel mogen de koraaltint dragen zoals de lichte knop die al draagt:
+  het is een vlak achter een label, geen voortgang, geen keuze en geen vak.
+  `accent.test.ts` houdt nu ook bij waar koraal staat, en waar een vakkleur
+  op iets staat dat niet gekozen is.
+- **Een ronde blijft ongemoeid.** Hij staat op de grond, en die is nu room;
+  zijn vlakken en kaarten veranderen niet.
+- **Het stapnummer is een munt en geen tekst meer**, dus de `·` ertussen is
+  weg. Een schermlezer hoort "1, Waar op de kaart?": er staat een verborgen
+  komma tussen.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

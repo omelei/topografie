@@ -1075,15 +1075,18 @@ function vorderingVan(vak: Onderwerp, known: ReadonlyMap<string, ItemState>, now
 }
 
 /**
- * One of the page's numbered questions: the number in the module's text colour
- * and the question in ink, on the hairline every section heading has. The
- * number is drawn here rather than written into the copy, because the modules
- * do not have the same number of questions.
+ * One of the page's numbered questions: the number as a coin in the module's
+ * colour and the question in ink (ADR-239). The number is drawn here rather
+ * than written into the copy, because the modules do not have the same number
+ * of questions. The comma is for a screen reader, which hears "1, Waar op de
+ * kaart?" where the eye sees the coin.
  */
 function Stap({ nummer, label }: { readonly nummer: number; readonly label: string }) {
   return (
-    <h2 className="tk-sectie">
-      <span className="tk-stap-nummer">{nummer}</span> · {label}
+    <h2 className="tk-sectie tk-stapkop">
+      <span className="tk-stap-nummer">{nummer}</span>
+      <span className="tk-sr-only">, </span>
+      {label}
     </h2>
   );
 }

@@ -90,6 +90,9 @@ describe('the tokens are the styleguide’s', () => {
     ['zon-tint', '#fff4d1'],
     ['zon-tekst', '#8a6300'],
     ['nacht', '#1b2a5e'],
+    // Kleur erin (ADR-239): the warm plane on room, and nacht's tint.
+    ['perzik', '#ffe8d4'],
+    ['nacht-tint', '#e4e8f5'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
@@ -132,6 +135,14 @@ describe('the tokens are the styleguide’s', () => {
     ['tijdvakken-vraag', '#aa489a'],
     ['vlaggen-schaduw', '#5f3800'],
     ['vlaggen-vraag', '#a06b30'],
+    // Kleur erin (ADR-239): the rule of a card, a tile or a chip, the -vlak
+    // colour at 35% in white.
+    ['topo-rand', '#ace5de'],
+    ['tafels-rand', '#b6d7fb'],
+    ['klok-rand', '#c6c7f7'],
+    ['woorden-rand', '#e4c6f7'],
+    ['tijdvakken-rand', '#f1c6eb'],
+    ['vlaggen-rand', '#fcdeaf'],
   ])('--%s is %s', (name, hex) => {
     expect(rootValue(name)?.toLowerCase()).toBe(hex);
   });
@@ -148,6 +159,23 @@ describe('the tokens are the styleguide’s', () => {
    * back): the tint made white cards look grey, and every screen now carries
    * the same neutral ground. The tokens stay so a screen need not know.
    */
+  it('stands every screen on room, the logo’s own (ADR-239)', () => {
+    expect(rootValue('grond')).toBe('var(--papier)');
+    expect(rootValue('vlak-hover')).toBe('var(--perzik)');
+    // Outside a subject: the light rule, and the soft planes mixed from nacht.
+    expect(rootValue('module-rand')).toBe('var(--rand-licht)');
+    expect(rootValue('module-meng')).toBe('var(--nacht)');
+  });
+
+  it.each([['topo'], ['tafels'], ['klok'], ['woorden'], ['tijdvakken'], ['vlaggen']])(
+    'points --module-rand at --%s-rand inside the subject',
+    (name) => {
+      const start = css.indexOf(`[data-module='${name}'] {`);
+      const block = css.slice(start, css.indexOf('}', start));
+      expect(block).toContain(`--module-rand: var(--${name}-rand);`);
+    },
+  );
+
   it.each([
     ['topo-grond'],
     ['tafels-grond'],

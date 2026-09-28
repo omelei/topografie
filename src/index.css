@@ -81,7 +81,8 @@
      * surface and the button you press. Leisteen's indigo (ADR-144) and its
      * cool-turned-warm ladder (ADR-159) are gone. Since ADR-220 room is the
      * warm plane (hover, fills), not the ground; since ADR-221 the ground is
-     * zand, the guide's own canvas.
+     * zand, the guide's own canvas; since ADR-238 melk; and since ADR-239 room
+     * again, with perzik as the warm plane on it.
      *
      * Where a pair from the guide does not reach WCAG AA, the guide's own
      * deeper tone takes its place, and the comment says so. The guide measures
@@ -90,10 +91,14 @@
      * Ratios as text, on kaart / on papier.
      */
     --canvas: #f3e6d8; /* zand: the guide's dashed rule, the ground of ADR-221, kept so going back is one value */
-    --papier: #fff3e6; /* room: fills, hover, the warm plane — no longer the ground */
-    --melk: #faf7f3; /* the ground since Kleurblokken (ADR-238), as it was in 1d (ADR-220) */
-    /* melk: ground of every screen   inkt 15.17 · secundair 7.79 · tertiair 6.52 · kaart 1.07 */
-    --grond: var(--melk);
+    --papier: #fff3e6; /* room, the logo's own: the ground again since Kleur erin (ADR-239) */
+    --melk: #faf7f3; /* the ground of Kleurblokken (ADR-238), kept so going back is one value */
+    /* room: ground of every screen   inkt 14.82 · secundair 7.61 · tertiair 6.37 · kaart 1.09 */
+    --grond: var(--papier);
+    /* The warm plane on room (ADR-239): hover, a chosen row, a neutral plate —
+     * what papier was while melk was the ground.
+     *                                inkt 13.69 · secundair 7.03 · tertiair 5.88 */
+    --perzik: #ffe8d4;
     --kaart: #ffffff; /* card and panel, and the frame round the page */
     --inkt: #2a1e17; /* cacao, from the logo                    16.20 / 14.82 */
     --tekst-secundair: #5e4a3e; /* cacao zacht                       8.32 / 7.61 */
@@ -132,11 +137,13 @@
      * wherever no subject is named. Never a button: that is koraal.
      *   on kaart 13.64 · on melk 12.77 · on balk-leeg 10.72 · white on it 13.64 */
     --nacht: #1b2a5e;
+    /* Its tint (ADR-239): a plate or a tile with nacht on it.   nacht on it 11.15 */
+    --nacht-tint: #e4e8f5;
 
     --zon: #ffc93c;
     --zon-rand: #d69a00; /* zon's lower edge */
     --zon-tint: #fff4d1;
-    --zon-tekst: #8a6300; /*                                  5.31 on zon-tint */
+    --zon-tekst: #8a6300; /*                                  4.94 on zon-tint */
 
     /* ---- Good, §02 ---------------------------------------------------------
      * Green is a status and nothing else: it says "onthouden", never "press
@@ -164,7 +171,7 @@
      * the token stays for any rule that does stand on the ground. */
     --rand-grond: color-mix(in srgb, var(--rand-bediening) 15%, var(--rand-licht));
     /* What a control turns to under the pointer, and the fill of a chosen row. */
-    --vlak-hover: var(--papier);
+    --vlak-hover: var(--perzik);
     /* The empty part of a bar, an empty dot, and a switched-off button: the
      * guide's own empty dot. */
     --balk-leeg: #efe2d4;
@@ -266,6 +273,16 @@
     --vlaggen-tint: #fff0d6;
     --vlaggen-schaduw: #5f3800;
     --vlaggen-vraag: #a06b30;
+    /* Kleur erin (ADR-239): the rule round a subject's card, tile or chip, and
+     * its lower edge where it is not chosen — the -vlak colour at 35% in white.
+     * A rule and no more: 1.30 (vlaggen) to 1.63 (klok) on a card, so it never
+     * carries a state on its own. */
+    --topo-rand: #ace5de;
+    --tafels-rand: #b6d7fb;
+    --klok-rand: #c6c7f7;
+    --woorden-rand: #e4c6f7;
+    --tijdvakken-rand: #f1c6eb;
+    --vlaggen-rand: #fcdeaf;
     /* What a module's colour is where no module is named: nacht since
      * Kleurblokken (ADR-238, cacao before it), so a bar on the front door is
      * progress and never "topografie" by accident — and never koraal, which
@@ -277,10 +294,12 @@
     --module-tint: var(--balk-leeg);
     --module-schaduw: var(--inkt);
     --module-vraag: var(--nacht);
+    /* Outside a subject a card's rule stays the light rule. */
+    --module-rand: var(--rand-licht);
     /* What a soft tint is mixed from: the subject's own colour inside a
-     * subject, and outside one still cacao, so the planes on Jij and the
-     * result stay warm now that the accent itself is nacht (ADR-238). */
-    --module-meng: var(--inkt);
+     * subject, and outside one nacht since Kleur erin (ADR-239). Cacao mixed
+     * with white was where the grey on Jij came from (ADR-238 chose it). */
+    --module-meng: var(--nacht);
     --module-grond: var(--grond);
 
     /* ---- The ground a page stands on --------------------------------------
@@ -291,7 +310,7 @@
      * A child sees which subject they are in from the icon tile instead.
      *
      * The tokens stay, so a screen still says bg-module-grond and does not have
-     * to know: they all resolve to the one ground, which is zand since 1b.
+     * to know: they all resolve to the one ground, which is room (ADR-239).
      */
     --topo-grond: var(--grond);
     --tafels-grond: var(--grond);
@@ -502,6 +521,7 @@
     --module-tint: var(--topo-tint);
     --module-schaduw: var(--topo-schaduw);
     --module-vraag: var(--topo-vraag);
+    --module-rand: var(--topo-rand);
     --module-meng: var(--topo);
     --module-grond: var(--topo-grond);
   }
@@ -512,6 +532,7 @@
     --module-tint: var(--tafels-tint);
     --module-schaduw: var(--tafels-schaduw);
     --module-vraag: var(--tafels-vraag);
+    --module-rand: var(--tafels-rand);
     --module-meng: var(--tafels);
     --module-grond: var(--tafels-grond);
   }
@@ -522,6 +543,7 @@
     --module-tint: var(--klok-tint);
     --module-schaduw: var(--klok-schaduw);
     --module-vraag: var(--klok-vraag);
+    --module-rand: var(--klok-rand);
     --module-meng: var(--klok);
     --module-grond: var(--klok-grond);
   }
@@ -532,6 +554,7 @@
     --module-tint: var(--woorden-tint);
     --module-schaduw: var(--woorden-schaduw);
     --module-vraag: var(--woorden-vraag);
+    --module-rand: var(--woorden-rand);
     --module-meng: var(--woorden);
     --module-grond: var(--woorden-grond);
   }
@@ -542,6 +565,7 @@
     --module-tint: var(--tijdvakken-tint);
     --module-schaduw: var(--tijdvakken-schaduw);
     --module-vraag: var(--tijdvakken-vraag);
+    --module-rand: var(--tijdvakken-rand);
     --module-meng: var(--tijdvakken);
     --module-grond: var(--tijdvakken-grond);
   }
@@ -552,6 +576,7 @@
     --module-tint: var(--vlaggen-tint);
     --module-schaduw: var(--vlaggen-schaduw);
     --module-vraag: var(--vlaggen-vraag);
+    --module-rand: var(--vlaggen-rand);
     --module-meng: var(--vlaggen);
     --module-grond: var(--vlaggen-grond);
   }
@@ -788,7 +813,7 @@
   /* The one block on a screen that is the reason the child is there — the test
    * date on K1. A surface fill and a border, where everything else has neither. */
   .tk-card-accented {
-    background: var(--papier);
+    background: var(--perzik);
   }
   /* Een voorbeeld van wat premium laat zien (ADR-232): een gestreepte rand, want
    * het is geen echte kaart over het eigen kind. */
@@ -1225,8 +1250,11 @@
     gap: 12px;
     margin: 0 -16px -16px;
     padding: 12px 16px;
-    border-top: var(--stroke-hair) solid var(--rand-licht);
-    background: var(--kaart);
+    border-top: var(--stroke-hair) solid var(--module-rand);
+    background: var(--module-tint);
+  }
+  .tk-startbalk-mobiel .tk-hulp {
+    color: var(--module-tekst);
   }
   .tk-startbalk-zin {
     flex: 1;
@@ -1256,7 +1284,7 @@
     height: 56px;
     border: var(--stroke-active) dashed var(--rand-sterk);
     border-radius: var(--radius-pil);
-    background: var(--papier);
+    background: var(--perzik);
     color: var(--tekst-tertiair);
   }
   .tk-embleem-klein {
@@ -1297,7 +1325,7 @@
     border-style: solid;
     border-color: transparent;
     background:
-      linear-gradient(var(--papier), var(--papier)) padding-box,
+      linear-gradient(var(--perzik), var(--perzik)) padding-box,
       conic-gradient(var(--embleem) 0 var(--vul, 0%), var(--balk-leeg) var(--vul, 0%)) border-box;
   }
 
@@ -1324,7 +1352,8 @@
     min-height: 168px;
     overflow: hidden;
     padding: 0;
-    border: var(--stroke-active) dashed var(--rand-sterk);
+    /* Nog niet gehaald: gestippeld, in een lichte toon van het vak (ADR-239). */
+    border: var(--stroke-active) dashed color-mix(in srgb, var(--module-vlak) 60%, var(--kaart));
     border-radius: var(--kaart-radius);
     background: var(--kaart);
     color: var(--inkt);
@@ -1350,11 +1379,11 @@
     place-items: center;
     align-content: start;
     padding-top: 8px;
-    background: var(--balk-leeg);
-    color: var(--inkt);
+    background: var(--module-tint);
+    color: var(--module);
   }
   .tk-diploma-vlak > * {
-    opacity: 0.12;
+    opacity: 0.25;
   }
   .tk-diploma-vlak > :nth-child(4n + 3),
   .tk-diploma-vlak > :nth-child(4n + 4) {
@@ -1393,7 +1422,7 @@
     border-radius: 50%;
     background:
       radial-gradient(closest-side, var(--kaart) 76%, transparent 78%),
-      conic-gradient(var(--module-vlak) var(--vul, 0%), var(--balk-leeg) 0);
+      conic-gradient(var(--module-vlak) var(--vul, 0%), var(--module-tint) 0);
     font-family: var(--font-kop);
     font-size: var(--type-bijschrift);
     font-weight: 700;
@@ -1413,9 +1442,6 @@
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--tekst-secundair);
-  }
-  .tk-diploma:is([data-gehaald], [data-stand='rijp']) .tk-diploma-soort {
     color: var(--module-tekst);
   }
   /* Een lang woord breekt af waar `afbreekbaar` het toestaat, en loopt nooit
@@ -1426,18 +1452,16 @@
     font-size: var(--type-kaartkop);
     line-height: var(--type-kaartkop-lh);
     font-weight: var(--type-kaartkop-weight);
-    color: var(--tekst-secundair);
+    color: var(--inkt);
     hyphens: manual;
     overflow-wrap: break-word;
-  }
-  .tk-diploma:is([data-gehaald], [data-stand='rijp']) .tk-diploma-titel {
-    color: var(--inkt);
   }
   .tk-diploma-stand {
     margin-top: auto;
     font-size: var(--type-bijschrift);
     line-height: var(--type-bijschrift-lh);
-    color: var(--tekst-secundair);
+    font-weight: 600;
+    color: var(--module-tekst);
   }
   .tk-diploma[data-gehaald] .tk-diploma-stand {
     color: var(--inkt);
@@ -1523,7 +1547,7 @@
     height: 24px;
     border: var(--stroke-hair) solid var(--rand-bediening);
     border-radius: var(--radius-pil);
-    background: var(--balk-leeg);
+    background: var(--kaart);
   }
   .tk-schakelaar::after {
     content: '';
@@ -1538,8 +1562,12 @@
     transition: transform 150ms ease-out;
   }
   [aria-pressed='true'] > .tk-lijstrij-pijl > .tk-schakelaar {
-    border-color: var(--nadruk);
+    border-color: var(--nadruk-tekst);
     background: var(--nadruk);
+  }
+  /* "Aan" in groen, naast de groene baan (ADR-239). 7,88 op de kaart. */
+  [aria-pressed='true'] > .tk-lijstrij-pijl > .tk-schakelaar + .tk-label {
+    color: var(--nadruk-tekst);
   }
   [aria-pressed='true'] > .tk-lijstrij-pijl > .tk-schakelaar::after {
     border-color: var(--nadruk);
@@ -2250,8 +2278,8 @@
   /* Het vakvlak: dezelfde vorm op de pagina van een vak, in de diepe kleur
    * met witte woorden (5,66 tot 7,89). De grote cirkel is de toon van de
    * vraagcirkel in een ronde, want de titel mag erover lopen (4,53 of meer);
-   * de stippen zijn de heldere vlakkleur, en staan alleen op een telefoon, waar
-   * ze boven de titel op de cirkel liggen. */
+   * de grote stip is de heldere vlakkleur en de kleine zon (ADR-239), en ze
+   * staan alleen op een telefoon, waar ze boven de titel op de cirkel liggen. */
   .tk-vakvlak {
     background: var(--module);
     color: var(--kaart);
@@ -2265,8 +2293,11 @@
   .tk-vakvlak .tk-welkom-cirkel {
     background: var(--module-vraag);
   }
-  .tk-vakvlak :is(.tk-welkom-zon, .tk-welkom-room) {
+  .tk-vakvlak .tk-welkom-room {
     background: var(--module-vlak);
+  }
+  .tk-vakvlak .tk-welkom-zon {
+    background: var(--zon);
   }
   /* The badge on the panel: white, with the subject's words, so it reads on
    * the deep tone as it did on the ground. */
@@ -2324,6 +2355,26 @@
      * 4,5, dus de stippen blijven weg en de cirkel draagt het vlak. */
     .tk-vakvlak :is(.tk-welkom-zon, .tk-welkom-room, .tk-welkom-room-twee) {
       display: none;
+    }
+  }
+  /* De etalage van Jij met de vormen van het welkomstvlak (ADR-239): de
+   * cirkel, de zon en de room, stil en achter de tekst. */
+  .tk-etalage-vormen {
+    position: relative;
+    overflow: hidden;
+  }
+  .tk-etalage-vormen :is(.tk-etalage-kop, .tk-etalage-tekst) {
+    position: relative;
+  }
+  @media (max-width: 767px) {
+    /* Hier staat geen Denker, dus de stippen schuiven naar rechts op. */
+    .tk-etalage-vormen .tk-welkom-zon {
+      top: 22px;
+      right: 112px;
+    }
+    .tk-etalage-vormen .tk-welkom-room {
+      top: 50px;
+      right: 90px;
     }
   }
   .tk-etalage-knoppen {
@@ -2649,7 +2700,7 @@
     gap: 4px;
     padding: 12px 16px;
     border-radius: var(--radius-chip-groot);
-    background: var(--papier);
+    background: var(--perzik);
   }
   /* What a tile counts, above the count: a caption, in the secondary ink. The
    * mark after an oefentoets is one of these tiles too (RoundMark), which is
@@ -2658,6 +2709,12 @@
     font-size: var(--type-bijschrift);
     line-height: var(--type-bijschrift-lh);
     color: var(--tekst-secundair);
+  }
+  .tk-cijfer[data-tint] .tk-cijfer-label {
+    color: inherit;
+  }
+  .tk-cijfer[data-tint] .tk-cijfer-getal {
+    color: var(--inkt);
   }
   .tk-cijfer-getal {
     font-family: var(--font-kop);
@@ -2722,11 +2779,32 @@
     height: 36px;
     border-radius: var(--radius-chip-groot);
   }
-  /* A plate that is about no module: "kies een vak", a test with no subject. */
+  /* A plate that is about no module: "kies een vak", a test with no subject.
+   * Perzik since room is the ground (ADR-239). */
   .tk-plaat-neutraal {
-    background: var(--papier);
+    background: var(--perzik);
     box-shadow: none;
     color: var(--tekst-secundair);
+  }
+  /* Een instelling op Jij krijgt een eigen tint (ADR-239): koraal, zon of
+   * nacht, telkens op de lichte toon met de diepe erop. Dezelfde drie op de
+   * getaltegels onder "Hoe vaak oefen je?". */
+  [data-tint='koraal'] {
+    background: var(--actie-tint);
+    color: var(--actie-tekst);
+  }
+  [data-tint='zon'] {
+    background: var(--zon-tint);
+    color: var(--zon-tekst);
+  }
+  [data-tint='nacht'] {
+    background: var(--nacht-tint);
+    color: var(--nacht);
+  }
+  /* De avatar vult zijn hele plaat. */
+  .tk-plaat-avatar {
+    padding: 0;
+    overflow: hidden;
   }
 
   /* ---- A row on the front door (ADR-094) ---------------------------------
@@ -2822,9 +2900,11 @@
     gap: 12px;
     width: 264px;
     padding: var(--kaart-padding);
-    border: var(--stroke-tegel) solid var(--rand-licht);
+    /* Kleur erin (ADR-239): the rule in the subject's light tone, the lower
+     * edge in its bright fill. The plate still names the subject. */
+    border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--kaart-radius);
-    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
     background: var(--kaart);
     color: var(--inkt);
     text-align: left;
@@ -2865,6 +2945,9 @@
   .tk-maakaf .tk-progress-rail {
     height: 10px;
     background: var(--module-tint);
+  }
+  .tk-maakaf .tk-progress-fill {
+    background: var(--module-vlak);
   }
   .tk-maakaf .tk-kaart-voet {
     margin-top: 0;
@@ -3012,10 +3095,10 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Hover in ink, not in the module's colour. The card is a door into one
-   * exercise, and the plate already says which module it is behind. */
+  /* Hover in the module's colour since Kleur erin (ADR-239): the card
+   * already wears it, and the rule darkens to its deep tone. */
   .tk-kaart:hover {
-    border-color: var(--tekst-tertiair);
+    border-color: var(--module);
   }
   .tk-kaart-titel {
     font-family: var(--font-kop);
@@ -3037,11 +3120,12 @@
     align-self: stretch;
     margin-top: auto;
     padding-top: 10px;
-    border-top: var(--stroke-hair) solid var(--rand-licht);
+    border-top: var(--stroke-hair) solid var(--module-rand);
     font-size: var(--type-bijschrift);
     line-height: var(--type-bijschrift-lh);
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
-    color: var(--tekst-secundair);
+    color: var(--module-tekst);
   }
   /* A module the plan has and the product does not: a dashed rule and a
    * plate with no module in it. A shape rather than a colour, so "not yet" is
@@ -3193,7 +3277,7 @@
     padding: 12px 16px;
     border-left: 4px solid var(--rand-sterk);
     border-radius: var(--radius-chip-groot);
-    background: var(--papier);
+    background: var(--perzik);
   }
   .tk-standtegel[data-status='remembered'] {
     border-left-color: var(--module);
@@ -3255,7 +3339,7 @@
    * blok was vier getallen op papier, en het getal dat een kind het meest
    * aangaat stond erin als een breuk: "3 van 5".
    *
-   * Een geoefende dag draagt de kleur van leer.nu, het aantal rondes en een
+   * Een geoefende dag is zon (ADR-239) en draagt het aantal rondes en een
    * zwaardere letter — drie signalen, zodat kleur nooit het enige is. Geen
    * groen: een geoefende dag is een feit en geen goed antwoord (HUISSTIJL §8).
    * Vandaag krijgt een rand, ook als er niet geoefend is. */
@@ -3273,12 +3357,15 @@
     align-items: center;
     gap: 2px;
     padding: 8px 2px;
-    border: 2px solid transparent;
+    border: 2px solid var(--rand-licht);
     border-radius: var(--radius-chip);
-    background: var(--papier);
+    background: var(--kaart);
   }
+  /* Een geoefende dag is zon (ADR-239): iets wat je gehaald hebt. */
   .tk-weekdag[data-geoefend='ja'] {
-    background: color-mix(in srgb, var(--module-meng) 16%, var(--kaart));
+    border-color: var(--zon-rand);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--zon-rand);
+    background: var(--zon);
   }
   .tk-weekdag[data-vandaag='ja'] {
     border-color: var(--module);
@@ -3301,6 +3388,7 @@
   }
   .tk-weekdag[data-geoefend='ja'] .tk-weekdag-getal {
     color: var(--inkt);
+    font-weight: 800;
   }
 
   /* ---- Week na week -----------------------------------------------------
@@ -3494,6 +3582,17 @@
     gap: 8px;
     color: var(--tekst-secundair);
   }
+  /* Kleur erin (ADR-239): in a row that belongs to a subject the arrow sits
+   * in a round dot of its tint. A weekly goal's row holds a button there, not
+   * an arrow, and a row without a subject keeps the plain arrow. */
+  .tk-lijstrij[data-module]:not(.tk-weekdoel-rij) .tk-lijstrij-pijl {
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-pil);
+    background: var(--module-tint);
+    color: var(--module);
+  }
 
   /* ---- A module's own page (ADR-095) --------------------------------------
    * A badge that names the module, the question, and then the chain of
@@ -3534,11 +3633,27 @@
      * bovenaan blijft plakken, niet erachter. */
     scroll-margin-top: 88px;
   }
-  /* The number in the module's text colour: the page's own order, told in the
-   * module it belongs to. The question beside it stays ink. */
+  /* The number as a coin in the module's colour, white on the deep tone
+   * (5.66 or more; Kleur erin, ADR-239). The question beside it stays ink. */
+  .tk-stapkop {
+    align-items: center;
+    gap: 10px;
+  }
   .tk-stap-nummer {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-pil);
+    background: var(--module);
+    color: var(--kaart);
+    font-family: var(--font-kop);
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
-    color: var(--module-tekst);
   }
 
   /* ---- Chips: where on the map, which kind of sum, which one, how many ----
@@ -3557,8 +3672,12 @@
     gap: 8px;
     min-height: var(--raak);
     padding: 0 16px;
-    border: var(--stroke-active) solid var(--rand-bediening);
+    /* The subject's light rule and lower edge since Kleur erin (ADR-239),
+     * where it was the control edge for WCAG 1.4.11. A chip carries its own
+     * word, so the rule is not what says there is something to press. */
+    border: var(--stroke-active) solid var(--module-rand);
     border-radius: var(--radius-pil);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--module-rand);
     background: var(--kaart);
     color: var(--inkt);
     font-size: var(--type-knop);
@@ -3571,7 +3690,7 @@
    * one would let the pointer quietly un-say what the page is saying. */
   .tk-keuze:not(:disabled):not([aria-pressed='true']):hover {
     background: var(--vlak-hover);
-    border-color: var(--tekst-tertiair);
+    border-color: var(--module);
   }
   .tk-keuze[aria-pressed='true'] {
     border-color: var(--accent-text);
@@ -3618,9 +3737,9 @@
     gap: 16px;
     min-height: var(--knop-hoogte);
     padding: 18px;
-    border: var(--stroke-tegel) solid var(--rand-licht);
+    border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--radius-tegel);
-    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    box-shadow: 0 var(--onderkant) 0 var(--module-rand);
     background: var(--kaart);
     color: var(--inkt);
     /* The words of a control, as a chip, a row and a button have them: a tile
@@ -3632,10 +3751,12 @@
     text-align: left;
     cursor: pointer;
   }
+  /* The plate on the subject's tint (ADR-239), and the bright fill once the
+   * tile is chosen. */
   .tk-tegel .tk-plaat {
-    background: var(--papier);
+    background: var(--module-tint);
     box-shadow: none;
-    color: var(--inkt);
+    color: var(--module-tekst);
   }
   @media (min-width: 1200px) {
     .tk-tegel .tk-plaat {
@@ -3644,11 +3765,7 @@
     }
   }
   .tk-tegel:not([aria-pressed='true']):hover {
-    background: var(--vlak-hover);
-    border-color: var(--tekst-tertiair);
-  }
-  .tk-tegel:not([aria-pressed='true']):hover .tk-plaat {
-    background: var(--kaart);
+    border-color: var(--module);
   }
   /* One pixel of padding goes back for the second pixel of rule, so nothing
    * beside a chosen tile moves. */
@@ -3658,8 +3775,9 @@
     background: var(--accent-tint);
   }
   .tk-tegel[aria-pressed='true'] .tk-plaat {
-    background: var(--accent-tint);
-    color: var(--accent-text);
+    background: var(--module-vlak);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--module);
+    color: var(--kaart);
   }
   .tk-tegel-vink {
     display: inline-flex;
@@ -3674,35 +3792,37 @@
    * niet van een bliksemronde te onderscheiden — terwijl het het enige is op
    * deze pagina waar een kind iets aan overhoudt.
    *
-   * **En het licht op zonder kleur.** De verleiding is het accent, en dat mag
-   * hier juist niet: het accent zegt "dit heb jij gekozen" (`accent.test.ts`),
-   * en een tegel die er altijd mee opgloeit, leert een kind die betekenis af.
-   * Wat het onderscheid draagt zijn drie dingen die geen hue zijn, zoals §A
+   * **Niet in het accent.** Het accent zegt "dit heb jij gekozen"
+   * (`accent.test.ts`), en een tegel die er altijd mee opgloeit, leert een kind
+   * die betekenis af. Sinds Kleur erin (ADR-239) staat hij in zon, de kleur van
+   * wat je haalt, en het onderscheid zit ook in wat geen hue is, zoals §A
    * vraagt: hij staat over de volle breedte waar de rest in twee kolommen
-   * staat, hij staat op papier met de rand van een bediening — twee pixels, in
-   * de kleur die een knop ook draagt — in plaats van op de kaart met een
-   * haarlijn, en hij draagt zijn eigen regel — wat de toets vraagt — waar
-   * de andere tegels alleen hun naam dragen. De gekozen staat blijft daarna
-   * precies die van elke andere tegel. */
+   * staat, met een rand van twee pixels, en hij draagt zijn eigen regel — wat
+   * de toets vraagt — waar de andere tegels alleen hun naam dragen. De gekozen
+   * staat blijft daarna precies die van elke andere tegel. */
   .tk-tegel-diploma {
     align-items: flex-start;
     width: 100%;
     margin-block-start: 12px;
     border-width: var(--stroke-active);
-    border-color: var(--rand-bediening);
-    background: var(--papier);
   }
+  /* Sinds Kleur erin (ADR-239) in zon: het is iets om te halen, en zon is de
+   * kleur van wat gehaald wordt. Gekozen is hij weer elke andere tegel. */
   .tk-tegel-diploma:not([aria-pressed='true']) {
     /* De dikkere rand kost een pixel padding terug, zoals bij een gekozen
      * tegel, zodat de rij eronder niet opschuift. */
     padding: 19px;
+    border-color: var(--zon-rand);
+    box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
+    background: var(--zon-tint);
   }
-  .tk-tegel-diploma .tk-plaat {
-    background: var(--kaart);
+  .tk-tegel-diploma:not([aria-pressed='true']) .tk-plaat {
+    background: var(--zon);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--zon-rand);
+    color: var(--inkt);
   }
   .tk-tegel-diploma:not([aria-pressed='true']):hover {
-    background: var(--kaart);
-    border-color: var(--inkt);
+    border-color: var(--zon-tekst);
   }
   .tk-tegel-diploma .tk-hulp {
     font-weight: 400;
@@ -3716,10 +3836,10 @@
     display: inline-flex;
     flex: none;
     align-items: center;
-    padding: 2px 8px;
-    border: var(--stroke-hair) solid var(--rand-sterk);
+    padding: 3px 9px;
     border-radius: var(--radius-chip);
-    background: var(--kaart);
+    /* Zon, the colour of premium (ADR-239). Cacao on it 10.55. */
+    background: var(--zon);
     color: var(--inkt);
     font-family: var(--font-tekst);
     font-size: var(--type-vlaklabel);
@@ -3962,6 +4082,12 @@
      * white strip and no rule under it. The page starts under the logo. */
     background: var(--grond);
   }
+  /* Kleur erin (ADR-239): inside a subject the bar, the logo's button and the
+   * sticky menu under it stand on the subject's tint. */
+  .tk-appbar[data-module],
+  .tk-vakmenu-houder[data-module] {
+    background: var(--module-tint);
+  }
   @media (min-width: 768px) {
     .tk-appbar {
       height: 64px;
@@ -4009,6 +4135,9 @@
   .tk-brand:focus {
     background: var(--grond);
     -webkit-tap-highlight-color: transparent;
+  }
+  .tk-appbar[data-module] .tk-brand {
+    background: var(--module-tint);
   }
   /* Het liggende logo in de balk: 28 op een telefoon, 32 vanaf 768 (ADR-154,
    * bijgesteld in ADR-168).
@@ -4085,7 +4214,7 @@
    * no hue carries it (§A). */
   .tk-navbar-item[aria-current='page'] {
     border-bottom-color: var(--nacht);
-    background: var(--papier);
+    background: var(--perzik);
     color: var(--inkt);
     font-weight: 700;
   }
@@ -4137,7 +4266,7 @@
     width: 36px;
     height: 36px;
     border-radius: var(--radius-pil);
-    background: var(--papier);
+    background: var(--perzik);
     color: var(--tekst-secundair);
     font-size: var(--type-knop);
     line-height: 1;
@@ -4253,6 +4382,9 @@
      * scrolls under, and 1.40:1 against a moving ground reads as nothing. */
     border-bottom: var(--stroke-hair) solid var(--rand-sterk);
   }
+  .tk-vakmenu-houder[data-module] .tk-vakmenu-rij {
+    border-bottom-color: var(--module-rand);
+  }
   /* Across the row rather than around its words, at the height of a button and
    * ruled in two pixels of ink. Not the ink *fill* of a primary button: §C
    * allows one of those per screen and a module page already spends it on
@@ -4283,6 +4415,21 @@
   .tk-vakmenu-knop[aria-expanded='true'] {
     background: var(--vlak-hover);
   }
+  /* Kleur erin (ADR-239). Inside a subject the button wears it: its rule and
+   * its words in the subject's colour, its plate the bright fill that every
+   * plate has. Outside one, the plate that says "kies een vak" is zon. */
+  .tk-vakmenu-knop[data-module] {
+    border-color: var(--module);
+    color: var(--module-tekst);
+  }
+  .tk-vakmenu-knop[data-module] .tk-plaat {
+    background: var(--module-vlak);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--module);
+  }
+  .tk-vakmenu-knop .tk-plaat-neutraal {
+    background: var(--zon);
+    color: var(--inkt);
+  }
   /* The name takes the width the mark and the chevron leave, and wraps rather
    * than being cut: at a reader's 200% "Tijdvakken" is wider than the pill, and
    * a button whose min-height is a floor can simply grow. */
@@ -4291,9 +4438,10 @@
     min-width: 0;
     text-align: left;
   }
+  /* The ground of the box it opens in: room, or a subject's tint (ADR-239). */
   .tk-vakmenu-paneel {
     padding: 10px 16px 14px;
-    background: var(--papier);
+    background: transparent;
     border-bottom: var(--stroke-hair) solid var(--rand-sterk);
   }
   @media (min-width: 768px) {
@@ -4423,13 +4571,14 @@
     background: var(--vlak-hover);
   }
   .tk-tabbar-item[aria-current='page'] {
-    color: var(--inkt);
+    color: var(--nacht);
     font-weight: 700;
   }
-  /* Nacht since Kleurblokken (ADR-238): the accent outside a subject. */
+  /* Nacht since Kleurblokken (ADR-238), with the icon in zon since Kleur erin
+   * (ADR-239): 8.88. */
   .tk-tabbar-item[aria-current='page'] .tk-tabbar-teken {
     background: var(--nacht);
-    color: var(--kaart);
+    color: var(--zon);
   }
 
   /* ---- The round, on four sizes (K3) -----------------------------------
@@ -5468,6 +5617,24 @@
   .tk-vakrij-meta {
     font-size: var(--type-bijschrift);
     color: var(--tekst-secundair);
+  }
+  /* Elk vak in zijn eigen tint, met een rand en een onderkant in de lichte
+   * toon (ADR-239). */
+  .tk-vakrij[data-module] {
+    border: var(--stroke-active) solid var(--module-rand);
+    box-shadow: 0 var(--onderkant) 0 var(--module-rand);
+    background: var(--module-tint);
+  }
+  .tk-vakrij[data-module]:hover {
+    border-color: var(--module);
+  }
+  .tk-vakrij[data-module] .tk-vakrij-naam {
+    font-weight: 700;
+    color: var(--module-tekst);
+  }
+  .tk-vakrij[data-module] .tk-vakrij-meta {
+    font-weight: 600;
+    color: var(--module-tekst);
   }
 
   /* Het venster waarin een diploma opengaat. Een laag over de pagina, en de

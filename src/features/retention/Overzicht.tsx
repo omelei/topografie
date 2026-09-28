@@ -240,10 +240,11 @@ export function HoeVaak({
   // string.
   const breuk = school !== 0 && dagen <= school;
 
+  // Elke tegel een eigen tint, zoals de instellingen erboven (ADR-239).
   const tegels = [
-    [t('you.tegelRondes'), String(deze.length)],
-    [t('you.tegelVragen'), String(beantwoord)],
-    [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer)],
+    [t('you.tegelRondes'), String(deze.length), 'koraal'],
+    [t('you.tegelVragen'), String(beantwoord), 'zon'],
+    [t('you.tegelCijfer'), cijfer === null ? t('you.geenCijfer') : formatGrade(cijfer), 'nacht'],
   ] as const;
 
   return (
@@ -265,8 +266,8 @@ export function HoeVaak({
       {deze.length === 0 ? null : (
         <>
           <dl className="tk-cijfers">
-            {tegels.map(([label, waarde]) => (
-              <div key={label} className="tk-cijfer">
+            {tegels.map(([label, waarde, tint]) => (
+              <div key={label} className="tk-cijfer" data-tint={tint}>
                 <dt className="tk-cijfer-label">{label}</dt>
                 <dd className="tk-cijfer-getal">{waarde}</dd>
               </div>
@@ -301,8 +302,7 @@ export function HoeVaak({
  *
  * **Geen groen.** Een geoefende dag is een feit en geen goed antwoord, en groen
  * en gearceerd rood zijn in dit product voorbehouden aan antwoorden
- * (`StatusLabel`, HUISSTIJL §8). Dus de kleur van leer.nu zelf, zoals de tegels
- * van Je geheugen.
+ * (`StatusLabel`, HUISSTIJL §8). Dus zon, de kleur van wat je haalt (ADR-239).
  */
 function Weekstrook({ dagen }: { readonly dagen: readonly DagTelling[] }) {
   return (

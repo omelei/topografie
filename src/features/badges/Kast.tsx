@@ -139,6 +139,7 @@ export function Kast({
               key={module.id}
               type="button"
               className="tk-vakrij"
+              data-module={module.id}
               aria-expanded={false}
               onClick={() => setOpen(module.id)}
             >
@@ -153,7 +154,13 @@ export function Kast({
         const gehaald = doelen.filter((doelwit) => datums.has(doelwit.id)).length;
         return (
           <section key={module.id} className="flex flex-col gap-3" aria-label={naam}>
-            <button type="button" className="tk-vakrij" aria-expanded onClick={() => setOpen(null)}>
+            <button
+              type="button"
+              className="tk-vakrij"
+              data-module={module.id}
+              aria-expanded
+              onClick={() => setOpen(null)}
+            >
               <span className="tk-vakrij-naam">{naam}</span>
               <span className="tk-vakrij-meta">
                 {gehaald > 0
