@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
  *
  * Inside a subject the accent is the subject's colour, as the Merk en
  * stijlgids draws its chosen tile (ADR-180); where no subject is named it is
- * cacao. It is never koraal, the colour of what you press. Neither the accent
+ * nacht (ADR-238). It is never koraal, the colour of what you press. Neither the accent
  * nor a module's colour ever touches the mark: the dot is ink on paper or
  * paper on ink in every module.
  *
@@ -59,6 +59,87 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
  * tile in the subject's colour again (ADR-180).
  */
 const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
+
+/**
+ * Kleur erin (ADR-239): where the subject's colour stands on something that
+ * is *not* chosen. Children found the app grey, so a subject's card, tile,
+ * chip, header and row in the cupboard now wear its light tone, and its plate
+ * its tint. This is not the accent — `--accent` still means "chosen" and only
+ * the rules above paint with it — but it is the same colour, so every place is
+ * named here, with a reason. What still says "chosen" is the deep tone, the
+ * double rule and the tick; the light tone never carries a state alone.
+ */
+const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
+  ['.tk-kaart', 'a card on Vandaag is a door into one subject'],
+  ['.tk-kaart:hover', 'the same card under the pointer'],
+  ['.tk-kaart-voet', 'the line the card is about, in its subject'],
+  ['.tk-maakaf .tk-progress-fill', 'progress through that subject'],
+  [
+    '.tk-lijstrij[data-module]:not(.tk-weekdoel-rij) .tk-lijstrij-pijl',
+    'the way into a subject, from a row that names it',
+  ],
+  ['.tk-vakmenu-houder[data-module]', 'the header of a subject’s page: where you are'],
+  ['.tk-appbar[data-module] .tk-brand', 'the logo’s button, on that header'],
+  ['.tk-vakmenu-houder[data-module] .tk-vakmenu-rij', 'the rule under that header'],
+  ['.tk-vakmenu-knop[data-module]', 'the button that names the subject you are in'],
+  ['.tk-vakmenu-knop[data-module] .tk-plaat', 'its plate, as every plate is'],
+  ['.tk-stap-nummer', 'the page’s own order, told in its subject'],
+  ['.tk-keuze', 'a chip on a subject’s page, not yet chosen'],
+  [".tk-keuze:not(:disabled):not([aria-pressed='true']):hover", 'the same chip under the pointer'],
+  ['.tk-tegel', 'a tile on a subject’s page, not yet chosen'],
+  ['.tk-tegel .tk-plaat', 'its plate, on the subject’s tint'],
+  [".tk-tegel:not([aria-pressed='true']):hover", 'the same tile under the pointer'],
+  ['.tk-diploma', 'a diploma of that subject, not yet earned'],
+  ['.tk-diploma-vlak', 'its drawings, in the subject'],
+  ['.tk-diploma-voortgang', 'how far along it is'],
+  ['.tk-diploma-soort', 'what kind of diploma, in its subject'],
+  ['.tk-diploma-stand', 'where it stands, in its subject'],
+  ['.tk-startbalk-mobiel', 'the start bar at the foot of a subject’s page'],
+  ['.tk-startbalk-mobiel .tk-hulp', 'its help line'],
+  ['.tk-vakrij[data-module]', 'a subject in the cupboard on Jij'],
+  ['.tk-vakrij[data-module]:hover', 'the same row under the pointer'],
+  ['.tk-vakrij[data-module] .tk-vakrij-naam', 'its name'],
+  ['.tk-vakrij[data-module] .tk-vakrij-meta', 'how many diplomas it has'],
+]);
+
+/**
+ * Koraal is the button, the page's opening panel and the logo (ADR-179). The
+ * rules that may paint with it, and why. Never progress, never what is chosen,
+ * never a subject.
+ */
+const KORAAL_SELECTORS: ReadonlyMap<string, string> = new Map([
+  ['.tk-button', 'the button'],
+  [
+    ":root:not([data-beweging='rustig']) .tk-button:active:not(:disabled):not(.tk-button-tertiary)",
+    'the button, pressed',
+  ],
+  ['.tk-knop-licht', 'a light button'],
+  ['.tk-knop-licht:active', 'a light button, pressed'],
+  ['.tk-kaartteken', 'the mark before a card you press'],
+  ['.tk-etalage', 'the panel a page opens on'],
+  ['.tk-welkom-cirkel', 'a shape on that panel'],
+  // ADR-239: a setting on Jij and a number tile under "Hoe vaak oefen je?" each
+  // have a tint of their own. It is a label's fill, as on the light button,
+  // and not progress, not a choice and not a subject.
+  ["[data-tint='koraal']", 'the tint of a setting and a number tile'],
+]);
+
+/** The rules of the stylesheet, without comments, as selector and declarations. */
+function cssRules(): { selector: string; line: string }[] {
+  const css = readFileSync(join(ROOT, 'src', 'index.css'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  const rules: { selector: string; line: string }[] = [];
+  let selector = '';
+  for (const raw of css.split('\n')) {
+    const line = raw.trim();
+    if (line.endsWith('{')) {
+      const named = line.slice(0, -1).trim();
+      if (named && !named.startsWith('@')) selector = named;
+      continue;
+    }
+    rules.push({ selector, line });
+  }
+  return rules;
+}
 
 /** Lines in components that may name an accent, and why. */
 const ALLOWED_LINES: readonly { file: string; snippet: string; why: string }[] = [
@@ -143,6 +224,38 @@ describe('the accent colours what is chosen and nothing else', () => {
     }
 
     expect(offenders, 'add it to ALLOWED_LINES with a reason, or use ink').toEqual([]);
+  });
+
+  it('names every place a subject colours what is not chosen (ADR-239)', () => {
+    // The subject's light rule is the token of this change: every rule that
+    // draws with it is on the list.
+    const offenders = cssRules()
+      .filter(({ line }) => line.includes('var(--module-rand)'))
+      .map(({ selector }) => selector)
+      .filter((selector) => !SUBJECT_SELECTORS.has(selector));
+    expect(offenders, 'add the rule to SUBJECT_SELECTORS, with a reason').toEqual([]);
+
+    // And every place on the list is a rule that still colours with the subject.
+    const selectors = new Set(
+      cssRules()
+        .filter(({ line }) => /var\(--module/.test(line))
+        .map(({ selector }) => selector),
+    );
+    const stale = [...SUBJECT_SELECTORS.keys()].filter((selector) => !selectors.has(selector));
+    expect(stale, 'remove it from SUBJECT_SELECTORS').toEqual([]);
+  });
+
+  it('keeps koraal to the button, the opening panel and the logo', () => {
+    const offenders = cssRules()
+      .filter(({ line }) => /var\(--(actie|koraal)[\w-]*\)/.test(line))
+      .map(({ selector }) => selector)
+      .filter((selector) => !KORAAL_SELECTORS.has(selector));
+    expect(offenders, 'koraal is the button, not a subject or a state').toEqual([]);
+
+    const subjectKoraal = cssRules()
+      .filter(({ selector }) => SUBJECT_SELECTORS.has(selector))
+      .filter(({ line }) => /var\(--(actie|koraal)/.test(line));
+    expect(subjectKoraal).toEqual([]);
   });
 
   it('keeps the mark out of it entirely', () => {

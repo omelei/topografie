@@ -55,7 +55,7 @@ export function GroepInstelling() {
         aria-expanded={open}
         onClick={() => setOpen(!open)}
       >
-        <span className="tk-plaat tk-plaat-neutraal">
+        <span className="tk-plaat tk-plaat-neutraal" data-tint="zon">
           <GridIcon size={24} />
         </span>
         <span className="tk-lijstrij-tekst">

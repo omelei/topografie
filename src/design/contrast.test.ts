@@ -103,11 +103,14 @@ describe('contrast', () => {
   it.each([
     ['inkt', 'kaart'],
     ['inkt', 'papier'],
-    // The ground is melk since ADR-238; papier (room) still carries text as a
-    // fill, so both are measured.
+    // The ground is room (papier) again since ADR-239, and perzik the warm
+    // plane on it; both carry text, so both are measured.
     ['inkt', 'grond'],
     ['tekst-secundair', 'grond'],
     ['tekst-tertiair', 'grond'],
+    ['inkt', 'perzik'],
+    ['tekst-secundair', 'perzik'],
+    ['tekst-tertiair', 'perzik'],
     ['fout', 'grond'],
     ['tekst-secundair', 'kaart'],
     ['tekst-secundair', 'papier'],
@@ -177,6 +180,27 @@ describe('contrast', () => {
     expect(ratio('zon-tekst', 'zon-tint')).toBeGreaterThanOrEqual(4.5);
   });
 
+  /**
+   * Kleur erin (ADR-239): a setting on Jij and a number tile under it stand on
+   * one of three tints, with the deep tone of the same colour on them; the
+   * chosen tab has its icon in zon on nacht; and a switch that is on says
+   * "aan" in green on the card.
+   */
+  it.each([
+    ['actie-tekst', 'actie-tint'],
+    ['zon-tekst', 'zon-tint'],
+    ['nacht', 'nacht-tint'],
+    ['inkt', 'zon'],
+    ['nadruk-tekst', 'kaart'],
+    ['nacht', 'kaart'],
+  ])('lets %s speak on %s (ADR-239)', (foreground, background) => {
+    expect(ratio(foreground, background)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('draws the chosen tab’s icon in zon on nacht (ADR-239)', () => {
+    expect(ratio('zon', 'nacht')).toBeGreaterThanOrEqual(3);
+  });
+
   it('carries every word on a page’s koraal panel in cacao', () => {
     expect(ratio('inkt', 'koraal')).toBeGreaterThanOrEqual(4.5);
   });
@@ -221,6 +245,23 @@ describe('the colours outside the styleguide’s table', () => {
    */
   it.each(MODULES.map((name) => [name] as const))('%s-text clears 4.5:1 on its tint', (name) => {
     expect(ratio(`${name}-text`, `${name}-tint`)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  /**
+   * Kleur erin (ADR-239): inside a subject the bar at the top, the start bar
+   * on a phone and a row in the cupboard stand on the subject's tint with its
+   * words on it, and a step's number is white on the deep tone. The rule round
+   * a card, a tile or a chip is the subject's light tone: a line and never
+   * the only thing that says what it is, so it is held to being lighter than
+   * the deep tone and nothing more.
+   */
+  it.each(MODULES.map((name) => [name] as const))('carries words on the tint of %s', (name) => {
+    expect(ratio(`${name}-text`, `${name}-tint`), 'the words on the tint').toBeGreaterThanOrEqual(
+      4.5,
+    );
+    expect(ratio('kaart', name), 'the number of a step').toBeGreaterThanOrEqual(4.5);
+    expect(ratio(name, `${name}-rand`), 'the rule is a light tone').toBeGreaterThanOrEqual(3);
+    expect(ratio(`${name}-rand`, 'kaart'), 'the rule is not white').toBeGreaterThan(1.2);
   });
 
   /**
@@ -307,8 +348,10 @@ describe('the ground under a page', () => {
     expect(ratio('rand-grond', 'grond')).toBeLessThan(ratio('rand-bediening', 'grond'));
   });
 
-  it('is melk, and room is a plane on it rather than the ground (ADR-238)', () => {
-    expect(token('grond')).toBe(token('melk'));
-    expect(token('grond')).not.toBe(token('papier'));
+  it('is room, and perzik is the warm plane on it (ADR-239)', () => {
+    // Melk was the ground under ADR-238; children found the app grey on it.
+    expect(token('grond')).toBe(token('papier'));
+    expect(token('vlak-hover')).toBe(token('perzik'));
+    expect(ratio('perzik', 'grond')).toBeGreaterThan(1);
   });
 });

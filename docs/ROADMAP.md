@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 27 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 28 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -143,6 +143,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #179      | Kleur erin: room als grond en perzik als warm vlak, de kop van een vakpagina in de vaktint, kaarten, tegels en chips met een rand in de vakkleur, het stapnummer als munt, de actieve tab in nacht met zon, zon op een geoefende dag, de diplomategel en premium, en een tint per instelling op Jij                                  | 239      |
 | #176      | Kleurblokken (richting 1b): melk als grond, nacht als accent buiten een vak, een welkomstvlak in koraal, de rondes van vandaag als vaktegels, weekdoelen als pillen, een vakvlak op de vakpagina, en in een ronde de vraag als enige gekleurde vlak met een witte terugkoppelkaart                                                   | 238      |
 | #175      | Denker in stijl Strip: witte ogen met pupil in nacht, geen losse punt, elf uitdrukkingen (nieuw: verdrietig, jaloers, verbaasd, verward), het nieuwe beeldmerk in logo en app-icoon, de bewegingen uit de levering, en verward op het foutscherm en bij een kaart die niet laadt                                                     | 237      |
 | #174      | Verbeteringen uit de review van kind en ouder: "Ik ben de ouder" in plaats van een koopknop bij het kind, stoppen zonder nullen, de terugknop in een ronde, één premiumblok op de ouderpagina, "Ouderpagina" als naam, e2e voor een kind met een ingelogde ouder, en kleinere teksten                                                | 236      |

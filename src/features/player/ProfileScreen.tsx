@@ -101,7 +101,11 @@ export function ProfileScreen({
         {/* De kop als de etalage van premium (ADR-150). De zin eronder zegt
             wie er oefent en wat er op de pagina staat, in die volgorde
             (ADR-172). */}
-        <header className="tk-etalage">
+        <header className="tk-etalage tk-etalage-vormen">
+          {/* De vormen van het welkomstvlak, stil en versiering (ADR-239). */}
+          <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
           <h1 className="tk-etalage-kop">{t('you.title')}</h1>
           <p className="tk-etalage-tekst text-lopend">
             {naamloos
@@ -249,6 +253,7 @@ function Instellingen({
         <li>
           <Switch
             icon={SpeakIcon}
+            tint="nacht"
             on={prefs.readAloud}
             label={t('you.readAloud')}
             why={t('you.readAloudWhy')}
@@ -258,6 +263,7 @@ function Instellingen({
         <li>
           <Switch
             icon={SpeakIcon}
+            tint="koraal"
             on={prefs.geluid}
             label={t('you.geluid')}
             why={t('you.geluidWhy')}
@@ -267,6 +273,7 @@ function Instellingen({
         <li>
           <Switch
             icon={OogIcon}
+            tint="zon"
             on={prefs.rustig}
             label={t('you.rustig')}
             why={t('you.rustigWhy')}
@@ -285,6 +292,7 @@ function Instellingen({
  */
 function Switch({
   icon: Teken,
+  tint,
   on,
   label,
   why,
@@ -292,6 +300,8 @@ function Switch({
 }: {
   /** Wat de schakelaar raakt. */
   readonly icon: ComponentType<Omit<IconProps, 'children'>>;
+  /** De tint van de plaat (ADR-239). */
+  readonly tint: 'koraal' | 'zon' | 'nacht';
   readonly on: boolean;
   readonly label: string;
   readonly why: string;
@@ -299,7 +309,7 @@ function Switch({
 }) {
   return (
     <button type="button" className="tk-lijstrij" aria-pressed={on} onClick={onToggle}>
-      <span className="tk-plaat tk-plaat-neutraal">
+      <span className="tk-plaat tk-plaat-neutraal" data-tint={tint}>
         <Teken size={24} />
       </span>
       <span className="tk-lijstrij-tekst">
@@ -367,8 +377,8 @@ function Avatarkiezer({
         {/* Verborgen: de regel ernaast zegt welke avatar het is, en zonder
             keuze is dit de voorletter — die anders vóór "Je avatar" in de naam
             van deze knop terechtkomt. */}
-        <span className="tk-plaat tk-plaat-neutraal" aria-hidden="true">
-          <AvatarTeken id={gekozen} naam={profile.naam} size={24} />
+        <span className="tk-plaat tk-plaat-neutraal tk-plaat-avatar" aria-hidden="true">
+          <AvatarTeken id={gekozen} naam={profile.naam} size={40} />
         </span>
         <span className="tk-lijstrij-tekst">
           <span className="tk-lijstrij-titel">{t('you.avatar')}</span>
@@ -463,7 +473,7 @@ function Naam({ profile }: { readonly profile: ProfileRecord }) {
           setOpen(!open);
         }}
       >
-        <span className="tk-plaat tk-plaat-neutraal">
+        <span className="tk-plaat tk-plaat-neutraal" data-tint="koraal">
           <PupilIcon size={24} />
         </span>
         <span className="tk-lijstrij-tekst">
