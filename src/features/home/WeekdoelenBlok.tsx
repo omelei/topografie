@@ -344,11 +344,19 @@ function Rij({
       </span>
       <span className="tk-lijstrij-tekst">
         <span className="tk-lijstrij-titel">{omschrijving}</span>
-        <ProgressBar
-          value={stand.nodig === 0 ? 0 : stand.gedaan / stand.nodig}
-          showDot={false}
-          label={`${omschrijving}: ${regel}`}
-        />
+        {opTeTellen(stand.nodig) ? (
+          <Segmenten
+            gedaan={stand.gedaan}
+            nodig={stand.nodig}
+            label={`${omschrijving}: ${regel}`}
+          />
+        ) : (
+          <ProgressBar
+            value={stand.nodig === 0 ? 0 : stand.gedaan / stand.nodig}
+            showDot={false}
+            label={`${omschrijving}: ${regel}`}
+          />
+        )}
       </span>
       <span className="tk-lijstrij-stand">{regel}</span>
       <span className="tk-lijstrij-pijl">
@@ -362,6 +370,52 @@ function Rij({
         </button>
       </span>
     </div>
+  );
+}
+
+/** Tot zoveel eenheden is de balk een pil per eenheid; daarboven doorlopend (ADR-238). */
+const SEGMENTEN_MAX = 10;
+
+/** Of een doel als pillen te tellen is: minstens één, en niet meer dan tien. */
+function opTeTellen(nodig: number): boolean {
+  if (nodig === 0) return false;
+  return nodig <= SEGMENTEN_MAX;
+}
+
+/**
+ * De balk van een doel als een rij pillen, één per ronde of dag (Kleurblokken,
+ * ADR-238): drie van de vijf is dan drie pillen, en dat is te tellen. Dezelfde
+ * voortgangsbalk voor een schermlezer als `ProgressBar`, met dezelfde naam.
+ */
+function Segmenten({
+  gedaan,
+  nodig,
+  label,
+}: {
+  readonly gedaan: number;
+  readonly nodig: number;
+  readonly label: string;
+}) {
+  const vol = Math.min(gedaan, nodig);
+  const percent = Math.round((vol / nodig) * 100);
+  return (
+    <span
+      className="tk-segmenten"
+      role="progressbar"
+      aria-label={label}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={percent}
+      aria-valuetext={`${percent}%`}
+    >
+      {Array.from({ length: nodig }, (_, n) => (
+        <span
+          key={n}
+          aria-hidden="true"
+          className={n < vol ? 'tk-segment tk-segment-vol' : 'tk-segment'}
+        />
+      ))}
+    </span>
   );
 }
 

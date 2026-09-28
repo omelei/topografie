@@ -409,22 +409,31 @@ export function ModuleScreen({
       {/* What is chosen here wears the module's colour (ADR-112). The child's
           own column beside it does not: it is about the child, not the module. */}
       <div className="tk-page-main" data-accent="module">
-        <div className="flex flex-col gap-3">
-          {/* Which module this is, as a badge in its own tint. On a phone and
-              a tablet the rail is not drawn, and the menu above says it too;
-              here it is the page saying it about itself. */}
-          <p className="tk-modulebadge">
-            <ModuleIcon size={16} />
-            {t(module.name)}
-          </p>
+        {/* Het vlak waar de pagina van een vak mee begint (Kleurblokken,
+            ADR-238): de vorm van het welkomstvlak op Vandaag, in de diepe
+            kleur van het vak met witte woorden. De vormen zijn versiering. */}
+        <div className="tk-etalage tk-welkom tk-vakvlak">
+          <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
+          <div className="tk-welkom-tekst">
+            {/* Which module this is, as a badge in its own tint. On a phone and
+                a tablet the rail is not drawn, and the menu above says it too;
+                here it is the page saying it about itself. */}
+            <p className="tk-modulebadge">
+              <ModuleIcon size={16} />
+              {t(module.name)}
+            </p>
 
-          {/* By name, the way the front door greets them — on every size. The
-              handoff drops the name on a phone; a chooser that asks "wat wil
-              je oefenen?" of nobody in particular is a form, and asked of Fem
-              it is a question (ADR-095). */}
-          <h1 className="tk-display tk-titel">
-            {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
-          </h1>
+            {/* By name, the way the front door greets them — on every size. The
+                handoff drops the name on a phone; a chooser that asks "wat wil
+                je oefenen?" of nobody in particular is a form, and asked of Fem
+                it is a question (ADR-095). */}
+            <h1 className="tk-display tk-welkom-kop">
+              {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
+            </h1>
+          </div>
 
           {/* Hier stond "Hier gaat je toets over", met een knop die de hele
               module als toets oefende. Het hing aan een toetsdatum, en die

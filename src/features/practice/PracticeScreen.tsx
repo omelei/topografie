@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { NextIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import {
   boxCentre,
@@ -285,40 +286,45 @@ export function PracticeScreen({
             a round is never interrupted by something that has to be dismissed. */}
         <div className="tk-round-question">
           {revealed ? (
-            <>
-              <div className="flex items-start gap-4">
-                <UitkomstTeken
-                  uitkomst={state.lastCorrect ? 'goed' : nearMiss ? 'bijna' : 'fout'}
-                />
-                <div className="min-w-0">
-                  {/* The heading is the right answer, not the word "fout" (K6):
+            <div className="tk-terugkoppeling">
+              <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : nearMiss ? 'bijna' : 'fout'} />
+              <div className="tk-terugkoppeling-tekst min-w-0">
+                {/* The heading is the right answer, not the word "fout" (K6):
                       first what it is, and only then what the child chose. */}
-                  <p className="tk-display text-sectiekop">
-                    {state.lastCorrect
-                      ? t('practice.correct', { naam })
-                      : nearMiss
-                        ? t('practice.almost')
-                        : t('practice.wrong', { naam })}
-                  </p>
-                  <p className="text-lopend text-tekst-secundair">
-                    {feedbackDetail(state, naam, chosenName)}
-                  </p>
-                </div>
-                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : nearMiss ? 'bijna' : 'fout'} />
+                <p className="tk-display text-sectiekop">
+                  {state.lastCorrect
+                    ? t('practice.correct', { naam })
+                    : nearMiss
+                      ? t('practice.almost')
+                      : t('practice.wrong', { naam })}
+                </p>
+                <p className="text-lopend text-tekst-secundair">
+                  {feedbackDetail(state, naam, chosenName)}
+                </p>
               </div>
+              <RondeDenker uitkomst={state.lastCorrect ? 'goed' : nearMiss ? 'bijna' : 'fout'} />
 
               {/* A lightning round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (
-                <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
+                <button
+                  ref={nextButton}
+                  type="button"
+                  className="tk-button tk-terugkoppeling-knop"
+                  onClick={next}
+                >
                   {t('practice.next')}
+                  <NextIcon size={20} />
                 </button>
               )}
-            </>
+            </div>
           ) : (
             <>
-              <p className="tk-label">{label}</p>
-              <h1 className="tk-display mt-1 text-vraag">{vraag}</h1>
+              <div className="tk-vraagblok">
+                <span className="tk-vraagblok-vorm" aria-hidden="true" />
+                <p className="tk-label">{label}</p>
+                <h1 className="tk-display text-vraag">{vraag}</h1>
+              </div>
               {typing ? <AnswerField key={state.index} onSubmit={submit} /> : null}
               {choosing && state.question.options ? (
                 <OptionList key={state.index} options={state.question.options} onChoose={choose} />

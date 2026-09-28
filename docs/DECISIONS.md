@@ -13743,6 +13743,80 @@ punt en de wenkbrauwen zijn weg. De levering noemt `denken` het beeldmerk.
 - **De nieuwe uitdrukkingen op meer schermen.** Waar verdrietig, jaloers en
   verbaasd iets toevoegen, is een ontwerpvraag voor het herontwerp van de app.
 
+## ADR-238 — Kleurblokken: melk als grond, nacht als accent, vlakken in de vakkleur
+
+**Status:** accepted. **Date:** 2026-09-27. Op verzoek van de eigenaar
+(visuele richting 1b, "Kleurblokken"). Wijzigt ADR-221: de grond is niet langer
+zand maar melk. Wijzigt ADR-180 voor het accent buiten een vak: nacht in plaats
+van cacao.
+
+**Besluit.**
+
+- **Melk (`--melk`, `#faf7f3`) is de grond van elk scherm,** in de app en in
+  elke ronde. `--grond` wijst naar `--melk`; `--canvas` (zand) blijft staan,
+  zodat terug één waarde is. De app-balk, de rail en de plakkende vakknop
+  staan op de grond in plaats van op een witte balk, zonder onderrand. De
+  tabbalk blijft wit.
+- **Nacht (`--nacht`, `#1b2a5e`) is het accent buiten een vak:** voortgang
+  (`--module` en `--accent` waar geen vak genoemd is), de actieve tab, een
+  gekozen chip. Het is de nacht van het logo, als eigen token in `index.css`,
+  want een component mag niet naar de logotokens grijpen. Binnen een vak blijft
+  het de diepe vakkleur.
+- **Per vak twee tonen erbij:** `-schaduw`, de harde onderkant van een
+  vaktegel, en `-vraag`, de cirkel achter de vraag in een ronde. De vraagtoon is
+  de diepe toon 12 % lichter (`color-mix(in oklch, diep 88%, white)`), als hex
+  vastgelegd zodat `contrast.test.ts` hem meet; voor topo is het `#0e8577` uit
+  het ontwerp, omdat de menging daar 4,43 onder wit gaf. En `--koraal-vorm`
+  (`#ff8466`) voor de cirkel op het welkomstvlak.
+- **Zachte tinten blijven warm.** Wat uit de vakkleur wordt gemengd (de
+  standtegels en de weekstrook op Jij, de ring, de tabel), mengt buiten een
+  vak uit cacao (`--module-meng`) en niet uit nacht: nacht met wit wordt koud
+  grijsblauw op een warme pagina. De lijn en de vulling zelf zijn nacht.
+- **Vlakken.** Vandaag opent met een welkomstvlak in koraal (Denker zwaait over
+  de rand), de rondes van vandaag zijn hooguit drie vaktegels in de diepe
+  vakkleur met witte woorden (de rest is de lijst van altijd), een vakpagina
+  opent met een vlak in de diepe vakkleur, en in een ronde is de vraag het
+  enige gekleurde vlak. Hooguit één merkvlak en drie vakvlakken per scherm.
+- **Kaarten en koppen.** Een sectiekop heeft geen lijn meer. Een weekdoel tot
+  tien eenheden is een rij pillen, daarboven een doorlopende balk. "Maak af"
+  is een kaart met het vakicoon links en een balk in de vakkleur op zijn tint.
+  Na een antwoord staat er een witte kaart met een neutrale rand, het teken van
+  48, Denker van 72 en de knop "Volgende vraag" met een pijl.
+- **Wat niet verandert:** de knopvorm, de lettertypen en de typeschaal, het
+  logo en Denker, de iconen, de kaartstaten goed/fout/gemist, wat beweegt
+  tijdens een vraag (niets) en de rustige stand. De vormen van 1b staan stil.
+
+**Contrast** (WCAG, gemeten uit de hex; `contrast.test.ts` houdt het vast):
+
+| Paar                      | Ratio                                |
+| ------------------------- | ------------------------------------ |
+| cacao op koraal           | 5.72                                 |
+| cacao op melk             | 15.17                                |
+| nacht op wit / op melk    | 13.64 / 12.77                        |
+| wit op diep (topo … klok) | 5.66 tot 7.89                        |
+| wit op vraagcirkel        | 4.53 (topo, vlaggen) tot 5.83 (klok) |
+| tekst-secundair op melk   | 7.79                                 |
+| actie (de knop) op melk   | 3.72                                 |
+
+De opdracht noemde 15,4 voor cacao op melk; gemeten is het 15,17.
+
+**Afwegingen.**
+
+- **Tekst loopt nooit over een vlakkleur.** Wit op de heldere vlakkleur haalt
+  2,1 tot 3,5. Waar het ontwerp een vorm onder de titel legt, staat de vorm
+  opzij (de tweede en derde herhaaltegel: rechtsboven in plaats van onderaan),
+  houdt de tekst afstand (de eerste tegel), of is de vorm de vraagtoon (de
+  grote cirkel op het vakvlak; de stippen staan daar alleen op een telefoon).
+- **De avatarknop op een telefoon** blijft de avatar alleen, met een raakvlak
+  van 56 (`--raak`); de pil van 44 met rand zou onder de trefmaat van een duim
+  zakken. Vanaf 768 is het de witte pil uit het ontwerp.
+- **Weekdoelen en "Maak af" naast elkaar op iPad** is niet gebouwd: "Recent
+  geoefend" staat ertussen, en de volgorde van de voordeur blijft.
+- **"Er staan {n} vragen voor je klaar"** staat onder de begroeting alleen met
+  premium: zonder code is dat getal een feit en geen wachtrij (ADR-124). De zin
+  "Er staan n vragen klaar die je bijna vergeten bent" in het blok is daarom
+  weg; het blok zegt nu "wat je bijna vergeten bent" naast de kop.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

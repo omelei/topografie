@@ -21,6 +21,9 @@ export const nl = {
   // Voor een kind dat nog geen naam typte (ADR-229).
   'home.welcomeZonderNaam': 'Hoi!',
   'home.todayOpen': 'Kies een onderwerp en begin met leren.',
+  // Onder de begroeting, met premium en vragen die vandaag terug moeten (ADR-238).
+  'home.welkomKlaarEen': 'Er staat 1 vraag voor je klaar.',
+  'home.welkomKlaar': 'Er staan {aantal} vragen voor je klaar.',
   // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
   // de vakken, en in drie stappen hoe het werkt.
   // De geheugencheck (ADR-228): één keer, zonder hulp. Geen woord over premium (R-11).
@@ -215,12 +218,13 @@ export const nl = {
   // "Vandaag": het dagplan (ADR-126). Het getal is van het kind zelf en staat
   // er dus ook zonder code; het plan eronder is waar premium voor is.
   'vandaag.titel': 'Vandaag herhalen',
-  'vandaag.eenKlaar': 'Er staat 1 vraag klaar die je bijna vergeten bent.',
-  'vandaag.klaar': 'Er staan {aantal} vragen klaar die je bijna vergeten bent.',
   'vandaag.eenVraag': 'Er is 1 vraag die vandaag terug moet komen. Zo blijft het in je hoofd.',
   'vandaag.vragen':
     'Er zijn {aantal} vragen die vandaag terug moeten komen. Zo blijft het in je hoofd.',
   'vandaag.ronde': '{aantal} vragen',
+  'vandaag.rondeEen': '1 vraag',
+  // Naast de kop, als de rondes als tegels klaarstaan (ADR-238).
+  'vandaag.bijschrift': 'wat je bijna vergeten bent',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
   'vandaag.gedaan': '{gedaan} van de {totaal} rondes gedaan.',

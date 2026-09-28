@@ -32,7 +32,7 @@ export function RondeDenker({ uitkomst }: { readonly uitkomst: Uitkomst }) {
 
   return (
     <span ref={plek} className="tk-ronde-denker">
-      <Brandmark size={56} uitdrukking={goed ? 'juichen' : 'bemoedigend'} />
+      <Brandmark size={72} uitdrukking={goed ? 'juichen' : 'bemoedigend'} />
     </span>
   );
 }

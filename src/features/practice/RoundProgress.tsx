@@ -68,6 +68,11 @@ export function RoundProgress({
           {t('practice.laatsteVraag')}
         </span>
       ) : null}
+      {/* Vanaf een tablet ook in woorden (ADR-238). Stil voor een schermlezer:
+          de balk zegt het al in `aria-valuetext`. */}
+      <span className="tk-round-teller" aria-hidden="true">
+        {t('practice.questionOf', { nu: index + 1, totaal: total })}
+      </span>
     </div>
   );
 }

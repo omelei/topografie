@@ -167,6 +167,12 @@ test('the Jij page has no violations', async ({ page }) => {
     .getByRole('region', { name: 'Jouw diploma’s' })
     .getByRole('button', { name: /^Rekenen / })
     .click();
+  // Terug naar boven vóór de scan (ADR-238). De klik schuift de kaart naar het
+  // midden van het scherm, en welke rij van de instellingen dan net boven de
+  // plakkende vakknop uitsteekt, hangt af van elke pixel erboven. axe telt die
+  // strook van een paar pixels als het hele aanraakdoel: dat meet de
+  // scrollstand, niet de pagina. Boven staat er niets onder de vakknop.
+  await page.locator('.tk-schil-rol').evaluate((el) => el.scrollTo(0, 0));
   expect((await scan(page)).violations).toEqual([]);
 
   // En met een diploma groot open, want dat is een dialoog: een eigen laag met

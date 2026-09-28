@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { sumInWoorden, sumText, sumUitgewerkt } from '@/game-core';
 import { Brandmark } from '@/components/Brandmark';
@@ -169,47 +170,54 @@ export function SumScreen({
       <div className="tk-round-body">
         <div className="tk-round-question">
           {revealed ? (
-            <>
-              <div className="flex items-start gap-4">
-                <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
-                <div className="min-w-0">
-                  <p className="tk-display text-sectiekop">
-                    {state.lastCorrect
-                      ? t('sums.correct', { uitgewerkt })
-                      : t('sums.wrong', { uitgewerkt })}
-                  </p>
-                  <p className="text-lopend text-tekst-secundair">
-                    {state.lastCorrect
-                      ? ''
-                      : state.given === null
-                        ? t('sums.dontKnowSub')
-                        : t('sums.wrongSub', { gegeven: state.given })}
-                  </p>
-                </div>
-                <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+            <div className="tk-terugkoppeling">
+              <UitkomstTeken uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
+              <div className="tk-terugkoppeling-tekst min-w-0">
+                <p className="tk-display text-sectiekop">
+                  {state.lastCorrect
+                    ? t('sums.correct', { uitgewerkt })
+                    : t('sums.wrong', { uitgewerkt })}
+                </p>
+                <p className="text-lopend text-tekst-secundair">
+                  {state.lastCorrect
+                    ? ''
+                    : state.given === null
+                      ? t('sums.dontKnowSub')
+                      : t('sums.wrongSub', { gegeven: state.given })}
+                </p>
               </div>
+              <RondeDenker uitkomst={state.lastCorrect ? 'goed' : 'fout'} />
 
               {/* A timed round moves on by itself, so there is nothing to
                   press and nothing to charge a child for pressing. */}
               {state.rule.kind !== 'tijd' && (
-                <button ref={nextButton} type="button" className="tk-button mt-4" onClick={next}>
+                <button
+                  ref={nextButton}
+                  type="button"
+                  className="tk-button tk-terugkoppeling-knop"
+                  onClick={next}
+                >
                   {/* A diploma ends here, so the button says so. "Volgende
                       vraag" on a button that shows a result is the kind of
                       small lie a child notices once and then stops trusting. */}
                   {stopsOnAMistake(mode) && !state.lastCorrect
                     ? t('sums.diplomaStop')
                     : t('practice.next')}
+                  <NextIcon size={20} />
                 </button>
               )}
-            </>
+            </div>
           ) : (
             <>
-              <p className="tk-label">{instruction}</p>
-              {/* The card carries a heading like every other question card, so
-                  a screen reader gets one and the eye has somewhere to land in
-                  a column that is otherwise a label and a box. The sum itself
-                  is beside it, where the map is on the other screen. */}
-              <h1 className="tk-display mt-1 text-vraag">{t('sums.prompt')}</h1>
+              <div className="tk-vraagblok">
+                <span className="tk-vraagblok-vorm" aria-hidden="true" />
+                <p className="tk-label">{instruction}</p>
+                {/* The card carries a heading like every other question card, so
+                    a screen reader gets one and the eye has somewhere to land in
+                    a column that is otherwise a label and a box. The sum itself
+                    is beside it, where the map is on the other screen. */}
+                <h1 className="tk-display text-vraag">{t('sums.prompt')}</h1>
+              </div>
               {typing ? (
                 <SumField key={state.index} onSubmit={submit} />
               ) : (
