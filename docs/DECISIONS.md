@@ -14027,6 +14027,42 @@ een tab tussen de andere.
 - **De kop is niet meer `--kop`** (ADR-240): wit aan een bureau, de grond op
   een telefoon.
 
+## ADR-242 — Feedback op de navigatie: Ouders in de tabbalk, dezelfde vaktegels en elke keuze springt door
+
+**Status:** accepted. **Date:** 2026-09-29. Op verzoek van de eigenaar, na
+ADR-241 op de live site. Wijzigt ADR-241 en ADR-233.
+
+**Besluit.**
+
+- **De tabbalk op een telefoon valt op.** Hij stond op de grond, met de
+  actieve tab wit op room, en sprong er niet uit. Nu is de balk wit met de rand
+  van het scherm (`--rand-sterk`, 2 px) erboven, en is de actieve tab een tint
+  achter de hele tab: nacht-tint met het woord in nacht, zoals een rij in de
+  zijbalk. Het teken blijft secundair.
+- **Ouders staat in de tabbalk**, als vierde: Vandaag, Oefenen, Jij, Ouders. De
+  ronde Ouders-knop in de kop gaat weg, zodat hij er niet twee keer staat; in
+  de kop staan op een telefoon nog premium en het kind.
+- **`/oefenen` toont dezelfde tegels als "Kies een vak" op Vandaag**: een lijst
+  met de plaat, de naam, een regel over wat erin zit en een pijl
+  (`VakTegels`). De grote kaarten van ADR-241 zijn weg.
+- **De vaktegels zijn even hoog.** Rijen in het raster waren dat niet: een
+  toelichting over twee regels maakte de tweede rij hoger. Nu is elke rij zo
+  hoog als de hoogste (`grid-auto-rows: 1fr`).
+- **Elke keuze op een vakpagina springt naar het volgende onderdeel** (ADR-233
+  deed het alleen bij het eerste): regio → onderwerp → welke → spelvorm →
+  hoeveel vragen → de startbalk. Staat "Hoeveel vragen?" er bij een spelvorm
+  niet, dan gaat de sprong naar de startbalk. Op een telefoon staat die al vast
+  onderaan en springt de laatste keuze niet. "Je fouten" is een stand op de
+  spelvorm en springt niet. De landingsmarge is 16 px, want het plakkende
+  vakmenu is weg.
+
+**Afwegingen.**
+
+- **Op een telefoon worden de vaktegels even hoog als de hoogste**, ook in één
+  kolom. Topo en Rekenen krijgen daardoor wat lucht onder hun ene regel.
+- **Springen tot de startbalk aan een bureau** schuift de pagina ook daar. Dat
+  is gewild: de volgorde van de pagina is overal dezelfde.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 28 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 29 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -143,6 +143,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #182      | Feedback op de navigatie: een witte tabbalk die opvalt, met Ouders als vierde tab; op `/oefenen` de vaktegels van Vandaag; alle vaktegels even hoog; en op elke vakpagina springt elke keuze naar het volgende onderdeel                                                                                                             | 242      |
 | #181      | Nieuwe navigatie en vakkleuren: vakken 70° uit elkaar (klok roze), een witte kop met premium als enige opvallende knop, een zijbalk met Oefenen en de vakken (inklapbaar) aan een bureau, `/oefenen` met de vakken als kaarten, en op een telefoon een kop op de grond met drie ronde knoppen en de tabs Vandaag · Oefenen · Jij     | 241      |
 | #180      | Witte tegels zoals op Vandaag (rand in de lichte vaktoon, onderkant en plaat in de heldere vakkleur) op elke vakpagina, een witte rail, en één kopkleur op elke pagina                                                                                                                                                               | 240      |
 | #179      | Kleur erin: room als grond en perzik als warm vlak, de kop van een vakpagina in de vaktint, kaarten, tegels en chips met een rand in de vakkleur, het stapnummer als munt, de actieve tab in nacht met zon, zon op een geoefende dag, de diplomategel en premium, en een tint per instelling op Jij                                  | 239      |

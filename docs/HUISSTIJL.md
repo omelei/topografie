@@ -217,7 +217,7 @@ Het ontwerp is `Navigatie.dc.html` (ADR-241); `Shell.tsx` bouwt het, met één
 breekpunt op 1200. Drie regels:
 
 - **"Hier ben je" ziet er overal hetzelfde uit:** een tint achter de hele rij
-  of tab. Een bestemming: `--nacht-tint` met het woord in nacht. Een vak: de
+  of tab. Een bestemming, ook een tab onderaan: `--nacht-tint` met het woord in nacht. Een vak: de
   vaktint met het woord in de diepe vakkleur. In `aria-current` is dat `page`
   voor de pagina zelf en `true` voor Oefenen als je in een vak bent.
 - **Het teken van een bestemming** (Vandaag, Oefenen, Jij, Ouders) is een
@@ -228,18 +228,19 @@ breekpunt op 1200. Drie regels:
   `--zon-rand`, onder de muis `--zon-hover`; waar je bent nacht op
   `--nacht-diep`, het woord wit en de ster in zon.
 
-| deel         | bureau (vanaf 1200)                                                                   | telefoon en tablet                                                         |
-| ------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| kop          | 64 hoog, wit, lijn eronder; logo 30; rechts premium (pil) en het kind (pil in perzik) | op de grond; logo 24; drie ronde knoppen van 44: premium, Ouders, het kind |
-| bestemmingen | zijbalk van 248: Vandaag, Oefenen met de vakken eronder, een lijn, Jij, Ouders        | tabbalk op de grond: Vandaag, Oefenen, Jij                                 |
-| vakken       | onder Oefenen, in- en uitklapbaar (`nav.oefenenOpen` in localStorage)                 | via Oefenen (`/oefenen`); een vakpagina heeft "‹ Oefenen" boven de kop     |
-| rij of tab   | min. 52 hoog, radius 18, plaat 36, Baloo 700 18                                       | min. 60 hoog, radius 20, teken 24, Baloo 700 15; actief wit met lijn       |
+| deel         | bureau (vanaf 1200)                                                                   | telefoon en tablet                                                          |
+| ------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| kop          | 64 hoog, wit, lijn eronder; logo 30; rechts premium (pil) en het kind (pil in perzik) | op de grond; logo 24; twee ronde knoppen van 44: premium en het kind        |
+| bestemmingen | zijbalk van 248: Vandaag, Oefenen met de vakken eronder, een lijn, Jij, Ouders        | witte tabbalk met een lijn erboven: Vandaag, Oefenen, Jij, Ouders (ADR-242) |
+| vakken       | onder Oefenen, in- en uitklapbaar (`nav.oefenenOpen` in localStorage)                 | via Oefenen (`/oefenen`); een vakpagina heeft "‹ Oefenen" boven de kop      |
+| rij of tab   | min. 52 hoog, radius 18, plaat 36, Baloo 700 18                                       | min. 60 hoog, radius 20, teken 24, Baloo 700 15; actief in nacht-tint       |
 
 Oefenen aan een bureau is twee knoppen in één rij: het woord gaat naar
 `/oefenen` en klapt de vakken open, de pijl (44 bij 44, met `aria-expanded`)
 klapt ze alleen in of uit. Staat de lijst dicht terwijl je in een vak bent, dan
-draagt Oefenen de tint. `/oefenen` toont de vakken als kaarten (`tk-vakkaart`):
-wit, met de lichte vaktoon als rand, de plaat linksboven en de naam onderaan.
+draagt Oefenen de tint. `/oefenen` toont de vakken als dezelfde tegels als
+"Kies een vak" op Vandaag (`VakTegels`, ADR-242), even hoog per rij. Op een
+vakpagina springt elke keuze naar het volgende onderdeel (ADR-242).
 
 ## Wat het bewaakt
 
