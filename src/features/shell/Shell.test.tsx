@@ -248,7 +248,7 @@ describe('the shell', () => {
     expect(screen.getByRole('button', { name: 'leer.nu, naar Vandaag' })).toBeInTheDocument();
   });
 
-  it('lays Vandaag, Oefenen and Jij along the bottom, and Oefenen holds every vak (ADR-241)', () => {
+  it('lays Vandaag, Oefenen, Jij and Ouders along the bottom, and Oefenen holds every vak (ADR-242)', () => {
     render(
       <Shell modules={MODULES} destinations={DESTINATIONS} currentModule="woorden">
         <p>taal</p>
@@ -257,14 +257,14 @@ describe('the shell', () => {
 
     const [, tabbalk] = screen.getAllByRole('navigation', { name: 'Waar je heen kunt' });
     const tabs = within(tabbalk as HTMLElement).getAllByRole('button');
-    expect(tabs.map((tab) => tab.textContent)).toEqual(['Vandaag', 'Oefenen', 'Jij']);
+    expect(tabs.map((tab) => tab.textContent)).toEqual(['Vandaag', 'Oefenen', 'Jij', 'Ouders']);
 
     // In een vak is Oefenen de tab waar je bent, als deel en niet als pagina.
     expect(tabs[1]).toHaveAttribute('aria-current', 'true');
     expect(tabs[0]).not.toHaveAttribute('aria-current');
   });
 
-  it('puts premium, Ouders and the child in the bar on a phone (ADR-241)', () => {
+  it('puts premium and the child in the bar, and Ouders in the tab bar (ADR-242)', () => {
     const seen: string[] = [];
     render(
       <Shell
@@ -279,13 +279,14 @@ describe('the shell', () => {
     );
 
     const balk = within(screen.getByRole('banner'));
-    // In de volgorde van het ontwerp: premium, Ouders, het kind.
+    // Het logo, premium en het kind. Ouders staat niet ook nog in de kop.
     expect(
       balk
         .getAllByRole('button')
         .map((knop) => knop.getAttribute('aria-label') ?? knop.textContent),
-    ).toEqual(['leer.nu, naar Vandaag', 'Premium', 'Ouders', 'Fem']);
-    const ouders = balk.getByRole('button', { name: 'Ouders' });
+    ).toEqual(['leer.nu, naar Vandaag', 'Premium', 'Fem']);
+    const [, tabbalk] = screen.getAllByRole('navigation', { name: 'Waar je heen kunt' });
+    const ouders = within(tabbalk as HTMLElement).getByRole('button', { name: 'Ouders' });
     expect(ouders).toHaveAttribute('aria-current', 'page');
     fireEvent.click(ouders);
     expect(seen).toEqual(['ouders']);

@@ -223,14 +223,14 @@ test('below 1200 a vak is reached through Oefenen', async ({ page }, testInfo) =
   const tabbalk = page
     .getByRole('navigation', { name: 'Waar je heen kunt' })
     .filter({ visible: true });
-  await expect(tabbalk.getByRole('button')).toHaveText(['Vandaag', 'Oefenen', 'Jij']);
+  await expect(tabbalk.getByRole('button')).toHaveText(['Vandaag', 'Oefenen', 'Jij', 'Ouders']);
   const oefenen = tabbalk.getByRole('button', { name: 'Oefenen', exact: true });
 
   await oefenen.click();
   await expect(page).toHaveURL(/\/oefenen$/);
   await expect(oefenen).toHaveAttribute('aria-current', 'page');
 
-  await page.getByRole('main').getByRole('button', { name: 'Klok', exact: true }).click();
+  await page.getByRole('main').getByRole('button', { name: /^Klok/ }).click();
   await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
   await expect(oefenen).toHaveAttribute('aria-current', 'true');
 

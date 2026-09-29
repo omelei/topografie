@@ -3034,9 +3034,12 @@
     flex-direction: column;
     gap: 4px;
   }
+  /* Elke rij even hoog (ADR-242): een toelichting over twee regels maakte de
+   * tweede rij hoger dan de eerste. */
   .tk-vakraster {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
+    grid-auto-rows: 1fr;
     gap: 12px;
     margin: 0;
     padding: 0;
@@ -3634,9 +3637,9 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    /* Wie hierheen springt (ADR-233), landt onder het vakmenu dat onder 1200
-     * bovenaan blijft plakken, niet erachter. */
-    scroll-margin-top: 88px;
+    /* Wie hierheen springt (ADR-233, ADR-242), landt met wat lucht boven zich.
+     * Het plakkende vakmenu is weg (ADR-241). */
+    scroll-margin-top: 16px;
   }
   /* The number as a coin in the module's colour, white on the deep tone
    * (5.66 or more; Kleur erin, ADR-239). The question beside it stays ink. */
@@ -4203,30 +4206,6 @@
   .tk-premium-pil:hover {
     background: var(--zon-hover);
   }
-  /* Ouders in de balk onder 1200 (ADR-241): een witte ronde knop met de lijn
-   * eromheen en het slot in secundair (8.32). Waar je bent: nacht-tint met een
-   * rand in nacht; het slot blijft secundair (6.80 op nacht-tint). */
-  .tk-balkknop {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: var(--stroke-active) solid var(--rand-licht);
-    border-radius: var(--radius-pil);
-    background: var(--kaart);
-    color: var(--tekst-secundair);
-    cursor: pointer;
-  }
-  .tk-balkknop:hover {
-    background: var(--perzik);
-  }
-  .tk-balkknop[aria-current='page'] {
-    border-color: var(--nacht);
-    background: var(--nacht-tint);
-  }
   .tk-premium-pil[aria-current='page'] {
     background: var(--nacht);
     box-shadow: 0 var(--onderkant-klein) 0 var(--nacht-diep);
@@ -4431,9 +4410,7 @@
   }
 
   /* ---- Oefenen, op /oefenen (ADR-241) -----------------------------------
-   * De vakken als kaarten: drie naast elkaar aan een bureau, twee op een
-   * telefoon. Een witte kaart met de lichte vaktoon als rand, linksboven de
-   * plaat van het vak en onderaan zijn naam; onder de muis de vaktint. */
+   * De titel en de vaktegels van Vandaag (`tk-vakraster`, ADR-242). */
   .tk-oefenen {
     gap: 16px;
   }
@@ -4441,50 +4418,6 @@
     font-size: 1.875rem; /* 30px */
     line-height: 2.25rem;
     font-weight: 800;
-  }
-  .tk-vakkaarten {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-vakkaart {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-    height: 100%;
-    min-height: 132px;
-    padding: 16px;
-    border: var(--stroke-active) solid var(--module-rand);
-    border-radius: var(--radius-tegel);
-    background: var(--kaart);
-    color: var(--inkt);
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-vakkaart:hover {
-    background: var(--module-tint);
-  }
-  .tk-vakkaart-plaat {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
-  }
-  .tk-vakkaart-plaat svg {
-    width: 28px;
-    height: 28px;
-  }
-  .tk-vakkaart-naam {
-    font-family: var(--font-kop);
-    font-size: 1.25rem; /* 20px */
-    line-height: 1.625rem;
-    font-weight: 800;
-    overflow-wrap: anywhere;
   }
   @media (min-width: 1200px) {
     .tk-oefenen {
@@ -4494,36 +4427,15 @@
       font-size: 2.25rem; /* 36px */
       line-height: 2.75rem;
     }
-    .tk-vakkaarten {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-    .tk-vakkaart {
-      min-height: 180px;
-      padding: 24px;
-      border-width: var(--stroke-hair);
-      border-radius: var(--radius-kaart);
-    }
-    .tk-vakkaart-plaat {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-    }
-    .tk-vakkaart-plaat svg {
-      width: 36px;
-      height: 36px;
-    }
-    .tk-vakkaart-naam {
-      font-size: 1.625rem; /* 26px */
-      line-height: 2rem;
-    }
   }
 
   /* ---- The tab bar, below 1200 ------------------------------------------
-   * Drie tabs, Vandaag, Oefenen en Jij (ADR-241), op de grond met een lijn
-   * erboven. Het teken is altijd secundair; waar je bent is de tab wit met de
-   * lijn eromheen en het woord in nacht (13.64), zoals een rij in de zijbalk
-   * een tint achter zich krijgt. Oefenen is de tab van elk vak.
+   * Vier tabs, Vandaag, Oefenen, Jij en Ouders (ADR-241, ADR-242). De balk is
+   * wit, met de rand van het scherm erboven, zodat hij loskomt van de grond
+   * van de pagina (ADR-242: op de grond sprong hij er niet uit). Waar je bent
+   * is een tint achter de hele tab, zoals een rij in de zijbalk: nacht-tint
+   * met het woord in nacht (11.15). Het teken is altijd secundair (6.80 op
+   * nacht-tint). Oefenen is de tab van elk vak.
    *
    * Altijd in beeld op een telefoon (op verzoek van de eigenaar): hij staat
    * onder `.tk-schil-rol`, dat zelf scrolt, en dus nooit over de inhoud heen.
@@ -4532,11 +4444,11 @@
    */
   .tk-tabbar {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
-    border-top: var(--stroke-hair) solid var(--rand-licht);
-    background: var(--grond);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px 12px calc(20px + env(safe-area-inset-bottom));
+    border-top: var(--stroke-active) solid var(--rand-sterk);
+    background: var(--kaart);
   }
   .tk-tabbar-item {
     display: flex;
@@ -4546,8 +4458,8 @@
     justify-content: center;
     gap: 2px;
     min-height: 60px;
-    padding: 6px 4px;
-    border: var(--stroke-active) solid transparent;
+    padding: 6px 2px;
+    border: 0;
     border-radius: var(--radius-kaart-telefoon);
     background: transparent;
     color: var(--tekst-secundair);
@@ -4567,9 +4479,9 @@
     background: var(--perzik);
   }
   .tk-tabbar-item[aria-current] {
-    border-color: var(--rand-licht);
-    background: var(--kaart);
+    background: var(--nacht-tint);
     color: var(--nacht);
+    font-weight: 800;
   }
 
   /* De terugknop boven een vakpagina onder 1200 (ADR-241): "‹ Oefenen" in
@@ -6318,7 +6230,7 @@
         .tk-module-card,
         .tk-profiel,
         .tk-zijbalk-rij,
-        .tk-vakkaart,
+        .tk-tabbar-item,
         .tk-doel-ander,
         .tk-weekdoel-weg,
         .tk-herhaaltegel

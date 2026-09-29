@@ -1,17 +1,11 @@
 import type { ReactNode } from 'react';
 import type { Groep, ModeId } from '@/game-core';
-import {
-  DiplomaIcon,
-  GoIcon,
-  LadderIcon,
-  NextIcon,
-  ShieldIcon,
-  type IconProps,
-} from '@/components/Icon';
+import { DiplomaIcon, GoIcon, LadderIcon, ShieldIcon, type IconProps } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { naamVan, starters, type Onderdeel } from '@/features/module/onderdelen';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
-import { BUILT_MODULES, type Module } from '@/features/shell/modules';
+import type { Module } from '@/features/shell/modules';
+import { VakTegels } from '@/features/shell/VakTegels';
 import { vrijeVorm } from './useVandaag';
 
 /**
@@ -71,45 +65,10 @@ export function VakkenRaster({ onVak }: { readonly onVak: (id: Module['id']) => 
       <h2 id="vakken-kop" className="tk-sectie">
         {t('home.vakken.titel')}
       </h2>
-      <ul className="tk-vakraster">
-        {BUILT_MODULES.map((module) => {
-          const ModuleIcon = MODULE_ICON[module.id];
-          return (
-            <li key={module.id}>
-              <button
-                type="button"
-                data-module={module.id}
-                className="tk-vaktegel"
-                onClick={() => onVak(module.id)}
-              >
-                <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
-                  <ModuleIcon size={24} />
-                </span>
-                <span className="tk-vaktegel-tekst">
-                  <span className="tk-kaart-titel">{t(module.name)}</span>
-                  <span className="tk-kaart-regel">{t(VAK_UITLEG[module.id])}</span>
-                </span>
-                <span className="tk-lijstrij-pijl" aria-hidden="true">
-                  <NextIcon size={20} />
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <VakTegels onVak={onVak} />
     </section>
   );
 }
-
-/** Wat er in elk vak zit, in één regel. Tijdvakken is er nog niet en staat er niet. */
-const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
-  topo: 'home.vak.topo',
-  tafels: 'home.vak.tafels',
-  klok: 'home.vak.klok',
-  woorden: 'home.vak.woorden',
-  vlaggen: 'home.vak.vlaggen',
-  tijdvakken: 'home.vak.topo',
-};
 
 const STAPPEN: readonly {
   readonly kop: TranslationKey;

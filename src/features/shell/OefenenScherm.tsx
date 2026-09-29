@@ -1,18 +1,17 @@
 import { t } from '@/i18n';
-import { MODULE_ICON } from './moduleIcons';
-import { RAIL_MODULES, type Module } from './modules';
+import { BUILT_MODULES, type Module } from './modules';
+import { VakTegels } from './VakTegels';
 
 /**
- * Oefenen, op /oefenen (ADR-241): de vakken bij elkaar, als kaarten.
+ * Oefenen, op /oefenen (ADR-241): de vakken bij elkaar.
  *
  * Aan een bureau staan dezelfde vakken ook in de zijbalk, onder Oefenen; op een
- * telefoon is dit de weg naar een vak, want het vakmenu onder de kop is weg.
- * Een kaart opent de startpagina van het vak, dezelfde als de rij in de
- * zijbalk. De kaart draagt de plaat van het vak en zijn naam; de vakkleur
- * staat in de rand en, onder de muis, in de tint.
+ * telefoon is dit de weg naar een vak. Sinds ADR-242 dezelfde tegels als onder
+ * "Kies een vak" op Vandaag: een lijst met een regel over wat er in elk vak
+ * zit. Een tegel opent de startpagina van het vak.
  */
 export function OefenenScherm({
-  modules = RAIL_MODULES,
+  modules = BUILT_MODULES,
   onOpen,
 }: {
   readonly modules?: readonly Module[];
@@ -22,27 +21,7 @@ export function OefenenScherm({
     <div className="tk-page">
       <div className="tk-page-main tk-oefenen">
         <h1 className="tk-oefenen-titel">{t('oefenen.titel')}</h1>
-
-        <ul className="tk-vakkaarten">
-          {modules.map((module) => {
-            const ModuleIcon = MODULE_ICON[module.id];
-            return (
-              <li key={module.id}>
-                <button
-                  type="button"
-                  data-module={module.id}
-                  className="tk-vakkaart"
-                  onClick={() => onOpen(module.id)}
-                >
-                  <span className="tk-plaat tk-vakkaart-plaat" aria-hidden="true">
-                    <ModuleIcon size={36} />
-                  </span>
-                  <span className="tk-vakkaart-naam">{t(module.name)}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <VakTegels onVak={onOpen} modules={modules} />
       </div>
     </div>
   );
