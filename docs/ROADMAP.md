@@ -57,15 +57,19 @@ Geparkeerd op 24 september, samen met de privacypagina: de eigenaar komt erop
 terug. De code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog
 moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
-1. **Vier antwoorden voor de privacyverklaring** — _jij_:
+1. **Vijf antwoorden voor de privacyverklaring** — _jij_:
    - wie verantwoordelijk is (naam of bedrijf, KvK-nummer);
    - het contactadres voor privacyvragen en verwijderverzoeken;
    - welke mailprovider de bevestigingsmails stuurt (advies: een Europese, zoals
      Brevo of Mailjet);
    - akkoord met de bewaartermijn: zolang het account bestaat, zelf te
-     verwijderen, en weg na 24 maanden zonder gebruik.
+     verwijderen, en weg na 24 maanden zonder gebruik;
+   - of elk antwoord van een kind op de server bewaard wordt (zie "Open
+     beslissingen").
 2. **Privacypagina `/privacy`**, met links vanaf account aanmaken, de kassa en de
-   ouderpagina — _Claude_, na stap 1.
+   ouderpagina — _Claude_, na stap 1. De pagina zegt per groep wat er op de
+   server staat (zie hieronder), en noemt Supabase, Mollie en de mailprovider
+   als verwerkers.
    In dezelfde PR gaan de beloftes op de premiumpagina mee ("alles blijft op je
    eigen apparaat", "je voornaam gaat nergens heen") en de uitleg bij wissen:
    met een account gaat er met toestemming wel iets naar de server (ADR-197).
@@ -78,11 +82,31 @@ moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
      van de gezinsfuncties één keer met de hand draaien;
    - Auth: Confirm email aan, SMTP met de gekozen provider, redirect-URL
      `https://www.leer.nu/ouder`;
-   - de verwerkersovereenkomst (DPA) tekenen.
+   - de verwerkersovereenkomst (DPA) tekenen, en daarin nakijken welke logs
+     Supabase zelf bijhoudt (IP-adressen van verzoeken) en hoe lang.
 4. **`GEZIN_URL` en `GEZIN_KEY` in GitHub zetten** — _jij_, pas als de
    privacypagina live staat. De volgende deploy zet de accounts aan.
 5. **Nakijken**: `Gezin nakijken` draaien en de keten van account tot kind
    doorlopen — _Claude_.
+
+#### Wat er op de server staat (29 september)
+
+- **Nu, zonder account** (`tools/premium/schema.sql`): de hash van elke
+  premiumcode met geldigheid en notitie; per code een willekeurig
+  apparaatnummer, het soort apparaat en de dag van eerst en laatst gezien;
+  foute codepogingen per apparaatnummer; per betaling het id van Mollie en de
+  code, leesbaar tot hij gemaild is en 30 dagen oud; en de teller (dag,
+  gebeurtenis, pagina, aantal). Niets over een kind. Het e-mailadres van een
+  koper staat alleen bij Mollie.
+- **Met het gezinsaccount erbij** (`supabase/migrations/`): het e-mailadres van
+  de ouder (geen naam); per kind de voornaam, inlogcode, niveau, groep en
+  toestemmingsdatum; de doos en tellingen per item; elke ronde met score en
+  tijden; elk antwoord met goed of fout, reactietijd, het gekozen of getypte
+  antwoord en tijdstip; diploma's, vijf vaste instellingen en doelen van de
+  ouder; en inlogpogingen als hash van code en IP. Alles van een kind gaat weg
+  met het kind of de ouder.
+- **Afspraak voor nu** — _jij_: zet in de `notitie` van een premiumcode geen
+  naam of adres van een klant. Het is het enige vrije tekstveld op de server.
 
 ## Daarna
 
@@ -122,7 +146,7 @@ teller.
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens                                              | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig                                                                                                                               |
 | Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). Vervalsen bij A uitgewerkt op 24 september. Delen van de uitslag is gebouwd als eerste stap (ADR-209). De eigenaar komt erop terug |
-| Privacypagina (`/privacy`)                                                                                                         | De eigenaar bepaalt later wat erin komt (24 september); de vier vragen staan bij het gezinsaccount                                                                                                                                  |
+| Privacypagina (`/privacy`)                                                                                                         | De eigenaar bepaalt later wat erin komt (24 september); de vijf vragen staan bij het gezinsaccount                                                                                                                                  |
 | Gezinsaccount live zetten                                                                                                          | Later (24 september); de stappen staan hierboven                                                                                                                                                                                    |
 | De DNS-records van Resend voor de kassa                                                                                            | Geparkeerd op 25 september; de mail van Google Workspace werkt al. Resend op een eigen subdomein, bijvoorbeeld `send.leer.nu`                                                                                                       |
 | Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                                                                                                                               |
@@ -130,10 +154,11 @@ teller.
 
 ## Open beslissingen
 
-| Vraag                                                                                                     | Voorstel                                                       | Waar het staat |
-| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------- |
-| Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen | ADR-193        |
-| Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                    | Laten staan als lokkertje                                      | ADR-192        |
+| Vraag                                                                                                                                                        | Voorstel                                                                                                                                                                         | Waar het staat                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang.                                                    | Laten staan: het is de sterkste aanleiding om premium te kopen                                                                                                                   | ADR-193                              |
+| Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                                                                       | Laten staan als lokkertje                                                                                                                                                        | ADR-192                              |
+| Met een account elk antwoord van een kind op de server bewaren (`pogingen`: goed of fout, reactietijd, het antwoord, tijdstip)? Het is de gevoeligste tabel. | Bewaren: de doelen van de ouder en het inzicht in wat telkens fout gaat worden eruit geteld. Wel in de privacyverklaring noemen, en een kortere termijn overwegen dan 24 maanden | `supabase/migrations/0001_gezin.sql` |
 
 ## Klein onderhoud
 
@@ -143,6 +168,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #183      | Wat er op de server staat, nu en met het gezinsaccount; een vijfde vraag voor de privacyverklaring (elk antwoord van een kind bewaren of niet); de logs van Supabase bij de verwerkersovereenkomst; en geen klantnamen in de notitie van een premiumcode                                                                             | —        |
 | #182      | Feedback op de navigatie: een witte tabbalk die opvalt (actief in koraaltint met streep), met Ouders als vierde tab; een fijnere tegelrand aan een bureau; op `/oefenen` de vaktegels van Vandaag; alle vaktegels even hoog; en op elke vakpagina springt elke keuze naar het volgende onderdeel                                     | 242      |
 | #181      | Nieuwe navigatie en vakkleuren: vakken 70° uit elkaar (klok roze), een witte kop met premium als enige opvallende knop, een zijbalk met Oefenen en de vakken (inklapbaar) aan een bureau, `/oefenen` met de vakken als kaarten, en op een telefoon een kop op de grond met drie ronde knoppen en de tabs Vandaag · Oefenen · Jij     | 241      |
 | #180      | Witte tegels zoals op Vandaag (rand in de lichte vaktoon, onderkant en plaat in de heldere vakkleur) op elke vakpagina, een witte rail, en één kopkleur op elke pagina                                                                                                                                                               | 240      |
