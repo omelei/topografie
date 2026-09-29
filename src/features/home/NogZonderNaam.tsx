@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { t } from '@/i18n';
 import { isIngesteld } from '@/store/account';
 import { activeChildId } from '@/store/children';
@@ -16,7 +16,14 @@ import { NaamVraag } from '@/features/player/NaamVraag';
  * als twee knoppen onder de eerste ronde. Een ouder gaat naar de pagina die
  * voor hem geschreven is (ADR-214); een kind met een code logt hier in.
  */
-export function VoorWieNieuwIs({ onVoorOuders }: { readonly onVoorOuders: () => void }) {
+export function VoorWieNieuwIs({
+  onVoorOuders,
+  ervoor,
+}: {
+  readonly onVoorOuders: () => void;
+  /** Een knop die in dezelfde rij vooraan staat: "Andere groep" (ADR-243). */
+  readonly ervoor?: ReactNode;
+}) {
   const [inloggen, setInloggen] = useState(false);
 
   if (inloggen) {
@@ -27,6 +34,7 @@ export function VoorWieNieuwIs({ onVoorOuders }: { readonly onVoorOuders: () => 
 
   return (
     <div className="flex flex-wrap gap-3">
+      {ervoor}
       <button type="button" className="tk-button tk-button-tertiary" onClick={onVoorOuders}>
         {t('naam.ikBenOuder')}
       </button>

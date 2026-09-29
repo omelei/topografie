@@ -20,6 +20,7 @@ const GEBEURTENISSEN = [
   ['gedeeld', 'Uitslag gedeeld'],
   ['werkblad', 'Werkblad geprint'],
   ['qr', 'QR-code gescand'],
+  ['groep', 'Groep gekozen op Vandaag'],
   ['premium', 'Premiumpagina bekeken'],
   ['kassa', 'Naar de kassa'],
 ];

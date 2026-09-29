@@ -1,7 +1,7 @@
 import { Geheugencheck, type CheckKlaar } from './Geheugencheck';
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
-import { formatGrade, grade, type Groep, type ModeId } from '@/game-core';
+import { formatGrade, grade, huidigeGroep, type Groep, type ModeId } from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -9,7 +9,13 @@ import type { Module } from '@/features/shell/modules';
 import { useVandaag, vrijeVorm } from './useVandaag';
 import { t, type TranslationKey } from '@/i18n';
 import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
-import { groepVanActiefKind } from '@/store/children';
+import {
+  getActiveChild,
+  groepOnbekend,
+  setGroep as bewaarGroep,
+  zetGroepOnbekend,
+} from '@/store/children';
+import { tel } from '@/store/teller';
 import type { OpenRound, PlayedRound } from '@/store/progress';
 import {
   geplaatst,
@@ -24,7 +30,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { EersteRonde, VakkenRaster, ZoWerktHet } from './Kennismaken';
+import { GroepVraag, VakkenRaster, ZoWerktHet } from './Kennismaken';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -124,6 +130,11 @@ export function HomeScreen({
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
   const [groepGelezen, setGroepGelezen] = useState(false);
+  const [kindId, setKindId] = useState<string | null>(null);
+  // Of dit kind op de vraag naar de groep "Weet ik niet" zei (ADR-243), en of
+  // het net op "Andere groep" drukte.
+  const [weetNiet, setWeetNiet] = useState(false);
+  const [andereGroep, setAndereGroep] = useState(false);
 
   useEffect(() => {
     void loadPlayedRounds().then((rondes) => {
@@ -131,11 +142,28 @@ export function HomeScreen({
       setGelezen(true);
     });
     void loadOpenRounds().then(setOpen);
-    void groepVanActiefKind().then((gelezenGroep) => {
-      setGroep(gelezenGroep);
+    void (async () => {
+      const kind = await getActiveChild();
+      setGroep(kind ? huidigeGroep(kind, new Date()) : undefined);
+      setKindId(kind?.id ?? null);
+      setWeetNiet(kind ? await groepOnbekend(kind.id) : false);
       setGroepGelezen(true);
-    });
+    })();
   }, []);
+
+  // De groep, gekozen op Vandaag (ADR-243): bewaard bij het kind, zoals op Jij,
+  // en geteld zonder wie (ADR-210). Alleen de keuze zelf, en niet samen met
+  // iets anders: wat een kind oefent, blijft op het apparaat.
+  async function kiesGroep(gekozen: Groep | undefined) {
+    if (kindId !== null) {
+      await bewaarGroep(kindId, gekozen);
+      if (gekozen === undefined) await zetGroepOnbekend(kindId);
+    }
+    tel('groep', gekozen === undefined ? '/geen' : `/${gekozen}`);
+    setGroep(gekozen);
+    setWeetNiet(gekozen === undefined);
+    setAndereGroep(false);
+  }
 
   // Over every set a round can be started on, mixes included: a round of the
   // Rekenmix that could not be placed would drop out of the history entirely.
@@ -177,9 +205,9 @@ export function HomeScreen({
   // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
   //
   // De sleutel is de groep: die wordt na het openen gelezen, en het plan volgt
-  // hem (ADR-151). Sinds ADR-229 kies je hem op Jij, niet op Vandaag. Met de naam
-  // van het blok ervoor, want Vandaag en het doel staan naast elkaar in
-  // dezelfde kolom en zouden anders dezelfde sleutel dragen.
+  // hem (ADR-151), ook als hij bovenaan deze pagina gekozen wordt (ADR-243).
+  // Met de naam van het blok ervoor, want Vandaag en het doel staan naast
+  // elkaar in dezelfde kolom en zouden anders dezelfde sleutel dragen.
   const { actief } = usePremium();
   const vandaag = (
     <VandaagBlok key={`vandaag-${groep ?? 'geen'}`} gespeeld={gespeeld} onPlan={onPlan} />
@@ -196,28 +224,50 @@ export function HomeScreen({
   // zodra hij gelezen is (ADR-153).
   const weekdoelen = <WeekdoelenBlok key={`weekdoel-${groep ?? 'geen'}`} onDiplomas={onDiplomas} />;
 
+  // Een nieuw kind: eerst waar het begint, dan de vakken en hoe het werkt
+  // (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de rijen
+  // erboven zijn dan zijn eigen weg terug.
+  // Nieuw is: nog geen ronde af én geen ronde half. Wie er één stopte, heeft
+  // "Maak af" nodig en is geen beginner meer.
+  const nieuw = gelezen && played.length === 0 && open !== null && open.length === 0;
+
+  // Een nieuw kind zonder groep krijgt eerst de vraag naar de groep (ADR-243),
+  // want de groep bepaalt waarmee het begint. Wie "Weet ik niet" zei, krijgt
+  // hem niet terug; wie op "Andere groep" drukt, wel.
+  const groepVraag =
+    nieuw && ((groep === undefined && !weetNiet) || andereGroep) ? (
+      <GroepVraag gekozen={groep === undefined && !weetNiet ? null : groep} onKies={kiesGroep} />
+    ) : null;
+
   // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
-  // die zegt "druk hier, dan oefen je" (ADR-162).
-  // Zonder naam staat "Hier begin je mee" er niet (ADR-231): de eerste ronde
-  // erboven zegt al waar je begint, en twee keer "begin hier" is er één te veel.
-  // Wie al geoefend heeft, ziet de rij als "Meest geoefend", ook zonder naam.
+  // die zegt "druk hier, dan oefen je" (ADR-162). Voor een nieuw kind zijn dat
+  // de vijf onderwerpen van zijn groep, één per vak, en kiest het zelf waarmee
+  // (ADR-243). Wie al geoefend heeft, ziet de rij als "Meest geoefend", ook
+  // zonder naam.
   const beginnen =
-    naamloos && populair.length === 0 ? null : (
+    groepVraag !== null ? null : (
       <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
     );
+
+  // Onder die rij, zolang het kind nieuw is: een andere groep kiezen. Onder de
+  // kaarten en niet erboven, want eerst kiest het waarmee het begint. Zonder
+  // naam in dezelfde rij als "Ik ben een ouder".
+  const andereGroepKnop =
+    nieuw && groepVraag === null ? (
+      <button
+        type="button"
+        className="tk-button tk-button-tertiary"
+        onClick={() => setAndereGroep(true)}
+      >
+        {groep === undefined ? t('home.begin.kiesGroep') : t('home.begin.andereGroep')}
+      </button>
+    ) : null;
 
   // Wat bij de groep past en nog niet gedaan is, onder wat het vaakst gedaan
   // is (ADR-206). Zo doet de groep ook iets voor wie al geoefend heeft.
   const passend = (
     <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />
   );
-
-  // Een nieuw kind: eerst één ronde om mee te beginnen, dan de vakken en hoe
-  // het werkt (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de
-  // rijen erboven zijn dan zijn eigen weg terug.
-  // Nieuw is: nog geen ronde af én geen ronde half. Wie er één stopte, heeft
-  // "Maak af" nodig en is geen beginner meer.
-  const nieuw = gelezen && played.length === 0 && open !== null && open.length === 0;
   const vakken = <VakkenRaster onVak={onVak} />;
 
   // Elk blok met een vaste sleutel: als de rondes gelezen zijn en de pagina
@@ -225,13 +275,16 @@ export function HomeScreen({
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
   //
-  // Zonder naam staan onder de eerste ronde de twee uitwegen van het oude
+  // Zonder naam staan onder waar je begint de twee uitwegen van het oude
   // naamscherm: voor een ouder en voor een kind met een inlogcode (ADR-229).
-  // Een vraag naar de groep staat hier niet meer: die kies je op Jij.
-  const gast = naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null;
+  const gast = naamloos ? (
+    <VoorWieNieuwIs onVoorOuders={onVoorOuders} ervoor={andereGroepKnop} />
+  ) : andereGroepKnop === null ? null : (
+    <div className="flex flex-wrap gap-3">{andereGroepKnop}</div>
+  );
   // Pas als alles gelezen is, staat de rest er (ADR-229). Daarvoor alleen de
   // kop: de pagina tekende eerst de indeling voor wie al oefende en wisselde
-  // dan naar die voor een nieuw kind, en alles onder de eerste ronde sprong een
+  // dan naar die voor een nieuw kind, en alles onder het eerste blok sprong een
   // scherm omlaag. Sinds er geen naamscherm meer voor staat, is dat het eerste
   // wat een nieuwe bezoeker ziet, en Lighthouse zag het ook (CLS 0,36).
   const gelezenAlles = gelezen && open !== null && groepGelezen;
@@ -240,10 +293,10 @@ export function HomeScreen({
     : nieuw
       ? [
           blok('kop', kop),
-          blok('eerste', <EersteRonde groep={groep} premium={actief} onBegin={onBegin} />),
+          blok('groepVraag', groepVraag),
+          blok('beginnen', beginnen),
           blok('gast', gast),
           blok('vandaagBoven', vandaagBoven),
-          blok('beginnen', beginnen),
           blok('vakken', vakken),
           blok('zo', <ZoWerktHet />),
           blok('weekdoelen', weekdoelen),

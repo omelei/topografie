@@ -5,8 +5,9 @@ import { expect, type Page } from '@playwright/test';
  *
  * Er staat geen naamscherm meer vóór de voordeur: een kind oefent eerst zonder
  * naam en typt hem waar hij iets doet. De kortste weg is Jij, waar de vraag
- * bovenaan staat zolang er geen naam is. Daarna Vandaag, zonder groep: die
- * kies je op Jij, en Vandaag vraagt er niet naar.
+ * bovenaan staat zolang er geen naam is. Daarna Vandaag, zonder groep: daar
+ * staat voor een kind dat nog niets deed eerst de vraag naar de groep
+ * (ADR-243), en `weetGroepNiet` beantwoordt hem.
  */
 /**
  * De deur voor de premiumpagina (ADR-232): het geboortejaar van een ouder,
@@ -29,4 +30,16 @@ export async function signIn(page: Page, naam: string) {
 
   await page.goto('/');
   await expect(page.getByRole('heading', { name: `Hoi ${naam}!` })).toBeVisible();
+}
+
+/**
+ * "Weet ik niet" op de vraag naar de groep, bovenaan Vandaag voor een kind dat
+ * nog niets deed (ADR-243). Daarna staan er de vijf onderwerpen van altijd.
+ */
+export async function weetGroepNiet(page: Page) {
+  await page
+    .getByRole('region', { name: 'In welke groep zit je?' })
+    .getByRole('button', { name: 'Weet ik niet' })
+    .click();
+  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
 }

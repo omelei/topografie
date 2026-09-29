@@ -1,59 +1,61 @@
-import type { ReactNode } from 'react';
-import type { Groep, ModeId } from '@/game-core';
+import { useState, type ReactNode } from 'react';
+import type { Groep } from '@/game-core';
 import { DiplomaIcon, GoIcon, LadderIcon, ShieldIcon, type IconProps } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
-import { naamVan, starters, type Onderdeel } from '@/features/module/onderdelen';
-import { MODULE_ICON } from '@/features/shell/moduleIcons';
+import { GroepKiezer } from '@/features/player/GroepKiezer';
 import type { Module } from '@/features/shell/modules';
 import { VakTegels } from '@/features/shell/VakTegels';
-import { vrijeVorm } from './useVandaag';
 
 /**
  * Wat er op Vandaag staat voor een kind dat nog niets deed (ADR-204).
  *
  * De voordeur was voor een nieuw kind een begroeting, een rij van vier kaarten
  * en drie koppen met "nog niets" eronder. Kaal, en het zei niet wat je moest
- * doen of wat je hier kon. Nu: één ronde om mee te beginnen, groot, de vakken
- * om uit te kiezen, en in drie stappen hoe het hier werkt — in de woorden van
- * de schrijfwijzer. De vakken staan er voor iedereen; de rest alleen tot de
+ * doen of wat je hier kon. Nu: waar je begint, bovenaan, de vakken om uit te
+ * kiezen, en in vier stappen hoe het hier werkt — in de woorden van de
+ * schrijfwijzer. De vakken staan er voor iedereen; de rest alleen tot de
  * eerste ronde erop zit.
  */
 
-/** De eerste ronde, met één knop: de bovenste van de starters voor deze groep. */
-export function EersteRonde({
-  groep,
-  premium,
-  onBegin,
+/**
+ * De vraag naar de groep, bovenaan voor een nieuw kind (ADR-243).
+ *
+ * Hier stond "Je eerste ronde": één kaart met één knop. Zonder groep was dat
+ * altijd de provincies, ook voor een kind uit groep 3. De groep bepaalt wat
+ * past, en na de keuze staan op deze plek de vijf onderwerpen van die groep,
+ * één per vak: het kind kiest zelf waarmee. Geen poort: de vakken staan
+ * eronder, en "Weet ik niet" geeft de vijf van altijd.
+ */
+export function GroepVraag({
+  gekozen,
+  onKies,
 }: {
-  readonly groep: Groep | undefined;
-  readonly premium: boolean;
-  readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+  /** De groep die nu geldt: `undefined` is geen groep, `null` is nog niets gekozen. */
+  readonly gekozen: Groep | undefined | null;
+  onKies(groep: Groep | undefined): Promise<void>;
 }) {
-  const eerste = starters(groep)[0];
-  if (eerste === undefined) return null;
+  const [bezig, setBezig] = useState(false);
 
-  const mode = vrijeVorm(eerste.deel, eerste.mode, premium);
-  const ModuleIcon = MODULE_ICON[eerste.deel.moduleId];
+  async function kies(groep: Groep | undefined) {
+    setBezig(true);
+    await onKies(groep);
+    setBezig(false);
+  }
 
   return (
-    <section className="tk-eerste" data-module={eerste.deel.moduleId} aria-labelledby="eerste-kop">
-      <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
-        <ModuleIcon size={28} />
-      </span>
+    <section className="tk-eerste" aria-labelledby="groepvraag-kop">
       <div className="tk-eerste-tekst">
-        <h2 id="eerste-kop" className="tk-kaart-titel">
-          {t('home.eerste.kop')}
+        <h2 id="groepvraag-kop" className="tk-kaart-titel">
+          {t('groep.vraag')}
         </h2>
-        <p className="text-lopend">
-          {t('home.eerste.zin', {
-            onderwerp: naamVan(eerste.deel),
-            manier: t(`mode.${mode}` as TranslationKey).toLocaleLowerCase('nl-NL'),
-          })}
-        </p>
+        <p className="text-lopend">{t('home.groep.zin')}</p>
       </div>
-      <button type="button" className="tk-button" onClick={() => onBegin(eerste.deel, mode)}>
-        {t('home.eerste.knop')}
-      </button>
+      <GroepKiezer
+        gekozen={gekozen}
+        uitweg="groep.weetNiet"
+        bezig={bezig}
+        onKies={(groep) => void kies(groep)}
+      />
     </section>
   );
 }

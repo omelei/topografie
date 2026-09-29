@@ -75,7 +75,13 @@ async function startRound(page: Page, set: Keuze, way: RegExp) {
 // Zonder naam (ADR-229): de voordeur, en de vraag naar de naam op Jij.
 test('the front door without a name has no violations', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
+  await expect(vraag).toBeVisible();
+  expect((await scan(page)).violations).toEqual([]);
+
+  // En met een groep: de vijf onderwerpen van die groep (ADR-243).
+  await vraag.getByRole('button', { name: 'Groep 5', exact: true }).click();
+  await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   await page.goto('/jij');

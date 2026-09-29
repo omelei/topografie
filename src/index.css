@@ -3043,6 +3043,10 @@
     flex-direction: column;
     gap: 4px;
   }
+  /* De groepen onder de vraag, over de hele breedte (ADR-243). */
+  .tk-eerste > .tk-keuzes {
+    flex: 1 1 100%;
+  }
   /* Elke rij even hoog (ADR-242): een toelichting over twee regels maakte de
    * tweede rij hoger dan de eerste. */
   .tk-vakraster {

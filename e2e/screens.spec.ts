@@ -51,12 +51,18 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   const size = testInfo.project.name;
 
   // De voordeur voor wie nog geen naam heeft (ADR-229): het naamscherm dat
-  // hier stond, is er niet meer. Wachten op de eerste ronde, die pas staat als
-  // de geschiedenis gelezen is.
+  // hier stond, is er niet meer. Wachten op de vraag naar de groep, die pas
+  // staat als de geschiedenis gelezen is (ADR-243).
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
+  await expect(vraag).toBeVisible();
   await shoot(page, size, '01-zonder-naam');
+
+  // Met een groep: de vijf onderwerpen van die groep, één per vak.
+  await vraag.getByRole('button', { name: 'Groep 5', exact: true }).click();
+  await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();
+  await shoot(page, size, '01-groep-gekozen');
 
   // Jij zonder naam: de vraag bovenaan.
   await page.goto('/jij');
@@ -68,7 +74,8 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // duurt die lezing langer dan een schermafdruk die meteen na de naam wordt
   // genomen. Wachten op de rij waar een kind mee begint: die is het eerste blok
   // van de pagina en staat er pas als de geschiedenis gelezen is (ADR-162).
-  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
+  // Fenna is het kind van daarnet, met groep 5.
+  await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();
   // En op de doelen, die hun eigen lezingen doen en anders net na de foto
   // verschijnen.
   await expect(page.getByRole('region', { name: 'Je doelen voor deze week' })).toBeVisible();

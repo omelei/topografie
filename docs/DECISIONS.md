@@ -14073,6 +14073,60 @@ ADR-241 op de live site. Wijzigt ADR-241 en ADR-233.
 - **Springen tot de startbalk aan een bureau** schuift de pagina ook daar. Dat
   is gewild: de volgorde van de pagina is overal dezelfde.
 
+## ADR-243 — De groep bovenaan Vandaag: een nieuw kind kiest zijn groep, dan zelf waarmee het begint
+
+**Status:** accepted. **Date:** 2026-09-29. Op verzoek van de eigenaar: "de
+eerste ronde toont altijd topografie, ongeacht mijn leeftijd, mijn niveau of
+mijn interesse." Wijzigt ADR-229 (Vandaag vraagt niets), ADR-231 (geen rij om
+mee te beginnen zonder naam) en ADR-151 (de groep in geen verzoek naar buiten).
+
+**Wat er mis was.** Sinds ADR-229 vraagt Vandaag geen groep; die kies je op
+Jij. Bijna geen nieuw kind doet dat, en zonder groep was "Je eerste ronde"
+altijd de provincies: stof van groep 5 tot en met 7, ook voor een kind uit
+groep 3. De vijf onderwerpen per groep (ADR-206) waren er wel, maar kwamen
+niet in beeld. ADR-229 schreef die prijs zelf op; hij bleek te hoog.
+
+**Besluit.**
+
+- **Een kind dat nog niets deed en geen groep heeft, ziet bovenaan "In welke
+  groep zit je?"**, met groep 3 tot en met 8 en "Weet ik niet" (`GroepVraag`,
+  dezelfde `GroepKiezer` als op Jij). De kaart "Je eerste ronde" is weg.
+- **Na de keuze staan op die plek de vijf onderwerpen van de groep**, één per
+  vak, als de rij "Hier begin je mee in groep 6", met "Andere groep" eronder.
+  De groep bepaalt het niveau, het kind kiest
+  het vak. Eén tik op de groep en één op een onderwerp: evenveel als via "Kies
+  een vak".
+- **"Weet ik niet" geeft de vijf van altijd** ("Hier begin je mee vandaag", met
+  "Kies je groep"), en de vraag komt voor dit kind niet terug
+  (`groepOnbekend:<kindId>`). Niet de oude vlag `groepGevraagd`: die zet ook
+  wie op Jij een naam typt.
+- **De groep wordt bewaard zoals op Jij** (`setGroep`), dus ook "Past bij
+  groep", de weekdoelen en de vakpagina's volgen hem meteen.
+- **De rij om mee te beginnen staat er ook zonder naam** (was ADR-231): de
+  kaart die hem dubbel maakte, is weg.
+- **De teller telt de keuze** (ADR-210): de gebeurtenis `groep` met `/3` tot en
+  met `/8` of `/geen` als adres. Per dag een aantal, zonder wie, en niet samen
+  met iets anders. De server kent de gebeurtenis pas als `schema.sql` opnieuw
+  gedraaid is; tot dan telt hij niets en merkt niemand iets. Het weekoverzicht
+  noemt het totaal.
+
+**Afwegingen.**
+
+- **Weer een vraag op Vandaag.** ADR-229 haalde een poort weg: een vraag die je
+  moest beantwoorden voor je iets kon. Dit is geen poort: de vakken staan
+  eronder, "Weet ik niet" staat erbij, en het antwoord verandert meteen wat er
+  staat. Dat is de regel van ADR-229 zelf: vraag iets waar het iets doet.
+- **Geen navigatie per groep.** De tabbalk en de vakken blijven voor iedereen
+  gelijk: vaste plekken zijn voorspelbaar, en elk vak heeft stof voor groep 3
+  tot en met 8. De groep ordent wat er in een vak staat (ADR-151).
+- **De groep gaat als aantal naar de teller.** ADR-151 zei dat de groep in geen
+  verzoek naar buiten staat; met het gezinsaccount klopte dat al niet meer. De
+  tabel heeft vier kolommen (dag, gebeurtenis, adres, aantal) en niets over
+  wie, dus een telling per groep is niet naar een kind terug te leiden. Wat het
+  oplevert: welke groepen er komen, en hoe vaak "Weet ik niet" gekozen wordt.
+- **Groep 1 en 2 staan er niet bij**, zoals in ADR-151: er is geen stof voor.
+  Een kleuter valt onder "Weet ik niet".
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
