@@ -78,7 +78,7 @@ ADR-154 wat het logo is en ADR-179 wat de nieuwe gids veranderde.
    een chip en een pil. Wat je indrukt staat op een harde onderkant van
    `--onderkant` (5 px, een chip 3) in zijn eigen donkere kleur en zakt daarop
    als je drukt; wat je niet kunt indrukken heeft er geen. Een tegel heeft een
-   rand van 3 px (`--stroke-tegel`). Elke tegel die je indrukt — een kaart op
+   rand van 3 px, aan een bureau 2 (`--stroke-tegel`, ADR-242). Elke tegel die je indrukt — een kaart op
    Vandaag (`tk-kaart`, `tk-vaktegel`), een tegel of vierkant op een vakpagina
    (`tk-tegel`, `tk-tafel`) — is wit, met een rand in de lichte vaktoon
    `--module-rand` (ADR-239) en een onderkant in de heldere `-vlak`-kleur, en
@@ -217,7 +217,9 @@ Het ontwerp is `Navigatie.dc.html` (ADR-241); `Shell.tsx` bouwt het, met één
 breekpunt op 1200. Drie regels:
 
 - **"Hier ben je" ziet er overal hetzelfde uit:** een tint achter de hele rij
-  of tab. Een bestemming, ook een tab onderaan: `--nacht-tint` met het woord in nacht. Een vak: de
+  of tab. Een bestemming in de zijbalk: `--nacht-tint` met het woord in
+  nacht. Een tab onderaan: de koraaltint met een koraal streep erboven en het
+  woord in diep koraal (ADR-242, de enige plek waar koraal zegt waar je bent). Een vak: de
   vaktint met het woord in de diepe vakkleur. In `aria-current` is dat `page`
   voor de pagina zelf en `true` voor Oefenen als je in een vak bent.
 - **Het teken van een bestemming** (Vandaag, Oefenen, Jij, Ouders) is een
@@ -228,12 +230,12 @@ breekpunt op 1200. Drie regels:
   `--zon-rand`, onder de muis `--zon-hover`; waar je bent nacht op
   `--nacht-diep`, het woord wit en de ster in zon.
 
-| deel         | bureau (vanaf 1200)                                                                   | telefoon en tablet                                                          |
-| ------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| kop          | 64 hoog, wit, lijn eronder; logo 30; rechts premium (pil) en het kind (pil in perzik) | op de grond; logo 24; twee ronde knoppen van 44: premium en het kind        |
-| bestemmingen | zijbalk van 248: Vandaag, Oefenen met de vakken eronder, een lijn, Jij, Ouders        | witte tabbalk met een lijn erboven: Vandaag, Oefenen, Jij, Ouders (ADR-242) |
-| vakken       | onder Oefenen, in- en uitklapbaar (`nav.oefenenOpen` in localStorage)                 | via Oefenen (`/oefenen`); een vakpagina heeft "‹ Oefenen" boven de kop      |
-| rij of tab   | min. 52 hoog, radius 18, plaat 36, Baloo 700 18                                       | min. 60 hoog, radius 20, teken 24, Baloo 700 15; actief in nacht-tint       |
+| deel         | bureau (vanaf 1200)                                                                   | telefoon en tablet                                                               |
+| ------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| kop          | 64 hoog, wit, lijn eronder; logo 30; rechts premium (pil) en het kind (pil in perzik) | op de grond; logo 24; twee ronde knoppen van 44: premium en het kind             |
+| bestemmingen | zijbalk van 248: Vandaag, Oefenen met de vakken eronder, een lijn, Jij, Ouders        | witte tabbalk met een lijn erboven: Vandaag, Oefenen, Jij, Ouders (ADR-242)      |
+| vakken       | onder Oefenen, in- en uitklapbaar (`nav.oefenenOpen` in localStorage)                 | via Oefenen (`/oefenen`); een vakpagina heeft "‹ Oefenen" boven de kop           |
+| rij of tab   | min. 52 hoog, radius 18, plaat 36, Baloo 700 18                                       | min. 60 hoog, radius 20, teken 24, Baloo 700 15; actief in koraaltint met streep |
 
 Oefenen aan een bureau is twee knoppen in één rij: het woord gaat naar
 `/oefenen` en klapt de vakken open, de pijl (44 bij 44, met `aria-expanded`)

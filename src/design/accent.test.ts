@@ -122,6 +122,11 @@ const KORAAL_SELECTORS: ReadonlyMap<string, string> = new Map([
   // have a tint of their own. It is a label's fill, as on the light button,
   // and not progress, not a choice and not a subject.
   ["[data-tint='koraal']", 'the tint of a setting and a number tile'],
+  // ADR-242, a choice of the owner: where you are in the tab bar on a phone is
+  // the light button's tint with a koraal rule above it, and the word in deep
+  // koraal. The one place koraal says where you are; nowhere else.
+  ['.tk-tabbar-item[aria-current]', 'where you are in the tab bar on a phone (ADR-242)'],
+  ['.tk-tabbar-item[aria-current] .tk-tabbar-teken', 'its icon, in the same deep koraal'],
 ]);
 
 /** The rules of the stylesheet, without comments, as selector and declarations. */

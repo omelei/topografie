@@ -477,6 +477,15 @@
     }
   }
 
+  /* Aan een bureau is de rand om een tegel 2 in plaats van 3 (ADR-242). Op
+   * een telefoon tekent een CSS-pixel als drie echte, en oogt 3 fijn; op een
+   * bureauscherm is het er één en werd de rand zwaar. Zo ogen ze gelijk. */
+  @media (min-width: 1200px) {
+    :root {
+      --stroke-tegel: 2px;
+    }
+  }
+
   /* A phone, 393-412: the thumb, the phone's card, and the headings a step
    * down, as the 393 screens set them. The reading text never shrinks, which
    * is the whole point of the PO scale. */
@@ -4433,9 +4442,12 @@
    * Vier tabs, Vandaag, Oefenen, Jij en Ouders (ADR-241, ADR-242). De balk is
    * wit, met de rand van het scherm erboven, zodat hij loskomt van de grond
    * van de pagina (ADR-242: op de grond sprong hij er niet uit). Waar je bent
-   * is een tint achter de hele tab, zoals een rij in de zijbalk: nacht-tint
-   * met het woord in nacht (11.15). Het teken is altijd secundair (6.80 op
-   * nacht-tint). Oefenen is de tab van elk vak.
+   * is de koraaltint achter de hele tab met een koraal streep erboven, en het
+   * woord en het teken in diep koraal (5.70). Een keuze van de eigenaar
+   * (ADR-242), en de enige plek waar koraal zegt waar je bent: de tint is die
+   * van een lichte knop, niet het vlak van de knop die je indrukt. Een
+   * streep én een kleur, zodat de kleur het niet alleen draagt. Oefenen is de
+   * tab van elk vak.
    *
    * Altijd in beeld op een telefoon (op verzoek van de eigenaar): hij staat
    * onder `.tk-schil-rol`, dat zelf scrolt, en dus nooit over de inhoud heen.
@@ -4460,6 +4472,8 @@
     min-height: 60px;
     padding: 6px 2px;
     border: 0;
+    /* Altijd een streep, zodat de woorden niet verspringen als hij kleurt. */
+    border-top: var(--onderkant-klein) solid transparent;
     border-radius: var(--radius-kaart-telefoon);
     background: transparent;
     color: var(--tekst-secundair);
@@ -4479,9 +4493,14 @@
     background: var(--perzik);
   }
   .tk-tabbar-item[aria-current] {
-    background: var(--nacht-tint);
-    color: var(--nacht);
+    border-top-color: var(--koraal);
+    border-radius: 0 0 var(--radius-kaart-telefoon) var(--radius-kaart-telefoon);
+    background: var(--actie-tint);
+    color: var(--actie-tekst);
     font-weight: 800;
+  }
+  .tk-tabbar-item[aria-current] .tk-tabbar-teken {
+    color: var(--actie-tekst);
   }
 
   /* De terugknop boven een vakpagina onder 1200 (ADR-241): "‹ Oefenen" in
