@@ -24,16 +24,16 @@ export const nl = {
   // Onder de begroeting, met premium en vragen die vandaag terug moeten (ADR-238).
   'home.welkomKlaarEen': 'Er staat 1 vraag voor je klaar.',
   'home.welkomKlaar': 'Er staan {aantal} vragen voor je klaar.',
-  // Voor een kind dat nog niets deed (ADR-204): één ronde om mee te beginnen,
-  // de vakken, en in drie stappen hoe het werkt.
   // De geheugencheck (ADR-228): één keer, zonder hulp. Geen woord over premium (R-11).
   'home.check.kop': 'Weet je het nog?',
   'home.check.zin':
     '{aantal} vragen uit {onderwerp} die je een paar weken geleden oefende. Zonder hulp, één keer.',
   'home.check.knop': 'Start',
-  'home.eerste.kop': 'Je eerste ronde',
-  'home.eerste.zin': '{onderwerp}, {manier}. Een ronde duurt maar een paar minuten.',
-  'home.eerste.knop': 'Start',
+  // Voor een kind dat nog niets deed (ADR-204), bovenaan (ADR-243): eerst de
+  // groep, dan de vijf onderwerpen van die groep. De vraag is 'groep.vraag'.
+  'home.groep.zin': 'Dan zie je meteen wat bij je groep past.',
+  'home.begin.andereGroep': 'Andere groep',
+  'home.begin.kiesGroep': 'Kies je groep',
   'home.vakken.titel': 'Kies een vak',
   'home.vak.topo': 'Provincies, steden en landen',
   'home.vak.tafels': 'Tafels en sommen',
@@ -2329,9 +2329,9 @@ export const nl = {
   // Op Vandaag, zolang er geen naam is: naar de pagina voor ouders (ADR-214).
   'naam.ikBenOuder': 'Ik ben een ouder',
 
-  // De groep (ADR-151). Sinds ADR-229 alleen op Jij, bij de instellingen, en
-  // bij de ouder: niet meer als vraag op Vandaag. De vraag is de naam van de
-  // rij knoppen voor een schermlezer.
+  // De groep (ADR-151). Op Jij, bij de instellingen, bij de ouder, en sinds
+  // ADR-243 weer op Vandaag, bovenaan voor een kind dat nog niets deed. De
+  // vraag is ook de naam van de rij knoppen voor een schermlezer.
   'groep.vraag': 'In welke groep zit je?',
   'groep.knop': 'Groep {groep}',
   // Op Jij, in de woorden van het kind (ADR-171), als rij bij de instellingen
@@ -2342,6 +2342,8 @@ export const nl = {
   'groep.jijUitleg':
     'Wat bij je groep past, staat bovenaan op Vandaag en op elke vakpagina. Wat bij een andere groep hoort, kun je ook kiezen. Op 1 augustus ga je vanzelf een groep verder.',
   'groep.geen': 'Geen groep',
+  // Op Vandaag, bij de vraag naar de groep (ADR-243).
+  'groep.weetNiet': 'Weet ik niet',
   'groep.gekozen': 'Je zit in groep {groep}.',
   'groep.nietGekozen': 'Je hebt geen groep gekozen. Dan staat alles in de gewone volgorde.',
   // Op een tegel met stof die dit kind nog niet gehad heeft. Hij blijft

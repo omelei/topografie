@@ -163,6 +163,24 @@ export async function zetGroepGevraagd(kindId: string): Promise<void> {
 }
 
 /**
+ * Of een kind op Vandaag "Weet ik niet" zei bij de vraag naar de groep
+ * (ADR-243). Dan komt de vraag niet terug, en staan er de vijf onderwerpen van
+ * altijd. Niet `groepGevraagd`: die zet ook wie op Jij een naam typt, en dat
+ * kind heeft de vraag nooit gezien.
+ */
+function groepOnbekendSleutel(kindId: string): string {
+  return `groepOnbekend:${kindId}`;
+}
+
+export async function groepOnbekend(kindId: string): Promise<boolean> {
+  return (await getSetting(groepOnbekendSleutel(kindId))) === 'ja';
+}
+
+export async function zetGroepOnbekend(kindId: string): Promise<void> {
+  await setSetting(groepOnbekendSleutel(kindId), 'ja');
+}
+
+/**
  * Of een kind zonder naam de uitnodiging op Vandaag al wegklikte (ADR-229).
  *
  * Eén keer, zoals de vraag naar de groep: wie "Niet nu" zegt, ziet hem niet

@@ -24,6 +24,9 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    dan `p=quarantine`; `p=reject` pas als de mail van Resend ook klopt.
 5. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen.
+6. **Na de merge van de groepsvraag (ADR-243) `tools/premium/schema.sql` opnieuw
+   draaien** in de SQL Editor van de premiumserver. Dan telt de teller welke
+   groep gekozen wordt; tot dan telt hij die keuze niet, en merkt niemand iets.
 
 ### Lopend
 
@@ -96,7 +99,8 @@ moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
   apparaatnummer, het soort apparaat en de dag van eerst en laatst gezien;
   foute codepogingen per apparaatnummer; per betaling het id van Mollie en de
   code, leesbaar tot hij gemaild is en 30 dagen oud; en de teller (dag,
-  gebeurtenis, pagina, aantal). Niets over een kind. Het e-mailadres van een
+  gebeurtenis, pagina, aantal; sinds ADR-243 ook hoe vaak per dag een groep
+  gekozen werd). Niets over een kind. Het e-mailadres van een
   koper staat alleen bij Mollie.
 - **Met het gezinsaccount erbij** (`supabase/migrations/`): het e-mailadres van
   de ouder (geen naam); per kind de voornaam, inlogcode, niveau, groep en
@@ -168,6 +172,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #184      | De groep bovenaan Vandaag: een nieuw kind kiest zijn groep (of "Weet ik niet") en daarna een van de vijf onderwerpen van die groep, in plaats van altijd de provincies; de teller telt de gekozen groep                                                                                                                              | 243      |
 | #183      | Wat er op de server staat, nu en met het gezinsaccount; een vijfde vraag voor de privacyverklaring (elk antwoord van een kind bewaren of niet); de logs van Supabase bij de verwerkersovereenkomst; en geen klantnamen in de notitie van een premiumcode                                                                             | —        |
 | #182      | Feedback op de navigatie: een witte tabbalk die opvalt (actief in koraaltint met streep), met Ouders als vierde tab; een fijnere tegelrand aan een bureau; op `/oefenen` de vaktegels van Vandaag; alle vaktegels even hoog; en op elke vakpagina springt elke keuze naar het volgende onderdeel                                     | 242      |
 | #181      | Nieuwe navigatie en vakkleuren: vakken 70° uit elkaar (klok roze), een witte kop met premium als enige opvallende knop, een zijbalk met Oefenen en de vakken (inklapbaar) aan een bureau, `/oefenen` met de vakken als kaarten, en op een telefoon een kop op de grond met drie ronde knoppen en de tabs Vandaag · Oefenen · Jij     | 241      |

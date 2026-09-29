@@ -24,7 +24,8 @@ export type Gebeurtenis =
   | 'premium'
   | 'kassa'
   | 'werkblad'
-  | 'qr';
+  | 'qr'
+  | 'groep';
 
 /** Of deze browser zegt: tel mij niet. */
 function wilNietGeteld(): boolean {

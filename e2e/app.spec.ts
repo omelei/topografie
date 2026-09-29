@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { signIn } from './naam';
+import { signIn, weetGroepNiet } from './naam';
 
 /**
  * The flows that exist today. Two of them are the point of the local-first
@@ -140,10 +140,10 @@ test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   await signIn(page, 'Rik');
 
   // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee vandaag"
-  // en niet "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is.
+  // en niet "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is. Hij
+  // staat er na de vraag naar de groep (ADR-243).
+  await weetGroepNiet(page);
   const rij = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
-  // Pas als Vandaag gelezen heeft wat er geoefend is, staat de pagina stil.
-  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
   await rij.focus();
   await page.keyboard.press('ArrowRight');
 
@@ -158,9 +158,10 @@ test('logs the round that was just played, with its mark', async ({ page }) => {
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
   // Before the first round there is nothing to log, and a new child gets the
-  // first round, the subjects and how it works instead (ADR-204).
+  // question of its group, the subjects and how it works instead (ADR-204,
+  // ADR-243).
   await expect(recent).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Je eerste ronde' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toBeVisible();
 
   await startRound(page, PROVINCIES, /Aanwijzen/);
   await page.getByRole('button', { name: 'Limburg' }).click();
@@ -645,7 +646,7 @@ test('the starter row is not called "most practised" before anything is practise
   page,
 }) => {
   await signIn(page, 'Sam');
-  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
+  await weetGroepNiet(page);
   await expect(page.getByRole('group', { name: 'Meest geoefend' })).toHaveCount(0);
 
   await eenRondeProvincies(page);

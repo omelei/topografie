@@ -14,6 +14,7 @@ select public.teller_tel('binnenkomst', '/topografie/provincies');
 select public.teller_tel('ronde-zonder-naam', '/rekenen/tafel-7');
 select public.teller_tel('naam', null);
 select public.teller_tel('qr', '/topografie/provincies');
+select public.teller_tel('groep', '/6');
 select public.teller_tel('iets-anders', '/topografie');
 select public.teller_tel('binnenkomst', '<script>alert(1)</script>');
 
@@ -36,6 +37,8 @@ begin
     'twee keer binnenkomen op hetzelfde adres is één rij met 2';
   assert (select aantal from public.teller where gebeurtenis = 'qr') = 1,
     'een scan van de code op een werkblad telt mee (ADR-212)';
+  assert (select aantal from public.teller where gebeurtenis = 'groep' and pad = '/6') = 1,
+    'de groep die op Vandaag gekozen werd, telt mee, zonder wie (ADR-243)';
   assert (select count(*) from public.teller where gebeurtenis = 'iets-anders') = 0,
     'een gebeurtenis buiten de lijst telt niet mee';
   assert (select count(*) from public.teller where pad like '%script%') = 0,

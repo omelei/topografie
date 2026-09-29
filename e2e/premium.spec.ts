@@ -688,11 +688,16 @@ test('without a code the first card starts a round, and a diploma asks the paren
   page,
 }) => {
   await signIn(page, 'Pim');
+  // Eerst de groep (ADR-243); daarna staan de startkaarten van groep 6 er.
+  await page
+    .getByRole('region', { name: 'In welke groep zit je?' })
+    .getByRole('button', { name: 'Groep 6', exact: true })
+    .click();
 
   // De startkaarten zijn meerkeuze: gratis, dus geen vraag aan de ouders.
   await page
+    .getByRole('group', { name: 'Hier begin je mee in groep 6' })
     .getByRole('button', { name: /Provincies/ })
-    .first()
     .click();
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
   await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toHaveCount(0);
