@@ -32,18 +32,17 @@ import {
  * (it folds away), a rule, Jij and Ouders.
  *
  * **Below 1200** — a tablet either way up, and a phone — the bar stands on
- * the ground: the mark, and three round buttons for premium, Ouders and the
- * child. Vandaag, Oefenen and Jij lie along the bottom where a thumb is, and
- * a vak is reached through Oefenen (`/oefenen`), which stays marked inside
- * every vak.
+ * the ground: the mark, and two round buttons for premium and the child.
+ * Vandaag, Oefenen, Jij and Ouders lie along the bottom where a thumb is
+ * (ADR-242), and a vak is reached through Oefenen (`/oefenen`), which stays
+ * marked inside every vak.
  *
  * "Hier ben je" looks the same everywhere (ADR-241): a tint behind the whole
  * row or tab. A destination's icon keeps its own colour when it is the one you
  * are on; only the row and the word change. Premium is the one loud button.
  *
- * Exactly one of each pair is displayed at any width — side bar or tab bar,
- * Ouders in the side bar or in the bar — so nothing is offered twice. Which
- * one is CSS.
+ * Exactly one of each pair is displayed at any width — side bar or tab bar —
+ * so nothing is offered twice. Which one is CSS.
  *
  * **Nothing here appears during a round.** Not hidden: not rendered. A round
  * screen is not wrapped in this component at all (ADR-041), and
@@ -74,8 +73,8 @@ const DESTINATION_ICON: Record<Destination['id'], ComponentType<Omit<IconProps, 
 /** Wat in de zijbalk staat, boven en onder de lijn (ADR-241). */
 const ZIJBALK_BOVEN: readonly Destination['id'][] = ['vandaag', 'oefenen'];
 const ZIJBALK_ONDER: readonly Destination['id'][] = ['jij', 'ouders'];
-/** Wat onderaan een telefoon staat: Oefenen in het midden. */
-const TABBALK: readonly Destination['id'][] = ['vandaag', 'oefenen', 'jij'];
+/** Wat onderaan een telefoon staat (ADR-242: Ouders erbij, als vierde). */
+const TABBALK: readonly Destination['id'][] = ['vandaag', 'oefenen', 'jij', 'ouders'];
 
 /**
  * Of de vakken onder Oefenen openstaan, bewaard op dit apparaat (ADR-241).
@@ -169,7 +168,6 @@ export function Shell({
     });
 
   const premium = showDestinations ? bestemming('premium') : null;
-  const ouders = showDestinations ? bestemming('ouders') : null;
   // In een vak ben je in Oefenen. De rij van dat vak zegt het in de zijbalk;
   // staat de lijst dicht, of staat het vak er niet in, dan zegt Oefenen het.
   const inVak = currentModule !== undefined;
@@ -276,19 +274,6 @@ export function Shell({
               >
                 <PremiumFilledIcon size={24} />
                 <span className="tk-premium-pil-naam">{premium.label}</span>
-              </button>
-            ) : null}
-            {/* Ouders staat aan een bureau in de zijbalk, en hier alleen onder
-                1200. */}
-            {ouders ? (
-              <button
-                type="button"
-                aria-current={current === 'ouders' ? 'page' : undefined}
-                aria-label={ouders.label}
-                className="tk-balkknop desk:hidden"
-                onClick={() => onNavigate?.('ouders')}
-              >
-                <ouders.Icon size={20} />
               </button>
             ) : null}
             {bar}

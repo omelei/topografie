@@ -219,15 +219,24 @@ export function ModuleScreen({
   const regioStap = heeftRegio ? 1 : 0;
   const watStap = regioStap + 1;
   const keuzeStap = heeftKeuze ? watStap + 1 : 0;
-  // Een keuze in het eerste onderdeel springt naar het tweede: zonder die
-  // sprong moest een kind op een telefoon zelf naar beneden zoeken (ADR-233).
-  // Het eerste onderdeel is de regio waar die er is, anders het onderwerp.
+  // Elke keuze springt naar het volgende onderdeel: zonder die sprong moest
+  // een kind op een telefoon zelf naar beneden zoeken (ADR-233, sinds ADR-242
+  // voor elk onderdeel en niet alleen het eerste). Regio → onderwerp →
+  // welke → spelvorm → hoeveel vragen → de startbalk.
   const watSectie = useRef<HTMLElement>(null);
   const keuzeSectie = useRef<HTMLElement>(null);
   const hoeSectie = useRef<HTMLElement>(null);
-  // Na de render: dan staat wat bij de keuze hoort er al.
-  const springNaar = (sectie: { readonly current: HTMLElement | null }) =>
-    requestAnimationFrame(() => sectie.current?.scrollIntoView({ block: 'start' }));
+  const aantalSectie = useRef<HTMLElement>(null);
+  const startSectie = useRef<HTMLDivElement>(null);
+  // Na de render: dan staat wat bij de keuze hoort er al. De eerste die er
+  // staat: "Hoeveel vragen?" is er niet bij elke spelvorm, en de startbalk
+  // staat op een telefoon al vast onderaan en hoeft dan niet.
+  // Een onderdeel komt bovenaan te staan; de startbalk alleen in beeld.
+  const springNaar = (...secties: { readonly current: HTMLElement | null }[]) =>
+    requestAnimationFrame(() => {
+      const doel = secties.map((sectie) => sectie.current).find((el) => el !== null);
+      doel?.scrollIntoView({ block: doel === startSectie.current ? 'nearest' : 'start' });
+    });
 
   const stap = {
     regio: regioStap,
@@ -549,7 +558,7 @@ export function ModuleScreen({
                       setVakId(null);
                       onSet(vak.sets[0]?.setId ?? '');
                     }
-                    if (!heeftRegio) springNaar(vraagtWelke(vak) ? keuzeSectie : hoeSectie);
+                    springNaar(vraagtWelke(vak) ? keuzeSectie : hoeSectie);
                   }}
                 >
                   <span className="tk-plaat">
@@ -591,7 +600,10 @@ export function ModuleScreen({
                     // one control whose visible label is shorter than it means.
                     aria-label={naamVan(deel)}
                     aria-pressed={deel.setId === chosen?.setId}
-                    onClick={() => onSet(deel.setId)}
+                    onClick={() => {
+                      onSet(deel.setId);
+                      springNaar(hoeSectie);
+                    }}
                   >
                     <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
                   </button>
@@ -606,7 +618,10 @@ export function ModuleScreen({
                     className="tk-keuze"
                     aria-label={naamVan(deel)}
                     aria-pressed={deel.setId === chosen?.setId}
-                    onClick={() => onSet(deel.setId)}
+                    onClick={() => {
+                      onSet(deel.setId);
+                      springNaar(hoeSectie);
+                    }}
                   >
                     <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
                   </button>
@@ -654,6 +669,7 @@ export function ModuleScreen({
                     }
                     setFormId(candidate.id);
                     setToetsstand(false);
+                    springNaar(aantalSectie, startSectie);
                   }}
                 >
                   <span className="tk-plaat">
@@ -732,6 +748,7 @@ export function ModuleScreen({
                   }
                   setFoutenstand(false);
                   setToetsstand(true);
+                  springNaar(aantalSectie, startSectie);
                 }}
               >
                 <span className="tk-plaat">
@@ -773,6 +790,7 @@ export function ModuleScreen({
                 setToetsstand(false);
                 setFoutenstand(false);
                 setFormId(diplomaVorm.id);
+                springNaar(aantalSectie, startSectie);
               }}
             >
               <span className="tk-plaat">
@@ -795,7 +813,7 @@ export function ModuleScreen({
             exploring have none, and a diploma is the whole table, so for those
             the step is not there rather than empty (ADR-100, amending ADR-074). */}
         {chosen && form && lengtes.length > 0 ? (
-          <section className="tk-kies" aria-label={t('choose.howMany')}>
+          <section ref={aantalSectie} className="tk-kies" aria-label={t('choose.howMany')}>
             <Stap nummer={stap.hoe + 1} label={t('choose.howMany')} />
 
             <div className="tk-keuzes">
@@ -810,7 +828,10 @@ export function ModuleScreen({
                     className="tk-keuze"
                     aria-label={t(label, { aantal: count })}
                     aria-pressed={count === vragen}
-                    onClick={() => setAantal(count)}
+                    onClick={() => {
+                      setAantal(count);
+                      springNaar(startSectie);
+                    }}
                   >
                     <span aria-hidden="true">
                       {heel ? t('choose.howManyAll', { aantal: count }) : count}
@@ -826,7 +847,7 @@ export function ModuleScreen({
             chooser. On a phone the same bar is at the foot of the page — see
             below. Always drawn; filled once every step has an answer. */}
         {kleinScherm ? null : (
-          <div className="tk-startbalk tk-choose-start">
+          <div ref={startSectie} className="tk-startbalk tk-choose-start">
             <div className="min-w-0">
               <p className="tk-startbalk-label">{t(klaar ? 'start.klaar' : 'start.nogKiezen')}</p>
               {klaar ? (
