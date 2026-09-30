@@ -45,6 +45,13 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    Workspace sinds 25 september, met `p=none`. Zijn de rapporten na twee tot
    vier weken schoon, dan `p=quarantine`; `p=reject` pas als de mail van
    Resend ook klopt.
+10. **Twee keuzes voor de Play Store** (zie [Play Store](#play-store)), na de
+    privacyverklaring:
+    - premium in de Android-app: zonder kassa, alleen een code invullen en
+      kopen op de site (advies), of Google Play Billing met 15% commissie;
+    - een persoonlijk ontwikkelaarsaccount (eerst 14 dagen testen met 12
+      testers) of een organisatieaccount (met D-U-N-S-nummer, advies als je
+      een eenmanszaak of bv hebt).
 
 Gedaan op 30 september: Search Console aangezet met de sitemap en tien pagina's
 aangevraagd, `tools/premium/schema.sql` opnieuw gedraaid, en de teller zelf
@@ -180,6 +187,30 @@ opnamelijst staan in [kleuters.md](kleuters.md).
 6. **Fase 3 bouwen: beginklank, hakken en plakken, letterklanken** — _jij
    spreekt de losse klanken in, Claude bouwt_. Losse klanken kunnen niet met
    een browserstem.
+
+### Play Store
+
+De site is al een installeerbare app (manifest, iconen). De route naar de Play
+Store is een Trusted Web Activity: een klein Android-omhulsel dat www.leer.nu
+opent, zodat elke deploy ook in de app staat zonder nieuwe release.
+
+1. **Privacyverklaring live** — zie "Gezinsaccount live zetten". Zonder
+   privacy-URL geen app, en voor een kinderapp kijkt Google extra streng.
+2. **Twee keuzes** — _jij_ (actielijst, punt 10). Let op: premium via de kassa
+   van Mollie in de app mag niet; digitale inhoud gaat in de app via Google
+   Play Billing. Of "code invullen, kopen op de site" zonder link naar de kassa
+   mag, kijkt Claude na in de actuele regels voor de EER.
+3. **Ontwikkelaarsaccount** — _jij_: $ 25 eenmalig, identiteit laten
+   controleren. Als handelaar (EU) staan je adres en telefoonnummer openbaar in
+   de store: gebruik een zakelijk adres.
+4. **Het omhulsel** — _Claude_, in één PR: Bubblewrap-configuratie uit
+   `site.webmanifest`, `public/.well-known/assetlinks.json` (met de SHA-256 van
+   de signing key van Google Play, niet van de upload key), een offlinepagina of
+   service worker, en de teksten voor de store volgens de schrijfwijzer.
+5. **In de Play Console** — _jij_: Families-beleid en doelgroep (4 tot 12
+   jaar), Data safety, leeftijdsclassificatie (IARC), screenshots en de feature
+   graphic. Met het gezinsaccount erbij: account verwijderen in de app en op een
+   webpagina.
 
 ## De volgende tien (24 september)
 
