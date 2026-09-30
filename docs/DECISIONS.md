@@ -14211,6 +14211,39 @@ volgt Google niet. De pagina's hingen dus alleen aan de sitemap.
 - **Alle onderwerpen van het vak**, ook als dat bij rekenen een lange rij is.
   Het zijn dezelfde links als op de pagina voor Google, uit één lijst.
 
+## ADR-246 — Het app-icoon is de hele Denker, op room
+
+**Status:** accepted. **Date:** 2026-09-30. Op verzoek van de eigenaar: "Wijzig
+ook het app icoon op basis van het nieuwe beeldmerk." Wijzigt het app-icoon
+van ADR-237.
+
+**Wat er mis was.** Het app-icoon was een koraal vierkant met het gezicht van
+Denker erop: het vlak wás zijn lijf. In het logo, op de site en in de app is
+Denker een ronde vorm met glans en wangen. Op het beginscherm leek het icoon
+daardoor een ander merk dan het logo naast de naam.
+
+**Besluit.**
+
+- **Het icoon is het beeldmerk op een tegel in room** (`#FFF3E6`): dezelfde
+  Denker die denkt als in het logo, heel, zonder schaduw. `leer-logo
+variant="icoon"` in `docs/leer.js` tekent hem; `tools/merk-uit-leer.mjs`
+  schrijft de bestanden.
+- **De maskable versie** vult het hele vlak met room en zet Denker in de veilige
+  zone, zoals eerst het gezicht.
+- **Het tabblad** (`favicon.svg`, `.ico`, 16 en 32 px) krijgt Denker los, in de
+  eenvoudige tekening (`variant="favicon"`): onder 36 px vallen glans, wangen
+  en lichtjes weg, zoals de stijlgids zegt. Een tegel in room zou in een licht
+  tabblad wegvallen.
+- **De rest blijft**: logo's, uitdrukkingen, og-image en het manifest zijn
+  byte voor byte gelijk.
+
+**Afwegingen.**
+
+- **Room tegenover koraal als grond.** Een koraal tegel valt meer op tussen
+  andere apps, maar dan is Denker geen vorm meer, alleen een gezicht. Room is
+  ook de kleur van het opstartscherm (`background_color`), dus het icoon en het
+  scherm dat erna komt, zijn één beeld.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

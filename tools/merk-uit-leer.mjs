@@ -152,15 +152,20 @@ for (const uitdrukking of UITDRUKKINGEN) {
   }
 }
 
-// App icons: the rounded tile, and a full-bleed one with the face in the safe zone.
+// App icons: Denker on a rounded tile in room, and a full-bleed one with Denker
+// in the safe zone (ADR-246). The tab gets Denker alone, in the simple drawing.
 const icoon = alsBestand(teken('leer-logo', { variant: 'icoon', height: 100 }));
+const favicon = alsBestand(teken('leer-logo', { variant: 'favicon', height: 100 }));
 const APP = join(DOCS, 'app-icoon');
 rmSync(APP, { recursive: true, force: true });
 schrijf(join(APP, 'app-icoon.svg'), icoon);
-schrijf(join(APP, 'favicon.svg'), icoon);
+schrijf(join(APP, 'favicon.svg'), favicon);
 const maskable = icoon
   .replace('<rect width="100" height="100" rx="24"', '<rect width="100" height="100"')
-  .replace(/(<\/defs><rect[^>]*\/>)/, '$1<g transform="translate(10 10) scale(.8)">')
+  .replace(
+    /(<rect width="100" height="100"[^>]*\/>)/,
+    '$1<g transform="translate(10 10) scale(.8)">',
+  )
   .replace('</svg>', '</g></svg>');
 schrijf(join(APP, 'app-icoon-maskable.svg'), maskable);
 schrijf(
@@ -246,8 +251,8 @@ schrijf(
 );
 
 const opIcoon = {
-  'favicon-16x16.png': [icoon, 16],
-  'favicon-32x32.png': [icoon, 32],
+  'favicon-16x16.png': [favicon, 16],
+  'favicon-32x32.png': [favicon, 32],
   'apple-touch-icon.png': [maskable, 180],
   'icon-192.png': [icoon, 192],
   'icon-512.png': [icoon, 512],
@@ -264,7 +269,7 @@ schrijf(
 // favicon.ico: three PNGs in an ICO wrapper, which every browser reads.
 const icoMaten = [16, 32, 48];
 const icoBeelden = [];
-for (const maat of icoMaten) icoBeelden.push(await png(icoon, maat, maat));
+for (const maat of icoMaten) icoBeelden.push(await png(favicon, maat, maat));
 const kop = Buffer.alloc(6 + 16 * icoBeelden.length);
 kop.writeUInt16LE(0, 0);
 kop.writeUInt16LE(1, 2);
