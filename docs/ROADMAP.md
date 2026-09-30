@@ -11,24 +11,39 @@ er gebeurt, in welke volgorde, en wie aan zet is.
 
 ### Actielijst voor jou, in deze volgorde
 
-1. **Testaankoop in de kassa.** Kijk of Mollie het nieuwe jaarbedrag vraagt
+1. **Leerkrachten werven via je netwerk.** Het bericht staat klaar in de sessie
+   van 30 september; de aanpak staat in de besloten roadmap (fase 0, actie
+   0.4). Het is het enige op deze lijst met een doorlooptijd die niemand kan
+   versnellen, dus eerst.
+2. **Indexering opnieuw aanvragen** in Search Console voor
+   `/topografie/provincies`, `/topografie` en `/`: sinds #186 staat daar een
+   kop met het onderwerp en staan er links naar de andere onderwerpen. Eerst
+   **Live URL testen**, dan **Indexering aanvragen**. Rond 3 oktober het
+   rapport Pagina-indexering bekijken.
+3. **Zoekwoorden verzamelen** in de Zoekwoordplanner van Google Ads (zonder
+   campagne), taal Nederlands, locatie Nederland, en de CSV aan Claude geven.
+   Daarmee kiest Claude de eerste pagina's per toetsonderwerp en betere
+   beschrijvingen voor Google.
+4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
+   `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
+5. **Testaankoop in de kassa.** Kijk of Mollie het nieuwe jaarbedrag vraagt
    (ADR-230). De code staat na betalen op het scherm; de mail met de code komt
    waarschijnlijk niet aan, want in de DNS staan geen records van Resend. Zet
    die records erbij (Resend → Domains → leer.nu).
-2. **Zoekwoorden verzamelen** in de Zoekwoordplanner van Google Ads (zonder
-   campagne), taal Nederlands, locatie Nederland, en de CSV aan Claude geven.
-   Search Console staat sinds 30 september aan, met de sitemap ingestuurd en
-   tien pagina's aangevraagd. Rond 3 oktober het rapport Pagina-indexering
-   bekijken.
-3. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
-   `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
-4. **DMARC opschalen**: mail op @leer.nu werkt via Google Workspace sinds 25
-   september, met `p=none`. Zijn de rapporten na twee tot vier weken schoon,
-   dan `p=quarantine`; `p=reject` pas als de mail van Resend ook klopt.
-5. **Op 8 oktober de teller uitlezen** (de vragen staan in
+6. **Uiterlijk 9 oktober de open besluiten nemen** die in de besloten roadmap
+   staan (§8: B4, B5 en B7). B0, B1, B2 en B6 zijn op 30 september genomen.
+7. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
    voor kleuters gebouwd wordt (zie [Groep 1 en 2](#groep-1-en-2)).
+8. **DMARC opschalen**, rond half oktober: mail op @leer.nu werkt via Google
+   Workspace sinds 25 september, met `p=none`. Zijn de rapporten na twee tot
+   vier weken schoon, dan `p=quarantine`; `p=reject` pas als de mail van
+   Resend ook klopt.
+
+Gedaan op 30 september: Search Console aangezet met de sitemap en tien pagina's
+aangevraagd, `tools/premium/schema.sql` opnieuw gedraaid, en de teller zelf
+getest (een ronde telt).
 
 ### Lopend
 
