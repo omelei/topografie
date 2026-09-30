@@ -4,13 +4,34 @@ import { expect, test } from '@playwright/test';
  * Een onderwerp is een pagina met een eigen titel (ADR-207). Wie via Google op
  * /topografie/provincies binnenkomt, ziet die titel in het tabblad, en de app
  * neemt de pagina over zodra hij start: de tekst voor Google blijft niet staan.
+ * Zonder naam zegt de kop hetzelfde als het tabblad (ADR-245).
  */
 test('a topic has its own page and title, and the app takes it over', async ({ page }) => {
   await page.goto('/topografie/provincies');
   await expect(page).toHaveTitle('Provincies van Nederland oefenen · leer.nu');
   // Zonder naam opent het onderwerp zelf (ADR-208).
-  await expect(page.getByRole('heading', { name: 'Wat wil je oefenen?' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Alles van topografie' })).toHaveCount(0);
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Provincies van Nederland oefenen' }),
+  ).toBeVisible();
+  await expect(page.locator('[data-seo]')).toHaveCount(0);
+});
+
+/**
+ * Onder een onderwerp de andere onderwerpen van het vak, als echte links
+ * (ADR-245): Google volgt ze, en een klik blijft in de app.
+ */
+test('a topic page links to the other topics of its subject', async ({ page }) => {
+  await page.goto('/topografie/provincies');
+  const meer = page.getByRole('navigation', { name: 'Meer topografie' });
+  await expect(meer.getByRole('link', { name: 'Alles van topografie' })).toHaveAttribute(
+    'href',
+    '/topografie',
+  );
+  await meer.getByRole('link', { name: 'Hoofdsteden van de provincies' }).click();
+  await expect(page).toHaveURL(/\/topografie\/hoofdsteden$/);
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Hoofdsteden van de provincies oefenen' }),
+  ).toBeVisible();
 });
 
 test('the sitemap lists the topics, and robots.txt points at it', async ({ request }) => {

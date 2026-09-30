@@ -213,14 +213,19 @@ export function seoPaginas(): SeoPagina[] {
   ];
 }
 
-let perPad: Map<string, string> | null = null;
+let perPad: Map<string, SeoPagina> | null = null;
+
+/** De pagina voor Google op dit adres, of null als het adres er geen heeft. */
+export function seoPaginaVoor(pathname: string): SeoPagina | null {
+  perPad ??= new Map(seoPaginas().map((pagina) => [pagina.pad, pagina]));
+  const pad = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
+  return perPad.get(pad) ?? null;
+}
 
 /**
  * De titel voor het tabblad, op het adres waar de app staat. Een adres zonder
  * eigen pagina (Jij, Premium, een ronde) heet gewoon leer.nu.
  */
 export function titelVoor(pathname: string): string {
-  perPad ??= new Map(seoPaginas().map((pagina) => [pagina.pad, pagina.titel]));
-  const pad = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-  return perPad.get(pad) ?? t('seo.standaard');
+  return seoPaginaVoor(pathname)?.titel ?? t('seo.standaard');
 }
