@@ -14,7 +14,9 @@ test.use({ storageState: { cookies: [], origins: [] } });
 test('a visitor plays a topic first, and keeps the round after typing a name', async ({ page }) => {
   await page.goto('/topografie/provincies');
   await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Wat wil je oefenen?' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Provincies van Nederland oefenen' }),
+  ).toBeVisible();
 
   // Zonder code de gratis manier: kies uit 4 namen (ADR-192).
   await page
