@@ -16,6 +16,7 @@ import { titelVoor } from '@/seo/paginas';
 import { tel, telBinnenkomst } from '@/store/teller';
 import { WerkbladScherm } from '@/features/werkblad/WerkbladScherm';
 import { Scholen } from '@/features/home/Scholen';
+import { Privacy } from '@/features/home/Privacy';
 import { VoorOuders } from '@/features/home/VoorOuders';
 import { ModuleSoon } from '@/features/shell/ModuleSoon';
 import { CategoryScreen } from '@/features/shell/CategoryScreen';
@@ -766,6 +767,15 @@ export default function App() {
     return (
       <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
         <Scholen />
+      </Shell>
+    );
+  }
+
+  // De privacyverklaring (ADR-249), zonder naam: wie dit leest, is een ouder.
+  if (route.name === 'privacy') {
+    return (
+      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+        <Privacy />
       </Shell>
     );
   }

@@ -38,6 +38,11 @@ export const brand = {
   contact: 'info@leer.nu',
   /** Waar een school een klassencode aanvraagt. */
   scholen: 'scholen@leer.nu',
+  /**
+   * Wie verantwoordelijk is voor de gegevens, voor de privacyverklaring
+   * (ADR-249). Een lege plaats laat de pagina weg.
+   */
+  verantwoordelijke: { naam: 'Omelei', kvk: '23456789', plaats: '' },
 
   locale: 'nl-NL',
   /**

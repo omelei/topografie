@@ -33,6 +33,7 @@ describe('the pages Google reads', () => {
       else if (pagina.pad.endsWith('/werkblad')) expect(route.name, pagina.pad).toBe('werkblad');
       else if (pagina.pad === '/voor-ouders') expect(route.name).toBe('voorOuders');
       else if (pagina.pad === '/scholen') expect(route.name).toBe('scholen');
+      else if (pagina.pad === '/privacy') expect(route.name).toBe('privacy');
       else expect(route.name, pagina.pad).toBe('module');
     }
     const provincies = routeFor('/topografie/provincies');

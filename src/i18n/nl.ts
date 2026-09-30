@@ -92,6 +92,10 @@ export const nl = {
   'ouders.privacy.kop': 'Wat er met de gegevens gebeurt',
   'ouders.privacy.tekst':
     'Wat je kind oefent, blijft op dit apparaat. Een naam is niet nodig om te oefenen. Typt je kind een voornaam, dan gaat die nergens heen. Onze server telt alleen hoe vaak iets gebeurt, zonder naam.',
+  // Met een gezinsaccount (ADR-249): dan gaat er met toestemming wél iets naar
+  // de server, en zegt deze belofte dat.
+  'ouders.privacy.tekstAccount':
+    'Zonder account blijft wat je kind oefent op dit apparaat, en is een naam niet nodig. Maak je een gezinsaccount, dan gaan de voornaam en de voortgang met jouw toestemming naar onze server in de EU. Onze server telt verder alleen hoe vaak iets gebeurt, zonder naam.',
   'ouders.kosten.kop': 'Wat het kost',
   'ouders.kosten.gratis': 'Oefenen is gratis, in elk vak en elk onderwerp.',
   'ouders.kosten.premium':
@@ -116,6 +120,8 @@ export const nl = {
     // Waar zolang het gezinsaccount niet live staat (roadmap): daarmee gaan de
     // voornaam en de voortgang wél naar de server.
     'Leer.nu slaat geen persoonlijke gegevens op van kinderen. Daarom is er geen verwerkersovereenkomst nodig.',
+  'scholen.privacy.tekstAccount':
+    'Leer.nu slaat voor de klas geen persoonlijke gegevens op van kinderen. Alleen als een ouder thuis een gezinsaccount maakt, staan de voornaam en de voortgang op onze server, met toestemming van die ouder.',
   'scholen.papier.kop': 'Werkbladen voor de klas',
   'scholen.papier.tekst':
     'Elk onderwerp heeft een werkblad om te printen. In één keer print je 30 verschillende bladen, met de antwoorden achteraan.',
@@ -131,6 +137,83 @@ export const nl = {
   'scholen.mail.onderwerp': 'Klassencode aanvragen',
   'scholen.mail.bericht': 'Naam van de school:\nPlaats:\nGroep:\nJouw naam:\nFactuuradres:\n',
   'scholen.prijs': '€ 300',
+  // De privacyverklaring (ADR-249). Tegen de ouder, in "je" en in gewone
+  // woorden: wat er waar staat, waarom, en wat je ermee kunt. Het deel over het
+  // gezinsaccount staat er alleen als deze bouw accounts heeft.
+  'privacy.titel': 'Privacy',
+  'privacy.bijgewerkt': 'Bijgewerkt op 30 september 2026.',
+  'privacy.intro':
+    'Hier lees je welke gegevens leer.nu gebruikt, waar ze staan en hoe lang, en wat je ermee kunt.',
+  'privacy.kort.kop': 'In het kort',
+  'privacy.kort.apparaat':
+    'Oefenen kan zonder account. Wat je kind oefent, blijft dan op dit apparaat.',
+  'privacy.kort.geen': 'Geen advertenties, geen volgcookies, en we verkopen niets door.',
+  'privacy.kort.account':
+    'Maak je een gezinsaccount, dan gaat de voortgang van je kinderen met jouw toestemming naar onze server in de EU.',
+  'privacy.wie.kop': 'Wie we zijn',
+  'privacy.wie.tekst': 'leer.nu is van {naam}, ingeschreven bij de KvK onder nummer {kvk}.',
+  'privacy.wie.tekstPlaats':
+    'leer.nu is van {naam} in {plaats}, ingeschreven bij de KvK onder nummer {kvk}.',
+  'privacy.wie.contact':
+    'Vragen over privacy, of wil je gegevens inzien, verbeteren of laten wissen? Mail naar {adres}. We antwoorden binnen een maand.',
+  'privacy.apparaat.kop': 'Op dit apparaat',
+  'privacy.apparaat.tekst':
+    'De app bewaart in de browser wat nodig is om te oefenen: de voornamen die kinderen intikken, wat ze oefenden en hoe het ging, diploma’s, instellingen en een premiumcode. Zonder account gaat dat nergens heen.',
+  'privacy.apparaat.wissen':
+    'Je haalt het weg met "Alles wissen" in de app, of door de websitegegevens van leer.nu in je browser te wissen.',
+  'privacy.teller.kop': 'De teller',
+  'privacy.teller.tekst':
+    'Om te zien of leer.nu gebruikt wordt, telt onze server per dag hoe vaak iets gebeurt: iemand kwam binnen op een pagina, begon een ronde, printte een werkblad of koos een groep. Alleen het aantal, zonder naam, zonder apparaatnummer en zonder cookie.',
+  'privacy.teller.nietVolgen':
+    'Staat in je browser "Niet volgen" of "Global Privacy Control" aan, dan telt hij niets.',
+  'privacy.premium.kop': 'Premium',
+  'privacy.premium.tekst':
+    'Vul je een code in, dan vraagt de app aan onze server of hij klopt. Daarvoor gaan de code, een willekeurig nummer voor dit apparaat en het soort apparaat (bijvoorbeeld "iPad") naar de server. Die bewaart de code versleuteld, met dat nummer, het soort apparaat en de dagen waarop het apparaat de code het eerst en het laatst gebruikte.',
+  'privacy.premium.pogingen': 'Foute codes tellen we per apparaatnummer, om raden tegen te gaan.',
+  'privacy.betalen.kop': 'Betalen',
+  'privacy.betalen.tekst':
+    'Je betaalt via Mollie. Je e-mailadres gaat naar Mollie, en naar Resend om je de code te mailen. Wij bewaren het niet en sturen geen nieuwsbrief.',
+  'privacy.betalen.bestelling':
+    'Bij een betaling bewaren we het nummer van de betaling bij Mollie en de code. De leesbare code halen we weg zodra hij gemaild is en de bestelling 30 dagen oud is.',
+  'privacy.account.kop': 'Met een gezinsaccount',
+  'privacy.account.intro':
+    'Een gezinsaccount is een keuze van de ouder. Een kind heeft geen e-mailadres en maakt zelf geen account. Met jouw toestemming staat dan op onze server:',
+  'privacy.account.ouder': 'jouw e-mailadres, zonder naam;',
+  'privacy.account.kind':
+    'per kind de voornaam, een inlogcode, het niveau, de groep en de dag waarop je toestemming gaf;',
+  'privacy.account.voortgang':
+    'wat je kind oefende: elke ronde met het aantal goed en de tijd, en elk antwoord met goed of fout, de reactietijd, het gegeven antwoord en het tijdstip;',
+  'privacy.account.rest': 'diploma’s, instellingen en de doelen die jij instelt;',
+  'privacy.account.inlog':
+    'mislukte inlogpogingen, als versleutelde code en versleuteld IP-adres, een dag lang.',
+  'privacy.account.bewaren':
+    'Dit blijft bewaard zolang het account bestaat. Een kind verwijder je zelf op de ouderpagina; wil je het hele account weg, mail ons dan. Gebruikt niemand het account 24 maanden, dan halen we alles weg.',
+  'privacy.wie2.kop': 'Wie ons helpt',
+  'privacy.wie2.intro':
+    'Deze bedrijven verwerken gegevens voor ons, en alleen voor wat hieronder staat:',
+  'privacy.wie2.github':
+    'GitHub (Microsoft) laat de website zien. Zoals elke webserver ziet het je IP-adres. GitHub zit in de VS en valt onder het EU-VS-gegevenskader.',
+  'privacy.wie2.supabase': 'Supabase host onze server, in Frankfurt.',
+  'privacy.wie2.mollie': 'Mollie verwerkt de betaling, in Nederland.',
+  'privacy.wie2.resend': 'Resend verstuurt de mail met de code, vanuit de EU.',
+  'privacy.wie2.google': 'Google Workspace ontvangt de mail die je ons stuurt.',
+  'privacy.waarom.kop': 'Waarom dat mag',
+  'privacy.waarom.overeenkomst':
+    'Voor premium en de betaling: omdat je iets bij ons koopt (uitvoering van een overeenkomst).',
+  'privacy.waarom.belang':
+    'Voor de teller en het tegengaan van raden: om leer.nu te laten werken en te verbeteren, zonder te weten wie je bent (gerechtvaardigd belang).',
+  'privacy.waarom.toestemming':
+    'Voor de gegevens van een kind in een gezinsaccount: omdat jij als ouder toestemming geeft. Die trek je in door het kind te verwijderen, of door ons te vragen het account weg te halen.',
+  'privacy.rechten.kop': 'Wat je kunt doen',
+  'privacy.rechten.tekst':
+    'Je mag vragen welke gegevens we van jou of je kind hebben, en ze laten verbeteren, meenemen of wissen. Mail daarvoor naar {adres}. Ben je het niet met ons eens, dan kun je een klacht indienen bij de Autoriteit Persoonsgegevens.',
+  'privacy.wijzigen.kop': 'Als dit verandert',
+  'privacy.wijzigen.tekst':
+    'Verandert er iets aan wat we bewaren, dan passen we deze pagina aan en staat de nieuwe datum bovenaan.',
+  'privacy.link': 'Lees de privacyverklaring',
+  'seo.privacy.titel': 'Privacy · leer.nu',
+  'seo.privacy.beschrijving':
+    'Welke gegevens leer.nu gebruikt, waar ze staan en hoe lang. Oefenen kan zonder account, en dan blijft alles op je apparaat.',
   'seo.scholen.titel': 'Voor de klas: een klassencode voor 40 apparaten · leer.nu',
   // "Over dit onderwerp" (ADR-213): onderaan de pagina van een onderwerp en op
   // de pagina voor Google. De vragen zijn die van een ouder.
@@ -844,6 +927,8 @@ export const nl = {
   'premium.waarom.geenNamen': 'We slaan geen namen van kinderen op',
   'premium.waarom.geenNamenUit':
     'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
+  'premium.waarom.geenNamenUitAccount':
+    'Zonder account staat de voornaam alleen op je eigen apparaat. Met een gezinsaccount gaat hij met jouw toestemming naar onze server in de EU. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
   'premium.waarom.gok': 'Belonen zonder gokken',
   'premium.waarom.gokUit':
     'Je kind doet pas de toets voor een diploma als het de stof op verschillende dagen goed had. Niets hangt van geluk af.',

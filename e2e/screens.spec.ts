@@ -239,6 +239,9 @@ test('for parents and for the class', async ({ page }, testInfo) => {
   await page.goto('/scholen');
   await expect(page.getByRole('heading', { name: 'leer.nu voor de klas' })).toBeVisible(READY);
   await shoot(page, size, '29-scholen');
+  await page.goto('/privacy');
+  await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeVisible(READY);
+  await shoot(page, size, '30-privacy');
 });
 
 /** Engels (ADR-217): het Nederlandse woord, de Engelse zin en vier keuzes. */
