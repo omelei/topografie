@@ -189,8 +189,8 @@
       const ink = k === 'wit' ? '#FFFFFF' : C.cacao; const pdot = k === 'kleur' ? C.koraal : ink;
       let svg;
       if (v === 'icoon') {
-        // Het beeldmerk zelf op een tegel in room: dezelfde Denker als in het logo, heel, niet alleen zijn gezicht.
-        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><rect width="100" height="100" rx="24" fill="${C.room}"/><g transform="translate(50 50.5) scale(1.04) translate(-50 -55.5)">${logoDenker(this._id)}</g></svg>`;
+        // Het beeldmerk zelf op een tegel in koraal diep: dezelfde Denker als in het logo, heel, en lichter dan zijn grond.
+        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><rect width="100" height="100" rx="24" fill="${C.koraalDiep}"/><g transform="translate(50 50.5) scale(1.04) translate(-50 -55.5)">${logoDenker(this._id)}</g></svg>`;
       } else if (v === 'favicon') {
         // Het tabblad: Denker los en in de eenvoudige tekening, want onder 36 px vallen glans, wangen en lichtjes weg.
         const d = denkerDelen('denken', this._id, true);

@@ -14211,7 +14211,7 @@ volgt Google niet. De pagina's hingen dus alleen aan de sitemap.
 - **Alle onderwerpen van het vak**, ook als dat bij rekenen een lange rij is.
   Het zijn dezelfde links als op de pagina voor Google, uit één lijst.
 
-## ADR-246 — Het app-icoon is de hele Denker, op room
+## ADR-246 — Het app-icoon is de hele Denker, op koraal diep
 
 **Status:** accepted. **Date:** 2026-09-30. Op verzoek van de eigenaar: "Wijzig
 ook het app icoon op basis van het nieuwe beeldmerk." Wijzigt het app-icoon
@@ -14224,25 +14224,26 @@ daardoor een ander merk dan het logo naast de naam.
 
 **Besluit.**
 
-- **Het icoon is het beeldmerk op een tegel in room** (`#FFF3E6`): dezelfde
-  Denker die denkt als in het logo, heel, zonder schaduw. `leer-logo
-variant="icoon"` in `docs/leer.js` tekent hem; `tools/merk-uit-leer.mjs`
-  schrijft de bestanden.
-- **De maskable versie** vult het hele vlak met room en zet Denker in de veilige
-  zone, zoals eerst het gezicht.
+- **Het icoon is het beeldmerk op een tegel in koraal diep** (`#C8412A`):
+  dezelfde Denker die denkt als in het logo, heel, zonder schaduw. De variant
+  `icoon` van `leer-logo` in `docs/leer.js` tekent hem, en
+  `tools/merk-uit-leer.mjs` schrijft de bestanden.
+- **De maskable versie** vult het hele vlak met koraal diep en zet Denker in de
+  veilige zone, zoals eerst het gezicht.
 - **Het tabblad** (`favicon.svg`, `.ico`, 16 en 32 px) krijgt Denker los, in de
-  eenvoudige tekening (`variant="favicon"`): onder 36 px vallen glans, wangen
-  en lichtjes weg, zoals de stijlgids zegt. Een tegel in room zou in een licht
-  tabblad wegvallen.
+  eenvoudige tekening (variant `favicon`): onder 36 px vallen glans, wangen en
+  lichtjes weg, zoals de stijlgids zegt. Op een tegel zou Denker daar te klein
+  zijn om te herkennen.
 - **De rest blijft**: logo's, uitdrukkingen, og-image en het manifest zijn
   byte voor byte gelijk.
 
 **Afwegingen.**
 
-- **Room tegenover koraal als grond.** Een koraal tegel valt meer op tussen
-  andere apps, maar dan is Denker geen vorm meer, alleen een gezicht. Room is
-  ook de kleur van het opstartscherm (`background_color`), dus het icoon en het
-  scherm dat erna komt, zijn één beeld.
+- **Koraal diep tegenover room als grond.** Eerst stond Denker op room; de
+  eigenaar koos koraal, omdat een koraal tegel meer opvalt tussen andere apps
+  en de merkkleur is. Gewoon koraal kan niet: dan valt Denker weg in zijn grond
+  en is hij weer alleen een gezicht. Koraal diep is donker genoeg om zijn ronde
+  vorm te laten zien, en blijft koraal.
 
 ## Deferred with accounts and commerce (ADR-014)
 
