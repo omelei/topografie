@@ -69,7 +69,7 @@ async function startRound(page: Page, set: Keuze, way: RegExp, toetsstand = fals
  * matched on "vragen" was quietly asserting which modes exist.
  */
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /**
@@ -665,7 +665,7 @@ async function eenRondeProvincies(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
   await page.getByRole('button', { name: 'Limburg' }).click();

@@ -26,7 +26,7 @@ test('counts where someone came in and that a round began, and nothing about who
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
 

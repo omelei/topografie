@@ -172,7 +172,7 @@ test('without a code a child can still discover, choose, and repeat their misses
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Ontdekken/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page).not.toHaveURL(/\/premium$/);
 
   // The table of one, chosen from four, so the round can be finished honestly
@@ -188,7 +188,7 @@ test('without a code a child can still discover, choose, and repeat their misses
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Meerkeuze/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let n = 1; n <= 10; n++) {
@@ -409,7 +409,7 @@ test('the code takes a place at the first premium round, not when a parent types
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Bliksemronde/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await expect(venster).toContainText('staat al op genoeg apparaten');
@@ -504,7 +504,7 @@ test('without an answer about a place, the round starts and the server is asked 
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Bliksemronde/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.locator('.tk-sum')).toBeVisible();
   expect(claims).toHaveLength(1);
@@ -521,7 +521,7 @@ async function oefenTafelVanEen(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Meerkeuze/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let vraag = 1; vraag <= 10; vraag++) {

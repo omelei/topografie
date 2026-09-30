@@ -19,7 +19,7 @@ async function startRound(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 

@@ -27,7 +27,7 @@ async function kies(page: Page, regio: string, onderwerp: RegExp, hoe: RegExp) {
 }
 
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /**

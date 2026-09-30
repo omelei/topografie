@@ -60,7 +60,7 @@ async function tafelVanEen(page: Page, vorm: RegExp) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: vorm })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ page }) => {
@@ -181,7 +181,7 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
     .getByRole('region', { name: 'Jouw tafeldiploma’s' })
     .getByRole('button', { name: 'Tafel van 1: nog geen diploma' })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   // Afzwemmen (ADR-149): de pagina is rijp, dus de vraag is of er iemand meekijkt.
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();

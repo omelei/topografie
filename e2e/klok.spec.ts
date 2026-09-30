@@ -21,7 +21,7 @@ async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp) {
 
   await wat.getByRole('button', { name: onderwerp }).click();
   await hoeStap.getByRole('button', { name: hoe }).click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 test('the clock has a module page in the same shape as the other two', async ({ page }) => {

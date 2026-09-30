@@ -21,7 +21,7 @@ async function kies(page: Page, pad: string, onderwerp: RegExp, hoe: RegExp) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: hoe })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /** Says "ik weet het niet" to every question, to the end of the round. */
@@ -69,7 +69,7 @@ test('de klok biedt "Je fouten" pas aan als er fouten zijn, bij de manieren', as
     'true',
   );
   await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();
 });
 

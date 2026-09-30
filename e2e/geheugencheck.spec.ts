@@ -24,7 +24,7 @@ async function oefenTafelVanEen(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Meerkeuze/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let vraag = 1; vraag <= 10; vraag++) {
     const som = await page.locator('.tk-sum').innerText();

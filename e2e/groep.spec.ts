@@ -181,7 +181,7 @@ test('de groep staat in de kop, en na een ronde komt "Past bij groep"', async ({
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();

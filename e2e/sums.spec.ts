@@ -51,7 +51,7 @@ async function tienGoed(page: Page) {
 
 /** The one way out of K2, whatever was chosen. See e2e/app.spec.ts. */
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /**
@@ -120,7 +120,7 @@ test('rekenen is the word a parent looks for, and it is the page itself', async 
     .getByRole('region', { name: /Kies een onderwerp/ })
     .getByRole('button', { name: /^Tafels/ });
   await expect(tafels).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('.tk-choose-start button')).toBeDisabled();
+  await expect(page.locator('.tk-choose-start .tk-button-go')).toBeDisabled();
 
   await kiesTafels(page);
   await expect(page.getByRole('button', { name: 'Tafel van 3', exact: true })).toBeVisible();

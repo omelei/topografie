@@ -21,7 +21,7 @@ test('a visitor plays a topic first, and keeps the round after typing a name', a
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();
@@ -109,7 +109,7 @@ test('"Niet nu" puts the invitation away for good, and Jij still asks', async ({
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();

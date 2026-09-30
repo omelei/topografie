@@ -88,7 +88,7 @@ async function zoekDeVlaggen(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Vlag zoeken/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
@@ -137,7 +137,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   // A diploma is its own length.
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   // Niemand oefende deze vlaggen, dus de pagina is niet rijp: één knop, en die
   // gaat terug naar oefenen. Sinds proefzwemmen weg is, is dat de enige uitweg.
@@ -154,7 +154,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
 
   await page.goto('/vlaggen');
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await speel(page);

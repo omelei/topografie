@@ -69,7 +69,7 @@ async function startRound(page: Page, set: Keuze, way: RegExp) {
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 // Zonder naam (ADR-229): de voordeur, en de vraag naar de naam op Jij.

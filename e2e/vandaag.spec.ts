@@ -21,7 +21,7 @@ async function eenProvincieEnStop(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
   await page.getByRole('button', { name: 'Limburg' }).click();
@@ -72,7 +72,7 @@ test('stoppen voor de eerste vraag geeft geen uitslag met nullen', async ({ page
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Meerkeuze/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
 
   await expect(page.getByRole('heading', { level: 1, name: 'Gestopt' })).toBeVisible();
@@ -125,7 +125,7 @@ test('de terugknop in een ronde gaat terug naar de vakpagina', async ({ page }) 
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Meerkeuze/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
 
   await page.goBack();

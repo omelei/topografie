@@ -76,7 +76,7 @@ test('een ronde flitsdictee op een eigen lijst begint', async ({ page }) => {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Flitsdictee/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
   await expect(page.getByText('De woorden laden even niet.')).toHaveCount(0);

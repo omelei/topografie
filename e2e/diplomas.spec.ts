@@ -23,7 +23,7 @@ async function wijsDeEilandenAan(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const weetNiet = page.getByRole('button', { name: 'Ik weet het niet' });
@@ -75,7 +75,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
     'aria-pressed',
     'true',
   );
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   // Afzwemmen first (ADR-149): what it asks, and that a page nobody practised
   // is not ripe. Er is dan precies één knop, en die gaat terug naar oefenen —
@@ -86,7 +86,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(knoppen).toHaveCount(1);
   await expect(knoppen).toHaveText('Eerst oefenen');
   await knoppen.click();
-  await expect(page.locator('.tk-choose-start button')).toBeVisible();
+  await expect(page.locator('.tk-choose-start .tk-button-go')).toBeVisible();
 
   // Dus eerst de eilanden leren, en dan pas afzwemmen. De doosstand zetten
   // scheelt de vier rondes over een week die het echt zou kosten.
@@ -94,7 +94,7 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await alsOnthouden(page);
   await page.goto('/topografie');
   await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
 
@@ -146,7 +146,7 @@ test('zonder naam vraagt de toets eerst welke naam op het diploma komt', async (
     .getByRole('region', { name: 'Jouw topodiploma’s' })
     .getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
 
   const vraag = page.getByRole('form', { name: 'Welke naam komt op je diploma?' });

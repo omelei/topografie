@@ -44,7 +44,7 @@ async function chooseAndStart(page: Page, way: RegExp) {
 
 /** The one way out of K2, whatever was chosen. See e2e/app.spec.ts. */
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 test('the front door, the chooser and the profile', async ({ page }, testInfo) => {
