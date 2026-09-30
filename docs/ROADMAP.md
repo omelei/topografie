@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 29 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 30 september 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -23,7 +23,9 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    september, met `p=none`. Zijn de rapporten na twee tot vier weken schoon,
    dan `p=quarantine`; `p=reject` pas als de mail van Resend ook klopt.
 5. **Op 8 oktober de teller uitlezen** (de vragen staan in
-   `tools/premium/README.md`) en samen het volgende kiezen.
+   `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
+   hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
+   voor kleuters gebouwd wordt (zie [Groep 1 en 2](#groep-1-en-2)).
 6. **Na de merge van de groepsvraag (ADR-243) `tools/premium/schema.sql` opnieuw
    draaien** in de SQL Editor van de premiumserver. Dan telt de teller welke
    groep gekozen wordt; tot dan telt hij die keuze niet, en merkt niemand iets.
@@ -80,7 +82,7 @@ moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
    servers") en `/scholen` ("slaat geen persoonlijke gegevens op van
    kinderen"): met een account klopt dat niet meer.
 3. **Supabase inrichten** — _jij_:
-   - EU-regio controleren, migraties 0001, 0002 en 0003 draaien;
+   - EU-regio controleren, migraties 0001 tot en met 0004 draaien;
    - geheimen van de edge functions zetten, project-ref in GitHub, de workflow
      van de gezinsfuncties één keer met de hand draaien;
    - Auth: Confirm email aan, SMTP met de gekozen provider, redirect-URL
@@ -114,15 +116,48 @@ moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 ## Daarna
 
-| Wat                                                                                                                                                                                                  | Wie           | Waarom                                                                              | Hangt af van                          |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ------------------------------------- |
-| Review kind en ouder: een klassencode per schooljaar op `/scholen` ("een jaar geldig", ADR-225)                                                                                                      | jij           | Hangt af van hoe de klassencode verkocht wordt                                      | Besluit over de klassencode           |
-| Review kind en ouder: poorten en beloftes met een account. De premiumdeur achter de pincode, geen "Zonder account werkt alles" in de poort, en de naam- en wisbelofte laten afhangen van de overname | Claude        | Tegenstrijdig voor een ingelogde ouder (bevinding 8)                                | Gezinsaccount live                    |
-| Premium per gezin in plaats van per apparaat                                                                                                                                                         | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                    |
-| Opruimen van accounts na 24 maanden zonder gebruik                                                                                                                                                   | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                 |
-| Een extra kind bijkopen, per jaar of per maand (ADR-230): een tweede product in de kassa, en de grens van 3 kinderen per code in plaats van per apparaat                                             | Claude        | Staat nu als "binnenkort" op de ouderpagina en `/kopen`                             | Premium per gezin                     |
-| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                                                                                           | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Later (24 september)                  |
-| Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur                                                                           | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A |
+| Wat                                                                                                                                                                                                  | Wie           | Waarom                                                                              | Hangt af van                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Review kind en ouder: een klassencode per schooljaar op `/scholen` ("een jaar geldig", ADR-225)                                                                                                      | jij           | Hangt af van hoe de klassencode verkocht wordt                                      | Besluit over de klassencode                     |
+| Review kind en ouder: poorten en beloftes met een account. De premiumdeur achter de pincode, geen "Zonder account werkt alles" in de poort, en de naam- en wisbelofte laten afhangen van de overname | Claude        | Tegenstrijdig voor een ingelogde ouder (bevinding 8)                                | Gezinsaccount live                              |
+| Premium per gezin in plaats van per apparaat                                                                                                                                                         | Claude        | Eén code voor alle kinderen en apparaten, zonder hem overal in te typen             | Gezinsaccount live                              |
+| Opruimen van accounts na 24 maanden zonder gebruik                                                                                                                                                   | Claude        | De bewaartermijn uit de privacyverklaring waarmaken                                 | Akkoord op de termijn                           |
+| Een extra kind bijkopen, per jaar of per maand (ADR-230): een tweede product in de kassa, en de grens van 3 kinderen per code in plaats van per apparaat                                             | Claude        | Staat nu als "binnenkort" op de ouderpagina en `/kopen`                             | Premium per gezin                               |
+| Betalen per maand, € 9,95 (Mollie: mandaat, abonnement, webhook, opzeggen)                                                                                                                           | Claude        | Staat nu als "binnenkort" op de site (ADR-196)                                      | Later (24 september)                            |
+| Groep 1 en 2: fase 1 tot en met 3, van tellen tot letterklanken (stappen [hieronder](#groep-1-en-2))                                                                                                 | jij en Claude | Groep 1 en 2 kunnen hun groep kiezen (ADR-244); nu meten of er vraag is             | De teller: hoe vaak `/1` en `/2` gekozen worden |
+| Klassencode stap B: klasmodus op schoolapparaten, overzicht voor de leerkracht, verwerkersovereenkomst, betalen op factuur                                                                           | jij en Claude | Een school koopt voor inzicht; dat maakt leer.nu verwerker voor de school (ADR-200) | Gezinsaccount live, besluit na stap A           |
+
+### Groep 1 en 2
+
+Stap 0 staat in #185: een kind uit groep 1 of 2 kan zijn groep kiezen, en de
+teller telt het (ADR-244). Tellen doet hij pas als `schema.sql` opnieuw
+gedraaid is (actie 6 hierboven). Wat nog komt, in deze volgorde. Wat, waarom en de
+opnamelijst staan in [kleuters.md](kleuters.md).
+
+1. **De teller uitlezen op 8 oktober** — _jij en Claude_: hoe vaak `/1` en `/2`
+   gekozen worden naast de andere groepen. Dan kiezen: fase 1 bouwen, langer
+   meten, of groep 1 en 2 weer uit de groepsvraag.
+2. **De stem voor fase 1 inspreken** — _jij_: 55 korte opnames (getallen,
+   "Waar is …?", vragen en terugkoppeling), ongeveer een uur. Kan al vóór het
+   besluit.
+3. **Fase 1 bouwen: tellen en getallen** — _Claude_, na een ja bij stap 1:
+   - de kleuterstand: alles voorgelezen, alleen tikken met drie keuzes, rondes
+     van 5 of 6, geen typen, toetsstand of cijfer;
+   - zes onderwerpen: hoeveel zie je, getalbeelden, cijfers, meer of minder,
+     wat komt erna, hoeveel zijn er verstopt;
+   - de plaatjes getekend in code, in de huisstijl;
+   - Vandaag voor een kleuter met één grote knop, en de diploma's om te
+     printen;
+   - de grens van gratis en premium voor kleuters, met een eigen ADR;
+   - de opnames omzetten en even hard maken, en een deel voor gesproken tekst
+     in de schrijfwijzer.
+4. **De woordenlijst voor fase 2 kiezen** — _jij en Claude_: ongeveer 70
+   woorden die een kind van 4 als plaatje herkent.
+5. **Fase 2 bouwen: klappen en rijmen** — _Claude tekent de plaatjes en bouwt,
+   jij spreekt de woorden in_.
+6. **Fase 3 bouwen: beginklank, hakken en plakken, letterklanken** — _jij
+   spreekt de losse klanken in, Claude bouwt_. Losse klanken kunnen niet met
+   een browserstem.
 
 ## De volgende tien (24 september)
 
@@ -161,6 +196,7 @@ teller.
 | Vraag                                                                                                                                                        | Voorstel                                                                                                                                                                         | Waar het staat                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang.                                                    | Laten staan: het is de sterkste aanleiding om premium te kopen                                                                                                                   | ADR-193                              |
+| Fase 1 voor groep 1 en 2 bouwen (ADR-244)?                                                                                                                   | Bouwen als ouders van kleuters de groepsvraag duidelijk gebruiken; samen bekijken bij het uitlezen op 8 oktober                                                                  | [kleuters.md](kleuters.md)           |
 | Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                                                                       | Laten staan als lokkertje                                                                                                                                                        | ADR-192                              |
 | Met een account elk antwoord van een kind op de server bewaren (`pogingen`: goed of fout, reactietijd, het antwoord, tijdstip)? Het is de gevoeligste tabel. | Bewaren: de doelen van de ouder en het inzicht in wat telkens fout gaat worden eruit geteld. Wel in de privacyverklaring noemen, en een kortere termijn overwegen dan 24 maanden | `supabase/migrations/0001_gezin.sql` |
 
@@ -172,6 +208,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #185      | Groep 1 en 2 in de groepsvraag, eerst om te meten: voor een kleuter "Voor groep 1 en 2 komt er iets aan" op Vandaag, de teller telt `/1` en `/2`, migratie 0004, en het plan met de opnamelijst in `kleuters.md`                                                                                                                     | 244      |
 | #184      | De groep bovenaan Vandaag: een nieuw kind kiest zijn groep (of "Weet ik niet") en daarna een van de vijf onderwerpen van die groep, in plaats van altijd de provincies; de teller telt de gekozen groep                                                                                                                              | 243      |
 | #183      | Wat er op de server staat, nu en met het gezinsaccount; een vijfde vraag voor de privacyverklaring (elk antwoord van een kind bewaren of niet); de logs van Supabase bij de verwerkersovereenkomst; en geen klantnamen in de notitie van een premiumcode                                                                             | —        |
 | #182      | Feedback op de navigatie: een witte tabbalk die opvalt (actief in koraaltint met streep), met Ouders als vierde tab; een fijnere tegelrand aan een bureau; op `/oefenen` de vaktegels van Vandaag; alle vaktegels even hoog; en op elke vakpagina springt elke keuze naar het volgende onderdeel                                     | 242      |

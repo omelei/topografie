@@ -60,6 +60,27 @@ export function GroepVraag({
   );
 }
 
+/**
+ * Voor een kind uit groep 1 of 2, op de plek van de onderwerpen van zijn groep
+ * (ADR-244).
+ *
+ * Er is nog geen stof voor kinderen die niet lezen. Liever dat eerlijk zeggen
+ * dan de provincies voorstellen. Wie het leest, is meestal een ouder; de vakken
+ * blijven eronder te kiezen.
+ */
+export function VoorKleuters() {
+  return (
+    <section className="tk-eerste" aria-labelledby="kleuters-kop">
+      <div className="tk-eerste-tekst">
+        <h2 id="kleuters-kop" className="tk-kaart-titel">
+          {t('home.kleuters.kop')}
+        </h2>
+        <p className="text-lopend">{t('home.kleuters.zin')}</p>
+      </div>
+    </section>
+  );
+}
+
 /** De vakken om uit te kiezen, als tegels in hun eigen kleur. */
 export function VakkenRaster({ onVak }: { readonly onVak: (id: Module['id']) => void }) {
   return (

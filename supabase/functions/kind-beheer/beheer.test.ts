@@ -105,9 +105,15 @@ describe('een kind aanmaken', () => {
     expect(gedaan).toContain('bewaarKind:kind-nieuw:Sofie:null');
   });
 
+  it('mag groep 1 en 2 (ADR-244)', async () => {
+    const { diensten, gedaan } = nepDiensten();
+    await behandel({ ...BASIS, groep: 1 }, diensten);
+    expect(gedaan).toContain('bewaarKind:kind-nieuw:Sofie:1');
+  });
+
   it('weigert een groep die niet bestaat', async () => {
     const { diensten } = nepDiensten();
-    expect(await reden(behandel({ ...BASIS, groep: 2 }, diensten))).toBe('groep-onbekend');
+    expect(await reden(behandel({ ...BASIS, groep: 0 }, diensten))).toBe('groep-onbekend');
     expect(await reden(behandel({ ...BASIS, groep: 9 }, diensten))).toBe('groep-onbekend');
   });
 

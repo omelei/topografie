@@ -59,6 +59,14 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(vraag).toBeVisible();
   await shoot(page, size, '01-zonder-naam');
 
+  // Groep 2: nog geen onderwerpen, wel de regel dat ze eraan komen (ADR-244).
+  await vraag.getByRole('button', { name: 'Groep 2', exact: true }).click();
+  await expect(
+    page.getByRole('region', { name: 'Voor groep 1 en 2 komt er iets aan' }),
+  ).toBeVisible();
+  await shoot(page, size, '01-kleuters');
+  await page.getByRole('button', { name: 'Andere groep' }).click();
+
   // Met een groep: de vijf onderwerpen van die groep, één per vak.
   await vraag.getByRole('button', { name: 'Groep 5', exact: true }).click();
   await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();

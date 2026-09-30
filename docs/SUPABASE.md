@@ -36,9 +36,11 @@ klik op **Run**. Doe daarna hetzelfde met
 kolom, wanneer de ouder toestemming gaf voor een kind (ADR-187). Zonder die
 tweede werkt alles, maar dan is die toestemming nergens aan te tonen. En daarna
 [`0003_samenvoegen.sql`](../supabase/migrations/0003_samenvoegen.sql): de regels
-voor wie er wint als twee apparaten van hetzelfde kind botsen (ADR-188).
+voor wie er wint als twee apparaten van hetzelfde kind botsen (ADR-188). En
+als laatste [`0004_kleutergroepen.sql`](../supabase/migrations/0004_kleutergroepen.sql):
+een kind mag ook in groep 1 of 2 zitten (ADR-244).
 
-Alle drie worden bij elke PR nagekeken op een lege Postgres (job `sql` in
+Alle vier worden bij elke PR nagekeken op een lege Postgres (job `sql` in
 `ci.yml`, `tools/sql-nakijken.sh`). Lokaal kan dat ook, met een Postgres waar
 `psql` bij kan: `PGHOST=… PGUSER=postgres tools/sql-nakijken.sh`.
 
@@ -381,16 +383,17 @@ het geboortejaar er weer. Dat is de terugval van ADR-178 en die blijft bestaan.
 
 ## Wat waar staat
 
-| Wat                                | Waar                                       |
-| ---------------------------------- | ------------------------------------------ |
-| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql`       |
-| Wanneer de ouder toestemming gaf   | `supabase/migrations/0002_toestemming.sql` |
-| Wie wint als twee apparaten botsen | `supabase/migrations/0003_samenvoegen.sql` |
-| De SQL nagekeken                   | `supabase/tests/`, `tools/sql-nakijken.sh` |
-| Inloggen als kind                  | `supabase/functions/kind-inloggen/`        |
-| Wat een ouder met een kind doet    | `supabase/functions/kind-beheer/`          |
-| De code en het wachtwoord, puur    | `supabase/functions/_gezin/code.ts`        |
-| De premiumcodes (ander project)    | `tools/premium/README.md`                  |
+| Wat                                | Waar                                          |
+| ---------------------------------- | --------------------------------------------- |
+| De tabellen, de policies, de RPC's | `supabase/migrations/0001_gezin.sql`          |
+| Wanneer de ouder toestemming gaf   | `supabase/migrations/0002_toestemming.sql`    |
+| Wie wint als twee apparaten botsen | `supabase/migrations/0003_samenvoegen.sql`    |
+| Groep 1 en 2 toegestaan            | `supabase/migrations/0004_kleutergroepen.sql` |
+| De SQL nagekeken                   | `supabase/tests/`, `tools/sql-nakijken.sh`    |
+| Inloggen als kind                  | `supabase/functions/kind-inloggen/`           |
+| Wat een ouder met een kind doet    | `supabase/functions/kind-beheer/`             |
+| De code en het wachtwoord, puur    | `supabase/functions/_gezin/code.ts`           |
+| De premiumcodes (ander project)    | `tools/premium/README.md`                     |
 
 De beslissingen staan in ADR-155 in [`DECISIONS.md`](DECISIONS.md); de tabellen
 staan als deel C in [`DATAMODEL.md`](DATAMODEL.md).

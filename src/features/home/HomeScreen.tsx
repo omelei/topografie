@@ -1,7 +1,14 @@
 import { Geheugencheck, type CheckKlaar } from './Geheugencheck';
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
-import { formatGrade, grade, huidigeGroep, type Groep, type ModeId } from '@/game-core';
+import {
+  formatGrade,
+  grade,
+  huidigeGroep,
+  isKleutergroep,
+  type Groep,
+  type ModeId,
+} from '@/game-core';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -30,7 +37,7 @@ import {
   type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { GroepVraag, VakkenRaster, ZoWerktHet } from './Kennismaken';
+import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
 import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
@@ -243,9 +250,12 @@ export function HomeScreen({
   // die zegt "druk hier, dan oefen je" (ADR-162). Voor een nieuw kind zijn dat
   // de vijf onderwerpen van zijn groep, één per vak, en kiest het zelf waarmee
   // (ADR-243). Wie al geoefend heeft, ziet de rij als "Meest geoefend", ook
-  // zonder naam.
+  // zonder naam. Groep 1 en 2 hebben nog geen onderwerpen, en krijgen hier te
+  // horen dat die eraan komen (ADR-244).
   const beginnen =
-    groepVraag !== null ? null : (
+    groepVraag !== null ? null : nieuw && isKleutergroep(groep) ? (
+      <VoorKleuters />
+    ) : (
       <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
     );
 

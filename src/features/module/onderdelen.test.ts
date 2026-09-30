@@ -10,7 +10,7 @@ import {
   type Gespeeld,
   type Onderdeel,
 } from './onderdelen';
-import { GROEPEN, type ModeId } from '@/game-core';
+import { GROEPEN, isKleutergroep, type ModeId } from '@/game-core';
 import { groepenVan, indelingVoor } from './groepen';
 import { TOPO_REGIOS } from './regios';
 
@@ -177,8 +177,17 @@ describe('the ones to start with, for a group', () => {
   });
 
   it('does not give two groups the same row', () => {
-    const rijen = GROEPEN.map((groep) => sets(groep).join());
-    expect(new Set(rijen).size).toBe(GROEPEN.length);
+    const metStof = GROEPEN.filter((groep) => !isKleutergroep(groep));
+    const rijen = metStof.map((groep) => sets(groep).join());
+    expect(new Set(rijen).size).toBe(metStof.length);
+  });
+
+  // Groep 1 en 2 hebben nog geen stof (ADR-244): liever geen rij dan de
+  // provincies voor een kind dat nog niet leest.
+  it('gives groep 1 and 2 no row yet', () => {
+    expect(sets(1)).toEqual([]);
+    expect(sets(2)).toEqual([]);
+    expect(voorGroep(2, new Set())).toEqual([]);
   });
 
   it('asks a verb the way verbs are asked', () => {
