@@ -20,30 +20,118 @@
 
 type Toon = { readonly hz: number; readonly na: number; readonly duur: number };
 
-/** Twee tonen omhoog, een kleine terts: kort en klaar voordat je erop wacht. */
-const GOED: readonly Toon[] = [
-  { hz: 660, na: 0, duur: 0.09 },
-  { hz: 880, na: 0.08, duur: 0.12 },
-];
-
 /**
- * Het moment dat een eigen geluid krijgt: een diploma. Drie tonen, en niet bij
- * elk goed antwoord — bij tachtig per week zou geluid ruis worden. Het begint
- * hoog en landt.
- *
- * Hier stond er een tweede naast, voor een albumpagina die helemaal in kleur
- * kwam. Het album is met ADR-158 opgeheven, dus die toon klonk nergens meer.
+ * Vijf geluiden om uit te kiezen, op Jij (ADR-247). Elk is dezelfde drie
+ * dingen: goed, fout en een diploma, met dezelfde regels. Goed gaat omhoog,
+ * fout is één lage, zachte toon, en een diploma begint hoog en landt.
  */
-const MOMENT = {
-  diploma: [
-    { hz: 880, na: 0, duur: 0.1 },
-    { hz: 1320, na: 0.09, duur: 0.1 },
-    { hz: 990, na: 0.2, duur: 0.2 },
-  ],
-} as const satisfies Record<string, readonly Toon[]>;
+export const KLANKEN = ['belletje', 'xylofoon', 'fluitje', 'robot', 'druppel'] as const;
+export type Klank = (typeof KLANKEN)[number];
 
-/** Eén lage, zachte toon. Geen tweede, want herhaling maakt er een oordeel van. */
-const FOUT: readonly Toon[] = [{ hz: 200, na: 0, duur: 0.16 }];
+interface Klankset {
+  /** De vorm van de golf: sinus is zacht, driehoek houtig, blok elektronisch. */
+  readonly golf: OscillatorType;
+  /** Kort en klaar voordat je erop wacht. */
+  readonly goed: readonly Toon[];
+  /** Eén toon. Geen tweede, want herhaling maakt er een oordeel van. */
+  readonly fout: readonly Toon[];
+  /**
+   * Het moment dat een eigen geluid krijgt: een diploma. Niet bij elk goed
+   * antwoord — bij tachtig per week zou geluid ruis worden.
+   */
+  readonly diploma: readonly Toon[];
+  /** Hoe hard ten opzichte van het belletje: een blokgolf klinkt veel luider. */
+  readonly sterkte: number;
+}
+
+const KLANKSETS: Readonly<Record<Klank, Klankset>> = {
+  // Het geluid van altijd (ADR-134): twee tonen omhoog, een kleine terts.
+  belletje: {
+    golf: 'sine',
+    goed: [
+      { hz: 660, na: 0, duur: 0.09 },
+      { hz: 880, na: 0.08, duur: 0.12 },
+    ],
+    fout: [{ hz: 200, na: 0, duur: 0.16 }],
+    diploma: [
+      { hz: 880, na: 0, duur: 0.1 },
+      { hz: 1320, na: 0.09, duur: 0.1 },
+      { hz: 990, na: 0.2, duur: 0.2 },
+    ],
+    sterkte: 1,
+  },
+  xylofoon: {
+    golf: 'triangle',
+    goed: [
+      { hz: 784, na: 0, duur: 0.08 },
+      { hz: 1047, na: 0.07, duur: 0.08 },
+      { hz: 1319, na: 0.14, duur: 0.12 },
+    ],
+    fout: [{ hz: 262, na: 0, duur: 0.14 }],
+    diploma: [
+      { hz: 1047, na: 0, duur: 0.08 },
+      { hz: 1319, na: 0.08, duur: 0.08 },
+      { hz: 1568, na: 0.16, duur: 0.08 },
+      { hz: 2093, na: 0.24, duur: 0.2 },
+    ],
+    sterkte: 1.2,
+  },
+  fluitje: {
+    golf: 'sine',
+    goed: [
+      { hz: 988, na: 0, duur: 0.07 },
+      { hz: 1480, na: 0.06, duur: 0.14 },
+    ],
+    fout: [{ hz: 330, na: 0, duur: 0.18 }],
+    diploma: [
+      { hz: 1175, na: 0, duur: 0.12 },
+      { hz: 1760, na: 0.1, duur: 0.12 },
+      { hz: 1480, na: 0.22, duur: 0.24 },
+    ],
+    sterkte: 0.8,
+  },
+  robot: {
+    golf: 'square',
+    goed: [
+      { hz: 440, na: 0, duur: 0.06 },
+      { hz: 660, na: 0.07, duur: 0.08 },
+    ],
+    fout: [{ hz: 150, na: 0, duur: 0.14 }],
+    diploma: [
+      { hz: 523, na: 0, duur: 0.07 },
+      { hz: 659, na: 0.08, duur: 0.07 },
+      { hz: 784, na: 0.16, duur: 0.07 },
+      { hz: 1047, na: 0.24, duur: 0.16 },
+    ],
+    sterkte: 0.35,
+  },
+  druppel: {
+    golf: 'sine',
+    goed: [
+      { hz: 1200, na: 0, duur: 0.05 },
+      { hz: 1800, na: 0.05, duur: 0.07 },
+    ],
+    fout: [{ hz: 420, na: 0, duur: 0.1 }],
+    diploma: [
+      { hz: 1400, na: 0, duur: 0.06 },
+      { hz: 2100, na: 0.07, duur: 0.06 },
+      { hz: 1600, na: 0.15, duur: 0.16 },
+    ],
+    sterkte: 1,
+  },
+};
+
+/** Welk geluid dit kind koos. Gezet bij het opstarten en op Jij (`zetKlank`). */
+let klank: Klank = 'belletje';
+
+export function isKlank(waarde: unknown): waarde is Klank {
+  return (KLANKEN as readonly unknown[]).includes(waarde);
+}
+
+/** Het geluid dat vanaf nu klinkt, bij elk antwoord en elk diploma. */
+export function zetKlank(nieuw: Klank): void {
+  klank = nieuw;
+}
 
 /** Hoe hard, op zijn hardst. Ver onder één: dit speelt naast een stem die voorleest. */
 const VOLUME = { goed: 0.16, fout: 0.09 } as const;
@@ -72,15 +160,23 @@ function audio(): AudioContext | null {
  * van een antwoord.
  */
 export function speelUitkomst(goed: boolean, aan: boolean): void {
-  speel(goed ? GOED : FOUT, goed ? VOLUME.goed : VOLUME.fout, aan);
+  const set = KLANKSETS[klank];
+  speel(set, goed ? set.goed : set.fout, goed ? VOLUME.goed : VOLUME.fout, aan);
 }
 
-/** Speelt het geluid van een pagina in kleur of een diploma. */
-export function speelMoment(moment: keyof typeof MOMENT, aan: boolean): void {
-  speel(MOMENT[moment], VOLUME.goed, aan);
+/** Speelt het geluid van een diploma. */
+export function speelMoment(moment: 'diploma', aan: boolean): void {
+  const set = KLANKSETS[klank];
+  speel(set, set[moment], VOLUME.goed, aan);
 }
 
-function speel(tonen: readonly Toon[], volume: number, aan: boolean): void {
+/** Laat een geluid horen zoals het bij een goed antwoord klinkt: op Jij, bij het kiezen. */
+export function speelProef(welk: Klank): void {
+  const set = KLANKSETS[welk];
+  speel(set, set.goed, VOLUME.goed, true);
+}
+
+function speel(set: Klankset, tonen: readonly Toon[], basis: number, aan: boolean): void {
   if (!aan) return;
 
   const ctx = audio();
@@ -92,11 +188,12 @@ function speel(tonen: readonly Toon[], volume: number, aan: boolean): void {
     void ctx.resume?.();
 
     const nu = ctx.currentTime;
+    const volume = basis * set.sterkte;
 
     for (const toon of tonen) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      osc.type = 'sine';
+      osc.type = set.golf;
       osc.frequency.value = toon.hz;
 
       // In en uit gefaded, want een blokgolf die abrupt begint klikt.

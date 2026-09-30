@@ -42,7 +42,6 @@ import { TerugBlok } from './TerugBlok';
 import { VandaagBlok } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
-import { WeekdoelenBlok } from './WeekdoelenBlok';
 
 /**
  * K1, the front door — which is also leer.nu itself.
@@ -58,9 +57,8 @@ import { WeekdoelenBlok } from './WeekdoelenBlok';
  * kop "Meest geoefend" — wat dit kind zelf het vaakst koos, is waar het vandaag
  * ook weer mee begint.
  *
- * **En "Waar je voor gaat" is "Je doelen voor deze week" geworden** (ADR-162):
- * één diploma dat maanden kon duren, vervangen door een handvol doelen met een
- * zondag eraan, zelf gemaakt en weg te laten.
+ * **"Je doelen voor deze week" staan op Jij** (ADR-247). Ze stonden hier sinds
+ * ADR-162, onder de rijen; Vandaag is nu alleen wat je vandaag doet.
  *
  * **Two rows that scroll sideways, and one list.** "Meest geoefend" and "Maak
  * af" are rows of cards at every size, one swipe, press or arrow key from what
@@ -110,8 +108,6 @@ export interface HomeScreenProps {
    * een andere reden — daar is de rest van een ronde, hier wat je bijna vergeet.
    */
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
-  /** Naar alle diploma's, op Jij (ADR-153). */
-  readonly onDiplomas: () => void;
   /** Naar de pagina van een vak, vanuit "Kies een vak" (ADR-204). */
   readonly onVak: (id: Module['id']) => void;
   /** De geheugencheck, één keer per kind (ADR-228). */
@@ -125,7 +121,6 @@ export function HomeScreen({
   onBegin,
   onVerder,
   onPlan,
-  onDiplomas,
   onVak,
   onGeheugencheck,
   onVoorOuders,
@@ -222,15 +217,6 @@ export function HomeScreen({
   const vandaagBoven = actief ? vandaag : null;
   const vandaagOnder = actief ? null : vandaag;
 
-  // En wat dit kind zich deze week voorneemt (ADR-162). Onder de rij waar het
-  // mee begint en onder "Vandaag": eerst waar je kunt drukken, dan wat er nu
-  // aan de beurt is, dan waar het deze week heen moet. Andersom leest de
-  // voordeur als een doelstelling met huiswerk eronder.
-  //
-  // Met de groep als sleutel, zoals Vandaag: de diploma's die erbij passen,
-  // zodra hij gelezen is (ADR-153).
-  const weekdoelen = <WeekdoelenBlok key={`weekdoel-${groep ?? 'geen'}`} onDiplomas={onDiplomas} />;
-
   // Een nieuw kind: eerst waar het begint, dan de vakken en hoe het werkt
   // (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de rijen
   // erboven zijn dan zijn eigen weg terug.
@@ -309,7 +295,6 @@ export function HomeScreen({
           blok('vandaagBoven', vandaagBoven),
           blok('vakken', vakken),
           blok('zo', <ZoWerktHet />),
-          blok('weekdoelen', weekdoelen),
           blok('vandaagOnder', vandaagOnder),
         ]
       : [
@@ -323,7 +308,6 @@ export function HomeScreen({
           blok('beginnen', beginnen),
           blok('passend', passend),
           blok('vandaagBoven', vandaagBoven),
-          blok('weekdoelen', weekdoelen),
           blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
           blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
           blok('vandaagOnder', vandaagOnder),

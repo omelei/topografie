@@ -34,6 +34,8 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'meerkeuze',
   'som-meerkeuze',
   'klok-meerkeuze',
+  // De digitale klok kiest ook uit vier (ADR-247).
+  'klok-digitaal',
   'vlag-meerkeuze',
   'taal-letters',
   'taal-vorm-kiezen',

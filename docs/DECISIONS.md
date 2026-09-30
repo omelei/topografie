@@ -14245,6 +14245,83 @@ daardoor een ander merk dan het logo naast de naam.
   en is hij weer alleen een gezicht. Koraal diep is donker genoeg om zijn ronde
   vorm te laten zien, en blijft koraal.
 
+## ADR-247 — Feedback van een nieuwe bezoeker: minder op Vandaag, een aanbod per groep, een duidelijkere vakpagina en een diploma bij elk onderwerp
+
+**Status:** accepted. **Date:** 2026-09-30. Op verzoek van de eigenaar, na een
+ronde als nieuwe bezoeker zonder account. Wijzigt ADR-162 (de weekdoelen op
+Vandaag), ADR-206 en ADR-243 (de onderwerpen per groep), ADR-233 en ADR-242
+(de sprong naar het volgende onderdeel), ADR-245 (de kop van een vakpagina),
+ADR-104 (geen vlaggendiploma voor de wereld) en ADR-134 (één geluid).
+
+**Wat er mis was, en wat er nu is.**
+
+- **Vandaag.** De weekdoelen stonden onder de rijen; ze staan nu op Jij, boven
+  de kast, want een diploma is een van de doelen. "Dan zie je meteen wat bij je
+  groep past" onder de groepsvraag en "Dan staat je naam bovenaan en op je
+  diploma's" onder de naamvraag zijn weg. De groepsvraag is een witte kaart en
+  geen vlak in room, en aan een bureau is de grond melk in plaats van room:
+  daar is veel meer grond te zien, en room werd de kleur van de pagina.
+- **Het aanbod per groep.** Na de groepskeuze stonden er altijd vijf kaarten,
+  één per vak: de provincies en ei of ij voor groep 3, vlaggen voor elke groep,
+  en de klok voor groep 7 en 8. Nu alleen wat past: de stof van dit jaar, en
+  wat volgend jaar begint achteraan (de provincies voor groep 5, ei of ij voor
+  groep 4). Geen vlaggen, want vlaggen zijn geen stof van een schooljaar; geen
+  herhaling; niets van jaren verder. Groep 3 krijgt twee kaarten (plussommen
+  tot 20, hele uren), groep 7 en 8 drie. "Past bij groep" volgt dezelfde regel.
+  Zonder groep ("Weet ik niet") blijven de vijf van altijd.
+- **De digitale klok** is een spelvorm van Klok, na Meerkeuze: vier cijfers op
+  een donker schermpje en de tijd in woorden gekozen uit vier. Om de vraag na
+  twaalf uur, want 19:30 is ook half acht. Gratis, zoals elke vorm die leert.
+- **Wat er gekozen is**, op een vakpagina: een gekozen tegel, chip of tafel is
+  gevuld in de diepe kleur van het vak met witte woorden, een witte plaat en een
+  witte vink. Een zachte tint met een rand was naast de rest niet te vinden.
+- **De sprong na een keuze** zette het volgende onderdeel helemaal bovenin, en
+  wat het kind net koos, was uit beeld. Nu schuift de pagina net zo ver dat het
+  volgende onderdeel in beeld staat (tot zestig procent van het scherm hoog,
+  boven de startbalk), en blijft hij staan als het er al staat
+  (`brengInBeeld`).
+- **"Nog even kiezen"** zei "Kies nog bij stap 2 en 3" in grijs. Nu is elke
+  stap die wacht een knop met zijn munt en zijn vraag ("2 Hoe wil je
+  oefenen?"), en een druk brengt je erheen. Op een telefoon alleen de munten.
+- **De kop van een vakpagina** is die van het vak: "Topografie oefenen",
+  "Rekenen oefenen", "Klokkijken oefenen", met of zonder naam, en ook als er
+  een onderwerp gekozen is. Hij bleef niet staan terwijl je koos.
+- **Het diploma bij elk onderwerp.** Zonder gekozen onderwerp stond het
+  diploma er niet, dus zag een nieuwe bezoeker alleen op
+  /topografie/provincies dat er een toets is: daar noemt het adres het
+  onderwerp al. Nu staat het er op elk vak, en wordt het het diploma van het
+  onderwerp dat je daarna kiest. Van de 104 onderwerpen hadden er 24 geen
+  diploma. Bij vlaggen krijgen "Bekende vlaggen" en "Lijkt op elkaar" het
+  diploma van hun werelddeel (een druk kiest "Alle vlaggen" van dat deel), en
+  de wereld krijgt een eigen vlaggendiploma: 80 diploma's in plaats van 79.
+- **Overal:** de onderkant van tegels, knoppen en kaarten is 3 in plaats van 5
+  pixels, van chips en platen 2 in plaats van 3.
+- **Jij:** "Je naam blijft op dit apparaat en gaat niet naar onze server" is
+  weg, ook bij de toets; met het gezinsaccount klopte hij niet meer. En er zijn
+  vijf geluiden om uit te kiezen (Belletje, Xylofoon, Fluitje, Robot,
+  Druppel), met dezelfde regels als het ene van ADR-134: goed gaat omhoog,
+  fout is één lage zachte toon. Een druk laat hem horen en bewaart hem.
+- **Maak een ouderaccount:** de tweede alinea staat in dezelfde letter als de
+  eerste; het is dezelfde uitleg, geen kleine lettertjes.
+
+**Afwegingen.**
+
+- **Een mix heeft geen diploma.** De Rekenmix, de Topomix, de Klokmix en de
+  drie Taalmixen zijn de andere onderwerpen door elkaar, en elk daarvan heeft
+  al een diploma. Een diploma voor de mix zou hetzelfde twee keer belonen.
+- **Geen diploma voor de makkelijke helft.** Bekende vlaggen krijgen het
+  diploma van het hele werelddeel, niet een eigen: dat blijft de regel van
+  ADR-104. Wat verandert, is dat je het vanaf daar ziet en kiest.
+- **De kop en Google.** ADR-245 gaf elk onderwerp zijn eigen kop, omdat een
+  kop na de titel het sterkste teken is van waar een pagina over gaat. Nu
+  delen de onderwerpen van een vak één kop: vijf verschillende op 190
+  adressen, in plaats van één. Het onderwerp staat nog in de titel van het
+  tabblad, de beschrijving en de kop "Over Provincies van Nederland". Laat
+  Search Console zien dat de onderwerppagina's zakken, dan is een kleinere
+  regel met het onderwerp onder de kop de eerste stap terug.
+- **Minder kaarten voor groep 3.** Twee kaarten die passen zijn beter dan vijf
+  waarvan drie niet. De vakken staan eronder voor wie iets anders wil.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

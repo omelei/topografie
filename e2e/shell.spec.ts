@@ -231,7 +231,7 @@ test('below 1200 a vak is reached through Oefenen', async ({ page }, testInfo) =
   await expect(oefenen).toHaveAttribute('aria-current', 'page');
 
   await page.getByRole('main').getByRole('button', { name: /^Klok/ }).click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await expect(oefenen).toHaveAttribute('aria-current', 'true');
 
   // And back, from above the heading.
@@ -266,7 +266,7 @@ test('at a desk the vakken fold away under Oefenen, and stay folded', async ({
   ]);
 
   await vakken.getByRole('button', { name: 'Taal', exact: true }).click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // The chevron is its own button, reached with Tab after Oefenen.
   const oefenen = zijbalk.getByRole('button', { name: 'Oefenen', exact: true });
@@ -301,7 +301,7 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
 
   await signIn(page, 'Mees');
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   const start = page.locator('.tk-choose-start button');
 
@@ -355,7 +355,7 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
 
   await signIn(page, 'Ilse');
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   const menu = page.locator('.tk-tabbar');
   await expect(menu).toBeInViewport();
 

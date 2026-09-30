@@ -195,12 +195,13 @@ test('de navigatie gaat naar Vandaag, Oefenen, Jij, Premium en Ouders', async ({
 });
 
 /**
- * "Ik wil geen doelen" op Vandaag zet het blok weg (ADR-162). De weg terug
+ * "Ik wil geen doelen" op Jij zet het blok weg (ADR-162, ADR-247). De weg terug
  * staat sinds ADR-173 bij de ouder: of de app het kind ergens toe aanzet, is
  * een besluit van de ouder en niet van wie aangezet wordt.
  */
-test('de doelen gaan uit op Vandaag en weer aan bij de ouder', async ({ page }) => {
+test('de doelen gaan uit op Jij en weer aan bij de ouder', async ({ page }) => {
   await signIn(page, 'Mila');
+  await page.goto('/jij');
 
   const doelen = page.getByRole('region', { name: 'Je doelen voor deze week' });
   await expect(doelen).toBeVisible();
@@ -215,7 +216,7 @@ test('de doelen gaan uit op Vandaag en weer aan bij de ouder', async ({ page }) 
   await schakelaar.click();
   await expect(schakelaar).toHaveAttribute('aria-pressed', 'true');
 
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Je doelen voor deze week' })).toBeVisible();
 });
 
@@ -256,4 +257,27 @@ test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
   // bij het eerste bezoek (ADR-229).
   await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
   await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toHaveCount(0);
+});
+
+/** Vijf geluiden om uit te kiezen, als het geluid aanstaat (ADR-247). */
+test('je kiest een van vijf geluiden, en hij blijft gekozen', async ({ page }) => {
+  await signIn(page, 'Ties');
+  await page.goto('/jij');
+
+  await page.getByRole('button', { name: /^Welk geluid\?/ }).click();
+  const geluiden = page.getByRole('group', { name: 'Welk geluid?' });
+  await expect(geluiden.getByRole('button')).toHaveCount(5);
+  await expect(geluiden.getByRole('button', { name: 'Belletje' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await geluiden.getByRole('button', { name: 'Robot' }).click();
+  await expect(geluiden.getByRole('button', { name: 'Robot' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+
+  await page.reload();
+  await expect(page.getByRole('button', { name: /^Welk geluid\?/ })).toContainText('Robot');
 });

@@ -119,61 +119,46 @@ describe('the ones to start with, for a group', () => {
     ]);
   });
 
-  it('keeps one card per module for every group', () => {
-    for (const groep of [3, 4, 5, 6, 7, 8] as const) {
+  it('keeps at most one card per subject, and never a flag, once there is a group', () => {
+    for (const groep of GROEPEN) {
       const modules = starters(groep).map((entry) => entry.deel.moduleId);
-      expect(new Set(modules).size, `groep ${groep}`).toBe(POPULAR_SHOWN);
+      expect(new Set(modules).size, `groep ${groep}`).toBe(modules.length);
+      expect(modules, `groep ${groep}`).not.toContain('vlaggen');
     }
   });
 
-  it('starts groep 3 on sums to twenty, with what is for later behind it', () => {
-    // Voor groep 3 zijn topografie, vlaggen en Taal allemaal voor later. Ze
-    // blijven in de rij, in hun eigen volgorde, achter rekenen en de klok.
-    const lijst = sets(3);
-    expect(lijst.slice(0, 2)).toEqual(['plus-20', 'klok-heel']);
-    expect(lijst.slice(2)).toEqual(['nl-provincies', 'vlag-europa-bekend', 'taal-sp-eiij']);
+  it('starts groep 3 on sums to twenty and whole hours, and nothing for later', () => {
+    // Topografie en Taal beginnen pas jaren later (ADR-247): liever twee
+    // kaarten die passen dan vijf waarvan drie niet.
+    expect(sets(3)).toEqual(['plus-20', 'klok-heel']);
   });
 
   /**
-   * Per groep de stof van dat jaar (ADR-206). Past er in een module niets, dan
-   * de set die het laatst ophoudt: de klok voor groep 7 en 8 is vijf minuten,
-   * niet de hele uren van groep 3.
+   * Per groep de stof van dat jaar (ADR-206), en sinds ADR-247 alleen dat: wat
+   * nu past, en wat volgend jaar begint achteraan. Geen herhaling en niets van
+   * jaren verder.
    */
-  it('picks what fits the group, or else what was last in the years before', () => {
-    const alles = startbareOnderdelen().filter((set) => !set.mix && groepenVan(set) !== undefined);
+  it('picks what fits the group, or what starts the year after, at the back', () => {
     for (const groep of GROEPEN) {
-      for (const { deel: kaart } of starters(groep)) {
-        const module = alles.filter((set) => set.moduleId === kaart.moduleId);
-        const pastIets = module.some((set) => indelingVoor(set, groep) === 'nu');
-        const indeling = indelingVoor(kaart, groep);
-        if (pastIets) {
-          expect(indeling, `groep ${groep}: ${kaart.setId}`).toBe('nu');
-        } else if (indeling === 'herhaling') {
-          const hoogste = (set: Onderdeel) => Math.max(...(groepenVan(set) ?? []));
-          const eerder = module.filter((set) => indelingVoor(set, groep) === 'herhaling');
-          expect(hoogste(kaart), `groep ${groep}: ${kaart.setId}`).toBe(
-            Math.max(...eerder.map(hoogste)),
-          );
-        }
+      const lijst = starters(groep);
+      const indelingen = lijst.map(({ deel }) => indelingVoor(deel, groep));
+      expect(indelingen, `groep ${groep}`).not.toContain('herhaling');
+      for (const { deel: kaart } of lijst) {
+        if (indelingVoor(kaart, groep) !== 'later') continue;
+        expect(Math.min(...(groepenVan(kaart) ?? [])), `groep ${groep}: ${kaart.setId}`).toBe(
+          groep + 1,
+        );
       }
+      // Wat past eerst.
+      const eersteLater = indelingen.indexOf('later');
+      if (eersteLater >= 0) expect(indelingen.slice(eersteLater)).not.toContain('nu');
     }
   });
 
-  it('gives groep 7 and 8 harder work, and puts a subject they are past at the back', () => {
-    expect(sets(7)).toEqual([
-      'nl-hoofdsteden',
-      'keer-1000',
-      'vlag-europa-alle',
-      'taal-ww-vt',
-      'klok-vijf',
-    ]);
-    expect(sets(8)).toEqual([
-      'europa-landen',
-      'delen-1000',
-      'vlag-wereld-alle',
-      'taal-en-school',
-      'klok-vijf',
-    ]);
+  it('gives groep 5 the provinces at the back, and groep 7 and 8 no clock', () => {
+    expect(sets(5)).toEqual(['tafel-3', 'klok-kwart', 'taal-sp-eiij', 'nl-provincies']);
+    expect(sets(7)).toEqual(['nl-hoofdsteden', 'keer-1000', 'taal-ww-vt']);
+    expect(sets(8)).toEqual(['europa-landen', 'delen-1000', 'taal-en-school']);
   });
 
   it('does not give two groups the same row', () => {
@@ -227,8 +212,12 @@ describe('what fits the group and is not done yet', () => {
     expect(lijst.find((kaart) => kaart.deel.moduleId === 'topo')).toBeUndefined();
   });
 
-  it('drops a subject that has nothing for the group', () => {
+  it('drops a subject that has nothing for the group, and the flags always', () => {
     expect(voorGroep(8, new Set()).map((kaart) => kaart.deel.moduleId)).not.toContain('klok');
+    for (const groep of GROEPEN) {
+      const modules = voorGroep(groep, new Set()).map((kaart) => kaart.deel.moduleId);
+      expect(modules, `groep ${groep}`).not.toContain('vlaggen');
+    }
   });
 
   it('is empty once everything that fits is done', () => {

@@ -26,6 +26,10 @@ describe('the vlaggendiploma', () => {
   it('is offered on the whole of a werelddeel, and op de provincies', () => {
     expect(tegels('vlag-europa-alle')).toContain('vlag-diploma');
     expect(tegels('vlag-zuid-amerika-alle')).toContain('vlag-diploma');
+    // En op de hele wereld, sinds ADR-247. Bekende vlaggen en vlaggen die op
+    // elkaar lijken krijgen op de pagina het diploma van hun werelddeel, maar
+    // geen eigen tegel.
+    expect(tegels('vlag-wereld-alle')).toContain('vlag-diploma');
     // Sinds ADR-168 ook thuis: de twaalf provincievlaggen zijn een hele set.
     expect(tegels('vlag-nederland-provincies')).toContain('vlag-diploma');
 
@@ -33,7 +37,6 @@ describe('the vlaggendiploma', () => {
       'vlag-europa-bekend',
       'vlag-europa-lijkt',
       'vlag-europa-fouten',
-      'vlag-wereld-alle',
       'vlag-wereld-mix',
     ]) {
       expect(tegels(setId), setId).not.toContain('vlag-diploma');

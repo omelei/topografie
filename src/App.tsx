@@ -41,6 +41,7 @@ import {
 } from '@/features/module/onderdelen';
 import { ProfileScreen } from '@/features/player/ProfileScreen';
 import { loadPreferences, zetRustig } from '@/features/player/settings';
+import { zetKlank } from '@/features/round/geluid';
 import { Afzwemmen } from '@/features/afzwemmen/Afzwemmen';
 import { doelwitVan } from '@/features/home/doel';
 import { PremiumScreen } from '@/features/premium/PremiumScreen';
@@ -161,7 +162,6 @@ export default function App() {
   const [visit, setVisit] = useState(0);
   // "Bekijk alle diploma's" op de voordeur opent Jij met de prijzenkast open
   // (ADR-153). Eén keer: wie daarna zelf naar Jij gaat, ziet hem zoals altijd.
-  const [diplomasOpen, setDiplomasOpen] = useState(false);
   const [route, go] = useRoute();
   const { actief: premium } = usePremium();
   // Of de ouder aan zet is (ADR-173). Hier en niet in de ouderpagina zelf: als
@@ -528,7 +528,11 @@ export default function App() {
   // Minder beweging staat op het document, dus het wordt gezet voordat er een
   // scherm beweegt, en niet pas wanneer iemand de instellingen opent (ADR-145).
   useEffect(() => {
-    void loadPreferences().then((prefs) => zetRustig(prefs.rustig));
+    void loadPreferences().then((prefs) => {
+      zetRustig(prefs.rustig);
+      // Het gekozen geluid (ADR-247), voor de eerste ronde begint.
+      zetKlank(prefs.klank);
+    });
   }, []);
 
   // The component gallery, in development only. import.meta.env.DEV is
@@ -697,7 +701,6 @@ export default function App() {
         <ModuleScreen
           key={route.module.id}
           module={route.module}
-          naam={boot.profile.naam}
           setId={route.setId}
           regio={route.regio ?? null}
           onSet={(setId) => go({ name: 'module', module: route.module, setId })}
@@ -766,15 +769,6 @@ export default function App() {
       </Shell>
     );
   }
-
-  // "Bekijk alle diploma's" opent Jij met de kast in beeld — precies wat
-  // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
-  // stond; nu het diploma zelf de beloning is, staat het raster weer bij het
-  // kind en wijst de link daar ook weer heen.
-  const goDiplomas = () => {
-    setDiplomasOpen(true);
-    go({ name: 'you' });
-  };
 
   /** Uit de kast: naar dat vak met de set gekozen, om te oefenen. */
   const goOefen = (deel: Onderdeel) => {
@@ -863,8 +857,6 @@ export default function App() {
           profile={boot.profile}
           onOefen={goOefen}
           onToets={(deel, mode) => beginRonde(deel, mode)}
-          kastOpen={diplomasOpen}
-          onKastGezien={() => setDiplomasOpen(false)}
           // De avatar staat ook in de balk, en die leest `boot.profile`
           // (ADR-177). Zonder dit zou elke keuze een herlaadbeurt kosten,
           // zoals hernoemen dat doet — en een kind probeert er een paar.
@@ -882,7 +874,6 @@ export default function App() {
         onVerder={maakAf}
         onPlan={uitHetPlan}
         onGeheugencheck={startGeheugencheck}
-        onDiplomas={goDiplomas}
         onVak={goModule}
         onVoorOuders={() => go({ name: 'voorOuders' })}
       />

@@ -111,6 +111,11 @@ export const DIPLOMA_WERELDDELEN = [
   'noord-amerika',
   'zuid-amerika',
   'oceanie',
+  // En de wereld (ADR-247): elk onderwerp op de vlaggenpagina hoort een
+  // diploma te hebben, en onder de wereld stond er geen. Twintig vlaggen uit
+  // de hele wereld, negen van de tien goed, zoals het topodiploma van de
+  // wereldkaart ook twintig landen van de honderdzevenenzestig vraagt.
+  'wereld',
 ] as const;
 
 export type DiplomaWerelddeel = (typeof DIPLOMA_WERELDDELEN)[number];
@@ -124,13 +129,26 @@ function alsDiplomaWerelddeel(deel: string | undefined): DiplomaWerelddeel | nul
 /**
  * The werelddeel a set is the whole of — `vlag-europa-alle` — which is the
  * only set a vlaggendiploma is sat on. A diploma for "bekende vlaggen" would be
- * a certificate for the easy half.
+ * a certificate for the easy half. Wie bekende vlaggen oefent, krijgt daarom
+ * het diploma van het hele werelddeel aangeboden (`vlagDiplomaDeelVan`).
  */
 export function diplomaWerelddeelVanSet(setId: string): DiplomaWerelddeel | null {
   // De provincies zijn hun eigen hele set: er is geen `vlag-nederland-alle`,
   // want er is niets anders onder Nederland om "alle" van te onderscheiden.
   if (setId === 'vlag-nederland-provincies') return 'nederland';
   return alsDiplomaWerelddeel(/^vlag-(.+)-alle$/.exec(setId)?.[1]);
+}
+
+/**
+ * Het werelddeel waar een set van vlaggen een deel van is, ook als het niet
+ * het hele werelddeel is: "Bekende vlaggen van Europa" hoort bij Europa
+ * (ADR-247). Een mix hoort nergens bij.
+ */
+export function vlagDiplomaDeelVan(setId: string): DiplomaWerelddeel | null {
+  return (
+    diplomaWerelddeelVanSet(setId) ??
+    alsDiplomaWerelddeel(/^vlag-(.+)-(bekend|lijkt|alle)$/.exec(setId)?.[1])
+  );
 }
 
 /** Twenty questions, which is the vlaggendiploma. */

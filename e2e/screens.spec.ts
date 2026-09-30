@@ -30,7 +30,7 @@ async function shoot(page: Page, project: string, naam: string) {
 
 async function chooseAndStart(page: Page, way: RegExp) {
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // Nothing is chosen for the child any more, so the subject is pressed too.
   await page
@@ -84,9 +84,6 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // van de pagina en staat er pas als de geschiedenis gelezen is (ADR-162).
   // Fenna is het kind van daarnet, met groep 5.
   await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();
-  // En op de doelen, die hun eigen lezingen doen en anders net na de foto
-  // verschijnen.
-  await expect(page.getByRole('region', { name: 'Je doelen voor deze week' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
   // Oefenen (ADR-241): de vakken als kaarten, drie of twee naast elkaar.
@@ -95,7 +92,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await shoot(page, size, '03b-oefenen');
 
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await shoot(page, size, '03-kiezen');
 
   // Jij carries the diplomas, which since ADR-167 are the whole reward
@@ -298,6 +295,8 @@ test('a goal in the list, and the ring with something in it', async ({ page }, t
   const size = testInfo.project.name;
 
   await signIn(page, 'Mirre');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
   const doelen = page.getByRole('region', { name: 'Je doelen voor deze week' });
   await doelen.getByRole('button', { name: 'Doel toevoegen' }).click();
   await doelen.getByRole('button', { name: '2 rondes doen', exact: true }).click();
@@ -423,7 +422,7 @@ test('the tables: choosing one, and a sum', async ({ page }, testInfo) => {
   // The word a parent types, which is now the page itself rather than a card
   // pointing at one.
   await page.goto('/rekenen');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // Nothing is chosen when the page opens, so the picture is taken once the
   // child has answered every step: the keypad open and the start bar ready.

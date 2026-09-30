@@ -73,8 +73,6 @@ test('counts nothing when the browser asks not to be tracked', async ({ page }) 
   const tellingen = await vangTellingen(page);
 
   await page.goto('/topografie/provincies');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Provincies van Nederland oefenen' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Topografie oefenen' })).toBeVisible();
   expect(tellingen).toEqual([]);
 });

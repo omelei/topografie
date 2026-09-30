@@ -4,7 +4,7 @@ import { langsDePoort, stubGezin } from './gezin';
 import { signIn } from './naam';
 
 /**
- * Je doelen voor deze week (ADR-162).
+ * Je doelen voor deze week (ADR-162), op Jij sinds ADR-247.
  *
  * "Waar je voor gaat" stond hier: één diploma, gekozen uit drie voorstellen,
  * dat maanden kon duren. Deze test loopt de boog die ervoor in de plaats kwam:
@@ -65,6 +65,8 @@ async function tafelVanEen(page: Page, vorm: RegExp) {
 
 test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ page }) => {
   await signIn(page, 'Fien');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
 
   const blok = blokVan(page);
   await expect(blok).toBeVisible();
@@ -83,12 +85,14 @@ test('een kind maakt een doel voor deze week en ziet het meelopen', async ({ pag
   // Eén ronde, en het doel loopt mee.
   await tafelVanEen(page, /Zelf typen/);
   await tienSommen(page);
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(blok).toContainText('1 van de 2');
 });
 
 test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ page }) => {
   await signIn(page, 'Bram');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
   const blok = blokVan(page);
 
   for (const knop of ['2 rondes doen', '3 rondes doen', '5 rondes doen']) {
@@ -102,7 +106,7 @@ test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ 
 
   // En het staat er nog na een rondje door de app.
   await page.goto('/rekenen');
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(blok).toContainText('3 rondes doen');
 
   await blok.getByRole('button', { name: 'Weghalen: 3 rondes doen' }).click();
@@ -114,8 +118,10 @@ test('een doel blijft staan, is weg te halen, en drie is het maximum', async ({ 
  * Geen doelen hoeven is ook een antwoord, en dan wordt het niet elke maandag
  * opnieuw gevraagd. Aanzetten kan bij de instellingen van de ouder (ADR-173).
  */
-test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async ({ page }) => {
+test('doelen zijn uit te zetten, en komen dan niet terug op Jij', async ({ page }) => {
   await signIn(page, 'Sep');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
 
   await blokVan(page).getByRole('button', { name: 'Ik wil geen doelen' }).click();
   await expect(blokVan(page)).toHaveCount(0);
@@ -132,12 +138,14 @@ test('doelen zijn uit te zetten, en komen dan niet terug op de voordeur', async 
   await schakelaar.click();
   await expect(schakelaar).toHaveAttribute('aria-pressed', 'true');
 
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(blokVan(page)).toBeVisible();
 });
 
 test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({ page }) => {
   await signIn(page, 'Tess');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
 
   // Eerst de tafel van 1 kennen: dan staat hij bovenaan de voorstellen, want
   // het diploma dat het dichtst bij is gaat voor.
@@ -145,7 +153,7 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
   await tienSommen(page);
   await alsOnthouden(page);
 
-  await page.goto('/');
+  await page.goto('/jij');
   const blok = blokVan(page);
   await blok.getByRole('button', { name: 'Doel toevoegen' }).click();
   await blok.getByRole('button', { name: 'Een diploma halen', exact: true }).click();
@@ -183,6 +191,6 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
   await expect(page.getByText('Daarmee is ook je weekdoel gehaald.')).toBeVisible();
 
   // En op de voordeur staat het doel op gehaald.
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(blok).toContainText('Gehaald!');
 });

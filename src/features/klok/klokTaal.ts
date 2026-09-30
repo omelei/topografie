@@ -61,3 +61,16 @@ export function klokWoorden(item: KlokItem): string {
 export function klokVoluit(item: KlokItem): string {
   return t('klok.beide', { woorden: klokWoorden(item), cijfers: klokDigitaal(item) });
 }
+
+/**
+ * De tijd zoals een digitale klok hem toont (ADR-247): vier cijfers met een
+ * dubbele punt, "07:30" of "19:30".
+ *
+ * Met een nul vooraan, want zo staat het op een oven, een wekker en een
+ * telefoon. Na twaalf uur telt de klok door tot 23; twaalf uur zelf blijft
+ * 12, want middag is geen nacht.
+ */
+export function digitaleTijd(tijd: KlokItem, middag: boolean): string {
+  const uur = middag && tijd.uur !== 12 ? tijd.uur + 12 : tijd.uur;
+  return `${String(uur).padStart(2, '0')}:${String(tijd.minuut).padStart(2, '0')}`;
+}

@@ -30,7 +30,7 @@ async function kies(
   hoe: RegExp,
 ) {
   await page.goto('/taal');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   const welk = page.getByRole('region', { name: 'Welk deel?' });
   await welk.getByRole('button', { name: deel, exact: true }).click();

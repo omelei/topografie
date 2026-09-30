@@ -1,5 +1,6 @@
 import { OverOnderwerp } from './OverOnderwerp';
-import { naarBoven } from '@/features/shell/naarBoven';
+import { brengInBeeld, naarBoven } from '@/features/shell/naarBoven';
+import { leesRustig } from '@/features/player/settings';
 import { pathFor, routeFor } from '@/features/shell/routes';
 import { seoPaginaVoor } from '@/seo/paginas';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
@@ -10,6 +11,7 @@ import {
   aanDeBeurt,
   countMastered,
   isDiplomaVorm,
+  vlagDiplomaDeelVan,
   vlagDiplomaSet,
   opGroep,
   roundPreview,
@@ -19,7 +21,7 @@ import {
   type ItemState,
   type ModeId,
 } from '@/game-core';
-import { t } from '@/i18n';
+import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates } from '@/store/progress';
 import { groepVanActiefKind } from '@/store/children';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -112,7 +114,6 @@ import { useSmallScreen } from '@/features/shell/useSmallScreen';
  */
 export function ModuleScreen({
   module,
-  naam,
   setId,
   regio: adresRegio = null,
   onSet,
@@ -121,8 +122,6 @@ export function ModuleScreen({
   onStart,
 }: {
   readonly module: Module;
-  /** Whose page this is. The heading asks them by name. */
-  readonly naam: string;
   /** Which set the address names, or null for the module's own way in. */
   readonly setId: string | null;
   /** Which region or part the address names without a set: /werkwoorden. */
@@ -210,10 +209,11 @@ export function ModuleScreen({
   const chosen = onderwerp !== null ? adresSet : null;
 
   // De pagina voor Google op dit adres (ADR-207), of die van het vak als het
-  // adres een mix of jouw fouten noemt: daar komen de kop en de links vandaan.
+  // adres een mix of jouw fouten noemt: daar komen de links vandaan. De kop is
+  // altijd die van het vak (ADR-247).
+  const vakPagina = seoPaginaVoor(pathFor({ name: 'module', module, setId: null }));
   const pagina =
-    seoPaginaVoor(pathFor({ name: 'module', module, setId: adresSet?.setId ?? null })) ??
-    seoPaginaVoor(pathFor({ name: 'module', module, setId: null }));
+    seoPaginaVoor(pathFor({ name: 'module', module, setId: adresSet?.setId ?? null })) ?? vakPagina;
 
   // Een link onder "Meer topografie" blijft in de app, en begint bovenaan de
   // pagina: anders stond je na de klik nog onderaan, bij de vragen van ouders.
@@ -250,11 +250,12 @@ export function ModuleScreen({
   // Na de render: dan staat wat bij de keuze hoort er al. De eerste die er
   // staat: "Hoeveel vragen?" is er niet bij elke spelvorm, en de startbalk
   // staat op een telefoon al vast onderaan en hoeft dan niet.
-  // Een onderdeel komt bovenaan te staan; de startbalk alleen in beeld.
+  // Niet meer bovenaan, maar net in beeld (ADR-247): wat je net koos, blijft
+  // zo lang mogelijk te zien. Zie `brengInBeeld`.
   const springNaar = (...secties: { readonly current: HTMLElement | null }[]) =>
     requestAnimationFrame(() => {
       const doel = secties.map((sectie) => sectie.current).find((el) => el !== null);
-      doel?.scrollIntoView({ block: doel === startSectie.current ? 'nearest' : 'start' });
+      if (doel) brengInBeeld(doel, leesRustig());
     });
 
   const stap = {
@@ -274,7 +275,23 @@ export function ModuleScreen({
   // Before there is a set, a way that is only offered for some sets is not
   // offered yet: a tafeldiploma drawn before the table is a tile that can
   // vanish from under a finger the moment the child picks the Keersommen.
-  const forms = chosen ? aangeboden : aangeboden.filter((kandidaat) => !kandidaat.geldtVoor);
+  //
+  // Behalve het diploma (ADR-247). Zonder onderwerp stond het er niet, en dus
+  // zag een nieuwe bezoeker alleen op /topografie/provincies dat er een toets
+  // is: daar noemt het adres het onderwerp al. Nu staat het er op elk vak,
+  // als het vak er een heeft: het diploma dat bij de meeste onderwerpen op
+  // deze pagina hoort. Kies je daarna een onderwerp, dan wordt het het diploma
+  // van dat onderwerp; heeft dat er geen (een mix), dan wacht de stap weer.
+  const setsHier = onderwerpen.flatMap((vak) => vak.sets.map((deel) => deel.setId));
+  const bijHoeveel = (kandidaat: PracticeForm) =>
+    setsHier.filter((id) => kandidaat.geldtVoor?.(id) ?? true).length;
+  const diplomaHier =
+    aangeboden
+      .filter((kandidaat) => isDiplomaVorm(kandidaat.id) && bijHoeveel(kandidaat) > 0)
+      .sort((een, ander) => bijHoeveel(ander) - bijHoeveel(een))[0] ?? null;
+  const forms = chosen
+    ? aangeboden
+    : aangeboden.filter((kandidaat) => !kandidaat.geldtVoor || kandidaat === diplomaHier);
   // The ways that are tiles. A way only the oefentoets asks in is reached by
   // pressing the oefentoets, and never offered beside it (ADR-102). Het
   // diploma staat apart, want het staat als laatste en het staat groter
@@ -285,9 +302,39 @@ export function ModuleScreen({
   const gewoneTegels = tegels
     .filter((candidate) => !isDiplomaVorm(candidate.id))
     .sort((a, b) => Number(isPremiumVorm(a.id)) - Number(isPremiumVorm(b.id)));
-  const diplomaVorm = tegels.find((candidate) => isDiplomaVorm(candidate.id)) ?? null;
+  const eigenDiploma = tegels.find((candidate) => isDiplomaVorm(candidate.id)) ?? null;
+  // Elk onderwerp een diploma (ADR-247). Bekende vlaggen en vlaggen die op
+  // elkaar lijken hebben er geen eigen, want dat zou een diploma voor de
+  // makkelijke helft zijn. Daar staat het diploma van het hele werelddeel, en
+  // een druk erop kiest dat werelddeel. Alleen een mix heeft er geen: die is
+  // de andere onderwerpen door elkaar, en die hebben elk hun eigen diploma.
+  const vlagDeel =
+    module.id === 'vlaggen' && chosen !== null && eigenDiploma === null
+      ? vlagDiplomaDeelVan(chosen.setId)
+      : null;
+  const diplomaVorm =
+    eigenDiploma ??
+    (vlagDeel === null
+      ? null
+      : (formsFor('vlaggen').find((candidate) => candidate.id === 'vlag-diploma') ?? null));
+  const diplomaReden =
+    vlagDeel === null || diplomaVorm === null
+      ? diplomaVorm === null
+        ? ''
+        : t(diplomaVorm.reason)
+      : t('way.vlag-diploma-deel', {
+          deel: t(
+            vlagDeel === 'wereld' ? 'vlag.heleWereld' : (`regio.${vlagDeel}` as TranslationKey),
+          ),
+        });
   // No way until one is pressed (ADR-111).
-  const gekozenManier = tegels.find((candidate) => candidate.id === formId) ?? null;
+  // Een diploma dat vóór het onderwerp gekozen is, is het diploma van het
+  // onderwerp dat daarna komt (ADR-247).
+  const gekozenManier =
+    tegels.find((candidate) => candidate.id === formId) ??
+    (formId !== null && isDiplomaVorm(formId)
+      ? (tegels.find((candidate) => isDiplomaVorm(candidate.id)) ?? null)
+      : null);
   // The oefentoets is a way of its own (ADR-100). It answers the way a test
   // asks, by typing, and hears back only at the end — so pressing it chooses
   // the way as well, and pressing any other way leaves it.
@@ -342,11 +389,18 @@ export function ModuleScreen({
   // The numbered steps still without an answer, in the page's own numbers.
   // "Hoeveel vragen?" is never among them: it opens on the round's own length,
   // pressed, which is an answer.
-  const wachtend = [
-    ...(onderwerp === null ? [stap.wat] : []),
-    ...(heeftKeuze && chosen === null ? [stap.keuze] : []),
-    ...(form === null ? [stap.hoe] : []),
+  // Met hun vraag en hun plek op de pagina: de startbalk noemt ze, en een
+  // druk erop brengt je erheen (ADR-247).
+  const wachtend: readonly Wachtend[] = [
+    ...(onderwerp === null
+      ? [{ nummer: stap.wat, vraag: t('choose.stepWhat'), sectie: watSectie }]
+      : []),
+    ...(heeftKeuze && chosen === null && onderwerp.keuze !== null
+      ? [{ nummer: stap.keuze, vraag: t(onderwerp.keuze), sectie: keuzeSectie }]
+      : []),
+    ...(form === null ? [{ nummer: stap.hoe, vraag: t('choose.stepHow'), sectie: hoeSectie }] : []),
   ];
+  const nogZin = nogTeKiezen(wachtend.map(({ nummer }) => nummer));
   const klaar = chosen !== null && form !== null;
 
   // What the start bar lists: one chip per question the page asked, in the
@@ -471,16 +525,14 @@ export function ModuleScreen({
                 {t(module.name)}
               </p>
 
-              {/* By name, the way the front door greets them — on every size. The
-                handoff drops the name on a phone; a chooser that asks "wat wil
-                je oefenen?" of nobody in particular is a form, and asked of Fem
-                it is a question (ADR-095). Without a name it is someone new, or
-                Google: then the heading says where they are, "Provincies van
-                Nederland oefenen", the same words as the tab (ADR-245). */}
+              {/* Het vak en wat je hier doet: "Topografie oefenen", met of
+                zonder naam, en ook als er een onderwerp gekozen is (ADR-247).
+                Het was "Wat wil je oefenen, Fem?", en zonder naam de naam van
+                het onderwerp (ADR-245), die bij elke keuze veranderde. De kop
+                blijft nu staan terwijl je kiest; het onderwerp staat in de
+                titel van het tabblad en onder "Over dit onderwerp". */}
               <h1 className="tk-display tk-welkom-kop">
-                {naam !== ''
-                  ? t('choose.title', { naam })
-                  : (pagina?.kop ?? t('choose.titleZonderNaam'))}
+                {vakPagina?.kop ?? t('choose.titleZonderNaam')}
               </h1>
             </div>
 
@@ -796,7 +848,7 @@ export function ModuleScreen({
               type="button"
               className="tk-tegel tk-tegel-diploma"
               aria-label={metPremium(
-                `${t(diplomaVorm.name)}. ${t(diplomaVorm.reason)}`,
+                `${t(diplomaVorm.name)}. ${diplomaReden}`,
                 isPremiumVorm(diplomaVorm.id),
                 actief,
               )}
@@ -812,6 +864,7 @@ export function ModuleScreen({
                 }
                 setToetsstand(false);
                 setFoutenstand(false);
+                if (vlagDeel !== null) kiesElders(vlagDiplomaSet(vlagDeel));
                 setFormId(diplomaVorm.id);
                 springNaar(aantalSectie, startSectie);
               }}
@@ -822,7 +875,7 @@ export function ModuleScreen({
               <span className="min-w-0">
                 {t(diplomaVorm.name)}
                 <span className="tk-hulp block" aria-hidden="true">
-                  {t(diplomaVorm.reason)}
+                  {diplomaReden}
                 </span>
               </span>
               {isPremiumVorm(diplomaVorm.id) ? <PremiumLabel /> : null}
@@ -883,9 +936,12 @@ export function ModuleScreen({
                   ))}
                 </ul>
               ) : (
-                <p id={nogId} className="tk-startbalk-nog">
-                  {nogTeKiezen(wachtend)}
-                </p>
+                <>
+                  <p id={nogId} className="tk-sr-only">
+                    {nogZin}
+                  </p>
+                  <NogKiezen wachtend={wachtend} kort={false} onNaar={springNaar} />
+                </>
               )}
               {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
             </div>
@@ -1033,15 +1089,64 @@ export function ModuleScreen({
                 {eerderZin ? <span className="tk-hulp block">{eerderZin}</span> : null}
               </>
             ) : (
-              <span id={nogId} className="tk-hulp block">
-                {nogTeKiezen(wachtend)}
-              </span>
+              <>
+                <span className="block font-semibold">{t('start.nogKiezen')}</span>
+                <span id={nogId} className="tk-sr-only">
+                  {nogZin}
+                </span>
+              </>
             )}
           </p>
+          {klaar ? null : <NogKiezen wachtend={wachtend} kort onNaar={springNaar} />}
           {startKnop}
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** Een stap die nog wacht: zijn nummer, zijn vraag en waar hij staat. */
+interface Wachtend {
+  readonly nummer: number;
+  readonly vraag: string;
+  readonly sectie: { readonly current: HTMLElement | null };
+}
+
+/**
+ * De stappen die nog wachten, in de startbalk (ADR-247).
+ *
+ * Er stond "Kies nog bij stap 2 en 3", in grijze letters: een zin die je moest
+ * lezen, en dan zelf de stap zoeken. Nu is elke stap die wacht een knop met
+ * zijn munt en zijn vraag, en een druk brengt je erheen. Op een telefoon is
+ * er geen plek voor de vraag: dan alleen de munt, met de vraag als naam.
+ */
+function NogKiezen({
+  wachtend,
+  kort,
+  onNaar,
+}: {
+  readonly wachtend: readonly Wachtend[];
+  readonly kort: boolean;
+  readonly onNaar: (sectie: Wachtend['sectie']) => void;
+}) {
+  return (
+    <ul className="tk-nogkiezen">
+      {wachtend.map(({ nummer, vraag, sectie }) => (
+        <li key={nummer}>
+          <button
+            type="button"
+            className="tk-nogstap"
+            aria-label={t('start.naarStap', { stap: nummer, vraag })}
+            onClick={() => onNaar(sectie)}
+          >
+            <span className="tk-stap-nummer" aria-hidden="true">
+              {nummer}
+            </span>
+            {kort ? null : <span aria-hidden="true">{vraag}</span>}
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 

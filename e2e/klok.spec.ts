@@ -14,7 +14,7 @@ import { signIn } from './naam';
 /** Step 1, step 2, start. The one way into a round, whatever was chosen. */
 async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp) {
   await page.goto('/klokkijken');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
   const hoeStap = page.getByRole('region', { name: /Hoe wil je/ });
@@ -50,7 +50,7 @@ test('the clock answers to the short word as well as its own', async ({ page }) 
 
   // "Klok" is what the rail says and what a child would type. Both land here.
   await page.goto('/klok');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   // The tile, "Kwartieren. …", and not the klokdiploma "Kwartieren: …" (ADR-117).
   await expect(page.getByRole('button', { name: /^Kwartieren\./ })).toBeVisible();
 });
@@ -83,6 +83,31 @@ test('reading a face: a clock on the stage and four times to choose from', async
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   // Whatever the time was, the answer is given in both notations.
   await expect(page.getByRole('status')).toContainText(':');
+});
+
+/**
+ * De digitale klok (ADR-247): cijfers op het scherm, en om de vraag na twaalf
+ * uur, zodat 19:30 ook half acht is.
+ */
+test('the digital clock: figures on the stage, the afternoon too, and four times', async ({
+  page,
+}) => {
+  await signIn(page, 'Jip');
+  await startKlok(page, /^Halve uren/, /^Digitale klok/);
+
+  const scherm = page.getByRole('img', { name: /^\d{2}:\d{2}$/ });
+  await expect(scherm).toBeVisible();
+  const eerste = Number((await scherm.getAttribute('aria-label'))?.slice(0, 2));
+  expect(eerste).toBeLessThanOrEqual(12);
+
+  const opties = page.getByRole('group', { name: 'Kies hoe laat het is' });
+  await expect(opties.getByRole('button')).toHaveCount(4);
+  await opties.getByRole('button').first().click();
+  await page.getByRole('button', { name: 'Volgende vraag' }).click();
+
+  // De tweede vraag staat na twaalf uur, behalve om twaalf uur zelf.
+  const tweede = Number((await scherm.getAttribute('aria-label'))?.slice(0, 2));
+  expect(tweede === 12 || tweede > 12).toBe(true);
 });
 
 test('the other direction: a time in words and four faces to point at', async ({ page }) => {
@@ -132,7 +157,7 @@ test('the clock is a door in the side bar like the others', async ({ page }, tes
   await rail.getByRole('button', { name: 'Klok', exact: true }).click();
 
   // A door that is open opens onto the chooser, not onto "binnenkort".
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await expect(rail.getByRole('button', { name: 'Klok', exact: true })).toHaveAttribute(
     'aria-current',
     'page',

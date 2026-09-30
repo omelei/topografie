@@ -130,5 +130,5 @@ test('de terugknop in een ronde gaat terug naar de vakpagina', async ({ page }) 
 
   await page.goBack();
   await expect(page.getByRole('button', { name: 'Stoppen' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 });

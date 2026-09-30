@@ -7,6 +7,7 @@ import {
   vlagDiplomaFor,
   vlagdiplomaDrempel,
   vlagdiplomaVragen,
+  vlagDiplomaDeelVan,
   werelddeelVanDiploma,
   type RewardSnapshot,
 } from './index';
@@ -64,8 +65,9 @@ describe('vlagDiplomaFor', () => {
 
   it('is only sat on the whole of a werelddeel, and only as a diploma', () => {
     expect(vlagDiplomaFor(ronde({ setId: 'vlag-europa-bekend' }))).toBeNull();
-    // De wereld niet: honderdzesennegentig vlaggen is geen werelddeel.
-    expect(vlagDiplomaFor(ronde({ setId: 'vlag-wereld-alle' }))).toBeNull();
+    // De wereld wel, sinds ADR-247: twintig vlaggen van de hele wereld.
+    expect(vlagDiplomaFor(ronde({ setId: 'vlag-wereld-alle' }))).toBe('diploma-vlag-wereld');
+    expect(vlagDiplomaFor(ronde({ setId: 'vlag-wereld-mix' }))).toBeNull();
     expect(vlagDiplomaFor(ronde({ mode: 'vlag-gemengd' }))).toBeNull();
   });
 
@@ -81,8 +83,8 @@ describe('vlagDiplomaFor', () => {
 });
 
 describe('the stored diploma', () => {
-  it('reads back as the werelddeel it was earned for, for all seven', () => {
-    expect(DIPLOMA_WERELDDELEN).toHaveLength(7);
+  it('reads back as the werelddeel it was earned for, for all eight', () => {
+    expect(DIPLOMA_WERELDDELEN).toHaveLength(8);
     for (const deel of DIPLOMA_WERELDDELEN) {
       expect(diplomaWerelddeelVanSet(vlagDiplomaSet(deel))).toBe(deel);
       expect(werelddeelVanDiploma(`diploma-vlag-${deel}`)).toBe(deel);
@@ -92,6 +94,20 @@ describe('the stored diploma', () => {
   it('is never mistaken for a tafeldiploma, or the other way round', () => {
     expect(tableOfDiploma('diploma-vlag-europa')).toBeNull();
     expect(werelddeelVanDiploma('diploma-tafel-7')).toBeNull();
-    expect(werelddeelVanDiploma('diploma-vlag-wereld')).toBeNull();
+    expect(werelddeelVanDiploma('diploma-vlag-wereld')).toBe('wereld');
+  });
+});
+
+describe('the diploma a set of flags belongs to (ADR-247)', () => {
+  it('is the diploma of its werelddeel, also for the known and the look-alike flags', () => {
+    expect(vlagDiplomaDeelVan('vlag-europa-bekend')).toBe('europa');
+    expect(vlagDiplomaDeelVan('vlag-azie-lijkt')).toBe('azie');
+    expect(vlagDiplomaDeelVan('vlag-wereld-bekend')).toBe('wereld');
+    expect(vlagDiplomaDeelVan('vlag-nederland-provincies')).toBe('nederland');
+  });
+
+  it('is none for a mix or a list of mistakes', () => {
+    expect(vlagDiplomaDeelVan('vlag-wereld-mix')).toBeNull();
+    expect(vlagDiplomaDeelVan('vlag-fouten')).toBeNull();
   });
 });

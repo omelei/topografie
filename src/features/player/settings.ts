@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getSetting, setSetting } from '@/store/profile';
+import { isKlank, type Klank } from '@/features/round/geluid';
 
 /**
  * The switch on K10, and it does something.
@@ -32,6 +33,8 @@ export interface Preferences {
    * in de klas of naast een slapende broer, zet ze hier uit.
    */
   readonly geluid: boolean;
+  /** Welk geluid (ADR-247): een van vijf, gekozen op Jij. */
+  readonly klank: Klank;
   /**
    * Minder beweging (ADR-145). Uit bij het begin: het systeem van het apparaat
    * zegt het al als iemand dat nodig heeft (`prefers-reduced-motion`). Maar een
@@ -44,12 +47,14 @@ export interface Preferences {
 export const DEFAULT_PREFERENCES: Preferences = {
   readAloud: true,
   geluid: true,
+  klank: 'belletje',
   rustig: false,
 };
 
 const KEY = {
   readAloud: 'voorlezen',
   geluid: 'geluid',
+  klank: 'klank',
   rustig: 'rustig',
 } as const;
 
@@ -60,20 +65,30 @@ function read(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function loadPreferences(): Promise<Preferences> {
-  const [readAloud, geluid, rustig] = await Promise.all([
+  const [readAloud, geluid, klank, rustig] = await Promise.all([
     getSetting(KEY.readAloud),
     getSetting(KEY.geluid),
+    getSetting(KEY.klank),
     getSetting(KEY.rustig),
   ]);
   return {
     readAloud: read(readAloud, DEFAULT_PREFERENCES.readAloud),
     geluid: read(geluid, DEFAULT_PREFERENCES.geluid),
+    klank: isKlank(klank) ? klank : DEFAULT_PREFERENCES.klank,
     rustig: read(rustig, DEFAULT_PREFERENCES.rustig),
   };
 }
 
-export async function savePreference(name: keyof Preferences, on: boolean): Promise<void> {
+/** De schakelaars: aan of uit. */
+export type Schakelaar = 'readAloud' | 'geluid' | 'rustig';
+
+export async function savePreference(name: Schakelaar, on: boolean): Promise<void> {
   await setSetting(KEY[name], on ? 'aan' : 'uit');
+}
+
+/** Het gekozen geluid (ADR-247). */
+export async function saveKlank(klank: Klank): Promise<void> {
+  await setSetting(KEY.klank, klank);
 }
 
 /**

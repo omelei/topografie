@@ -49,7 +49,7 @@ async function kiesOnderwerp(page: Page, [vak, chip]: Keuze) {
  */
 async function startRound(page: Page, set: Keuze, way: RegExp, toetsstand = false) {
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   await kiesOnderwerp(page, set);
   await page

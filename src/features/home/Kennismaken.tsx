@@ -48,7 +48,6 @@ export function GroepVraag({
         <h2 id="groepvraag-kop" className="tk-kaart-titel">
           {t('groep.vraag')}
         </h2>
-        <p className="text-lopend">{t('home.groep.zin')}</p>
       </div>
       <GroepKiezer
         gekozen={gekozen}

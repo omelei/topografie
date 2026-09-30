@@ -22,13 +22,16 @@ import { EigenLijsten } from './EigenLijsten';
 import { NAAM_MAX, NaamVraag } from './NaamVraag';
 import { GroepInstelling } from './GroepInstelling';
 import { Jaaroverzicht } from './Jaaroverzicht';
+import { WeekdoelenBlok } from '@/features/home/WeekdoelenBlok';
 import {
   DEFAULT_PREFERENCES,
   loadPreferences,
   savePreference,
   zetRustig,
   type Preferences,
+  type Schakelaar,
 } from './settings';
+import { KlankInstelling } from './KlankInstelling';
 
 /**
  * K10, "Jij": the child's own page (ADR-112), en sinds ADR-171 ook de pagina
@@ -68,16 +71,11 @@ export function ProfileScreen({
   profile,
   onOefen,
   onToets,
-  kastOpen = false,
-  onKastGezien,
   onProfiel,
 }: {
   readonly profile: ProfileRecord;
   readonly onOefen: (deel: Onderdeel) => void;
   readonly onToets: (deel: Onderdeel, mode: ModeId) => void;
-  /** Binnengekomen via "Bekijk alle diploma's": de kast in beeld (ADR-153). */
-  readonly kastOpen?: boolean;
-  readonly onKastGezien?: (() => void) | undefined;
   /** Dit kind is veranderd: de balk draagt het ook (ADR-177). */
   readonly onProfiel?: ((profile: ProfileRecord) => void) | undefined;
 }) {
@@ -85,15 +83,8 @@ export function ProfileScreen({
   const { actief: premium } = usePremium();
   const naamloos = !heeftNaam(profile);
 
-  // Met premium staat "Wie oefent er?" boven de kast, dus is dit nog een sprong;
-  // zonder is het er een van niets.
-  useEffect(() => {
-    if (!kastOpen) return;
-    kast.current?.scrollIntoView({ block: 'start' });
-    onKastGezien?.();
-    // Eén keer, bij binnenkomst.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // "Bekijk alle diploma's" onder je doelen: de kast staat op deze pagina.
+  const naarKast = () => kast.current?.scrollIntoView({ block: 'start' });
 
   return (
     <div className="tk-page">
@@ -123,6 +114,11 @@ export function ProfileScreen({
             en de reden dat ADR-172 het verplaatste — acht blokken tussen de
             naam en de diploma's — is er niet meer: het zijn er nu twee. */}
         <Instellingen profile={profile} onProfiel={onProfiel} />
+
+        {/* Je doelen voor deze week (ADR-162), sinds ADR-247 hier en niet
+            meer op Vandaag: wat je je voorneemt, hoort bij wat je bereikt.
+            Direct boven de kast, want een diploma is een van de doelen. */}
+        <WeekdoelenBlok onDiplomas={naarKast} />
 
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
@@ -228,7 +224,7 @@ function Instellingen({
     });
   }, []);
 
-  const toggle = (name: keyof Preferences) => {
+  const toggle = (name: Schakelaar) => {
     const next = { ...prefs, [name]: !prefs[name] };
     void savePreference(name, next[name]).then(() => {
       setPrefs(next);
@@ -270,6 +266,10 @@ function Instellingen({
             onToggle={() => toggle('geluid')}
           />
         </li>
+        {/* Welk geluid, alleen als het geluid aanstaat (ADR-247). */}
+        {prefs.geluid ? (
+          <KlankInstelling klank={prefs.klank} onKlank={(klank) => setPrefs({ ...prefs, klank })} />
+        ) : null}
         <li>
           <Switch
             icon={OogIcon}
