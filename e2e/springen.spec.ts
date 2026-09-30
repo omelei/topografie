@@ -20,13 +20,14 @@ test('op Topo brengt een regio de onderwerpen in beeld, en de regio blijft staan
 
   const onderwerpen = page.getByRole('region', { name: 'Kies een onderwerp' });
   const eerste = onderwerpen.getByRole('button').first();
-  await expect(eerste).not.toBeInViewport();
 
   const europa = page
     .getByRole('region', { name: /Waar op de kaart/ })
     .getByRole('button', { name: 'Europa' });
   await europa.click();
-  await expect(eerste).toBeInViewport();
+  // Het eerste onderwerp helemaal in beeld, wat de hoogte van het scherm ook
+  // is (op een iPad staand stond het er al half), en de regio nog steeds.
+  await expect(eerste).toBeInViewport({ ratio: 1 });
   await expect(europa).toBeInViewport();
 });
 
