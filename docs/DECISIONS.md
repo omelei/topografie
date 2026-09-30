@@ -14127,6 +14127,53 @@ niet in beeld. ADR-229 schreef die prijs zelf op; hij bleek te hoog.
 - **Groep 1 en 2 staan er niet bij**, zoals in ADR-151: er is geen stof voor.
   Een kleuter valt onder "Weet ik niet".
 
+## ADR-244 — Groep 1 en 2 in de groepsvraag, eerst om te meten
+
+**Status:** accepted. **Date:** 2026-09-29. Op verzoek van de eigenaar: "Ik wil
+groep 1 en 2 toevoegen." Wijzigt ADR-151 (groep 3 tot en met 8) en de laatste
+afweging van ADR-243 (een kleuter valt onder "Weet ik niet"). Het plan staat in
+[kleuters.md](kleuters.md).
+
+**Wat er mis was.** Een kind uit groep 1 of 2 kon zijn groep niet kiezen. Er is
+geen stof voor kinderen die niet lezen, dus dat was eerlijk, maar we weten ook
+niet hoeveel ouders van een kleuter leer.nu opzoeken. Oefeningen voor kleuters
+vragen een kleuterstand, een stem en plaatjes: te veel om te bouwen op een
+vermoeden.
+
+**Besluit.**
+
+- **`Groep` is 1 tot en met 8.** De groepsvraag op Vandaag, Jij en de
+  ouderpagina toont acht knoppen. `isKleutergroep` zegt of het groep 1 of 2
+  is.
+- **Voor groep 1 en 2 is elke set `later`.** Er is geen set met die groepen,
+  dus `pastBijGroep` geeft `later`, en de volgorde blijft die zonder groep.
+  Geen onderwerpen om mee te beginnen (`STARTERS_PER_GROEP` is leeg) en geen
+  rij "Past bij groep".
+- **Vandaag zegt het eerlijk.** Op de plek van de onderwerpen van de groep
+  staat "Voor groep 1 en 2 komt er iets aan", met wat er komt. De vakken staan
+  eronder, en "Andere groep" ernaast.
+- **De teller telt de keuze** zoals in ADR-243: `groep` met `/1` of `/2`. Er
+  is geen nieuwe gebeurtenis en geen wijziging aan `schema.sql` nodig.
+- **Op 1 augustus schuift groep 2 door naar groep 3** (`huidigeGroep`), en dan
+  staan plussommen tot 20 bovenaan.
+- **Het gezinsaccount laat groep 1 en 2 toe:** migratie `0004_kleutergroepen`
+  zet de controle op 1 tot en met 8, en `kind-beheer` ook. 0001 maakt de tabel
+  met `if not exists`, dus een wijziging daar zou een bestaande database niet
+  raken.
+
+**Afwegingen.**
+
+- **Meten voor bouwen.** Oefeningen voor kleuters zijn een eigen stuk werk: een
+  kleuterstand, een ingesproken stem en getekende plaatjes (zie
+  [kleuters.md](kleuters.md)). Eerst zien of er vraag is kost een paar regels.
+- **Een belofte op Vandaag.** "Er komt iets aan" is waar zolang het plan staat.
+  Besluit de eigenaar na het meten om het niet te bouwen, dan gaan groep 1 en 2
+  weer uit de groepsvraag. Een kind met groep 1 of 2 houdt die dan, en ziet
+  alles `later`, zoals nu.
+- **Geen stof van groep 3 voor een kleuter.** Plussommen en hele uren lagen
+  voor de hand, maar vragen lezen. Liever geen rij dan een rij die een kind
+  van vijf niet kan doen.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

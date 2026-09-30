@@ -3,6 +3,7 @@ import {
   GROEPEN,
   huidigeGroep,
   isGroep,
+  isKleutergroep,
   opGroep,
   pastBijGroep,
   rangVoorGroep,
@@ -93,13 +94,29 @@ describe('samen', () => {
 });
 
 describe('huidigeGroep', () => {
-  it('kent alleen groep 3 tot en met 8', () => {
-    expect(isGroep(3)).toBe(true);
+  it('kent alleen groep 1 tot en met 8', () => {
+    expect(isGroep(1)).toBe(true);
     expect(isGroep(8)).toBe(true);
-    expect(isGroep(2)).toBe(false);
+    expect(isGroep(0)).toBe(false);
     expect(isGroep(9)).toBe(false);
     expect(isGroep('5')).toBe(false);
     expect(isGroep(undefined)).toBe(false);
+  });
+
+  // Groep 1 en 2 hebben nog geen stof (ADR-244), maar schuiven wel door: een
+  // kind uit groep 2 staat na de zomer in groep 3, bij plussommen tot 20.
+  it('schuift groep 2 op 1 augustus door naar groep 3', () => {
+    const opgegeven = { groep: 2, groepSchooljaar: 2026 };
+    expect(huidigeGroep(opgegeven, new Date(2027, 6, 31))).toBe(2);
+    expect(huidigeGroep(opgegeven, new Date(2027, 7, 1))).toBe(3);
+    expect(isKleutergroep(huidigeGroep(opgegeven, new Date(2027, 7, 1)))).toBe(false);
+  });
+
+  it('noemt alleen groep 1 en 2 een kleutergroep', () => {
+    expect(GROEPEN.filter(isKleutergroep)).toEqual([1, 2]);
+    expect(isKleutergroep(undefined)).toBe(false);
+    // Elke set met stof is voor een kleuter voor later: de volgorde blijft.
+    expect(pastBijGroep([3, 4], 1)).toBe('later');
   });
 
   it('begint een schooljaar op 1 augustus', () => {

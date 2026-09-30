@@ -34,6 +34,20 @@ begin
     'elk kind draagt het moment van toestemming (0002)';
 end $$;
 
+-- Groep 1 tot en met 8 (0004, ADR-244), en daarbuiten niets.
+update public.kinderen set groep = 1 where voornaam = 'Noor';
+do $$ begin
+  assert (select groep from public.kinderen where voornaam = 'Noor') = 1,
+    'een kind uit groep 1 kan zijn groep bewaren (0004)';
+  begin
+    update public.kinderen set groep = 0 where voornaam = 'Noor';
+    raise exception 'groep 0 werd bewaard';
+  exception when check_violation then
+    null;
+  end;
+end $$;
+update public.kinderen set groep = null where voornaam = 'Noor';
+
 -- Vanaf hier is ouder A aan het woord, zoals PostgREST het doet.
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000a', true);

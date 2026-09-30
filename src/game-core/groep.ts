@@ -16,10 +16,27 @@
  * niet" koos, ziet de app die er vóór ADR-151 was.
  */
 
-/** Groep 3 tot en met 8. Groep 1 en 2 hebben geen stof in dit product. */
-export type Groep = 3 | 4 | 5 | 6 | 7 | 8;
+/**
+ * Groep 1 tot en met 8.
+ *
+ * Groep 1 en 2 zijn er sinds ADR-244, eerst zonder stof: een kind uit groep 1
+ * of 2 kan zijn groep kiezen, de teller telt hoe vaak dat gebeurt (ADR-243),
+ * en elke set is voor hem `later`. Zo meten we of er vraag is voordat er
+ * rondes voor kleuters komen. Op 1 augustus schuift groep 2 vanzelf door naar
+ * groep 3, en dan staat de stof van groep 3 bovenaan.
+ */
+export type Groep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export const GROEPEN: readonly Groep[] = [3, 4, 5, 6, 7, 8];
+export const GROEPEN: readonly Groep[] = [1, 2, 3, 4, 5, 6, 7, 8];
+
+/**
+ * Groep 1 en 2: kinderen die nog niet lezen. Voor hen is er nog geen stof
+ * (ADR-244), en Vandaag zegt dat eerlijk in plaats van de provincies voor te
+ * stellen.
+ */
+export function isKleutergroep(groep: Groep | undefined): groep is 1 | 2 {
+  return groep === 1 || groep === 2;
+}
 
 export function isGroep(waarde: unknown): waarde is Groep {
   return typeof waarde === 'number' && (GROEPEN as readonly number[]).includes(waarde);

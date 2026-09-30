@@ -1355,6 +1355,10 @@ export function starters(groep?: Groep): Populair[] {
  * legt dat vast. Die schuift achteraan, het verst terug het laatst.
  */
 const STARTERS_PER_GROEP: Readonly<Record<Groep, readonly string[]>> = {
+  // Groep 1 en 2 hebben nog geen stof (ADR-244): geen rij, maar op Vandaag een
+  // eerlijke regel dat er iets aankomt. De vakken blijven eronder te kiezen.
+  1: [],
+  2: [],
   // Per groep: topografie, rekenen, klok, vlaggen, Taal.
   3: ['nl-provincies', 'plus-20', 'klok-heel', 'vlag-europa-bekend', 'taal-sp-eiij'],
   4: ['nl-provincies', 'tafel-2', 'klok-half', 'vlag-europa-bekend', 'taal-sp-eiij'],

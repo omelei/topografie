@@ -85,7 +85,7 @@ function tekst(waarde: unknown): string {
 function leesGroep(waarde: unknown): number | null {
   if (waarde === null || waarde === undefined || waarde === '') return null;
   const groep = typeof waarde === 'number' ? waarde : Number(waarde);
-  if (!Number.isInteger(groep) || groep < 3 || groep > 8)
+  if (!Number.isInteger(groep) || groep < 1 || groep > 8)
     throw new BeheerProbleem('groep-onbekend');
   return groep;
 }

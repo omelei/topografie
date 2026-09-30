@@ -89,6 +89,20 @@ test('"Weet ik niet" gives the usual five, and the question stays away', async (
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toHaveCount(0);
 });
 
+test('groep 1 and 2 hear honestly that their rounds are coming', async ({ page }) => {
+  await page.goto('/');
+  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
+  await vraag.getByRole('button', { name: 'Groep 2', exact: true }).click();
+
+  // Geen onderwerpen van groep 3 tot en met 8 (ADR-244), wel de vakken eronder.
+  await expect(
+    page.getByRole('region', { name: 'Voor groep 1 en 2 komt er iets aan' }),
+  ).toBeVisible();
+  await expect(page.getByRole('group', { name: /Hier begin je mee/ })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Andere groep' })).toBeVisible();
+});
+
 test('"Niet nu" puts the invitation away for good, and Jij still asks', async ({ page }) => {
   await page.goto('/topografie/provincies');
   await page

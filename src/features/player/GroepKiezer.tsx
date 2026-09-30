@@ -2,8 +2,8 @@ import { GROEPEN, type Groep } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 
 /**
- * Zes knoppen en een uitweg: groep 3 tot en met 8, en "Zeg ik niet" of
- * "Geen groep" (ADR-151, ADR-161).
+ * Acht knoppen en een uitweg: groep 1 tot en met 8 (groep 1 en 2 sinds
+ * ADR-244), en "Weet ik niet" of "Geen groep" (ADR-151, ADR-161, ADR-243).
  *
  * Dezelfde rij op drie plekken — na de naam, één keer op de voordeur, en op
  * Jij — zodat een groep er overal hetzelfde uitziet. Het zijn de

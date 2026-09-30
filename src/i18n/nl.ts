@@ -34,6 +34,11 @@ export const nl = {
   'home.groep.zin': 'Dan zie je meteen wat bij je groep past.',
   'home.begin.andereGroep': 'Andere groep',
   'home.begin.kiesGroep': 'Kies je groep',
+  // Voor groep 1 en 2, op de plek van de onderwerpen (ADR-244). Er is nog geen
+  // stof voor kinderen die niet lezen; meestal leest een ouder dit.
+  'home.kleuters.kop': 'Voor groep 1 en 2 komt er iets aan',
+  'home.kleuters.zin':
+    'We maken rondes met tellen, rijmen en klappen. Een stem leest alles voor. Tot dan kun je hieronder elk vak kiezen.',
   'home.vakken.titel': 'Kies een vak',
   'home.vak.topo': 'Provincies, steden en landen',
   'home.vak.tafels': 'Tafels en sommen',
