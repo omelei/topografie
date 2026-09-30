@@ -106,6 +106,9 @@ export type ModeId =
   // question and the answer swapped — what a child is looking at differs.
   | 'klok-meerkeuze'
   | 'klok-welke-klok'
+  // De digitale klok (ADR-247): vier cijfers, ook na twaalf uur, en de tijd in
+  // woorden gekozen uit vier. Wat een kind op een oven of een telefoon leest.
+  | 'klok-digitaal'
   | 'klok-typen'
   // Flags ask both ways round too: which flag belongs to this name, and which
   // name belongs to this flag. The third is the oefentoets's own, which

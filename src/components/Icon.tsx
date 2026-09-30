@@ -302,6 +302,23 @@ export function KeyboardIcon(props: Omit<IconProps, 'children'>) {
 }
 
 /**
+ * De digitale klok (ADR-247): een schermpje met een dubbele punt erin.
+ *
+ * Dezelfde rechthoek als typen, want het is ook een schermpje, en de dubbele
+ * punt in het midden is wat hem op elke maat een klok maakt en geen toetsenbord.
+ */
+export function DigitaalIcon(props: Omit<IconProps, 'children'>) {
+  return (
+    <Icon {...props}>
+      <rect x="2.5" y="6" width="19" height="12" rx="3" />
+      <path d="M7 9.5v5M15.5 9.5h2v5" />
+      <circle cx="12" cy="10.2" r="0.9" fill="currentColor" />
+      <circle cx="12" cy="13.8" r="0.9" fill="currentColor" />
+    </Icon>
+  );
+}
+
+/**
  * Exploring: a loupe, which is looking without being asked anything.
  *
  * The circle is the third in this set and the handle is what separates it from

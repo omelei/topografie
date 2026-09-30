@@ -33,7 +33,7 @@ async function antwoord(page: Page) {
 test('de laatste vraag wordt aangekondigd, en niet eerder', async ({ page }) => {
   await signIn(page, 'Noor');
   await kiesTafelVanEen(page);
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const laatste = page.locator('.tk-round-laatste');
   await expect(page.getByPlaceholder('Antwoord')).toBeVisible();
@@ -61,7 +61,7 @@ test('voor de ronde staat er hoeveel je er eerder gehad hebt', async ({ page }) 
   await expect(page.getByText(/eerder gehad/)).toHaveCount(0);
 
   // Een ronde spelen, en dan is het de tweede keer.
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   for (let vraag = 1; vraag <= 10; vraag++) {
     await antwoord(page);
     const volgende = page.getByRole('button', { name: 'Volgende vraag' });

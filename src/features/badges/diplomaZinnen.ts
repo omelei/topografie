@@ -64,6 +64,7 @@ export const DIPLOMA_ZIN: Readonly<Record<string, TranslationKey>> = {
   'vlag-noord-amerika-alle': 'diploma.zin.vlag-noord-amerika-alle',
   'vlag-zuid-amerika-alle': 'diploma.zin.vlag-zuid-amerika-alle',
   'vlag-oceanie-alle': 'diploma.zin.vlag-oceanie-alle',
+  'vlag-wereld-alle': 'diploma.zin.vlag-wereld-alle',
   'taal-sp-eiij': 'diploma.zin.taal-sp-eiij',
   'taal-sp-auou': 'diploma.zin.taal-sp-auou',
   'taal-sp-gch': 'diploma.zin.taal-sp-gch',

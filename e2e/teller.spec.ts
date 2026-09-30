@@ -26,7 +26,7 @@ test('counts where someone came in and that a round began, and nothing about who
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
 
@@ -73,8 +73,6 @@ test('counts nothing when the browser asks not to be tracked', async ({ page }) 
   const tellingen = await vangTellingen(page);
 
   await page.goto('/topografie/provincies');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Provincies van Nederland oefenen' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Topografie oefenen' })).toBeVisible();
   expect(tellingen).toEqual([]);
 });

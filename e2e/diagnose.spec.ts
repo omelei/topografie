@@ -21,7 +21,7 @@ async function eenProvincieEnStop(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
   await page.getByRole('button', { name: 'Limburg' }).click();
@@ -42,7 +42,7 @@ async function eenHeleTafelronde(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Zelf typen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   for (let vraag = 1; vraag <= 10; vraag++) {
     const som = await page.locator('.tk-sum').innerText();

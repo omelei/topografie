@@ -15,7 +15,7 @@ import { signIn } from './naam';
 
 async function startTable(page: Page, tafel: number, hoe: RegExp) {
   await page.goto('/rekenen');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
   const hoeStap = page.getByRole('region', { name: /Hoe wil je/ });
@@ -51,7 +51,7 @@ async function tienGoed(page: Page) {
 
 /** The one way out of K2, whatever was chosen. See e2e/app.spec.ts. */
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /**
@@ -89,7 +89,7 @@ test('the rail is the map of the product, not a list of what is finished', async
   // door opens its module's page and the rail says which one is showing.
   const taal = rail.getByRole('button', { name: 'Taal', exact: true });
   await taal.click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await expect(taal).toHaveAttribute('aria-current', 'page');
 });
 
@@ -98,7 +98,7 @@ test('the tables have an address of their own', async ({ page }) => {
   // The slug still works — it has been written down — and it is the same page.
   await page.goto('/tafels');
 
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await kiesTafels(page);
   await expect(page.getByRole('button', { name: 'Tafel van 7', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Tafel van 12', exact: true })).toBeVisible();
@@ -112,7 +112,7 @@ test('rekenen is the word a parent looks for, and it is the page itself', async 
   // page here with a single card on it saying "Rekenen", which charged a child
   // a click to be told what they had already typed. Tafels sits under rekenen;
   // klokkijken sits beside it (ADR-044).
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // Nothing is chosen for the child: no subject pressed, and a start bar that
   // is there but cannot start until every step has an answer.
@@ -120,7 +120,7 @@ test('rekenen is the word a parent looks for, and it is the page itself', async 
     .getByRole('region', { name: /Kies een onderwerp/ })
     .getByRole('button', { name: /^Tafels/ });
   await expect(tafels).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('.tk-choose-start button')).toBeDisabled();
+  await expect(page.locator('.tk-choose-start .tk-button-go')).toBeDisabled();
 
   await kiesTafels(page);
   await expect(page.getByRole('button', { name: 'Tafel van 3', exact: true })).toBeVisible();

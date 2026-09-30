@@ -21,7 +21,8 @@ const TEKST: Record<
   NaamMoment,
   {
     readonly titel: TranslationKey;
-    readonly uitleg: TranslationKey;
+    /** De zin onder de vraag, of geen (ADR-247). */
+    readonly uitleg: TranslationKey | null;
     readonly veld: TranslationKey;
     readonly knop: TranslationKey;
     readonly teKort: TranslationKey;
@@ -29,21 +30,21 @@ const TEKST: Record<
 > = {
   vandaag: {
     titel: 'naam.titel',
-    uitleg: 'naam.vandaag.uitleg',
+    uitleg: null,
     veld: 'naam.veld',
     knop: 'naam.bewaar',
     teKort: 'naam.teKort',
   },
   jij: {
     titel: 'naam.titel',
-    uitleg: 'naam.uitleg',
+    uitleg: null,
     veld: 'naam.veld',
     knop: 'naam.bewaar',
     teKort: 'naam.teKort',
   },
   toets: {
     titel: 'naam.toets.titel',
-    uitleg: 'naam.uitleg',
+    uitleg: null,
     veld: 'naam.veld',
     knop: 'naam.bewaar',
     teKort: 'naam.teKort',
@@ -115,7 +116,9 @@ export function NaamVraag({
       <Kop id={titel} className={kop === 'h1' ? 'tk-titel' : 'tk-sectie'}>
         {t(tekst.titel)}
       </Kop>
-      <p className="text-lopend text-tekst-secundair">{t(tekst.uitleg)}</p>
+      {tekst.uitleg === null ? null : (
+        <p className="text-lopend text-tekst-secundair">{t(tekst.uitleg)}</p>
+      )}
       <label htmlFor={veld} className="tk-label">
         {t(tekst.veld)}
       </label>

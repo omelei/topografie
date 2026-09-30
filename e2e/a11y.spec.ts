@@ -59,7 +59,7 @@ async function kiesOnderwerp(page: Page, [vak, chip]: Keuze) {
  */
 async function startRound(page: Page, set: Keuze, way: RegExp) {
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   await kiesOnderwerp(page, set);
   await page
@@ -69,7 +69,7 @@ async function startRound(page: Page, set: Keuze, way: RegExp) {
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 // Zonder naam (ADR-229): de voordeur, en de vraag naar de naam op Jij.
@@ -108,7 +108,7 @@ test('the module pages have no violations, in each of their four shapes', async 
   await signIn(page, 'Nour');
 
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   await page.goto('/rekenen');

@@ -38,7 +38,7 @@ async function startRound(page: Page) {
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
@@ -231,7 +231,7 @@ test('below 1200 a vak is reached through Oefenen', async ({ page }, testInfo) =
   await expect(oefenen).toHaveAttribute('aria-current', 'page');
 
   await page.getByRole('main').getByRole('button', { name: /^Klok/ }).click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   await expect(oefenen).toHaveAttribute('aria-current', 'true');
 
   // And back, from above the heading.
@@ -266,7 +266,7 @@ test('at a desk the vakken fold away under Oefenen, and stay folded', async ({
   ]);
 
   await vakken.getByRole('button', { name: 'Taal', exact: true }).click();
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // The chevron is its own button, reached with Tab after Oefenen.
   const oefenen = zijbalk.getByRole('button', { name: 'Oefenen', exact: true });
@@ -301,9 +301,9 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
 
   await signIn(page, 'Mees');
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
-  const start = page.locator('.tk-choose-start button');
+  const start = page.locator('.tk-choose-start .tk-button-go');
 
   // In reach before anything has been scrolled: stuck to the foot of the glass.
   await expect(start).toBeInViewport();
@@ -314,7 +314,7 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
   if (box === null) throw new Error('the start button has no box');
   const geraakt = await page.evaluate(
     ({ x, y }) =>
-      (document.elementFromPoint(x, y)?.closest('.tk-choose-start button') ?? null) !== null,
+      (document.elementFromPoint(x, y)?.closest('.tk-choose-start .tk-button-go') ?? null) !== null,
     { x: box.x + box.width / 2, y: box.y + box.height / 2 },
   );
   expect(geraakt, 'a press on the start button does not land on it').toBe(true);
@@ -355,7 +355,7 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
 
   await signIn(page, 'Ilse');
   await page.goto('/topografie');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   const menu = page.locator('.tk-tabbar');
   await expect(menu).toBeInViewport();
 

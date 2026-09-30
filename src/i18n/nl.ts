@@ -30,8 +30,8 @@ export const nl = {
     '{aantal} vragen uit {onderwerp} die je een paar weken geleden oefende. Zonder hulp, één keer.',
   'home.check.knop': 'Start',
   // Voor een kind dat nog niets deed (ADR-204), bovenaan (ADR-243): eerst de
-  // groep, dan de vijf onderwerpen van die groep. De vraag is 'groep.vraag'.
-  'home.groep.zin': 'Dan zie je meteen wat bij je groep past.',
+  // groep, dan de onderwerpen van die groep. De vraag is 'groep.vraag', zonder
+  // zin eronder (ADR-247).
   'home.begin.andereGroep': 'Andere groep',
   'home.begin.kiesGroep': 'Kies je groep',
   // Voor groep 1 en 2, op de plek van de onderwerpen (ADR-244). Er is nog geen
@@ -635,11 +635,8 @@ export const nl = {
   'topo.diplomaEarned': 'Topodiploma gehaald: {kaart}',
   'topo.diplomaMissed':
     'Nog geen diploma: {goed} van de {totaal} goed. Met {nodig} goed is hij van jou.',
-  // Bij naam, net als de begroeting op de voordeur. "Wat wil je oefenen?" aan
-  // niemand in het bijzonder is een formulier; aan Fem gevraagd is het een
-  // vraag, en zij is degene die hem beantwoordt.
-  'choose.title': 'Wat wil je oefenen, {naam}?',
-  // Zonder naam, voor wie eerst probeert (ADR-208).
+  // De kop van een vakpagina is die van het vak, "Topografie oefenen"
+  // (ADR-247). Dit is alleen wat er staat als die pagina er niet is.
   'choose.titleZonderNaam': 'Wat wil je oefenen?',
   // "Waarover" was een woord dat niemand van tien hardop zegt. Deze zegt wat
   // de stap van je vraagt in plaats van waar hij over gaat.
@@ -710,6 +707,8 @@ export const nl = {
   'start.nogKiezen': 'Nog even kiezen',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
+  // Een stap die nog wacht, als knop in de startbalk (ADR-247).
+  'start.naarStap': 'Naar stap {stap}: {vraag}',
   // Premium (ADR-111, ADR-116, ADR-122): een code die een ouder één keer
   // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
   //
@@ -722,7 +721,7 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 79 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor 3 kinderen op 3 apparaten, een jaar lang.',
+    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 80 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor 3 kinderen op 3 apparaten, een jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
   'premium.etalageKop': 'Oefenen is gratis. Premium plant het herhalen en opent de diploma’s.',
@@ -765,7 +764,7 @@ export const nl = {
     'Per som en per woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
   'premium.usp.zelf': 'Diploma’s halen en zichzelf overhoren',
   'premium.usp.zelfUit':
-    'Je kind kan alle 79 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
+    'Je kind kan alle 80 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
   'premium.usp.gezin': 'Voor het hele gezin',
   'premium.usp.gezinUit': 'Eén code voor 3 kinderen, op 3 apparaten, een heel jaar lang.',
 
@@ -807,7 +806,7 @@ export const nl = {
   // `kast.test.ts` bindt het getal aan de lijst.
   'premium.regel.ringen': 'Alle diploma’s zien, en wanneer je kind klaar is voor de toets',
   'premium.regel.diplomas':
-    'Alle 79 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
+    'Alle 80 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
   'premium.regel.weekdoelen': 'Elke week eigen doelen kiezen en halen',
   'premium.regel.voortgang': 'Zien wat je kind inmiddels beheerst en hoe vaak het oefent',
   'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
@@ -1162,6 +1161,10 @@ export const nl = {
   'klok.typeQuestion': 'Typ hoe laat het is',
   'klok.chooseQuestion': 'Kies hoe laat het is',
   'klok.whichQuestion': 'Welke klok hoort hierbij?',
+  // De digitale klok (ADR-247): de cijfers staan op het scherm, de tijd in
+  // woorden kies je uit vier.
+  'klok.digitaalQuestion': 'Hoe zeg je deze tijd?',
+  'klok.digitaalPrompt': 'Kijk naar de cijfers. Hoe zeg je deze tijd?',
   'klok.typePlaceholder': '7:30',
   'klok.correct': 'Goed! Het is {tijd}.',
   'klok.wrong': 'Het is {tijd}.',
@@ -1174,11 +1177,13 @@ export const nl = {
   // midden in die zin leest als een fout. De vraag zelf staat boven de vier
   // klokken, waar hij hoort.
   'mode.klok-welke-klok': 'Klok zoeken',
+  'mode.klok-digitaal': 'Digitale klok',
   'mode.klok-typen': 'Zelf typen',
   // De volgorde is op elke pagina dezelfde (ADR-112): zoeken, meerkeuze, zelf
   // typen. Bij de klok is zoeken de klok die bij een tijd hoort.
   'way.klok-meerkeuze': 'Kies uit 4 tijden — de eerste stap naar typen',
   'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort',
+  'way.klok-digitaal': 'Lees de cijfers, ook na 12 uur, en kies de tijd',
   'way.klok-typen': 'Typ de tijd zelf — zoals op de toets',
   // Het klokdiploma (ADR-117): tien klokken van één stap, zelf opschrijven,
   // negen goed, en pas aan het eind hoor je hoe het ging.
@@ -1260,6 +1265,10 @@ export const nl = {
   // de tien goed, en pas aan het eind hoor je hoe het ging.
   'mode.vlag-diploma': 'Vlaggendiploma',
   'way.vlag-diploma': '9 van de 10 goed — pas aan het eind zie je hoe het ging',
+  // Bij bekende vlaggen en vlaggen die op elkaar lijken: het diploma van het
+  // hele werelddeel (ADR-247).
+  'way.vlag-diploma-deel': 'Over alle vlaggen van {deel}, 9 van de 10 goed',
+  'vlag.heleWereld': 'de hele wereld',
   'vlag.diplomasTitle': 'Jouw vlaggendiploma’s',
   'vlag.diplomasCount': '{aantal} van de {totaal} gehaald',
   'vlag.diplomaHave': '{deel}: vlaggendiploma gehaald',
@@ -2125,6 +2134,14 @@ export const nl = {
     'De browser zegt nog nee. Dat beslist hij zelf, vaak pas als de app vaker gebruikt wordt of op het beginscherm staat.',
   'you.geluid': 'Geluid bij een antwoord',
   'you.geluidWhy': 'Een korte toon als het goed is, een zachte als het niet klopt.',
+  // Vijf geluiden om uit te kiezen (ADR-247). Een druk laat hem horen.
+  'you.klank': 'Welk geluid?',
+  'you.klankUitleg': 'Druk op een geluid, dan hoor je het.',
+  'klank.belletje': 'Belletje',
+  'klank.xylofoon': 'Xylofoon',
+  'klank.fluitje': 'Fluitje',
+  'klank.robot': 'Robot',
+  'klank.druppel': 'Druppel',
   // Twee schakelaars erbij (ADR-145), allebei voor een kind dat snel afgeleid is.
   'you.rustig': 'Minder beweging',
   'you.rustigWhy':
@@ -2238,6 +2255,7 @@ export const nl = {
     'Je herkent alle vlaggen van Noord-Amerika, ook van de eilanden.',
   'diploma.zin.vlag-zuid-amerika-alle': 'Je herkent alle vlaggen van Zuid-Amerika.',
   'diploma.zin.vlag-oceanie-alle': 'Je herkent alle vlaggen van Oceanië, ook van de eilanden.',
+  'diploma.zin.vlag-wereld-alle': 'Je herkent de vlaggen van de hele wereld.',
   'diploma.zin.taal-sp-eiij': 'Je weet wanneer je ei schrijft en wanneer ij.',
   'diploma.zin.taal-sp-auou': 'Je weet wanneer je au schrijft en wanneer ou.',
   'diploma.zin.taal-sp-gch': 'Je weet wanneer je g schrijft en wanneer ch.',
@@ -2312,13 +2330,9 @@ export const nl = {
   // wat je onthoudt, nooit voor meedoen alleen (ADR-040).
   // De naam, gevraagd waar hij iets doet (ADR-229): na de eerste ronde op
   // Vandaag, op Jij, vóór de toets en op de ouderpagina. Nooit meer vooraf.
-  // "Niet naar onze server" geldt zolang het gezinsaccount niet live staat
-  // (roadmap): een kind in een account heeft zijn voornaam op de server.
+  // Zonder uitleg eronder (ADR-247): de vraag is duidelijk genoeg, en "niet
+  // naar onze server" klopt niet meer voor een kind in een gezinsaccount.
   'naam.titel': 'Hoe heet je?',
-  'naam.uitleg': 'Je naam blijft op dit apparaat en gaat niet naar onze server.',
-  // Op Vandaag zegt de vraag wat de naam doet, want oefenen kan ook zonder.
-  'naam.vandaag.uitleg':
-    'Dan staat je naam bovenaan en op je diploma’s. Hij blijft op dit apparaat.',
   'naam.toets.titel': 'Welke naam komt op je diploma?',
   'naam.veld': 'Je naam',
   'naam.bewaar': 'Bewaren',

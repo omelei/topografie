@@ -1312,15 +1312,15 @@ export function meestGeoefend(
 }
 
 /**
- * The four to start with, for a child who has played nothing yet.
+ * The ones to start with, for a child who has played nothing yet.
  *
  * Returned with a count of zero rather than with a made-up one, so the tile can
  * say "nog niet geoefend" and mean it.
  *
- * Met een groep (ADR-151) blijft het één kaart per module, maar niet dezelfde:
- * elke groep heeft zijn eigen vijf (ADR-206). Wat niet bij de groep past —
- * de provincies voor groep 4, de klok voor groep 8 — schuift achteraan, maar
- * blijft in de rij.
+ * Met een groep (ADR-151) is het de stof van dat jaar, één kaart per vak
+ * (ADR-206), en sinds ADR-247 alleen wat past: wat dit jaar aan de beurt is,
+ * en wat volgend jaar begint achteraan. Geen vlaggen, geen herhaling en niets
+ * van jaren verder; dat staat op de pagina van het vak.
  */
 export function starters(groep?: Groep): Populair[] {
   const alles = startbareOnderdelen();
@@ -1331,42 +1331,41 @@ export function starters(groep?: Groep): Populair[] {
     return deel ? [{ deel, mode: beginVorm(deel), keer: 0, at: '' }] : [];
   });
 
-  // Van wat voorbij is, eerst wat het kortst geleden was: voor groep 8 de
-  // werkwoorden van groep 7 voor de klok van groep 6.
-  const geleden = ({ deel }: Populair) =>
-    groep === undefined || indelingVoor(deel, groep) !== 'herhaling'
-      ? 0
-      : groep - Math.max(...(groepenVan(deel) ?? []));
-  const opAfstand = [...lijst].sort((een, ander) => geleden(een) - geleden(ander));
-
-  return opGroep(opAfstand, (kaart) => indelingVoor(kaart.deel, groep));
+  return opGroep(lijst, (kaart) => indelingVoor(kaart.deel, groep));
 }
 
 /**
- * Waarmee een kind van een groep begint, per groep met de hand gekozen
- * (ADR-206).
+ * De vakken die een groep aanbiedt: alles behalve vlaggen (ADR-247).
  *
- * Eerst rekende een regel het uit: de vaste set als die past, anders de set
- * die het laatst begint. Dat gaf voor groep 7 en 8 bijna dezelfde rij als voor
- * groep 5, want bekende vlaggen en ei of ij passen van groep 5 tot 8, en groep
- * 8 kreeg "Hele uren" omdat er voor de klok niets meer past. Hier staat de stof
- * van dat jaar, één set per module, in de volgorde van `STARTERS`. Past er in
- * een module niets, dan een set van het laatste jaar dat nog iets had; de test
- * legt dat vast. Die schuift achteraan, het verst terug het laatst.
+ * Vlaggen zijn geen stof van een schooljaar. Ze staan in de koppeltabel om de
+ * pagina van het vak te ordenen, maar een rij die zegt "hier begin je mee in
+ * groep 6" hoort te gaan over wat er in groep 6 op school komt.
+ */
+const VAKKEN_PER_GROEP = STARTERS.filter(({ moduleId }) => moduleId !== 'vlaggen');
+
+/**
+ * Waarmee een kind van een groep begint, per groep met de hand gekozen
+ * (ADR-206, ADR-247).
+ *
+ * Per groep de stof van dat jaar, één set per vak, in de volgorde van
+ * `STARTERS`. Een vak zonder stof voor de groep staat er niet in: geen
+ * topografie en geen Taal voor groep 3, geen klok voor groep 7 en 8. Wat
+ * volgend jaar begint, mag erbij en schuift achteraan: de provincies voor
+ * groep 5, ei of ij voor groep 4. De test legt dat vast.
  */
 const STARTERS_PER_GROEP: Readonly<Record<Groep, readonly string[]>> = {
   // Groep 1 en 2 hebben nog geen stof (ADR-244): geen rij, maar op Vandaag een
   // eerlijke regel dat er iets aankomt. De vakken blijven eronder te kiezen.
   1: [],
   2: [],
-  // Per groep: topografie, rekenen, klok, vlaggen, Taal.
-  3: ['nl-provincies', 'plus-20', 'klok-heel', 'vlag-europa-bekend', 'taal-sp-eiij'],
-  4: ['nl-provincies', 'tafel-2', 'klok-half', 'vlag-europa-bekend', 'taal-sp-eiij'],
-  5: ['nl-provincies', 'tafel-3', 'klok-kwart', 'vlag-europa-bekend', 'taal-sp-eiij'],
-  6: ['nl-provincies', 'keer-100', 'klok-vijf', 'vlag-nederland-provincies', 'taal-ww-tt'],
-  7: ['nl-hoofdsteden', 'keer-1000', 'klok-vijf', 'vlag-europa-alle', 'taal-ww-vt'],
+  // Per groep: topografie, rekenen, klok, Taal.
+  3: ['plus-20', 'klok-heel'],
+  4: ['tafel-2', 'klok-half', 'taal-sp-eiij'],
+  5: ['nl-provincies', 'tafel-3', 'klok-kwart', 'taal-sp-eiij'],
+  6: ['nl-provincies', 'keer-100', 'klok-vijf', 'taal-ww-tt'],
+  7: ['nl-hoofdsteden', 'keer-1000', 'taal-ww-vt'],
   // Groep 8 begint Taal met Engels (ADR-217): de werkwoorden zijn van groep 7.
-  8: ['europa-landen', 'delen-1000', 'klok-vijf', 'vlag-wereld-alle', 'taal-en-school'],
+  8: ['europa-landen', 'delen-1000', 'taal-en-school'],
 };
 
 /** De vorm waarin een kaart begint: die van zijn module, en bij Taal die van zijn deel. */
@@ -1380,7 +1379,7 @@ function beginVorm(deel: Onderdeel): ModeId {
  * Wat bij de groep past en dit kind nog niet deed: de rij "Past bij groep 6"
  * op Vandaag, voor wie al geoefend heeft (ADR-206).
  *
- * Eén kaart per module, zodat de rij over alle vakken gaat. Per module eerst de
+ * Eén kaart per vak, zonder vlaggen (ADR-247). Per vak eerst de
  * starter van de groep, dan de stof van dit jaar (de set die het laatst
  * begint), dan de volgorde van de content. Een mix, een foutenlijst en een
  * eigen lijst hebben geen groep en staan er niet in. Is alles gedaan, dan is de
@@ -1391,7 +1390,7 @@ export function voorGroep(groep: Groep | undefined, gedaan: ReadonlySet<string>)
   const voorkeur = STARTERS_PER_GROEP[groep];
   const alles = startbareOnderdelen();
 
-  return STARTERS.flatMap(({ moduleId }) => {
+  return VAKKEN_PER_GROEP.flatMap(({ moduleId }) => {
     const kandidaten = alles
       .map((deel, plek) => ({ deel, plek, groepen: groepenVan(deel) }))
       .filter(
@@ -1442,6 +1441,7 @@ const SUM_MODES: readonly ModeId[] = [
 const KLOK_MODES: readonly ModeId[] = [
   'klok-meerkeuze',
   'klok-welke-klok',
+  'klok-digitaal',
   'klok-typen',
   'bliksemronde',
   'overleven',

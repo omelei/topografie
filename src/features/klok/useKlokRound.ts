@@ -32,6 +32,7 @@ import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/u
 export type KlokMode =
   | 'klok-meerkeuze'
   | 'klok-welke-klok'
+  | 'klok-digitaal'
   | 'klok-typen'
   | 'bliksemronde'
   | 'overleven'
@@ -49,6 +50,7 @@ export type KlokMode =
 export const KLOK_ROUND_RULE: Record<KlokMode, RoundRule> = {
   'klok-meerkeuze': { kind: 'fixed', aantal: 10 },
   'klok-welke-klok': { kind: 'fixed', aantal: 10 },
+  'klok-digitaal': { kind: 'fixed', aantal: 10 },
   'klok-typen': { kind: 'fixed', aantal: 10 },
   bliksemronde: { kind: 'tijd', seconden: 60 },
   overleven: { kind: 'levens', levens: 3 },
@@ -71,7 +73,15 @@ function isDiploma(mode: KlokMode): boolean {
  * reading speed rather than whether the face was read.
  */
 export function typesTheKlok(mode: KlokMode): boolean {
-  return mode !== 'klok-meerkeuze' && mode !== 'klok-welke-klok';
+  return mode !== 'klok-meerkeuze' && mode !== 'klok-welke-klok' && mode !== 'klok-digitaal';
+}
+
+/**
+ * Of de klok digitaal is (ADR-247): vier cijfers in plaats van wijzers, en
+ * om de vraag een tijd na twaalf uur, want 19:30 is ook half acht.
+ */
+export function isDigitaal(mode: KlokMode): boolean {
+  return mode === 'klok-digitaal';
 }
 
 /**

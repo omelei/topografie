@@ -88,7 +88,7 @@ async function zoekDeVlaggen(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /^Vlag zoeken/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
   const volgende = page.getByRole('button', { name: 'Volgende vraag' });
@@ -115,8 +115,9 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await page.goto('/vlaggen');
 
   const muur = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
-  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
-  await expect(muur.getByRole('button')).toHaveCount(7);
+  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een. Acht sinds
+  // ADR-247: de wereld ook.
+  await expect(muur.getByRole('button')).toHaveCount(8);
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
 
   const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
@@ -137,7 +138,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   // A diploma is its own length.
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   // Niemand oefende deze vlaggen, dus de pagina is niet rijp: één knop, en die
   // gaat terug naar oefenen. Sinds proefzwemmen weg is, is dat de enige uitweg.
@@ -154,7 +155,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
 
   await page.goto('/vlaggen');
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
   await speel(page);
@@ -166,7 +167,7 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await page.goto('/jij');
   const kast = page.getByRole('region', { name: 'Jouw diploma’s' });
   // Alle vakken staan dicht (ADR-232); één druk zet Vlaggen open.
-  // Zeven sinds ADR-168: de provincievlaggen hebben er ook een.
+  // Acht: zeven sinds ADR-168 (de provincievlaggen), en de wereld sinds ADR-247.
   await kast.getByRole('button', { name: /^Vlaggen / }).click();
-  await expect(kast.getByRole('region', { name: 'Vlaggen' }).locator('.tk-diploma')).toHaveCount(7);
+  await expect(kast.getByRole('region', { name: 'Vlaggen' }).locator('.tk-diploma')).toHaveCount(8);
 });

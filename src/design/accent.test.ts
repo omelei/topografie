@@ -96,6 +96,8 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
   ['.tk-diploma-soort', 'what kind of diploma, in its subject'],
   ['.tk-diploma-stand', 'where it stands, in its subject'],
   ['.tk-startbalk-mobiel .tk-hulp', 'its help line'],
+  // ADR-247: a step still waiting, in the start bar, takes you to it.
+  ['.tk-nogstap', 'a step still to answer, in the start bar'],
   ['.tk-vakrij[data-module]', 'a subject in the cupboard on Jij'],
   ['.tk-vakrij[data-module]:hover', 'the same row under the pointer'],
   ['.tk-vakrij[data-module] .tk-vakrij-naam', 'its name'],

@@ -14,7 +14,7 @@ import { signIn } from './naam';
 /** Where, what, how, start: the one way into a round, whatever was chosen. */
 async function kies(page: Page, regio: string, onderwerp: RegExp, hoe: RegExp) {
   await page.goto('/vlaggen');
-  await expect(page.getByRole('heading', { name: /^Wat wil je oefenen,/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
   await waar.getByRole('button', { name: regio, exact: true }).click();
@@ -27,7 +27,7 @@ async function kies(page: Page, regio: string, onderwerp: RegExp, hoe: RegExp) {
 }
 
 async function start(page: Page) {
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
 /**

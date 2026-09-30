@@ -14,26 +14,24 @@ test.use({ storageState: { cookies: [], origins: [] } });
 test('a visitor plays a topic first, and keeps the round after typing a name', async ({ page }) => {
   await page.goto('/topografie/provincies');
   await expect(page.getByPlaceholder('Je naam')).toHaveCount(0);
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Provincies van Nederland oefenen' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Topografie oefenen' })).toBeVisible();
 
   // Zonder code de gratis manier: kies uit 4 namen (ADR-192).
   await page
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
-  // Vandaag opent gewoon, en nodigt uit om een naam te typen, met wat hij doet.
+  // Vandaag opent gewoon, en nodigt uit om een naam te typen (ADR-229).
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
   const vraag = page.getByRole('form', { name: 'Hoe heet je?' });
-  await expect(vraag.getByText('Dan staat je naam bovenaan en op je diploma’s.')).toBeVisible();
+  await expect(vraag.getByLabel('Je naam')).toBeVisible();
   const geoefend = page.getByRole('group', { name: 'Meest geoefend' });
   await expect(geoefend.getByRole('button', { name: /Provincies van Nederland/ })).toBeVisible();
 
@@ -111,7 +109,7 @@ test('"Niet nu" puts the invitation away for good, and Jij still asks', async ({
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Kies uit 4 namen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();

@@ -399,8 +399,9 @@
      * darker, and sinks onto it when pressed. It is a shape and not a shadow:
      * no blur, no offset sideways, and nothing that is not pressable has one.
      */
-    --onderkant: 5px; /* a button, a tile, a card that is a door */
-    --onderkant-klein: 3px; /* a chip, a plate */
+    /* Dunner sinds ADR-247: vijf pixels las als een dikke schaduw. */
+    --onderkant: 3px; /* a button, a tile, a card that is a door */
+    --onderkant-klein: 2px; /* a chip, a plate */
     --stroke-tegel: 3px; /* the rule round a tile */
 
     /* ---- Lines --------------------------------------------------------------
@@ -483,6 +484,10 @@
   @media (min-width: 1200px) {
     :root {
       --stroke-tegel: 2px;
+      /* Op een bureauscherm is er veel meer grond te zien dan op een telefoon,
+       * en werd room de kleur van de pagina in plaats van de grond eronder
+       * (ADR-247). Melk is dezelfde warme grond, lichter. */
+      --grond: var(--melk);
     }
   }
 
@@ -1199,10 +1204,41 @@
     color: var(--accent-text);
   }
   /* Not yet: which numbered steps still wait, where the chips will be, and the
-   * Start button beside it switched off (ADR-111). */
-  .tk-startbalk-nog {
+   * Start button beside it switched off (ADR-111). Since ADR-247 each waiting
+   * step is a button with its coin and its question, which takes you there. */
+  .tk-nogkiezen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin: 12px 0 0;
-    color: var(--tekst-secundair);
+    padding: 0;
+    list-style: none;
+  }
+  .tk-startbalk-mobiel .tk-nogkiezen {
+    flex: none;
+    margin: 0;
+  }
+  .tk-nogstap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--raak);
+    padding: 0 16px 0 7px;
+    border: var(--stroke-hair) solid var(--module-rand);
+    border-radius: var(--radius-pil);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--module-rand);
+    background: var(--kaart);
+    color: var(--inkt);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .tk-nogstap:hover {
+    border-color: var(--module);
+  }
+  .tk-startbalk-mobiel .tk-nogstap {
+    padding: 0 7px;
   }
   .tk-startbalk-keuzes {
     display: flex;
@@ -1785,6 +1821,28 @@
   }
   .tk-klok-optie .tk-klok {
     max-width: 8rem;
+  }
+
+  /* De digitale klok (ADR-247): een donker schermpje met lichte cijfers, zo
+   * breed als de wijzerklok hoog is. Inkt en zon, niet het vak: wat een kind
+   * moet lezen is geen accent. */
+  .tk-digitaal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 30rem);
+    margin-inline: auto;
+    padding: 24px 16px;
+    border-radius: var(--radius-kaart);
+    box-shadow: 0 var(--onderkant) 0 var(--nacht-diep);
+    background: var(--nacht);
+    color: var(--zon);
+    font-family: var(--font-kop);
+    font-size: clamp(3.5rem, 14vw, 7rem);
+    line-height: 1;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
   }
 
   /* ---- Flags (ADR-102) -------------------------------------------------
@@ -3035,7 +3093,9 @@
     border: var(--stroke-tegel) solid var(--module-rand);
     border-radius: var(--kaart-radius);
     box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
-    background: var(--module-tint);
+    /* Wit, zoals elke kaart op Vandaag (ADR-247): een vlak in room op room
+     * maakte de pagina één grote roomkleur. */
+    background: var(--kaart);
   }
   .tk-eerste-tekst {
     display: flex;
@@ -3713,11 +3773,14 @@
     background: var(--vlak-hover);
     border-color: var(--module);
   }
+  /* Gekozen is gevuld (ADR-247): de diepe kleur van het vak met witte
+   * woorden. Een zachte tint met een rand was naast de andere chips niet te
+   * vinden. */
   .tk-keuze[aria-pressed='true'] {
     border-color: var(--accent-text);
     box-shadow: 0 var(--onderkant-klein) 0 var(--accent-text);
-    background: var(--accent-tint);
-    color: var(--accent-text);
+    background: var(--accent-text);
+    color: var(--kaart);
   }
   /* A region the plan has and the product does not: a dashed rule, which is
    * what the front door draws for a module that is coming. */
@@ -3785,16 +3848,30 @@
   }
   /* One pixel of padding goes back for the second pixel of rule, so nothing
    * beside a chosen tile moves. */
+  /* Gekozen is gevuld, zoals een chip (ADR-247): de diepe kleur van het vak,
+   * witte woorden, een witte plaat en een witte vink. */
   .tk-tegel[aria-pressed='true'] {
-    border-color: var(--accent);
-    box-shadow: 0 var(--onderkant) 0 var(--accent);
-    background: var(--accent-tint);
+    border-color: var(--accent-text);
+    box-shadow: 0 var(--onderkant) 0 var(--accent-text);
+    background: var(--accent-text);
+    color: var(--kaart);
+  }
+  .tk-tegel[aria-pressed='true'] .tk-plaat {
+    box-shadow: none;
+    background: var(--kaart);
+    color: var(--accent-text);
+  }
+  .tk-tegel[aria-pressed='true'] .tk-hulp {
+    color: inherit;
   }
   .tk-tegel-vink {
     display: inline-flex;
     flex: none;
     margin-left: auto;
     color: var(--accent-text);
+  }
+  .tk-tegel[aria-pressed='true'] > .tk-tegel-vink {
+    color: var(--kaart);
   }
 
   /* Het diploma onder de manieren (ADR-168): dezelfde tegel, zwaarder gezet.
@@ -3909,10 +3986,10 @@
     border-color: var(--module);
   }
   .tk-tafel[aria-pressed='true'] {
-    border-color: var(--accent);
-    box-shadow: 0 var(--onderkant) 0 var(--accent);
-    background: var(--accent-tint);
-    color: var(--accent-text);
+    border-color: var(--accent-text);
+    box-shadow: 0 var(--onderkant) 0 var(--accent-text);
+    background: var(--accent-text);
+    color: var(--kaart);
   }
 
   /* ---- Badges ----------------------------------------------------------

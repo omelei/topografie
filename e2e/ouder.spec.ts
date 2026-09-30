@@ -344,7 +344,7 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();

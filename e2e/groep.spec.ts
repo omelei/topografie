@@ -181,7 +181,7 @@ test('de groep staat in de kop, en na een ronde komt "Past bij groep"', async ({
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();
@@ -277,6 +277,8 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
 
   await page.goto('/');
   await kiesGroep(page, 'Groep 8');
+  // De doelen staan op Jij (ADR-247).
+  await page.goto('/jij');
 
   const blok = page.getByRole('region', { name: 'Je doelen voor deze week' });
   const voorstellen = async () => {
@@ -299,16 +301,14 @@ test('de voorgestelde diploma’s passen bij de groep, met de weg naar alle dipl
   await page.goto('/jij');
   await openGroep(page);
   await wisselGroep(page, 'Groep 3');
-  await page.goto('/');
+  await page.reload();
   await voorstellen();
   const dichtbij3 = blok.getByRole('region', { name: 'Dichtbij' });
   await expect(dichtbij3.getByRole('button', { name: /Hele uren/ })).toBeVisible();
   await expect(dichtbij3.getByRole('button', { name: /Landen van Europa/ })).toHaveCount(0);
 
-  // De knop onderaan het blok: naar Jij, met de kast in beeld — precies wat
-  // ADR-153 schreef. ADR-158 stuurde hem naar Voor ouders omdat het raster daar
-  // stond; nu het diploma zelf de beloning is, staat het weer bij het kind.
+  // De knop onderaan het blok: de kast, op dezelfde pagina (ADR-247).
   await blok.getByRole('button', { name: 'Bekijk alle diploma’s' }).click();
   await expect(page).toHaveURL(/\/jij$/);
-  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw diploma’s' })).toBeInViewport();
 });

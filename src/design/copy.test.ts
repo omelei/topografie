@@ -56,6 +56,7 @@ const SAMENGESTELD: readonly RegExp[] = [
   /^taal\.kaart\./, // taalTaal
   /^taal\.uitleg\./, // taalTaal, via UITLEG
   /^weekdoel\.soort\./, // WeekdoelenBlok
+  /^klank\./, // KlankInstelling (ADR-247)
 ];
 
 /** Every TypeScript file under a directory, tests included. */

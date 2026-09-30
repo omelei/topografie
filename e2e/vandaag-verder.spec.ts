@@ -23,7 +23,7 @@ async function oefenTafelVanEen(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Zelf typen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
 
   for (let vraag = 1; vraag <= 10; vraag++) {
     const som = await page.locator('.tk-sum').innerText();
@@ -80,7 +80,7 @@ test('na een ronde staat er hoeveel er nog van vandaag over is', async ({ page }
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
   await page.getByRole('button', { name: 'Stoppen' }).click();

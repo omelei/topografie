@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
-import type { KlokItem } from '@/game-core';
 import { Brandmark } from '@/components/Brandmark';
 import { SpeakButton } from '@/components/SpeakButton';
 import { usePreferences } from '@/features/player/settings';
@@ -11,8 +10,15 @@ import { Counter } from '@/features/round/Teller';
 import { RondeDenker } from '@/features/round/RondeDenker';
 import { UitkomstTeken } from '@/features/round/UitkomstTeken';
 import { KlokFace } from './KlokFace';
-import { klokVoluit, klokWoorden } from './klokTaal';
-import { useKlokRound, typesTheKlok, wijstDeKlokAan, type KlokMode } from './useKlokRound';
+import { DigitaleKlok } from './DigitaleKlok';
+import { digitaleTijd, klokVoluit, klokWoorden } from './klokTaal';
+import {
+  isDigitaal,
+  useKlokRound,
+  typesTheKlok,
+  wijstDeKlokAan,
+  type KlokMode,
+} from './useKlokRound';
 import { KlokResultScreen } from './KlokResultScreen';
 
 /**
@@ -125,19 +131,39 @@ export function KlokScreen({
   const typing = typesTheKlok(mode);
   const andersom = wijstDeKlokAan(mode);
   const woorden = klokWoorden(tijd);
+  // De digitale klok (ADR-247): om de vraag na twaalf uur, zodat een kind ook
+  // 19:30 leert lezen als half acht.
+  const digitaal = isDigitaal(mode);
+  const middag = digitaal && state.index % 2 === 1;
+  // De tijd voluit, in de cijfers die op het scherm stonden.
+  const voluit = digitaal
+    ? t('klok.beide', { woorden, cijfers: digitaleTijd(tijd, middag) })
+    : klokVoluit(tijd);
 
   const instruction = andersom
     ? t('klok.whichQuestion')
     : typing
       ? t('klok.typeQuestion')
-      : t('klok.chooseQuestion');
+      : digitaal
+        ? t('klok.digitaalQuestion')
+        : t('klok.chooseQuestion');
   // The time out loud only where the time is the question. See the note above.
-  const spoken = andersom ? `${woorden}. ${t('klok.whichQuestion')}` : t('klok.lookPrompt');
+  const spoken = andersom
+    ? `${woorden}. ${t('klok.whichQuestion')}`
+    : digitaal
+      ? t('klok.digitaalPrompt')
+      : t('klok.lookPrompt');
   // What the child answered, in the notation they answered in: the words if
   // they pressed one of four times, and their own keystrokes if they typed.
   // Quoting a pressed option back in figures would be answering a question
-  // they were not asked.
-  const gegeven = state.given === null ? state.getypt : klokVoluit(state.given);
+  // they were not asked. Op de digitale klok alleen de woorden: de cijfers
+  // van een ander antwoord zouden in de verkeerde helft van de dag staan.
+  const gegeven =
+    state.given === null
+      ? state.getypt
+      : digitaal
+        ? klokWoorden(state.given)
+        : klokVoluit(state.given);
 
   return (
     <div
@@ -183,7 +209,7 @@ export function KlokScreen({
       {/* Announced separately from the heading, so a screen reader hears every
           new question rather than only the first. */}
       <p className="tk-sr-only" role="status" aria-live="polite">
-        {revealed ? spokenFeedback(state.lastCorrect, tijd, gegeven) : spoken}
+        {revealed ? spokenFeedback(state.lastCorrect, voluit, gegeven) : spoken}
       </p>
 
       <div className="tk-round-body">
@@ -194,8 +220,8 @@ export function KlokScreen({
               <div className="tk-terugkoppeling-tekst min-w-0">
                 <p className="tk-display text-sectiekop">
                   {state.lastCorrect
-                    ? t('klok.correct', { tijd: klokVoluit(tijd) })
-                    : t('klok.wrong', { tijd: klokVoluit(tijd) })}
+                    ? t('klok.correct', { tijd: voluit })
+                    : t('klok.wrong', { tijd: voluit })}
                 </p>
                 <p className="text-lopend text-tekst-secundair">
                   {state.lastCorrect
@@ -277,6 +303,8 @@ export function KlokScreen({
                 </button>
               ))}
             </div>
+          ) : digitaal ? (
+            <DigitaleKlok tijd={tijd} middag={middag} />
           ) : (
             <KlokFace item={tijd} />
           )}
@@ -294,8 +322,7 @@ function aftellen(seconden: number): string {
 }
 
 /** What a screen reader hears once the answer is in. */
-function spokenFeedback(correct: boolean, tijd: KlokItem, gegeven: string | null): string {
-  const voluit = klokVoluit(tijd);
+function spokenFeedback(correct: boolean, voluit: string, gegeven: string | null): string {
   if (correct) return t('klok.correct', { tijd: voluit });
 
   const detail =

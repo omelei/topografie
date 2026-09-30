@@ -93,7 +93,9 @@ function Aanmelden({ binnen, onGoed }: { readonly binnen: boolean; readonly onGo
       </p>
       <h2 className="tk-titel">{t(kop.titel)}</h2>
       <p className="text-lopend">{t(kop.uitleg)}</p>
-      {modus === 'aanmelden' ? <p className="tk-hulp">{t('ouder.accountHulp')}</p> : null}
+      {/* Dezelfde letter als de uitleg erboven (ADR-247): het is het tweede
+          deel van dezelfde uitleg, geen kleine lettertjes. */}
+      {modus === 'aanmelden' ? <p className="text-lopend">{t('ouder.accountHulp')}</p> : null}
 
       <AccountBlok onModus={setModus} inDePoort />
     </div>

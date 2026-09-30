@@ -13,6 +13,7 @@ describe('premium', () => {
       'meerkeuze',
       'som-meerkeuze',
       'klok-meerkeuze',
+      'klok-digitaal',
       'vlag-meerkeuze',
       // Taal's choosing (ADR-118).
       'taal-letters',

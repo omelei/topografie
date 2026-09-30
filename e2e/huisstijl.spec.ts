@@ -19,16 +19,23 @@ async function startRound(page: Page) {
     .getByRole('region', { name: /Hoe wil je/ })
     .getByRole('button', { name: /Aanwijzen/ })
     .click();
-  await page.locator('.tk-choose-start button').click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
+}
+
+/** Room, of melk vanaf 1200 breed (ADR-247). */
+async function grondVoor(page: Page): Promise<string> {
+  const breed = await page.evaluate(() => window.innerWidth >= 1200);
+  return breed ? 'rgb(250, 247, 243)' : 'rgb(255, 243, 230)';
 }
 
 test('stands on room and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  // Room, the logo's own, the ground since Kleur erin (ADR-239).
-  expect(ground).toBe('rgb(255, 243, 230)');
+  // Room, the logo's own, the ground since Kleur erin (ADR-239); aan een
+  // bureau melk, want daar is veel meer grond te zien (ADR-247).
+  expect(ground).toBe(await grondVoor(page));
 
   const heading = page.getByRole('heading', { name: /^Hoi / });
   await expect(heading).toBeVisible();
@@ -51,7 +58,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
   expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    'rgb(255, 243, 230)',
+    await grondVoor(page),
   );
 
   const stop = await page.locator('.tk-stop').boundingBox();
