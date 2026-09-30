@@ -309,7 +309,7 @@ test('a goal in the list, and the ring with something in it', async ({ page }, t
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 
-  await page.goto('/');
+  await page.goto('/jij');
   await expect(doelen).toContainText('van de 2');
   await doelen.scrollIntoViewIfNeeded();
   await shoot(page, size, '18-doelen');

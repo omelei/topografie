@@ -14256,7 +14256,9 @@ ADR-104 (geen vlaggendiploma voor de wereld) en ADR-134 (één geluid).
 **Wat er mis was, en wat er nu is.**
 
 - **Vandaag.** De weekdoelen stonden onder de rijen; ze staan nu op Jij, boven
-  de kast, want een diploma is een van de doelen. "Dan zie je meteen wat bij je
+  de kast, want een diploma is een van de doelen. Alleen met premium: zonder
+  code was het blok een vraag naar premium, en die staan sinds ADR-232 niet
+  op Jij. "Dan zie je meteen wat bij je
   groep past" onder de groepsvraag en "Dan staat je naam bovenaan en op je
   diploma's" onder de naamvraag zijn weg. De groepsvraag is een witte kaart en
   geen vlak in room, en aan een bureau is de grond melk in plaats van room:

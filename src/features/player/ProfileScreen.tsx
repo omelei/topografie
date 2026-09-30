@@ -117,8 +117,10 @@ export function ProfileScreen({
 
         {/* Je doelen voor deze week (ADR-162), sinds ADR-247 hier en niet
             meer op Vandaag: wat je je voorneemt, hoort bij wat je bereikt.
-            Direct boven de kast, want een diploma is een van de doelen. */}
-        <WeekdoelenBlok onDiplomas={naarKast} />
+            Direct boven de kast, want een diploma is een van de doelen.
+            Alleen met premium: zonder code was het blok een vraag naar
+            premium, en die staan sinds ADR-232 niet meer op Jij. */}
+        {premium ? <WeekdoelenBlok onDiplomas={naarKast} /> : null}
 
         {/* De diplomakast: alle diploma's die dit kind kan halen, met de gaten
             zichtbaar. Zodra het diploma zelf de beloning is, is een gat geen
