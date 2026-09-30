@@ -1,4 +1,7 @@
 import { OverOnderwerp } from './OverOnderwerp';
+import { naarBoven } from '@/features/shell/naarBoven';
+import { pathFor, routeFor } from '@/features/shell/routes';
+import { seoPaginaVoor } from '@/seo/paginas';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
 import { useEffect, useId, useRef, useState } from 'react';
 import { Button } from '@/components/Button';
@@ -205,6 +208,22 @@ export function ModuleScreen({
     adresVak ?? alleOnderwerpen.find((vak) => vak.id === vakId && vraagtWelke(vak)) ?? null;
   const onderwerp = gekozenVak !== null && onderwerpen.includes(gekozenVak) ? gekozenVak : null;
   const chosen = onderwerp !== null ? adresSet : null;
+
+  // De pagina voor Google op dit adres (ADR-207), of die van het vak als het
+  // adres een mix of jouw fouten noemt: daar komen de kop en de links vandaan.
+  const pagina =
+    seoPaginaVoor(pathFor({ name: 'module', module, setId: adresSet?.setId ?? null })) ??
+    seoPaginaVoor(pathFor({ name: 'module', module, setId: null }));
+
+  // Een link onder "Meer topografie" blijft in de app, en begint bovenaan de
+  // pagina: anders stond je na de klik nog onderaan, bij de vragen van ouders.
+  const volg = (pad: string) => {
+    const doel = routeFor(pad);
+    if (doel.name === 'werkblad') onWerkblad?.(doel.setId);
+    else if (doel.name === 'module') onSet(doel.setId);
+    else return;
+    naarBoven();
+  };
 
   // Wat een kind wilde toen het op een slot drukte (ADR-193): het venster zegt
   // het terug, en de ouderpagina onthoudt het.
@@ -455,9 +474,13 @@ export function ModuleScreen({
               {/* By name, the way the front door greets them — on every size. The
                 handoff drops the name on a phone; a chooser that asks "wat wil
                 je oefenen?" of nobody in particular is a form, and asked of Fem
-                it is a question (ADR-095). */}
+                it is a question (ADR-095). Without a name it is someone new, or
+                Google: then the heading says where they are, "Provincies van
+                Nederland oefenen", the same words as the tab (ADR-245). */}
               <h1 className="tk-display tk-welkom-kop">
-                {naam === '' ? t('choose.titleZonderNaam') : t('choose.title', { naam })}
+                {naam !== ''
+                  ? t('choose.title', { naam })
+                  : (pagina?.kop ?? t('choose.titleZonderNaam'))}
               </h1>
             </div>
 
@@ -981,7 +1004,12 @@ export function ModuleScreen({
         {/* Wat erin zit en de vragen van een ouder (ADR-213): ook wat Google
             leest, nadat de app de pagina heeft overgenomen. */}
         {chosen !== null && !chosen.mix && !/(^|-)fouten$/.test(chosen.setId) ? (
-          <OverOnderwerp deel={chosen} />
+          <OverOnderwerp
+            deel={chosen}
+            links={pagina?.links ?? []}
+            linksKop={pagina?.linksKop ?? ''}
+            onVolg={volg}
+          />
         ) : null}
       </div>
 

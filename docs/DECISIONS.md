@@ -14174,6 +14174,77 @@ vermoeden.
   voor de hand, maar vragen lezen. Liever geen rij dan een rij die een kind
   van vijf niet kan doen.
 
+## ADR-245 — De kop noemt het onderwerp, en onder een onderwerp staan echte links
+
+**Status:** accepted. **Date:** 2026-09-30. Na de eerste blik van Google Search
+Console op /topografie/provincies. Volgt op ADR-207 en ADR-213.
+
+**Wat er mis was.** Google leest een pagina nadat de app is gestart. Dan was
+de kop op elke vak- en onderwerppagina "Wat wil je oefenen?": op 190 adressen
+dezelfde H1, terwijl de kop na de titel het sterkste teken is van waar een
+pagina over gaat. En de links naar de andere onderwerpen stonden alleen in de
+tekst voor Google, die de app vervangt. In de app zijn het knoppen, en die
+volgt Google niet. De pagina's hingen dus alleen aan de sitemap.
+
+**Besluit.**
+
+- **Zonder naam zegt de kop waar je bent**: "Provincies van Nederland oefenen"
+  op /topografie/provincies, "Topografie oefenen" op /topografie. Het zijn de
+  woorden van het tabblad en van de pagina voor Google (`seoPaginaVoor`). Wie
+  geen naam heeft, is nieuw of is Google.
+- **Met een naam blijft de vraag**: "Wat wil je oefenen, Fem?" (ADR-095). Een
+  kind dat hier al was, weet waar het is.
+- **Onder "Over dit onderwerp" staan de links van de pagina voor Google**, als
+  `<a href>`: het werkblad, "Alles van topografie" en de andere onderwerpen van
+  het vak, onder de kop "Meer topografie". Een gewone klik blijft in de app en
+  begint bovenaan; Ctrl-klik of een lange druk werkt zoals bij elke link.
+
+**Afwegingen.**
+
+- **Geen verborgen kop.** Een onzichtbare H1 met het onderwerp erin zou Google
+  iets anders laten lezen dan een kind ziet. De kop die je ziet, is de kop die
+  telt.
+- **Links onderaan, geen links als tegels.** De tegels kiezen een onderwerp en
+  springen naar de volgende stap (ADR-233); een link die de pagina wisselt,
+  zou dat breken. Onderaan zijn ze voor Google en voor een ouder die verder
+  kijkt.
+- **Alle onderwerpen van het vak**, ook als dat bij rekenen een lange rij is.
+  Het zijn dezelfde links als op de pagina voor Google, uit één lijst.
+
+## ADR-246 — Het app-icoon is de hele Denker, op koraal diep
+
+**Status:** accepted. **Date:** 2026-09-30. Op verzoek van de eigenaar: "Wijzig
+ook het app icoon op basis van het nieuwe beeldmerk." Wijzigt het app-icoon
+van ADR-237.
+
+**Wat er mis was.** Het app-icoon was een koraal vierkant met het gezicht van
+Denker erop: het vlak wás zijn lijf. In het logo, op de site en in de app is
+Denker een ronde vorm met glans en wangen. Op het beginscherm leek het icoon
+daardoor een ander merk dan het logo naast de naam.
+
+**Besluit.**
+
+- **Het icoon is het beeldmerk op een tegel in koraal diep** (`#C8412A`):
+  dezelfde Denker die denkt als in het logo, heel, zonder schaduw. De variant
+  `icoon` van `leer-logo` in `docs/leer.js` tekent hem, en
+  `tools/merk-uit-leer.mjs` schrijft de bestanden.
+- **De maskable versie** vult het hele vlak met koraal diep en zet Denker in de
+  veilige zone, zoals eerst het gezicht.
+- **Het tabblad** (`favicon.svg`, `.ico`, 16 en 32 px) krijgt Denker los, in de
+  eenvoudige tekening (variant `favicon`): onder 36 px vallen glans, wangen en
+  lichtjes weg, zoals de stijlgids zegt. Op een tegel zou Denker daar te klein
+  zijn om te herkennen.
+- **De rest blijft**: logo's, uitdrukkingen, og-image en het manifest zijn
+  byte voor byte gelijk.
+
+**Afwegingen.**
+
+- **Koraal diep tegenover room als grond.** Eerst stond Denker op room; de
+  eigenaar koos koraal, omdat een koraal tegel meer opvalt tussen andere apps
+  en de merkkleur is. Gewoon koraal kan niet: dan valt Denker weg in zijn grond
+  en is hij weer alleen een gezicht. Koraal diep is donker genoeg om zijn ronde
+  vorm te laten zien, en blijft koraal.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

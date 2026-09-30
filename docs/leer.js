@@ -5,7 +5,7 @@
   window.__leerLoaded = true;
 
   const C = {
-    koraal: '#FF6A4D', koraalDiep: '#C8412A', cacao: '#2A1E17', geel: '#FFC93C', geelDiep: '#8A6300',
+    koraal: '#FF6A4D', koraalDiep: '#C8412A', cacao: '#2A1E17', room: '#FFF3E6', geel: '#FFC93C', geelDiep: '#8A6300',
   };
   const VAK = {
     topo: { f: '#12B3A0', d: '#0B7468', t: '#DDF6F1', n: 'Topo' },
@@ -189,9 +189,12 @@
       const ink = k === 'wit' ? '#FFFFFF' : C.cacao; const pdot = k === 'kleur' ? C.koraal : ink;
       let svg;
       if (v === 'icoon') {
-        const id = this._id;
-        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><defs><linearGradient id="ig${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF8466"/><stop offset="1" stop-color="#F0553A"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#ig${id})"/><ellipse cx="30" cy="26" rx="18" ry="8" transform="rotate(-30 30 26)" fill="#fff" opacity=".18"/>
-          <g transform="translate(50 52) scale(1.3) translate(-50 -55)"><ellipse cx="27" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><ellipse cx="73" cy="64" rx="5.5" ry="3.4" fill="#FF3D6E" opacity=".28"/><g class="face">${eye(39, 'i' + id, false, { dx: 0.8, dy: -4.6 })}${eye(61, 'i' + id, false, { dx: 0.8, dy: -4.6 })}${lijn('M45 66.5 Q50 69 55 65.8', 3.74)}</g></g></svg>`;
+        // Het beeldmerk zelf op een tegel in koraal diep: dezelfde Denker als in het logo, heel, en lichter dan zijn grond.
+        svg = `<svg viewBox="0 0 100 100" height="${h}" role="img" aria-label="leer.nu"><rect width="100" height="100" rx="24" fill="${C.koraalDiep}"/><g transform="translate(50 50.5) scale(1.04) translate(-50 -55.5)">${logoDenker(this._id)}</g></svg>`;
+      } else if (v === 'favicon') {
+        // Het tabblad: Denker los en in de eenvoudige tekening, want onder 36 px vallen glans, wangen en lichtjes weg.
+        const d = denkerDelen('denken', this._id, true);
+        svg = `<svg viewBox="11 15 78 81" height="${h}" role="img" aria-label="leer.nu">${d.defs}${d.lijf}</svg>`;
       } else if (v === 'beeldmerk') {
         svg = `<svg viewBox="0 5.5 100 100" height="${h}" role="img" aria-label="leer.nu">${logoDenker(this._id)}</svg>`;
       } else if (v === 'staand') {

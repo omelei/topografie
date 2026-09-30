@@ -5935,6 +5935,30 @@
   .tk-over-vragen dd {
     color: var(--tekst-secundair);
   }
+  /* De andere onderwerpen van het vak, als echte links (ADR-245): voor Google,
+   * en voor een ouder die verder kijkt. Een rij die doorloopt, geen tegels:
+   * dit is de voet van de pagina, geen tweede keuze. */
+  .tk-over-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .tk-over-links ul {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 16px;
+  }
+  .tk-over-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--raak);
+    color: var(--inkt);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tk-over-links a:hover {
+    color: var(--tekst-secundair);
+  }
 
   /* ---- Werkblad (ADR-211) -------------------------------------------------
    * Een blad papier: wit, inkt, geen schaduw en geen kleur die de printer

@@ -15,8 +15,11 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    (ADR-230). De code staat na betalen op het scherm; de mail met de code komt
    waarschijnlijk niet aan, want in de DNS staan geen records van Resend. Zet
    die records erbij (Resend → Domains → leer.nu).
-2. **Google Search Console** voor www.leer.nu, en `https://www.leer.nu/sitemap.xml`
-   insturen. Herinnering staat op 25 september.
+2. **Zoekwoorden verzamelen** in de Zoekwoordplanner van Google Ads (zonder
+   campagne), taal Nederlands, locatie Nederland, en de CSV aan Claude geven.
+   Search Console staat sinds 30 september aan, met de sitemap ingestuurd en
+   tien pagina's aangevraagd. Rond 3 oktober het rapport Pagina-indexering
+   bekijken.
 3. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
    `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
 4. **DMARC opschalen**: mail op @leer.nu werkt via Google Workspace sinds 25
@@ -26,9 +29,6 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
    voor kleuters gebouwd wordt (zie [Groep 1 en 2](#groep-1-en-2)).
-6. **Na de merge van de groepsvraag (ADR-243) `tools/premium/schema.sql` opnieuw
-   draaien** in de SQL Editor van de premiumserver. Dan telt de teller welke
-   groep gekozen wordt; tot dan telt hij die keuze niet, en merkt niemand iets.
 
 ### Lopend
 
@@ -208,6 +208,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                  | ADR      |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| #186      | De kop van een vak- of onderwerppagina noemt zonder naam het onderwerp ("Provincies van Nederland oefenen"), en onder een onderwerp staan de andere onderwerpen van het vak als echte links, voor Google. Het app-icoon is de hele Denker op een tegel in koraal diep, het tabblad Denker los                                        | 245, 246 |
 | #185      | Groep 1 en 2 in de groepsvraag, eerst om te meten: voor een kleuter "Voor groep 1 en 2 komt er iets aan" op Vandaag, de teller telt `/1` en `/2`, migratie 0004, en het plan met de opnamelijst in `kleuters.md`                                                                                                                     | 244      |
 | #184      | De groep bovenaan Vandaag: een nieuw kind kiest zijn groep (of "Weet ik niet") en daarna een van de vijf onderwerpen van die groep, in plaats van altijd de provincies; de teller telt de gekozen groep                                                                                                                              | 243      |
 | #183      | Wat er op de server staat, nu en met het gezinsaccount; een vijfde vraag voor de privacyverklaring (elk antwoord van een kind bewaren of niet); de logs van Supabase bij de verwerkersovereenkomst; en geen klantnamen in de notitie van een premiumcode                                                                             | —        |
