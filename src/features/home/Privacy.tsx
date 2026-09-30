@@ -44,7 +44,10 @@ function Blok({
  */
 export function Privacy() {
   const metAccount = isIngesteld();
-  const { naam, kvk, plaats } = brand.verantwoordelijke;
+  const naam = brand.verantwoordelijke;
+  // Uit de bouw (ADR-249): leeg tot de inschrijving bij de KvK er is.
+  const kvk = String(import.meta.env.VITE_KVK_NUMMER ?? '').trim();
+  const plaats = String(import.meta.env.VITE_VESTIGINGSPLAATS ?? '').trim();
   const adres = brand.contact;
 
   return (
@@ -67,9 +70,12 @@ export function Privacy() {
         <Blok
           kop="privacy.wie.kop"
           alineas={[
-            plaats === ''
-              ? t('privacy.wie.tekst', { naam, kvk })
-              : t('privacy.wie.tekstPlaats', { naam, kvk, plaats }),
+            [
+              plaats === ''
+                ? t('privacy.wie.naam', { naam })
+                : t('privacy.wie.naamPlaats', { naam, plaats }),
+              ...(kvk === '' ? [] : [t('privacy.wie.kvk', { kvk })]),
+            ].join(' '),
             t('privacy.wie.contact', { adres }),
           ]}
         />

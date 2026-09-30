@@ -35,8 +35,10 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    met de code aan?
 6. **Uiterlijk 9 oktober de open besluiten nemen** die in de besloten roadmap
    staan (§8: B4, B5 en B7). B0, B1, B2 en B6 zijn op 30 september genomen.
-7. **De vestigingsplaats van Omelei doorgeven** voor de privacyverklaring. De
-   andere antwoorden zijn binnen (30 september) en de pagina `/privacy` staat.
+7. **Na de inschrijving bij de KvK** (1 oktober): zet in GitHub bij **Settings →
+   Secrets and variables → Actions → Variables** `KVK_NUMMER` en
+   `VESTIGINGSPLAATS`, en draai **Actions → CI → Run workflow** op `main`. Dan
+   staan ze op `/privacy`; tot die tijd laat de pagina ze weg.
 8. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
@@ -84,9 +86,9 @@ code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog moet, in
 deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 1. **Vijf antwoorden voor de privacyverklaring** — _jij_, gedaan op 30
-   september: Omelei (KvK 23456789), info@leer.nu, Resend, 24 maanden zonder
-   gebruik, en elk antwoord even lang als het account. Alleen de
-   vestigingsplaats ontbreekt nog. Wat er eerst stond:
+   september: Omelei, info@leer.nu, Resend, 24 maanden zonder gebruik, en elk
+   antwoord even lang als het account. Het KvK-nummer en de vestigingsplaats
+   volgen na de inschrijving (actie 7). Wat er eerst stond:
    - wie verantwoordelijk is (naam of bedrijf, KvK-nummer);
    - het contactadres voor privacyvragen en verwijderverzoeken;
    - welke mailprovider de bevestigingsmails stuurt (advies sinds 30 september:

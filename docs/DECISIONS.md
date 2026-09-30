@@ -14355,7 +14355,7 @@ figuurtje erin, in een pil die zelf perzik is.
 
 **Status:** accepted. **Date:** 2026-09-30. Stap 2 van "Gezinsaccount live
 zetten" op de roadmap, na de antwoorden van de eigenaar: verantwoordelijk is
-Omelei (KvK 23456789), contact via info@leer.nu, een account blijft bewaard
+Omelei, contact via info@leer.nu, een account blijft bewaard
 tot 24 maanden zonder gebruik, en elk antwoord van een kind even lang als het
 account.
 
@@ -14377,8 +14377,10 @@ account.
 - **Links** naar `/privacy` op `/voor-ouders`, `/scholen`, de premiumpagina,
   onder het accountformulier en op de kassa (`/kopen`). Een gewone link met
   een volle laadbeurt: het is een pagina die je zelden opent.
-- **De verantwoordelijke staat in `brand.verantwoordelijke`**, met een plaats
-  die leeg mag zijn; dan laat de pagina hem weg.
+- **De verantwoordelijke staat in `brand.verantwoordelijke`; het KvK-nummer en
+  de plaats komen uit de bouw** (`KVK_NUMMER` en `VESTIGINGSPLAATS` als
+  variabelen in GitHub). De inschrijving bij de KvK volgt nog; tot dan laat de
+  pagina ze weg in plaats van een nummer te tonen dat niet bestaat.
 
 **Wat nog moet vóór `GEZIN_URL` live gaat** (roadmap): de accounts na 24
 maanden zonder gebruik echt opruimen, want de pagina belooft het; en het hele

@@ -61,7 +61,9 @@ test('the privacy statement has a page, and the pages that promise link to it', 
   await page.goto('/privacy');
   await expect(page).toHaveTitle('Privacy · leer.nu');
   await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeVisible();
-  await expect(page.getByText('KvK onder nummer 23456789')).toBeVisible();
+  await expect(page.getByText('leer.nu is van Omelei.')).toBeVisible();
+  // Zonder KVK_NUMMER in de bouw staat er geen nummer, en zeker geen verzonnen.
+  await expect(page.getByText(/KvK/)).toHaveCount(0);
   await expect(page.getByText('info@leer.nu').first()).toBeVisible();
   // De e2e-bouw heeft een gezinsproject (VITE_GEZIN_URL), dus dat deel staat
   // erbij; een bouw zonder laat het weg.

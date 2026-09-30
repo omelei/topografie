@@ -151,9 +151,9 @@ export const nl = {
   'privacy.kort.account':
     'Maak je een gezinsaccount, dan gaat de voortgang van je kinderen met jouw toestemming naar onze server in de EU.',
   'privacy.wie.kop': 'Wie we zijn',
-  'privacy.wie.tekst': 'leer.nu is van {naam}, ingeschreven bij de KvK onder nummer {kvk}.',
-  'privacy.wie.tekstPlaats':
-    'leer.nu is van {naam} in {plaats}, ingeschreven bij de KvK onder nummer {kvk}.',
+  'privacy.wie.naam': 'leer.nu is van {naam}.',
+  'privacy.wie.naamPlaats': 'leer.nu is van {naam} in {plaats}.',
+  'privacy.wie.kvk': 'Ingeschreven bij de KvK onder nummer {kvk}.',
   'privacy.wie.contact':
     'Vragen over privacy, of wil je gegevens inzien, verbeteren of laten wissen? Mail naar {adres}. We antwoorden binnen een maand.',
   'privacy.apparaat.kop': 'Op dit apparaat',
