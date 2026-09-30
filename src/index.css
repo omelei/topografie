@@ -6024,6 +6024,15 @@
   /* De andere onderwerpen van het vak, als echte links (ADR-245): voor Google,
    * en voor een ouder die verder kijkt. Een rij die doorloopt, geen tegels:
    * dit is de voet van de pagina, geen tweede keuze. */
+  /* De lijsten op de privacypagina (ADR-249): gewone opsommingstekens, want de
+   * reset haalt ze overal weg. */
+  .tk-privacy-lijst {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 20px;
+    list-style: disc;
+  }
   .tk-over-links {
     display: flex;
     flex-direction: column;

@@ -35,8 +35,10 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    met de code aan?
 6. **Uiterlijk 9 oktober de open besluiten nemen** die in de besloten roadmap
    staan (§8: B4, B5 en B7). B0, B1, B2 en B6 zijn op 30 september genomen.
-7. **Vijf antwoorden voor de privacyverklaring** (zie "Gezinsaccount live
-   zetten" hieronder). Daarna bouwt Claude de privacypagina.
+7. **Na de inschrijving bij de KvK** (1 oktober): zet in GitHub bij **Settings →
+   Secrets and variables → Actions → Variables** `KVK_NUMMER` en
+   `VESTIGINGSPLAATS`, en draai **Actions → CI → Run workflow** op `main`. Dan
+   staan ze op `/privacy`; tot die tijd laat de pagina ze weg.
 8. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
@@ -52,10 +54,10 @@ getest (een ronde telt).
 
 ### Lopend
 
-| Wat                                                                        | Wie           | Staat   | Hangt af van                                 |
-| -------------------------------------------------------------------------- | ------------- | ------- | -------------------------------------------- |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen | —                                            |
-| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Gestart | De vijf antwoorden voor de privacyverklaring |
+| Wat                                                                        | Wie           | Staat   | Hangt af van                                              |
+| -------------------------------------------------------------------------- | ------------- | ------- | --------------------------------------------------------- |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen | —                                                         |
+| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Gestart | Opruimen na 24 maanden (Claude), Supabase inrichten (jij) |
 
 ### Code afschermen
 
@@ -83,7 +85,10 @@ Op 30 september weer opgepakt: de eigenaar wil het gezinsaccount nu maken. De
 code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog moet, in
 deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
-1. **Vijf antwoorden voor de privacyverklaring** — _jij_:
+1. **Vijf antwoorden voor de privacyverklaring** — _jij_, gedaan op 30
+   september: Omelei, info@leer.nu, Resend, 24 maanden zonder gebruik, en elk
+   antwoord even lang als het account. Het KvK-nummer en de vestigingsplaats
+   volgen na de inschrijving (actie 7). Wat er eerst stond:
    - wie verantwoordelijk is (naam of bedrijf, KvK-nummer);
    - het contactadres voor privacyvragen en verwijderverzoeken;
    - welke mailprovider de bevestigingsmails stuurt (advies sinds 30 september:
@@ -93,7 +98,7 @@ deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
      verwijderen, en weg na 24 maanden zonder gebruik;
    - of elk antwoord van een kind op de server bewaard wordt (zie "Open
      beslissingen").
-2. **Privacypagina `/privacy`**, met links vanaf account aanmaken, de kassa en de
+2. **Privacypagina `/privacy`** (gebouwd, ADR-249), met links vanaf account aanmaken, de kassa en de
    ouderpagina — _Claude_, na stap 1. De pagina zegt per groep wat er op de
    server staat (zie hieronder), en noemt Supabase, Mollie en de mailprovider
    als verwerkers.
@@ -103,7 +108,10 @@ deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
    Ook de naamvraag ("blijft opgeslagen op dit apparaat en niet op onze
    servers") en `/scholen` ("slaat geen persoonlijke gegevens op van
    kinderen"): met een account klopt dat niet meer.
-3. **Supabase inrichten** — _jij_:
+3. **Opruimen na 24 maanden bouwen** — _Claude_: de privacyverklaring belooft
+   het, dus het moet er zijn vóór stap 5. Tot er een knop is, gaat het hele
+   account verwijderen per mail.
+4. **Supabase inrichten** — _jij_:
    - EU-regio controleren, migraties 0001 tot en met 0004 draaien;
    - geheimen van de edge functions zetten, project-ref in GitHub, de workflow
      van de gezinsfuncties één keer met de hand draaien;
@@ -111,9 +119,9 @@ deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
      `https://www.leer.nu/ouder`;
    - de verwerkersovereenkomst (DPA) tekenen, en daarin nakijken welke logs
      Supabase zelf bijhoudt (IP-adressen van verzoeken) en hoe lang.
-4. **`GEZIN_URL` en `GEZIN_KEY` in GitHub zetten** — _jij_, pas als de
+5. **`GEZIN_URL` en `GEZIN_KEY` in GitHub zetten** — _jij_, pas als de
    privacypagina live staat. De volgende deploy zet de accounts aan.
-5. **Nakijken**: `Gezin nakijken` draaien en de keten van account tot kind
+6. **Nakijken**: `Gezin nakijken` draaien en de keten van account tot kind
    doorlopen — _Claude_.
 
 #### Wat er op de server staat (29 september)
@@ -212,12 +220,11 @@ teller.
 
 ## Open beslissingen
 
-| Vraag                                                                                                                                                        | Voorstel                                                                                                                                                                         | Waar het staat                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang.                                                    | Laten staan: het is de sterkste aanleiding om premium te kopen                                                                                                                   | ADR-193                              |
-| Fase 1 voor groep 1 en 2 bouwen (ADR-244)?                                                                                                                   | Bouwen als ouders van kleuters de groepsvraag duidelijk gebruiken; samen bekijken bij het uitlezen op 8 oktober                                                                  | [kleuters.md](kleuters.md)           |
-| Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                                                                       | Laten staan als lokkertje                                                                                                                                                        | ADR-192                              |
-| Met een account elk antwoord van een kind op de server bewaren (`pogingen`: goed of fout, reactietijd, het antwoord, tijdstip)? Het is de gevoeligste tabel. | Bewaren: de doelen van de ouder en het inzicht in wat telkens fout gaat worden eruit geteld. Wel in de privacyverklaring noemen, en een kortere termijn overwegen dan 24 maanden | `supabase/migrations/0001_gezin.sql` |
+| Vraag                                                                                                     | Voorstel                                                                                                        | Waar het staat             |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Mag "Klaar voor de toets, met premium" zonder code blijven? Strikt genomen is het een vorm van voortgang. | Laten staan: het is de sterkste aanleiding om premium te kopen                                                  | ADR-193                    |
+| Fase 1 voor groep 1 en 2 bouwen (ADR-244)?                                                                | Bouwen als ouders van kleuters de groepsvraag duidelijk gebruiken; samen bekijken bij het uitlezen op 8 oktober | [kleuters.md](kleuters.md) |
+| Mag het aantal op Vandaag ("N vragen die herhaald moeten worden") zonder code blijven?                    | Laten staan als lokkertje                                                                                       | ADR-192                    |
 
 ## Klein onderhoud
 

@@ -15,6 +15,7 @@ import {
 import { openWisselaar } from '@/features/ouder/wisselaar';
 import { t, type TranslationKey } from '@/i18n';
 import { isTeKoop, isVerlopen, verlooptBinnenkort } from '@/store/premium';
+import { isIngesteld } from '@/store/account/omgeving';
 import { leesbareDatum, usePremium } from './usePremium';
 
 /**
@@ -46,6 +47,16 @@ const WAAROM: readonly (readonly [Pictogram, TranslationKey, TranslationKey])[] 
   [FamilyIcon, 'premium.waarom.geenNamen', 'premium.waarom.geenNamenUit'],
   [StarIcon, 'premium.waarom.gok', 'premium.waarom.gokUit'],
 ];
+
+/**
+ * Met een gezinsaccount gaat de voornaam wél naar de server, met toestemming
+ * (ADR-249). Dan zegt de belofte dat, en niet meer dat hij nergens heen gaat.
+ */
+function metAccount(uitleg: TranslationKey): TranslationKey {
+  return uitleg === 'premium.waarom.geenNamenUit' && isIngesteld()
+    ? 'premium.waarom.geenNamenUitAccount'
+    : uitleg;
+}
 
 /**
  * Basis tegen premium, regel voor regel (ADR-145).
@@ -228,11 +239,14 @@ function Aanbod() {
               </span>
               <span className="flex min-w-0 flex-col gap-1">
                 <span className="tk-lijstrij-titel">{t(kop)}</span>
-                <span className="text-tekst-secundair">{t(uitleg)}</span>
+                <span className="text-tekst-secundair">{t(metAccount(uitleg))}</span>
               </span>
             </li>
           ))}
         </ul>
+        <a className="tk-button tk-button-tertiary self-start" href="/privacy">
+          {t('privacy.link')}
+        </a>
       </section>
 
       <NaarOuder />

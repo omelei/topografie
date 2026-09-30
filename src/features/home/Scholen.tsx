@@ -2,6 +2,7 @@ import { useId, type ComponentType } from 'react';
 import { GridIcon, type IconProps, PaperIcon, PupilIcon, ShieldIcon } from '@/components/Icon';
 import { brand } from '@/config/brand';
 import { t, type TranslationKey } from '@/i18n';
+import { isIngesteld } from '@/store/account/omgeving';
 
 type Pictogram = ComponentType<Omit<IconProps, 'children'>>;
 
@@ -66,7 +67,13 @@ export function Scholen() {
                   <Teken size={24} />
                 </span>
                 <span className="tk-kaartje-kop">{t(kaartKop)}</span>
-                <span className="text-lopend text-tekst-secundair">{t(uitleg)}</span>
+                <span className="text-lopend text-tekst-secundair">
+                  {t(
+                    uitleg === 'scholen.privacy.tekst' && isIngesteld()
+                      ? 'scholen.privacy.tekstAccount'
+                      : uitleg,
+                  )}
+                </span>
               </li>
             ))}
           </ul>
@@ -83,6 +90,9 @@ export function Scholen() {
             <p className="text-lopend">{t('scholen.kosten.gratis')}</p>
             <p className="text-lopend">{t('scholen.mail', { adres: brand.scholen })}</p>
           </div>
+          <a className="tk-button tk-button-tertiary self-start" href="/privacy">
+            {t('privacy.link')}
+          </a>
         </section>
       </div>
     </div>

@@ -314,6 +314,11 @@ jobs:
           # Voor ouders dat inloggen nog niet beschikbaar is.
           VITE_GEZIN_URL: ${{ vars.GEZIN_URL }}
           VITE_GEZIN_KEY: ${{ vars.GEZIN_KEY }}
+          # De privacyverklaring (ADR-249): het KvK-nummer en de plaats van de
+          # verantwoordelijke. Leeg tot de inschrijving er is, en dan laat
+          # /privacy ze weg in plaats van een nummer te verzinnen.
+          VITE_KVK_NUMMER: ${{ vars.KVK_NUMMER }}
+          VITE_VESTIGINGSPLAATS: ${{ vars.VESTIGINGSPLAATS }}
       # Cheap, and it closes the only way this build can be wrong while every
       # test passes: the tests run against a dev server that does not have a
       # base at all, so nothing else in this file ever looks at the paths that

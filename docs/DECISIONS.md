@@ -14351,6 +14351,42 @@ figuurtje erin, in een pil die zelf perzik is.
 - **Twee letters aangepast aan de schrijfwijzer**: "premium" en "overleven"
   midden in een zin met een kleine letter, zoals overal (woordenlijst).
 
+## ADR-249 — De privacyverklaring op /privacy, en beloftes die meebewegen met het gezinsaccount
+
+**Status:** accepted. **Date:** 2026-09-30. Stap 2 van "Gezinsaccount live
+zetten" op de roadmap, na de antwoorden van de eigenaar: verantwoordelijk is
+Omelei, contact via info@leer.nu, een account blijft bewaard
+tot 24 maanden zonder gebruik, en elk antwoord van een kind even lang als het
+account.
+
+**Besluit.**
+
+- **`/privacy`** (`Privacy.tsx`, `privacy.*` in `nl.ts`), een pagina voor
+  Google en in de sitemap. In de volgorde waarin een ouder het tegenkomt: in
+  het kort, wie we zijn, op dit apparaat, de teller, premium, betalen, met een
+  gezinsaccount, wie ons helpt, waarom dat mag, wat je kunt doen, als dit
+  verandert.
+- **Het deel over het gezinsaccount staat er alleen als de bouw accounts
+  heeft** (`isIngesteld`, dus `GEZIN_URL` en `GEZIN_KEY`). Zo zegt de pagina
+  op elk moment wat er echt gebeurt. Hetzelfde geldt voor de toestemming als
+  grondslag.
+- **Drie beloftes bewegen mee.** Met accounts zeggen `/voor-ouders`,
+  `/scholen` en de premiumpagina dat de voornaam en de voortgang met
+  toestemming naar de server in de EU gaan; zonder accounts blijven ze zoals
+  ze waren, want dan kloppen die.
+- **Links** naar `/privacy` op `/voor-ouders`, `/scholen`, de premiumpagina,
+  onder het accountformulier en op de kassa (`/kopen`). Een gewone link met
+  een volle laadbeurt: het is een pagina die je zelden opent.
+- **De verantwoordelijke staat in `brand.verantwoordelijke`; het KvK-nummer en
+  de plaats komen uit de bouw** (`KVK_NUMMER` en `VESTIGINGSPLAATS` als
+  variabelen in GitHub). De inschrijving bij de KvK volgt nog; tot dan laat de
+  pagina ze weg in plaats van een nummer te tonen dat niet bestaat.
+
+**Wat nog moet vóór `GEZIN_URL` live gaat** (roadmap): de accounts na 24
+maanden zonder gebruik echt opruimen, want de pagina belooft het; en het hele
+account laten verwijderen gaat tot er een knop is per mail, en zo staat het er
+ook.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

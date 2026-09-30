@@ -281,6 +281,8 @@ export type Route =
   | { readonly name: 'voorOuders' }
   /** Voor de klas: een klassencode aanvragen (ADR-216). */
   | { readonly name: 'scholen' }
+  /** De privacyverklaring (ADR-249). */
+  | { readonly name: 'privacy' }
   /** Een werkblad om te printen, voor één onderwerp (ADR-211). */
   | { readonly name: 'werkblad'; readonly module: Module; readonly setId: string };
 
@@ -297,6 +299,9 @@ export const VOOR_OUDERS_SLUG = 'voor-ouders';
 
 /** Voor de klas (ADR-216). */
 export const SCHOLEN_SLUG = 'scholen';
+
+/** De privacyverklaring (ADR-249). */
+export const PRIVACY_SLUG = 'privacy';
 
 /** Achter een onderwerp: /topografie/provincies/werkblad (ADR-211). */
 export const WERKBLAD_SLUG = 'werkblad';
@@ -372,6 +377,7 @@ export function routeFor(pathname: string): Route {
   if (slug === OUDER_SLUG) return { name: 'ouder' };
   if (slug === VOOR_OUDERS_SLUG) return { name: 'voorOuders' };
   if (slug === SCHOLEN_SLUG) return { name: 'scholen' };
+  if (slug === PRIVACY_SLUG) return { name: 'privacy' };
 
   const [head = '', tail, derde] = slug.split('/');
   // /topografie/provincies/werkblad: het werkblad van dat onderwerp (ADR-211).
@@ -408,6 +414,7 @@ function slugFor(route: Route): string {
   if (route.name === 'ouder') return OUDER_SLUG;
   if (route.name === 'voorOuders') return VOOR_OUDERS_SLUG;
   if (route.name === 'scholen') return SCHOLEN_SLUG;
+  if (route.name === 'privacy') return PRIVACY_SLUG;
   if (route.name === 'category') return route.category.id;
   if (route.name === 'werkblad') {
     return `${slugFor({ name: 'module', module: route.module, setId: route.setId })}/${WERKBLAD_SLUG}`;
