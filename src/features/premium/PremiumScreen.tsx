@@ -258,6 +258,8 @@ function Etalage({ teKoop }: { readonly teKoop: boolean }) {
         {t('premium.etalageKop')}
       </h2>
       <p className="tk-etalage-tekst">{t('premium.intro')}</p>
+      <p className="tk-etalage-tekst">{t('premium.introPlan')}</p>
+      <p className="tk-etalage-tekst">{t('premium.introVoorWie')}</p>
       {teKoop ? (
         <>
           <div className="tk-etalage-knoppen">

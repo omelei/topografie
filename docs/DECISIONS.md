@@ -14324,6 +14324,33 @@ ADR-104 (geen vlaggendiploma voor de wereld) en ADR-134 (één geluid).
 - **Minder kaarten voor groep 3.** Twee kaarten die passen zijn beter dan vijf
   waarvan drie niet. De vakken staan eronder voor wie iets anders wil.
 
+## ADR-248 — De avatar vult zijn rondje in de kop, en de premiumpagina in de woorden van de eigenaar
+
+**Status:** accepted. **Date:** 2026-09-30. Op verzoek van de eigenaar: "De
+avatar in de topbar is nu niet goed uitgelijnd. Er wordt teveel room getoond",
+en drie teksten op de premiumpagina.
+
+**Wat er mis was.** Elke avatar (ADR-202) is een figuur klein midden op een
+eigen pastelschijf. Op 40 px in de kop was dat vooral een vlak room met een
+figuurtje erin, in een pil die zelf perzik is.
+
+**Besluit.**
+
+- **In de kop zoomt de avatar 1,3 keer in**, binnen zijn eigen ronde vlak
+  (`.tk-profiel-letter`). De figuur vult het rondje; wat eraf valt, is lege
+  schijf. Een brede tekening (fladder, planeet) verliest een puntje van de
+  vleugel of de ring. De kiezer op Jij en de andere plekken blijven zoals ze
+  zijn: daar is de avatar groot genoeg.
+- **De premiumpagina**, in de woorden van de eigenaar:
+  - kop: "Oefenen is gratis. Premium maakt leren slimmer.";
+  - de uitleg in drie alinea's (`premium.intro`, `premium.introPlan`,
+    `premium.introVoorWie`): wat gratis is en wat premium erbij geeft, wat het
+    plannen oplevert, en voor wie;
+  - onder "Leer.nu plant het herhalen": "Zo hoeft je kind niet zelf te bedenken
+    wat het moet oefenen."
+- **Twee letters aangepast aan de schrijfwijzer**: "premium" en "overleven"
+  midden in een zin met een kleine letter, zoals overal (woordenlijst).
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

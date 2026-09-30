@@ -4363,6 +4363,15 @@
     width: 100%;
     height: 100%;
   }
+  /* In de kop is de avatar 40 px. Elke tekening staat klein midden op een eigen
+   * pastelschijf, dus op die maat was hij vooral een vlak room met een figuurtje
+   * erin. Ingezoomd vult de figuur de schijf; wat eruit valt, is lege schijf. */
+  .tk-profiel-letter:has(.tk-avatar-plaatje) {
+    overflow: hidden;
+  }
+  .tk-profiel-letter .tk-avatar-plaatje {
+    transform: scale(1.3);
+  }
   /* Onder 1200 (ADR-241): de avatar alleen, in een witte cirkel met de lijn
    * eromheen, net zo groot als premium en Ouders ernaast. */
   @media (max-width: 1199px) {
