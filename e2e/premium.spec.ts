@@ -245,7 +245,7 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen is gratis. Premium plant het herhalen en opent de diploma’s.',
+    'Oefenen is gratis. Premium maakt leren slimmer.',
     'Wat premium voor je doet',
     'Basis en premium naast elkaar',
     'Waarom leer.nu',

@@ -721,10 +721,15 @@ export const nl = {
   // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
   // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
   'premium.intro':
-    'Je kind oefent elk vak gratis: ontdekken, aanwijzen, meerkeuze en zelf typen. Premium opent de bliksemronde, overleven, de oefentoets en alle 80 diploma’s. Ook plant premium het herhalen, en zie je wat je kind beheerst. Voor 3 kinderen op 3 apparaten, een jaar lang.',
+    'Je kind kan elk vak gratis oefenen met ontdekken, aanwijzen, meerkeuze en zelf typen. Met premium komt daar meer bij: de bliksemronde, overleven, de oefentoets en alle 80 diploma’s.',
+  // Drie alinea's sinds 30 september, in de woorden van de eigenaar: wat erbij
+  // komt, wat het plannen oplevert, en voor wie.
+  'premium.introPlan':
+    'Premium plant bovendien automatisch wanneer je kind iets opnieuw moet oefenen. Zo blijft de leerstof beter hangen en zie je eenvoudig wat je kind al beheerst.',
+  'premium.introVoorWie': 'Voor 3 kinderen, op 3 apparaten, een heel jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
   'premium.etalageLabel': 'Voor ouders',
-  'premium.etalageKop': 'Oefenen is gratis. Premium plant het herhalen en opent de diploma’s.',
+  'premium.etalageKop': 'Oefenen is gratis. Premium maakt leren slimmer.',
   'premium.perSchooljaar': 'per jaar',
   'premium.codeTitel': 'Heb je al een code?',
   // Met een code is dat geen vraag meer (ADR-236).
@@ -746,7 +751,7 @@ export const nl = {
   'premium.watTitel': 'Wat premium voor je doet',
   'premium.usp.plan': 'Leer.nu plant het herhalen',
   'premium.usp.planUit':
-    'Leer.nu zet elke dag klaar wat aan de beurt is, net voordat je kind het vergeet. Dan hoeft het niet te bedenken waar het begint.',
+    'Leer.nu zet elke dag klaar wat aan de beurt is, net voordat je kind het vergeet. Zo hoeft je kind niet zelf te bedenken wat het moet oefenen.',
   // De statistieken als eigen belofte (ADR-164). "Je ziet wat blijft hangen"
   // stond hier, en dat is waar maar bescheiden: wat premium werkelijk geeft is
   // de hele boekhouding van het oefenen, tot per som. Elke regel hieronder is

@@ -26,17 +26,22 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    beschrijvingen voor Google.
 4. **Een werkblad delen** met een leerkracht en in een oudergroep, bijvoorbeeld
    `leer.nu/topografie/provincies/werkblad`. De snelste test of het aanslaat.
-5. **Testaankoop in de kassa.** Kijk of Mollie het nieuwe jaarbedrag vraagt
-   (ADR-230). De code staat na betalen op het scherm; de mail met de code komt
-   waarschijnlijk niet aan, want in de DNS staan geen records van Resend. Zet
-   die records erbij (Resend → Domains → leer.nu).
+5. **Resend instellen en een testaankoop doen.** Gekozen op 30 september: de
+   kassa blijft de code mailen via Resend, naast de mail van Google Workspace.
+   Voeg in Resend het domein `leer.nu` toe (regio EU), zet de drie records die
+   Resend noemt naast die van Google (niets wijzigen of weghalen), en zet in
+   Supabase de geheimen `RESEND_SLEUTEL` en `KASSA_AFZENDER`. Doe daarna een
+   testaankoop: vraagt Mollie het nieuwe jaarbedrag (ADR-230), en komt de mail
+   met de code aan?
 6. **Uiterlijk 9 oktober de open besluiten nemen** die in de besloten roadmap
    staan (§8: B4, B5 en B7). B0, B1, B2 en B6 zijn op 30 september genomen.
-7. **Op 8 oktober de teller uitlezen** (de vragen staan in
+7. **Vijf antwoorden voor de privacyverklaring** (zie "Gezinsaccount live
+   zetten" hieronder). Daarna bouwt Claude de privacypagina.
+8. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1
    voor kleuters gebouwd wordt (zie [Groep 1 en 2](#groep-1-en-2)).
-8. **DMARC opschalen**, rond half oktober: mail op @leer.nu werkt via Google
+9. **DMARC opschalen**, rond half oktober: mail op @leer.nu werkt via Google
    Workspace sinds 25 september, met `p=none`. Zijn de rapporten na twee tot
    vier weken schoon, dan `p=quarantine`; `p=reject` pas als de mail van
    Resend ook klopt.
@@ -47,9 +52,10 @@ getest (een ronde telt).
 
 ### Lopend
 
-| Wat                                                                        | Wie | Staat   | Hangt af van |
-| -------------------------------------------------------------------------- | --- | ------- | ------------ |
-| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij | Te doen | —            |
+| Wat                                                                        | Wie           | Staat   | Hangt af van                                 |
+| -------------------------------------------------------------------------- | ------------- | ------- | -------------------------------------------- |
+| Code afschermen: GitHub Pro nemen, dan de repository privé (zie hieronder) | jij           | Te doen | —                                            |
+| Gezinsaccount live zetten (zie hieronder)                                  | jij en Claude | Gestart | De vijf antwoorden voor de privacyverklaring |
 
 ### Code afschermen
 
@@ -71,17 +77,18 @@ vanuit deze repository.
    echt geheim moet blijven (premiumcodes controleren, de kassa), gebeurt
    daarom al op de server. Dat blijft de regel.
 
-### Gezinsaccount live zetten (geparkeerd)
+### Gezinsaccount live zetten (gestart 30 september)
 
-Geparkeerd op 24 september, samen met de privacypagina: de eigenaar komt erop
-terug. De code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog
-moet, in deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
+Op 30 september weer opgepakt: de eigenaar wil het gezinsaccount nu maken. De
+code staat klaar en is getest (ADR-155 tot en met ADR-190). Wat nog moet, in
+deze volgorde. De klikken staan in [SUPABASE.md](SUPABASE.md).
 
 1. **Vijf antwoorden voor de privacyverklaring** — _jij_:
    - wie verantwoordelijk is (naam of bedrijf, KvK-nummer);
    - het contactadres voor privacyvragen en verwijderverzoeken;
-   - welke mailprovider de bevestigingsmails stuurt (advies: een Europese, zoals
-     Brevo of Mailjet);
+   - welke mailprovider de bevestigingsmails stuurt (advies sinds 30 september:
+     Resend in de EU-regio, dat de kassa al gebruikt, ook als SMTP voor
+     Supabase Auth);
    - akkoord met de bewaartermijn: zolang het account bestaat, zelf te
      verwijderen, en weg na 24 maanden zonder gebruik;
    - of elk antwoord van een kind op de server bewaard wordt (zie "Open
@@ -188,8 +195,8 @@ teller.
 | 3   | Pagina voor ouders (`/ouders`): wat het is, hoe herhalen werkt, wat het kost, privacy                     | Wie via Google komt, weet nu niet waarom leer.nu beter is                  | Middel | Gedaan (#149) |
 | 4   | `/scholen` met de klassencode aanvragen                                                                   | Scholen zijn de snelste weg naar veel kinderen tegelijk                    | Klein  | Gedaan (#151) |
 | 5   | Wekelijks overzicht van de teller als issue in GitHub                                                     | Cijfers die niemand opzoekt, sturen niets                                  | Klein  | Gedaan (#150) |
-| 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  | Geparkeerd    |
-| 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel | Geparkeerd    |
+| 6   | Privacypagina (`/privacy`)                                                                                | Nodig voor accounts, scholen en vertrouwen                                 | Klein  | Gestart 30-09 |
+| 7   | Gezinsaccount live: voortgang op elk apparaat                                                             | Premium per gezin in plaats van per apparaat; een ouder kijkt mee          | Middel | Gestart 30-09 |
 | 8   | Engels: woordjes voor groep 7 en 8                                                                        | Grote vraag, en de brug naar de brugklas                                   | Groot  | Gedaan (#152) |
 | 9   | Betalen per maand, € 9,95                                                                                 | Lagere drempel dan een jaar vooruit                                        | Middel | Later         |
 | 10  | Uitdagen (A + D)                                                                                          | Pas als delen (ADR-209) laat zien dat kinderen elkaar opzoeken             | Middel | Na 8 oktober  |
@@ -200,9 +207,6 @@ teller.
 | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Conversie meten: verkochte en geactiveerde codes per week, vóór en na de nieuwe grens                                              | Later; de cijfers staan in Mollie en op de premiumserver, er is geen tracking van kinderen voor nodig                                                                                                                               |
 | Uitdagen: een kind daagt een ander uit met een code (A), of om de beurt op één apparaat (D); met premium de stand per tegenstander | Opties uitgewerkt op 23 september (A code, B server, C A + gezin, D één apparaat; advies A + D). Vervalsen bij A uitgewerkt op 24 september. Delen van de uitslag is gebouwd als eerste stap (ADR-209). De eigenaar komt erop terug |
-| Privacypagina (`/privacy`)                                                                                                         | De eigenaar bepaalt later wat erin komt (24 september); de vijf vragen staan bij het gezinsaccount                                                                                                                                  |
-| Gezinsaccount live zetten                                                                                                          | Later (24 september); de stappen staan hierboven                                                                                                                                                                                    |
-| De DNS-records van Resend voor de kassa                                                                                            | Geparkeerd op 25 september; de mail van Google Workspace werkt al. Resend op een eigen subdomein, bijvoorbeeld `send.leer.nu`                                                                                                       |
 | Een bericht of mail aan ouders (bijvoorbeeld "klaar voor de toets")                                                                | Kan pas met het gezinsaccount, en dan met toestemming                                                                                                                                                                               |
 | Proefperiode                                                                                                                       | Bewust niet: een ouder die zijn kind wil laten oefenen, koopt meteen (ADR-192)                                                                                                                                                      |
 
