@@ -90,6 +90,7 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
   ['.tk-vaktegel', 'a subject’s tile on Vandaag, a door into it'],
   ['.tk-vaktegel:hover', 'the same tile under the pointer'],
   ['.tk-eerste', 'the first round, in its subject'],
+  ['.tk-nudoen', 'the one thing to do now, in its subject (ADR-250)'],
   ['.tk-diploma', 'a diploma of that subject, not yet earned'],
   ['.tk-diploma-vlak', 'its drawings, in the subject'],
   ['.tk-diploma-voortgang', 'how far along it is'],

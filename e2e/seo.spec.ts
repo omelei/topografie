@@ -50,3 +50,30 @@ test('a topic page says what is in it and answers a parent', async ({ page }) =>
   await expect(over.getByText('Groningen (Groningen)')).toBeVisible();
   await expect(over.getByText('Is het gratis?')).toBeVisible();
 });
+
+/**
+ * De privacyverklaring (ADR-249) is een pagina voor Google en voor ouders, en
+ * elke pagina die een belofte over gegevens doet, linkt ernaar.
+ */
+test('the privacy statement has a page, and the pages that promise link to it', async ({
+  page,
+}) => {
+  await page.goto('/privacy');
+  await expect(page).toHaveTitle('Privacy · leer.nu');
+  await expect(page.getByRole('heading', { level: 1, name: 'Privacy' })).toBeVisible();
+  await expect(page.getByText('leer.nu is van Omelei.')).toBeVisible();
+  // Zonder KVK_NUMMER in de bouw staat er geen nummer, en zeker geen verzonnen.
+  await expect(page.getByText(/KvK/)).toHaveCount(0);
+  await expect(page.getByText('info@leer.nu').first()).toBeVisible();
+  // De e2e-bouw heeft een gezinsproject (VITE_GEZIN_URL), dus dat deel staat
+  // erbij; een bouw zonder laat het weg.
+  await expect(page.getByRole('heading', { name: 'Met een gezinsaccount' })).toBeVisible();
+
+  for (const pad of ['/voor-ouders', '/scholen']) {
+    await page.goto(pad);
+    await expect(page.getByRole('link', { name: 'Lees de privacyverklaring' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    );
+  }
+});

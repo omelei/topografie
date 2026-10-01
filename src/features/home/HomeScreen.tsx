@@ -1,4 +1,3 @@
-import { Geheugencheck, type CheckKlaar } from './Geheugencheck';
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Brandmark } from '@/components/Brandmark';
 import {
@@ -7,15 +6,14 @@ import {
   huidigeGroep,
   isKleutergroep,
   type Groep,
+  type ItemState,
   type ModeId,
 } from '@/game-core';
-import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
-import { useVandaag, vrijeVorm } from './useVandaag';
 import { t, type TranslationKey } from '@/i18n';
-import { loadOpenRounds, loadPlayedRounds } from '@/store/progress';
+import { loadItemStates, loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import {
   getActiveChild,
   groepOnbekend,
@@ -26,71 +24,49 @@ import { tel } from '@/store/teller';
 import type { OpenRound, PlayedRound } from '@/store/progress';
 import {
   geplaatst,
-  meestGeoefend,
   naamVan,
   starters,
   startbareOnderdelen,
   voorGroep,
-  POPULAR_SHOWN,
   type Gespeeld,
   type Onderdeel,
-  type Populair,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
-import { TerugBlok } from './TerugBlok';
-import { VandaagBlok } from './VandaagBlok';
+import { Geheugencheck, zoekGeheugencheck, type CheckKlaar } from './Geheugencheck';
+import { GroepVraag, VakkenRij, VoorKleuters } from './Kennismaken';
+import { NuDoenKaart } from './NuDoen';
+import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
+import { terugkomst, TerugKaart } from './TerugBlok';
+import { useVandaag, vrijeVorm } from './useVandaag';
+import { HerhaalRegel, KlaarVoorVandaag, VandaagHerhalen } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 
 /**
  * K1, the front door — which is also leer.nu itself.
  *
- * Redrawn in 2026-09 (ADR-094) and still the same argument, in the same order.
- * First the child's own name, and under it what doing this is. Then the ways
- * in — what this child goes back to most, what they did last and how it went,
- * and what they started and did not finish.
+ * **Eén ding bovenaan: Nu doen** (ADR-250). Onder de begroeting staat precies
+ * één kaart met één knop, en die staat op elke telefoon boven de vouw. Welke
+ * kaart, kiest `kiesNuDoen`: Welkom terug, Vandaag herhalen, Maak af, de
+ * geheugencheck of Ga verder. Hiervoor kozen die vijf elk hun eigen plek, en
+ * stond de knop die de begroeting beloofde onder het naamformulier en twee
+ * rijen geschiedenis.
  *
- * **Waar je begint staat bovenaan** (ADR-162). "Hier begin je mee vandaag" is
- * het eerste blok onder de begroeting, en het is de enige rij die zegt: druk
- * hier, dan oefen je. Voor wie al geoefend heeft is het dezelfde rij onder de
- * kop "Meest geoefend" — wat dit kind zelf het vaakst koos, is waar het vandaag
- * ook weer mee begint.
+ * **Daaronder één rij: Verder oefenen** (ADR-250). Meest geoefend, Recent
+ * geoefend en Maak af toonden een kind met één ronde drie keer hetzelfde
+ * onderwerp. Nu staat elk onderwerp één keer, en niet nog eens als het Nu doen
+ * is. Wat half af is, staat vooraan.
  *
- * **"Je doelen voor deze week" staan op Jij** (ADR-247). Ze stonden hier sinds
- * ADR-162, onder de rijen; Vandaag is nu alleen wat je vandaag doet.
+ * **Een nieuw kind** krijgt eerst de vraag naar zijn groep (ADR-243), dan de
+ * onderwerpen van die groep, en de vakken als rij. Wie al geoefend heeft, heeft
+ * zijn eigen weg terug in de rijen, en de vakken onder de tab Oefenen.
  *
- * **Two rows that scroll sideways, and one list.** "Meest geoefend" and "Maak
- * af" are rows of cards at every size, one swipe, press or arrow key from what
- * is past the edge (`ScrollRij`). "Recent geoefend" is a list (ADR-112): it is
- * a log, read top to bottom, newest first.
+ * **Geen premium op Vandaag** (ADR-250). Een kind koopt niets (R-11): zonder
+ * code staat er hoeveel er terugkomt, als feit, en geen slot en geen knop.
  *
- * **"Maak af" took the place of "Verder oefenen"** (ADR-115). That row was one
- * tile per module with a bar of how much was remembered — a second way to the
- * rail's five doors, and a forecast in a place ADR-094 said should not have
- * one. What a child actually wants from the front door is the round they left
- * halfway: the provinces they stopped at seven, the clock they closed when
- * dinner was ready. Each card is one of those, and pressing it asks the
- * questions that round had not asked yet.
- *
- * **Er staat geen kolom meer naast** (ADR-168). Van de vier blokken die de
- * eigen kolom ooit droeg was "Jouw favorieten" het laatste, en het was een
- * derde weg naar dezelfde ronde: "Meest geoefend" staat bovenaan deze pagina en
- * "Recent geoefend" eronder, allebei met dezelfde set en dezelfde manier achter
- * de knop. Drie lijsten van hetzelfde is geen keuze maar ruis, en het was de
- * enige daarvan die alleen boven 1200 bestond — dus wat een kind op de laptop
- * van thuis als "zijn plek" leerde kennen, was op de tablet van school weg.
- * Eén kolom, op elke maat.
- *
- * One thing it deliberately does not do: **it does not forecast** — "wat
- * onthoud je" is K9's.
+ * Eén kolom, op elke maat (ADR-168). One thing it deliberately does not do:
+ * **it does not forecast** — "wat onthoud je" is K9's.
  */
-
-/** How many rounds the history shows: as many as "meest geoefend" holds. */
-const RECENT_SHOWN = POPULAR_SHOWN;
-
-/** How many unfinished rounds the row holds. It scrolls; ten is a week of stopping. */
-const OPEN_SHOWN = 10;
 
 export interface HomeScreenProps {
   /** Whose front door this is. K1 opens by saying so. */
@@ -130,6 +106,9 @@ export function HomeScreen({
   // anders flitsen de blokken voor een nieuw kind langs bij een kind van jaren.
   const [gelezen, setGelezen] = useState(false);
   const [open, setOpen] = useState<readonly OpenRound[] | null>(null);
+  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
+  // De geheugencheck: `undefined` tot hij gezocht is, `null` als er geen is.
+  const [check, setCheck] = useState<CheckKlaar | null | undefined>(undefined);
   const [groep, setGroep] = useState<Groep | undefined>(undefined);
   const [groepGelezen, setGroepGelezen] = useState(false);
   const [kindId, setKindId] = useState<string | null>(null);
@@ -137,6 +116,9 @@ export function HomeScreen({
   // het net op "Andere groep" drukte.
   const [weetNiet, setWeetNiet] = useState(false);
   const [andereGroep, setAndereGroep] = useState(false);
+  // "Later" op Welkom terug (ADR-250). Na de volgende ronde is hij vanzelf weg,
+  // want dan was de laatste ronde vandaag; tot dan is dit genoeg.
+  const [terugLater, setTerugLater] = useState(false);
 
   useEffect(() => {
     void loadPlayedRounds().then((rondes) => {
@@ -144,6 +126,8 @@ export function HomeScreen({
       setGelezen(true);
     });
     void loadOpenRounds().then(setOpen);
+    void loadItemStates().then(setStates);
+    void zoekGeheugencheck(new Date()).then(setCheck);
     void (async () => {
       const kind = await getActiveChild();
       setGroep(kind ? huidigeGroep(kind, new Date()) : undefined);
@@ -167,14 +151,121 @@ export function HomeScreen({
     setAndereGroep(false);
   }
 
+  const { actief } = usePremium();
+  const vandaag = useVandaag();
+
   // Over every set a round can be started on, mixes included: a round of the
   // Rekenmix that could not be placed would drop out of the history entirely.
   const alles = startbareOnderdelen();
   const gespeeld = geplaatst(played, alles);
-  const populair = meestGeoefend(gespeeld);
   // Een kind zonder naam oefent gewoon (ADR-229); de voordeur groet het zonder
   // naam, en vraagt hem pas na de eerste ronde, als uitnodiging.
   const naamloos = naam.trim() === '';
+
+  // Nieuw is: nog geen ronde af, geen ronde half en niets te herhalen. Wie er
+  // één stopte, heeft "Maak af" nodig en is geen beginner meer.
+  const basisGelezen = gelezen && open !== null && states !== null && groepGelezen;
+  const nieuw = basisGelezen && played.length === 0 && open.length === 0 && states.size === 0;
+  // Pas als alles gelezen is, staat de rest er (ADR-229): de pagina tekende
+  // eerst de ene indeling en wisselde dan naar de andere, en alles onder het
+  // eerste blok sprong een scherm omlaag (CLS 0,36). Voor wie al oefende, wacht
+  // Nu doen ook op het plan, de dozen en de geheugencheck: een kaart die
+  // bovenaan verschijnt en dan plaatsmaakt, is een knop onder een vinger die
+  // weg is.
+  const gelezenAlles = basisGelezen && (nieuw || (vandaag !== null && check !== undefined));
+
+  // ---- Nu doen (ADR-250) ----
+  const terug = states === null || terugLater ? null : terugkomst(played, states, new Date());
+  const herhalen =
+    actief && vandaag !== null && !vandaag.voortgang.klaar && vandaag.plan.vragen > 0;
+  const half = halfAf(open ?? [], alles);
+  const laatste = gespeeld[0] ?? null;
+  const soort = kiesNuDoen({
+    terug: terug !== null,
+    herhalen,
+    maakAf: half !== null,
+    check: check !== null && check !== undefined,
+    verder: laatste !== null,
+  });
+  const klaarVandaag = actief && vandaag !== null && vandaag.voortgang.klaar;
+
+  // Het onderwerp van Nu doen staat niet nog eens in Verder oefenen.
+  const nuSet =
+    soort === 'terug'
+      ? (terug?.eerste.deel.setId ?? null)
+      : soort === 'maakAf'
+        ? (half?.deel.setId ?? null)
+        : soort === 'check'
+          ? (check?.deel.setId ?? null)
+          : soort === 'verder'
+            ? (laatste?.deel.setId ?? null)
+            : null;
+
+  let nuDoen: ReactNode = null;
+  if (soort === 'terug' && terug !== null) {
+    nuDoen = (
+      <TerugKaart
+        terug={terug}
+        gespeeld={gespeeld}
+        onVerder={onVerder}
+        onLater={() => setTerugLater(true)}
+      />
+    );
+  } else if (soort === 'herhalen' && vandaag !== null) {
+    nuDoen = <VandaagHerhalen vandaag={vandaag} gespeeld={gespeeld} onPlan={onPlan} />;
+  } else if (soort === 'maakAf' && half !== null) {
+    const { deel, ronde } = half;
+    const rest = ronde.rest.length;
+    nuDoen = (
+      <NuDoenKaart
+        moduleId={deel.moduleId}
+        kop={t('home.nu.maakAf.kop')}
+        regel={
+          rest === 1
+            ? t('home.nu.maakAf.regelEen', { onderwerp: naamVan(deel), totaal: ronde.totaal })
+            : t('home.nu.maakAf.regel', {
+                onderwerp: naamVan(deel),
+                aantal: rest,
+                totaal: ronde.totaal,
+              })
+        }
+        knop={t('home.nu.maakAf.knop')}
+        balk={{ waarde: ronde.beantwoord / ronde.totaal, label: restVan(ronde) }}
+        onStart={() => onVerder(deel, vrijeVorm(deel, ronde.mode, actief), ronde.rest)}
+      />
+    );
+  } else if (soort === 'check' && check) {
+    nuDoen = <Geheugencheck check={check} onStart={onGeheugencheck} />;
+  } else if (soort === 'verder' && laatste !== null) {
+    const vorm = vrijeVorm(laatste.deel, laatste.ronde.mode, actief);
+    nuDoen = (
+      <NuDoenKaart
+        vorm="smal"
+        moduleId={laatste.deel.moduleId}
+        kop={t('home.nu.verder.kop', { onderwerp: naamVan(laatste.deel) })}
+        regel={t(`mode.${vorm}` as TranslationKey)}
+        knop={t('home.nu.verder.knop')}
+        onStart={() => onBegin(laatste.deel, vorm)}
+      />
+    );
+  }
+
+  // Een nieuw kind zonder groep krijgt eerst de vraag naar de groep (ADR-243),
+  // want de groep bepaalt waarmee het begint. Wie "Weet ik niet" zei, krijgt
+  // hem niet terug; wie op "Andere groep" drukt, wel.
+  const vraagGroep = nieuw && ((groep === undefined && !weetNiet) || andereGroep);
+  const kleuter = nieuw && !vraagGroep && isKleutergroep(groep);
+
+  // De zin onder de begroeting zegt wat er nu staat, en hoort bij Nu doen.
+  const status: string = !gelezenAlles
+    ? t('home.todayOpen')
+    : nieuw
+      ? vraagGroep
+        ? t('home.status.groep')
+        : kleuter
+          ? t('home.status.kleuter')
+          : t('home.status.begin')
+      : statusVoor(soort, vandaag?.plan.vragen ?? 0, klaarVandaag);
 
   // Het welkomstvlak (Kleurblokken, ADR-238): het merkvlak van de pagina, met
   // Denker die zwaait over de rand. De vormen zijn versiering, staan stil en
@@ -189,7 +280,7 @@ export function HomeScreen({
         <h1 className="tk-welkom-kop">
           {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
         </h1>
-        <WelkomRegel />
+        <p className="tk-welkom-tekstregel">{status}</p>
       </div>
       <span className="tk-welkom-denker">
         <Brandmark size={136} uitdrukking="zwaaien" />
@@ -197,241 +288,264 @@ export function HomeScreen({
     </div>
   );
 
-  // Wie twee weken weg was, hoort eerst dat zijn diploma's er nog hangen, en
-  // wat de eerste ronde terug kost (ADR-149). Niets als er niets te zeggen is.
-  const terug = <TerugBlok played={played} gespeeld={gespeeld} onVerder={onVerder} />;
-
-  // Met premium bovenaan, boven alles: dan is het het enige blok dat zegt wat er
-  // nú te doen is, met een knop per ronde (ADR-126). Zonder premium is het een
-  // getal en een slot, en dat is geen opdracht: wie binnenkomt, ziet dan eerst
-  // waar hij kan beginnen, en het blok staat onder de rijen (ADR-152).
-  //
-  // De sleutel is de groep: die wordt na het openen gelezen, en het plan volgt
-  // hem (ADR-151), ook als hij bovenaan deze pagina gekozen wordt (ADR-243).
-  // Met de naam van het blok ervoor, want Vandaag en het doel staan naast
-  // elkaar in dezelfde kolom en zouden anders dezelfde sleutel dragen.
-  const { actief } = usePremium();
-  const vandaag = (
-    <VandaagBlok key={`vandaag-${groep ?? 'geen'}`} gespeeld={gespeeld} onPlan={onPlan} />
-  );
-  const vandaagBoven = actief ? vandaag : null;
-  const vandaagOnder = actief ? null : vandaag;
-
-  // Een nieuw kind: eerst waar het begint, dan de vakken en hoe het werkt
-  // (ADR-204). Wie al geoefend heeft, heeft de vakken onderaan: de rijen
-  // erboven zijn dan zijn eigen weg terug.
-  // Nieuw is: nog geen ronde af én geen ronde half. Wie er één stopte, heeft
-  // "Maak af" nodig en is geen beginner meer.
-  const nieuw = gelezen && played.length === 0 && open !== null && open.length === 0;
-
-  // Een nieuw kind zonder groep krijgt eerst de vraag naar de groep (ADR-243),
-  // want de groep bepaalt waarmee het begint. Wie "Weet ik niet" zei, krijgt
-  // hem niet terug; wie op "Andere groep" drukt, wel.
-  const groepVraag =
-    nieuw && ((groep === undefined && !weetNiet) || andereGroep) ? (
-      <GroepVraag gekozen={groep === undefined && !weetNiet ? null : groep} onKies={kiesGroep} />
-    ) : null;
-
-  // Waar dit kind mee begint: de eerste rij van de pagina, want het is de enige
-  // die zegt "druk hier, dan oefen je" (ADR-162). Voor een nieuw kind zijn dat
-  // de vijf onderwerpen van zijn groep, één per vak, en kiest het zelf waarmee
-  // (ADR-243). Wie al geoefend heeft, ziet de rij als "Meest geoefend", ook
-  // zonder naam. Groep 1 en 2 hebben nog geen onderwerpen, en krijgen hier te
-  // horen dat die eraan komen (ADR-244).
-  const beginnen =
-    groepVraag !== null ? null : nieuw && isKleutergroep(groep) ? (
-      <VoorKleuters />
-    ) : (
-      <Populairst populair={populair} groep={groep} premium={actief} onBegin={onBegin} />
-    );
-
-  // Onder die rij, zolang het kind nieuw is: een andere groep kiezen. Onder de
-  // kaarten en niet erboven, want eerst kiest het waarmee het begint. Zonder
-  // naam in dezelfde rij als "Ik ben een ouder".
-  const andereGroepKnop =
-    nieuw && groepVraag === null ? (
-      <button
-        type="button"
-        className="tk-button tk-button-tertiary"
-        onClick={() => setAndereGroep(true)}
-      >
-        {groep === undefined ? t('home.begin.kiesGroep') : t('home.begin.andereGroep')}
-      </button>
-    ) : null;
-
-  // Wat bij de groep past en nog niet gedaan is, onder wat het vaakst gedaan
-  // is (ADR-206). Zo doet de groep ook iets voor wie al geoefend heeft.
-  const passend = (
-    <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />
-  );
-  const vakken = <VakkenRaster onVak={onVak} />;
-
   // Elk blok met een vaste sleutel: als de rondes gelezen zijn en de pagina
   // van volgorde wisselt, verhuist React de blokken in plaats van ze opnieuw
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
-  //
-  // Zonder naam staan onder waar je begint de twee uitwegen van het oude
-  // naamscherm: voor een ouder en voor een kind met een inlogcode (ADR-229).
-  const gast = naamloos ? (
-    <VoorWieNieuwIs onVoorOuders={onVoorOuders} ervoor={andereGroepKnop} />
-  ) : andereGroepKnop === null ? null : (
-    <div className="flex flex-wrap gap-3">{andereGroepKnop}</div>
-  );
-  // Pas als alles gelezen is, staat de rest er (ADR-229). Daarvoor alleen de
-  // kop: de pagina tekende eerst de indeling voor wie al oefende en wisselde
-  // dan naar die voor een nieuw kind, en alles onder het eerste blok sprong een
-  // scherm omlaag. Sinds er geen naamscherm meer voor staat, is dat het eerste
-  // wat een nieuwe bezoeker ziet, en Lighthouse zag het ook (CLS 0,36).
-  const gelezenAlles = gelezen && open !== null && groepGelezen;
-  const kern = !gelezenAlles
-    ? [blok('kop', kop)]
-    : nieuw
-      ? [
-          blok('kop', kop),
-          blok('groepVraag', groepVraag),
-          blok('beginnen', beginnen),
-          blok('gast', gast),
-          blok('vandaagBoven', vandaagBoven),
-          blok('vakken', vakken),
-          blok('zo', <ZoWerktHet />),
-          blok('vandaagOnder', vandaagOnder),
-        ]
-      : [
-          blok('kop', kop),
-          // Na de eerste ronde, één keer: hoe heet je? Weg te klikken (ADR-229).
-          blok('naam', naamloos ? <NaamUitnodiging /> : null),
-          blok('terug', terug),
-          // Eén keer per kind, bovenaan zolang hij er is: het is een uitnodiging
-          // en geen rij, en na één ronde is hij weg (ADR-228).
-          blok('check', <Geheugencheck onStart={onGeheugencheck} />),
-          blok('beginnen', beginnen),
-          blok('passend', passend),
-          blok('vandaagBoven', vandaagBoven),
-          blok('recent', <Recent gespeeld={gespeeld} premium={actief} onBegin={onBegin} />),
-          blok('maakAf', <MaakAf open={open} alles={alles} premium={actief} onVerder={onVerder} />),
-          blok('vandaagOnder', vandaagOnder),
-          blok('vakken', vakken),
-          blok('gast', gast),
-        ];
 
-  // Eén kolom, op elke maat (ADR-168). De kolom ernaast is weg.
-  return <div className="tk-home">{kern}</div>;
-}
+  if (!gelezenAlles) return <div className="tk-home">{[blok('kop', kop)]}</div>;
 
-/**
- * De zin onder de begroeting. Met premium en vragen die vandaag terug moeten:
- * hoeveel dat er zijn, want dat is wat er nu klaarstaat (ADR-238). Anders de
- * zin van altijd. Zonder code is dat getal een feit en geen wachtrij
- * (ADR-124), dus dan staat het alleen in het blok Vandaag herhalen.
- */
-function WelkomRegel() {
-  const { actief } = usePremium();
-  const vandaag = useVandaag();
-  const vragen = actief && vandaag !== null && !vandaag.voortgang.klaar ? vandaag.plan.vragen : 0;
+  if (nieuw) {
+    // Waar dit kind mee begint: de vijf onderwerpen van zijn groep, één per
+    // vak, en het kiest zelf waarmee (ADR-243). Groep 1 en 2 hebben nog geen
+    // onderwerpen, en krijgen hier te horen dat die eraan komen (ADR-244).
+    const beginnen = vraagGroep ? (
+      <GroepVraag gekozen={groep === undefined && !weetNiet ? null : groep} onKies={kiesGroep} />
+    ) : kleuter ? (
+      <VoorKleuters />
+    ) : (
+      <Starters groep={groep} premium={actief} onBegin={onBegin} />
+    );
+    // Onder de kaarten en niet erboven, want eerst kiest het waarmee het begint.
+    const andere = vraagGroep ? null : (
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          className="tk-button tk-button-tertiary"
+          onClick={() => setAndereGroep(true)}
+        >
+          {groep === undefined ? t('home.begin.kiesGroep') : t('home.begin.andereGroep')}
+        </button>
+      </div>
+    );
+
+    return (
+      <div className="tk-home">
+        {[
+          blok('kop', kop),
+          blok('beginnen', beginnen),
+          blok('andere', andere),
+          blok('vakken', <VakkenRij onVak={onVak} />),
+          // Zonder naam de twee uitwegen van het oude naamscherm: voor een
+          // ouder en voor een kind met een inlogcode (ADR-229). De inlogcode
+          // staat nergens anders.
+          blok('gast', naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null),
+        ]}
+      </div>
+    );
+  }
+
+  const verder = verderOefenen(open ?? [], gespeeld, alles, nuSet);
 
   return (
-    <p className="tk-welkom-tekstregel">
-      {vragen === 0
-        ? t('home.todayOpen')
-        : vragen === 1
-          ? t('home.welkomKlaarEen')
-          : t('home.welkomKlaar', { aantal: vragen })}
-    </p>
+    <div className="tk-home">
+      {[
+        blok('kop', kop),
+        blok('nu', nuDoen),
+        // Na de eerste ronde, één keer: hoe heet je? Onder Nu doen en niet
+        // erboven, en weg te klikken (ADR-229, ADR-250).
+        blok('naam', naamloos ? <NaamUitnodiging /> : null),
+        blok('klaar', klaarVandaag && soort !== 'herhalen' ? <KlaarVoorVandaag /> : null),
+        blok(
+          'verder',
+          verder.length === 0 ? null : (
+            <VerderOefenen
+              kaarten={verder}
+              premium={actief}
+              onBegin={onBegin}
+              onVerder={onVerder}
+            />
+          ),
+        ),
+        blok(
+          'passend',
+          <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />,
+        ),
+        blok(
+          'herhaal',
+          !actief && vandaag !== null && vandaag.plan.vragen > 0 ? (
+            <HerhaalRegel vragen={vandaag.plan.vragen} />
+          ) : null,
+        ),
+        blok('gast', naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null),
+      ]}
+    </div>
   );
 }
 
+/** De zin onder de begroeting voor wie al geoefend heeft, bij zijn Nu doen. */
+function statusVoor(soort: NuDoenSoort | null, vragen: number, klaar: boolean): string {
+  switch (soort) {
+    case 'terug':
+      return t('home.status.terug');
+    // Met premium staan de vragen echt klaar: er is een knop (ADR-238).
+    case 'herhalen':
+      return vragen === 1 ? t('home.welkomKlaarEen') : t('home.welkomKlaar', { aantal: vragen });
+    case 'maakAf':
+      return t('home.status.maakAf');
+    case 'check':
+    case 'verder':
+      return klaar ? t('home.status.klaar') : t('home.status.verder');
+    default:
+      return t('home.todayOpen');
+  }
+}
+
+/** "Nog 11 van de 12 vragen": wat er van een ronde over is. */
+function restVan(ronde: OpenRound): string {
+  return ronde.rest.length === 1
+    ? t('home.openRestOne', { totaal: ronde.totaal })
+    : t('home.openRest', { aantal: ronde.rest.length, totaal: ronde.totaal });
+}
+
 /**
- * One card in "meest geoefend": a mark, the exercise, the way it was done, and
- * under a rule how often.
+ * Eén kaart in een rij op Vandaag (ADR-250): de plaat links, het onderwerp, de
+ * spelvorm, en waar dat zo is de stand eronder. Dezelfde kaart in Verder
+ * oefenen, Hier begin je mee en Past bij groep.
  */
-function GeoefendKaart({
+function OefenKaart({
   deel,
   vorm,
-  status,
+  half,
+  uitslag,
   onClick,
 }: {
   readonly deel: Onderdeel;
   readonly vorm: string;
-  readonly status: string | null;
+  /** Een ronde die half af is: een balk en hoeveel er nog over is. */
+  readonly half?: OpenRound | undefined;
+  /** De uitslag van de laatste ronde, met premium (ADR-192). */
+  readonly uitslag?: string | null | undefined;
   readonly onClick: () => void;
 }) {
   const ModuleIcon = MODULE_ICON[deel.moduleId];
+  const rest = half === undefined ? null : restVan(half);
 
   return (
-    <button type="button" data-module={deel.moduleId} className="tk-kaart" onClick={onClick}>
+    <button
+      type="button"
+      data-module={deel.moduleId}
+      className="tk-kaart tk-maakaf"
+      onClick={onClick}
+    >
       <span className="tk-plaat tk-plaat-groot">
         <ModuleIcon size={24} />
       </span>
-      <span className="tk-kaart-titel tk-kaart-titel-twee">{naamVan(deel)}</span>
+      <span className="tk-kaart-titel">{naamVan(deel)}</span>
       <span className="tk-kaart-regel">{vorm}</span>
-      {status === null ? null : <span className="tk-kaart-voet">{status}</span>}
+      {half === undefined || rest === null ? null : (
+        // The bar is decorative: the words under it say the same, and the
+        // whole card is one button whose name is read once.
+        <span aria-hidden="true">
+          <ProgressBar value={half.beantwoord / half.totaal} showDot={false} label={rest} />
+        </span>
+      )}
+      {rest !== null ? <span className="tk-kaart-voet">{rest}</span> : null}
+      {uitslag ? <span className="tk-kaart-voet">{uitslag}</span> : null}
     </button>
   );
 }
 
 /**
- * Where this child keeps going, most played first, with the count on each.
+ * Verder oefenen (ADR-250): wat half af is vooraan, daarna wat gespeeld is,
+ * elk onderwerp één keer.
  *
- * **The count is this device's own.** Progress never leaves the machine
- * (ADR-015), so there is no "most popular with everyone" and no honest way to
- * invent one. A profile with no rounds behind it is offered the ones to start
- * with, at nought rather than at a number that would be a guess.
+ * Een ronde die half af is, gaat verder met precies de vragen die nog niet
+ * gesteld zijn (ADR-115). Een gespeeld onderwerp begint opnieuw op dezelfde
+ * manier, en draagt met premium de uitslag van de laatste ronde: een cijfer
+ * alleen bij een toets (ADR-235), anders een telling.
  */
-function Populairst({
-  populair,
+function VerderOefenen({
+  kaarten,
+  premium,
+  onBegin,
+  onVerder,
+}: {
+  readonly kaarten: readonly VerderKaart[];
+  /** Zonder premium geen uitslag, en een premiummanier wordt een gratis manier (ADR-192). */
+  readonly premium: boolean;
+  readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
+  readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
+}) {
+  return (
+    <ScrollRij titel={t('home.verderTitel')}>
+      {kaarten.map((kaart) => {
+        const { deel } = kaart;
+        if (kaart.soort === 'half') {
+          const vorm = vrijeVorm(deel, kaart.ronde.mode, premium);
+          return (
+            <OefenKaart
+              key={deel.setId}
+              deel={deel}
+              vorm={t(`mode.${vorm}` as TranslationKey)}
+              half={kaart.ronde}
+              onClick={() => onVerder(deel, vorm, kaart.ronde.rest)}
+            />
+          );
+        }
+        const { ronde } = kaart.gespeeld;
+        const vorm = vrijeVorm(deel, ronde.mode, premium);
+        return (
+          <OefenKaart
+            key={deel.setId}
+            deel={deel}
+            vorm={t(`mode.${vorm}` as TranslationKey)}
+            uitslag={premium ? uitslagVan(kaart.gespeeld) : null}
+            onClick={() => onBegin(deel, vorm)}
+          />
+        );
+      })}
+    </ScrollRij>
+  );
+}
+
+/**
+ * De uitslag van een ronde. Over wat beantwoord is en niet over wat gevraagd
+ * was: een ronde mag eerder stoppen, en vragen die niemand zag zijn niet fout.
+ */
+function uitslagVan({ ronde }: Gespeeld): string {
+  const uit = { goed: ronde.correct, totaal: ronde.answered };
+  // Een cijfer alleen bij een toets (ADR-235): een oefenronde, met hulp
+  // onderweg, krijgt geen oordeel maar een telling.
+  const cijfer = ronde.toets === true ? grade(ronde.correct, ronde.answered) : null;
+  return cijfer === null
+    ? t('home.recentOutOf', uit)
+    : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit });
+}
+
+/**
+ * Waar een nieuw kind mee begint: de vijf onderwerpen van zijn groep, één per
+ * vak (ADR-243). Geen getal eronder: een kind dat nog niets deed, heeft geen
+ * stand (ADR-131).
+ */
+function Starters({
   groep,
   premium,
   onBegin,
 }: {
-  readonly populair: readonly Populair[];
   /** Waarmee een nieuw kind begint, hangt af van zijn groep (ADR-151). */
   readonly groep: Groep | undefined;
-  /**
-   * Zonder premium geen aantal eronder, en een premiummanier wordt de eerste
-   * gratis manier van die set (ADR-192). De volgorde blijft, want die zegt waar
-   * je mee verder wilt; de telling is voortgang.
-   */
   readonly premium: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
-  const leeg = populair.length === 0;
-  const lijst = leeg ? starters(groep) : populair;
+  const lijst = starters(groep);
   if (lijst.length === 0) return null;
 
   return (
-    // De kop hangt af van wie ernaar kijkt. Voor een kind dat nog niets deed is
-    // "Meest geoefend" een kop over een geschiedenis die niet bestaat, en het
-    // is meteen het eerste wat het leest (ADR-131). De regel eronder zei dat al
-    // en is nu de kop zelf, want twee keer hetzelfde is één keer te veel.
     <ScrollRij
-      titel={
-        !leeg
-          ? t('home.popularTitle')
-          : groep === undefined
-            ? t('home.popularStart')
-            : t('home.popularStartGroep', { groep })
-      }
+      titel={groep === undefined ? t('home.popularStart') : t('home.popularStartGroep', { groep })}
     >
-      {lijst.map(({ deel, mode, keer }) => (
-        <GeoefendKaart
-          key={`${deel.setId}-${mode}`}
-          deel={deel}
-          vorm={t(`mode.${vrijeVorm(deel, mode, premium)}` as TranslationKey)}
-          // Nought is a sentence rather than a nought: "0 keer gespeeld" reads
-          // as a score on a child who has done nothing wrong.
-          status={
-            !premium
-              ? null
-              : keer === 0
-                ? t('home.popularNone')
-                : keer === 1
-                  ? t('home.popularOnce')
-                  : t('home.popularTimes', { aantal: keer })
-          }
-          onClick={() => onBegin(deel, vrijeVorm(deel, mode, premium))}
-        />
-      ))}
+      {lijst.map(({ deel, mode }) => {
+        const vorm = vrijeVorm(deel, mode, premium);
+        return (
+          <OefenKaart
+            key={`${deel.setId}-${mode}`}
+            deel={deel}
+            vorm={t(`mode.${vorm}` as TranslationKey)}
+            onClick={() => onBegin(deel, vorm)}
+          />
+        );
+      })}
     </ScrollRij>
   );
 }
@@ -460,159 +574,12 @@ function PastBijGroep({
       {lijst.map(({ deel, mode }) => {
         const vorm = vrijeVorm(deel, mode, premium);
         return (
-          <GeoefendKaart
+          <OefenKaart
             key={deel.setId}
             deel={deel}
             vorm={t(`mode.${vorm}` as TranslationKey)}
-            status={premium ? t('home.popularNone') : null}
             onClick={() => onBegin(deel, vorm)}
           />
-        );
-      })}
-    </ScrollRij>
-  );
-}
-
-/**
- * What was just practised, and what it came to — newest first, as a list.
- *
- * A log and not a league table. The mark is over what was answered rather than
- * what was asked, because a round can be stopped early and the questions nobody
- * saw were not got wrong. Every row starts that same set the same way again.
- */
-function Recent({
-  gespeeld,
-  premium,
-  onBegin,
-}: {
-  readonly gespeeld: readonly Gespeeld[];
-  /**
-   * Zonder premium geen cijfer, en een premiummanier wordt de eerste gratis
-   * manier van die set (ADR-192): de rij blijft de snelste weg terug naar wat
-   * je net deed, de uitslag ervan is voortgang.
-   */
-  readonly premium: boolean;
-  readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
-}) {
-  const recent = gespeeld.slice(0, RECENT_SHOWN);
-
-  return (
-    <section className="flex flex-col gap-3" aria-label={t('home.recentTitle')}>
-      <h2 className="tk-sectie">{t('home.recentTitle')}</h2>
-
-      {recent.length === 0 ? (
-        <p className="text-tekst-secundair">{t('home.recentNone')}</p>
-      ) : (
-        <ul className="tk-lijst">
-          {recent.map(({ deel, ronde }) => {
-            const ModuleIcon = MODULE_ICON[deel.moduleId];
-            // Een cijfer alleen bij een toets (ADR-235): een oefenronde, met
-            // hulp onderweg, krijgt geen oordeel maar een telling.
-            const cijfer = ronde.toets === true ? grade(ronde.correct, ronde.answered) : null;
-            const vorm = vrijeVorm(deel, ronde.mode, premium);
-            const uit = { goed: ronde.correct, totaal: ronde.answered };
-
-            return (
-              <li key={ronde.at}>
-                <button
-                  type="button"
-                  data-module={deel.moduleId}
-                  className="tk-lijstrij"
-                  onClick={() => onBegin(deel, vorm)}
-                >
-                  <span className="tk-plaat">
-                    <ModuleIcon size={24} />
-                  </span>
-                  <span className="tk-lijstrij-tekst">
-                    <span className="tk-lijstrij-titel">{naamVan(deel)}</span>
-                    <span className="tk-lijstrij-regel">{t(`mode.${vorm}` as TranslationKey)}</span>
-                  </span>
-                  {premium ? (
-                    <span className="tk-lijstrij-stand">
-                      {cijfer === null
-                        ? t('home.recentOutOf', uit)
-                        : t('home.recentLine', { cijfer: formatGrade(cijfer), ...uit })}
-                    </span>
-                  ) : null}
-                  <span className="tk-lijstrij-pijl">
-                    <NextIcon size={20} />
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
-  );
-}
-
-/**
- * The rounds this child started and did not finish, newest first (ADR-115).
- *
- * Each card is the set, the way it was being answered, and how far it got —
- * as a bar and in words, because "nog 8 van de 15" is what decides whether it
- * is worth doing before dinner. Pressing it asks exactly the questions that
- * round had not asked yet, in the same way, and nothing else.
- *
- * Empty is a sentence rather than an absent row: the row is where a stopped
- * round will be, and a child who has never stopped one should still learn
- * that it is there.
- */
-function MaakAf({
-  open,
-  alles,
-  premium,
-  onVerder,
-}: {
-  readonly open: readonly OpenRound[] | null;
-  readonly alles: readonly Onderdeel[];
-  /** Zonder premium gaat een ronde in een premiummanier verder op een gratis manier (ADR-192). */
-  readonly premium: boolean;
-  readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
-}) {
-  const kaarten = (open ?? []).flatMap((ronde) => {
-    const deel = alles.find((kandidaat) => kandidaat.setId === ronde.setId);
-    return deel ? [{ deel, ronde }] : [];
-  });
-  const getoond = kaarten.slice(0, OPEN_SHOWN);
-
-  return (
-    <ScrollRij
-      titel={t('home.openTitle')}
-      // Nothing until the rounds are read, so the sentence for "nothing to
-      // finish" never flashes past a child who has three.
-      leeg={open !== null && getoond.length === 0 ? t('home.openNone') : undefined}
-    >
-      {getoond.map(({ deel, ronde }) => {
-        const ModuleIcon = MODULE_ICON[deel.moduleId];
-        const rest =
-          ronde.rest.length === 1
-            ? t('home.openRestOne', { totaal: ronde.totaal })
-            : t('home.openRest', { aantal: ronde.rest.length, totaal: ronde.totaal });
-
-        return (
-          <button
-            key={`${deel.setId}-${ronde.mode}`}
-            type="button"
-            data-module={deel.moduleId}
-            className="tk-kaart tk-maakaf"
-            onClick={() => onVerder(deel, vrijeVorm(deel, ronde.mode, premium), ronde.rest)}
-          >
-            <span className="tk-plaat tk-plaat-groot">
-              <ModuleIcon size={24} />
-            </span>
-            <span className="tk-kaart-titel">{naamVan(deel)}</span>
-            <span className="tk-kaart-regel">
-              {t(`mode.${vrijeVorm(deel, ronde.mode, premium)}` as TranslationKey)}
-            </span>
-            {/* The bar is decorative: the words under it say the same, and the
-                whole card is one button whose name is read once. */}
-            <span aria-hidden="true">
-              <ProgressBar value={ronde.beantwoord / ronde.totaal} showDot={false} label={rest} />
-            </span>
-            <span className="tk-kaart-voet">{rest}</span>
-          </button>
         );
       })}
     </ScrollRij>

@@ -54,12 +54,14 @@ async function speel(page: Page) {
   throw new Error('De ronde hield niet op.');
 }
 
-/** Back to the front door, and the round is in the child's history. */
+/**
+ * Back to the front door, and the round is the way back: after one round its
+ * set is Nu doen, "Ga verder met …" (ADR-250).
+ */
 async function inGeschiedenis(page: Page, set: string) {
   // "Klaar" when nothing is due any more (ADR-149), "Terug naar Vandaag" otherwise.
   await page.getByRole('button', { name: /^(Klaar|Terug naar Vandaag)$/ }).click();
-  const recent = page.getByRole('region', { name: 'Recent geoefend' });
-  await expect(recent.getByRole('button', { name: new RegExp(set) }).first()).toBeVisible();
+  await expect(page.getByRole('region', { name: `Ga verder met ${set}` })).toBeVisible();
 }
 
 test('flags have a module page in the shape topography has', async ({ page }) => {
@@ -162,6 +164,18 @@ test('Oefentoets: no answers until the end, and then a mark', async ({ page }) =
   await speel(page);
   await expect(page.getByText('Cijfer', { exact: true })).toBeVisible();
   await inGeschiedenis(page, 'Bekende vlaggen van Afrika');
+
+  // Na een ronde op een ander onderwerp staat de toets in Verder oefenen, met
+  // zijn cijfer: alleen een toets krijgt er een (ADR-235, ADR-250).
+  await kies(page, 'Europa', /^Bekende vlaggen/, /^Meerkeuze/);
+  await start(page);
+  await speel(page);
+  await inGeschiedenis(page, 'Bekende vlaggen van Europa');
+  const verder = page.getByRole('region', { name: 'Verder oefenen' });
+  await expect(verder.getByRole('button', { name: /Bekende vlaggen van Afrika/ })).toContainText(
+    /Cijfer \d/,
+  );
+  await expect(verder.getByRole('button', { name: /Bekende vlaggen van Europa/ })).toHaveCount(0);
 });
 
 test('Ontdekken: a flag, where it is, its capital and one fact', async ({ page }) => {

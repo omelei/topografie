@@ -38,6 +38,13 @@ export const brand = {
   contact: 'info@leer.nu',
   /** Waar een school een klassencode aanvraagt. */
   scholen: 'scholen@leer.nu',
+  /**
+   * Wie verantwoordelijk is voor de gegevens, voor de privacyverklaring
+   * (ADR-249). Het KvK-nummer en de plaats komen uit de bouw (`KVK_NUMMER`
+   * en `VESTIGINGSPLAATS` in GitHub), zodat ze zonder codewijziging erbij
+   * komen; zie `Privacy.tsx`.
+   */
+  verantwoordelijke: 'Omelei',
 
   locale: 'nl-NL',
   /**

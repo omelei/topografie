@@ -437,19 +437,20 @@ test('the day plan says how much without a code, and is the plan with one', asyn
 
   await page.goto('/');
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  await expect(vandaag).toContainText('vandaag terug moet');
-  await expect(vandaag).toContainText('Leer.nu zet elke dag klaar wat aan de beurt is');
-  await expect(vandaag.getByRole('button', { name: /Tafel van 1/ })).toHaveCount(0);
+  await expect(vandaag).toContainText(/Vandaag (komt|komen) er \d+ (vraag|vragen) terug\./);
+  await expect(vandaag.getByRole('button')).toHaveCount(0);
+  // Geen slot en geen knop naar premium op Vandaag: een kind koopt niets
+  // (R-11, ADR-250).
+  await expect(page.locator('.tk-home')).not.toContainText(/premium/i);
 
-  // En het staat onder de rijen, niet bovenaan: wie binnenkomt, ziet eerst waar
-  // hij kan oefenen en dan pas een slot (ADR-152).
-  const recent = await page.getByRole('region', { name: 'Recent geoefend' }).boundingBox();
-  const slot = await vandaag.boundingBox();
-  expect(slot?.y ?? -1).toBeGreaterThan(recent?.y ?? Infinity);
+  // En het staat onder Nu doen, niet bovenaan: wie binnenkomt, ziet eerst waar
+  // hij kan oefenen (ADR-152, ADR-250).
+  const nu = await page.getByRole('region', { name: /^Ga verder met / }).boundingBox();
+  const regel = await vandaag.boundingBox();
+  expect(regel?.y ?? -1).toBeGreaterThan(nu?.y ?? Infinity);
 
   // En Premium staat in de kop, op elke pagina: sinds ADR-171 een bestemming
-  // en sinds ADR-241 de ene knop in de kop die opvalt. Exact, want "Bekijk
-  // premium" in het blok hierboven bevat hetzelfde woord.
+  // en sinds ADR-241 de ene knop in de kop die opvalt.
   const inDeNavigatie = page
     .getByRole('banner')
     .getByRole('button', { name: 'Premium', exact: true });

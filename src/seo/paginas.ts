@@ -122,6 +122,16 @@ export function seoPaginas(): SeoPagina[] {
     links: home.links,
   };
 
+  // De privacyverklaring (ADR-249).
+  const privacy: SeoPagina = {
+    pad: pathFor({ name: 'privacy' }),
+    titel: t('seo.privacy.titel'),
+    beschrijving: t('seo.privacy.beschrijving'),
+    kop: t('privacy.titel'),
+    linksKop: t('seo.vakken'),
+    links: home.links,
+  };
+
   const vakken = BUILT_MODULES.flatMap((module): SeoPagina[] => {
     const vak = t(VAK_ZOEKNAAM[module.id]);
     // Midden in een zin zonder hoofdletter: "Meer topografie".
@@ -209,6 +219,7 @@ export function seoPaginas(): SeoPagina[] {
       links: [...voorOuders.links, { pad: scholen.pad, naam: t('ouders.scholen') }],
     },
     scholen,
+    privacy,
     ...vakken,
   ];
 }

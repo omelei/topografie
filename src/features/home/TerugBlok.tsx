@@ -1,5 +1,3 @@
-import { useEffect, useState } from 'react';
-import { NextIcon } from '@/components/Icon';
 import {
   aanDeBeurt,
   isDue,
@@ -11,7 +9,8 @@ import {
 import { isFoutenOnderwerp, isPremiumOnderwerp } from '@/features/module/premium';
 import { startbareOnderdelen, type Gespeeld, type Onderdeel } from '@/features/module/onderdelen';
 import { t } from '@/i18n';
-import { loadItemStates, type PlayedRound } from '@/store/progress';
+import type { PlayedRound } from '@/store/progress';
+import { NuDoenKaart } from './NuDoen';
 import { vormVoor } from './useVandaag';
 
 /** De eerste ronde na een tijd weg: kort, zodat hij makkelijk af te maken is. */
@@ -37,25 +36,27 @@ const DAG_MS = 86_400_000;
  * concept), en dat is een slechte eerste dag terug. Elke opfrisser in doos vijf
  * levert bovendien een stempel op.
  */
-export function TerugBlok({
-  played,
-  gespeeld,
-  onVerder,
-}: {
-  readonly played: readonly PlayedRound[];
-  readonly gespeeld: readonly Gespeeld[];
-  readonly onVerder: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
-}) {
-  const [states, setStates] = useState<ReadonlyMap<string, ItemState> | null>(null);
+export interface Terugkomst {
+  /** Hoeveel vragen er vandaag terugkomen. */
+  readonly aantal: number;
+  /** De eerste ronde terug: de set, en welke vragen. */
+  readonly eerste: { readonly deel: Onderdeel; readonly ids: readonly string[] };
+  readonly minuten: number;
+}
 
-  useEffect(() => {
-    void loadItemStates().then(setStates);
-  }, []);
-
+/**
+ * Of dit kind terugkomt, en met wat (ADR-149). Null als de laatste ronde
+ * minder dan `TERUGKOMST_DAGEN` geleden is, of als er niets terug hoeft. Sinds
+ * ADR-250 apart van de kaart, omdat Nu doen moet weten of hij er is.
+ */
+export function terugkomst(
+  played: readonly PlayedRound[],
+  states: ReadonlyMap<string, ItemState>,
+  now: Date,
+): Terugkomst | null {
   const laatste = played[0]?.at;
-  if (states === null || laatste === undefined) return null;
+  if (laatste === undefined) return null;
 
-  const now = new Date();
   const weg = Math.floor((now.getTime() - new Date(laatste).getTime()) / DAG_MS);
   if (weg < TERUGKOMST_DAGEN) return null;
 
@@ -64,26 +65,37 @@ export function TerugBlok({
 
   const eerste = eersteRonde(states, now);
   if (eerste === null) return null;
-  const minuten = minutenVoor(eerste.ids.length);
+  return { aantal, eerste, minuten: minutenVoor(eerste.ids.length) };
+}
+
+/**
+ * Welkom terug als Nu doen (ADR-250): de kaart zonder vak, want hij gaat over
+ * alles wat je oefende. "Later" zet hem weg tot het kind een ronde deed, en
+ * daarna is hij vanzelf weg: dan was de laatste ronde vandaag.
+ */
+export function TerugKaart({
+  terug,
+  gespeeld,
+  onVerder,
+  onLater,
+}: {
+  readonly terug: Terugkomst;
+  readonly gespeeld: readonly Gespeeld[];
+  readonly onVerder: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
+  readonly onLater: () => void;
+}) {
+  const { aantal, eerste, minuten } = terug;
 
   return (
-    <section className="tk-lijstrij tk-terug" aria-label={t('terug.titel')}>
-      <span className="tk-lijstrij-tekst">
-        <span className="tk-lijstrij-titel">{t('terug.zin')}</span>
-        <span className="tk-lijstrij-regel">
-          {aantal === 1 ? t('terug.klaarEen') : t('terug.klaar', { aantal })}{' '}
-          {minuten === 1 ? t('terug.minuutEen') : t('terug.minuten', { minuten })}
-        </span>
-      </span>
-      <button
-        type="button"
-        className="tk-button"
-        onClick={() => onVerder(eerste.deel, vormVoor(eerste.deel, gespeeld), eerste.ids)}
-      >
-        <NextIcon size={20} />
-        {t('terug.knop')}
-      </button>
-    </section>
+    <NuDoenKaart
+      kop={t('terug.zin')}
+      regel={`${aantal === 1 ? t('terug.klaarEen') : t('terug.klaar', { aantal })} ${
+        minuten === 1 ? t('terug.minuutEen') : t('terug.minuten', { minuten })
+      }`}
+      knop={t('terug.knop')}
+      onStart={() => onVerder(eerste.deel, vormVoor(eerste.deel, gespeeld), eerste.ids)}
+      onLater={onLater}
+    />
   );
 }
 

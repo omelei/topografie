@@ -3107,6 +3107,172 @@
   .tk-eerste > .tk-keuzes {
     flex: 1 1 100%;
   }
+  /* De groepen als raster van vier, met alleen het cijfer (ADR-250), en "Weet
+   * ik niet" over de hele breedte eronder. Zo past de vraag op een telefoon
+   * van 360 bij 640 boven de vouw. */
+  .tk-keuzes.tk-keuzes-raster {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .tk-keuzes-raster > .tk-keuze {
+    justify-content: center;
+    min-height: 56px;
+  }
+  .tk-keuzes-raster > .tk-keuze:last-child {
+    grid-column: 1 / -1;
+  }
+
+  /* ---- Nu doen (ADR-250) --------------------------------------------------
+   * De ene kaart bovenaan Vandaag: de kaart van "Je eerste ronde" (tk-eerste),
+   * met de plaat van het vak naast een kop van 24 en de knop over de hele
+   * breedte. Zonder vak de lichte lijn en een onderkant in nacht. De smalle
+   * vorm, voor Ga verder, zet de plaat naast kop en regel samen. */
+  .tk-nudoen {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    border: var(--stroke-tegel) solid var(--module-rand);
+    border-radius: var(--kaart-radius);
+    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
+    background: var(--kaart);
+  }
+  .tk-nudoen-kop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .tk-nudoen-titel {
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.75rem; /* 28px */
+    font-weight: 800;
+    text-wrap: pretty;
+  }
+  .tk-nudoen-tekst {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .tk-nudoen .tk-progress-rail {
+    height: 10px;
+    background: var(--module-tint);
+  }
+  .tk-nudoen .tk-progress-fill {
+    background: var(--module-vlak);
+  }
+  .tk-nudoen-knop {
+    width: 100%;
+    min-height: 56px;
+  }
+  .tk-nudoen-later {
+    align-self: center;
+    margin: -8px 0 -6px;
+  }
+  .tk-nudoen-smal {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+  }
+  .tk-nudoen-smal .tk-nudoen-tekst {
+    gap: 0;
+  }
+  .tk-nudoen-smal .tk-nudoen-titel {
+    font-size: var(--type-knop); /* 20px */
+    line-height: var(--type-knop-lh); /* 24px */
+    font-weight: 700;
+  }
+  .tk-nudoen-smal > .tk-nudoen-knop {
+    grid-column: 1 / -1;
+  }
+
+  /* "Hoe heet je?" onder Nu doen (ADR-250): de vraag, en het veld met de twee
+   * knoppen op één regel. Bewaren is de tweede knop, niet koraal. */
+  .tk-naamregel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    background: var(--kaart);
+  }
+  .tk-naamregel-kop {
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 700;
+  }
+  .tk-naamregel-rij {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-naamregel-veld {
+    flex: 1 1 8rem;
+    min-width: 0;
+  }
+
+  /* Klaar voor vandaag, onder Nu doen (ADR-250): in zon, want het is gehaald,
+   * met een vinkje als vorm en zonder onderkant, want het is geen knop. */
+  .tk-klaar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--kaart-radius);
+    background: var(--zon-tint);
+  }
+  .tk-klaar-teken {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pil);
+    background: var(--zon);
+    color: var(--inkt);
+  }
+  .tk-klaar-tekst {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .tk-klaar-kop {
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 700;
+  }
+
+  /* Zonder premium: hoeveel er vandaag terugkomt, als feit (ADR-250). Het
+   * getal in een schijf in nacht; geen slot, geen knop. */
+  .tk-herhaalregel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .tk-herhaalregel-getal {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 8px;
+    border-radius: var(--radius-pil);
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: 1;
+    font-weight: 800;
+  }
   /* Elke rij even hoog (ADR-242): een toelichting over twee regels maakte de
    * tweede rij hoger dan de eerste. */
   .tk-vakraster {
@@ -3142,6 +3308,17 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+  }
+  /* Een vak in de rij op Vandaag, voor een nieuw kind (ADR-250): de plaat en
+   * de naam, in een rij die opzij scrolt. */
+  .tk-vaktegel-klein {
+    flex: none;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    min-height: 64px;
+    padding: 10px 18px 10px 12px;
+    scroll-snap-align: start;
   }
   .tk-uitlegstappen {
     display: grid;
@@ -6024,6 +6201,15 @@
   /* De andere onderwerpen van het vak, als echte links (ADR-245): voor Google,
    * en voor een ouder die verder kijkt. Een rij die doorloopt, geen tegels:
    * dit is de voet van de pagina, geen tweede keuze. */
+  /* De lijsten op de privacypagina (ADR-249): gewone opsommingstekens, want de
+   * reset haalt ze overal weg. */
+  .tk-privacy-lijst {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 20px;
+    list-style: disc;
+  }
   .tk-over-links {
     display: flex;
     flex-direction: column;

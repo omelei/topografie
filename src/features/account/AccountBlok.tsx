@@ -263,6 +263,9 @@ function Formulier({
           ) : null}
         </div>
       </form>
+      <a className="tk-button tk-button-tertiary self-start" href="/privacy">
+        {t('privacy.link')}
+      </a>
     </>
   );
 }

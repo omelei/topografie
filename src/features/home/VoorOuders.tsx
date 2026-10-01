@@ -1,5 +1,6 @@
 import { NextIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
+import { isIngesteld } from '@/store/account/omgeving';
 import type { Module } from '@/features/shell/modules';
 import { VakkenRaster } from './Kennismaken';
 
@@ -51,11 +52,20 @@ export function VoorOuders({
           <li key={kop} className="tk-uitlegstap">
             <span className="flex flex-col gap-1">
               <span className="tk-kaart-titel">{t(kop)}</span>
-              <span className="text-tekst-secundair">{t(tekst)}</span>
+              <span className="text-tekst-secundair">
+                {t(
+                  tekst === 'ouders.privacy.tekst' && isIngesteld()
+                    ? 'ouders.privacy.tekstAccount'
+                    : tekst,
+                )}
+              </span>
             </span>
           </li>
         ))}
       </ul>
+      <a className="tk-button tk-button-tertiary self-start" href="/privacy">
+        {t('privacy.link')}
+      </a>
 
       <section className="flex flex-col gap-2" aria-labelledby="ouders-kosten">
         <h2 id="ouders-kosten" className="tk-sectie">
