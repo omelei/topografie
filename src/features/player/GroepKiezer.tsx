@@ -21,6 +21,7 @@ export function GroepKiezer({
   onKies,
   bezig = false,
   label,
+  raster = false,
 }: {
   /** De groep die nu geldt: `undefined` is geen groep, `null` is nog niets gekozen. */
   readonly gekozen: Groep | undefined | null;
@@ -32,19 +33,30 @@ export function GroepKiezer({
    * kind zelf; op de ouderpagina gaat het over een kind, in de derde persoon.
    */
   readonly label?: string | undefined;
+  /**
+   * Als raster van vier, met alleen het cijfer (ADR-250): zo past de vraag op
+   * Vandaag ook op een telefoon van 360 bij 640 boven de vouw. Een schermlezer
+   * hoort nog steeds "Groep 6".
+   */
+  readonly raster?: boolean;
 }) {
   return (
-    <div className="tk-keuzes" role="group" aria-label={label ?? t('groep.vraag')}>
+    <div
+      className={raster ? 'tk-keuzes tk-keuzes-raster' : 'tk-keuzes'}
+      role="group"
+      aria-label={label ?? t('groep.vraag')}
+    >
       {GROEPEN.map((groep) => (
         <button
           key={groep}
           type="button"
           className="tk-keuze"
           aria-pressed={gekozen === groep}
+          aria-label={raster ? t('groep.knop', { groep }) : undefined}
           disabled={bezig}
           onClick={() => onKies(groep)}
         >
-          {t('groep.knop', { groep })}
+          {raster ? groep : t('groep.knop', { groep })}
         </button>
       ))}
       <button

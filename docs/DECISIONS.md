@@ -14387,6 +14387,64 @@ maanden zonder gebruik echt opruimen, want de pagina belooft het; en het hele
 account laten verwijderen gaat tot er een knop is per mail, en zo staat het er
 ook.
 
+## ADR-250 — Nu doen: één kaart bovenaan Vandaag, één rij Verder oefenen, en geen premium op Vandaag
+
+**Status:** accepted. **Date:** 2026-10-01. Na een review van Vandaag op een
+telefoon en het ontwerp "Vandaag varianten" uit Claude Design, met de eigenaar.
+
+**Aanleiding.** Op een telefoon van 412 bij 839 was Vandaag 2,4 tot 2,9
+schermen lang, en in geen enkele stand stond de belangrijkste knop in het
+eerste scherm. Met premium zei de begroeting "Er staat 1 vraag voor je klaar",
+maar de knop daarvoor stond onder het naamformulier en Meest geoefend: de
+comment van ADR-126 ("met premium bovenaan, boven alles") en de code liepen
+sinds ADR-162 uiteen. Een kind met één ronde zag hetzelfde onderwerp drie keer
+(Meest geoefend, Recent geoefend, Maak af). Zonder premium stond er een
+premiumkaart met "Bekijk premium" voor een kind, terwijl R-11 zegt dat een kind
+niets koopt.
+
+**Besluit.**
+
+- **Nu doen** (`nuDoen.ts`, `NuDoen.tsx`): voor wie al geoefend heeft staat
+  onder de begroeting precies één kaart met één knop. `kiesNuDoen` kiest in
+  deze volgorde: Welkom terug (twee weken weg, ADR-149), Vandaag herhalen (met
+  premium en iets klaar), Maak je ronde af (de nieuwste ronde die half af is),
+  de geheugencheck (ADR-228, één keer per kind) en Ga verder met het laatst
+  gespeelde onderwerp. Het is de enige koraal knop op Vandaag. Welkom terug
+  heeft "Later"; dan wordt de volgende Nu doen, tot de volgende ronde.
+- **De zin onder de begroeting hoort bij Nu doen**: "Je ronde wacht op je.",
+  "Fijn dat je er weer bent.", "Er staan 14 vragen voor je klaar." enzovoort.
+- **Verder oefenen** vervangt Meest geoefend, Recent geoefend en Maak af: één
+  rij, elk onderwerp één keer, wat half af is vooraan, daarna het nieuwste
+  eerst, en het onderwerp van Nu doen niet nog eens. Met premium draagt een
+  kaart de uitslag van de laatste ronde (een cijfer alleen bij een toets,
+  ADR-235). Alle rijen op Vandaag gebruiken dezelfde compacte kaart, de plaat
+  links (de kaart van Maak af uit ADR-238).
+- **Geen premium op Vandaag.** Zonder code staat het aantal dat vandaag
+  terugkomt er als feit, in één regel met het getal in nacht, zonder slot en
+  zonder knop (ADR-124's regel blijft: het getal is van het kind). De zin is
+  korter: "Vandaag komen er 8 vragen terug. Zo blijft het in je hoofd." Dit
+  beantwoordt ook de open beslissing over dat aantal op de roadmap.
+- **Klaar voor vandaag** staat met premium onder Nu doen, in zon met een
+  vinkje (ADR-139: de beloning is niet dat het blok verdwijnt).
+- **"Hoe heet je?"** blijft na de eerste ronde (ADR-229), maar compact en
+  onder Nu doen in plaats van erboven. Bewaren is de tweede knop.
+- **Een nieuw kind**: de groepsvraag zonder kaart, als raster van vier met
+  alleen het cijfer (een schermlezer hoort "Groep 6"), zodat hij op 360 bij
+  640 boven de vouw past; dan de onderwerpen van de groep, "Andere groep", en
+  "Kies een vak" als rij. "Zo werkt leer.nu" is weg: dat is uitleg voor ouders
+  en staat op `/voor-ouders`. Wie iets te herhalen heeft, is niet nieuw, ook
+  zonder ronde in het logboek.
+- **Wie al geoefend heeft, ziet de vakken niet meer op Vandaag**: die staan
+  onder de tab Oefenen.
+- **"Ik ben een ouder" en "Ik heb een inlogcode" blijven** zolang er geen naam
+  is, onderaan. Het ontwerp haalde ze weg, maar dit is de enige plek waar een
+  kind met een inlogcode inlogt.
+
+**Niet gedaan, en waarom.** Het ontwerp liet de herhaalregel en Klaar voor
+vandaag wegklikken. Dat vraagt per kind opslag ("tot het aantal verandert",
+"tot morgen") en lost het probleem van de vouw niet op; het staat als kleine
+stap op de roadmap als het gemist wordt.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

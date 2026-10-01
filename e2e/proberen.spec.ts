@@ -32,15 +32,16 @@ test('a visitor plays a topic first, and keeps the round after typing a name', a
   await expect(page.getByRole('heading', { name: 'Hoi!' })).toBeVisible();
   const vraag = page.getByRole('form', { name: 'Hoe heet je?' });
   await expect(vraag.getByLabel('Je naam')).toBeVisible();
-  const geoefend = page.getByRole('group', { name: 'Meest geoefend' });
-  await expect(geoefend.getByRole('button', { name: /Provincies van Nederland/ })).toBeVisible();
+  // De ronde die half af is, is Nu doen (ADR-250), en de naam staat eronder.
+  const nu = page.getByRole('region', { name: 'Maak je ronde af' });
+  await expect(nu).toContainText('Provincies van Nederland');
 
   await vraag.getByLabel('Je naam').fill('Noor');
   await vraag.getByRole('button', { name: 'Bewaren' }).click();
 
   await expect(page.getByRole('heading', { name: 'Hoi Noor!' })).toBeVisible();
   await expect(page.getByRole('form', { name: 'Hoe heet je?' })).toHaveCount(0);
-  await expect(geoefend.getByRole('button', { name: /Provincies van Nederland/ })).toBeVisible();
+  await expect(nu).toContainText('Provincies van Nederland');
 });
 
 test('the front door opens without a name, and asks for the group first', async ({ page }) => {

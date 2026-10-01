@@ -24,6 +24,23 @@ export const nl = {
   // Onder de begroeting, met premium en vragen die vandaag terug moeten (ADR-238).
   'home.welkomKlaarEen': 'Er staat 1 vraag voor je klaar.',
   'home.welkomKlaar': 'Er staan {aantal} vragen voor je klaar.',
+  // De zin onder de begroeting, bij wat Nu doen is (ADR-250).
+  'home.status.groep': 'Kies je groep, dan weet je waar je begint.',
+  'home.status.begin': 'Kies waar je mee begint.',
+  'home.status.kleuter': 'Kijk gerust rond in de vakken.',
+  'home.status.maakAf': 'Je ronde wacht op je.',
+  'home.status.verder': 'Een ronde duurt maar een paar minuten.',
+  'home.status.klaar': 'Zin in nog een ronde?',
+  'home.status.terug': 'Fijn dat je er weer bent.',
+  // Nu doen (ADR-250): de ene kaart bovenaan, met één knop.
+  'home.nu.maakAf.kop': 'Maak je ronde af',
+  'home.nu.maakAf.regel': '{onderwerp}: nog {aantal} van de {totaal} vragen.',
+  'home.nu.maakAf.regelEen': '{onderwerp}: nog 1 van de {totaal} vragen.',
+  'home.nu.maakAf.knop': 'Maak af',
+  'home.nu.verder.kop': 'Ga verder met {onderwerp}',
+  'home.nu.verder.knop': 'Start',
+  // Op Welkom terug: dan wordt de volgende kaart Nu doen, tot je een ronde deed.
+  'home.nu.later': 'Later',
   // De geheugencheck (ADR-228): één keer, zonder hulp. Geen woord over premium (R-11).
   'home.check.kop': 'Weet je het nog?',
   'home.check.zin':
@@ -260,44 +277,18 @@ export const nl = {
   'werkblad.opdracht.spelling': 'Vul de letters in.',
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
   'werkblad.opdracht.engels': 'Schrijf het Engelse woord op de lijn.',
-  'home.zo.titel': 'Zo werkt leer.nu',
-  'home.zo.stap': 'Stap {nummer}',
-  // Zo werkt leer.nu, in vier stappen (ADR-231), in de woorden van de eigenaar.
-  'home.zo.oefen.kop': 'Begin met oefenen',
-  'home.zo.oefen.uitleg':
-    'Kies een vak, een onderwerp en een spelvorm. Je begint direct met spelen.',
-  'home.zo.fouten.kop': 'Leer van je fouten',
-  'home.zo.fouten.uitleg':
-    'Je ziet direct wat je goed en fout hebt gedaan. Foute antwoorden kun je direct opnieuw oefenen.',
-  'home.zo.moeilijk.kop': 'Oefenen wat je moeilijk vindt',
-  'home.zo.moeilijk.uitleg':
-    'Wij zetten automatisch de vragen voor je klaar die je moeilijk vindt.',
-  'home.zo.diploma.kop': 'Haal je diploma',
-  'home.zo.diploma.uitleg':
-    'Als je voldoende hebt geoefend, kun jij je officiële leer.nu-diploma halen.',
-  // De rondes die je begon en niet afmaakte (ADR-115), in de plaats van de
-  // moduletegels van "Verder oefenen". Tikken vraagt wat die ronde nog niet
-  // had gevraagd, op dezelfde manier.
-  'home.openTitle': 'Maak af',
-  'home.openNone': 'Stop je halverwege een ronde? Dan kun je hem hier afmaken.',
+  // Wat er van een ronde over is (ADR-115), op Nu doen en in Verder oefenen.
   'home.openRest': 'Nog {aantal} van de {totaal} vragen',
   'home.openRestOne': 'Nog 1 van de {totaal} vragen',
-  // De tegels tussen het toetsblok en het logboek: waar je zelf het vaakst
-  // naar teruggaat, met het aantal keer erbij. Dat getal komt van dit apparaat
-  // en van niets anders - er is geen server die meekijkt, dus er is ook geen
-  // "3.412 keer gespeeld" te tonen dat waar zou zijn.
-  'home.popularTitle': 'Meest geoefend',
-  // Dezelfde rij, voor wie nog niets deed. "Meest geoefend" is dan een kop over
-  // een geschiedenis die niet bestaat (ADR-131).
+  // Meest geoefend, Recent geoefend en Maak af in één rij (ADR-250).
+  'home.verderTitel': 'Verder oefenen',
+  // De rij voor wie nog niets deed (ADR-131).
   'home.popularStart': 'Hier begin je mee vandaag',
   // Met een groep zegt de kop dat ook: de rij is voor groep 6 een andere dan
   // voor groep 8 (ADR-206).
   'home.popularStartGroep': 'Hier begin je mee in groep {groep}',
   // Voor wie al geoefend heeft: wat bij de groep past en nog niet gedaan is.
   'home.pastBijGroep': 'Past bij groep {groep}',
-  'home.popularTimes': '{aantal} keer geoefend',
-  'home.popularOnce': '1 keer geoefend',
-  'home.popularNone': 'nog niet geoefend',
   // De voorspelling stond hier en staat nu alleen nog op K9. Weg in plaats van
   // ongebruikt blijven staan: copy die nergens meer verschijnt is copy die
   // niemand nog leest en die bij de volgende ronde toch wordt meegewogen.
@@ -306,9 +297,8 @@ export const nl = {
   // "Vandaag": het dagplan (ADR-126). Het getal is van het kind zelf en staat
   // er dus ook zonder code; het plan eronder is waar premium voor is.
   'vandaag.titel': 'Vandaag herhalen',
-  'vandaag.eenVraag': 'Er is 1 vraag die vandaag terug moet komen. Zo blijft het in je hoofd.',
-  'vandaag.vragen':
-    'Er zijn {aantal} vragen die vandaag terug moeten komen. Zo blijft het in je hoofd.',
+  'vandaag.eenVraag': 'Vandaag komt er 1 vraag terug. Zo blijft het in je hoofd.',
+  'vandaag.vragen': 'Vandaag komen er {aantal} vragen terug. Zo blijft het in je hoofd.',
   'vandaag.ronde': '{aantal} vragen',
   'vandaag.rondeEen': '1 vraag',
   // Naast de kop, als de rondes als tegels klaarstaan (ADR-238).
@@ -362,8 +352,7 @@ export const nl = {
   'start.eerderGehad':
     'Van de {totaal} heb je er {eerder} al eerder gehad. Zo blijft het in je hoofd.',
 
-  'home.recentTitle': 'Recent geoefend',
-  'home.recentNone': 'Nog niets geoefend. Na je eerste ronde staat het hier.',
+  // De uitslag van de laatste ronde op een kaart in Verder oefenen, met premium.
   'home.recentOutOf': '{goed} van de {totaal} goed',
   'home.recentLine': 'Cijfer {cijfer} · {goed} van de {totaal} goed',
   // De twee knoppen boven een rij, die hem een kaart opschuiven. Ze noemen de
@@ -373,7 +362,6 @@ export const nl = {
 
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.
-  'terug.titel': 'Welkom terug',
   'terug.zin': 'Alles wat je geoefend hebt, staat er nog.',
   'terug.klaar': 'Vandaag komen er {aantal} vragen terug.',
   'terug.klaarEen': 'Vandaag komt er 1 vraag terug.',
@@ -1038,8 +1026,6 @@ export const nl = {
   'delen.gedeeld': 'Gedeeld.',
   'delen.gekopieerd': 'Gekopieerd. Plak het in een bericht.',
   'delen.zelf': 'Delen lukt niet op dit apparaat. Dit is de link:',
-  'premium.wat.vandaag':
-    'Leer.nu zet elke dag klaar wat aan de beurt is. Dan hoef jij niet te bedenken waar je begint.',
   // Wat premium laat zien, sinds ADR-192. Steeds met de zin dat het al bewaard
   // wordt: wie premium neemt, begint niet op nul.
   'premium.wat.voortgang':
