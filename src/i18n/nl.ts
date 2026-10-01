@@ -55,7 +55,7 @@ export const nl = {
   // stof voor kinderen die niet lezen; meestal leest een ouder dit.
   'home.kleuters.kop': 'Voor groep 1 en 2 komt er iets aan',
   'home.kleuters.zin':
-    'We maken rondes met tellen, rijmen en klappen. Een stem leest alles voor. Tot dan kun je hieronder elk vak kiezen.',
+    'We maken rondes met tellen, rijmen en klappen. Een stem leest alles voor. Tot dan kun je onder Oefenen elk vak kiezen.',
   'home.vakken.titel': 'Kies een vak',
   'home.vak.topo': 'Provincies, steden en landen',
   'home.vak.tafels': 'Tafels en sommen',
@@ -277,6 +277,21 @@ export const nl = {
   'werkblad.opdracht.spelling': 'Vul de letters in.',
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
   'werkblad.opdracht.engels': 'Schrijf het Engelse woord op de lijn.',
+  'home.zo.titel': 'Zo werkt leer.nu',
+  'home.zo.stap': 'Stap {nummer}',
+  // Zo werkt leer.nu, in vier stappen (ADR-231), aan een bureau (ADR-251).
+  'home.zo.oefen.kop': 'Begin met oefenen',
+  'home.zo.oefen.uitleg':
+    'Kies een vak, een onderwerp en een spelvorm. Je begint direct met spelen.',
+  'home.zo.fouten.kop': 'Leer van je fouten',
+  'home.zo.fouten.uitleg':
+    'Je ziet direct wat je goed en fout hebt gedaan. Foute antwoorden kun je direct opnieuw oefenen.',
+  'home.zo.moeilijk.kop': 'Oefenen wat je moeilijk vindt',
+  'home.zo.moeilijk.uitleg':
+    'Wij zetten automatisch de vragen voor je klaar die je moeilijk vindt.',
+  'home.zo.diploma.kop': 'Haal je diploma',
+  'home.zo.diploma.uitleg':
+    'Als je voldoende hebt geoefend, kun jij je officiële leer.nu-diploma halen.',
   // Wat er van een ronde over is (ADR-115), op Nu doen en in Verder oefenen.
   'home.openRest': 'Nog {aantal} van de {totaal} vragen',
   'home.openRestOne': 'Nog 1 van de {totaal} vragen',

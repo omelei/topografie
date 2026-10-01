@@ -320,7 +320,7 @@ test('Ontdekken: the rule, and the words with their letters marked', async ({ pa
 
   // Nothing was asked, so the way out is home.
   await page.getByRole('button', { name: 'Klaar' }).click();
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /^Hoi/ })).toBeVisible();
 });
 
 test('Kies de vorm: three real forms, and the round in the history', async ({ page }) => {
@@ -387,7 +387,7 @@ test('Ontdekken on verbs: a card per rule, with examples from the set', async ({
   expect((await scan(page)).violations).toEqual([]);
 
   await page.getByRole('button', { name: 'Klaar' }).click();
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /^Hoi/ })).toBeVisible();
 });
 
 /**

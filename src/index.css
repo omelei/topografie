@@ -3107,6 +3107,25 @@
   .tk-eerste > .tk-keuzes {
     flex: 1 1 100%;
   }
+  /* "Ik ben een ouder" en "Ik heb een inlogcode" onderaan Vandaag. Op een
+   * telefoon direct onder elkaar, zonder witregel ertussen (ADR-251): elk
+   * houdt de 44 die elke knop haalt, maar niet de 56 van een gewone knop. */
+  .tk-gastknoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  @media (max-width: 767px) {
+    .tk-gastknoppen {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .tk-gastknoppen > .tk-button {
+      min-height: var(--touch-wijzer);
+    }
+  }
+
   /* De groepen als raster van vier, met alleen het cijfer (ADR-250), en "Weet
    * ik niet" over de hele breedte eronder. Zo past de vraag op een telefoon
    * van 360 bij 640 boven de vouw. */
@@ -3308,17 +3327,6 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
-  }
-  /* Een vak in de rij op Vandaag, voor een nieuw kind (ADR-250): de plaat en
-   * de naam, in een rij die opzij scrolt. */
-  .tk-vaktegel-klein {
-    flex: none;
-    gap: 12px;
-    width: auto;
-    height: auto;
-    min-height: 64px;
-    padding: 10px 18px 10px 12px;
-    scroll-snap-align: start;
   }
   .tk-uitlegstappen {
     display: grid;
