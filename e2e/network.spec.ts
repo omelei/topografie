@@ -1,5 +1,6 @@
 import { expect, test, type Request } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * The app asks nobody anything.
@@ -66,14 +67,12 @@ test('never asks a third party for anything', async ({ page, baseURL }) => {
   await signIn(page, 'Sofie');
 
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.

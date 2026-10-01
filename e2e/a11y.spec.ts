@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, stubGezin, VERLOPEN_LINK } from './gezin';
 import { doorDePremiumdeur, signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Accessibility, checked on the screens Lighthouse cannot reach.
@@ -39,11 +40,9 @@ const STEDEN: Keuze = [/^Steden/, /^Steden van Nederland$/];
 type Keuze = readonly [RegExp] | readonly [RegExp, RegExp];
 
 async function kiesOnderwerp(page: Page, [vak, chip]: Keuze) {
-  const what = page.getByRole('region', { name: /Kies een onderwerp/ });
-
   // First rather than exact: after the card is pressed its chips are in the
   // same region, and a chip's accessible name is the set's full name.
-  await what.getByRole('button', { name: vak }).first().click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: vak }).first().click();
   // The chips are a numbered step of their own now, not a caption inside step
   // 1, so they are no longer in that region. The chip patterns are anchored at
   // both ends, which is what keeps them off the start button — that one names
@@ -62,10 +61,7 @@ async function startRound(page: Page, set: Keuze, way: RegExp) {
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   await kiesOnderwerp(page, set);
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: way })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: way }).click();
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.
@@ -116,10 +112,7 @@ test('the module pages have no violations, in each of their four shapes', async 
   // page whose visible label is deliberately shorter than its meaning: "12" is
   // what the eye gets and "Tafel van 12" is what a screen reader gets. Nothing
   // is pressed when the page opens, so it waits for Tafels.
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await expect(page.getByRole('button', { name: 'Tafel van 12', exact: true })).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
@@ -340,10 +333,7 @@ test.describe('het slot zonder code', () => {
     await signIn(page, 'Sanne');
     await page.goto('/topografie');
     await kiesOnderwerp(page, [/^Provincies/]);
-    await page
-      .getByRole('region', { name: /Hoe wil je/ })
-      .getByRole('button', { name: /^Bliksemronde/ })
-      .click();
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
     await expect(venster).toBeVisible();

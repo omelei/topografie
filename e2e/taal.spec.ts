@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { opEenTelefoon, stap } from './stap';
 
 /**
  * Taal: the fifth module (ADR-118), and one round of every way of each part.
@@ -31,18 +32,11 @@ async function kies(
 ) {
   await page.goto('/taal');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
-
-  const welk = page.getByRole('region', { name: 'Welk deel?' });
-  await welk.getByRole('button', { name: deel, exact: true }).click();
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await wat.getByRole('button', { name: onderwerp }).click();
+  await (await stap(page, 'Welk deel?')).getByRole('button', { name: deel, exact: true }).click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: onderwerp }).click();
   if (set) await page.getByRole('button', { name: set, exact: true }).click();
 
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: hoe })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
 }
 
 async function start(page: Page) {
@@ -99,16 +93,13 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
   await page.goto('/taal');
 
   // Which part, in the row topography asks where on, with Spelling chosen.
-  const welk = page.getByRole('region', { name: 'Welk deel?' });
   // Spelling, Werkwoorden en Engels (ADR-217).
-  await expect(welk.getByRole('button')).toHaveCount(3);
-  await expect(welk.getByRole('button', { name: 'Spelling', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect((await stap(page, 'Welk deel?')).getByRole('button')).toHaveCount(3);
+  // Op een telefoon is niets voorgekozen, ook het deel niet (ADR-252).
+  await expect(
+    (await stap(page, 'Welk deel?')).getByRole('button', { name: 'Spelling', exact: true }),
+  ).toHaveAttribute('aria-pressed', opEenTelefoon(page) ? 'false' : 'true');
   await expect(page.getByRole('region', { name: 'Waar op de kaart?' })).toHaveCount(0);
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
   for (const naam of [
     'Onthoudwoorden',
     'D of t',
@@ -116,33 +107,56 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
     'Achter aan het woord',
     'Spellingmix',
   ]) {
-    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
+        name: new RegExp(`^${naam}`),
+      }),
+    ).toBeVisible();
   }
 
   // The ways follow the part, before a subject is chosen — and there is no
   // clock among them (ADR-118).
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
   for (const naam of ['Kies de letters', 'Flitsdictee', 'Overleven', 'Oefentoets']) {
-    await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Hoe wil je/)).getByRole('button', { name: new RegExp(`^${naam}`) }),
+    ).toBeVisible();
   }
-  await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }),
+  ).toHaveCount(0);
   expect((await scan(page)).violations).toEqual([]);
 
-  await welk.getByRole('button', { name: 'Werkwoorden', exact: true }).click();
+  await (
+    await stap(page, 'Welk deel?')
+  )
+    .getByRole('button', { name: 'Werkwoorden', exact: true })
+    .click();
   for (const naam of [
     'Tegenwoordige tijd',
     'Verleden tijd',
     'Voltooid deelwoord',
     'Werkwoordmix',
   ]) {
-    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
+        name: new RegExp(`^${naam}`),
+      }),
+    ).toBeVisible();
   }
   for (const naam of ['Kies de vorm', 'Typ de vorm', 'Overleven', 'Oefentoets']) {
-    await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Hoe wil je/)).getByRole('button', { name: new RegExp(`^${naam}`) }),
+    ).toBeVisible();
   }
-  await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }),
+  ).toHaveCount(0);
 
-  await welk.getByRole('button', { name: 'Engels', exact: true }).click();
+  await (
+    await stap(page, 'Welk deel?')
+  )
+    .getByRole('button', { name: 'Engels', exact: true })
+    .click();
   for (const naam of [
     'Tellen en de kalender',
     'Kleuren en kleding',
@@ -151,64 +165,59 @@ test('Taal has a module page in the shape the others have, opening on Spelling',
     'Werkwoorden in het Engels',
     'Engelse mix',
   ]) {
-    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
+        name: new RegExp(`^${naam}`),
+      }),
+    ).toBeVisible();
   }
   for (const naam of ['Kies het woord', 'Typ het woord', 'Overleven', 'Oefentoets']) {
-    await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Hoe wil je/)).getByRole('button', { name: new RegExp(`^${naam}`) }),
+    ).toBeVisible();
   }
   expect((await scan(page)).violations).toEqual([]);
 });
 
 test('the parts and the sets have addresses, and the page opens on them', async ({ page }) => {
   await signIn(page, 'Lars');
-  const welk = page.getByRole('region', { name: 'Welk deel?' });
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
 
   await page.goto('/werkwoorden');
-  await expect(welk.getByRole('button', { name: 'Werkwoorden', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, 'Welk deel?')).getByRole('button', { name: 'Werkwoorden', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await expect(page).toHaveURL(/\/taal\/werkwoorden$/);
 
   await page.goto('/spelling');
-  await expect(welk.getByRole('button', { name: 'Spelling', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, 'Welk deel?')).getByRole('button', { name: 'Spelling', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
 
   // Woordjes zijn Engels (ADR-217).
   await page.goto('/woordjes');
   await expect(page).toHaveURL(/\/taal\/engels$/);
-  await expect(welk.getByRole('button', { name: 'Engels', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, 'Welk deel?')).getByRole('button', { name: 'Engels', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
 
   await page.goto('/taal/ei-ij');
-  await expect(wat.getByRole('button', { name: /^Onthoudwoorden/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  await expect(page.getByRole('button', { name: 'Ei of ij', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Onthoudwoorden/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, 'Welke letters?')).getByRole('button', { name: 'Ei of ij', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
 
   await page.goto('/taal/tegenwoordige-tijd');
-  await expect(wat.getByRole('button', { name: /^Tegenwoordige tijd/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tegenwoordige tijd/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('Kies de letters: a screen reader hears the letters one by one', async ({ page }) => {
   await signIn(page, 'Mees');
   await page.goto('/taal/ei-ij');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Kies de letters/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Kies de letters/ }).click();
   await start(page);
 
   // "ei" and "ij" sound the same, so the names spell them.

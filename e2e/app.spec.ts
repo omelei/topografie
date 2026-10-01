@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn, weetGroepNiet } from './naam';
+import { opEenTelefoon, stap } from './stap';
 
 /**
  * The flows that exist today. Two of them are the point of the local-first
@@ -24,11 +25,9 @@ const STEDEN: Keuze = [/^Steden/, /^Steden van Nederland$/];
 type Keuze = readonly [RegExp] | readonly [RegExp, RegExp];
 
 async function kiesOnderwerp(page: Page, [vak, chip]: Keuze) {
-  const what = page.getByRole('region', { name: /Kies een onderwerp/ });
-
   // First rather than exact: after the card is pressed its chips are in the
   // same region, and a chip's accessible name is the set's full name.
-  await what.getByRole('button', { name: vak }).first().click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: vak }).first().click();
   // The chips are a numbered step of their own now, not a caption inside step
   // 1, so they are no longer in that region. The chip patterns are anchored at
   // both ends, which is what keeps them off the start button — that one names
@@ -52,11 +51,9 @@ async function startRound(page: Page, set: Keuze, way: RegExp, toetsstand = fals
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   await kiesOnderwerp(page, set);
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: way })
-    .click();
-  if (toetsstand) await page.getByRole('button', { name: /^Oefentoets/ }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: way }).click();
+  if (toetsstand)
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Oefentoets/ }).click();
   await start(page);
 }
 
@@ -144,6 +141,15 @@ test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   // staat er na de vraag naar de groep (ADR-243).
   await weetGroepNiet(page);
   const rij = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
+  // Op een telefoon is de rij een lijst (ADR-252): drie rijen, en de rest
+  // achter "Nog 2 tonen", met de focus op de eerste die erbij kwam.
+  if (opEenTelefoon(page)) {
+    await expect(rij.locator('.tk-oefenrij')).toHaveCount(3);
+    await rij.getByRole('button', { name: 'Nog 2 tonen' }).click();
+    await expect(rij.locator('.tk-oefenrij')).toHaveCount(5);
+    await expect(rij.locator('.tk-oefenrij').nth(3)).toBeFocused();
+    return;
+  }
   await rij.focus();
   await page.keyboard.press('ArrowRight');
 
@@ -209,21 +215,17 @@ test('a round of Europe draws Europe, not the Netherlands', async ({ page }) => 
   // Gescoped op de vraag waar hij bij hoort: "Europa" staat ook op de
   // diplomakast onderaan dezelfde pagina, en welke van de twee er het eerst
   // staat hangt af van hoe snel dat blok laadt.
-  await page
-    .getByRole('region', { name: 'Waar op de kaart?' })
-    .getByRole('button', { name: /^Europa/ })
-    .click();
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Landen/ })).toBeVisible();
+  await (await stap(page, 'Waar op de kaart?')).getByRole('button', { name: /^Europa/ }).click();
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Landen/ }),
+  ).toBeVisible();
   // And the Dutch subjects are gone: a region is a filter, not a heading.
-  await expect(wat.getByRole('button', { name: /^Provincies/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Provincies/ }),
+  ).toHaveCount(0);
 
-  await wat.getByRole('button', { name: /^Landen/ }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Landen/ }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await start(page);
 
   // A country on the map, asked for in the words a country is asked for in.
@@ -241,18 +243,13 @@ test('a round of Europe draws Europe, not the Netherlands', async ({ page }) => 
 test('the countries of the world have an address of their own', async ({ page }) => {
   await signIn(page, 'Noor');
   await page.goto('/topografie/wereld');
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Landen/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Landen/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
   // In de regiorij: sinds ADR-168 heet het vakje van het wereldtopodiploma ook
   // "Wereld".
   await expect(
-    page
-      .getByRole('region', { name: 'Waar op de kaart?' })
-      .getByRole('button', { name: /^Wereld/ }),
+    (await stap(page, 'Waar op de kaart?')).getByRole('button', { name: /^Wereld/ }),
   ).toHaveAttribute('aria-pressed', 'true');
 });
 
@@ -264,10 +261,7 @@ test('the countries of the world have an address of their own', async ({ page })
 test('on the world map a child zooms in, and zooming answers nothing', async ({ page }) => {
   await signIn(page, 'Jip');
   await page.goto('/topografie/wereld');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await start(page);
 
   const vraag = page.getByRole('heading', { name: /Waar ligt / });
@@ -553,8 +547,7 @@ test('explore names a city, places it, and scores nothing', async ({ page }) => 
   // The set is still untouched: browsing is not practice. Asked on K2, where
   // the sets live now.
   await page.goto('/topografie');
-  const steden = page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  const steden = (await stap(page, /Kies een onderwerp/))
     .getByRole('button', { name: /^Steden/ })
     .first();
   // The accessible name and not the visible text: a subject tile shows an icon
@@ -671,14 +664,12 @@ test('the starter row is for before anything is practised', async ({ page }) => 
 /** Eén ronde provincies, helemaal uitgespeeld, zodat er geschiedenis is. */
 async function eenRondeProvincies(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();

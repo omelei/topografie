@@ -14464,6 +14464,73 @@ ADR-250.
   direct onder elkaar, zonder witregel. Elk houdt de 44 die elke knop haalt
   (ADR-032), niet de 56 van een gewone knop.
 
+## ADR-252 — Op een telefoon: Vandaag in één koraal blok met lijsten, en de vakpagina als accordeon
+
+**Status:** accepted. **Date:** 2026-10-01. Op verzoek van de eigenaar, naar
+de ontwerpen "Vandaag - nieuw" en "Vakpagina - nieuw" (393 × 852). Alleen
+onder 768; vanaf 768 blijft alles zoals het was.
+
+**Besluit, Vandaag.**
+
+- **Welkom en Nu doen zijn één koraal blok.** Bovenin "Hoi {naam}!" met de
+  zin eronder en Denker (68) ernaast, daaronder Nu doen als witte binnenkaart:
+  plaat, kop en regel, bij Maak af een balk, en één koraal knop over de hele
+  breedte. Met premium en iets te herhalen is de eerste ronde van het plan Nu
+  doen; de rest staat in de lijst "Vandaag herhalen", met het aantal vragen
+  rechts in de kop.
+- **Lijsten in plaats van rijen die opzij doorlopen** (ADR-094): Verder
+  oefenen, Past bij groep, Hier begin je mee en Vandaag herhalen zijn elk één
+  witte kaart met rijen van minstens 68 hoog: plaat, onderwerp, "spelvorm ·
+  uitslag", bij een halve ronde een balk, en een pijl in de tint van het vak.
+  Drie rijen staan er; de rest is één druk verder ("Nog 4 tonen").
+- Zonder premium blijft de regel met het getal onderaan (ADR-250). Het
+  vakkenraster stond op een telefoon al niet op Vandaag (ADR-251).
+
+**Besluit, de vakpagina.**
+
+- **De kop is een witte kaart** met de plaat van het vak en "Topografie
+  oefenen", zonder vlak in de kleur van het vak.
+- **De stappen zijn een accordeon: er staat er precies één open.** Wat
+  gekozen is staat samen bovenaan in één kaart (vinkje, label, antwoord,
+  "Wijzig"); wat nog komt staat eronder als gestippelde rij met "Nog kiezen".
+  Na elke keuze opent de eerste stap zonder antwoord (`stappen.ts`): na stap 1
+  stap 2, na de laatste keuze is alles dicht, en na "Wijzig" en een keuze de
+  eerste stap die nog leeg is. Een andere kaart wist het onderwerp, een ander
+  onderwerp wist welke; dezelfde kaart nog eens wist niets. De open stap komt
+  in beeld als hij niet al in het bovenste 45% staat, met 80 lucht erboven, en
+  zonder glijden voor wie minder beweging vroeg.
+- **Niets is voorgekozen, ook de kaart niet.** Dat wijkt op een telefoon af
+  van ADR-111, waar Nederland de standaard is: het ontwerp begint met stap 1
+  open. Een adres dat een onderwerp of een deel noemt, beantwoordt die stappen
+  wel. "Hoeveel vragen?" heeft altijd een antwoord (de lengte van de ronde) en
+  staat dus gekozen, met "Wijzig".
+- **Een rij die nog komt, is ook een knop.** Hij opent die stap. Een rij die
+  niets doet als je erop drukt, is een kapotte knop.
+- **Twee vormen om te kiezen.** Chips (kaart, welke, hoeveel vragen; ook de
+  tafels): een pil van 48 die niet afbreekt. Tegels (onderwerp, spelvorm): twee
+  kolommen, minstens 96 hoog, plaat, naam en een korte regel. Gekozen is de
+  tint van het vak met zijn rand en een vinkje, en dat is de enige plek waar
+  de kleur van het vak staat, met de vinkjes en de voortgang onderaan; de kop,
+  de nummers en de randen zijn neutraal. Een premiumtegel draagt een geel
+  sterrondje met één legenda "Met premium" onder het raster, niet voor wie
+  premium heeft. Het diploma is een tegel over de volle breedte in zon.
+- **De diploma's en "Over" staan achter een rij**, in een blad dat van onderen
+  opkomt (een echte `<dialog>`, zoals ADR-163): "Jouw topodiploma's · 2 van de
+  11 gehaald" met een ring, en "Over {onderwerp}" met wat je oefent, het
+  werkblad en de vragen van ouders. Anders dan het venster van ADR-163 staat de
+  inhoud van "Over" er ook als het blad dicht is: wat een ouder leest, leest
+  Google ook (ADR-213).
+- **De balk onderaan** zegt tijdens het kiezen "Stap 2 van 3" met een segment
+  per stap; als alles gekozen is maar er een stap openstaat "Alles gekozen" met
+  een kleine Start (44); en als alles dicht is een wit blad met "Klaar om te
+  starten", de zin, de duur en een Start van 60. Hij blijft sticky en het
+  laatste in de pagina (ADR-095), dus hij ligt onderaan nooit over de open
+  stap.
+
+**Gevolgen.** De e2e-tests kiezen een stap via `e2e/stap.ts`, dat op een
+telefoon een dichte stap eerst opent; vanaf 768 is het de sectie zelf. De
+diplomamuren melden hoeveel er gehaald zijn (`onStand`), voor de rij.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

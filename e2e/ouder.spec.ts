@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herbevestig, langsDePoort, stubGezin } from './gezin';
 import { doorDePremiumdeur, signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * De ouder en het kind (ADR-173).
@@ -336,14 +337,12 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
 
   // Eén ronde, zodat er iets te melden valt.
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await page.getByRole('button', { name: 'Stoppen' }).click();

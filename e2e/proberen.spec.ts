@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { aanEenBureau } from './maat';
 import { weetGroepNiet } from './naam';
+import { stap } from './stap';
 
 /**
  * Eerst oefenen, de naam later (ADR-208, ADR-229).
@@ -18,10 +19,7 @@ test('a visitor plays a topic first, and keeps the round after typing a name', a
   await expect(page.getByRole('heading', { level: 1, name: 'Topografie oefenen' })).toBeVisible();
 
   // Zonder code de gratis manier: kies uit 4 namen (ADR-192).
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Kies uit 4 namen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Kies uit 4 namen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
@@ -113,10 +111,7 @@ test('groep 1 and 2 hear honestly that their rounds are coming', async ({ page }
 
 test('"Niet nu" puts the invitation away for good, and Jij still asks', async ({ page }) => {
   await page.goto('/topografie/provincies');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Kies uit 4 namen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Kies uit 4 namen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();

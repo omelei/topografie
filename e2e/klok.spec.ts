@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Klokkijken: the third module, and the first one that asks in two directions.
@@ -16,11 +17,8 @@ async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp) {
   await page.goto('/klokkijken');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  const hoeStap = page.getByRole('region', { name: /Hoe wil je/ });
-
-  await wat.getByRole('button', { name: onderwerp }).click();
-  await hoeStap.getByRole('button', { name: hoe }).click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: onderwerp }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
@@ -30,19 +28,27 @@ test('the clock has a module page in the same shape as the other two', async ({ 
 
   // Four steps and a mix, one set each. No region row — a clock is not
   // anywhere — and no chips, because no subject here holds more than one set.
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
   for (const naam of ['Hele uren', 'Halve uren', 'Kwartieren', 'Vijf minuten', 'Klokmix']) {
-    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
+        name: new RegExp(`^${naam}`),
+      }),
+    ).toBeVisible();
   }
   await expect(page.getByRole('region', { name: 'Waar op de kaart?' })).toHaveCount(0);
 
   // Step 2 is five ways, and the two that read the face come before the one
   // that reads it backwards. The clock and the lives are off by default (K10),
   // so four of the five are on the page.
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(hoe.getByRole('button', { name: /^Meerkeuze/ })).toBeVisible();
-  await expect(hoe.getByRole('button', { name: /^Klok zoeken/ })).toBeVisible();
-  await expect(hoe.getByRole('button', { name: /^Zelf typen/ })).toBeVisible();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }),
+  ).toBeVisible();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Klok zoeken/ }),
+  ).toBeVisible();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Zelf typen/ }),
+  ).toBeVisible();
 });
 
 test('the clock answers to the short word as well as its own', async ({ page }) => {
@@ -58,12 +64,9 @@ test('the clock answers to the short word as well as its own', async ({ page }) 
 test('a step of the clock has an address, and the page opens on it', async ({ page }) => {
   await signIn(page, 'Iris');
   await page.goto('/klokkijken/kwartieren');
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Kwartieren/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Kwartieren/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('reading a face: a clock on the stage and four times to choose from', async ({ page }) => {

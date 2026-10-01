@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Two children on one device, ADR-046.
@@ -22,14 +23,12 @@ import { signIn } from './naam';
 async function answerOne(page: Page) {
   await page.goto('/');
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.

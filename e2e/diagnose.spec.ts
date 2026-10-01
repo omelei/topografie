@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Het meetinstrument achter #diagnose (ADR-128).
@@ -13,14 +14,12 @@ import { signIn } from './naam';
 /** De provincies: twaalf vragen, waarvan dit er één beantwoordt en dan stopt. */
 async function eenProvincieEnStop(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
@@ -33,15 +32,9 @@ async function eenProvincieEnStop(page: Page) {
 /** De tafel van 1, helemaal uitgespeeld. */
 async function eenHeleTafelronde(page: Page) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Zelf typen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   for (let vraag = 1; vraag <= 10; vraag++) {

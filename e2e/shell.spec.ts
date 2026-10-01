@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { doorDePremiumdeur, signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Naar de onderkant van de pagina, en hoe ver dat was.
@@ -27,14 +28,12 @@ async function naarOnder(page: Page): Promise<number> {
 
 async function startRound(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   // The wrapper rather than the label: the label is the combination in words
   // and its measure comes from the round, so matching on "vragen" was quietly
   // asserting which modes exist — and one of the mode cards ends in it too.
@@ -303,9 +302,30 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
   await page.goto('/topografie');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
-  const start = page.locator('.tk-choose-start .tk-button-go');
+  // While choosing, the bar says which step you are on (ADR-252), stuck to the
+  // foot of the glass before anything has been scrolled.
+  const balk = page.locator('.tk-startbalk-mobiel');
+  await expect(balk).toBeInViewport();
+  await expect(balk).toContainText('Stap 1 van 3');
 
-  // In reach before anything has been scrolled: stuck to the foot of the glass.
+  // No wider than the phone — the first failure.
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+
+  await (await stap(page, /Waar op de kaart/)).getByRole('button', { name: 'Nederland' }).click();
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
+
+  // Everything chosen: the start block, with its button in reach.
+  const start = page.locator('.tk-choose-start .tk-button-go');
+  await expect(start).toBeEnabled();
+  await naarOnder(page);
   await expect(start).toBeInViewport();
 
   // The point at the button's centre is the button, not whatever the bar lies
@@ -319,27 +339,6 @@ test('on a phone the start button stays in reach', async ({ page }, testInfo) =>
   );
   expect(geraakt, 'a press on the start button does not land on it').toBe(true);
 
-  // No wider than the phone — the first failure.
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
-
-  // Nothing is chosen yet, so the bar is there but cannot start anything.
-  await expect(start).toBeDisabled();
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Provincies/ })
-    .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
-  await expect(start).toBeEnabled();
-
-  // Still there at the foot of the page, and it starts the round.
-  await naarOnder(page);
-  await expect(start).toBeInViewport();
   await start.click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 });
@@ -356,6 +355,8 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
   await signIn(page, 'Ilse');
   await page.goto('/topografie');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
+  // De onderwerpen van Nederland open: dan is de pagina langer dan het scherm.
+  await (await stap(page, /Waar op de kaart/)).getByRole('button', { name: 'Nederland' }).click();
   const menu = page.locator('.tk-tabbar');
   await expect(menu).toBeInViewport();
 

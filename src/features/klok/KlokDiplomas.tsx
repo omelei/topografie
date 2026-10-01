@@ -16,11 +16,17 @@ import { PremiumLabel } from '@/features/module/PremiumLabel';
  */
 export function KlokDiplomas({
   onKies,
+  onStand,
   alleenBehaald = false,
   stilAlsLeeg = false,
 }: {
   /** Where pressing a diploma chooses its step. Absent where the wall is only shown. */
   readonly onKies?: ((setId: KlokDiplomaSet) => void) | undefined;
+  /**
+   * Hoeveel er gehaald zijn, zodra het bekend is: op een telefoon staat de wand
+   * achter een rij die het zegt (ADR-252).
+   */
+  readonly onStand?: ((behaald: number, totaal: number) => void) | undefined;
   /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
   readonly alleenBehaald?: boolean;
   /** Niets tonen zolang er niets gehaald is (ADR-158). */
@@ -31,6 +37,10 @@ export function KlokDiplomas({
   useEffect(() => {
     void loadKlokDiplomas().then(setBehaald);
   }, []);
+
+  useEffect(() => {
+    if (behaald !== null) onStand?.(behaald.size, KLOK_DIPLOMA_SETS.length);
+  }, [behaald, onStand]);
 
   // Ook zonder code getekend (ADR-192): de ringen zijn te zien, halen kan met
   // premium. Het label in de kop zegt dat, en de toets vraagt om de code.

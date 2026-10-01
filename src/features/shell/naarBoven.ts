@@ -1,3 +1,5 @@
+import { scrollAfstand } from '@/features/module/stappen';
+
 /**
  * Terug naar boven, op een nieuw scherm (zie `App`).
  *
@@ -43,4 +45,24 @@ export function brengInBeeld(doel: HTMLElement, rustig: boolean): void {
   const opties: ScrollToOptions = { top: verschil, behavior: rustig ? 'auto' : 'smooth' };
   const scroller = eigenRol ? rol : window;
   if (typeof scroller.scrollBy === 'function') scroller.scrollBy(opties);
+}
+
+/**
+ * De stap die op een telefoon openging in beeld brengen (ADR-252): niet als
+ * zijn bovenkant al in het bovenste deel van het scherm staat, en anders met
+ * 80 pixels lucht erboven (`scrollAfstand`). Zonder glijden voor wie minder
+ * beweging vroeg.
+ */
+export function stapInBeeld(doel: HTMLElement, rustig: boolean): void {
+  const rol = document.querySelector<HTMLElement>('.tk-schil-rol');
+  const eigenRol = rol !== null && rol.scrollHeight > rol.clientHeight && rol.contains(doel);
+  const boven = eigenRol ? rol.getBoundingClientRect().top : 0;
+  const hoogte = eigenRol ? rol.clientHeight : window.innerHeight;
+  const afstand = scrollAfstand(doel.getBoundingClientRect().top - boven, hoogte);
+  if (Math.abs(afstand) < 1) return;
+
+  const scroller = eigenRol ? rol : window;
+  if (typeof scroller.scrollBy === 'function') {
+    scroller.scrollBy({ top: afstand, behavior: rustig ? 'auto' : 'smooth' });
+  }
 }

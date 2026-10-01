@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, langsDePoort, stubGezin } from './gezin';
 import { signIn } from './naam';
+import { openOver, stap } from './stap';
 
 /**
  * The screens of the design, photographed at every size the app claims to work
@@ -33,12 +34,12 @@ async function chooseAndStart(page: Page, way: RegExp) {
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
 
   // Nothing is chosen for the child any more, so the subject is pressed too.
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  const how = page.getByRole('region', { name: /Hoe wil je/ });
-  await how.getByRole('button', { name: way }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: way }).click();
   await start(page);
 }
 
@@ -133,6 +134,8 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   // Een modulepagina met een set gekozen zegt één ding over het leren: wat er
   // hier vandaag terugkomt, want alleen wat terugkomt kan onthouden raken.
   await page.goto('/topografie/provincies');
+  // Op een telefoon staat die zin bij "Over" (ADR-252).
+  await openOver(page);
   const terug = page.getByText(
     /Hier komt vandaag|Hier komen vandaag|voorlopig niets terug|Morgen \d+/,
   );
@@ -165,14 +168,12 @@ test.describe('zonder code', () => {
     await signIn(page, 'Sanne');
 
     await page.goto('/topografie');
-    await page
-      .getByRole('region', { name: /Kies een onderwerp/ })
+    await (
+      await stap(page, /Kies een onderwerp/)
+    )
       .getByRole('button', { name: /^Provincies/ })
       .click();
-    await page
-      .getByRole('region', { name: /Hoe wil je/ })
-      .getByRole('button', { name: /^Bliksemronde/ })
-      .click();
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
     await expect(venster).toBeVisible(READY);
@@ -249,10 +250,7 @@ test('an English word, chosen', async ({ page }, testInfo) => {
   const size = testInfo.project.name;
   await signIn(page, 'Noor');
   await page.goto('/taal/engels-dieren');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Kies het woord/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Kies het woord/ }).click();
   await start(page);
   const keuzes = page.getByRole('group', { name: 'Kies het Engelse woord' });
   await expect(keuzes).toBeVisible(READY);
@@ -267,14 +265,12 @@ test('the round: pointing, and the answer', async ({ page }, testInfo) => {
 
   await signIn(page, 'Joris');
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await start(page);
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible(READY);
@@ -355,18 +351,13 @@ test('the round: Europe, and the world', async ({ page }, testInfo) => {
     await page.goto('/topografie');
     // In de regiorij: sinds ADR-168 heeft de wereldkaart ook een diploma, en
     // dat vakje heet ook "Wereld".
-    await page
-      .getByRole('region', { name: 'Waar op de kaart?' })
+    await (
+      await stap(page, 'Waar op de kaart?')
+    )
       .getByRole('button', { name: new RegExp(`^${regio}`) })
       .click();
-    await page
-      .getByRole('region', { name: /Kies een onderwerp/ })
-      .getByRole('button', { name: /^Landen/ })
-      .click();
-    await page
-      .getByRole('region', { name: /Hoe wil je/ })
-      .getByRole('button', { name: hoe })
-      .click();
+    await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Landen/ }).click();
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
     await start(page);
 
     await expect(page.getByRole('heading', { name: /Waar ligt |Hoe heet dit land/ })).toBeVisible(
@@ -390,10 +381,7 @@ test('the round: pointing on the world, zoomed in', async ({ page }, testInfo) =
 
   await signIn(page, 'Sem');
   await page.goto('/topografie/wereld');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await start(page);
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible(READY);
 
@@ -435,15 +423,9 @@ test('the tables: choosing one, and a sum', async ({ page }, testInfo) => {
 
   // Nothing is chosen when the page opens, so the picture is taken once the
   // child has answered every step: the keypad open and the start bar ready.
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Zelf typen/ }).click();
   await shoot(page, size, '10-tafels');
 
   await start(page);

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
 import { langsDePoort, stubGezin } from './gezin';
 import { signIn } from './naam';
+import { stap, wand } from './stap';
 
 /**
  * Je doelen voor deze week (ADR-162), op Jij sinds ADR-247.
@@ -51,15 +52,9 @@ async function tienSommen(page: Page) {
 
 async function tafelVanEen(page: Page, vorm: RegExp) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: vorm })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: vorm }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
@@ -173,12 +168,10 @@ test('een diploma als doel van de week, en het uitslagscherm zegt het', async ({
   // met de twaalf tafeldiploma's (ADR-075). Eén druk kiest de tafel én de
   // vorm; daarna is er nog één startknop.
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
-  await page
-    .getByRole('region', { name: 'Jouw tafeldiploma’s' })
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
+  await (
+    await wand(page, 'Jouw tafeldiploma’s')
+  )
     .getByRole('button', { name: 'Tafel van 1: nog geen diploma' })
     .click();
   await page.locator('.tk-choose-start .tk-button-go').click();
