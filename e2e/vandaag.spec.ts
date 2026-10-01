@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { aanEenBureau } from './maat';
 import { signIn } from './naam';
 
 /**
@@ -36,7 +37,10 @@ test('a round stopped halfway is Nu doen, and asks only what was left', async ({
   // Nothing started yet: a new child gets the subjects, and Nu doen comes
   // once there is something to finish (ADR-204, ADR-250).
   const nu = page.getByRole('region', { name: 'Maak je ronde af' });
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
+  // De vakken staan er alleen aan een bureau (ADR-251).
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(
+    aanEenBureau(page) ? 1 : 0,
+  );
   await expect(nu).toHaveCount(0);
 
   await eenProvincieEnStop(page);
@@ -44,8 +48,10 @@ test('a round stopped halfway is Nu doen, and asks only what was left', async ({
 
   // The round stopped halfway is Nu doen, at the top, with how far it got.
   await expect(nu).toContainText('Provincies van Nederland: nog 11 van de 12 vragen.');
-  // De vakken staan er niet meer: die zijn er onder de tab Oefenen (ADR-250).
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(0);
+  // De vakken staan er alleen aan een bureau; anders onder de tab Oefenen (ADR-251).
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(
+    aanEenBureau(page) ? 1 : 0,
+  );
   await nu.getByRole('button', { name: 'Maak af' }).click();
 
   // Eleven questions, not twelve: stopping after one says so.

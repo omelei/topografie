@@ -33,7 +33,7 @@ import {
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
 import { Geheugencheck, zoekGeheugencheck, type CheckKlaar } from './Geheugencheck';
-import { GroepVraag, VakkenRij, VoorKleuters } from './Kennismaken';
+import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
 import { NuDoenKaart } from './NuDoen';
 import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
 import { terugkomst, TerugKaart } from './TerugBlok';
@@ -58,8 +58,12 @@ import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
  * is. Wat half af is, staat vooraan.
  *
  * **Een nieuw kind** krijgt eerst de vraag naar zijn groep (ADR-243), dan de
- * onderwerpen van die groep, en de vakken als rij. Wie al geoefend heeft, heeft
- * zijn eigen weg terug in de rijen, en de vakken onder de tab Oefenen.
+ * onderwerpen van die groep. Wie al geoefend heeft, heeft zijn eigen weg terug
+ * in de rijen.
+ *
+ * **De vakken en "Zo werkt leer.nu" alleen aan een bureau** (ADR-251). Vanaf
+ * 1200 staan ze onderaan; op een telefoon en een tablet niet, want daar zijn
+ * de vakken één tik weg onder Oefenen.
  *
  * **Geen premium op Vandaag** (ADR-250). Een kind koopt niets (R-11): zonder
  * code staat er hoeveel er terugkomt, als feit, en geen slot en geen knop.
@@ -325,7 +329,15 @@ export function HomeScreen({
           blok('kop', kop),
           blok('beginnen', beginnen),
           blok('andere', andere),
-          blok('vakken', <VakkenRij onVak={onVak} />),
+          // Aan een bureau de vakken en hoe het werkt; op een telefoon en een
+          // tablet niet: daar staat de tab Oefenen voor de vakken (ADR-251).
+          blok(
+            'vakken',
+            <AlleenAanEenBureau>
+              <VakkenRaster onVak={onVak} />
+              <ZoWerktHet />
+            </AlleenAanEenBureau>,
+          ),
           // Zonder naam de twee uitwegen van het oude naamscherm: voor een
           // ouder en voor een kind met een inlogcode (ADR-229). De inlogcode
           // staat nergens anders.
@@ -367,10 +379,26 @@ export function HomeScreen({
             <HerhaalRegel vragen={vandaag.plan.vragen} />
           ) : null,
         ),
+        blok(
+          'vakken',
+          <AlleenAanEenBureau>
+            <VakkenRaster onVak={onVak} />
+          </AlleenAanEenBureau>,
+        ),
         blok('gast', naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null),
       ]}
     </div>
   );
+}
+
+/**
+ * Wat alleen aan een bureau staat, vanaf 1200 (ADR-251). Op een telefoon en een
+ * tablet duwden de vakken en "Zo werkt leer.nu" alles een scherm omlaag; daar
+ * zijn de vakken één tik weg onder Oefenen. `contents`, zodat de blokken in de
+ * kolom van Vandaag hun gewone afstand houden.
+ */
+function AlleenAanEenBureau({ children }: { readonly children: ReactNode }) {
+  return <div className="hidden desk:contents">{children}</div>;
 }
 
 /** De zin onder de begroeting voor wie al geoefend heeft, bij zijn Nu doen. */

@@ -27,7 +27,7 @@ export function VoorWieNieuwIs({ onVoorOuders }: { readonly onVoorOuders: () => 
   }
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="tk-gastknoppen">
       <button type="button" className="tk-button tk-button-tertiary" onClick={onVoorOuders}>
         {t('naam.ikBenOuder')}
       </button>

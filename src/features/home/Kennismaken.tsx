@@ -1,12 +1,10 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
+import { DiplomaIcon, GoIcon, LadderIcon, ShieldIcon, type IconProps } from '@/components/Icon';
 import type { Groep } from '@/game-core';
-import { t } from '@/i18n';
-import { MODULE_ICON } from '@/features/shell/moduleIcons';
-import { BUILT_MODULES } from '@/features/shell/modules';
+import { t, type TranslationKey } from '@/i18n';
 import { GroepKiezer } from '@/features/player/GroepKiezer';
 import type { Module } from '@/features/shell/modules';
 import { VakTegels } from '@/features/shell/VakTegels';
-import { ScrollRij } from './ScrollRij';
 
 /**
  * Wat er op Vandaag staat voor een kind dat nog niets deed (ADR-204).
@@ -94,30 +92,40 @@ export function VakkenRaster({ onVak }: { readonly onVak: (id: Module['id']) => 
   );
 }
 
+const STAPPEN: readonly {
+  readonly kop: TranslationKey;
+  readonly uitleg: TranslationKey;
+  readonly Teken: (props: Omit<IconProps, 'children'>) => ReactNode;
+}[] = [
+  { kop: 'home.zo.oefen.kop', uitleg: 'home.zo.oefen.uitleg', Teken: GoIcon },
+  { kop: 'home.zo.fouten.kop', uitleg: 'home.zo.fouten.uitleg', Teken: ShieldIcon },
+  { kop: 'home.zo.moeilijk.kop', uitleg: 'home.zo.moeilijk.uitleg', Teken: LadderIcon },
+  { kop: 'home.zo.diploma.kop', uitleg: 'home.zo.diploma.uitleg', Teken: DiplomaIcon },
+];
+
 /**
- * De vakken als rij op Vandaag, voor een nieuw kind (ADR-250): de plaat en de
- * naam, en verder niets. Wie al geoefend heeft, vindt ze onder de tab Oefenen.
+ * Hoe leer.nu werkt, in vier stappen: oefenen, je fouten, wat moeilijk is, je
+ * diploma (ADR-231). Elke stap is een kaartje uit de huisstijl, met een teken,
+ * een label, een kop en een regel (ADR-232).
  */
-export function VakkenRij({ onVak }: { readonly onVak: (id: Module['id']) => void }) {
+export function ZoWerktHet() {
   return (
-    <ScrollRij titel={t('home.vakken.titel')}>
-      {BUILT_MODULES.map((module) => {
-        const ModuleIcon = MODULE_ICON[module.id];
-        return (
-          <button
-            key={module.id}
-            type="button"
-            data-module={module.id}
-            className="tk-vaktegel tk-vaktegel-klein"
-            onClick={() => onVak(module.id)}
-          >
-            <span className="tk-plaat tk-plaat-klein" aria-hidden="true">
-              <ModuleIcon size={20} />
+    <section className="flex flex-col gap-3" aria-labelledby="zo-kop">
+      <h2 id="zo-kop" className="tk-sectie">
+        {t('home.zo.titel')}
+      </h2>
+      <ol className="tk-kaarten">
+        {STAPPEN.map(({ kop, uitleg, Teken }, index) => (
+          <li key={kop} className="tk-kaartje">
+            <span className="tk-kaartteken" aria-hidden="true">
+              <Teken size={28} />
             </span>
-            <span className="tk-kaart-titel">{t(module.name)}</span>
-          </button>
-        );
-      })}
-    </ScrollRij>
+            <span className="tk-label">{t('home.zo.stap', { nummer: index + 1 })}</span>
+            <span className="tk-kaartje-kop">{t(kop)}</span>
+            <span className="tk-hulp">{t(uitleg)}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
   );
 }

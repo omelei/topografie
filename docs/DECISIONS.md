@@ -14445,6 +14445,25 @@ vandaag wegklikken. Dat vraagt per kind opslag ("tot het aantal verandert",
 "tot morgen") en lost het probleem van de vouw niet op; het staat als kleine
 stap op de roadmap als het gemist wordt.
 
+## ADR-251 — De vakken en "Zo werkt leer.nu" alleen aan een bureau, en de twee knoppen voor gasten dicht onder elkaar
+
+**Status:** accepted. **Date:** 2026-10-01. Op verzoek van de eigenaar, na
+ADR-250.
+
+**Besluit.**
+
+- **"Kies een vak" en "Zo werkt leer.nu" staan op Vandaag alleen vanaf 1200
+  breed** (het breekpunt `desk`), op een telefoon en een tablet niet. Aan een
+  bureau staan ze zoals vóór ADR-250: de vakken als raster voor elk kind, en
+  "Zo werkt leer.nu" voor een nieuw kind. Op een telefoon en een tablet duwden
+  ze waar je begint omlaag, en de vakken zijn daar één tik weg onder Oefenen.
+  De rij met vakken uit ADR-250 is weg.
+- **Het kleuterblok** zegt nu "Tot dan kun je onder Oefenen elk vak kiezen."
+  in plaats van "hieronder", want op een telefoon staan ze er niet onder.
+- **"Ik ben een ouder" en "Ik heb een inlogcode"** staan op een telefoon
+  direct onder elkaar, zonder witregel. Elk houdt de 44 die elke knop haalt
+  (ADR-032), niet de 56 van een gewone knop.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because
