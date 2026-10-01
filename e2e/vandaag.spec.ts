@@ -30,25 +30,23 @@ async function eenProvincieEnStop(page: Page) {
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
 }
 
-test('a round stopped halfway waits under Maak af, and asks only what was left', async ({
-  page,
-}) => {
+test('a round stopped halfway is Nu doen, and asks only what was left', async ({ page }) => {
   await signIn(page, 'Lotte');
 
-  // Nothing started yet: a new child gets the first round and the subjects,
-  // and the row comes once there is something to finish (ADR-204).
-  const rij = page.getByRole('region', { name: 'Maak af' });
+  // Nothing started yet: a new child gets the subjects, and Nu doen comes
+  // once there is something to finish (ADR-204, ADR-250).
+  const nu = page.getByRole('region', { name: 'Maak je ronde af' });
   await expect(page.getByRole('region', { name: 'Kies een vak' })).toBeVisible();
-  await expect(rij).toHaveCount(0);
-  // And the module tiles it replaced are gone.
-  await expect(page.getByRole('region', { name: 'Verder oefenen' })).toHaveCount(0);
+  await expect(nu).toHaveCount(0);
 
   await eenProvincieEnStop(page);
   await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
-  const kaart = rij.getByRole('button', { name: /Provincies van Nederland/ });
-  await expect(kaart).toContainText('Nog 11 van de 12 vragen');
-  await kaart.click();
+  // The round stopped halfway is Nu doen, at the top, with how far it got.
+  await expect(nu).toContainText('Provincies van Nederland: nog 11 van de 12 vragen.');
+  // De vakken staan er niet meer: die zijn er onder de tab Oefenen (ADR-250).
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(0);
+  await nu.getByRole('button', { name: 'Maak af' }).click();
 
   // Eleven questions, not twelve: stopping after one says so.
   await page.getByRole('button', { name: 'Ik weet het niet' }).click();

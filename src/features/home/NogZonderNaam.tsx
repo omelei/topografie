@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { t } from '@/i18n';
 import { isIngesteld } from '@/store/account';
 import { activeChildId } from '@/store/children';
@@ -13,17 +13,11 @@ import { NaamVraag } from '@/features/player/NaamVraag';
  * drie uitwegen: eerst proberen, "Ik ben een ouder" en "Ik heb een inlogcode".
  * Het naamscherm is weg, en de groep kies je op Jij. Proberen is gewoon de
  * voordeur zelf, en de twee andere uitwegen staan hier,
- * als twee knoppen onder de eerste ronde. Een ouder gaat naar de pagina die
+ * als twee knoppen onderaan Vandaag. Ze blijven staan zolang er geen naam is:
+ * dit is de enige plek waar een kind met een inlogcode inlogt (ADR-250). Een ouder gaat naar de pagina die
  * voor hem geschreven is (ADR-214); een kind met een code logt hier in.
  */
-export function VoorWieNieuwIs({
-  onVoorOuders,
-  ervoor,
-}: {
-  readonly onVoorOuders: () => void;
-  /** Een knop die in dezelfde rij vooraan staat: "Andere groep" (ADR-243). */
-  readonly ervoor?: ReactNode;
-}) {
+export function VoorWieNieuwIs({ onVoorOuders }: { readonly onVoorOuders: () => void }) {
   const [inloggen, setInloggen] = useState(false);
 
   if (inloggen) {
@@ -34,7 +28,6 @@ export function VoorWieNieuwIs({
 
   return (
     <div className="flex flex-wrap gap-3">
-      {ervoor}
       <button type="button" className="tk-button tk-button-tertiary" onClick={onVoorOuders}>
         {t('naam.ikBenOuder')}
       </button>
@@ -76,6 +69,7 @@ export function NaamUitnodiging() {
   return (
     <NaamVraag
       moment="vandaag"
+      regel
       // De naam staat ook in de balk en in de kop: opnieuw laden, zoals
       // hernoemen op Jij, zodat nergens het oude "Hoi!" blijft staan.
       onKlaar={() => window.location.reload()}

@@ -102,6 +102,12 @@ test('the memory check comes once, changes no box, and the parent reads the resu
 
   await dertigDagenTerug(page);
   await page.goto('/');
+  // Wie dertig dagen weg was, begint met Welkom terug: die gaat voor (ADR-250).
+  // "Later" zet hem weg, en dan is de geheugencheck Nu doen.
+  const terug = page.getByRole('region', { name: 'Alles wat je geoefend hebt, staat er nog.' });
+  await expect(terug).toBeVisible();
+  await terug.getByRole('button', { name: 'Later' }).click();
+  await expect(terug).toHaveCount(0);
   const kaart = page.getByRole('region', { name: 'Weet je het nog?' });
   await expect(kaart).toContainText('10 vragen uit Tafel van 1');
   // Voor het kind: geen woord over premium, geen prijs, geen link (R-11).

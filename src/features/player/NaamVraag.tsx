@@ -74,6 +74,7 @@ export function NaamVraag({
   kop = 'h2',
   onKlaar,
   onNietNu,
+  regel = false,
 }: {
   readonly moment: NaamMoment;
   /** Een `h1` als dit het enige op de pagina is, zoals op de ouderpagina. */
@@ -81,6 +82,12 @@ export function NaamVraag({
   readonly onKlaar: (kind: ProfileRecord) => void;
   /** Alleen waar de vraag weg mag: dan staat er "Niet nu". */
   readonly onNietNu?: (() => void) | undefined;
+  /**
+   * Compact, onder Nu doen op Vandaag (ADR-250): de vraag als kop, en het veld
+   * met de twee knoppen op één regel. Bewaren is de tweede knop en niet koraal,
+   * zodat Nu doen de enige koraal knop op Vandaag blijft.
+   */
+  readonly regel?: boolean;
 }) {
   const [naam, setNaam] = useState('');
   const [fout, setFout] = useState(false);
@@ -106,6 +113,63 @@ export function NaamVraag({
     onKlaar(kind);
   }
 
+  const veldInvoer = (extra: { readonly className: string; readonly label?: string }) => (
+    <input
+      id={veld}
+      className={extra.className}
+      value={naam}
+      onChange={(event) => {
+        setNaam(event.target.value);
+        setFout(false);
+      }}
+      placeholder={t(tekst.veld)}
+      aria-label={extra.label}
+      autoComplete="off"
+      maxLength={NAAM_MAX}
+      enterKeyHint="done"
+      aria-describedby={fout ? melding : undefined}
+      aria-invalid={fout}
+    />
+  );
+  const foutMelding = fout ? (
+    <p id={melding} role="alert" className="font-semibold text-fout">
+      {t(tekst.teKort)}
+    </p>
+  ) : null;
+  const nietNu = onNietNu ? (
+    <button
+      type="button"
+      className="tk-button tk-button-tertiary"
+      disabled={bezig}
+      onClick={onNietNu}
+    >
+      {t('naam.nietNu')}
+    </button>
+  ) : null;
+
+  if (regel) {
+    return (
+      <form
+        className="tk-naamregel"
+        aria-labelledby={titel}
+        noValidate
+        onSubmit={(event) => void bewaar(event)}
+      >
+        <Kop id={titel} className="tk-naamregel-kop">
+          {t(tekst.titel)}
+        </Kop>
+        <div className="tk-naamregel-rij">
+          {veldInvoer({ className: 'tk-input tk-naamregel-veld', label: t(tekst.veld) })}
+          <button type="submit" className="tk-button tk-button-secondary" disabled={bezig}>
+            {t(tekst.knop)}
+          </button>
+          {nietNu}
+        </div>
+        {foutMelding}
+      </form>
+    );
+  }
+
   return (
     <form
       className="tk-card flex flex-col gap-4"
@@ -122,39 +186,13 @@ export function NaamVraag({
       <label htmlFor={veld} className="tk-label">
         {t(tekst.veld)}
       </label>
-      <input
-        id={veld}
-        className="tk-input max-w-xs"
-        value={naam}
-        onChange={(event) => {
-          setNaam(event.target.value);
-          setFout(false);
-        }}
-        placeholder={t(tekst.veld)}
-        autoComplete="off"
-        maxLength={NAAM_MAX}
-        aria-describedby={fout ? melding : undefined}
-        aria-invalid={fout}
-      />
-      {fout ? (
-        <p id={melding} role="alert" className="font-semibold text-fout">
-          {t(tekst.teKort)}
-        </p>
-      ) : null}
+      {veldInvoer({ className: 'tk-input max-w-xs' })}
+      {foutMelding}
       <div className="flex flex-wrap gap-3">
         <button type="submit" className="tk-button" disabled={bezig}>
           {t(tekst.knop)}
         </button>
-        {onNietNu ? (
-          <button
-            type="button"
-            className="tk-button tk-button-tertiary"
-            disabled={bezig}
-            onClick={onNietNu}
-          >
-            {t('naam.nietNu')}
-          </button>
-        ) : null}
+        {nietNu}
       </div>
     </form>
   );

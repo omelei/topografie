@@ -287,6 +287,12 @@ test('the round: pointing, and the answer', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
   await shoot(page, size, '07-resultaat');
+
+  // Terug op Vandaag is de ronde die half af is Nu doen (ADR-250): bovenaan,
+  // met één knop, boven de vouw.
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
+  await expect(page.getByRole('region', { name: 'Maak je ronde af' })).toBeVisible(READY);
+  await shoot(page, size, '07b-nu-doen');
 });
 
 /**

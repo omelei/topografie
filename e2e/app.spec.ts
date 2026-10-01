@@ -150,35 +150,46 @@ test('a row on the front door scrolls from the keyboard', async ({ page }) => {
   await expect.poll(() => rij.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
 });
 
-test('logs the round that was just played, with its mark', async ({ page }) => {
+test('Vandaag offers the round that was stopped, and lists each topic once', async ({ page }) => {
   await signIn(page, 'Jamie');
 
-  const recent = page.getByRole('region', { name: 'Recent geoefend' });
+  const verder = page.getByRole('region', { name: 'Verder oefenen' });
   // De kolom met favorieten staat er niet meer, op geen enkele maat (ADR-168).
   await expect(page.getByRole('region', { name: 'Jouw favorieten' })).toHaveCount(0);
 
-  // Before the first round there is nothing to log, and a new child gets the
-  // question of its group, the subjects and how it works instead (ADR-204,
-  // ADR-243).
-  await expect(recent).toHaveCount(0);
+  // Before the first round there is nothing to go back to, and a new child
+  // gets the question of its group and the subjects instead (ADR-204, ADR-243).
+  await expect(verder).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'In welke groep zit je?' })).toBeVisible();
 
   await startRound(page, PROVINCIES, /Aanwijzen/);
   await page.getByRole('button', { name: 'Limburg' }).click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
-
   await page.getByRole('button', { name: 'Stoppen' }).click();
   await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
 
-  // One answer, and a telling rather than a mark: a round with help on the way
-  // gets no cijfer on the front door, only the oefentoets does (ADR-235).
-  const tegel = recent.getByRole('button', { name: /Provincies van Nederland/ });
-  await expect(tegel).toContainText(/[01] van de 1 goed/);
-  await expect(tegel).not.toContainText('Cijfer');
-  await expect(tegel).toContainText('Aanwijzen');
+  // Nu doen is de ronde die half af is (ADR-250), en hij staat er één keer:
+  // niet nog eens in Verder oefenen.
+  const nu = page.getByRole('region', { name: 'Maak je ronde af' });
+  await expect(nu).toContainText('Provincies van Nederland: nog 11 van de 12 vragen.');
+  await expect(verder).toHaveCount(0);
 
-  // The tile is the shortcut it looks like: same set, same way, no chooser.
-  await tegel.click();
+  // Een tweede onderwerp, ook gestopt: dat wordt Nu doen, en het eerste schuift
+  // naar Verder oefenen.
+  await startRound(page, HOOFDSTEDEN, /Aanwijzen/);
+  await page.getByRole('button', { name: 'Ik weet het niet' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
+
+  await expect(nu).toContainText('Hoofdsteden van de provincies');
+  const kaart = verder.getByRole('button', { name: /Provincies van Nederland/ });
+  await expect(kaart).toContainText('Aanwijzen');
+  await expect(kaart).toContainText('Nog 11 van de 12 vragen');
+  await expect(verder.getByRole('button', { name: /Hoofdsteden/ })).toHaveCount(0);
+
+  // The card is the shortcut it looks like: same set, same way, no chooser.
+  await kaart.click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 });
 
@@ -337,13 +348,12 @@ test('the oefentoets asks without answering, and marks at the end', async ({ pag
   await expect(page.getByText('Zonder hulp onderweg, net als op school.')).toBeVisible();
   await expect(page.locator('.tk-toetscijfer')).toContainText(/1,0|10,0/);
 
-  // En op Vandaag staat dat cijfer erbij, want dit was een toets (ADR-235).
+  // Op Vandaag is de toets die half af is Nu doen (ADR-250). Het cijfer van een
+  // toets op een kaart in Verder oefenen staat in e2e/vandaag.spec.ts.
   await page.getByRole('button', { name: 'Terug naar Vandaag' }).click();
-  await expect(
-    page
-      .getByRole('region', { name: 'Recent geoefend' })
-      .getByRole('button', { name: /Provincies van Nederland/ }),
-  ).toContainText(/Cijfer (1,0|10,0)/);
+  await expect(page.getByRole('region', { name: 'Maak je ronde af' })).toContainText(
+    'Provincies van Nederland',
+  );
 });
 
 /**
@@ -636,22 +646,26 @@ test('overleven spends a life on a wrong answer', async ({ page }) => {
 });
 
 /**
- * De rij met starters heet naar wie ernaar kijkt (ADR-131).
+ * De rij met starters is voor wie nog niets deed (ADR-131, ADR-250).
  *
- * "Meest geoefend" is een kop over een geschiedenis, en het allereerste wat een
- * kind op deze pagina leest is precies die kop — terwijl er dan nog geen
- * geschiedenis is.
+ * Een kop over een geschiedenis is het allereerste wat een kind op deze pagina
+ * leest, terwijl er dan nog geen geschiedenis is. En na de eerste ronde is de
+ * rij weg: dan is wat het kind deed de weg terug.
  */
-test('the starter row is not called "most practised" before anything is practised', async ({
-  page,
-}) => {
+test('the starter row is for before anything is practised', async ({ page }) => {
   await signIn(page, 'Sam');
   await weetGroepNiet(page);
-  await expect(page.getByRole('group', { name: 'Meest geoefend' })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Hier begin je mee vandaag' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Verder oefenen' })).toHaveCount(0);
 
+  // Na een ronde staat de rij met starters er niet meer: dan is er een eigen
+  // weg terug, als Nu doen bovenaan (ADR-250).
   await eenRondeProvincies(page);
   await page.goto('/');
-  await expect(page.getByRole('group', { name: 'Meest geoefend' })).toBeVisible();
+  await expect(page.getByRole('group', { name: /^Hier begin je mee/ })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Maak je ronde af' })).toContainText(
+    'Provincies van Nederland',
+  );
 });
 
 /** Eén ronde provincies, helemaal uitgespeeld, zodat er geschiedenis is. */

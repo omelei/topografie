@@ -336,8 +336,9 @@ test('Kies de vorm: three real forms, and the round in the history', async ({ pa
 
   // "Klaar" when nothing is due any more (ADR-149), "Terug naar Vandaag" otherwise.
   await page.getByRole('button', { name: /^(Klaar|Terug naar Vandaag)$/ }).click();
-  const recent = page.getByRole('region', { name: 'Recent geoefend' });
-  await expect(recent.getByRole('button', { name: /Tegenwoordige tijd/ }).first()).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: /^Ga verder met .*Tegenwoordige tijd/ }),
+  ).toBeVisible();
 });
 
 test('Typ de vorm: after a wrong answer, the rule applied to this verb', async ({ page }) => {
