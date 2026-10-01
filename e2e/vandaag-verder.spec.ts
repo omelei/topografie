@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Het slinkende dagplan (ADR-139).
@@ -14,15 +15,9 @@ import { signIn } from './naam';
 /** De tafel van 1, helemaal uitgespeeld: tien onderdelen met een stand. */
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Zelf typen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   for (let vraag = 1; vraag <= 10; vraag++) {
@@ -72,14 +67,12 @@ test('na een ronde staat er hoeveel er nog van vandaag over is', async ({ page }
   // Twee sets oefenen, zodat er vandaag twee rondes klaarstaan.
   await oefenTafelVanEen(page);
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Limburg' }).click();
   await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();

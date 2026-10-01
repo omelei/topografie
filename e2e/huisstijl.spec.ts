@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * The house style in the running app (ADR-109).
@@ -11,14 +12,12 @@ import { signIn } from './naam';
 
 async function startRound(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }

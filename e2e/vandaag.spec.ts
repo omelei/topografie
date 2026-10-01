@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { aanEenBureau } from './maat';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * The front door's "Maak af" (ADR-115) and the table on Jij that was Onthouden's
@@ -14,14 +15,12 @@ import { signIn } from './naam';
 /** The provinces, pointed at: twelve questions, of which this answers one and stops. */
 async function eenProvincieEnStop(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();
@@ -68,14 +67,12 @@ test('a round stopped halfway is Nu doen, and asks only what was left', async ({
 test('stoppen voor de eerste vraag geeft geen uitslag met nullen', async ({ page }) => {
   await signIn(page, 'Mila');
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('button', { name: 'Stoppen' }).click();
 
@@ -121,14 +118,12 @@ test('the table on Jij counts the answers, the share right, and the days since',
 test('de terugknop in een ronde gaat terug naar de vakpagina', async ({ page }) => {
   await signIn(page, 'Jip');
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
 

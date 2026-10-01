@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * De geheugencheck (ADR-228): één keer per kind, zodra er 8 vragen zijn die het
@@ -15,15 +16,9 @@ test.use({ storageState: { cookies: [], origins: [] } });
 /** Tafel van 1 met meerkeuze: elk antwoord is de vermenigvuldiger zelf. */
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
   for (let vraag = 1; vraag <= 10; vraag++) {

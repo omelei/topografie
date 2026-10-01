@@ -37,6 +37,20 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   [".tk-tegel[aria-pressed='true']", 'the answer already given, as a tile'],
   [".tk-tegel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a tile'],
   ['.tk-tegel-vink', 'the answer already given: its tick'],
+  // ADR-252: on a phone the steps already answered stand together at the top,
+  // each with a tick, and the bar at the foot has a segment per step — the
+  // answered ones in the subject's colour. Both say "chosen" and nothing else.
+  ['.tk-stapgekozen-vink', 'a step already answered: its tick'],
+  // The same chip, tile and tick on a phone, drawn as the design has them:
+  // the subject's tint with its rule, rather than filled (ADR-252).
+  [".tk-kiespagina .tk-keuze[aria-pressed='true']", 'the answer already given, as a chip'],
+  [".tk-kiespagina .tk-tegel[aria-pressed='true']", 'the answer already given, as a tile'],
+  [
+    ".tk-kiespagina .tk-tegel[aria-pressed='true'] .tk-plaat",
+    'the answer already given, as a tile',
+  ],
+  ['.tk-kiespagina .tk-tegel-vink', 'the answer already given: its tick'],
+  [".tk-stapvoortgang-segment[data-stand='gekozen']", 'a step already answered, in the bar'],
   // Ontdekken: the name being looked at, in a list of eighty (ADR-112). It
   // carries a tick as well, so the tint is not the only thing that says so.
   [".tk-verken-item[aria-current='true']", 'the answer already given, in a list'],

@@ -1,9 +1,18 @@
-import { useId } from 'react';
+import { createContext, useContext, useId } from 'react';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { t } from '@/i18n';
+
+/**
+ * Of Nu doen in het welkomstvlak staat, op een telefoon (ADR-252). Dan is de
+ * kaart een witte binnenkaart in het koraal: plaat, kop en regel naast elkaar,
+ * daaronder de balk en de knop. Een context en geen eigenschap, want vier
+ * kaarten (Welkom terug, Maak af, de geheugencheck, Ga verder) tekenen hem, en
+ * alleen Vandaag weet waar hij staat.
+ */
+export const NuDoenBinnen = createContext(false);
 
 /**
  * De kaart van Nu doen (ADR-250): een kop, één regel, en één knop over de
@@ -40,6 +49,7 @@ export function NuDoenKaart({
   readonly onLater?: (() => void) | undefined;
 }) {
   const kopId = useId();
+  const binnen = useContext(NuDoenBinnen);
   const ModuleIcon = moduleId === undefined ? null : MODULE_ICON[moduleId];
   const plaat =
     ModuleIcon === null ? null : (
@@ -53,6 +63,41 @@ export function NuDoenKaart({
       <NextIcon size={20} />
     </button>
   );
+
+  if (binnen) {
+    return (
+      <section
+        className="tk-nudoen tk-nudoen-binnen"
+        data-module={moduleId}
+        aria-labelledby={kopId}
+      >
+        <div className="tk-nudoen-kop">
+          {plaat}
+          <div className="tk-nudoen-tekst">
+            <h2 id={kopId} className="tk-nudoen-titel">
+              {kop}
+            </h2>
+            <p className="tk-nudoen-regel">{regel}</p>
+          </div>
+        </div>
+        {balk === undefined ? null : (
+          <span aria-hidden="true">
+            <ProgressBar value={balk.waarde} showDot={false} label={balk.label} />
+          </span>
+        )}
+        {startknop}
+        {onLater === undefined ? null : (
+          <button
+            type="button"
+            className="tk-button tk-button-tertiary tk-nudoen-later"
+            onClick={onLater}
+          >
+            {t('home.nu.later')}
+          </button>
+        )}
+      </section>
+    );
+  }
 
   if (vorm === 'smal') {
     return (

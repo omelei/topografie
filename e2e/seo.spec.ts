@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { openOver } from './stap';
 
 /**
  * Een onderwerp is een pagina met een eigen titel (ADR-207). Wie via Google op
@@ -20,6 +21,7 @@ test('a topic has its own page and title, and the app takes it over', async ({ p
  */
 test('a topic page links to the other topics of its subject', async ({ page }) => {
   await page.goto('/topografie/provincies');
+  await openOver(page);
   const meer = page.getByRole('navigation', { name: 'Meer topografie' });
   await expect(meer.getByRole('link', { name: 'Alles van topografie' })).toHaveAttribute(
     'href',
@@ -45,6 +47,7 @@ test('the sitemap lists the topics, and robots.txt points at it', async ({ reque
  */
 test('a topic page says what is in it and answers a parent', async ({ page }) => {
   await page.goto('/topografie/hoofdsteden');
+  await openOver(page);
   const over = page.getByRole('region', { name: 'Over Hoofdsteden van de provincies' });
   await expect(over).toBeVisible();
   await expect(over.getByText('Groningen (Groningen)')).toBeVisible();

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { opEenTelefoon, stap } from './stap';
 
 /**
  * Flags: the fourth module, and one integration test per way of practising.
@@ -15,15 +16,13 @@ import { signIn } from './naam';
 async function kies(page: Page, regio: string, onderwerp: RegExp, hoe: RegExp) {
   await page.goto('/vlaggen');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
-
-  const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
-  await waar.getByRole('button', { name: regio, exact: true }).click();
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await wat.getByRole('button', { name: onderwerp }).click();
-
-  const hoeStap = page.getByRole('region', { name: /Hoe wil je/ });
-  await hoeStap.getByRole('button', { name: hoe }).click();
+  await (
+    await stap(page, 'Waar op de kaart?')
+  )
+    .getByRole('button', { name: regio, exact: true })
+    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: onderwerp }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
 }
 
 async function start(page: Page) {
@@ -70,51 +69,77 @@ test('flags have a module page in the shape topography has', async ({ page }) =>
 
   // Where, in the same eight words as topography, opening on the world: flags
   // are mostly other countries', and nothing but the region is chosen for you.
-  const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
-  await expect(waar.getByRole('button')).toHaveCount(8);
-  await expect(waar.getByRole('button', { name: 'Wereld', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Vlaggenmix/ })).toBeVisible();
+  await expect((await stap(page, 'Waar op de kaart?')).getByRole('button')).toHaveCount(8);
+  // Op een telefoon is niets voorgekozen, ook de kaart niet (ADR-252).
+  await expect(
+    (await stap(page, 'Waar op de kaart?')).getByRole('button', { name: 'Wereld', exact: true }),
+  ).toHaveAttribute('aria-pressed', opEenTelefoon(page) ? 'false' : 'true');
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Vlaggenmix/ }),
+  ).toBeVisible();
 
   // Nederland has one subject and nothing else to choose.
-  await waar.getByRole('button', { name: 'Nederland', exact: true }).click();
-  await expect(wat.getByRole('button', { name: /^Provincievlaggen/ })).toBeVisible();
-  await expect(wat.getByRole('button')).toHaveCount(1);
+  await (
+    await stap(page, 'Waar op de kaart?')
+  )
+    .getByRole('button', { name: 'Nederland', exact: true })
+    .click();
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Provincievlaggen/ }),
+  ).toBeVisible();
+  await expect((await stap(page, /Kies een onderwerp/)).getByRole('button')).toHaveCount(1);
 
-  await waar.getByRole('button', { name: 'Europa', exact: true }).click();
+  await (
+    await stap(page, 'Waar op de kaart?')
+  )
+    .getByRole('button', { name: 'Europa', exact: true })
+    .click();
   for (const naam of ['Bekende vlaggen', 'Alle vlaggen', 'Lijkt op elkaar']) {
-    await expect(wat.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
+        name: new RegExp(`^${naam}`),
+      }),
+    ).toBeVisible();
   }
-  await expect(wat.getByRole('button', { name: /^Vlaggenmix/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Vlaggenmix/ }),
+  ).toHaveCount(0);
 
   // Five ways and the oefentoets, and no typing: spelling is not the point.
   // A set first, because the ways are the ways of a chosen set.
-  await wat.getByRole('button', { name: /^Bekende vlaggen/ }).click();
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Bekende vlaggen/ })
+    .click();
   const manieren = ['Vlag zoeken', 'Meerkeuze', 'Ontdekken', 'Bliksemronde', 'Overleven'];
   for (const naam of [...manieren, 'Oefentoets']) {
-    await expect(hoe.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    await expect(
+      (await stap(page, /Hoe wil je/)).getByRole('button', { name: new RegExp(`^${naam}`) }),
+    ).toBeVisible();
   }
-  await expect(hoe.getByRole('button', { name: /^Zelf typen/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Zelf typen/ }),
+  ).toHaveCount(0);
 
-  await waar.getByRole('button', { name: 'Wereld', exact: true }).click();
-  await expect(wat.getByRole('button', { name: /^Vlaggenmix/ })).toBeVisible();
+  await (
+    await stap(page, 'Waar op de kaart?')
+  )
+    .getByRole('button', { name: 'Wereld', exact: true })
+    .click();
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Vlaggenmix/ }),
+  ).toBeVisible();
 });
 
 test('a set of flags has an address, and the page opens on it', async ({ page }) => {
   await signIn(page, 'Daan');
   await page.goto('/vlaggen/europa-bekend');
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Bekende vlaggen/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
   await expect(
-    page.getByRole('region', { name: 'Waar op de kaart?' }).getByRole('button', { name: 'Europa' }),
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Bekende vlaggen/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, 'Waar op de kaart?')).getByRole('button', { name: 'Europa' }),
   ).toHaveAttribute('aria-pressed', 'true');
 });
 

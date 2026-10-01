@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * Een kind op een apparaat waar de ouder is ingelogd, zonder code (flow 2 uit
@@ -25,15 +26,15 @@ test('een kind met een ingelogde ouder en zonder code', async ({ page }) => {
 
   // Het kind oefent gewoon: voor oefenen is geen account en geen code nodig.
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
 
   // Een premiummanier opent het venster. Daarin staat geen knop om te kopen,
   // want die hoort achter de pincode (R-11): wel de weg naar de ouder.
-  await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
   const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await venster.getByRole('button', { name: 'Mijn ouders zijn erbij' }).click();
   await expect(venster.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);

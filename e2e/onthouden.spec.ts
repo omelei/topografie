@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { doorDePremiumdeur, signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * De getallen over het oefenen, op Jij (ADR-148, ADR-171, ADR-172).
@@ -14,14 +15,12 @@ import { doorDePremiumdeur, signIn } from './naam';
 /** De provincies, aangewezen: één vraag beantwoord, en dan gestopt. */
 async function eenProvincieEnStop(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Limburg' })).toBeVisible();

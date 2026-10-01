@@ -29,11 +29,17 @@ const TAFELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
  */
 export function Tafeldiplomas({
   onKies,
+  onStand,
   alleenBehaald = false,
   stilAlsLeeg = false,
 }: {
   /** Where pressing a diploma chooses its table. Absent where the wall is only shown. */
   readonly onKies?: ((setId: string) => void) | undefined;
+  /**
+   * Hoeveel er gehaald zijn, zodra het bekend is: op een telefoon staat de wand
+   * achter een rij die het zegt (ADR-252).
+   */
+  readonly onStand?: ((behaald: number, totaal: number) => void) | undefined;
   /** Alleen tonen wat gehaald is (ADR-143), met de stand erboven. */
   readonly alleenBehaald?: boolean;
   /** Niets tonen zolang er niets gehaald is (ADR-158). */
@@ -44,6 +50,10 @@ export function Tafeldiplomas({
   useEffect(() => {
     void loadDiplomas().then(setBehaald);
   }, []);
+
+  useEffect(() => {
+    if (behaald !== null) onStand?.(behaald.size, TAFELS.length);
+  }, [behaald, onStand]);
 
   // Nothing until it is known: a wall that shows twelve gaps and then fills
   // four of them has told a child they had none.

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * De ronde kondigt zichzelf aan (ADR-140).
@@ -12,15 +13,9 @@ import { signIn } from './naam';
 
 async function kiesTafelVanEen(page: Page) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Zelf typen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Zelf typen/ }).click();
 }
 
 /** Eén som goed beantwoorden en doorgaan. */

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
 import { signIn } from './naam';
+import { stap, wand } from './stap';
 
 /**
  * The klokdiploma and the topodiploma (ADR-117): a wall on the module page
@@ -15,14 +16,12 @@ import { signIn } from './naam';
  */
 async function wijsDeEilandenAan(page: Page) {
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Waddeneilanden/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Aanwijzen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
@@ -41,20 +40,15 @@ test('four klokdiploma’s, and one press chooses a step and the diploma', async
   await signIn(page, 'Jip');
   await page.goto('/klokkijken');
 
-  const muur = page.getByRole('region', { name: 'Jouw klokdiploma’s' });
+  const muur = await wand(page, 'Jouw klokdiploma’s');
   await expect(muur.getByRole('button')).toHaveCount(4);
   await muur.getByRole('button', { name: 'Kwartieren: nog geen klokdiploma' }).click();
-
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Kwartieren/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(hoe.getByRole('button', { name: /^Klokdiploma/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Kwartieren/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Klokdiploma/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
   // A diploma is its own length.
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 });
@@ -65,16 +59,13 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await signIn(page, 'Isa');
   await page.goto('/topografie');
 
-  const muur = page.getByRole('region', { name: 'Jouw topodiploma’s' });
+  const muur = await wand(page, 'Jouw topodiploma’s');
   // Twaalf sinds ADR-168: de wereldkaart hoort er ook bij.
   await expect(muur.getByRole('button')).toHaveCount(12);
   await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
-
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(hoe.getByRole('button', { name: /^Topodiploma/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Topodiploma/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   // Afzwemmen first (ADR-149): what it asks, and that a page nobody practised
@@ -86,14 +77,18 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await expect(knoppen).toHaveCount(1);
   await expect(knoppen).toHaveText('Eerst oefenen');
   await knoppen.click();
-  await expect(page.locator('.tk-choose-start .tk-button-go')).toBeVisible();
+  await expect(page.locator('.tk-choose-start')).toBeVisible();
 
   // Dus eerst de eilanden leren, en dan pas afzwemmen. De doosstand zetten
   // scheelt de vier rondes over een week die het echt zou kosten.
   await wijsDeEilandenAan(page);
   await alsOnthouden(page);
   await page.goto('/topografie');
-  await muur.getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' }).click();
+  await (
+    await wand(page, 'Jouw topodiploma’s')
+  )
+    .getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' })
+    .click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();
@@ -142,8 +137,9 @@ test('zonder naam vraagt de toets eerst welke naam op het diploma komt', async (
   await alsOnthouden(page);
 
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: 'Jouw topodiploma’s' })
+  await (
+    await wand(page, 'Jouw topodiploma’s')
+  )
     .getByRole('button', { name: 'Waddeneilanden: nog geen topodiploma' })
     .click();
   await page.locator('.tk-choose-start .tk-button-go').click();

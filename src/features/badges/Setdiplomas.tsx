@@ -30,6 +30,7 @@ export function Setdiplomas({
   titel,
   sets,
   onKies,
+  onStand,
 }: {
   readonly moduleId: Module['id'];
   readonly titel: string;
@@ -37,12 +38,20 @@ export function Setdiplomas({
   readonly sets: readonly Onderdeel[];
   /** Drukken kiest die set en het diploma erbij. */
   readonly onKies?: ((setId: string) => void) | undefined;
+  /** Hoeveel er gehaald zijn, voor de rij op een telefoon (ADR-252). */
+  readonly onStand?: ((behaald: number, totaal: number) => void) | undefined;
 }) {
   const [behaald, setBehaald] = useState<ReadonlySet<string> | null>(null);
 
   useEffect(() => {
     void loadBehaald().then(setBehaald);
   }, []);
+
+  useEffect(() => {
+    if (behaald === null) return;
+    const doelen = sets.flatMap((deel) => doelwitVan(deel) ?? []);
+    onStand?.(doelen.filter((doel) => behaald.has(doel.id)).length, doelen.length);
+  }, [behaald, sets, onStand]);
 
   // Niets tot het bekend is: een wand die eerst vier gaten toont en er daarna
   // twee van vult, heeft een kind verteld dat het niets had.

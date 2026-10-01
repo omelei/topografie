@@ -183,6 +183,11 @@
     /* The empty part of a bar, an empty dot, and a switched-off button: the
      * guide's own empty dot. */
     --balk-leeg: #efe2d4;
+    /* De vakpagina op een telefoon (ADR-252), uit het ontwerp "Vakpagina -
+     * nieuw": de gestippelde rand van een stap die nog komt, en het segment
+     * van de stap die openstaat. Lijnen en vlakken, geen tekst. */
+    --rand-stippel: #d9c6b4;
+    --balk-open: #c9b4a2;
     /* Wrong: framboos. Wrong is a hatched area and a cross; this is the colour
      * that goes with the shape, never the shape itself. The guide's Framboos
      * (#e03553) is 4.37 as text, so the red that is read is its deeper edge:
@@ -3209,6 +3214,156 @@
     grid-column: 1 / -1;
   }
 
+  /* ---- Vandaag op een telefoon (ADR-252) ----------------------------------
+   * Alleen op een telefoon getekend (`useSmallScreen`), dus zonder breekpunt.
+   * Het welkomstvlak en Nu doen zijn één koraal vlak: de begroeting met Denker
+   * ernaast, en daaronder Nu doen als witte binnenkaart. Cacao op koraal 5,72. */
+  .tk-welkom-nu {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 18px 16px 16px;
+    border-radius: 24px;
+  }
+  .tk-welkom-boven {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tk-welkom-nu .tk-welkom-kop {
+    font-size: 2rem; /* 32px */
+    line-height: 2.25rem; /* 36px */
+  }
+  .tk-welkom-nu .tk-welkom-denker {
+    width: 68px;
+    height: 68px;
+    margin: 0 -4px 0 0;
+  }
+  /* De binnenkaart: plaat, kop en regel naast elkaar, de balk en de knop over
+   * de hele breedte. Wit op koraal, dus geen rand en geen onderkant van het
+   * vak: het vlak eromheen is de lijst al. */
+  .tk-nudoen-binnen {
+    position: relative;
+    gap: 12px;
+    padding: 16px;
+    border: 0;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+  .tk-nudoen-binnen .tk-nudoen-tekst {
+    gap: 2px;
+  }
+  .tk-nudoen-binnen .tk-nudoen-titel {
+    font-size: var(--type-knop); /* 20px */
+    line-height: var(--type-knop-lh); /* 24px */
+  }
+  .tk-nudoen-regel {
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem; /* 20px */
+  }
+  .tk-nudoen-binnen .tk-progress-rail {
+    height: 8px;
+  }
+  .tk-nudoen-binnen .tk-nudoen-later {
+    margin: -4px 0 -6px;
+  }
+
+  /* De lijsten van Vandaag op een telefoon (ADR-252): één witte kaart per
+   * lijst, de rijen met een haarlijn ertussen, elke rij even hoog. De pijl in
+   * een cirkel in de tint van het vak, de woorden erop in de diepe toon. */
+  .tk-oefenlijst {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tk-oefenlijst-rijen {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: 20px;
+    background: var(--kaart);
+  }
+  .tk-oefenlijst-rijen > li + li {
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-oefenrij {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 68px;
+    padding: 12px 12px 12px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--inkt);
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-oefenrij:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-oefenrij:focus-visible,
+  .tk-oefenlijst-meer:focus-visible {
+    outline-offset: -4px;
+  }
+  .tk-oefenrij-tekst {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .tk-oefenrij-titel {
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.375rem; /* 22px */
+    font-weight: 700;
+  }
+  .tk-oefenrij-regel {
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem; /* 20px */
+  }
+  .tk-oefenrij .tk-progress {
+    margin-top: 4px;
+  }
+  .tk-oefenrij .tk-progress-rail {
+    height: 6px;
+    background: var(--module-tint);
+  }
+  .tk-oefenrij-pijl {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pil);
+    background: var(--module-tint);
+    color: var(--module-tekst);
+  }
+  .tk-oefenlijst-meer {
+    width: 100%;
+    min-height: 52px;
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .tk-oefenlijst-meer:hover {
+    background: var(--vlak-hover);
+  }
+
   /* "Hoe heet je?" onder Nu doen (ADR-250): de vraag, en het veld met de twee
    * knoppen op één regel. Bewaren is de tweede knop, niet koraal. */
   .tk-naamregel {
@@ -4126,6 +4281,423 @@
   }
   .tk-tegel .tk-premium + .tk-tegel-vink {
     margin-left: 0;
+  }
+
+  /* ---- De vakpagina op een telefoon (ADR-252) -------------------------------
+   * Een accordeon: één stap open, wat gekozen is samen bovenaan, wat nog komt
+   * gestippeld eronder. Groen (de kleur van het vak) alleen voor wat gekozen
+   * is en voor de vinkjes; de kop, de nummers, de randen en de voortgang zijn
+   * neutraal. De stukken die alleen op een telefoon getekend worden, staan
+   * zonder breekpunt; wat een gedeelde klasse anders tekent, eronder. */
+  .tk-vakkaart {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: 24px;
+    background: var(--kaart);
+  }
+  .tk-vakkaart-kop {
+    min-width: 0;
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.75rem; /* 28px */
+    line-height: 2rem; /* 32px */
+    font-weight: 800;
+  }
+  .tk-kiespagina > .tk-page-main {
+    gap: 16px;
+  }
+  .tk-stappen {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-stappen-gekozen {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: 20px;
+    background: var(--kaart);
+  }
+  .tk-stappen-gekozen > li + li {
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-stapgekozen {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 10px 16px 10px 14px;
+    border: 0;
+    background: transparent;
+    color: var(--inkt);
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-stapgekozen:hover {
+    background: var(--vlak-hover);
+  }
+  .tk-stapgekozen:focus-visible {
+    outline-offset: -4px;
+  }
+  .tk-stapgekozen-vink {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-pil);
+    background: var(--accent);
+    color: var(--kaart);
+  }
+  .tk-stapgekozen-tekst {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .tk-stapgekozen-label {
+    color: var(--tekst-secundair);
+    font-size: var(--type-vlaklabel);
+    line-height: var(--type-vlaklabel-lh);
+    letter-spacing: var(--type-vlaklabel-ls);
+    font-weight: var(--type-vlaklabel-weight);
+    text-transform: uppercase;
+  }
+  .tk-stapgekozen-waarde {
+    overflow-wrap: anywhere;
+    font-family: var(--font-kop);
+    font-size: var(--type-knop); /* 20px */
+    line-height: var(--type-knop-lh); /* 24px */
+    font-weight: 700;
+  }
+  .tk-stapgekozen-wijzig {
+    flex: none;
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  /* De stap die openstaat: een witte kaart met een warme rand en onderkant. */
+  .tk-stapopen {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    border: var(--stroke-active) solid var(--rand-sterk);
+    border-radius: 20px;
+    box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
+    background: var(--kaart);
+    scroll-margin-top: 80px;
+  }
+  .tk-stapopen-kop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 700;
+  }
+  .tk-stapopen-nummer,
+  .tk-staplater-nummer {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-pil);
+    font-family: var(--font-kop);
+    font-size: 1.0625rem; /* 17px */
+    line-height: 1;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .tk-stapopen-nummer {
+    background: var(--inkt);
+    color: var(--kaart);
+  }
+  .tk-stappen-later {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-staplater {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 56px;
+    padding: 10px 16px 10px 14px;
+    border: var(--stroke-active) dashed var(--rand-stippel);
+    border-radius: 18px;
+    background: transparent;
+    color: var(--inkt);
+    text-align: left;
+    cursor: pointer;
+  }
+  .tk-staplater-nummer {
+    background: var(--balk-leeg);
+    color: var(--tekst-secundair);
+  }
+  .tk-staplater-vraag {
+    flex: 1;
+    min-width: 0;
+    font-weight: 700;
+  }
+  .tk-staplater-nog {
+    flex: none;
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+  }
+  /* Premium op een tegel: een geel rondje met een ster, en één legenda. */
+  .tk-ster {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-pil);
+    background: var(--zon);
+    color: var(--inkt);
+  }
+  .tk-tegel > .tk-ster {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  .tk-legenda {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem;
+  }
+  .tk-tegel-regel {
+    display: block;
+    margin-top: 2px;
+    color: var(--tekst-secundair);
+    font-family: var(--font-tekst);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem; /* 20px */
+    font-weight: 400;
+  }
+  /* De rijen naar de diploma's en "Over": de ring en de plaat. */
+  .tk-meerrij-beeld {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+  .tk-standring-baan,
+  .tk-standring-vol {
+    fill: none;
+    stroke-width: 5;
+  }
+  .tk-standring-baan {
+    stroke: var(--balk-leeg);
+  }
+  .tk-standring-vol {
+    stroke: var(--tekst-secundair);
+  }
+  .tk-blad .tk-venster-body {
+    padding: 20px 16px 32px;
+  }
+  .tk-blad .tk-venster-body > :first-child {
+    padding-right: 48px;
+  }
+
+  /* De balk onderaan: tijdens het kiezen smal, met de stap en de segmenten;
+   * als alles gekozen is en er een stap openstaat een kleine Start; en als
+   * alles dicht is een wit blad met de zin, de duur en een grote Start. */
+  .tk-stapvoortgang {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .tk-stapvoortgang-tekst {
+    flex: 1;
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.375rem; /* 22px */
+    font-weight: 700;
+  }
+  .tk-stapvoortgang-balk {
+    display: flex;
+    gap: 4px;
+  }
+  .tk-stapvoortgang-segment {
+    flex: 1;
+    height: 6px;
+    border-radius: var(--radius-pil);
+    background: var(--balk-leeg);
+  }
+  .tk-stapvoortgang-segment[data-stand='gekozen'] {
+    background: var(--accent);
+  }
+  .tk-stapvoortgang-segment[data-stand='open'] {
+    background: var(--balk-open);
+  }
+  .tk-startbalk-mobiel[data-stand='kiezen'] {
+    min-height: 60px;
+    padding: 10px 16px;
+  }
+  .tk-startbalk-mobiel .tk-button-go-klein {
+    min-height: 44px;
+    padding: 0 18px;
+  }
+  .tk-startbalk-mobiel[data-stand='start'] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 20px 16px 16px;
+    border-top: 0;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 calc(-3px) 0 var(--rand-sterk);
+    background: var(--kaart);
+  }
+  .tk-startbalk-mobiel[data-stand='start'] .tk-button-go {
+    width: 100%;
+    min-height: 60px;
+    margin-top: 12px;
+  }
+  .tk-startblok-label {
+    color: var(--tekst-secundair);
+    font-size: var(--type-vlaklabel);
+    line-height: var(--type-vlaklabel-lh);
+    letter-spacing: var(--type-vlaklabel-ls);
+    font-weight: var(--type-vlaklabel-weight);
+    text-transform: uppercase;
+  }
+  .tk-startblok-zin {
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: var(--type-knop);
+    line-height: var(--type-knop-lh);
+    font-weight: 700;
+  }
+  .tk-startblok-duur {
+    color: var(--tekst-secundair);
+    font-size: var(--type-bijschrift);
+    line-height: 1.25rem;
+  }
+
+  /* Wat een chip en een tegel op een telefoon anders zijn (ADR-252). Twee
+   * vormen om te kiezen: een pil van 48 die niet afbreekt, en een tegel in
+   * twee kolommen. Ongekozen wit met een warme rand, gekozen de tint van het
+   * vak met zijn rand en zijn woorden. */
+  @media (max-width: 767px) {
+    .tk-kiespagina .tk-keuze {
+      min-height: 48px;
+      max-width: 100%;
+      padding: 0 18px;
+      border-color: var(--rand-sterk);
+      box-shadow: 0 var(--onderkant-klein) 0 var(--rand-sterk);
+      white-space: nowrap;
+    }
+    .tk-kiespagina .tk-keuze[aria-pressed='true'] {
+      border-color: var(--accent);
+      box-shadow: 0 var(--onderkant-klein) 0 var(--accent);
+      background: var(--accent-tint);
+      color: var(--accent-text);
+    }
+    .tk-kiespagina .tk-tegels {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .tk-kiespagina .tk-tegel {
+      position: relative;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+      min-height: 96px;
+      padding: 12px;
+      border-width: var(--stroke-active);
+      border-color: var(--rand-sterk);
+      border-radius: 18px;
+      box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
+      overflow-wrap: anywhere;
+      font-family: var(--font-kop);
+      font-size: 1.125rem; /* 18px */
+      line-height: 1.375rem; /* 22px */
+      font-weight: 700;
+    }
+    /* Op een vinger blijft de muis staan waar je tikte: geen gekleurde rand
+     * op een tegel of chip die niet gekozen is. */
+    .tk-kiespagina .tk-tegel:not([aria-pressed='true']):hover,
+    .tk-kiespagina .tk-keuze:not(:disabled):not([aria-pressed='true']):hover {
+      border-color: var(--rand-sterk);
+    }
+    .tk-kiespagina .tk-tegel .tk-plaat {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-chip);
+      background: var(--perzik);
+      box-shadow: none;
+      color: var(--inkt);
+    }
+    .tk-kiespagina .tk-tegel[aria-pressed='true'] {
+      border-color: var(--accent);
+      box-shadow: 0 var(--onderkant) 0 var(--accent);
+      background: var(--accent-tint);
+      color: var(--inkt);
+    }
+    .tk-kiespagina .tk-tegel[aria-pressed='true'] .tk-plaat {
+      background: var(--accent);
+      color: var(--kaart);
+    }
+    .tk-kiespagina .tk-tegel-vink {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      margin: 0;
+      border-radius: var(--radius-pil);
+      background: var(--accent);
+    }
+    .tk-kiespagina .tk-tegel-vink > svg {
+      width: 16px;
+      height: 16px;
+    }
+    /* Het diploma: een tegel over de volle breedte, in zon (ADR-168). */
+    .tk-kiespagina .tk-tegel-diploma {
+      grid-column: 1 / -1;
+      margin-block-start: 0;
+    }
+    .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) {
+      padding: 12px;
+      border-color: var(--zon-rand);
+      box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
+      background: var(--zon-tint);
+    }
+    .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) .tk-plaat {
+      background: var(--zon);
+      box-shadow: none;
+    }
+    .tk-kiespagina .tk-tegel-diploma[aria-pressed='true'] {
+      background: var(--zon-tint);
+    }
   }
 
   /* ---- Squares: which table, which division ------------------------------

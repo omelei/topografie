@@ -2,6 +2,7 @@ import { expect, test, type Page, type Route } from '@playwright/test';
 import { langsDePoort, stubGezin } from './gezin';
 import { alsOnthouden } from './zaai';
 import { doorDePremiumdeur, signIn } from './naam';
+import { stap, wand } from './stap';
 
 /**
  * Premium behind a code (ADR-116, ADR-122): without one the premium parts are
@@ -62,12 +63,12 @@ test('without a code the premium parts are labelled once, and say what they do',
   // even aan de ouders (ADR-163): een venster over de pagina heen, met een
   // codeveld erin, en de pagina eronder blijft waar hij was.
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
 
   const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await expect(venster).toBeVisible();
@@ -85,27 +86,26 @@ test('without a code the premium parts are labelled once, and say what they do',
   await venster.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();
   await expect(venster).toBeHidden();
   await expect(page).toHaveURL(/\/topografie\/provincies$/);
-  await expect(hoe.getByRole('button', { name: /^Bliksemronde/ })).toHaveAttribute(
-    'aria-pressed',
-    'false',
-  );
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }),
+  ).toHaveAttribute('aria-pressed', 'false');
 
   // En vanuit het venster is de premiumpagina één druk ver, voor wie hem wil.
-  await hoe.getByRole('button', { name: /^Bliksemronde/ }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
   await venster.getByRole('button', { name: 'Wat is premium?' }).click();
   await expect(page).toHaveURL(/\/premium$/);
 
   // And a free way is still simply a way.
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Meerkeuze/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 
   await page.goto('/jij');
   await expect(page.getByRole('region', { name: 'Wie oefent er?' })).toHaveCount(0);
@@ -164,14 +164,12 @@ test('without a code a child can still discover, choose, and repeat their misses
   // Ontdekken is a way now, not a lock: it asks nothing, so it can never be
   // the thing a child is turned away from (ADR-122).
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Ontdekken/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Ontdekken/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page).not.toHaveURL(/\/premium$/);
 
@@ -179,15 +177,9 @@ test('without a code a child can still discover, choose, and repeat their misses
   // — and one answer given wrong on purpose, so there is something to repeat.
   // Meerkeuze, so every answer is one of the four on the screen.
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
@@ -400,15 +392,9 @@ test('the code takes a place at the first premium round, not when a parent types
 
   // Een premiummanier wel. De code is vol: het venster zegt wie het regelt.
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Bliksemronde/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
@@ -496,15 +482,9 @@ test('without an answer about a place, the round starts and the server is asked 
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Bliksemronde/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.locator('.tk-sum')).toBeVisible();
@@ -513,15 +493,9 @@ test('without an answer about a place, the round starts and the server is asked 
 
 async function oefenTafelVanEen(page: Page) {
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
   await page.getByRole('button', { name: 'Tafel van 1', exact: true }).click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Meerkeuze/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   const opties = page.getByRole('group', { name: 'Kies het antwoord' });
@@ -584,14 +558,12 @@ test.describe('doorsturen naar de ouder', () => {
 
     await signIn(page, 'Fenna');
     await page.goto('/topografie');
-    await page
-      .getByRole('region', { name: /Kies een onderwerp/ })
+    await (
+      await stap(page, /Kies een onderwerp/)
+    )
       .getByRole('button', { name: /^Provincies/ })
       .click();
-    await page
-      .getByRole('region', { name: /Hoe wil je/ })
-      .getByRole('button', { name: /^Bliksemronde/ })
-      .click();
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
     await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
@@ -627,14 +599,12 @@ test.describe('doorsturen naar de ouder', () => {
   async function naarDoorsturen(page: Page, naam: string) {
     await signIn(page, naam);
     await page.goto('/topografie');
-    await page
-      .getByRole('region', { name: /Kies een onderwerp/ })
+    await (
+      await stap(page, /Kies een onderwerp/)
+    )
       .getByRole('button', { name: /^Provincies/ })
       .click();
-    await page
-      .getByRole('region', { name: /Hoe wil je/ })
-      .getByRole('button', { name: /^Bliksemronde/ })
-      .click();
+    await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
 
     const venster = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
     await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
@@ -705,12 +675,10 @@ test('without a code the first card starts a round, and a diploma asks the paren
 
   // Een diploma op de muur kiezen is premium.
   await page.goto('/rekenen');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: /^Tafels/ })
-    .click();
-  await page
-    .getByRole('region', { name: 'Jouw tafeldiploma’s' })
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Tafels/ }).click();
+  await (
+    await wand(page, 'Jouw tafeldiploma’s')
+  )
     .getByRole('button', { name: /^Tafel van 3/ })
     .click();
   await expect(page.getByRole('dialog', { name: 'Vraag het even aan je ouders' })).toBeVisible();
@@ -728,14 +696,12 @@ test('without a code the parents read what the child wanted, and what it is read
 
   // Een slot noemt wat het kind wilde.
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Bliksemronde/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Bliksemronde/ }).click();
   const vraag = page.getByRole('dialog', { name: 'Vraag het even aan je ouders' });
   await expect(vraag).toContainText('Bliksemronde bij Provincies van Nederland hoort bij premium.');
   await vraag.getByRole('button', { name: 'Nee, ik doe iets anders' }).click();

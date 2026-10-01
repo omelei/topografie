@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * De lijst van school, zelf ingetypt (ADR-135), bij de instellingen op Jij (ADR-171).
@@ -36,22 +37,24 @@ test('een ingetypte lijst wordt een set die je kunt oefenen', async ({ page }) =
   // Werkwoorden — en niet als onderwerp binnen Spelling, want de vormen volgen
   // op deze module het deel en niet het onderwerp (ADR-118).
   await page.goto('/taal');
-  await page
-    .getByRole('region', { name: 'Welk deel?' })
+  await (
+    await stap(page, 'Welk deel?')
+  )
     .getByRole('button', { name: 'Eigen woorden', exact: true })
     .click();
 
   await expect(
-    page
-      .getByRole('region', { name: /Kies een onderwerp/ })
-      .getByRole('button', { name: /^Eigen woorden/ }),
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Eigen woorden/ }),
   ).toBeVisible();
 
   // En de enige vorm is het flitsdictee: kiezen tussen letters kan niet op een
   // woord waar niemand een gat in heeft gezet.
-  const vormen = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(vormen.getByRole('button', { name: /Flitsdictee/ })).toBeVisible();
-  await expect(vormen.getByRole('button', { name: /Kies de letters/ })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Flitsdictee/ }),
+  ).toBeVisible();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Kies de letters/ }),
+  ).toHaveCount(0);
 });
 
 /**
@@ -64,18 +67,17 @@ test('een ronde flitsdictee op een eigen lijst begint', async ({ page }) => {
   await maakLijst(page, 'Week 13', ['trein', 'fiets', 'wijzer']);
 
   await page.goto('/taal');
-  await page
-    .getByRole('region', { name: 'Welk deel?' })
+  await (
+    await stap(page, 'Welk deel?')
+  )
     .getByRole('button', { name: 'Eigen woorden', exact: true })
     .click();
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Eigen woorden/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Flitsdictee/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Flitsdictee/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   await expect(page.getByRole('button', { name: 'Stoppen' })).toBeVisible();
@@ -87,13 +89,12 @@ test('het deel Eigen woorden bestaat alleen als er een lijst is', async ({ page 
   await signIn(page, 'Fenna');
 
   await page.goto('/taal');
-  const delen = page.getByRole('region', { name: 'Welk deel?' });
   // Spelling, Werkwoorden en Engels (ADR-217).
-  await expect(delen.getByRole('button')).toHaveCount(3);
+  await expect((await stap(page, 'Welk deel?')).getByRole('button')).toHaveCount(3);
 
   await maakLijst(page, 'Week 1', ['trein']);
   await page.goto('/taal');
-  await expect(delen.getByRole('button')).toHaveCount(4);
+  await expect((await stap(page, 'Welk deel?')).getByRole('button')).toHaveCount(4);
 });
 
 /** Hetzelfde woord twee keer zou twee onderdelen met hetzelfde id geven. */
@@ -120,9 +121,7 @@ test('een woord en een hele lijst gaan er weer af', async ({ page }) => {
   // kamer is erger dan geen deur.
   await page.goto('/taal');
   await expect(
-    page
-      .getByRole('region', { name: 'Welk deel?' })
-      .getByRole('button', { name: 'Eigen woorden', exact: true }),
+    (await stap(page, 'Welk deel?')).getByRole('button', { name: 'Eigen woorden', exact: true }),
   ).toHaveCount(0);
 });
 
@@ -136,13 +135,15 @@ test('met twee lijsten draagt elke chip de naam die de ouder typte', async ({ pa
   await maakLijst(page, 'Week 13', ['fiets']);
 
   await page.goto('/taal');
-  await page
-    .getByRole('region', { name: 'Welk deel?' })
+  await (
+    await stap(page, 'Welk deel?')
+  )
     .getByRole('button', { name: 'Eigen woorden', exact: true })
     .click();
   // De chips staan onder het gekozen onderwerp, zoals de twaalf tafels.
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Eigen woorden/ })
     .click();
 

@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { stap } from './stap';
 
 /**
  * Deel je uitslag (ADR-209): de uitslag en een link naar hetzelfde onderwerp,
@@ -22,10 +23,7 @@ test('after a round the result can be shared, with a link to the same topic', as
   });
 
   await page.goto('/topografie/provincies');
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /Kies uit 4 namen/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Kies uit 4 namen/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await page.getByRole('group', { name: 'Kies de naam' }).getByRole('button').first().click();
   await page.getByRole('button', { name: 'Stoppen' }).click();

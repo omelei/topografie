@@ -1,10 +1,11 @@
 import { OverOnderwerp } from './OverOnderwerp';
-import { brengInBeeld, naarBoven } from '@/features/shell/naarBoven';
+import { brengInBeeld, naarBoven, stapInBeeld } from '@/features/shell/naarBoven';
 import { leesRustig } from '@/features/player/settings';
 import { pathFor, routeFor } from '@/features/shell/routes';
 import { seoPaginaVoor } from '@/seo/paginas';
+import { overOnderwerp } from '@/seo/over';
 import { heeftWerkblad } from '@/features/werkblad/werkblad';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/components/Button';
 import { ChevronDownIcon, CorrectIcon, GoIcon, PaperIcon, WrongIcon } from '@/components/Icon';
 import {
@@ -64,6 +65,21 @@ import {
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
 import { PremiumLabel } from './PremiumLabel';
 import { useSmallScreen } from '@/features/shell/useSmallScreen';
+import {
+  Blad,
+  LaterStappen,
+  MeerRij,
+  OpenStap,
+  OverBeeld,
+  PremiumLegenda,
+  PremiumSter,
+  StandRing,
+  StappenGekozen,
+  StapVoortgang,
+  type StapAntwoord,
+  type StapKop,
+} from './KiesStappen';
+import { balkStand, openStap, segmenten, type OpenWens, type StapId } from './stappen';
 
 /**
  * A module's own page — leer.nu/topografie, leer.nu/rekenen, leer.nu/klokkijken
@@ -111,6 +127,15 @@ import { useSmallScreen } from '@/features/shell/useSmallScreen';
  * **Taal asks which part first, in the same row** (ADR-118): "Welk deel?" is
  * the region row with Spelling and Werkwoorden in it, and the ways follow the
  * part rather than the set.
+ *
+ * **Op een telefoon een accordeon** (ADR-252). Dezelfde vragen in dezelfde
+ * volgorde, maar er staat er één open: wat gekozen is, staat samen bovenaan in
+ * één kaart met "Wijzig", wat nog komt eronder als gestippelde rij, en na elke
+ * keuze opent de eerste stap die nog leeg is (`stappen.ts`). Er is niets
+ * voorgekozen, ook de kaart niet. Twee vormen om te kiezen, chips en tegels in
+ * twee kolommen; de diploma's en "Over" staan achter een rij, in een blad dat
+ * van onderen opkomt. Onderaan een balk met de stap waar je bent, en als
+ * alles gekozen is het startblok. Vanaf 768 blijft alles zoals het was.
  */
 export function ModuleScreen({
   module,
@@ -159,6 +184,25 @@ export function ModuleScreen({
   const [foutenstand, setFoutenstand] = useState(false);
   const kleinScherm = useSmallScreen();
   const nogId = useId();
+  // Op een telefoon (ADR-252): welke stap het kind zelf opende, of 'auto' voor
+  // de eerste zonder antwoord; welk blad openstaat; en hoeveel diploma's de
+  // wand in dat blad heeft, voor de rij die ernaar wijst.
+  const [openWens, setOpenWens] = useState<OpenWens>('auto');
+  const [scrollVraag, setScrollVraag] = useState(0);
+  const [blad, setBlad] = useState<'diplomas' | 'over' | null>(null);
+  const [diplomaStand, setDiplomaStand] = useState<{
+    readonly behaald: number;
+    readonly totaal: number;
+  } | null>(null);
+  const zetDiplomaStand = useCallback(
+    (behaald: number, totaal: number) =>
+      setDiplomaStand((nu) =>
+        nu !== null && nu.behaald === behaald && nu.totaal === totaal ? nu : { behaald, totaal },
+      ),
+    [],
+  );
+  const openRef = useRef<HTMLElement>(null);
+  const stappenRef = useRef<HTMLDivElement>(null);
   // Wat een premiumtegel zonder code doet: hij vraagt het even aan de ouders in
   // plaats van gekozen en bij de start geweigerd te worden (ADR-116, ADR-163).
   const { actief } = usePremium();
@@ -257,6 +301,22 @@ export function ModuleScreen({
       const doel = secties.map((sectie) => sectie.current).find((el) => el !== null);
       if (doel) brengInBeeld(doel, leesRustig());
     });
+
+  // Na een keuze op een telefoon: de stap die nu open moet, is de eerste
+  // zonder antwoord, en die komt in beeld (ADR-252). Vanaf 768 de sprong naar
+  // het volgende onderdeel, zoals altijd.
+  const naKeuze = () => {
+    setOpenWens('auto');
+    setScrollVraag((n) => n + 1);
+  };
+  const verder = (...secties: { readonly current: HTMLElement | null }[]) => {
+    if (kleinScherm) naKeuze();
+    else springNaar(...secties);
+  };
+  const openOpTelefoon = (id: StapId) => {
+    setOpenWens(id);
+    setScrollVraag((n) => n + 1);
+  };
 
   const stap = {
     regio: regioStap,
@@ -464,12 +524,104 @@ export function ModuleScreen({
     onSet(id);
   };
 
+  // ---- De stappen op een telefoon (ADR-252) ----------------------------------
+  // Op een telefoon (ADR-252) is de kaart pas gekozen als het kind erop drukte,
+  // of als het adres hem noemt. Vanaf 768 heeft hij een standaard (ADR-111).
+  const regioGekozen = regio !== null || adresVak !== null || uitAdres !== null;
+  // Elke vraag van de pagina met zijn antwoord, of null zolang er geen is. De
+  // stap "Hoeveel vragen?" heeft er altijd een: de lengte van de ronde zelf.
+  const vormWaarde =
+    form === null
+      ? null
+      : alsToets
+        ? t('choose.testMode')
+        : alsFouten
+          ? `${t(form.name)} · ${t('choose.fouten')}`
+          : t(form.name);
+  const telefoonStappen: readonly (StapKop & {
+    readonly label: string;
+    readonly waarde: string | null;
+  })[] = [
+    ...(heeftRegio
+      ? [
+          {
+            id: 'regio' as const,
+            vraag: t(regioVraag(module.id)),
+            label: t(regioLabel(module.id)),
+            waarde: regioGekozen && regioNaam ? t(regioNaam.naam) : null,
+          },
+        ]
+      : []),
+    {
+      id: 'wat' as const,
+      vraag: t('choose.stepWhat'),
+      label: t(module.id === 'tafels' ? 'start.som' : 'start.onderwerp'),
+      waarde: onderwerp ? t(onderwerp.naam) : null,
+    },
+    ...(heeftKeuze && onderwerp.keuze !== null
+      ? [
+          {
+            id: 'keuze' as const,
+            vraag: t(onderwerp.keuze),
+            label: t('start.welke'),
+            waarde: chosen ? (chosen.kortNaam ?? naamVan(chosen)) : null,
+          },
+        ]
+      : []),
+    {
+      id: 'hoe' as const,
+      vraag: t('choose.stepHow'),
+      label: t('start.manier'),
+      waarde: vormWaarde,
+    },
+    ...(chosen && form && lengtes.length > 0
+      ? [
+          {
+            id: 'aantal' as const,
+            vraag: t('choose.howMany'),
+            label: t('start.ronde'),
+            waarde: ronde ?? '',
+          },
+        ]
+      : []),
+  ].map((kandidaat, plek) => ({ ...kandidaat, nummer: plek + 1 }));
+  const standen = telefoonStappen.map(({ id, waarde }) => ({ id, gekozen: waarde !== null }));
+  const openId = openStap(standen, openWens);
+  const balk = balkStand(standen, openId);
+
+  // De open stap in beeld, na een keuze of een druk op een stap: alleen als hij
+  // niet al bovenin staat. Na de laatste keuze is alles dicht, en dan de
+  // stappen zelf.
+  useEffect(() => {
+    if (scrollVraag === 0) return;
+    const doel = openRef.current ?? stappenRef.current;
+    if (doel) stapInBeeld(doel, leesRustig());
+  }, [scrollVraag]);
+
+  const vakKop = vakPagina?.kop ?? t('choose.titleZonderNaam');
+  const setdiplomaTitel = t(
+    module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle',
+  );
+  // Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat boven de
+  // kop (ADR-241).
+  const terugKnop = onOefenen ? (
+    <button
+      type="button"
+      className="tk-terugknop desk:hidden"
+      aria-label={t('module.terugOefenen')}
+      onClick={onOefenen}
+    >
+      <ChevronDownIcon size={20} />
+      {t('nav.oefenen')}
+    </button>
+  ) : null;
+
   // Off, not absent, until every step has an answer: a button that appeared
   // only at the end would be a button a child had to go looking for. What is
   // still missing is said beside it, and a screen reader hears that too.
-  const startKnop = (
+  const startKnopVan = (vorm?: string) => (
     <Button
-      className="tk-button-go"
+      className={vorm === undefined ? 'tk-button-go' : `tk-button-go ${vorm}`}
       disabled={!klaar}
       aria-label={klaar ? t('choose.goLabel', { wat: zin }) : undefined}
       aria-describedby={klaar ? undefined : nogId}
@@ -482,12 +634,489 @@ export function ModuleScreen({
       <GoIcon size={24} />
     </Button>
   );
+  const startKnop = startKnopVan();
 
   const vink = (
     <span className="tk-tegel-vink">
       <CorrectIcon size={24} />
     </span>
   );
+
+  // Een premiumtegel op een telefoon: een ster in plaats van het woord, en
+  // niets voor wie premium al heeft.
+  const premiumTeken = (premium: boolean) =>
+    !premium ? null : kleinScherm ? actief ? null : <PremiumSter /> : <PremiumLabel />;
+  // De korte regel onder een tegel op een telefoon.
+  const tegelRegel = (regel: string | null) =>
+    regel === null || regel === '' ? null : (
+      <span className="tk-tegel-regel" aria-hidden="true">
+        {regel}
+      </span>
+    );
+
+  // ---- What each step asks, as chips or tiles --------------------------------
+  // Eén keer gebouwd en op twee plekken gezet: vanaf 768 als sectie onder
+  // elkaar, op een telefoon in de stap die openstaat (ADR-252).
+
+  const regioKnoppen = (
+    <div className="tk-keuzes">
+      {regios.map((kandidaat) => {
+        const RegioIcon = regioIcon(kandidaat.id);
+
+        return (
+          <button
+            key={kandidaat.id}
+            type="button"
+            className="tk-keuze"
+            aria-pressed={
+              kandidaat.built ? kandidaat.id === hier && (regioGekozen || !kleinScherm) : undefined
+            }
+            disabled={!kandidaat.built}
+            data-soon={kandidaat.built ? undefined : 'ja'}
+            onClick={() => {
+              // Een andere kaart wist op een telefoon het onderwerp en wat
+              // eronder gekozen was (ADR-252); dezelfde kaart nog eens niet.
+              if (kleinScherm && kandidaat.id !== hier) {
+                setVakId(null);
+                if (setId !== null) onSet(null);
+              }
+              setRegio(kandidaat.id);
+              // A set on another map is not chosen on this one, and
+              // the address should stop saying it is.
+              if (adresVak && adresVak.regio !== kandidaat.id) onSet(null);
+              verder(watSectie);
+            }}
+          >
+            <RegioIcon size={20} />
+            {t(kandidaat.naam)}
+            {/* A region the plan has and the product does not says so
+                on its own face rather than opening onto nothing. */}
+            {kandidaat.built ? null : (
+              <span className="tk-label tk-keuze-soon">{t('regio.soon')}</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  const onderwerpTegels = (
+    <div className="tk-tegels">
+      {onderwerpen.map((vak) => {
+        const open = vak.id === onderwerp?.id;
+        const VakIcon = onderwerpIcon(vak.id);
+        const premium = isPremiumOnderwerp(vak.id);
+        const buitenGroep = groepLabel(indelingVanOnderwerp(vak, groep));
+
+        return (
+          <button
+            key={vak.id}
+            type="button"
+            className="tk-tegel"
+            // How the subject is going is not on the face of it; it is in
+            // its name, and in the child's own column (ADR-089).
+            aria-label={metPremium(
+              [t(vak.naam), buitenGroep, actief ? vorderingVan(vak, known, now) : null]
+                .filter((deel) => deel !== null)
+                .join('. '),
+              premium,
+              actief,
+            )}
+            aria-pressed={open}
+            // A subject with one set chooses it. One whose sets are a
+            // second question opens that question and chooses nothing
+            // yet: the table of one is not what a child who pressed
+            // "Tafels" asked for (ADR-111). Pressed again while open it
+            // does nothing, so a chosen table of seven stays chosen.
+            onClick={() => {
+              if (open) {
+                // Op een telefoon sluit hij wel de stap: het antwoord staat.
+                if (kleinScherm) naKeuze();
+                return;
+              }
+              if (premium && !actief) {
+                wilDit(t(vak.naam));
+                return;
+              }
+              setRegio(hier);
+              if (vraagtWelke(vak)) {
+                setVakId(vak.id);
+                if (setId !== null) onSet(null);
+              } else {
+                setVakId(null);
+                onSet(vak.sets[0]?.setId ?? '');
+              }
+              verder(vraagtWelke(vak) ? keuzeSectie : hoeSectie);
+            }}
+          >
+            <span className="tk-plaat">
+              <VakIcon size={24} />
+            </span>
+            <span className="min-w-0">
+              {t(vak.naam)}
+              {kleinScherm ? (
+                tegelRegel(buitenGroep ?? (vak.uitleg === null ? null : t(vak.uitleg)))
+              ) : buitenGroep !== null ? (
+                <span className="tk-hulp block" aria-hidden="true">
+                  {buitenGroep}
+                </span>
+              ) : null}
+            </span>
+            {premiumTeken(premium)}
+            {open ? vink : null}
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  // Op een telefoon is ook het toetsenbord van tafels een rij chips: twee
+  // vormen om te kiezen, en niet drie (ADR-252).
+  const keuzeKnoppen =
+    onderwerp === null ? null : isKeypad(onderwerp) && !kleinScherm ? (
+      <div className="tk-tafels">
+        {onderwerp.sets.map((deel) => (
+          <button
+            key={deel.setId}
+            type="button"
+            className="tk-tafel"
+            // The full name, because "7" is not a sentence: this is the
+            // one control whose visible label is shorter than it means.
+            aria-label={naamVan(deel)}
+            aria-pressed={deel.setId === chosen?.setId}
+            onClick={() => {
+              onSet(deel.setId);
+              verder(hoeSectie);
+            }}
+          >
+            <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
+          </button>
+        ))}
+      </div>
+    ) : (
+      <div className="tk-keuzes">
+        {onderwerp.sets.map((deel) => (
+          <button
+            key={deel.setId}
+            type="button"
+            className="tk-keuze"
+            aria-label={naamVan(deel)}
+            aria-pressed={deel.setId === chosen?.setId}
+            onClick={() => {
+              onSet(deel.setId);
+              verder(hoeSectie);
+            }}
+          >
+            <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
+          </button>
+        ))}
+      </div>
+    );
+
+  // Het diploma, altijd als laatste en altijd uitgelicht (ADR-168). Vanaf 768
+  // onder het raster, op een telefoon als laatste tegel erin, over de volle
+  // breedte.
+  const diplomaTegel = diplomaVorm ? (
+    <button
+      type="button"
+      className="tk-tegel tk-tegel-diploma"
+      aria-label={metPremium(
+        `${t(diplomaVorm.name)}. ${diplomaReden}`,
+        isPremiumVorm(diplomaVorm.id),
+        actief,
+      )}
+      aria-pressed={!alsToets && diplomaVorm.id === form?.id}
+      onClick={() => {
+        if (isPremiumVorm(diplomaVorm.id) && !actief) {
+          wilDit(
+            chosen !== null ? t('wens.diploma', { naam: naamVan(chosen) }) : t(diplomaVorm.name),
+          );
+          return;
+        }
+        setToetsstand(false);
+        setFoutenstand(false);
+        if (vlagDeel !== null) kiesElders(vlagDiplomaSet(vlagDeel));
+        setFormId(diplomaVorm.id);
+        verder(aantalSectie, startSectie);
+      }}
+    >
+      <span className="tk-plaat">
+        <diplomaVorm.icon size={24} />
+      </span>
+      <span className="min-w-0">
+        {t(diplomaVorm.name)}
+        <span className={kleinScherm ? 'tk-tegel-regel' : 'tk-hulp block'} aria-hidden="true">
+          {diplomaReden}
+        </span>
+      </span>
+      {premiumTeken(isPremiumVorm(diplomaVorm.id))}
+      {!alsToets && diplomaVorm.id === form?.id ? vink : null}
+    </button>
+  ) : null;
+
+  const vormTegels = (
+    <div className="tk-tegels">
+      {gewoneTegels.map((candidate) => {
+        const FormIcon = candidate.icon;
+        const gekozenVorm = !alsToets && candidate.id === form?.id;
+        const premium = isPremiumVorm(candidate.id);
+
+        return (
+          <button
+            key={candidate.id}
+            type="button"
+            className="tk-tegel"
+            aria-label={metPremium(`${t(candidate.name)}. ${t(candidate.reason)}`, premium, actief)}
+            aria-pressed={gekozenVorm}
+            onClick={() => {
+              if (premium && !actief) {
+                wilDit(metSet(t(candidate.name)));
+                return;
+              }
+              setFormId(candidate.id);
+              setToetsstand(false);
+              verder(aantalSectie, startSectie);
+            }}
+          >
+            <span className="tk-plaat">
+              <FormIcon size={24} />
+            </span>
+            <span className="min-w-0">
+              {t(candidate.name)}
+              {kleinScherm ? tegelRegel(kortVan(t(candidate.reason))) : null}
+            </span>
+            {premiumTeken(premium)}
+            {gekozenVorm ? vink : null}
+          </button>
+        );
+      })}
+
+      {/* "Je fouten": een stand op de manier die gekozen is, zoals de
+          oefentoets er een is (ADR-168). Het was een onderwerp — een
+          tegel tussen Provincies en Steden — en dat is het niet: waar de
+          ronde over gaat, staat in stap 2, en dit zegt welk deel ervan
+          gevraagd wordt. Alleen als er iets in zit (`MIN_FOUTEN`), want
+          een knop die "0 fouten" oefent, oefent niets.
+
+          Gratis sinds ADR-231, ook hier (ADR-232): je fouten herhalen
+          hoort bij oefenen. Alleen het aantal blijft bij premium, want
+          dat is een telling over rondes heen (ADR-192). */}
+      {kanFouten ? (
+        <button
+          type="button"
+          className="tk-tegel"
+          // Zonder code geen aantal: hoeveel je fout had is een telling over
+          // rondes heen, en dat is voortgang (ADR-192).
+          aria-label={
+            actief
+              ? `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`
+              : t('choose.fouten')
+          }
+          aria-pressed={alsFouten}
+          onClick={() => {
+            // Een diploma over de helft van een set is geen diploma, en
+            // een oefentoets over je eigen fouten is geen toets: allebei
+            // gaan ze uit zodra dit aangaat.
+            setToetsstand(false);
+            if (form !== null && isDiplomaVorm(form.id)) setFormId(null);
+            setFoutenstand(!alsFouten);
+            if (kleinScherm) naKeuze();
+          }}
+        >
+          <span className="tk-plaat">
+            <WrongIcon size={24} />
+          </span>
+          <span className="min-w-0">
+            {t('choose.fouten')}
+            {kleinScherm && actief
+              ? tegelRegel(t('choose.foutenWhy', { aantal: fouteIds.length }))
+              : null}
+          </span>
+          {alsFouten ? vink : null}
+        </button>
+      ) : null}
+
+      {/* The oefentoets, one of the ways: pressing it un-presses the
+          others, because it chooses how you answer too. It used to be a
+          switch on whichever way was chosen (ADR-085), which asked a
+          child to pick a way a test never asks for (ADR-100). */}
+      {toetsVorm ? (
+        <button
+          type="button"
+          className="tk-tegel"
+          // "Je typt zonder hulp" is what the toets is everywhere a test
+          // types; where it asks in a way of its own, that way says it.
+          aria-label={metPremium(
+            `${t('choose.testMode')}. ${t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')}`,
+            true,
+            actief,
+          )}
+          aria-pressed={alsToets}
+          onClick={() => {
+            if (!actief) {
+              wilDit(
+                chosen !== null
+                  ? t('wens.oefentoets', { naam: naamVan(chosen) })
+                  : t('choose.testMode'),
+              );
+              return;
+            }
+            setFoutenstand(false);
+            setToetsstand(true);
+            verder(aantalSectie, startSectie);
+          }}
+        >
+          <span className="tk-plaat">
+            <PaperIcon size={24} />
+          </span>
+          <span className="min-w-0">
+            {t('choose.testMode')}
+            {kleinScherm
+              ? tegelRegel(
+                  kortVan(t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')),
+                )
+              : null}
+          </span>
+          {premiumTeken(true)}
+          {alsToets ? vink : null}
+        </button>
+      ) : null}
+
+      {kleinScherm ? diplomaTegel : null}
+    </div>
+  );
+
+  const aantalKnoppen = (
+    <div className="tk-keuzes">
+      {lengtes.map((count) => {
+        const heel = count === setSize;
+        const label = heel ? 'choose.howManyAllLabel' : 'choose.howManyOne';
+
+        return (
+          <button
+            key={count}
+            type="button"
+            className="tk-keuze"
+            aria-label={t(label, { aantal: count })}
+            aria-pressed={count === vragen}
+            onClick={() => {
+              setAantal(count);
+              verder(startSectie);
+            }}
+          >
+            <span aria-hidden="true">
+              {heel ? t('choose.howManyAll', { aantal: count }) : count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+
+  // ---- The diploma walls ----------------------------------------------------
+  // Een diploma kiezen sluit op een telefoon het blad, en de stappen gaan
+  // verder waar nog iets leeg is.
+  const naDiploma = () => {
+    if (!kleinScherm) return;
+    setBlad(null);
+    naKeuze();
+  };
+  const kiesTafelDiploma = (tafel: string) => {
+    // Een diploma halen is premium (ADR-192): zonder code eerst de
+    // vraag aan de ouders, net als de diplomategel zelf.
+    if (!actief) {
+      setBlad(null);
+      wilDiploma(tafel);
+      return;
+    }
+    kiesElders(tafel);
+    setFormId('tafeldiploma');
+    setToetsstand(false);
+    naDiploma();
+  };
+  const kiesVlagDiploma = (deel: Parameters<typeof vlagDiplomaSet>[0]) => {
+    if (!actief) {
+      setBlad(null);
+      wilDiploma(vlagDiplomaSet(deel));
+      return;
+    }
+    kiesElders(vlagDiplomaSet(deel));
+    setFormId('vlag-diploma');
+    setToetsstand(false);
+    naDiploma();
+  };
+  const kiesKlokDiploma = (stap: string) => {
+    if (!actief) {
+      setBlad(null);
+      wilDiploma(stap);
+      return;
+    }
+    kiesElders(stap);
+    setFormId('klok-diploma');
+    setToetsstand(false);
+    naDiploma();
+  };
+  const kiesTopoDiploma = (kaart: string) => {
+    if (!actief) {
+      setBlad(null);
+      wilDiploma(kaart);
+      return;
+    }
+    kiesElders(kaart);
+    setFormId('topo-diploma');
+    setToetsstand(false);
+    naDiploma();
+  };
+  const kiesSetDiploma = (setId: string) => {
+    if (!actief) {
+      setBlad(null);
+      wilDiploma(setId);
+      return;
+    }
+    kiesElders(setId);
+    setFormId(module.id === 'woorden' ? 'taal-diploma' : 'reken-diploma');
+    setToetsstand(false);
+    setFoutenstand(false);
+    naDiploma();
+  };
+
+  // Wat erin zit en de vragen van een ouder (ADR-213), voor een onderwerp dat
+  // er een pagina voor heeft.
+  const overDeel =
+    chosen !== null && !chosen.mix && !/(^|-)fouten$/.test(chosen.setId) ? chosen : null;
+  const overOnder =
+    overDeel === null ? null : (
+      <OverOnderwerp
+        deel={overDeel}
+        links={pagina?.links ?? []}
+        linksKop={pagina?.linksKop ?? ''}
+        onVolg={(pad) => {
+          setBlad(null);
+          volg(pad);
+        }}
+      />
+    );
+  const werkbladKnop =
+    onWerkblad && chosen !== null && heeftWerkblad(chosen) ? (
+      <button
+        type="button"
+        className="tk-button tk-button-tertiary self-start"
+        onClick={() => {
+          setBlad(null);
+          onWerkblad(chosen.setId);
+        }}
+      >
+        {t('werkblad.knop')}
+      </button>
+    ) : null;
+  const terugRegel =
+    actief && chosen !== null && states !== null ? (
+      <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
+    ) : null;
+
+  if (kleinScherm) {
+    return mobiel();
+  }
 
   return (
     <div className="tk-page" data-module={module.id}>
@@ -497,17 +1126,7 @@ export function ModuleScreen({
         <div className="tk-vakkop">
           {/* Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat
             boven de kop (ADR-241). */}
-          {onOefenen ? (
-            <button
-              type="button"
-              className="tk-terugknop desk:hidden"
-              aria-label={t('module.terugOefenen')}
-              onClick={onOefenen}
-            >
-              <ChevronDownIcon size={20} />
-              {t('nav.oefenen')}
-            </button>
-          ) : null}
+          {terugKnop}
           {/* Het vlak waar de pagina van een vak mee begint (Kleurblokken,
             ADR-238): de vorm van het welkomstvlak op Vandaag, in de diepe
             kleur van het vak met witte woorden. De vormen zijn versiering. */}
@@ -531,9 +1150,7 @@ export function ModuleScreen({
                 het onderwerp (ADR-245), die bij elke keuze veranderde. De kop
                 blijft nu staan terwijl je kiest; het onderwerp staat in de
                 titel van het tabblad en onder "Over dit onderwerp". */}
-              <h1 className="tk-display tk-welkom-kop">
-                {vakPagina?.kop ?? t('choose.titleZonderNaam')}
-              </h1>
+              <h1 className="tk-display tk-welkom-kop">{vakKop}</h1>
             </div>
 
             {/* Hier stond "Hier gaat je toets over", met een knop die de hele
@@ -548,38 +1165,7 @@ export function ModuleScreen({
         {heeftRegio ? (
           <section className="tk-kies" aria-label={t(regioVraag(module.id))}>
             <Stap nummer={stap.regio} label={t(regioVraag(module.id))} />
-
-            <div className="tk-keuzes">
-              {regios.map((kandidaat) => {
-                const RegioIcon = regioIcon(kandidaat.id);
-
-                return (
-                  <button
-                    key={kandidaat.id}
-                    type="button"
-                    className="tk-keuze"
-                    aria-pressed={kandidaat.built ? kandidaat.id === hier : undefined}
-                    disabled={!kandidaat.built}
-                    data-soon={kandidaat.built ? undefined : 'ja'}
-                    onClick={() => {
-                      setRegio(kandidaat.id);
-                      // A set on another map is not chosen on this one, and
-                      // the address should stop saying it is.
-                      if (adresVak && adresVak.regio !== kandidaat.id) onSet(null);
-                      springNaar(watSectie);
-                    }}
-                  >
-                    <RegioIcon size={20} />
-                    {t(kandidaat.naam)}
-                    {/* A region the plan has and the product does not says so
-                        on its own face rather than opening onto nothing. */}
-                    {kandidaat.built ? null : (
-                      <span className="tk-label tk-keuze-soon">{t('regio.soon')}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            {regioKnoppen}
           </section>
         ) : null}
 
@@ -592,67 +1178,7 @@ export function ModuleScreen({
               dingen: een rij woorden om te lezen, of een raster om aan te
               wijzen. Een kind dat op /topografie geleerd heeft waar het antwoord
               op stap 2 staat, vindt het op /rekenen op dezelfde plek terug. */}
-          <div className="tk-tegels">
-            {onderwerpen.map((vak) => {
-              const open = vak.id === onderwerp?.id;
-              const VakIcon = onderwerpIcon(vak.id);
-              const premium = isPremiumOnderwerp(vak.id);
-              const buitenGroep = groepLabel(indelingVanOnderwerp(vak, groep));
-
-              return (
-                <button
-                  key={vak.id}
-                  type="button"
-                  className="tk-tegel"
-                  // How the subject is going is not on the face of it; it is in
-                  // its name, and in the child's own column (ADR-089).
-                  aria-label={metPremium(
-                    [t(vak.naam), buitenGroep, actief ? vorderingVan(vak, known, now) : null]
-                      .filter((deel) => deel !== null)
-                      .join('. '),
-                    premium,
-                    actief,
-                  )}
-                  aria-pressed={open}
-                  // A subject with one set chooses it. One whose sets are a
-                  // second question opens that question and chooses nothing
-                  // yet: the table of one is not what a child who pressed
-                  // "Tafels" asked for (ADR-111). Pressed again while open it
-                  // does nothing, so a chosen table of seven stays chosen.
-                  onClick={() => {
-                    if (open) return;
-                    if (premium && !actief) {
-                      wilDit(t(vak.naam));
-                      return;
-                    }
-                    setRegio(hier);
-                    if (vraagtWelke(vak)) {
-                      setVakId(vak.id);
-                      if (setId !== null) onSet(null);
-                    } else {
-                      setVakId(null);
-                      onSet(vak.sets[0]?.setId ?? '');
-                    }
-                    springNaar(vraagtWelke(vak) ? keuzeSectie : hoeSectie);
-                  }}
-                >
-                  <span className="tk-plaat">
-                    <VakIcon size={24} />
-                  </span>
-                  <span className="min-w-0">
-                    {t(vak.naam)}
-                    {buitenGroep !== null ? (
-                      <span className="tk-hulp block" aria-hidden="true">
-                        {buitenGroep}
-                      </span>
-                    ) : null}
-                  </span>
-                  {premium ? <PremiumLabel /> : null}
-                  {open ? vink : null}
-                </button>
-              );
-            })}
-          </div>
+          {onderwerpTegels}
         </section>
 
         {/* The second, smaller decision, where there is one — numbered like the
@@ -663,46 +1189,7 @@ export function ModuleScreen({
         {onderwerp && heeftKeuze && onderwerp.keuze ? (
           <section ref={keuzeSectie} className="tk-kies" aria-label={t(onderwerp.keuze)}>
             <Stap nummer={stap.keuze} label={t(onderwerp.keuze)} />
-
-            {isKeypad(onderwerp) ? (
-              <div className="tk-tafels">
-                {onderwerp.sets.map((deel) => (
-                  <button
-                    key={deel.setId}
-                    type="button"
-                    className="tk-tafel"
-                    // The full name, because "7" is not a sentence: this is the
-                    // one control whose visible label is shorter than it means.
-                    aria-label={naamVan(deel)}
-                    aria-pressed={deel.setId === chosen?.setId}
-                    onClick={() => {
-                      onSet(deel.setId);
-                      springNaar(hoeSectie);
-                    }}
-                  >
-                    <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="tk-keuzes">
-                {onderwerp.sets.map((deel) => (
-                  <button
-                    key={deel.setId}
-                    type="button"
-                    className="tk-keuze"
-                    aria-label={naamVan(deel)}
-                    aria-pressed={deel.setId === chosen?.setId}
-                    onClick={() => {
-                      onSet(deel.setId);
-                      springNaar(hoeSectie);
-                    }}
-                  >
-                    <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            {keuzeKnoppen}
           </section>
         ) : null}
 
@@ -720,121 +1207,7 @@ export function ModuleScreen({
               ingehaald. */}
           <Stap nummer={stap.hoe} label={t('choose.stepHow')} />
 
-          <div className="tk-tegels">
-            {gewoneTegels.map((candidate) => {
-              const FormIcon = candidate.icon;
-              const gekozenVorm = !alsToets && candidate.id === form?.id;
-              const premium = isPremiumVorm(candidate.id);
-
-              return (
-                <button
-                  key={candidate.id}
-                  type="button"
-                  className="tk-tegel"
-                  aria-label={metPremium(
-                    `${t(candidate.name)}. ${t(candidate.reason)}`,
-                    premium,
-                    actief,
-                  )}
-                  aria-pressed={gekozenVorm}
-                  onClick={() => {
-                    if (premium && !actief) {
-                      wilDit(metSet(t(candidate.name)));
-                      return;
-                    }
-                    setFormId(candidate.id);
-                    setToetsstand(false);
-                    springNaar(aantalSectie, startSectie);
-                  }}
-                >
-                  <span className="tk-plaat">
-                    <FormIcon size={24} />
-                  </span>
-                  <span className="min-w-0">{t(candidate.name)}</span>
-                  {premium ? <PremiumLabel /> : null}
-                  {gekozenVorm ? vink : null}
-                </button>
-              );
-            })}
-
-            {/* "Je fouten": een stand op de manier die gekozen is, zoals de
-                oefentoets er een is (ADR-168). Het was een onderwerp — een
-                tegel tussen Provincies en Steden — en dat is het niet: waar de
-                ronde over gaat, staat in stap 2, en dit zegt welk deel ervan
-                gevraagd wordt. Alleen als er iets in zit (`MIN_FOUTEN`), want
-                een knop die "0 fouten" oefent, oefent niets.
-
-                Gratis sinds ADR-231, ook hier (ADR-232): je fouten herhalen
-                hoort bij oefenen. Alleen het aantal blijft bij premium, want
-                dat is een telling over rondes heen (ADR-192). */}
-            {kanFouten ? (
-              <button
-                type="button"
-                className="tk-tegel"
-                // Zonder code geen aantal: hoeveel je fout had is een telling over
-                // rondes heen, en dat is voortgang (ADR-192).
-                aria-label={
-                  actief
-                    ? `${t('choose.fouten')}. ${t('choose.foutenWhy', { aantal: fouteIds.length })}`
-                    : t('choose.fouten')
-                }
-                aria-pressed={alsFouten}
-                onClick={() => {
-                  // Een diploma over de helft van een set is geen diploma, en
-                  // een oefentoets over je eigen fouten is geen toets: allebei
-                  // gaan ze uit zodra dit aangaat.
-                  setToetsstand(false);
-                  if (form !== null && isDiplomaVorm(form.id)) setFormId(null);
-                  setFoutenstand(!alsFouten);
-                }}
-              >
-                <span className="tk-plaat">
-                  <WrongIcon size={24} />
-                </span>
-                <span className="min-w-0">{t('choose.fouten')}</span>
-                {alsFouten ? vink : null}
-              </button>
-            ) : null}
-
-            {/* The oefentoets, one of the ways: pressing it un-presses the
-                others, because it chooses how you answer too. It used to be a
-                switch on whichever way was chosen (ADR-085), which asked a
-                child to pick a way a test never asks for (ADR-100). */}
-            {toetsVorm ? (
-              <button
-                type="button"
-                className="tk-tegel"
-                // "Je typt zonder hulp" is what the toets is everywhere a test
-                // types; where it asks in a way of its own, that way says it.
-                aria-label={metPremium(
-                  `${t('choose.testMode')}. ${t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')}`,
-                  true,
-                  actief,
-                )}
-                aria-pressed={alsToets}
-                onClick={() => {
-                  if (!actief) {
-                    wilDit(
-                      chosen !== null
-                        ? t('wens.oefentoets', { naam: naamVan(chosen) })
-                        : t('choose.testMode'),
-                    );
-                    return;
-                  }
-                  setFoutenstand(false);
-                  setToetsstand(true);
-                  springNaar(aantalSectie, startSectie);
-                }}
-              >
-                <span className="tk-plaat">
-                  <PaperIcon size={24} />
-                </span>
-                <span className="min-w-0">{t('choose.testMode')}</span>
-                <PremiumLabel />
-                {alsToets ? vink : null}
-              </button>
-            ) : null}
-          </div>
+          {vormTegels}
 
           {/* Het diploma, altijd als laatste en altijd uitgelicht (ADR-168).
               Het stond als achtste tegel in hetzelfde raster en was daarin niet
@@ -843,45 +1216,7 @@ export function ModuleScreen({
               volle breedte, in de kleur van het vak, met eronder waar hij over
               gaat — en de reden ervan hardop, want een toets waarvan je de lat
               niet kent, is een toets die je niet durft te doen. */}
-          {diplomaVorm ? (
-            <button
-              type="button"
-              className="tk-tegel tk-tegel-diploma"
-              aria-label={metPremium(
-                `${t(diplomaVorm.name)}. ${diplomaReden}`,
-                isPremiumVorm(diplomaVorm.id),
-                actief,
-              )}
-              aria-pressed={!alsToets && diplomaVorm.id === form?.id}
-              onClick={() => {
-                if (isPremiumVorm(diplomaVorm.id) && !actief) {
-                  wilDit(
-                    chosen !== null
-                      ? t('wens.diploma', { naam: naamVan(chosen) })
-                      : t(diplomaVorm.name),
-                  );
-                  return;
-                }
-                setToetsstand(false);
-                setFoutenstand(false);
-                if (vlagDeel !== null) kiesElders(vlagDiplomaSet(vlagDeel));
-                setFormId(diplomaVorm.id);
-                springNaar(aantalSectie, startSectie);
-              }}
-            >
-              <span className="tk-plaat">
-                <diplomaVorm.icon size={24} />
-              </span>
-              <span className="min-w-0">
-                {t(diplomaVorm.name)}
-                <span className="tk-hulp block" aria-hidden="true">
-                  {diplomaReden}
-                </span>
-              </span>
-              {isPremiumVorm(diplomaVorm.id) ? <PremiumLabel /> : null}
-              {!alsToets && diplomaVorm.id === form?.id ? vink : null}
-            </button>
-          ) : null}
+          {diplomaTegel}
         </section>
 
         {/* How long, as a step of its own — and only after a way that has a
@@ -891,145 +1226,58 @@ export function ModuleScreen({
         {chosen && form && lengtes.length > 0 ? (
           <section ref={aantalSectie} className="tk-kies" aria-label={t('choose.howMany')}>
             <Stap nummer={stap.hoe + 1} label={t('choose.howMany')} />
-
-            <div className="tk-keuzes">
-              {lengtes.map((count) => {
-                const heel = count === setSize;
-                const label = heel ? 'choose.howManyAllLabel' : 'choose.howManyOne';
-
-                return (
-                  <button
-                    key={count}
-                    type="button"
-                    className="tk-keuze"
-                    aria-label={t(label, { aantal: count })}
-                    aria-pressed={count === vragen}
-                    onClick={() => {
-                      setAantal(count);
-                      springNaar(startSectie);
-                    }}
-                  >
-                    <span aria-hidden="true">
-                      {heel ? t('choose.howManyAll', { aantal: count }) : count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {aantalKnoppen}
           </section>
         ) : null}
 
         {/* From a tablet up, the answers together and the way on, closing the
-            chooser. On a phone the same bar is at the foot of the page — see
-            below. Always drawn; filled once every step has an answer. */}
-        {kleinScherm ? null : (
-          <div ref={startSectie} className="tk-startbalk tk-choose-start">
-            <div className="min-w-0">
-              <p className="tk-startbalk-label">{t(klaar ? 'start.klaar' : 'start.nogKiezen')}</p>
-              {klaar ? (
-                <ul className="tk-startbalk-keuzes">
-                  {gekozenLijst.map(({ label, waarde }) => (
-                    <li key={label} className="tk-startchip">
-                      <span className="tk-startchip-label">{label}</span>
-                      {waarde}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <>
-                  <p id={nogId} className="tk-sr-only">
-                    {nogZin}
-                  </p>
-                  <NogKiezen wachtend={wachtend} kort={false} onNaar={springNaar} />
-                </>
-              )}
-              {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
-            </div>
-            {startKnop}
+            chooser. Always drawn; filled once every step has an answer. */}
+        <div ref={startSectie} className="tk-startbalk tk-choose-start">
+          <div className="min-w-0">
+            <p className="tk-startbalk-label">{t(klaar ? 'start.klaar' : 'start.nogKiezen')}</p>
+            {klaar ? (
+              <ul className="tk-startbalk-keuzes">
+                {gekozenLijst.map(({ label, waarde }) => (
+                  <li key={label} className="tk-startchip">
+                    <span className="tk-startchip-label">{label}</span>
+                    {waarde}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <>
+                <p id={nogId} className="tk-sr-only">
+                  {nogZin}
+                </p>
+                <NogKiezen wachtend={wachtend} kort={false} onNaar={springNaar} />
+              </>
+            )}
+            {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
           </div>
-        )}
+          {startKnop}
+        </div>
 
         {/* Eén zin: wat hier vandaag terugkomt. Dat is de voorwaarde voor het
             diploma — alleen wat terugkomt kan onthouden raken. */}
-        {actief && chosen !== null && states !== null ? (
-          <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
-        ) : null}
+        {terugRegel}
 
         {/* Hetzelfde onderwerp op papier (ADR-211): voor thuis, of voor de klas. */}
-        {onWerkblad && chosen !== null && heeftWerkblad(chosen) ? (
-          <button
-            type="button"
-            className="tk-button tk-button-tertiary self-start"
-            onClick={() => onWerkblad(chosen.setId)}
-          >
-            {t('werkblad.knop')}
-          </button>
-        ) : null}
+        {werkbladKnop}
 
         {/* Twelve diplomas, under the tables and nowhere else (ADR-075). Pressing
             a gap answers both steps at once: that table, and the diploma. */}
-        {onderwerp?.id === 'tafels' ? (
-          <Tafeldiplomas
-            onKies={(tafel) => {
-              // Een diploma halen is premium (ADR-192): zonder code eerst de
-              // vraag aan de ouders, net als de diplomategel zelf.
-              if (!actief) {
-                wilDiploma(tafel);
-                return;
-              }
-              kiesElders(tafel);
-              setFormId('tafeldiploma');
-              setToetsstand(false);
-            }}
-          />
-        ) : null}
+        {onderwerp?.id === 'tafels' ? <Tafeldiplomas onKies={kiesTafelDiploma} /> : null}
 
         {/* Six vlaggendiploma's on the flags page (ADR-104). Pressing one answers
             every step at once: that werelddeel, all its flags, the diploma. */}
-        {module.id === 'vlaggen' ? (
-          <VlagDiplomas
-            onKies={(deel) => {
-              if (!actief) {
-                wilDiploma(vlagDiplomaSet(deel));
-                return;
-              }
-              kiesElders(vlagDiplomaSet(deel));
-              setFormId('vlag-diploma');
-              setToetsstand(false);
-            }}
-          />
-        ) : null}
+        {module.id === 'vlaggen' ? <VlagDiplomas onKies={kiesVlagDiploma} /> : null}
 
         {/* Four klokdiploma's on the clock's page, and eleven topodiploma's on
             topography's (ADR-117). Pressing one answers every step at once:
             that step or that map, and the diploma. */}
-        {module.id === 'klok' ? (
-          <KlokDiplomas
-            onKies={(stap) => {
-              if (!actief) {
-                wilDiploma(stap);
-                return;
-              }
-              kiesElders(stap);
-              setFormId('klok-diploma');
-              setToetsstand(false);
-            }}
-          />
-        ) : null}
+        {module.id === 'klok' ? <KlokDiplomas onKies={kiesKlokDiploma} /> : null}
 
-        {module.id === 'topo' ? (
-          <TopoDiplomas
-            onKies={(kaart) => {
-              if (!actief) {
-                wilDiploma(kaart);
-                return;
-              }
-              kiesElders(kaart);
-              setFormId('topo-diploma');
-              setToetsstand(false);
-            }}
-          />
-        ) : null}
+        {module.id === 'topo' ? <TopoDiplomas onKies={kiesTopoDiploma} /> : null}
 
         {/* En de twee vakken die er geen hadden (ADR-168): de soorten som
             buiten de tafels, en Taal. Dezelfde wand, met de namen uit de sets
@@ -1042,67 +1290,216 @@ export function ModuleScreen({
         {setdiplomas.length > 0 ? (
           <Setdiplomas
             moduleId={module.id}
-            titel={t(module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle')}
+            titel={setdiplomaTitel}
             sets={setdiplomas}
-            onKies={(setId) => {
-              if (!actief) {
-                wilDiploma(setId);
-                return;
-              }
-              kiesElders(setId);
-              setFormId(module.id === 'woorden' ? 'taal-diploma' : 'reken-diploma');
-              setToetsstand(false);
-              setFoutenstand(false);
-            }}
+            onKies={kiesSetDiploma}
           />
         ) : null}
 
         {/* Wat erin zit en de vragen van een ouder (ADR-213): ook wat Google
             leest, nadat de app de pagina heeft overgenomen. */}
-        {chosen !== null && !chosen.mix && !/(^|-)fouten$/.test(chosen.setId) ? (
-          <OverOnderwerp
-            deel={chosen}
-            links={pagina?.links ?? []}
-            linksKop={pagina?.linksKop ?? ''}
-            onVolg={volg}
-          />
-        ) : null}
+        {overOnder}
       </div>
-
-      {/* On a phone: the sentence and the way on, stuck to the foot of the
-          screen. After the child's own column, as the last thing in the page, so
-          it is in reach the whole way down and never lies over its own button.
-          See .tk-startbalk-mobiel for what ADR-052 taught about building it. */}
-      {kleinScherm ? (
-        <div className="tk-startbalk-mobiel tk-choose-start" data-accent="module">
-          <p className="tk-startbalk-zin">
-            {klaar ? (
-              <>
-                <span className="block font-semibold">{zin}</span>
-                {minuten === null ? null : (
-                  <span className="tk-hulp block">
-                    {minuten === 1
-                      ? t('choose.minuteOne')
-                      : t('choose.minutes', { aantal: minuten })}
-                  </span>
-                )}
-                {eerderZin ? <span className="tk-hulp block">{eerderZin}</span> : null}
-              </>
-            ) : (
-              <>
-                <span className="block font-semibold">{t('start.nogKiezen')}</span>
-                <span id={nogId} className="tk-sr-only">
-                  {nogZin}
-                </span>
-              </>
-            )}
-          </p>
-          {klaar ? null : <NogKiezen wachtend={wachtend} kort onNaar={springNaar} />}
-          {startKnop}
-        </div>
-      ) : null}
     </div>
   );
+
+  /**
+   * De vakpagina op een telefoon (ADR-252): de kop als witte kaart, de stappen
+   * als accordeon, de diploma's en "Over" als twee rijen naar een blad, en
+   * onderaan de balk.
+   */
+  function mobiel() {
+    const inhoud: Record<StapId, ReactNode> = {
+      regio: regioKnoppen,
+      wat: (
+        <>
+          {onderwerpTegels}
+          {!actief && onderwerpen.some((vak) => isPremiumOnderwerp(vak.id)) ? (
+            <PremiumLegenda />
+          ) : null}
+        </>
+      ),
+      keuze: keuzeKnoppen,
+      hoe: (
+        <>
+          {vormTegels}
+          {!actief &&
+          (toetsVorm !== null ||
+            gewoneTegels.some((vorm) => isPremiumVorm(vorm.id)) ||
+            (diplomaVorm !== null && isPremiumVorm(diplomaVorm.id))) ? (
+            <PremiumLegenda />
+          ) : null}
+        </>
+      ),
+      aantal: aantalKnoppen,
+    };
+    const open = telefoonStappen.find((kandidaat) => kandidaat.id === openId) ?? null;
+    const gekozenStappen = telefoonStappen.filter(
+      (kandidaat): kandidaat is StapAntwoord =>
+        kandidaat.waarde !== null && kandidaat.id !== openId,
+    );
+    const laterStappen = telefoonStappen.filter(
+      (kandidaat) => kandidaat.waarde === null && kandidaat.id !== openId,
+    );
+
+    // De wand van dit vak, in het blad. Eén per pagina: de tafels hebben de
+    // hunne alleen als Tafels gekozen is, anders die van de soort som.
+    const muur =
+      onderwerp?.id === 'tafels'
+        ? {
+            titel: t('rekenen.diplomasTitle'),
+            wand: <Tafeldiplomas onKies={kiesTafelDiploma} onStand={zetDiplomaStand} />,
+          }
+        : module.id === 'vlaggen'
+          ? {
+              titel: t('vlag.diplomasTitle'),
+              wand: <VlagDiplomas onKies={kiesVlagDiploma} onStand={zetDiplomaStand} />,
+            }
+          : module.id === 'klok'
+            ? {
+                titel: t('klok.diplomasTitle'),
+                wand: <KlokDiplomas onKies={kiesKlokDiploma} onStand={zetDiplomaStand} />,
+              }
+            : module.id === 'topo'
+              ? {
+                  titel: t('topo.diplomasTitle'),
+                  wand: <TopoDiplomas onKies={kiesTopoDiploma} onStand={zetDiplomaStand} />,
+                }
+              : setdiplomas.length > 0
+                ? {
+                    titel: setdiplomaTitel,
+                    wand: (
+                      <Setdiplomas
+                        moduleId={module.id}
+                        titel={setdiplomaTitel}
+                        sets={setdiplomas}
+                        onKies={kiesSetDiploma}
+                        onStand={zetDiplomaStand}
+                      />
+                    ),
+                  }
+                : null;
+    const overKop = overDeel === null ? null : overOnderwerp(overDeel).kop;
+
+    return (
+      <div className="tk-page tk-kiespagina" data-module={module.id}>
+        <div className="tk-page-main" data-accent="module">
+          <div className="tk-vakkop">
+            {terugKnop}
+            {/* De kop als witte kaart, met de plaat van het vak: geen vlak in
+                de kleur van het vak, want die is op deze pagina voor wat je
+                koos (ADR-252). */}
+            <div className="tk-vakkaart">
+              <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
+                <ModuleIcon size={24} />
+              </span>
+              <h1 className="tk-vakkaart-kop">{vakKop}</h1>
+            </div>
+          </div>
+
+          <div ref={stappenRef} className="tk-stappen">
+            <StappenGekozen stappen={gekozenStappen} onWijzig={openOpTelefoon} />
+            {open === null ? null : (
+              <OpenStap stap={open} stapRef={openRef}>
+                {inhoud[open.id]}
+              </OpenStap>
+            )}
+            <LaterStappen stappen={laterStappen} onOpen={openOpTelefoon} />
+          </div>
+
+          {muur !== null || overDeel !== null ? (
+            <ul className="tk-oefenlijst-rijen">
+              {muur === null ? null : (
+                <li>
+                  <MeerRij
+                    moduleId={module.id}
+                    titel={muur.titel}
+                    regel={
+                      diplomaStand === null
+                        ? ''
+                        : t('kies.diplomasStand', {
+                            aantal: diplomaStand.behaald,
+                            totaal: diplomaStand.totaal,
+                          })
+                    }
+                    beeld={
+                      <StandRing
+                        deel={
+                          diplomaStand === null || diplomaStand.totaal === 0
+                            ? 0
+                            : diplomaStand.behaald / diplomaStand.totaal
+                        }
+                      />
+                    }
+                    onClick={() => setBlad('diplomas')}
+                  />
+                </li>
+              )}
+              {overKop === null ? null : (
+                <li>
+                  <MeerRij
+                    moduleId={module.id}
+                    titel={overKop}
+                    regel={t(
+                      werkbladKnop === null ? 'kies.overRegelZonderWerkblad' : 'kies.overRegel',
+                    )}
+                    beeld={<OverBeeld />}
+                    onClick={() => setBlad('over')}
+                  />
+                </li>
+              )}
+            </ul>
+          ) : null}
+        </div>
+
+        {muur === null ? null : (
+          <Blad open={blad === 'diplomas'} titel={muur.titel} onSluit={() => setBlad(null)}>
+            {muur.wand}
+          </Blad>
+        )}
+        {/* Ook dicht in de pagina: wat een ouder hier leest, leest Google ook. */}
+        {overKop === null ? null : (
+          <Blad open={blad === 'over'} titel={overKop} onSluit={() => setBlad(null)}>
+            {terugRegel}
+            {werkbladKnop}
+            {overOnder}
+          </Blad>
+        )}
+
+        {/* Onderaan, boven het menu: de stap waar je bent, of de weg verder.
+            Sticky en het laatste in de pagina, zoals ADR-095 hem bouwde: hij
+            ligt nooit over zijn eigen knop, en onderaan de pagina nooit over
+            de stap die openstaat. */}
+        <div className="tk-startbalk-mobiel tk-choose-start" data-accent="module" data-stand={balk}>
+          {balk === 'kiezen' ? (
+            <>
+              <StapVoortgang segmenten={segmenten(standen, openId)} />
+              <span id={nogId} className="tk-sr-only">
+                {nogZin}
+              </span>
+            </>
+          ) : balk === 'allesGekozen' ? (
+            <>
+              <p className="tk-stapvoortgang-tekst">{t('kies.allesGekozen')}</p>
+              {startKnopVan('tk-button-go-klein')}
+            </>
+          ) : (
+            <>
+              <p className="tk-startblok-label">{t('start.klaar')}</p>
+              <p className="tk-startblok-zin">{zin}</p>
+              {minuten === null ? null : (
+                <p className="tk-startblok-duur">
+                  {minuten === 1 ? t('choose.minuteOne') : t('choose.minutes', { aantal: minuten })}
+                </p>
+              )}
+              {eerderZin ? <p className="tk-startblok-duur">{eerderZin}</p> : null}
+              {startKnop}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 }
 
 /** Een stap die nog wacht: zijn nummer, zijn vraag en waar hij staat. */
@@ -1284,4 +1681,16 @@ function terugZin(
   const blik = vooruitblik(ids, states, now);
   if (blik.morgenTerug > 0) return t('module.terugMorgen', { aantal: blik.morgenTerug });
   return t('module.terugNiets');
+}
+
+/**
+ * Het eerste deel van een uitleg, voor onder een tegel op een telefoon: "Kies
+ * uit 4 namen" van "Kies uit 4 namen — de eerste stap naar typen" (ADR-252).
+ * De hele zin blijft de naam van de tegel.
+ */
+function kortVan(uitleg: string): string {
+  const deel = uitleg.split(' — ')[0] ?? uitleg;
+  // En van een uitleg in zinnen alleen de eerste: "Je typt zonder hulp."
+  const zin = /^[^.]*\./.exec(deel);
+  return zin === null ? deel : zin[0];
 }

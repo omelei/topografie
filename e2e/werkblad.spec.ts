@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { openOver } from './stap';
 
 /**
  * Een werkblad om te printen (ADR-211): te openen zonder naam, vanaf de pagina
@@ -15,6 +16,7 @@ test('a worksheet opens from its topic, with a blank map and the answers', async
   page,
 }, testInfo) => {
   await page.goto('/topografie/provincies');
+  await openOver(page);
   await page.getByRole('button', { name: 'Werkblad om te printen' }).click();
 
   await expect(page).toHaveURL(/\/topografie\/provincies\/werkblad$/);

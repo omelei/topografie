@@ -304,6 +304,17 @@ export const nl = {
   'home.popularStartGroep': 'Hier begin je mee in groep {groep}',
   // Voor wie al geoefend heeft: wat bij de groep past en nog niet gedaan is.
   'home.pastBijGroep': 'Past bij groep {groep}',
+  // Op een telefoon een lijst van drie rijen, en de rest één druk verder
+  // (ADR-252).
+  'home.nogTonen': 'Nog {aantal} tonen',
+  'home.nogTonenEen': 'Nog 1 tonen',
+  // Vandaag herhalen als Nu doen op een telefoon (ADR-252): de eerste ronde
+  // van het plan, en de rest eronder als lijst.
+  'home.nu.herhalen.regel': '{onderwerp} · {aantal} vragen',
+  'home.nu.herhalen.regelEen': '{onderwerp} · 1 vraag',
+  // De rest van het plan onder die kaart: een andere kop, want "Vandaag
+  // herhalen" is de kaart zelf al.
+  'vandaag.daarna': 'Daarna herhalen',
   // De voorspelling stond hier en staat nu alleen nog op K9. Weg in plaats van
   // ongebruikt blijven staan: copy die nergens meer verschijnt is copy die
   // niemand nog leest en die bij de volgende ronde toch wordt meegewogen.
@@ -787,6 +798,18 @@ export const nl = {
   'start.seconden': '{aantal} seconden',
   'start.levens': '{aantal} levens',
   'start.vrij': 'rondkijken',
+  // De vakpagina op een telefoon (ADR-252): één stap open, wat gekozen is
+  // samen bovenaan, en onderaan een balk die zegt waar je bent.
+  'kies.wijzig': 'Wijzig',
+  'kies.wijzigLabel': 'Wijzig stap {stap}, {vraag}: {waarde}',
+  'kies.nogKiezen': 'Nog kiezen',
+  'kies.stapVan': 'Stap {stap} van {totaal}',
+  'kies.allesGekozen': 'Alles gekozen',
+  'kies.metPremium': 'Met premium',
+  'kies.diplomasStand': '{aantal} van de {totaal} gehaald',
+  'kies.overRegel': 'Wat je oefent, werkblad en vragen van ouders',
+  'kies.overRegelZonderWerkblad': 'Wat je oefent en vragen van ouders',
+  'kies.sluit': 'Sluiten',
   // Zolang niet elke stap een antwoord heeft, staat de balk er wel maar is hij
   // leeg, en zegt hij welke stappen nog wachten. De stappen zijn genummerd op
   // de pagina, dus het nummer is de kortste weg terug.

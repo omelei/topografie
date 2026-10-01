@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { alsOnthouden } from './zaai';
 import { signIn } from './naam';
+import { stap, wand } from './stap';
 
 /**
  * The vlaggendiploma (ADR-104): six on the flags page with the gaps showing,
@@ -76,18 +77,17 @@ async function speel(page: Page) {
  */
 async function zoekDeVlaggen(page: Page) {
   await page.goto('/vlaggen');
-  await page
-    .getByRole('region', { name: 'Waar op de kaart?' })
+  await (
+    await stap(page, 'Waar op de kaart?')
+  )
     .getByRole('button', { name: 'Zuid-Amerika' })
     .click();
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Alle vlaggen/ })
     .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: /^Vlag zoeken/ })
-    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Vlag zoeken/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 
   const klaar = page.getByRole('heading', { name: 'Ronde klaar' });
@@ -114,27 +114,21 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await signIn(page, 'Anouk');
   await page.goto('/vlaggen');
 
-  const muur = page.getByRole('region', { name: 'Jouw vlaggendiploma’s' });
+  const muur = await wand(page, 'Jouw vlaggendiploma’s');
   // Zeven sinds ADR-168: de provincievlaggen hebben er ook een. Acht sinds
   // ADR-247: de wereld ook.
   await expect(muur.getByRole('button')).toHaveCount(8);
   await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
 
-  const waar = page.getByRole('region', { name: 'Waar op de kaart?' });
-  await expect(waar.getByRole('button', { name: 'Zuid-Amerika' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  await expect(wat.getByRole('button', { name: /^Alle vlaggen/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(hoe.getByRole('button', { name: /^Vlaggendiploma/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    (await stap(page, 'Waar op de kaart?')).getByRole('button', { name: 'Zuid-Amerika' }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Alle vlaggen/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Vlaggendiploma/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
   // A diploma is its own length.
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
 
@@ -154,7 +148,11 @@ test('six vlaggendiploma’s, and one press chooses a whole werelddeel to sit', 
   await alsOnthouden(page);
 
   await page.goto('/vlaggen');
-  await muur.getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' }).click();
+  await (
+    await wand(page, 'Jouw vlaggendiploma’s')
+  )
+    .getByRole('button', { name: 'Zuid-Amerika: nog geen vlaggendiploma' })
+    .click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByText('Klaar voor de toets', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Nee, ik begin' }).click();

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn } from './naam';
+import { stap } from './stap';
 
 /**
  * "Je fouten" is een spelvorm op de gekozen set (ADR-103, ADR-168).
@@ -13,14 +14,8 @@ import { signIn } from './naam';
 
 async function kies(page: Page, pad: string, onderwerp: RegExp, hoe: RegExp) {
   await page.goto(pad);
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
-    .getByRole('button', { name: onderwerp })
-    .click();
-  await page
-    .getByRole('region', { name: /Hoe wil je/ })
-    .getByRole('button', { name: hoe })
-    .click();
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: onderwerp }).click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
 }
 
@@ -42,16 +37,22 @@ async function weetHetNiet(page: Page) {
 
 test('de klok biedt "Je fouten" pas aan als er fouten zijn, bij de manieren', async ({ page }) => {
   await signIn(page, 'Ties');
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
 
   // Nergens een onderwerp dat over fouten gaat, met of zonder fouten.
   await page.goto('/klokkijken');
-  await expect(wat.getByRole('button', { name: /fouten/i })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /fouten/i }),
+  ).toHaveCount(0);
 
   // En zonder fouten ook geen spelvorm: er valt niets te oefenen.
-  await wat.getByRole('button', { name: /^Hele uren/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).toHaveCount(0);
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Hele uren/ })
+    .click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }),
+  ).toHaveCount(0);
 
   await kies(page, '/klokkijken', /^Hele uren/, /^Meerkeuze/);
   await weetHetNiet(page);
@@ -60,15 +61,20 @@ test('de klok biedt "Je fouten" pas aan als er fouten zijn, bij de manieren', as
   // Zonder code, zonder label en zonder venster: je fouten zijn gratis (ADR-231,
   // ADR-232).
   await page.goto('/klokkijken');
-  await wat.getByRole('button', { name: /^Hele uren/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).not.toContainText(/premium/i);
-  await hoe.getByRole('button', { name: /^Jouw fouten/ }).click();
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Hele uren/ })
+    .click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }),
+  ).not.toContainText(/premium/i);
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
-  await hoe.getByRole('button', { name: /^Meerkeuze/ }).click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Meerkeuze/ }).click();
   await page.locator('.tk-choose-start .tk-button-go').click();
   await expect(page.getByRole('group', { name: 'Kies hoe laat het is' })).toBeVisible();
 });
@@ -92,28 +98,35 @@ test('topografie biedt dezelfde spelvorm, op de set die gekozen is', async ({ pa
   await weetHetNiet(page);
 
   await page.goto('/topografie');
-  const wat = page.getByRole('region', { name: /Kies een onderwerp/ });
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  await expect(wat.getByRole('button', { name: /fouten/i })).toHaveCount(0);
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /fouten/i }),
+  ).toHaveCount(0);
 
   // Op de provincies wel, want daar zijn ze gemaakt; op de wateren niet.
-  await wat.getByRole('button', { name: /^Provincies/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).toBeVisible();
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }),
+  ).toBeVisible();
 
-  await wat.getByRole('button', { name: /^Wateren/ }).click();
-  await expect(hoe.getByRole('button', { name: /^Jouw fouten/ })).toHaveCount(0);
+  await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Wateren/ }).click();
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Jouw fouten/ }),
+  ).toHaveCount(0);
 });
 
 test('het diploma staat als laatste manier, met zijn eigen regel erbij', async ({ page }) => {
   await signIn(page, 'Sam');
   await page.goto('/topografie');
-  await page
-    .getByRole('region', { name: /Kies een onderwerp/ })
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
     .getByRole('button', { name: /^Provincies/ })
     .click();
-
-  const hoe = page.getByRole('region', { name: /Hoe wil je/ });
-  const manieren = hoe.getByRole('button');
+  const manieren = (await stap(page, /Hoe wil je/)).getByRole('button');
   await expect(manieren.last()).toContainText('Topodiploma');
-  await expect(hoe.locator('.tk-tegel-diploma')).toHaveCount(1);
+  await expect((await stap(page, /Hoe wil je/)).locator('.tk-tegel-diploma')).toHaveCount(1);
 });
