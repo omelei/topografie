@@ -47,6 +47,13 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    Workspace sinds 25 september, met `p=none`. Zijn de rapporten na twee tot
    vier weken schoon, dan `p=quarantine`; `p=reject` pas als de mail van
    Resend ook klopt.
+10. **Twee keuzes voor de Play Store** (zie [Play Store](#play-store)), na de
+    privacyverklaring:
+    - premium in de Android-app: zonder kassa, alleen een code invullen en
+      kopen op de site (advies), of Google Play Billing met 15% commissie;
+    - een persoonlijk ontwikkelaarsaccount (eerst 14 dagen testen met 12
+      testers) of een organisatieaccount (met D-U-N-S-nummer, advies als je
+      een eenmanszaak of bv hebt).
 
 Gedaan op 30 september: Search Console aangezet met de sitemap en tien pagina's
 aangevraagd, `tools/premium/schema.sql` opnieuw gedraaid, en de teller zelf
@@ -189,6 +196,30 @@ opnamelijst staan in [kleuters.md](kleuters.md).
    spreekt de losse klanken in, Claude bouwt_. Losse klanken kunnen niet met
    een browserstem.
 
+### Play Store
+
+De site is al een installeerbare app (manifest, iconen). De route naar de Play
+Store is een Trusted Web Activity: een klein Android-omhulsel dat www.leer.nu
+opent, zodat elke deploy ook in de app staat zonder nieuwe release.
+
+1. **Privacyverklaring live** — zie "Gezinsaccount live zetten". Zonder
+   privacy-URL geen app, en voor een kinderapp kijkt Google extra streng.
+2. **Twee keuzes** — _jij_ (actielijst, punt 10). Let op: premium via de kassa
+   van Mollie in de app mag niet; digitale inhoud gaat in de app via Google
+   Play Billing. Of "code invullen, kopen op de site" zonder link naar de kassa
+   mag, kijkt Claude na in de actuele regels voor de EER.
+3. **Ontwikkelaarsaccount** — _jij_: $ 25 eenmalig, identiteit laten
+   controleren. Als handelaar (EU) staan je adres en telefoonnummer openbaar in
+   de store: gebruik een zakelijk adres.
+4. **Het omhulsel** — _Claude_, in één PR: Bubblewrap-configuratie uit
+   `site.webmanifest`, `public/.well-known/assetlinks.json` (met de SHA-256 van
+   de signing key van Google Play, niet van de upload key), een offlinepagina of
+   service worker, en de teksten voor de store volgens de schrijfwijzer.
+5. **In de Play Console** — _jij_: Families-beleid en doelgroep (4 tot 12
+   jaar), Data safety, leeftijdsclassificatie (IARC), screenshots en de feature
+   graphic. Met het gezinsaccount erbij: account verwijderen in de app en op een
+   webpagina.
+
 ## De volgende tien (24 september)
 
 Op volgorde van wat het oplevert voor bezoekers en omzet, tegen wat het kost.
@@ -235,6 +266,7 @@ Niets open.
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                                                        | ADR      |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | #192      | Vandaag per type kind: één kaart Nu doen bovenaan met één knop (Welkom terug, Vandaag herhalen, Maak af, de geheugencheck of Ga verder), Meest geoefend, Recent geoefend en Maak af samen in Verder oefenen met elk onderwerp één keer, geen premiumkaart voor het kind, de naam compact onder Nu doen, de groepsvraag als raster en de vakken als rij voor een nieuw kind | 250      |
+| #191      | De Play Store op de actielijst: twee keuzes voor de eigenaar en de stappen naar een Trusted Web Activity                                                                                                                                                                                                                                                                   | —        |
 | #187      | Feedback als nieuwe bezoeker: weekdoelen naar Jij, per groep alleen passende onderwerpen (geen vlaggen), een digitale klok, gekozen tegels gevuld, de sprong na een keuze niet meer tot bovenaan, klikbare stappen bij "Nog even kiezen", de kop "Topografie oefenen", een diploma bij elk onderwerp (80, met de wereld), een dunnere onderkant, vijf geluiden op Jij      | 247      |
 | #186      | De kop van een vak- of onderwerppagina noemt zonder naam het onderwerp ("Provincies van Nederland oefenen"), en onder een onderwerp staan de andere onderwerpen van het vak als echte links, voor Google. Het app-icoon is de hele Denker op een tegel in koraal diep, het tabblad Denker los                                                                              | 245, 246 |
 | #185      | Groep 1 en 2 in de groepsvraag, eerst om te meten: voor een kleuter "Voor groep 1 en 2 komt er iets aan" op Vandaag, de teller telt `/1` en `/2`, migratie 0004, en het plan met de opnamelijst in `kleuters.md`                                                                                                                                                           | 244      |
