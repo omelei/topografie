@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 1 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 2 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -265,6 +265,7 @@ Niets open.
 
 | PR        | Wat                                                                                                                                                                                                                                                                                                                                                                        | ADR      |
 | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| #195      | Zonder premium geen regel "Vandaag komen er 53 vragen terug" meer op Vandaag: een getal zonder plek om het te oefenen                                                                                                                                                                                                                                                      | 253      |
 | #194      | Op een telefoon: Vandaag in één koraal blok (begroeting met Nu doen als witte kaart erin) en lijsten van drie rijen met "Nog {n} tonen"; de vakpagina als accordeon (één stap open, gekozen stappen samen met Wijzig, automatisch door), chips en tegels in twee vormen, diploma's en "Over" in een blad, en een stapbalk of startblok onderaan                            | 252      |
 | #193      | Op Vandaag "Kies een vak" en "Zo werkt leer.nu" alleen aan een bureau (vanaf 1200), niet op telefoon en tablet; "Ik ben een ouder" en "Ik heb een inlogcode" op een telefoon dicht onder elkaar                                                                                                                                                                            | 251      |
 | #192      | Vandaag per type kind: één kaart Nu doen bovenaan met één knop (Welkom terug, Vandaag herhalen, Maak af, de geheugencheck of Ga verder), Meest geoefend, Recent geoefend en Maak af samen in Verder oefenen met elk onderwerp één keer, geen premiumkaart voor het kind, de naam compact onder Nu doen, de groepsvraag als raster en de vakken als rij voor een nieuw kind | 250      |

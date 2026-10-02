@@ -24,10 +24,11 @@ const TEGELS = 3;
  *   laatst deed, en alleen de onderdelen die aan de beurt zijn.
  * - **Met premium en klaar** de bevestiging, onder Nu doen (ADR-139): de
  *   beloning voor op schema zijn is niet dat het blok verdwijnt.
- * - **Zonder premium** één regel met het getal, onderaan. Het getal is waar en
- *   van het kind zelf (ADR-124's regel), het plan is waar premium voor is. Er
- *   staat geen slot en geen knop naar premium: een kind koopt niets (R-11), en
- *   wat er te kiezen valt, leest de ouder op de premiumpagina.
+ * - **Zonder premium** niets (ADR-253). Er stond één regel met het getal
+ *   ("Vandaag komen er 53 vragen terug"), maar zonder plek om ze te oefenen
+ *   was dat een raadsel en geen feit. Een gewone ronde stelt wat aan de beurt
+ *   is toch eerst. Er staat geen slot en geen knop naar premium: een kind
+ *   koopt niets (R-11).
  *
  * Wie niets te herhalen heeft, ziet niets: een leeg plan aanprijzen is een lege
  * doos op slot doen.
@@ -147,23 +148,6 @@ export function KlaarVoorVandaag() {
         <span className="tk-klaar-kop">{t('vandaag.klaarVoorVandaag')}</span>
         <span className="tk-hulp">{t('vandaag.klaarUitleg')}</span>
       </span>
-    </section>
-  );
-}
-
-/**
- * Zonder premium: hoeveel er vandaag terugkomt, als feit. Het getal staat in
- * een schijf in nacht, zoals een getal buiten een vak.
- */
-export function HerhaalRegel({ vragen }: { readonly vragen: number }) {
-  return (
-    <section className="tk-herhaalregel" aria-label={t('vandaag.titel')}>
-      <span className="tk-herhaalregel-getal" data-tint="nacht" aria-hidden="true">
-        {vragen}
-      </span>
-      <p className="tk-hulp">
-        {vragen === 1 ? t('vandaag.eenVraag') : t('vandaag.vragen', { aantal: vragen })}
-      </p>
     </section>
   );
 }
