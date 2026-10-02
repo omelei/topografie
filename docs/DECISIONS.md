@@ -14531,6 +14531,29 @@ onder 768; vanaf 768 blijft alles zoals het was.
 telefoon een dichte stap eerst opent; vanaf 768 is het de sectie zelf. De
 diplomamuren melden hoeveel er gehaald zijn (`onStand`), voor de rij.
 
+## ADR-253 — Zonder premium geen getal van wat er terugkomt op Vandaag
+
+**Status:** accepted. **Date:** 2026-10-02. Op verzoek van de eigenaar.
+Herziet het deel van ADR-126 en ADR-250 over Vandaag zonder code.
+
+**Aanleiding.** Zonder code stond onderaan Vandaag "Vandaag komen er 53
+vragen terug. Zo blijft het in je hoofd." Het getal is elke vraag die een kind
+eerder had en die vandaag aan de beurt is. Doos 1 tot en met 3 komen na één dag
+terug, dus het is in de praktijk alles van gisteren dat nog niet beheerst is,
+en het loopt snel op. Er stond geen plek bij om ze te oefenen: dat is het
+dagplan, en dat is premium. Een ouder vroeg zich af hoe het getal ontstaat en
+waar je die 53 oefent, en een kind kan er niets mee.
+
+**Besluit.** Zonder code staat er op Vandaag niets over herhalen: geen regel,
+geen getal. Een lijst per onderwerp voor iedereen is overwogen en afgewezen:
+dan staat er te veel op Vandaag. Met premium blijft alles zoals het was: de
+eerste ronde als Nu doen of de tegels, "Daarna herhalen", "Klaar voor
+vandaag".
+
+**Gevolgen.** Herhalen gebeurt zonder code nog steeds: een gewone ronde stelt
+wat aan de beurt is eerst (`composeRound`). Alleen het getal is weg.
+`HerhaalRegel`, zijn stijl en de twee teksten zijn verwijderd.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

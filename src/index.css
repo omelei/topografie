@@ -3426,27 +3426,6 @@
     font-weight: 700;
   }
 
-  /* Zonder premium: hoeveel er vandaag terugkomt, als feit (ADR-250). Het
-   * getal in een schijf in nacht; geen slot, geen knop. */
-  .tk-herhaalregel {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .tk-herhaalregel-getal {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 8px;
-    border-radius: var(--radius-pil);
-    font-family: var(--font-kop);
-    font-size: var(--type-knop);
-    line-height: 1;
-    font-weight: 800;
-  }
   /* Elke rij even hoog (ADR-242): een toelichting over twee regels maakte de
    * tweede rij hoger dan de eerste. */
   .tk-vakraster {

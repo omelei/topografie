@@ -320,11 +320,9 @@ export const nl = {
   // niemand nog leest en die bij de volgende ronde toch wordt meegewogen.
   // Wat je net gedaan hebt, met het cijfer erbij. Een logboek, geen ranglijst:
   // het staat er in de volgorde waarin het gebeurde en telt niets bij elkaar op.
-  // "Vandaag": het dagplan (ADR-126). Het getal is van het kind zelf en staat
-  // er dus ook zonder code; het plan eronder is waar premium voor is.
+  // "Vandaag": het dagplan (ADR-126), met premium. Zonder code staat er niets
+  // (ADR-253).
   'vandaag.titel': 'Vandaag herhalen',
-  'vandaag.eenVraag': 'Vandaag komt er 1 vraag terug. Zo blijft het in je hoofd.',
-  'vandaag.vragen': 'Vandaag komen er {aantal} vragen terug. Zo blijft het in je hoofd.',
   'vandaag.ronde': '{aantal} vragen',
   'vandaag.rondeEen': '1 vraag',
   // Naast de kop, als de rondes als tegels klaarstaan (ADR-238).

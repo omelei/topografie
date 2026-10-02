@@ -406,34 +406,27 @@ test('the code takes a place at the first premium round, not when a parent types
 });
 
 /**
- * "Vandaag herhalen" (ADR-126): de belofte die de premiumpagina doet, in het
- * product. Zonder code staat er hoevéél er klaarstaat — dat is een feit over dit
- * kind — en het plan zelf is waar premium voor is.
+ * "Vandaag herhalen" (ADR-126) is de belofte die de premiumpagina doet. Zonder
+ * code staat er niets van op Vandaag (ADR-253): ook geen getal van hoeveel er
+ * terugkomt, want een getal zonder plek om het te oefenen roept alleen vragen
+ * op. Een gewone ronde stelt wat aan de beurt is toch eerst.
  */
-test('the day plan says how much without a code, and is the plan with one', async ({ page }) => {
+test('without a code Vandaag shows no day plan and no count, only the way to practise', async ({
+  page,
+}) => {
   await signIn(page, 'Fenna');
-
-  // Zonder geoefend te hebben is er niets te herhalen, en dan staat er niets:
-  // een leeg plan aanprijzen is een lege doos op slot doen.
-  await expect(page.getByRole('region', { name: 'Vandaag herhalen' })).toHaveCount(0);
 
   // Eén ronde, en de standen een week terug, zodat er iets aan de beurt is.
   await oefenTafelVanEen(page);
   await zetStandenTerug(page);
 
   await page.goto('/');
-  const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  await expect(vandaag).toContainText(/Vandaag (komt|komen) er \d+ (vraag|vragen) terug\./);
-  await expect(vandaag.getByRole('button')).toHaveCount(0);
+  await expect(page.getByRole('region', { name: /^Ga verder met / })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Vandaag herhalen' })).toHaveCount(0);
+  await expect(page.locator('.tk-home')).not.toContainText(/vragen? terug/);
   // Geen slot en geen knop naar premium op Vandaag: een kind koopt niets
   // (R-11, ADR-250).
   await expect(page.locator('.tk-home')).not.toContainText(/premium/i);
-
-  // En het staat onder Nu doen, niet bovenaan: wie binnenkomt, ziet eerst waar
-  // hij kan oefenen (ADR-152, ADR-250).
-  const nu = await page.getByRole('region', { name: /^Ga verder met / }).boundingBox();
-  const regel = await vandaag.boundingBox();
-  expect(regel?.y ?? -1).toBeGreaterThan(nu?.y ?? Infinity);
 
   // En Premium staat in de kop, op elke pagina: sinds ADR-171 een bestemming
   // en sinds ADR-241 de ene knop in de kop die opvalt.

@@ -40,7 +40,7 @@ import { OefenLijst, type OefenRijData } from './OefenLijst';
 import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
 import { terugkomst, TerugKaart } from './TerugBlok';
 import { useVandaag, vormVoor, vrijeVorm, type Vandaag } from './useVandaag';
-import { HerhaalRegel, KlaarVoorVandaag, VandaagHerhalen } from './VandaagBlok';
+import { KlaarVoorVandaag, VandaagHerhalen } from './VandaagBlok';
 import { ScrollRij } from './ScrollRij';
 import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 
@@ -67,8 +67,9 @@ import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
  * 1200 staan ze onderaan; op een telefoon en een tablet niet, want daar zijn
  * de vakken één tik weg onder Oefenen.
  *
- * **Geen premium op Vandaag** (ADR-250). Een kind koopt niets (R-11): zonder
- * code staat er hoeveel er terugkomt, als feit, en geen slot en geen knop.
+ * **Geen premium op Vandaag** (ADR-250). Een kind koopt niets (R-11): geen
+ * slot en geen knop. En zonder code ook geen getal van wat er terugkomt
+ * (ADR-253): een getal zonder plek om het te oefenen roept alleen vragen op.
  *
  * **Op een telefoon één blok bovenaan, en lijsten in plaats van rijen**
  * (ADR-252). De begroeting en Nu doen zijn één koraal vlak met een witte kaart
@@ -447,12 +448,6 @@ export function HomeScreen({
             lijst={kleinScherm}
             onBegin={onBegin}
           />,
-        ),
-        blok(
-          'herhaal',
-          !actief && vandaag !== null && vandaag.plan.vragen > 0 ? (
-            <HerhaalRegel vragen={vandaag.plan.vragen} />
-          ) : null,
         ),
         blok(
           'vakken',
