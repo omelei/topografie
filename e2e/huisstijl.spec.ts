@@ -23,9 +23,7 @@ async function startRound(page: Page) {
 }
 
 /** Room, op elke maat (ADR-259; ADR-247 maakte het melk aan een bureau). */
-async function grondVoor(page: Page): Promise<string> {
-  return Promise.resolve('rgb(255, 243, 230)');
-}
+const ROOM = 'rgb(255, 243, 230)';
 
 test('stands on room and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
@@ -33,7 +31,7 @@ test('stands on room and sets its headings in Baloo 2', async ({ page }) => {
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   // Room, the logo's own, the ground since Kleur erin (ADR-239), op elke maat
   // (ADR-259).
-  expect(ground).toBe(await grondVoor(page));
+  expect(ground).toBe(ROOM);
 
   const heading = page.getByRole('heading', { name: /^Hoi / });
   await expect(heading).toBeVisible();
@@ -55,9 +53,7 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
   // Light like every other screen since ADR-112: the same ground.
   const ronde = page.locator('[data-thema="ronde"]');
   await expect(ronde).toBeVisible();
-  expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(
-    await grondVoor(page),
-  );
+  expect(await ronde.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(ROOM);
 
   const stop = await page.locator('.tk-stop').boundingBox();
   expect(stop?.height ?? 0, 'the stop in a round').toBeGreaterThanOrEqual(56);
