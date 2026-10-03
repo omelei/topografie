@@ -11,7 +11,13 @@ import {
   type KlokSet,
   type RoundRule,
 } from '@/game-core';
-import { KLOK_FOUTEN_ID, klokPool, loadKlokSet } from '@/content/loadKlok';
+import {
+  isDigitaleKlokSet,
+  KLOK_DIG_FOUTEN_ID,
+  KLOK_FOUTEN_ID,
+  klokPool,
+  loadKlokSet,
+} from '@/content/loadKlok';
 import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/useRoundCore';
 
 /**
@@ -32,7 +38,6 @@ import { useRoundCore, type RondeFase, type RondeKern } from '@/features/round/u
 export type KlokMode =
   | 'klok-meerkeuze'
   | 'klok-welke-klok'
-  | 'klok-digitaal'
   | 'klok-typen'
   | 'bliksemronde'
   | 'overleven'
@@ -50,7 +55,6 @@ export type KlokMode =
 export const KLOK_ROUND_RULE: Record<KlokMode, RoundRule> = {
   'klok-meerkeuze': { kind: 'fixed', aantal: 10 },
   'klok-welke-klok': { kind: 'fixed', aantal: 10 },
-  'klok-digitaal': { kind: 'fixed', aantal: 10 },
   'klok-typen': { kind: 'fixed', aantal: 10 },
   bliksemronde: { kind: 'tijd', seconden: 60 },
   overleven: { kind: 'levens', levens: 3 },
@@ -73,15 +77,15 @@ function isDiploma(mode: KlokMode): boolean {
  * reading speed rather than whether the face was read.
  */
 export function typesTheKlok(mode: KlokMode): boolean {
-  return mode !== 'klok-meerkeuze' && mode !== 'klok-welke-klok' && mode !== 'klok-digitaal';
+  return mode !== 'klok-meerkeuze' && mode !== 'klok-welke-klok';
 }
 
 /**
- * Of de klok digitaal is (ADR-247): vier cijfers in plaats van wijzers, en
- * om de vraag een tijd na twaalf uur, want 19:30 is ook half acht.
+ * Of de klok digitaal is (ADR-257): dat zegt de set, niet de spelvorm. Tot
+ * ADR-257 was de digitale klok een spelvorm (ADR-247).
  */
-export function isDigitaal(mode: KlokMode): boolean {
-  return mode === 'klok-digitaal';
+export function isDigitaal(setId: string): boolean {
+  return isDigitaleKlokSet(setId);
 }
 
 /**
@@ -182,7 +186,8 @@ export function useKlokRound(
       const alles = alleen ? alleenDeze(alleen, loaded.items, klokPool(setId)) : eigen;
       // "Oefen je fouten": only the faces with a mistake against them, read
       // from the boxes as the round starts (ADR-103).
-      const pool = setId === KLOK_FOUTEN_ID && !alleen ? metFouten(alles, states) : alles;
+      const fouten = setId === KLOK_FOUTEN_ID || setId === KLOK_DIG_FOUTEN_ID;
+      const pool = fouten && !alleen ? metFouten(alles, states) : alles;
 
       const picked = composeRound({
         items: pool,

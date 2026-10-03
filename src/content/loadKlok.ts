@@ -35,6 +35,36 @@ export const KLOK_MIX_ID = 'klok-mix';
 export const KLOK_FOUTEN_ID = 'klok-fouten';
 
 /**
+ * De digitale klok (ADR-257): dezelfde vier stappen, dezelfde tijden, maar in
+ * cijfers. Geen eigen bestanden: elke set is die van de wijzerklok met
+ * `klok-dig-` ervoor, in de set en in elk item. Eigen ids, want 19:30 lezen
+ * is iets anders leren dan een wijzer lezen, en een kind dat de wijzerklok
+ * kent heeft de digitale daarmee nog niet in zijn doosjes.
+ */
+export const KLOK_DIGITAAL_VOORVOEGSEL = 'klok-dig-';
+export const KLOK_DIG_MIX_ID = 'klok-dig-mix';
+export const KLOK_DIG_FOUTEN_ID = 'klok-dig-fouten';
+
+/** Of een set van de digitale klok is. */
+export function isDigitaleKlokSet(id: string): boolean {
+  return id.startsWith(KLOK_DIGITAAL_VOORVOEGSEL);
+}
+
+/** `klok-half` wordt `klok-dig-half`, `klok-07-30` wordt `klok-dig-07-30`. */
+function digitaalId(id: string): string {
+  return `${KLOK_DIGITAAL_VOORVOEGSEL}${id.slice('klok-'.length)}`;
+}
+
+function alsDigitaal(set: KlokSet): KlokSet {
+  return {
+    ...set,
+    id: digitaalId(set.id),
+    digitaal: true,
+    items: set.items.map((item) => ({ ...item, id: digitaalId(item.id) })),
+  };
+}
+
+/**
  * The four, in the order a child meets them: whole hours, half hours, quarters,
  * then the five-minute steps.
  *
@@ -43,6 +73,7 @@ export const KLOK_FOUTEN_ID = 'klok-fouten';
  */
 const VOLGORDE = ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf'];
 
+/** De vier stappen van de wijzerklok. */
 export function loadKlokSets(): KlokSet[] {
   const sets = Object.values(modules).map((module) => module.default);
   return VOLGORDE.map((id) => sets.find((set) => set.id === id)).filter(
@@ -50,27 +81,34 @@ export function loadKlokSets(): KlokSet[] {
   );
 }
 
+/** De vier stappen van de digitale klok (ADR-257). */
+export function loadDigitaleKlokSets(): KlokSet[] {
+  return loadKlokSets().map(alsDigitaal);
+}
+
 export function isKlokMix(id: string): boolean {
-  return id === KLOK_MIX_ID;
+  return id === KLOK_MIX_ID || id === KLOK_DIG_MIX_ID;
 }
 
 /** Everything on the face at once, under one name. */
-function klokMix(sets: readonly KlokSet[]): KlokSet {
+function klokMix(sets: readonly KlokSet[], id: string): KlokSet {
   return {
-    id: KLOK_MIX_ID,
+    id,
     // Null, because the items in it sit at four different steps. A mix that
     // claimed one of them would be claiming to be a set it is not.
     stap: null,
     niveau: 1,
     contentVersie: sets[0]?.contentVersie ?? '',
     items: sets.flatMap((set) => set.items),
+    ...(isDigitaleKlokSet(id) ? { digitaal: true } : {}),
   };
 }
 
 export function loadKlokSet(id: string): KlokSet | undefined {
-  const sets = loadKlokSets();
-  if (isKlokMix(id)) return klokMix(sets);
-  if (id === KLOK_FOUTEN_ID) return { ...klokMix(sets), id: KLOK_FOUTEN_ID };
+  const digitaal = isDigitaleKlokSet(id);
+  const sets = digitaal ? loadDigitaleKlokSets() : loadKlokSets();
+  if (isKlokMix(id)) return klokMix(sets, id);
+  if (id === KLOK_FOUTEN_ID || id === KLOK_DIG_FOUTEN_ID) return klokMix(sets, id);
   return sets.find((set) => set.id === id);
 }
 
@@ -81,7 +119,9 @@ export function loadKlokSet(id: string): KlokSet | undefined {
  * "hele uren" has to reach past those twelve. Unlike rekenen it reaches all the
  * way — there is no second kind of thing to stray into. A clock is a clock, and
  * a child who reaches for the stopwatch on it is one who can already read it.
+ * De digitale klok blijft bij de digitale (ADR-257).
  */
 export function klokPool(id: string): readonly KlokItem[] {
-  return loadKlokSet(isKlokMix(id) ? id : KLOK_MIX_ID)?.items ?? [];
+  const mix = isDigitaleKlokSet(id) ? KLOK_DIG_MIX_ID : KLOK_MIX_ID;
+  return loadKlokSet(mix)?.items ?? [];
 }

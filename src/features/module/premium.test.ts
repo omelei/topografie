@@ -96,6 +96,10 @@ describe('the map a page opens on', () => {
 
   it('is Spelling on Taal, whose row asks which part (ADR-118)', () => {
     expect(regiosVan('woorden')).toBe(TAAL_DELEN);
+    // Klok vraagt eerst welke klok, en opent op de wijzerklok (ADR-257).
+    expect(regiosVan('klok').map((regio) => regio.id)).toEqual(['analoog', 'digitaal']);
+    expect(regioVraag('klok')).toBe('klokdeel.title');
+    expect(eersteRegio('klok', regiosVan('klok'))).toBe('analoog');
     expect(TAAL_DELEN.map((deel) => deel.id)).toEqual(['spelling', 'werkwoorden', 'engels']);
     expect(eersteRegio('woorden', TAAL_DELEN)).toBe('spelling');
     expect(regioVraag('woorden')).toBe('deel.title');

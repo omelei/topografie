@@ -3,6 +3,7 @@ import {
   AfrikaIcon,
   AzieIcon,
   DeelIcon,
+  DigitaalIcon,
   EenTweeIcon,
   EilandIcon,
   EuropaIcon,
@@ -76,6 +77,9 @@ export const REGIO_ICON: Record<string, TileIcon> = {
   // Taal's parts, on the same row (ADR-118).
   spelling: GatIcon,
   werkwoorden: VormenIcon,
+  // De twee klokken (ADR-257): een wijzerplaat en een schermpje met cijfers.
+  analoog: UurIcon,
+  digitaal: DigitaalIcon,
 };
 
 /**
@@ -163,7 +167,9 @@ export function onderwerpIcon(id: string): TileIcon {
   // Every module's list of mistakes is the mistakes, whatever map it is on.
   if (id.endsWith('-fouten')) return WrongIcon;
   const vlag = /^vlag-.+-([a-z]+)$/.exec(id)?.[1];
-  return ONDERWERP_ICON[id] ?? (vlag ? VLAG_ONDERWERP_ICON[vlag] : undefined) ?? MixIcon;
+  // De digitale klok heeft dezelfde vier stappen, met hetzelfde teken (ADR-257).
+  const kaal = id.replace(/^digitaal-/, '');
+  return ONDERWERP_ICON[kaal] ?? (vlag ? VLAG_ONDERWERP_ICON[vlag] : undefined) ?? MixIcon;
 }
 
 export function regioIcon(id: string): TileIcon {

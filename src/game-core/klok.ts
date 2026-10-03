@@ -41,6 +41,12 @@ export interface KlokSet {
   readonly niveau: Niveau;
   readonly contentVersie: string;
   readonly items: readonly KlokItem[];
+  /**
+   * Of dit de digitale klok is (ADR-257): dezelfde tijden, in cijfers in
+   * plaats van met wijzers, en met eigen ids, want een digitale klok lezen is
+   * iets anders leren dan een wijzerklok.
+   */
+  readonly digitaal?: boolean;
 }
 
 export const MINUTEN_PER_UUR = 60;

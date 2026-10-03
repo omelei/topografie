@@ -444,3 +444,28 @@ test('the tables: choosing one, and a sum', async ({ page }, testInfo) => {
   await expect(page.getByPlaceholder('Antwoord')).toBeVisible(READY);
   await shoot(page, size, '11-som');
 });
+
+/**
+ * De klok met de rij "Welke klok?" (ADR-257): de pagina op de digitale klok, en
+ * Klok zoeken met vier digitale klokken als antwoord.
+ */
+test('the clock: the digital part, and four digital clocks to choose from', async ({
+  page,
+}, testInfo) => {
+  const size = testInfo.project.name;
+  await signIn(page, 'Lot');
+
+  await page.goto('/klokkijken/digitaal');
+  await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible(READY);
+  await shoot(page, size, '27-klok-digitaal');
+
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Kwartieren/ })
+    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Klok zoeken/ }).click();
+  await start(page);
+  await expect(page.getByRole('group', { name: 'Welke klok hoort hierbij?' })).toBeVisible(READY);
+  await shoot(page, size, '28-klok-digitaal-zoeken');
+});

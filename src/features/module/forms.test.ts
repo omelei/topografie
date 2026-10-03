@@ -102,7 +102,6 @@ describe('the ways of practising', () => {
     expect(KLOK_FORMS.map((form) => form.id)).toEqual([
       'klok-welke-klok',
       'klok-meerkeuze',
-      'klok-digitaal',
       'klok-typen',
       'bliksemronde',
       'overleven',

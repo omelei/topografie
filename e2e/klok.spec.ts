@@ -12,10 +12,15 @@ import { stap } from './stap';
  * actually reachable from step 2.
  */
 
-/** Step 1, step 2, start. The one way into a round, whatever was chosen. */
-async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp) {
+/**
+ * Welke klok, het onderwerp, hoe, start. The one way into a round, whatever
+ * was chosen. Zonder klok blijft het de wijzerklok, waar de pagina op opent.
+ */
+async function startKlok(page: Page, onderwerp: RegExp, hoe: RegExp, klok: RegExp | null = null) {
   await page.goto('/klokkijken');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
+
+  if (klok) await (await stap(page, /Welke klok/)).getByRole('button', { name: klok }).click();
 
   await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: onderwerp }).click();
   await (await stap(page, /Hoe wil je/)).getByRole('button', { name: hoe }).click();
@@ -26,8 +31,9 @@ test('the clock has a module page in the same shape as the other two', async ({ 
   await signIn(page, 'Sanne');
   await page.goto('/klokkijken');
 
-  // Four steps and a mix, one set each. No region row — a clock is not
-  // anywhere — and no chips, because no subject here holds more than one set.
+  // Four steps and a mix, one set each, and no chips, because no subject here
+  // holds more than one set. Geen kaart, maar wel een rij erboven: welke klok
+  // (ADR-257), en de pagina opent op de wijzerklok.
   for (const naam of ['Hele uren', 'Halve uren', 'Kwartieren', 'Vijf minuten', 'Klokmix']) {
     await expect(
       (await stap(page, /Kies een onderwerp/)).getByRole('button', {
@@ -36,6 +42,9 @@ test('the clock has a module page in the same shape as the other two', async ({ 
     ).toBeVisible();
   }
   await expect(page.getByRole('region', { name: 'Waar op de kaart?' })).toHaveCount(0);
+  const klokken = await stap(page, /Welke klok/);
+  await expect(klokken.getByRole('button', { name: /^Analoge klok/ })).toBeVisible();
+  await expect(klokken.getByRole('button', { name: /^Digitale klok/ })).toBeVisible();
 
   // Step 2 is five ways, and the two that read the face come before the one
   // that reads it backwards. The clock and the lives are off by default (K10),
@@ -58,7 +67,10 @@ test('the clock answers to the short word as well as its own', async ({ page }) 
   await page.goto('/klok');
   await expect(page.getByRole('heading', { level: 1, name: / oefenen$/ })).toBeVisible();
   // The tile, "Kwartieren. …", and not the klokdiploma "Kwartieren: …" (ADR-117).
-  await expect(page.getByRole('button', { name: /^Kwartieren\./ })).toBeVisible();
+  // Op een telefoon staat eerst "Welke klok?" open (ADR-257).
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Kwartieren\./ }),
+  ).toBeVisible();
 });
 
 test('a step of the clock has an address, and the page opens on it', async ({ page }) => {
@@ -89,14 +101,15 @@ test('reading a face: a clock on the stage and four times to choose from', async
 });
 
 /**
- * De digitale klok (ADR-247): cijfers op het scherm, en om de vraag na twaalf
- * uur, zodat 19:30 ook half acht is.
+ * De digitale klok (ADR-247, ADR-257): een deel van Klok en geen spelvorm. Bij
+ * meerkeuze cijfers op het scherm, en om de vraag na twaalf uur, zodat 19:30
+ * ook half acht is.
  */
 test('the digital clock: figures on the stage, the afternoon too, and four times', async ({
   page,
 }) => {
   await signIn(page, 'Jip');
-  await startKlok(page, /^Halve uren/, /^Digitale klok/);
+  await startKlok(page, /^Halve uren/, /^Meerkeuze/, /^Digitale klok/);
 
   const scherm = page.getByRole('img', { name: /^\d{2}:\d{2}$/ });
   await expect(scherm).toBeVisible();
@@ -111,6 +124,47 @@ test('the digital clock: figures on the stage, the afternoon too, and four times
   // De tweede vraag staat na twaalf uur, behalve om twaalf uur zelf.
   const tweede = Number((await scherm.getAttribute('aria-label'))?.slice(0, 2));
   expect(tweede === 12 || tweede > 12).toBe(true);
+});
+
+test('the digital clock is no longer a way of practising, but every way works on it', async ({
+  page,
+}) => {
+  await signIn(page, 'Guus');
+  await page.goto('/klokkijken');
+  await expect(
+    (await stap(page, /Hoe wil je/)).getByRole('button', { name: /^Digitale klok/ }),
+  ).toHaveCount(0);
+
+  // Klok zoeken: de tijd in woorden, en vier digitale klokken om uit te kiezen.
+  await startKlok(page, /^Kwartieren/, /^Klok zoeken/, /^Digitale klok/);
+  const klokken = page.getByRole('group', { name: 'Welke klok hoort hierbij?' });
+  await expect(klokken.getByRole('button')).toHaveCount(4);
+  await expect(klokken.locator('.tk-digitaal')).toHaveCount(4);
+  await expect(klokken.locator('.tk-klok')).toHaveCount(0);
+});
+
+test('typing on the digital clock: the time in words, written in figures', async ({ page }) => {
+  await signIn(page, 'Vos');
+  await startKlok(page, /^Hele uren/, /^Zelf typen/, /^Digitale klok/);
+
+  // De cijfers staan er niet: die schrijft het kind zelf.
+  await expect(page.getByText('Typ deze tijd in cijfers', { exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/uur$/);
+  await expect(page.getByRole('img', { name: /^\d{2}:\d{2}$/ })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Ik weet het niet' }).click();
+  await expect(page.getByRole('status')).toContainText(':00');
+});
+
+test('the digital clock has its own addresses', async ({ page }) => {
+  await signIn(page, 'Nina');
+  await page.goto('/klokkijken/digitaal-kwartieren');
+  await expect(
+    (await stap(page, /Welke klok/)).getByRole('button', { name: /^Digitale klok/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Kwartieren/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('the other direction: a time in words and four faces to point at', async ({ page }) => {

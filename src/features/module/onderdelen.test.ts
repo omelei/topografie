@@ -299,40 +299,63 @@ describe('what topography offers', () => {
  */
 describe('what the clock offers', () => {
   const vakken = onderwerpenVan('klok');
+  const op = (regio: string) => vakken.filter((vak) => vak.regio === regio);
 
-  it('offers the four steps a classroom teaches, and a mix of them', () => {
-    expect(vakken.map((vak) => vak.id)).toEqual([
+  it('offers the four steps a classroom teaches, and a mix of them, on both clocks', () => {
+    expect(op('analoog').map((vak) => vak.id)).toEqual([
       'hele-uren',
       'halve-uren',
       'kwartieren',
       'vijf-minuten',
       'klok-mix',
     ]);
+    // De digitale klok (ADR-257): dezelfde stappen onder het tweede deel.
+    expect(op('digitaal').map((vak) => vak.id)).toEqual([
+      'digitaal-hele-uren',
+      'digitaal-halve-uren',
+      'digitaal-kwartieren',
+      'digitaal-vijf-minuten',
+      'klok-dig-mix',
+    ]);
+    expect(vakken).toHaveLength(10);
   });
 
   it('gives every subject exactly one set, so there is nothing to choose under it', () => {
     for (const vak of vakken) {
       expect(vak.sets.length, vak.id).toBe(1);
       expect(vak.keuze, vak.id).toBeNull();
-      // No regions: a clock is not anywhere.
-      expect(vak.regio, vak.id).toBeNull();
+      expect(['analoog', 'digitaal'], vak.id).toContain(vak.regio);
     }
   });
 
   it('never puts more than six cards in front of a child at once', () => {
-    expect(vakken.length).toBeLessThanOrEqual(6);
+    expect(op('analoog').length).toBeLessThanOrEqual(6);
+    expect(op('digitaal').length).toBeLessThanOrEqual(6);
   });
 
   it('counts every face once over the four steps, and never the mix as well', () => {
     // The mix holds all hundred and forty-four; the four steps hold them
     // between them. A total that added both would tell a child there are two
-    // hundred and eighty-eight times on a clock.
-    const stappen = vakken.filter((vak) => vak.id !== 'klok-mix');
-    const faces = stappen.flatMap((vak) => vak.sets.flatMap((deel) => deel.items));
+    // hundred and eighty-eight times on a clock. Per klok, want de digitale
+    // klok heeft eigen ids (ADR-257).
+    for (const [regio, mix] of [
+      ['analoog', 'klok-mix'],
+      ['digitaal', 'klok-dig-mix'],
+    ] as const) {
+      const stappen = op(regio).filter((vak) => vak.id !== mix);
+      const faces = stappen.flatMap((vak) => vak.sets.flatMap((deel) => deel.items));
 
-    expect(faces).toHaveLength(144);
-    expect(new Set(faces.map((item) => item.id)).size).toBe(144);
-    expect(vakken.find((vak) => vak.id === 'klok-mix')?.sets[0]?.mix).toBe(true);
+      expect(faces).toHaveLength(144);
+      expect(new Set(faces.map((item) => item.id)).size).toBe(144);
+      expect(vakken.find((vak) => vak.id === mix)?.sets[0]?.mix).toBe(true);
+    }
+  });
+
+  it('keeps the digital faces apart from the hands, so each clock fills its own boxes', () => {
+    const ids = (regio: string) =>
+      new Set(op(regio).flatMap((vak) => vak.sets.flatMap((deel) => deel.items.map((i) => i.id))));
+    const analoog = ids('analoog');
+    expect([...ids('digitaal')].some((id) => analoog.has(id))).toBe(false);
   });
 
   it('leaves the mix out of what progress is counted over', () => {
@@ -342,9 +365,14 @@ describe('what the clock offers', () => {
       'klok-half',
       'klok-kwart',
       'klok-vijf',
+      'klok-dig-heel',
+      'klok-dig-half',
+      'klok-dig-kwart',
+      'klok-dig-vijf',
     ]);
 
     // And it is startable all the same, because it has an address and a tile.
     expect(startbareOnderdelen().map((deel) => deel.setId)).toContain('klok-mix');
+    expect(startbareOnderdelen().map((deel) => deel.setId)).toContain('klok-dig-mix');
   });
 });

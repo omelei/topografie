@@ -16,15 +16,16 @@ import { onderdelen, startbareOnderdelen } from '@/features/module/onderdelen';
  * Deze toets is er omdat dat precies is wat er gebeurde.
  */
 describe('welke diploma’s de kast kan tonen', () => {
-  it('kent ze alle tachtig', () => {
+  it('kent ze alle vierentachtig', () => {
     // Drieëndertig tot ADR-168; sindsdien heeft elk onderwerp dat een eigen set
     // is er een. Het getal staat hier hardop, zodat een set die stilletjes uit
     // de lijst valt niet onopgemerkt blijft.
     // Elf erbij met Engels (ADR-217), en de vlaggen van de wereld (ADR-247).
-    expect(doelwitten(startbareOnderdelen(), true)).toHaveLength(80);
+    // Vier erbij met de digitale klok (ADR-257).
+    expect(doelwitten(startbareOnderdelen(), true)).toHaveLength(84);
   });
 
-  it('per vak: twaalf tafels en twintig andere sommen, acht vlaggensets, vier klokstappen, twaalf kaarten en vierentwintig sets Taal', () => {
+  it('per vak: twaalf tafels en twintig andere sommen, acht vlaggensets, acht klokstappen, twaalf kaarten en vierentwintig sets Taal', () => {
     const perVak = new Map<string, number>();
     for (const doelwit of doelwitten(startbareOnderdelen(), true)) {
       perVak.set(doelwit.deel.moduleId, (perVak.get(doelwit.deel.moduleId) ?? 0) + 1);
@@ -32,7 +33,7 @@ describe('welke diploma’s de kast kan tonen', () => {
     expect(Object.fromEntries(perVak)).toEqual({
       tafels: 32,
       vlaggen: 8,
-      klok: 4,
+      klok: 8,
       topo: 12,
       woorden: 24,
     });

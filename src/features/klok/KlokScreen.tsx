@@ -131,25 +131,30 @@ export function KlokScreen({
   const typing = typesTheKlok(mode);
   const andersom = wijstDeKlokAan(mode);
   const woorden = klokWoorden(tijd);
-  // De digitale klok (ADR-247): om de vraag na twaalf uur, zodat een kind ook
-  // 19:30 leert lezen als half acht.
-  const digitaal = isDigitaal(mode);
-  const middag = digitaal && state.index % 2 === 1;
+  // De digitale klok (ADR-247, ADR-257): dat zegt de set. Bij kiezen en zoeken
+  // om de vraag na twaalf uur, zodat een kind ook 19:30 leert lezen als half
+  // acht. Bij typen staat de tijd in woorden en schrijft het kind hem in
+  // cijfers: cijfers overtypen die al op het scherm staan, toetst niets.
+  const digitaal = isDigitaal(setId);
+  const inWoorden = andersom || (digitaal && typing);
+  const middag = digitaal && !typing && state.index % 2 === 1;
   // De tijd voluit, in de cijfers die op het scherm stonden.
-  const voluit = digitaal
+  const voluit = middag
     ? t('klok.beide', { woorden, cijfers: digitaleTijd(tijd, middag) })
     : klokVoluit(tijd);
 
   const instruction = andersom
     ? t('klok.whichQuestion')
     : typing
-      ? t('klok.typeQuestion')
+      ? digitaal
+        ? t('klok.digitaalTypeQuestion')
+        : t('klok.typeQuestion')
       : digitaal
         ? t('klok.digitaalQuestion')
         : t('klok.chooseQuestion');
   // The time out loud only where the time is the question. See the note above.
-  const spoken = andersom
-    ? `${woorden}. ${t('klok.whichQuestion')}`
+  const spoken = inWoorden
+    ? `${woorden}. ${instruction}`
     : digitaal
       ? t('klok.digitaalPrompt')
       : t('klok.lookPrompt');
@@ -257,7 +262,7 @@ export function KlokScreen({
                     On the mode that asks the other way round, the heading *is*
                     the question: the time, in words, and nothing on the stage
                     but the four faces to choose between. */}
-                <h1 className="tk-display text-vraag">{andersom ? woorden : t('klok.prompt')}</h1>
+                <h1 className="tk-display text-vraag">{inWoorden ? woorden : t('klok.prompt')}</h1>
               </div>
               {typing ? <KlokField key={state.index} onSubmit={submit} /> : null}
               {/* Four times in words, on the two-of-three ways that show a
@@ -299,12 +304,18 @@ export function KlokScreen({
                   aria-label={klokWoorden(optie)}
                   onClick={() => choose(optie)}
                 >
-                  <KlokFace item={optie} />
+                  {digitaal ? (
+                    <DigitaleKlok tijd={optie} middag={middag} />
+                  ) : (
+                    <KlokFace item={optie} />
+                  )}
                 </button>
               ))}
             </div>
           ) : digitaal ? (
-            <DigitaleKlok tijd={tijd} middag={middag} />
+            // Bij typen een lege klok tot het antwoord er is: de tijd staat in
+            // woorden op de kaart, en de cijfers zijn wat het kind schrijft.
+            <DigitaleKlok tijd={tijd} middag={middag} leeg={typing && !revealed} />
           ) : (
             <KlokFace item={tijd} />
           )}

@@ -34,7 +34,8 @@ const GRATIS_VORMEN: ReadonlySet<ModeId> = new Set<ModeId>([
   'meerkeuze',
   'som-meerkeuze',
   'klok-meerkeuze',
-  // De digitale klok kiest ook uit vier (ADR-247).
+  // Vervallen als spelvorm (ADR-257), maar een oude ronde op Vandaag mag er
+  // geen slot door krijgen.
   'klok-digitaal',
   'vlag-meerkeuze',
   'taal-letters',

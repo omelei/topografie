@@ -14700,3 +14700,47 @@ genoteerd: de pagina belooft een maandabonnement dat de kassa nog niet levert,
 en "−50%" is een korting op een prijs die nog niet te betalen is (en 49,8%
 precies). Zodra betalen per maand er is, vervalt dit; tot die tijd is het een
 punt op de roadmap.
+
+## ADR-257 — De digitale klok is een deel van Klok, geen spelvorm
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar: "digitale
+klok wordt nu als spelvorm getoond, terwijl ik zou verwachten dat ik eerst kan
+kiezen tussen digitale klok en analoge klok en vervolgens pas een onderwerp
+kies." Met ook typen, de bliksemronde, overleven en een diploma op de digitale
+klok. Wijzigt ADR-247 (de digitale klok als spelvorm) en ADR-117 (vier
+klokdiploma's).
+
+**Aanleiding.** Analoog of digitaal gaat over de klok, niet over hoe je oefent.
+Als spelvorm kon de digitale klok alleen meerkeuze zijn: er was geen digitaal
+zoeken, typen, bliksemronde of diploma, en het klokdiploma was altijd analoog.
+
+**Besluit.** Klok krijgt de rij die Topografie en Taal al hebben (ADR-083,
+ADR-118): eerst "Welke klok? Analoge klok · Digitale klok", dan het onderwerp,
+dan de spelvorm. De pagina opent op de analoge klok.
+
+- **Eigen sets, afgeleid.** De digitale klok heeft dezelfde vier stappen en een
+  mix, met `klok-dig-` voor de set en voor elk item (`klok-dig-07-30`). Geen
+  eigen bestanden: `loadKlok` leidt ze af van de analoge. Eigen ids, want 19:30
+  lezen is iets anders leren dan een wijzer lezen; een kind dat de wijzerklok
+  kent, heeft de digitale daarmee nog niet in zijn doosjes.
+- **Wat elke spelvorm op de digitale klok doet:**
+  - Klok zoeken: de tijd in woorden, en vier digitale klokken om uit te kiezen.
+  - Meerkeuze: de cijfers op het scherm, om de vraag na twaalf uur, en de tijd
+    in woorden kiezen uit vier. Dit is wat de spelvorm van ADR-247 deed.
+  - Zelf typen, de bliksemronde, overleven en het diploma: de tijd in woorden,
+    en het kind schrijft hem in cijfers. Cijfers overtypen die al op het
+    scherm staan, zou niets toetsen.
+- **Vier digitale klokdiploma's**, per stap en met dezelfde drempel: 84
+  diploma's in plaats van 80. De premiumtabel en de kassa zeggen 84. Op de
+  vakpagina staan de vier van de gekozen klok, op Jij alle acht.
+- **Adressen:** `/klokkijken/digitaal` opent op het deel,
+  `/klokkijken/digitaal-halve-uren` op het onderwerp, zoals `/taal/werkwoorden`.
+- **Werkblad:** op de digitale klok de tijd in woorden, in cijfers op te
+  schrijven, in plaats van wijzerplaten.
+- **De oude spelvorm** `klok-digitaal` blijft als id bestaan, met zijn naam en
+  gratis, omdat oude rondes in de geschiedenis van kinderen hem dragen. Hij is
+  nergens meer te kiezen.
+
+**Gevolg.** Op een telefoon staat eerst "Welke klok?" open: één keuze meer
+voordat een kind een onderwerp ziet. Dat is de prijs van de juiste volgorde,
+en dezelfde die Topografie en Taal al betalen.

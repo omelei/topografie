@@ -219,8 +219,20 @@ export function werelddeelVanDiploma(id: string): DiplomaWerelddeel | null {
  * The klokdiploma (ADR-117): one per step of the clock, in the order a
  * classroom teaches them. Not the mix, which is every step at once, and not a
  * child's own mistakes.
+ *
+ * Sinds ADR-257 ook op de digitale klok, per stap en in dezelfde volgorde: de
+ * wijzerklok eerst, want die leert een kind eerst.
  */
-export const KLOK_DIPLOMA_SETS = ['klok-heel', 'klok-half', 'klok-kwart', 'klok-vijf'] as const;
+export const KLOK_DIPLOMA_SETS = [
+  'klok-heel',
+  'klok-half',
+  'klok-kwart',
+  'klok-vijf',
+  'klok-dig-heel',
+  'klok-dig-half',
+  'klok-dig-kwart',
+  'klok-dig-vijf',
+] as const;
 
 export type KlokDiplomaSet = (typeof KLOK_DIPLOMA_SETS)[number];
 

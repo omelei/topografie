@@ -51,6 +51,20 @@ test('four klokdiploma’s, and one press chooses a step and the diploma', async
   ).toHaveAttribute('aria-pressed', 'true');
   // A diploma is its own length.
   await expect(page.getByRole('region', { name: 'Hoeveel vragen?' })).toHaveCount(0);
+
+  // En vier van de digitale klok, op het deel van die klok (ADR-257).
+  await page.goto('/klokkijken/digitaal');
+  const digitaal = await wand(page, 'Jouw klokdiploma’s');
+  await expect(digitaal.getByRole('button')).toHaveCount(4);
+  await digitaal
+    .getByRole('button', { name: 'Kwartieren, digitaal: nog geen klokdiploma' })
+    .click();
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Kwartieren/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
+  await expect(
+    (await stap(page, /Welke klok/)).getByRole('button', { name: /^Digitale klok/ }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('a topodiploma is sat on one map, says nothing until the end, and hangs on Jij', async ({
@@ -122,7 +136,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await kast.getByRole('button', { name: /^Topo / }).click();
   await expect(kast.getByRole('region', { name: 'Topo' }).locator('.tk-diploma')).toHaveCount(12);
   await kast.getByRole('button', { name: /^Klok / }).click();
-  await expect(kast.getByRole('region', { name: 'Klok' }).locator('.tk-diploma')).toHaveCount(4);
+  // Vier analoge en vier digitale (ADR-257).
+  await expect(kast.getByRole('region', { name: 'Klok' }).locator('.tk-diploma')).toHaveCount(8);
 });
 
 /**

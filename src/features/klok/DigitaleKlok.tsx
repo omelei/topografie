@@ -12,11 +12,22 @@ import { digitaleTijd } from './klokTaal';
 export function DigitaleKlok({
   tijd,
   middag,
+  leeg = false,
 }: {
   readonly tijd: KlokItem;
   readonly middag: boolean;
+  /** Zonder cijfers, als het kind ze zelf schrijft (ADR-257). */
+  readonly leeg?: boolean;
 }) {
   const tekst = digitaleTijd(tijd, middag);
+
+  if (leeg) {
+    return (
+      <div className="tk-digitaal" aria-hidden="true">
+        <span>--:--</span>
+      </div>
+    );
+  }
 
   return (
     <div className="tk-digitaal" role="img" aria-label={tekst}>

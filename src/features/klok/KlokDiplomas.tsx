@@ -3,6 +3,7 @@ import { KLOK_DIPLOMA_SETS, type KlokDiplomaSet } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
 import { loadKlokDiplomas } from '@/store/rewardStore';
 import { DiplomaRaster } from '@/features/badges/DiplomaRaster';
+import { isDigitaleKlokSet } from '@/content/loadKlok';
 import { PremiumLabel } from '@/features/module/PremiumLabel';
 
 /**
@@ -19,6 +20,7 @@ export function KlokDiplomas({
   onStand,
   alleenBehaald = false,
   stilAlsLeeg = false,
+  deel,
 }: {
   /** Where pressing a diploma chooses its step. Absent where the wall is only shown. */
   readonly onKies?: ((setId: KlokDiplomaSet) => void) | undefined;
@@ -31,16 +33,28 @@ export function KlokDiplomas({
   readonly alleenBehaald?: boolean;
   /** Niets tonen zolang er niets gehaald is (ADR-158). */
   readonly stilAlsLeeg?: boolean;
+  /**
+   * Alleen de diploma's van deze klok (ADR-257): op de vakpagina die van de
+   * klok die gekozen is. Zonder deel, zoals op Jij, allemaal.
+   */
+  readonly deel?: 'analoog' | 'digitaal' | undefined;
 }) {
-  const [behaald, setBehaald] = useState<ReadonlySet<KlokDiplomaSet> | null>(null);
+  const [alleBehaald, setBehaald] = useState<ReadonlySet<KlokDiplomaSet> | null>(null);
+  const sets = KLOK_DIPLOMA_SETS.filter(
+    (set) => deel === undefined || isDigitaleKlokSet(set) === (deel === 'digitaal'),
+  );
+  const behaald =
+    alleBehaald === null ? null : new Set([...alleBehaald].filter((set) => sets.includes(set)));
 
   useEffect(() => {
     void loadKlokDiplomas().then(setBehaald);
   }, []);
 
+  const aantal = behaald?.size ?? null;
+  const totaal = sets.length;
   useEffect(() => {
-    if (behaald !== null) onStand?.(behaald.size, KLOK_DIPLOMA_SETS.length);
-  }, [behaald, onStand]);
+    if (aantal !== null) onStand?.(aantal, totaal);
+  }, [aantal, totaal, onStand]);
 
   // Ook zonder code getekend (ADR-192): de ringen zijn te zien, halen kan met
   // premium. Het label in de kop zegt dat, en de toets vraagt om de code.
@@ -58,16 +72,13 @@ export function KlokDiplomas({
         <h2>{t('klok.diplomasTitle')}</h2>
         <PremiumLabel hoorbaar />
         <span className="tk-sectie-meta">
-          {t('klok.diplomasCount', { aantal: behaald.size, totaal: KLOK_DIPLOMA_SETS.length })}
+          {t('klok.diplomasCount', { aantal: behaald.size, totaal: sets.length })}
         </span>
       </div>
 
       <DiplomaRaster
         module="klok"
-        vakken={(alleenBehaald
-          ? KLOK_DIPLOMA_SETS.filter((id) => behaald.has(id))
-          : KLOK_DIPLOMA_SETS
-        ).map((set) => {
+        vakken={(alleenBehaald ? sets.filter((id) => behaald.has(id)) : sets).map((set) => {
           const stap = t(`set.${set}` as TranslationKey);
           const gehaald = behaald.has(set);
 

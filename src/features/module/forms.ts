@@ -2,7 +2,6 @@ import type { ComponentType } from 'react';
 import {
   BoltIcon,
   ChoiceIcon,
-  DigitaalIcon,
   DiplomaIcon,
   ExploreIcon,
   KeyboardIcon,
@@ -317,17 +316,6 @@ export const KLOK_FORMS: readonly PracticeForm[] = [
     reason: 'way.klok-meerkeuze',
     icon: ChoiceIcon,
     rule: KLOK_ROUND_RULE['klok-meerkeuze'],
-    seconds: 10,
-  },
-  {
-    // De digitale klok (ADR-247), na kiezen en voor typen: ook hier kies je de
-    // tijd uit vier, maar je leest cijfers in plaats van wijzers. Om de vraag
-    // is het na twaalf uur, want dat is wat een digitale klok anders maakt.
-    id: 'klok-digitaal',
-    name: 'mode.klok-digitaal',
-    reason: 'way.klok-digitaal',
-    icon: DigitaalIcon,
-    rule: KLOK_ROUND_RULE['klok-digitaal'],
     seconds: 10,
   },
   {
