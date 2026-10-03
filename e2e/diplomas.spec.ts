@@ -136,7 +136,8 @@ test('a topodiploma is sat on one map, says nothing until the end, and hangs on 
   await kast.getByRole('button', { name: /^Topo / }).click();
   await expect(kast.getByRole('region', { name: 'Topo' }).locator('.tk-diploma')).toHaveCount(12);
   await kast.getByRole('button', { name: /^Klok / }).click();
-  await expect(kast.getByRole('region', { name: 'Klok' }).locator('.tk-diploma')).toHaveCount(4);
+  // Vier analoge en vier digitale (ADR-257).
+  await expect(kast.getByRole('region', { name: 'Klok' }).locator('.tk-diploma')).toHaveCount(8);
 });
 
 /**
