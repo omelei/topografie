@@ -14554,6 +14554,57 @@ vandaag".
 wat aan de beurt is eerst (`composeRound`). Alleen het getal is weg.
 `HerhaalRegel`, zijn stijl en de twee teksten zijn verwijderd.
 
+## ADR-254 — Het ontwerp van Vandaag op een telefoon op elke pagina en elke maat
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar: "het
+design op de vandaag pagina op mobiel vind ik het beste; voer dit door op alle
+pagina's op desktop, tablet en mobiel. Verander geen functionaliteit." Wijzigt
+ADR-252 (alleen onder 768) en de vorm van ADR-240, ADR-241 en ADR-242.
+
+**Aanleiding.** Sinds ADR-252 had Vandaag op een telefoon een eigen ontwerp:
+één koraal blok met Nu doen als witte kaart erin, en lijsten in één witte kaart.
+Vanaf 768 stond er het oude: een los welkomstvlak, een kaart Nu doen met een
+rand in de vakkleur, rijen die opzij doorliepen en tegels voor wat terugkomt.
+De andere pagina's begonnen met een losse kop op de grond, de vakken waren
+tegels met een rand en een onderkant in hun kleur, en de vakpagina had vanaf
+768 een vlak in de diepe vakkleur en gekleurde tegels.
+
+**Besluit.** Eén ontwerp, dat van Vandaag op een telefoon, op elke maat.
+
+- **Vandaag** tekent op elke maat wat het op een telefoon tekende: het koraal
+  blok met Nu doen erin, en Verder oefenen, Past bij groep, Hier begin je mee
+  en Vandaag herhalen als lijsten van drie rijen met "Nog {n} tonen". De rijen
+  die opzij doorliepen (`ScrollRij`) en de tegels van Vandaag herhalen zijn
+  weg, met hun teksten. "Kies een vak" en "Zo werkt leer.nu" staan nog steeds
+  alleen aan een bureau (ADR-251).
+- **De kop van een pagina** is het koraal blok van Vandaag (`Paginakop`):
+  de kop, één regel en Denker. Op Oefenen, Jij, de ouderpagina, Voor ouders,
+  de privacyverklaring en de pagina's van een categorie of een vak dat nog
+  komt. De premiumpagina en `/scholen` openen al met een koraal etalage en
+  houden die.
+- **De vakken** zijn overal de lijst van Vandaag: één witte kaart, rijen met
+  plaat, naam, regel en een pijl in de tint van het vak (`VakTegels`). Op
+  Oefenen, onder "Kies een vak" en op Voor ouders.
+- **De vakpagina** heeft vanaf 768 de kop als witte kaart met de plaat, en de
+  chips en tegels van een telefoon: neutraal, de kleur van het vak alleen voor
+  wat gekozen is, een ster met één legenda voor premium, een korte regel onder
+  elke tegel, het diploma als laatste tegel in zon, en de tafels als chips.
+  Elke stap is een witte kaart zoals de open stap op een telefoon, met het
+  nummer in inkt; de startbalk is een wit blad.
+
+**Niet gedaan, en waarom.** De accordeon van de vakpagina blijft op een
+telefoon. Vanaf 768 staan de stappen onder elkaar zoals ze stonden, met
+Nederland voorgekozen (ADR-111): de accordeon verandert wat er gekozen is en
+wat een druk doet, en de eigenaar vroeg om geen functionaliteit te
+veranderen. De schermen van een ronde en "Ronde klaar" houden hun vorm: dat is
+geen pagina om te kiezen, en het ontwerp van Vandaag zegt er niets over.
+
+**Gevolgen.** `useSmallScreen` beslist alleen nog over gedrag: de accordeon en
+wat er voorgekozen is. De e2e-tests van Vandaag gaan op elke maat uit van de
+lijsten. De CSS van de oude kaarten, tegels en rijen (`tk-kaart`,
+`tk-vaktegel`, `tk-vakvlak`, `tk-herhaaltegel`, `tk-scrollrij`, `tk-tafel`) wordt niet meer
+getekend en kan in een eigen PR weg.
+
 ## Deferred with accounts and commerce (ADR-014)
 
 Recorded in full in the 2026-09-05 revision history; summarised here because

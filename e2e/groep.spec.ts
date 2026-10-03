@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn, weetGroepNiet } from './naam';
-import { opEenTelefoon, stap } from './stap';
+import { stap } from './stap';
 
 /**
  * De groep van een kind (ADR-151): gevraagd na de naam, te wijzigen op Jij
@@ -102,13 +102,13 @@ async function zaaiGelijkWachten(page: Page) {
 /** Staan de provincies in Vandaag boven de hele uren? */
 async function provinciesEerst(page: Page): Promise<boolean> {
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
-  // Op een telefoon is de eerste ronde de kaart bovenaan, en staat de rest in
-  // "Daarna herhalen" (ADR-252).
+  // De eerste ronde is de kaart bovenaan, en de rest staat in "Daarna
+  // herhalen" (ADR-252, op elke maat sinds ADR-254).
   const daarna = page.getByRole('region', { name: 'Daarna herhalen' });
-  const lees = async () =>
-    opEenTelefoon(page)
-      ? [await vandaag.innerText(), ...(await daarna.getByRole('button').allTextContents())]
-      : vandaag.getByRole('button').allTextContents();
+  const lees = async () => [
+    await vandaag.innerText(),
+    ...(await daarna.getByRole('button').allTextContents()),
+  ];
   await expect(vandaag).toBeVisible();
   await expect
     .poll(async () => (await lees()).some((tekst) => tekst.includes('Hele uren')))

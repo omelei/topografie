@@ -32,6 +32,7 @@ import {
   type Schakelaar,
 } from './settings';
 import { KlankInstelling } from './KlankInstelling';
+import { Paginakop } from '@/features/shell/Paginakop';
 
 /**
  * K10, "Jij": the child's own page (ADR-112), en sinds ADR-171 ook de pagina
@@ -89,21 +90,16 @@ export function ProfileScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        {/* De kop als de etalage van premium (ADR-150). De zin eronder zegt
-            wie er oefent en wat er op de pagina staat, in die volgorde
-            (ADR-172). */}
-        <header className="tk-etalage tk-etalage-vormen">
-          {/* De vormen van het welkomstvlak, stil en versiering (ADR-239). */}
-          <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
-          <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
-          <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
-          <h1 className="tk-etalage-kop">{t('you.title')}</h1>
-          <p className="tk-etalage-tekst text-lopend">
-            {naamloos
+        {/* De kop van Vandaag (ADR-254). De zin eronder zegt wie er oefent en
+            wat er op de pagina staat, in die volgorde (ADR-172). */}
+        <Paginakop
+          kop={t('you.title')}
+          regel={
+            naamloos
               ? t(premium ? 'you.introZonderNaam' : 'you.introZonderNaamZonderCode')
-              : t(premium ? 'you.intro' : 'you.introZonderCode', { naam: profile.naam })}
-          </p>
-        </header>
+              : t(premium ? 'you.intro' : 'you.introZonderCode', { naam: profile.naam })
+          }
+        />
 
         {/* Wie je bent, bovenaan (ADR-177): je avatar, je naam, je groep en de
             schakelaars. Het stond onderaan sinds ADR-172, met het argument dat

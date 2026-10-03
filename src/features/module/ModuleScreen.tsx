@@ -63,7 +63,6 @@ import {
   type PracticeForm,
 } from './forms';
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
-import { PremiumLabel } from './PremiumLabel';
 import { useSmallScreen } from '@/features/shell/useSmallScreen';
 import {
   Blad,
@@ -642,11 +641,13 @@ export function ModuleScreen({
     </span>
   );
 
-  // Een premiumtegel op een telefoon: een ster in plaats van het woord, en
-  // niets voor wie premium al heeft.
-  const premiumTeken = (premium: boolean) =>
-    !premium ? null : kleinScherm ? actief ? null : <PremiumSter /> : <PremiumLabel />;
-  // De korte regel onder een tegel op een telefoon.
+  // Een premiumtegel: een ster in plaats van het woord, en niets voor wie
+  // premium al heeft (ADR-252, op elke maat sinds ADR-254).
+  const premiumTeken = (premium: boolean) => {
+    if (!premium || actief) return null;
+    return <PremiumSter />;
+  };
+  // De korte regel onder een tegel.
   const tegelRegel = (regel: string | null) =>
     regel === null || regel === '' ? null : (
       <span className="tk-tegel-regel" aria-hidden="true">
@@ -754,13 +755,7 @@ export function ModuleScreen({
             </span>
             <span className="min-w-0">
               {t(vak.naam)}
-              {kleinScherm ? (
-                tegelRegel(buitenGroep ?? (vak.uitleg === null ? null : t(vak.uitleg)))
-              ) : buitenGroep !== null ? (
-                <span className="tk-hulp block" aria-hidden="true">
-                  {buitenGroep}
-                </span>
-              ) : null}
+              {tegelRegel(buitenGroep ?? (vak.uitleg === null ? null : t(vak.uitleg)))}
             </span>
             {premiumTeken(premium)}
             {open ? vink : null}
@@ -770,30 +765,10 @@ export function ModuleScreen({
     </div>
   );
 
-  // Op een telefoon is ook het toetsenbord van tafels een rij chips: twee
-  // vormen om te kiezen, en niet drie (ADR-252).
+  // Ook het toetsenbord van tafels is een rij chips: twee vormen om te kiezen,
+  // en niet drie (ADR-252, op elke maat sinds ADR-254).
   const keuzeKnoppen =
-    onderwerp === null ? null : isKeypad(onderwerp) && !kleinScherm ? (
-      <div className="tk-tafels">
-        {onderwerp.sets.map((deel) => (
-          <button
-            key={deel.setId}
-            type="button"
-            className="tk-tafel"
-            // The full name, because "7" is not a sentence: this is the
-            // one control whose visible label is shorter than it means.
-            aria-label={naamVan(deel)}
-            aria-pressed={deel.setId === chosen?.setId}
-            onClick={() => {
-              onSet(deel.setId);
-              verder(hoeSectie);
-            }}
-          >
-            <span aria-hidden="true">{deel.kortNaam ?? naamVan(deel)}</span>
-          </button>
-        ))}
-      </div>
-    ) : (
+    onderwerp === null ? null : (
       <div className="tk-keuzes">
         {onderwerp.sets.map((deel) => (
           <button
@@ -813,9 +788,9 @@ export function ModuleScreen({
       </div>
     );
 
-  // Het diploma, altijd als laatste en altijd uitgelicht (ADR-168). Vanaf 768
-  // onder het raster, op een telefoon als laatste tegel erin, over de volle
-  // breedte.
+  // Het diploma, altijd als laatste en altijd uitgelicht (ADR-168): de laatste
+  // tegel in het raster, over de volle breedte (ADR-252, op elke maat sinds
+  // ADR-254).
   const diplomaTegel = diplomaVorm ? (
     <button
       type="button"
@@ -845,7 +820,7 @@ export function ModuleScreen({
       </span>
       <span className="min-w-0">
         {t(diplomaVorm.name)}
-        <span className={kleinScherm ? 'tk-tegel-regel' : 'tk-hulp block'} aria-hidden="true">
+        <span className="tk-tegel-regel" aria-hidden="true">
           {diplomaReden}
         </span>
       </span>
@@ -883,7 +858,7 @@ export function ModuleScreen({
             </span>
             <span className="min-w-0">
               {t(candidate.name)}
-              {kleinScherm ? tegelRegel(kortVan(t(candidate.reason))) : null}
+              {tegelRegel(kortVan(t(candidate.reason)))}
             </span>
             {premiumTeken(premium)}
             {gekozenVorm ? vink : null}
@@ -928,9 +903,7 @@ export function ModuleScreen({
           </span>
           <span className="min-w-0">
             {t('choose.fouten')}
-            {kleinScherm && actief
-              ? tegelRegel(t('choose.foutenWhy', { aantal: fouteIds.length }))
-              : null}
+            {actief ? tegelRegel(t('choose.foutenWhy', { aantal: fouteIds.length })) : null}
           </span>
           {alsFouten ? vink : null}
         </button>
@@ -971,18 +944,16 @@ export function ModuleScreen({
           </span>
           <span className="min-w-0">
             {t('choose.testMode')}
-            {kleinScherm
-              ? tegelRegel(
-                  kortVan(t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')),
-                )
-              : null}
+            {tegelRegel(
+              kortVan(t(toetsVorm.alleenToets ? toetsVorm.reason : 'choose.testModeWhy')),
+            )}
           </span>
           {premiumTeken(true)}
           {alsToets ? vink : null}
         </button>
       ) : null}
 
-      {kleinScherm ? diplomaTegel : null}
+      {diplomaTegel}
     </div>
   );
 
@@ -1114,12 +1085,24 @@ export function ModuleScreen({
       <p className="tk-hulp">{terugZin(chosen.items, states, now)}</p>
     ) : null;
 
+  // De ster op een premiumtegel heeft één legenda onder het raster, niet voor
+  // wie premium heeft (ADR-252).
+  const premiumWat = onderwerpen.some((vak) => isPremiumOnderwerp(vak.id));
+  const premiumHoe =
+    toetsVorm !== null ||
+    gewoneTegels.some((vorm) => isPremiumVorm(vorm.id)) ||
+    (diplomaVorm !== null && isPremiumVorm(diplomaVorm.id));
+  const legendaWat = !actief && premiumWat ? <PremiumLegenda /> : null;
+  const legendaHoe = !actief && premiumHoe ? <PremiumLegenda /> : null;
+
   if (kleinScherm) {
     return mobiel();
   }
 
+  // Vanaf 768 dezelfde kop, chips en tegels als op een telefoon (ADR-254), met
+  // de stappen onder elkaar in plaats van een accordeon.
   return (
-    <div className="tk-page" data-module={module.id}>
+    <div className="tk-page tk-kiespagina" data-module={module.id}>
       {/* What is chosen here wears the module's colour (ADR-112). The child's
           own column beside it does not: it is about the child, not the module. */}
       <div className="tk-page-main" data-accent="module">
@@ -1127,36 +1110,16 @@ export function ModuleScreen({
           {/* Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat
             boven de kop (ADR-241). */}
           {terugKnop}
-          {/* Het vlak waar de pagina van een vak mee begint (Kleurblokken,
-            ADR-238): de vorm van het welkomstvlak op Vandaag, in de diepe
-            kleur van het vak met witte woorden. De vormen zijn versiering. */}
-          <div className="tk-etalage tk-welkom tk-vakvlak">
-            <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
-            <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
-            <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
-            <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
-            <div className="tk-welkom-tekst">
-              {/* Which module this is, as a badge in its own tint. On a phone and
-                a tablet the side bar is not drawn; here it is the page saying
-                it about itself. */}
-              <p className="tk-modulebadge">
-                <ModuleIcon size={16} />
-                {t(module.name)}
-              </p>
-
-              {/* Het vak en wat je hier doet: "Topografie oefenen", met of
-                zonder naam, en ook als er een onderwerp gekozen is (ADR-247).
-                Het was "Wat wil je oefenen, Fem?", en zonder naam de naam van
-                het onderwerp (ADR-245), die bij elke keuze veranderde. De kop
-                blijft nu staan terwijl je kiest; het onderwerp staat in de
-                titel van het tabblad en onder "Over dit onderwerp". */}
-              <h1 className="tk-display tk-welkom-kop">{vakKop}</h1>
-            </div>
-
-            {/* Hier stond "Hier gaat je toets over", met een knop die de hele
-              module als toets oefende. Het hing aan een toetsdatum, en die
-              wordt sinds ADR-162 nergens meer ingevoerd. De oefentoets zelf
-              staat er nog, bij de manieren, waar hij altijd stond. */}
+          {/* De kop als witte kaart, met de plaat van het vak, zoals op een
+              telefoon (ADR-252, op elke maat sinds ADR-254). Het was een vlak
+              in de diepe kleur van het vak (ADR-238). Het vak en wat je hier
+              doet: "Topografie oefenen", ook als er een onderwerp gekozen is
+              (ADR-247). */}
+          <div className="tk-vakkaart">
+            <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
+              <ModuleIcon size={24} />
+            </span>
+            <h1 className="tk-vakkaart-kop">{vakKop}</h1>
           </div>
         </div>
 
@@ -1179,6 +1142,7 @@ export function ModuleScreen({
               wijzen. Een kind dat op /topografie geleerd heeft waar het antwoord
               op stap 2 staat, vindt het op /rekenen op dezelfde plek terug. */}
           {onderwerpTegels}
+          {legendaWat}
         </section>
 
         {/* The second, smaller decision, where there is one — numbered like the
@@ -1208,15 +1172,7 @@ export function ModuleScreen({
           <Stap nummer={stap.hoe} label={t('choose.stepHow')} />
 
           {vormTegels}
-
-          {/* Het diploma, altijd als laatste en altijd uitgelicht (ADR-168).
-              Het stond als achtste tegel in hetzelfde raster en was daarin niet
-              van een bliksemronde te onderscheiden, terwijl het het enige is op
-              deze pagina waar een kind iets aan overhoudt. Eén tegel over de
-              volle breedte, in de kleur van het vak, met eronder waar hij over
-              gaat — en de reden ervan hardop, want een toets waarvan je de lat
-              niet kent, is een toets die je niet durft te doen. */}
-          {diplomaTegel}
+          {legendaHoe}
         </section>
 
         {/* How long, as a step of its own — and only after a way that has a
@@ -1314,21 +1270,14 @@ export function ModuleScreen({
       wat: (
         <>
           {onderwerpTegels}
-          {!actief && onderwerpen.some((vak) => isPremiumOnderwerp(vak.id)) ? (
-            <PremiumLegenda />
-          ) : null}
+          {legendaWat}
         </>
       ),
       keuze: keuzeKnoppen,
       hoe: (
         <>
           {vormTegels}
-          {!actief &&
-          (toetsVorm !== null ||
-            gewoneTegels.some((vorm) => isPremiumVorm(vorm.id)) ||
-            (diplomaVorm !== null && isPremiumVorm(diplomaVorm.id))) ? (
-            <PremiumLegenda />
-          ) : null}
+          {legendaHoe}
         </>
       ),
       aantal: aantalKnoppen,
@@ -1612,15 +1561,6 @@ function rondeVan(
   return minuten === null
     ? t('start.vragen', { aantal: vragen })
     : t('start.vragenTijd', { aantal: vragen, minuten });
-}
-
-/**
- * The subject whose sets are twelve numbers: a keypad, not a row of words. The
- * deelsommen were one too until they came in ranges, like the keersommen
- * (ADR-120).
- */
-function isKeypad(onderwerp: Onderwerp): boolean {
-  return onderwerp.id === 'tafels';
 }
 
 /**

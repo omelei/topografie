@@ -4,16 +4,17 @@ import { OefenenScherm } from './OefenenScherm';
 
 /**
  * Oefenen (ADR-241): de vijf vakken in de volgorde van het plan, sinds ADR-242
- * als dezelfde tegels als onder "Kies een vak" op Vandaag: naam en toelichting.
+ * als dezelfde vakken als onder "Kies een vak" op Vandaag: naam en toelichting,
+ * sinds ADR-254 als rijen in de lijst van Vandaag.
  */
 describe('Oefenen', () => {
-  it('shows the five subjects as the tiles of Vandaag, in the order of the plan', () => {
+  it('shows the five subjects as the rows of Vandaag, in the order of the plan', () => {
     const geopend: string[] = [];
     render(<OefenenScherm onOpen={(id) => geopend.push(id)} />);
 
     expect(screen.getByRole('heading', { level: 1, name: 'Oefenen' })).toBeInTheDocument();
     const tegels = screen.getAllByRole('button');
-    expect(tegels.map((tegel) => tegel.className)).toEqual(Array(5).fill('tk-vaktegel'));
+    expect(tegels.map((tegel) => tegel.className)).toEqual(Array(5).fill('tk-oefenrij'));
     expect(tegels.map((tegel) => tegel.dataset.module)).toEqual([
       'topo',
       'tafels',

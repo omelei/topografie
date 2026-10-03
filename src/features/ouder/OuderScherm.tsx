@@ -28,6 +28,7 @@ import { GeheugencheckUitslag } from './GeheugencheckUitslag';
 import { HoeGaatHet } from './HoeGaatHet';
 import { Kinderen } from './Kinderen';
 import { Overname } from './Overname';
+import { Paginakop } from '@/features/shell/Paginakop';
 
 /**
  * De ouderpagina, op /ouder (ADR-173).
@@ -75,10 +76,7 @@ export function OuderScherm({ naam }: { readonly naam: string }) {
   return (
     <div className="tk-page" onClickCapture={() => verleng()} onKeyDownCapture={() => verleng()}>
       <div className="tk-page-main">
-        <header className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('ouder.titel')}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('ouder.intro')}</p>
-        </header>
+        <Paginakop kop={t('ouder.titel')} regel={t('ouder.intro')} />
 
         <Kinderen
           key={`kinderen-${vanBuiten}`}

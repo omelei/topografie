@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 2 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 3 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
