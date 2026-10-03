@@ -128,7 +128,7 @@ test('greets the child by name on the front door', async ({ page }) => {
 
 /**
  * A list on the front door shows three rows, and the rest is one press further
- * (ADR-252; on every size since ADR-254). The focus goes to the first row that
+ * (ADR-252; on every size since ADR-255). The focus goes to the first row that
  * came in, so a keyboard does not start at the top again.
  */
 test('a list on the front door shows three rows, and the rest on request', async ({ page }) => {

@@ -2,7 +2,7 @@ import { Brandmark } from '@/components/Brandmark';
 
 /**
  * De kop van een pagina: het koraal vlak van Vandaag, met de kop, één regel
- * eronder en Denker ernaast (ADR-254).
+ * eronder en Denker ernaast (ADR-255).
  *
  * Vandaag op een telefoon begon met één koraal blok (ADR-252), en de andere
  * pagina's met een losse kop op de grond, of op Jij een etalage zonder Denker.

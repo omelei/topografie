@@ -642,7 +642,7 @@ export function ModuleScreen({
   );
 
   // Een premiumtegel: een ster in plaats van het woord, en niets voor wie
-  // premium al heeft (ADR-252, op elke maat sinds ADR-254).
+  // premium al heeft (ADR-252, op elke maat sinds ADR-255).
   const premiumTeken = (premium: boolean) => {
     if (!premium || actief) return null;
     return <PremiumSter />;
@@ -766,7 +766,7 @@ export function ModuleScreen({
   );
 
   // Ook het toetsenbord van tafels is een rij chips: twee vormen om te kiezen,
-  // en niet drie (ADR-252, op elke maat sinds ADR-254).
+  // en niet drie (ADR-252, op elke maat sinds ADR-255).
   const keuzeKnoppen =
     onderwerp === null ? null : (
       <div className="tk-keuzes">
@@ -790,7 +790,7 @@ export function ModuleScreen({
 
   // Het diploma, altijd als laatste en altijd uitgelicht (ADR-168): de laatste
   // tegel in het raster, over de volle breedte (ADR-252, op elke maat sinds
-  // ADR-254).
+  // ADR-255).
   const diplomaTegel = diplomaVorm ? (
     <button
       type="button"
@@ -1099,7 +1099,7 @@ export function ModuleScreen({
     return mobiel();
   }
 
-  // Vanaf 768 dezelfde kop, chips en tegels als op een telefoon (ADR-254), met
+  // Vanaf 768 dezelfde kop, chips en tegels als op een telefoon (ADR-255), met
   // de stappen onder elkaar in plaats van een accordeon.
   return (
     <div className="tk-page tk-kiespagina" data-module={module.id}>
@@ -1111,7 +1111,7 @@ export function ModuleScreen({
             boven de kop (ADR-241). */}
           {terugKnop}
           {/* De kop als witte kaart, met de plaat van het vak, zoals op een
-              telefoon (ADR-252, op elke maat sinds ADR-254). Het was een vlak
+              telefoon (ADR-252, op elke maat sinds ADR-255). Het was een vlak
               in de diepe kleur van het vak (ADR-238). Het vak en wat je hier
               doet: "Topografie oefenen", ook als er een onderwerp gekozen is
               (ADR-247). */}

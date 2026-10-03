@@ -103,7 +103,7 @@ async function zaaiGelijkWachten(page: Page) {
 async function provinciesEerst(page: Page): Promise<boolean> {
   const vandaag = page.getByRole('region', { name: 'Vandaag herhalen' });
   // De eerste ronde is de kaart bovenaan, en de rest staat in "Daarna
-  // herhalen" (ADR-252, op elke maat sinds ADR-254).
+  // herhalen" (ADR-252, op elke maat sinds ADR-255).
   const daarna = page.getByRole('region', { name: 'Daarna herhalen' });
   const lees = async () => [
     await vandaag.innerText(),

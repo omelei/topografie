@@ -14554,7 +14554,7 @@ vandaag".
 wat aan de beurt is eerst (`composeRound`). Alleen het getal is weg.
 `HerhaalRegel`, zijn stijl en de twee teksten zijn verwijderd.
 
-## ADR-254 — Het ontwerp van Vandaag op een telefoon op elke pagina en elke maat
+## ADR-255 — Het ontwerp van Vandaag op een telefoon op elke pagina en elke maat
 
 **Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar: "het
 design op de vandaag pagina op mobiel vind ik het beste; voer dit door op alle

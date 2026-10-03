@@ -5,7 +5,7 @@ import { OefenenScherm } from './OefenenScherm';
 /**
  * Oefenen (ADR-241): de vijf vakken in de volgorde van het plan, sinds ADR-242
  * als dezelfde vakken als onder "Kies een vak" op Vandaag: naam en toelichting,
- * sinds ADR-254 als rijen in de lijst van Vandaag.
+ * sinds ADR-255 als rijen in de lijst van Vandaag.
  */
 describe('Oefenen', () => {
   it('shows the five subjects as the rows of Vandaag, in the order of the plan', () => {

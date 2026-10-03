@@ -9,7 +9,7 @@ import { Paginakop } from './Paginakop';
  * Aan een bureau staan dezelfde vakken ook in de zijbalk, onder Oefenen; op een
  * telefoon is dit de weg naar een vak. Sinds ADR-242 dezelfde tegels als onder
  * "Kies een vak" op Vandaag: een lijst met een regel over wat er in elk vak
- * zit. Een tegel opent de startpagina van het vak. Sinds ADR-254 met de kop en
+ * zit. Een tegel opent de startpagina van het vak. Sinds ADR-255 met de kop en
  * de lijst van Vandaag.
  */
 export function OefenenScherm({

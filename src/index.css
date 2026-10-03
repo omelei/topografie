@@ -3215,7 +3215,7 @@
   }
 
   /* ---- Vandaag (ADR-252) ---------------------------------------------------
-   * Het ontwerp voor een telefoon, sinds ADR-254 op elke maat en ook de kop van
+   * Het ontwerp voor een telefoon, sinds ADR-255 op elke maat en ook de kop van
    * de andere pagina's (`Paginakop`), dus zonder breekpunt. Het welkomstvlak en
    * Nu doen zijn één koraal vlak: de begroeting met Denker ernaast, en daaronder
    * Nu doen als witte binnenkaart. Cacao op koraal 5,72. */
@@ -3283,7 +3283,7 @@
     margin: -4px 0 -6px;
   }
 
-  /* De lijsten van Vandaag (ADR-252, op elke maat sinds ADR-254): één witte
+  /* De lijsten van Vandaag (ADR-252, op elke maat sinds ADR-255): één witte
    * kaart per lijst, de rijen met een haarlijn ertussen, elke rij even hoog.
    * De pijl in een cirkel in de tint van het vak, de woorden erop in de diepe
    * toon. Ook de vakken op Oefenen en onder "Kies een vak" (`VakTegels`). */
@@ -4594,7 +4594,7 @@
   }
 
   /* Wat een chip en een tegel op de vakpagina anders zijn (ADR-252, op elke
-   * maat sinds ADR-254). Twee vormen om te kiezen: een pil van 48 die niet
+   * maat sinds ADR-255). Twee vormen om te kiezen: een pil van 48 die niet
    * afbreekt, en een tegel met de plaat boven de naam. Ongekozen wit met een
    * warme rand, gekozen de tint van het vak met zijn rand en zijn woorden. */
   .tk-kiespagina .tk-keuze {
@@ -4697,7 +4697,7 @@
     }
   }
 
-  /* Vanaf 768 staan de stappen onder elkaar, niet als accordeon (ADR-254). Elke
+  /* Vanaf 768 staan de stappen onder elkaar, niet als accordeon (ADR-255). Elke
    * stap is wat op een telefoon de open stap is: een witte kaart met een warme
    * rand en onderkant, het nummer in inkt. De startbalk is een wit blad met
    * dezelfde rand, en de stappen die nog wachten zijn neutraal: de kleur van

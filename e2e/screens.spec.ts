@@ -87,7 +87,7 @@ test('the front door, the chooser and the profile', async ({ page }, testInfo) =
   await expect(page.getByRole('group', { name: 'Hier begin je mee in groep 5' })).toBeVisible();
   await shoot(page, size, '02-thuis');
 
-  // Oefenen (ADR-241): de vakken als lijst, zoals op Vandaag (ADR-254).
+  // Oefenen (ADR-241): de vakken als lijst, zoals op Vandaag (ADR-255).
   await page.goto('/oefenen');
   await expect(page.getByRole('heading', { level: 1, name: 'Oefenen' })).toBeVisible();
   await shoot(page, size, '03b-oefenen');

@@ -90,7 +90,7 @@ export function ProfileScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        {/* De kop van Vandaag (ADR-254). De zin eronder zegt wie er oefent en
+        {/* De kop van Vandaag (ADR-255). De zin eronder zegt wie er oefent en
             wat er op de pagina staat, in die volgorde (ADR-172). */}
         <Paginakop
           kop={t('you.title')}

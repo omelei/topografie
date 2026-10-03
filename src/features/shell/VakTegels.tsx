@@ -17,7 +17,7 @@ const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
  * De vakken als lijst: de plaat, de naam, een regel over wat erin zit en een
  * pijl in de tint van het vak. Op Vandaag onder "Kies een vak", op /oefenen en
  * op Voor ouders dezelfde (ADR-242), zodat een kind één vorm leert voor "naar
- * een vak". Sinds ADR-254 de lijst van Vandaag op een telefoon (ADR-252): één
+ * een vak". Sinds ADR-255 de lijst van Vandaag op een telefoon (ADR-252): één
  * witte kaart, de rijen met een haarlijn ertussen. Het waren tegels in de kleur
  * van het vak, met een rand en een onderkant.
  */

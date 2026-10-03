@@ -71,7 +71,7 @@ import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
  * begroeting en Nu doen zijn één koraal vlak met een witte kaart erin, en
  * Verder oefenen, Past bij groep en Vandaag herhalen zijn lijsten van drie
  * rijen in een witte kaart, met de rest één druk verder. Dat was het ontwerp
- * voor een telefoon; sinds ADR-254 is het Vandaag op elke maat.
+ * voor een telefoon; sinds ADR-255 is het Vandaag op elke maat.
  *
  * Eén kolom, op elke maat (ADR-168). One thing it deliberately does not do:
  * **it does not forecast** — "wat onthoud je" is K9's.
@@ -222,7 +222,7 @@ export function HomeScreen({
     );
   } else if (soort === 'herhalen' && vandaag !== null) {
     // De eerste ronde van het plan is Nu doen, als kaart met één knop; de
-    // rest staat eronder als lijst (ADR-252, op elke maat sinds ADR-254).
+    // rest staat eronder als lijst (ADR-252, op elke maat sinds ADR-255).
     const eerste = vandaag.plan.rondes[0];
     nuDoen =
       eerste === undefined ? null : (
@@ -295,7 +295,7 @@ export function HomeScreen({
           : t('home.status.begin')
       : statusVoor(soort, vandaag?.plan.vragen ?? 0, klaarVandaag);
 
-  // Het welkomstvlak is ook Nu doen (ADR-252, op elke maat sinds ADR-254): de
+  // Het welkomstvlak is ook Nu doen (ADR-252, op elke maat sinds ADR-255): de
   // begroeting, Denker ernaast, en de kaart met de ene knop als witte kaart in
   // het koraal. Zo staat de knop boven de vouw op elke telefoon, en is er
   // bovenaan één blok in plaats van twee.
@@ -474,7 +474,7 @@ interface Oefening {
 
 /**
  * Een lijst op Vandaag (ADR-252). De rijen die opzij doorliepen stonden hier
- * vanaf 768 tot ADR-254; nu is het op elke maat dezelfde lijst.
+ * vanaf 768 tot ADR-255; nu is het op elke maat dezelfde lijst.
  */
 function Rij({
   titel,
