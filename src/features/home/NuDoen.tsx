@@ -1,4 +1,4 @@
-import { createContext, useContext, useId } from 'react';
+import { useId } from 'react';
 import { NextIcon } from '@/components/Icon';
 import { ProgressBar } from '@/components/ProgressBar';
 import { MODULE_ICON } from '@/features/shell/moduleIcons';
@@ -6,29 +6,18 @@ import type { Module } from '@/features/shell/modules';
 import { t } from '@/i18n';
 
 /**
- * Of Nu doen in het welkomstvlak staat, op een telefoon (ADR-252). Dan is de
- * kaart een witte binnenkaart in het koraal: plaat, kop en regel naast elkaar,
- * daaronder de balk en de knop. Een context en geen eigenschap, want vier
- * kaarten (Welkom terug, Maak af, de geheugencheck, Ga verder) tekenen hem, en
- * alleen Vandaag weet waar hij staat.
- */
-export const NuDoenBinnen = createContext(false);
-
-/**
  * De kaart van Nu doen (ADR-250): een kop, één regel, en één knop over de
  * hele breedte. Het is de enige koraal knop op Vandaag.
  *
- * Twee vormen, uit het ontwerp "Vandaag varianten". De grote kaart, met de
- * plaat naast de kop, voor Maak af, Welkom terug en de geheugencheck; die
- * hebben een regel die iets uitlegt. De smalle, met de plaat naast kop en
- * regel samen, voor Ga verder: daar is de regel alleen de spelvorm.
+ * Hij staat als witte binnenkaart in het koraal welkomstvlak (ADR-252, op elke
+ * maat sinds ADR-255): plaat, kop en regel naast elkaar, daaronder bij Maak af
+ * de balk, en de knop. Vier kaarten tekenen hem: Welkom terug, Maak af, de
+ * geheugencheck en Ga verder. Er waren twee vormen naast het welkomstvlak, een
+ * grote en een smalle; die staan sinds ADR-255 nergens meer.
  *
- * Zonder vak (Welkom terug gaat over alles) is er geen plaat, en draagt de
- * kaart de lichte lijn en de onderkant in nacht, zoals elke kaart buiten een
- * vak.
+ * Zonder vak (Welkom terug gaat over alles) is er geen plaat.
  */
 export function NuDoenKaart({
-  vorm = 'groot',
   moduleId,
   kop,
   regel,
@@ -37,7 +26,6 @@ export function NuDoenKaart({
   onStart,
   onLater,
 }: {
-  readonly vorm?: 'groot' | 'smal';
   readonly moduleId?: Module['id'] | undefined;
   readonly kop: string;
   readonly regel: string;
@@ -49,7 +37,6 @@ export function NuDoenKaart({
   readonly onLater?: (() => void) | undefined;
 }) {
   const kopId = useId();
-  const binnen = useContext(NuDoenBinnen);
   const ModuleIcon = moduleId === undefined ? null : MODULE_ICON[moduleId];
   const plaat =
     ModuleIcon === null ? null : (
@@ -64,73 +51,22 @@ export function NuDoenKaart({
     </button>
   );
 
-  if (binnen) {
-    return (
-      <section
-        className="tk-nudoen tk-nudoen-binnen"
-        data-module={moduleId}
-        aria-labelledby={kopId}
-      >
-        <div className="tk-nudoen-kop">
-          {plaat}
-          <div className="tk-nudoen-tekst">
-            <h2 id={kopId} className="tk-nudoen-titel">
-              {kop}
-            </h2>
-            <p className="tk-nudoen-regel">{regel}</p>
-          </div>
-        </div>
-        {balk === undefined ? null : (
-          <span aria-hidden="true">
-            <ProgressBar value={balk.waarde} showDot={false} label={balk.label} />
-          </span>
-        )}
-        {startknop}
-        {onLater === undefined ? null : (
-          <button
-            type="button"
-            className="tk-button tk-button-tertiary tk-nudoen-later"
-            onClick={onLater}
-          >
-            {t('home.nu.later')}
-          </button>
-        )}
-      </section>
-    );
-  }
-
-  if (vorm === 'smal') {
-    return (
-      <section className="tk-nudoen tk-nudoen-smal" data-module={moduleId} aria-labelledby={kopId}>
+  return (
+    <section className="tk-nudoen tk-nudoen-binnen" data-module={moduleId} aria-labelledby={kopId}>
+      <div className="tk-nudoen-kop">
         {plaat}
         <div className="tk-nudoen-tekst">
           <h2 id={kopId} className="tk-nudoen-titel">
             {kop}
           </h2>
-          <p className="tk-hulp">{regel}</p>
+          <p className="tk-nudoen-regel">{regel}</p>
         </div>
-        {startknop}
-      </section>
-    );
-  }
-
-  return (
-    <section className="tk-nudoen" data-module={moduleId} aria-labelledby={kopId}>
-      <div className="tk-nudoen-kop">
-        {plaat}
-        <h2 id={kopId} className="tk-nudoen-titel">
-          {kop}
-        </h2>
       </div>
-      <div className="tk-nudoen-tekst">
-        <p className="text-lopend text-tekst-secundair">{regel}</p>
-        {balk === undefined ? null : (
-          // De balk is versiering: de regel erboven zegt hetzelfde in woorden.
-          <span aria-hidden="true">
-            <ProgressBar value={balk.waarde} showDot={false} label={balk.label} />
-          </span>
-        )}
-      </div>
+      {balk === undefined ? null : (
+        <span aria-hidden="true">
+          <ProgressBar value={balk.waarde} showDot={false} label={balk.label} />
+        </span>
+      )}
       {startknop}
       {onLater === undefined ? null : (
         <button

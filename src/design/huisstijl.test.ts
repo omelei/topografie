@@ -184,15 +184,12 @@ describe('the tokens are the styleguide’s', () => {
     expect(rule('  .tk-zijbalk')).toContain('background: var(--kaart)');
     // No subject tints the bar any more.
     expect(cssCode).not.toMatch(/\.tk-appbar\[data-module\]/);
-    for (const tegel of ['.tk-kaart', '.tk-tegel', '.tk-tafel', '.tk-vaktegel']) {
-      expect(rule(`  ${tegel}`), tegel).toContain('background: var(--kaart)');
-      expect(rule(`  ${tegel}`), tegel).toContain(
-        'border: var(--stroke-tegel) solid var(--module-rand)',
-      );
-      expect(rule(`  ${tegel}`), tegel).toContain(
-        'box-shadow: 0 var(--onderkant) 0 var(--module-vlak)',
-      );
-    }
+    // Een tegel op een vakpagina (ADR-240). De kaarten van Vandaag, de vaktegels
+    // en de vierkanten van de tafels zijn weg sinds ADR-255.
+    const tegel = rule('  .tk-tegel');
+    expect(tegel).toContain('background: var(--kaart)');
+    expect(tegel).toContain('border: var(--stroke-tegel) solid var(--module-rand)');
+    expect(tegel).toContain('box-shadow: 0 var(--onderkant) 0 var(--module-vlak)');
   });
 
   it.each([['topo'], ['tafels'], ['klok'], ['woorden'], ['tijdvakken'], ['vlaggen']])(

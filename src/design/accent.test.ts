@@ -54,14 +54,9 @@ const ALLOWED_SELECTORS: ReadonlyMap<string, string> = new Map([
   // Ontdekken: the name being looked at, in a list of eighty (ADR-112). It
   // carries a tick as well, so the tint is not the only thing that says so.
   [".tk-verken-item[aria-current='true']", 'the answer already given, in a list'],
-  [".tk-tafel[aria-pressed='true']", 'the answer already given, as a square'],
-  [".tk-tafel[aria-pressed='true'] .tk-plaat", 'the answer already given, as a square'],
   // De startbalk is al die antwoorden tegelijk, met de accentkleur langs de
   // voorste rand (ADR-095), en hij is ook de weg verder — dus de kleur die
   // "hier druk je op" zegt hoort er precies. De chips erop blijven inkt.
-  // Vandaag (ADR-126): de voordeur had geen primaire actie, en dit is hem. Het
-  // is dezelfde vorm als de startbalk om dezelfde reden: hier begint een ronde.
-  ['.tk-vandaag', 'the one thing to do today'],
   ['.tk-startbalk', 'the answers already given, together'],
   ['.tk-startbalk-label', 'the answers already given, together'],
 ]);
@@ -84,10 +79,6 @@ const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
  * double rule and the tick; the light tone never carries a state alone.
  */
 const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
-  ['.tk-kaart', 'a card on Vandaag is a door into one subject'],
-  ['.tk-kaart:hover', 'the same card under the pointer'],
-  ['.tk-kaart-voet', 'the line the card is about, in its subject'],
-  ['.tk-maakaf .tk-progress-fill', 'progress through that subject'],
   [
     '.tk-lijstrij[data-module]:not(.tk-weekdoel-rij) .tk-lijstrij-pijl',
     'the way into a subject, from a row that names it',
@@ -97,12 +88,6 @@ const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
   [".tk-keuze:not(:disabled):not([aria-pressed='true']):hover", 'the same chip under the pointer'],
   ['.tk-tegel', 'a tile on a subject’s page, not yet chosen'],
   [".tk-tegel:not([aria-pressed='true']):hover", 'the same tile under the pointer'],
-  // ADR-240: every tile a child presses has the same rule and lower edge as a
-  // card on Vandaag.
-  ['.tk-tafel', 'a square on a subject’s page, not yet chosen'],
-  [".tk-tafel:not([aria-pressed='true']):hover", 'the same square under the pointer'],
-  ['.tk-vaktegel', 'a subject’s tile on Vandaag, a door into it'],
-  ['.tk-vaktegel:hover', 'the same tile under the pointer'],
   ['.tk-eerste', 'the first round, in its subject'],
   ['.tk-nudoen', 'the one thing to do now, in its subject (ADR-250)'],
   ['.tk-diploma', 'a diploma of that subject, not yet earned'],
