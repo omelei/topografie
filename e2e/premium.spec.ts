@@ -224,9 +224,9 @@ test('without a code the premium page points at the kassa, and with one it does 
   await page.goto('/premium');
   await doorDePremiumdeur(page);
 
-  // De volgorde van de beslissing (ADR-124, ADR-145): in één zin wat het is en
-  // wat het kost, wat het doet, basis en premium naast elkaar, waarom wij, en
-  // pas daarna het veld voor wie al een code heeft.
+  // De beslissing boven de vouw (ADR-256): Basis en premium in één tabel,
+  // de keuze tussen maandelijks en jaarlijks met de prijs en de knop, dan
+  // waarom wij, en pas daarna de weg voor wie al een code heeft.
   // Gescoped op de pagina zelf: de blokken in de kolom ernaast zijn ook h2.
   //
   // Met `expect(locator)` en niet met `allInnerTexts()`. Dat laatste vraagt de
@@ -237,45 +237,43 @@ test('without a code the premium page points at the kassa, and with one it does 
   // tot het klopt of de tijd om is.
   const koppen = page.locator('.tk-page-main').getByRole('heading', { level: 2 });
   await expect(koppen).toHaveText([
-    'Oefenen is gratis. Premium maakt leren slimmer.',
-    'Wat premium voor je doet',
-    'Basis en premium naast elkaar',
     'Waarom leer.nu',
     // Het codeveld stond hier en staat sinds ADR-173 bij de ouder: een kind mag
     // deze pagina zien en een kind koopt niets. Wat er nog staat is de weg
-    // ernaartoe, onder dezelfde kop. Het account staat er niet meer; dat is ook
-    // van de ouder.
+    // ernaartoe, onder dezelfde kop.
     'Heb je al een code?',
   ]);
-  await expect(page.getByText('€ 59,95').first()).toBeVisible();
 
-  // Twee manieren van betalen (ADR-164): het jaar als aanrader, de maand
-  // ernaast. Per maand betalen bestaat nog niet (ADR-196), dus staat er
-  // "binnenkort" en geen knop naar een kassa die het niet kan.
-  await expect(page.getByText('€ 9,95').first()).toBeVisible();
-  await expect(page.getByText('Binnenkort kun je ook per maand betalen').first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Per maand' })).toHaveCount(0);
+  // Jaarlijks staat standaard aan; maandelijks wisselt de prijs en het plan
+  // dat de knop meeneemt naar de kassa (ADR-164, ADR-256).
+  const betalen = page.getByRole('group', { name: 'Betalen' });
+  await expect(betalen.getByRole('radio', { name: /Jaarlijks/ })).toBeChecked();
+  await expect(page.getByText('€ 59,95')).toBeVisible();
+  const knop = page.getByRole('link', { name: 'Premium activeren' });
+  await expect(knop).toHaveAttribute('href', '/kopen/');
 
-  // En de belofte over namen staat erbij (ADR-164).
-  await expect(page.getByText('We slaan geen namen van kinderen op')).toBeVisible();
-  await expect(page.getByText('Uitgebreide statistieken over je kind')).toBeVisible();
+  await betalen.getByText('Maandelijks').click();
+  await expect(page.getByText('€ 9,95')).toBeVisible();
+  await expect(page.getByText('Maandelijks opzegbaar.')).toBeVisible();
+  await expect(knop).toHaveAttribute('href', '/kopen/?plan=maand');
+  await betalen.getByText('Jaarlijks').click();
+  await expect(knop).toHaveAttribute('href', '/kopen/');
+
+  // De belofte over het kind staat erbij.
+  await expect(page.getByText('Je kind blijft anoniem')).toBeVisible();
 
   // En de vergelijking zegt per regel wat erin zit: de bliksemronde niet in
-  // basis, alle vakken wel (ADR-122, ADR-145).
+  // basis, alle vakken wel (ADR-122, ADR-145, ADR-256).
   const tabel = page.getByRole('table', { name: 'Basis en premium naast elkaar' });
   await expect(
-    tabel.getByRole('row', { name: /De bliksemronde en overleven/ }).getByText('Zit er niet in'),
+    tabel.getByRole('row', { name: /Bliksemronde, overleven/ }).getByText('Zit er niet in'),
   ).toHaveCount(1);
-  await expect(
-    tabel.getByRole('row', { name: /Alle vakken en alle onderwerpen/ }).getByRole('img'),
-  ).toHaveCount(2);
+  await expect(tabel.getByRole('row', { name: /Alle vakken/ }).getByRole('img')).toHaveCount(2);
 
   // Zonder kolom ernaast — die staat sinds ADR-168 nergens meer.
   await expect(page.locator('.tk-home-aside')).toHaveCount(0);
 
-  const knop = page.getByRole('link', { name: 'Een code kopen' }).first();
   await expect(knop).toBeVisible();
-
   const doel = new URL((await knop.getAttribute('href')) ?? '', origin);
   expect(doel.origin, 'de kassa staat op dit adres zelf').toBe(origin);
 
@@ -342,9 +340,9 @@ test('a code is checked once, and then everything opens', async ({ page }) => {
   // geen USP's en geen kassa meer te lezen (ADR-123, ADR-124). De ouderpagina
   // staat nog open, dus de deur vraagt niets (ADR-232).
   await page.goto('/premium');
-  await expect(page.getByRole('link', { name: 'Een code kopen' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Premium activeren' })).toHaveCount(0);
   await expect(page.getByText('€ 59,95')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Waarom leer.nu' })).toHaveCount(0);
   await expect(page.getByText(/Premium staat aan op dit apparaat/)).toBeVisible();
 });
 

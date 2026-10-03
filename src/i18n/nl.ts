@@ -812,24 +812,11 @@ export const nl = {
   // Premium (ADR-111, ADR-116, ADR-122): een code die een ouder één keer
   // invult. Geen e-mail en geen wachtwoord; er is geen account om in te loggen.
   //
-  // De knip staat sinds ADR-192 tussen oefenen in de gratis vormen en alles wat
-  // over weken gaat, en de intro zegt hem in die volgorde: eerst wat gratis is,
-  // dan waar premium over gaat. Andersom leest elke zin als een muur.
+  // Sinds ADR-256 staat de knip van ADR-192 niet meer in een intro maar in de
+  // tabel: regel voor regel, met een vinkje of een streep.
   'premium.label': 'Premium',
   'premium.titel': 'Premium',
-  // De knip van ADR-192, in de woorden van een ouder: oefenen kan gratis, en
-  // premium opent de rest en zorgt dat het blijft hangen. Geen "vóór je" meer: met dat accent
-  // staat er "eerder dan jij", en bedoeld was "in jouw plaats" (ADR-145).
-  'premium.intro':
-    'Je kind kan elk vak gratis oefenen met ontdekken, aanwijzen, meerkeuze en zelf typen. Met premium komt daar meer bij: de bliksemronde, overleven, de oefentoets en alle 80 diploma’s.',
-  // Drie alinea's sinds 30 september, in de woorden van de eigenaar: wat erbij
-  // komt, wat het plannen oplevert, en voor wie.
-  'premium.introPlan':
-    'Premium plant bovendien automatisch wanneer je kind iets opnieuw moet oefenen. Zo blijft de leerstof beter hangen en zie je eenvoudig wat je kind al beheerst.',
-  'premium.introVoorWie': 'Voor 3 kinderen, op 3 apparaten, een heel jaar lang.',
   'premium.introAan': 'Alles staat open op dit apparaat.',
-  'premium.etalageLabel': 'Voor ouders',
-  'premium.etalageKop': 'Oefenen is gratis. Premium maakt leren slimmer.',
   'premium.perSchooljaar': 'per jaar',
   'premium.codeTitel': 'Heb je al een code?',
   // Met een code is dat geen vraag meer (ADR-236).
@@ -846,128 +833,71 @@ export const nl = {
     'Je code is verlopen op {datum}. Alles wat je kinderen hebben geoefend, staat nog op dit apparaat. Verleng je, dan komt alles terug.',
   'premium.afmelden': 'Code van dit apparaat halen',
   'premium.afmeldenUitleg': 'Had dit apparaat een plek, dan komt die vrij voor een ander apparaat.',
-  // Wat premium dóét, in vier klussen (ADR-124), sinds ADR-145 als kaarten met
-  // een teken. De kop is wat het oplevert, de regel eronder hoe.
-  'premium.watTitel': 'Wat premium voor je doet',
-  'premium.usp.plan': 'Leer.nu plant het herhalen',
-  'premium.usp.planUit':
-    'Leer.nu zet elke dag klaar wat aan de beurt is, net voordat je kind het vergeet. Zo hoeft je kind niet zelf te bedenken wat het moet oefenen.',
-  // De statistieken als eigen belofte (ADR-164). "Je ziet wat blijft hangen"
-  // stond hier, en dat is waar maar bescheiden: wat premium werkelijk geeft is
-  // de hele boekhouding van het oefenen, tot per som. Elke regel hieronder is
-  // een ding dat op de Onthouden-pagina echt staat, want een belofte die
-  // nergens uitkomt is de snelste manier om een ouder kwijt te raken die net
-  // betaald heeft.
-  'premium.usp.zicht': 'Uitgebreide statistieken over je kind',
-  // Zonder de voorspelling over drie weken (ADR-177). Die stond hier als
-  // premiumbelofte en klopte op twee manieren niet meer: hij staat niet meer
-  // bij de statistieken, en waar hij wél staat — na een ronde — staat hij bij
-  // `premium.regel.voorspelling`, sinds ADR-192 ook premium. Een belofte die nergens uitkomt is de
-  // snelste manier om een ouder kwijt te raken die net betaald heeft, en dat
-  // staat al sinds ADR-164 boven deze sleutel.
-  'premium.usp.zichtUit':
-    'Per som en per woord: hoe vaak je kind het goed had, wanneer het er voor het laatst naar keek, en hoe het oefenen week na week gaat.',
-  'premium.usp.zelf': 'Diploma’s halen en zichzelf overhoren',
-  'premium.usp.zelfUit':
-    'Je kind kan alle 80 diploma’s halen, van de tafels tot de vlaggen. Met de oefentoets test het zelf of het de stof beheerst. Jij hoeft niet meer te overhoren.',
-  'premium.usp.gezin': 'Voor het hele gezin',
-  'premium.usp.gezinUit': 'Eén code voor 3 kinderen, op 3 apparaten, een heel jaar lang.',
 
-  // Basis tegen premium (ADR-145). De uitleg boven de tabel lost op wat de
-  // oude intro openliet: "oefenen is gratis" en toch "Premium" bij drie
-  // manieren op elke modulepagina. Die drie toetsen, en dat staat er nu.
+  // Basis tegen premium (ADR-145, ADR-256): acht korte regels uit het ontwerp,
+  // en twee die het ontwerp niet had maar die premium wel opent. Elke regel is
+  // nagelopen tegen wat de app echt afschermt (`isPremiumVorm`).
   'premium.vergelijkTitel': 'Basis en premium naast elkaar',
-  'premium.vergelijkUitleg':
-    'Oefenen kan gratis, in elk vak: ontdekken, aanwijzen, meerkeuze en zelf typen. De bliksemronde, overleven, de oefentoets, de diploma’s, de voortgang en de weekdoelen zijn premium.',
+  'premium.tabelKop': 'Wat je krijgt',
   'premium.basisNaam': 'Basis',
-  'premium.basisPrijs': 'Gratis',
-  'premium.basisVoor':
-    'Ontdekken, aanwijzen, meerkeuze en zelf typen, in elk vak. Voor altijd, zonder code.',
-  'premium.premiumVoor':
-    'Alles uit Basis, en daarbovenop: de bliksemronde, overleven, de oefentoets, alle diploma’s, de voortgang, de weekdoelen en een plan voor elke dag.',
-  'premium.tabelWat': 'Onderdeel',
+  // Op de kolom van Basis: dat is wat dit apparaat nu heeft.
+  'premium.actief': 'Actief',
   'premium.tabelJa': 'Zit erin',
   'premium.tabelNee': 'Zit er niet in',
-  'premium.groep.oefenen': 'Oefenen',
-  'premium.groep.belonen': 'Belonen',
-  'premium.groep.onthouden': 'Herhalen',
-  'premium.groep.uitdagen': 'Uitdagen',
-  'premium.groep.ouders': 'Voor ouders',
-  'premium.regel.vakken': 'Alle vakken en alle onderwerpen van school',
-  // Sinds ADR-177 is dit waar. Het stond hier als "Basis" terwijl een kind
-  // zonder code één onderwerp van één vak zag — de provincies van Nederland,
-  // niet als keuze maar als lot. Nu kan het elk van zijn eigen vakken en
-  // onderwerpen aanwijzen.
-  // Sinds ADR-224 is elke manier die leert gratis: ontdekken, zoeken, kiezen en
-  // typen. Eén regel; de regel "zoeken en typen" onder premium is weg.
-  'premium.regel.vormen': 'Ontdekken, aanwijzen, meerkeuze en zelf typen',
-  'premium.regel.herhaal': 'Na een ronde de fouten meteen overdoen',
-  // "Een schatting" en niet "zien" (ADR-177): het is een vergeetcurve met een
-  // gekozen constante, en `retention.ts` verbiedt tekst die anders suggereert.
-  'premium.regel.voorspelling':
-    'Na elke ronde een schatting van wat er over drie weken nog van over is',
-  // Alle diploma's zijn premium sinds ADR-192, ook de tafels. De ring bij elk
-  // diploma blijft te zien: een kind hoort te weten wat er te halen valt.
-  // `kast.test.ts` bindt het getal aan de lijst.
-  'premium.regel.ringen': 'Alle diploma’s zien, en wanneer je kind klaar is voor de toets',
-  'premium.regel.diplomas':
-    'Alle 80 diploma’s halen: de tafels, rekenen, topografie, taal, klok en vlaggen',
-  'premium.regel.weekdoelen': 'Elke week eigen doelen kiezen en halen',
-  'premium.regel.voortgang': 'Zien wat je kind inmiddels beheerst en hoe vaak het oefent',
-  'premium.regel.plan': 'Elke dag klaargezet wat herhaald moet worden',
-  // De diepte en de tijd (ADR-177). Sinds ADR-192 is ook per vak en per
-  // onderwerp kijken premium (`premium.regel.voortgang`); dit is wat er
-  // daaronder nog bij komt.
-  'premium.regel.onthouden': 'Per som en per woord zien hoe het gaat, en het verloop week na week',
-  'premium.regel.fouten': 'Alle fouten verzameld, om later te oefenen',
-  'premium.regel.oefentoets': 'De oefentoets, met een cijfer',
-  'premium.regel.bliksem': 'De bliksemronde en overleven',
-  'premium.regel.lijsten': 'Oefenstof van school intypen of importeren',
-  'premium.regel.kinderen': 'Tot drie kinderen op dit apparaat',
-  'premium.regel.gezin': 'Eén code voor 3 kinderen, op 3 apparaten',
+  'premium.regel.vakken': 'Alle vakken',
+  'premium.regel.onbeperkt': 'Onbeperkt leren',
+  'premium.regel.reclame': 'Geen advertenties',
+  // In het ontwerp "Alle spelvormen". Maar elke spelvorm die leert is gratis
+  // sinds ADR-224; premium zijn de drie die toetsen (ADR-256).
+  'premium.regel.bliksem': 'Bliksemronde, overleven en de oefentoets',
+  // In het ontwerp "Meer dan 80". Het zijn er precies 80, en `kast.test.ts`
+  // bindt het getal aan de lijst.
+  'premium.regel.diplomas': 'Alle 80 diploma’s',
+  'premium.regel.plan': 'Automatisch plannen en herhalen',
+  'premium.regel.weekdoelen': 'Persoonlijke doelen per kind',
+  'premium.regel.voortgang': 'Uitgebreid inzicht in voortgang per kind',
+  'premium.regel.lijsten': 'Eigen oefenlijsten',
+  // Drie kinderen kunnen ook zonder code (ADR-173); wat premium erbij geeft,
+  // is dat één code op drie apparaten werkt.
+  'premium.regel.gezin': 'Eén code voor 3 apparaten',
 
-  // Waarom dit en geen ander. Geen functies maar redenen om te vertrouwen, en
-  // alle vier controleerbaar, want dat is het punt. Sinds ADR-145 een kop en
-  // een regel, zodat de reden in één oogopslag te lezen is.
-  'premium.waaromTitel': 'Waarom leer.nu',
-  'premium.waarom.reclame': 'Geen advertenties, geen trackers',
-  'premium.waarom.reclameUit':
-    'Dat hoef je niet op ons woord te geloven: de broncode is openbaar, dus je kunt het zelf controleren.',
-  'premium.waarom.apparaat': 'Alles blijft op je eigen apparaat',
-  'premium.waarom.apparaatUit':
-    // Sinds ADR-210 gaat er ook een telling heen, zonder naam. Sinds ADR-226
-    // stuurt de controle van de code een willekeurig nummer voor dit apparaat mee.
-    'Wat je kind oefent, blijft op dit apparaat. Naar onze server gaan alleen de code, een willekeurig nummer voor dit apparaat en tellingen zonder naam.',
-  // Hier stond "Geen abonnement". Dat kan niet blijven staan naast een knop
-  // waar een prijs per maand op staat (ADR-164), en de plek gaat naar de belofte
-  // die dit product wél onderscheidt en die nergens anders stond.
-  'premium.waarom.geenNamen': 'We slaan geen namen van kinderen op',
-  'premium.waarom.geenNamenUit':
-    'De voornaam die je kind invult, staat op je eigen apparaat en gaat nergens heen. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
-  'premium.waarom.geenNamenUitAccount':
-    'Zonder account staat de voornaam alleen op je eigen apparaat. Met een gezinsaccount gaat hij met jouw toestemming naar onze server in de EU. Geen achternaam, geen school, geen woonplaats en geen geboortedatum: we vragen ze niet.',
-  'premium.waarom.gok': 'Belonen zonder gokken',
-  'premium.waarom.gokUit':
-    'Je kind doet pas de toets voor een diploma als het de stof op verschillende dagen goed had. Niets hangt van geluk af.',
-
-  // De kassa (ADR-123, ADR-124). Het bedrag staat hier omdat een knop naar een
-  // winkel zonder prijs als een val voelt; kassa.test.ts houdt het gelijk aan
-  // PRIJS_CENTEN, zodat er één bedrag is en geen twee.
+  // Kopen (ADR-123, ADR-164, ADR-256). Het bedrag staat hier omdat een knop
+  // naar een winkel zonder prijs als een val voelt; kassa.test.ts houdt het
+  // jaarbedrag gelijk aan PRIJS_CENTEN, zodat er één bedrag is en geen twee.
+  'premium.betalen': 'Betalen',
+  'premium.maandelijks': 'Maandelijks',
+  'premium.jaarlijks': 'Jaarlijks',
+  'premium.jaarKorting': '−50%',
   'premium.prijs': '€ 59,95',
-  'premium.kopenUitleg':
-    'Eenmalig, voor een heel jaar, 3 kinderen en 3 apparaten. Je betaalt met iDEAL en krijgt je code meteen.',
-  'premium.kopenKnop': 'Een code kopen',
-  // De tweede manier (ADR-164). Een schooljaar vooruit betalen is voor wie
-  // zeker weet dat dit past, en dat weet je pas nadat je het gebruikt hebt.
-  // Daarom ook per maand, en dan zonder een jaar eraan vast te zitten. Tot
-  // betalen per maand er is, staat het er als "binnenkort" (ADR-196).
   'premium.maandPrijs': '€ 9,95',
   'premium.perMaand': 'per maand',
-  'premium.perSchooljaarKort': 'per jaar',
-  'premium.binnenkort': 'Binnenkort',
-  'premium.maandUitleg': 'Binnenkort kun je ook per maand betalen, en elke maand opzeggen.',
-  'premium.jaarVoordeel': 'Een jaar in één keer kost minder dan zeven losse maanden.',
-  'premium.ofPerMaand': 'Binnenkort ook {prijs} per maand, maandelijks opzegbaar.',
+  'premium.gezinJaar': 'Voor het hele gezin: 3 kinderen, één jaar lang',
+  'premium.gezinMaand': 'Voor het hele gezin: 3 kinderen',
+  'premium.activeren': 'Premium activeren',
+  'premium.jaarUitleg': 'Minder dan € 5 per maand. Eén keer betalen.',
+  'premium.maandUitleg': 'Maandelijks opzegbaar.',
+  'premium.privacy': 'Privacyverklaring',
+  // De knop op de ouderpagina, die naar dezelfde kassa gaat.
+  'premium.kopenKnop': 'Een code kopen',
+
+  // Waarom dit en geen ander (ADR-256): vier redenen om te vertrouwen.
+  'premium.waaromTitel': 'Waarom leer.nu',
+  'premium.waarom.anoniem': 'Je kind blijft anoniem',
+  'premium.waarom.anoniemUit':
+    'We slaan geen persoonlijke gegevens van je kind op. Geen account, geen e-mailadres. De voortgang blijft op je eigen apparaat.',
+  // Met een gezinsaccount gaat de voornaam wél naar de server, met
+  // toestemming (ADR-249). Dan zegt de uitleg dat.
+  'premium.waarom.anoniemUitAccount':
+    'Zonder account blijft alles op je eigen apparaat. Met een gezinsaccount gaat alleen de voornaam, met jouw toestemming, naar onze server in de EU. Geen achternaam, geen school en geen e-mailadres van je kind.',
+  'premium.waarom.herhalen': 'Slim herhalen',
+  'premium.waarom.herhalenUit':
+    'Wat nog lastig is, komt vaker terug. Wat goed gaat, komt minder vaak terug. Zo blijft de stof beter hangen.',
+  'premium.waarom.kort': 'Een paar minuten per dag',
+  'premium.waarom.kortUit':
+    'Korte oefensessies die makkelijk in de dag passen. Regelmatig oefenen werkt beter dan lang oefenen.',
+  'premium.waarom.reclame': 'Geen reclame, geen afleiding',
+  'premium.waarom.reclameUit':
+    'Alleen oefenen. Er zijn geen advertenties, pop-ups of links naar andere websites.',
 
   'premium.fout.leeg': 'Typ eerst de code.',
   'premium.fout.onbekend': 'Deze code kennen we niet. Kijk of je hem goed hebt overgetypt.',
