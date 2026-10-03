@@ -75,10 +75,14 @@ test('op Rekenen opent een onderwerp de vraag welke, en een tafel de spelvormen'
   await signIn(page, 'Noor');
   await page.goto('/rekenen');
 
+  // Eerst welke sommen (ADR-258); daarna staan de onderwerpen open en in beeld.
   await page
-    .getByRole('region', { name: 'Kies een onderwerp' })
-    .getByRole('button', { name: /^Tafels/ })
+    .getByRole('region', { name: 'Welke sommen?' })
+    .getByRole('button', { name: /^Keer en delen/ })
     .click();
+  const onderwerpen = page.getByRole('region', { name: 'Kies een onderwerp' });
+  await expect(onderwerpen.getByRole('button').first()).toBeInViewport();
+  await onderwerpen.getByRole('button', { name: /^Tafels/ }).click();
   const welke = page.getByRole('region', { name: 'Welke tafel?' });
   await expect(welke.getByRole('button', { name: 'Tafel van 7', exact: true })).toBeInViewport();
 
@@ -91,7 +95,7 @@ test('een stap die nog komt, gaat open met een druk op zijn rij', async ({ page 
   await signIn(page, 'Noor');
   await page.goto('/rekenen');
 
-  await page.getByRole('button', { name: /^Naar stap 2: Hoe wil je oefenen\?/ }).click();
+  await page.getByRole('button', { name: /^Naar stap 3: Hoe wil je oefenen\?/ }).click();
   const hoe = page.getByRole('region', { name: /Hoe wil je/ });
   await expect(hoe.getByRole('button').first()).toBeInViewport();
   await expect(page.getByRole('region', { name: 'Kies een onderwerp' })).toHaveCount(0);

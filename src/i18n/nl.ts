@@ -1344,6 +1344,12 @@ export const nl = {
   'regio.analoog': 'Analoge klok',
   'regio.digitaal': 'Digitale klok',
   'start.klok': 'klok',
+  // Rekenen (ADR-258): eerst welke sommen, dan het onderwerp, dan hoe.
+  'rekendeel.title': 'Welke sommen?',
+  'regio.plusEnMin': 'Plus en min',
+  'regio.keerEnDelen': 'Keer en delen',
+  'regio.rekenmix': 'Rekenmix',
+  'start.sommen': 'sommen',
   // Spelling: zes tegels. De vier soorten onthoudwoorden en de drie
   // woordeinden zijn elk één tegel, met knopjes eronder.
   'onderwerp.taal.onthoud': 'Onthoudwoorden',

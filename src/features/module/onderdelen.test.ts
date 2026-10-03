@@ -376,3 +376,14 @@ describe('what the clock offers', () => {
     expect(startbareOnderdelen().map((deel) => deel.setId)).toContain('klok-dig-mix');
   });
 });
+
+describe('what rekenen offers (ADR-258)', () => {
+  it('puts every subject under one of three parts, never more than six to a part', () => {
+    const vakken = onderwerpenVan('tafels');
+    const op = (regio: string) => vakken.filter((vak) => vak.regio === regio).map((vak) => vak.id);
+    expect(op('plus-en-min')).toEqual(['plus', 'min', 'splitsen', 'halveren', 'verdubbelen']);
+    expect(op('keer-en-delen')).toEqual(['tafels', 'keer', 'delen']);
+    expect(op('rekenmix')).toEqual(['rekenmix']);
+    expect(vakken.every((vak) => vak.regio !== null)).toBe(true);
+  });
+});

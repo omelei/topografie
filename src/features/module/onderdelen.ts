@@ -976,7 +976,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.tafels',
       uitleg: 'onderwerp.tafels.uitleg',
       keuze: 'onderwerp.tafels.keuze',
-      regio: null,
+      regio: 'keer-en-delen',
       sets: van('tafel-'),
     },
     // Keersommen in three ranges (ADR-100, ADR-120): to 10 is the table sums
@@ -989,7 +989,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.keer',
       uitleg: 'onderwerp.keer.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'keer-en-delen',
       sets: [...mixMet('keer-10'), ...van('keer-')],
     },
     // Deelsommen in the same three ranges, by the number that is divided: the
@@ -1001,7 +1001,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.delen',
       uitleg: 'onderwerp.delen.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'keer-en-delen',
       sets: van('delen-'),
     },
     {
@@ -1010,7 +1010,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.plus',
       uitleg: 'onderwerp.plus.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'plus-en-min',
       sets: van('plus-'),
     },
     {
@@ -1019,7 +1019,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.min',
       uitleg: 'onderwerp.min.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'plus-en-min',
       sets: van('min-'),
     },
     // Splitsen, halveren and verdubbelen (ADR-120): three more kinds of sum,
@@ -1030,7 +1030,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.splitsen',
       uitleg: 'onderwerp.splitsen.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'plus-en-min',
       sets: van('splitsen-'),
     },
     {
@@ -1039,7 +1039,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.halveren',
       uitleg: 'onderwerp.halveren.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'plus-en-min',
       sets: van('halveren-'),
     },
     {
@@ -1048,7 +1048,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.verdubbelen',
       uitleg: 'onderwerp.verdubbelen.uitleg',
       keuze: 'onderwerp.bereik.keuze',
-      regio: null,
+      regio: 'plus-en-min',
       sets: van('verdubbelen-'),
     },
     {
@@ -1057,7 +1057,7 @@ export function onderwerpenVan(moduleId: Module['id']): Onderwerp[] {
       naam: 'onderwerp.rekenmix',
       uitleg: 'onderwerp.rekenmix.uitleg',
       keuze: 'onderwerp.rekenmix.keuze',
-      regio: null,
+      regio: 'rekenmix',
       sets: [
         ...mixMet('rekenmix-1'),
         ...mixMet('rekenmix-2'),

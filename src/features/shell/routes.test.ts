@@ -158,6 +158,13 @@ describe('the addresses', () => {
       setId: null,
       regio: 'digitaal',
     });
+    // Rekenen op een deel (ADR-258).
+    expect(routeFor('/rekenen/plus-en-min')).toMatchObject({
+      name: 'module',
+      setId: null,
+      regio: 'plus-en-min',
+    });
+    expect(routeFor('/rekenen/tafel-7')).toMatchObject({ name: 'module', setId: 'tafel-7' });
     const digitaal = routeFor('/klokkijken/digitaal-mix');
     expect(digitaal.name === 'module' ? pathFor(digitaal) : null).toBe('/klokkijken/digitaal-mix');
     expect(pathFor(routeFor('/klok/halve-uren'))).toMatch(/\/klokkijken\/halve-uren$/);

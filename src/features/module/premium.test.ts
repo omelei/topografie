@@ -91,7 +91,6 @@ describe('the map a page opens on', () => {
   it('is Nederland on topography and the world on flags', () => {
     expect(eersteRegio('topo', TOPO_REGIOS)).toBe('nederland');
     expect(eersteRegio('vlaggen', TOPO_REGIOS)).toBe('wereld');
-    expect(eersteRegio('tafels', [])).toBeNull();
   });
 
   it('is Spelling on Taal, whose row asks which part (ADR-118)', () => {
@@ -100,6 +99,16 @@ describe('the map a page opens on', () => {
     expect(regiosVan('klok').map((regio) => regio.id)).toEqual(['analoog', 'digitaal']);
     expect(regioVraag('klok')).toBe('klokdeel.title');
     expect(eersteRegio('klok', regiosVan('klok'))).toBe('analoog');
+    // Rekenen vraagt eerst welke sommen, en opent op keer en delen; tot en met
+    // groep 3 op plus en min, want de tafels komen pas in groep 4 (ADR-258).
+    expect(regiosVan('tafels').map((regio) => regio.id)).toEqual([
+      'plus-en-min',
+      'keer-en-delen',
+      'rekenmix',
+    ]);
+    expect(eersteRegio('tafels', regiosVan('tafels'))).toBe('keer-en-delen');
+    expect(eersteRegio('tafels', regiosVan('tafels'), 3)).toBe('plus-en-min');
+    expect(eersteRegio('tafels', regiosVan('tafels'), 4)).toBe('keer-en-delen');
     expect(TAAL_DELEN.map((deel) => deel.id)).toEqual(['spelling', 'werkwoorden', 'engels']);
     expect(eersteRegio('woorden', TAAL_DELEN)).toBe('spelling');
     expect(regioVraag('woorden')).toBe('deel.title');

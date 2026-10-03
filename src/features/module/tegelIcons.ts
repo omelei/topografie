@@ -80,6 +80,10 @@ export const REGIO_ICON: Record<string, TileIcon> = {
   // De twee klokken (ADR-257): een wijzerplaat en een schermpje met cijfers.
   analoog: UurIcon,
   digitaal: DigitaalIcon,
+  // De delen van Rekenen (ADR-258): het teken van hun eerste soort som.
+  'plus-en-min': PlusIcon,
+  'keer-en-delen': KeerIcon,
+  rekenmix: MixIcon,
 };
 
 /**
