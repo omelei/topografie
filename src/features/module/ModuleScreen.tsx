@@ -229,6 +229,8 @@ export function ModuleScreen({
   const regios = regiosVan(module.id);
   const uitAdres = regios.find((kandidaat) => kandidaat.id === adresRegio)?.id ?? null;
   const hier = regio ?? adresVak?.regio ?? uitAdres ?? eersteRegio(module.id, regios);
+  // Welke klok, voor de diploma's van die klok (ADR-257).
+  const klokDeel = hier === 'digitaal' ? 'digitaal' : 'analoog';
   const opKaart =
     regios.length === 0 ? alleOnderwerpen : alleOnderwerpen.filter((vak) => vak.regio === hier);
   // Wat bij de groep past eerst, dan wat herhaling is, dan wat voor later is
@@ -1231,7 +1233,7 @@ export function ModuleScreen({
         {/* Four klokdiploma's on the clock's page, and eleven topodiploma's on
             topography's (ADR-117). Pressing one answers every step at once:
             that step or that map, and the diploma. */}
-        {module.id === 'klok' ? <KlokDiplomas onKies={kiesKlokDiploma} /> : null}
+        {module.id === 'klok' ? <KlokDiplomas onKies={kiesKlokDiploma} deel={klokDeel} /> : null}
 
         {module.id === 'topo' ? <TopoDiplomas onKies={kiesTopoDiploma} /> : null}
 
@@ -1307,7 +1309,13 @@ export function ModuleScreen({
           : module.id === 'klok'
             ? {
                 titel: t('klok.diplomasTitle'),
-                wand: <KlokDiplomas onKies={kiesKlokDiploma} onStand={zetDiplomaStand} />,
+                wand: (
+                  <KlokDiplomas
+                    onKies={kiesKlokDiploma}
+                    onStand={zetDiplomaStand}
+                    deel={klokDeel}
+                  />
+                ),
               }
             : module.id === 'topo'
               ? {

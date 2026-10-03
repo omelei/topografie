@@ -1,4 +1,5 @@
 import {
+  klokDigitaal,
   sumText,
   sumUitgewerkt,
   zinDelen,
@@ -12,7 +13,8 @@ import {
 } from '@/game-core';
 import type { TranslationKey } from '@/i18n';
 import type { Onderdeel } from '@/features/module/onderdelen';
-import { klokVoluit } from '@/features/klok/klokTaal';
+import { klokVoluit, klokWoorden } from '@/features/klok/klokTaal';
+import { isDigitaleKlokSet } from '@/content/loadKlok';
 
 /**
  * Een werkblad om te printen, per onderwerp (ADR-211).
@@ -32,6 +34,8 @@ export type WerkbladVraag =
   | { readonly soort: 'plek'; readonly geometrieRef: string; readonly antwoord: string }
   | { readonly soort: 'som'; readonly tekst: string; readonly antwoord: string }
   | { readonly soort: 'klok'; readonly klok: KlokItem; readonly antwoord: string }
+  /** De digitale klok (ADR-257): de tijd in woorden, het kind schrijft de cijfers. */
+  | { readonly soort: 'klok-woorden'; readonly woorden: string; readonly antwoord: string }
   | { readonly soort: 'vlag'; readonly vlag: VlagItem; readonly antwoord: string }
   | {
       readonly soort: 'zin';
@@ -52,6 +56,7 @@ const HOOGSTENS: Record<WerkbladVraag['soort'], number> = {
   plek: 25,
   som: 30,
   klok: 12,
+  'klok-woorden': 20,
   vlag: 20,
   zin: 15,
 };
@@ -165,6 +170,19 @@ export function werkbladVoor(deel: Onderdeel, zaad: number): Werkblad | null {
     return {
       opdracht: 'werkblad.opdracht.sommen',
       vragen: kies(deel.items as readonly SumItem[], HOOGSTENS.som, zaad).map(som),
+    };
+  }
+
+  if (deel.moduleId === 'klok' && isDigitaleKlokSet(deel.setId)) {
+    return {
+      opdracht: 'werkblad.opdracht.klokDigitaal',
+      vragen: kies(deel.items as readonly KlokItem[], HOOGSTENS['klok-woorden'], zaad).map(
+        (klok) => ({
+          soort: 'klok-woorden',
+          woorden: klokWoorden(klok),
+          antwoord: klokDigitaal(klok),
+        }),
+      ),
     };
   }
 

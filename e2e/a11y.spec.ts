@@ -121,7 +121,10 @@ test('the module pages have no violations, in each of their four shapes', async 
   // topografie's Nederland row has, with no chips underneath.
   // The tile, whose name is "Halve uren. …" — not the klokdiploma under it,
   // whose name starts "Halve uren: …" (ADR-117).
-  await expect(page.getByRole('button', { name: /^Halve uren\./ })).toBeVisible();
+  // Op een telefoon staat eerst "Welke klok?" open (ADR-257).
+  await expect(
+    (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Halve uren\./ }),
+  ).toBeVisible();
   expect((await scan(page)).violations).toEqual([]);
 
   // The page of a module not built yet. Taal was this example until it was

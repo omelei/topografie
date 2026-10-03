@@ -273,6 +273,7 @@ export const nl = {
   'werkblad.opdracht.kaart': 'Schrijf bij elk nummer de naam.',
   'werkblad.opdracht.sommen': 'Reken uit. Schrijf het antwoord op de lijn.',
   'werkblad.opdracht.klok': 'Schrijf op hoe laat het is.',
+  'werkblad.opdracht.klokDigitaal': 'Schrijf de tijd in cijfers.',
   'werkblad.opdracht.vlaggen': 'Schrijf onder elke vlag de naam.',
   'werkblad.opdracht.spelling': 'Vul de letters in.',
   'werkblad.opdracht.werkwoorden': 'Vul het werkwoord in, in de goede vorm.',
@@ -639,6 +640,15 @@ export const nl = {
   // half acht dat je hier goed hebt hetzelfde doosje opschuift als altijd.
   'set.klok-mix': 'Klokmix',
   'set.klok-mix.uitleg': 'Alle standen van de klok door elkaar',
+  // De digitale klok (ADR-257): dezelfde vier stappen in cijfers. De naam
+  // zegt het erbij, want hij staat ook op Vandaag en Jij, zonder de rij
+  // "Welke klok?" erboven.
+  'set.klok-dig-heel': 'Hele uren, digitaal',
+  'set.klok-dig-half': 'Halve uren, digitaal',
+  'set.klok-dig-kwart': 'Kwartieren, digitaal',
+  'set.klok-dig-vijf': 'Vijf minuten, digitaal',
+  'set.klok-dig-mix': 'Klokmix, digitaal',
+  'set.klok-dig-mix.uitleg': 'Alle tijden in cijfers door elkaar',
 
   // Topografie in drie stappen: eerst waar op de wereld, dan wat, dan hoe.
   // De regio staat vooraan omdat het de grofste keuze is die er te maken valt
@@ -692,6 +702,12 @@ export const nl = {
   'onderwerp.kwartieren.uitleg': 'Kwart over en kwart voor',
   'onderwerp.vijfMinuten': 'Vijf minuten',
   'onderwerp.vijfMinuten.uitleg': 'Vijf over, tien voor half, en alles ertussen',
+  // Op de digitale klok (ADR-257) zegt de regel hoe cijfers klinken, ook na
+  // twaalf uur.
+  'onderwerp.heleUren.digitaal': '7:00 en 19:00 zijn allebei zeven uur',
+  'onderwerp.halveUren.digitaal': '7:30 en 19:30 zijn allebei half acht',
+  'onderwerp.kwartieren.digitaal': '7:15 is kwart over zeven, 18:45 kwart voor zeven',
+  'onderwerp.vijfMinuten.digitaal': '7:25 is vijf voor half acht',
   'onderwerp.klokmix': 'Klokmix',
 
   // Modes
@@ -850,9 +866,9 @@ export const nl = {
   // In het ontwerp "Alle spelvormen". Maar elke spelvorm die leert is gratis
   // sinds ADR-224; premium zijn de drie die toetsen (ADR-256).
   'premium.regel.bliksem': 'Bliksemronde, overleven en de oefentoets',
-  // In het ontwerp "Meer dan 80". Het zijn er precies 80, en `kast.test.ts`
-  // bindt het getal aan de lijst.
-  'premium.regel.diplomas': 'Alle 80 diploma’s',
+  // In het ontwerp "Meer dan 80". Het zijn er precies 84 sinds de digitale
+  // klok (ADR-257), en `kast.test.ts` bindt het getal aan de lijst.
+  'premium.regel.diplomas': 'Alle 84 diploma’s',
   'premium.regel.plan': 'Automatisch plannen en herhalen',
   'premium.regel.weekdoelen': 'Persoonlijke doelen per kind',
   'premium.regel.voortgang': 'Uitgebreid inzicht in voortgang per kind',
@@ -1196,10 +1212,13 @@ export const nl = {
   'klok.typeQuestion': 'Typ hoe laat het is',
   'klok.chooseQuestion': 'Kies hoe laat het is',
   'klok.whichQuestion': 'Welke klok hoort hierbij?',
-  // De digitale klok (ADR-247): de cijfers staan op het scherm, de tijd in
-  // woorden kies je uit vier.
+  // De digitale klok (ADR-247, ADR-257): bij meerkeuze staan de cijfers op het
+  // scherm en kies je de tijd in woorden uit vier.
   'klok.digitaalQuestion': 'Hoe zeg je deze tijd?',
   'klok.digitaalPrompt': 'Kijk naar de cijfers. Hoe zeg je deze tijd?',
+  // Bij typen andersom: de tijd in woorden, en jij schrijft hem in cijfers.
+  // Cijfers overtypen die al op het scherm staan, zou niets toetsen.
+  'klok.digitaalTypeQuestion': 'Typ deze tijd in cijfers',
   'klok.typePlaceholder': '7:30',
   'klok.correct': 'Goed! Het is {tijd}.',
   'klok.wrong': 'Het is {tijd}.',
@@ -1212,13 +1231,13 @@ export const nl = {
   // midden in die zin leest als een fout. De vraag zelf staat boven de vier
   // klokken, waar hij hoort.
   'mode.klok-welke-klok': 'Klok zoeken',
+  // Vervallen als spelvorm (ADR-257); de naam blijft voor oude rondes.
   'mode.klok-digitaal': 'Digitale klok',
   'mode.klok-typen': 'Zelf typen',
   // De volgorde is op elke pagina dezelfde (ADR-112): zoeken, meerkeuze, zelf
   // typen. Bij de klok is zoeken de klok die bij een tijd hoort.
   'way.klok-meerkeuze': 'Kies uit 4 tijden — de eerste stap naar typen',
   'way.klok-welke-klok': 'Zoek de klok die bij de tijd hoort',
-  'way.klok-digitaal': 'Lees de cijfers, ook na 12 uur, en kies de tijd',
   'way.klok-typen': 'Typ de tijd zelf — zoals op de toets',
   // Het klokdiploma (ADR-117): tien klokken van één stap, zelf opschrijven,
   // negen goed, en pas aan het eind hoor je hoe het ging.
@@ -1253,6 +1272,7 @@ export const nl = {
   'set.oceanie-fouten': 'Jouw fouten in Oceanië',
   'set.wereld-fouten': 'Jouw fouten op de wereldkaart',
   'set.klok-fouten': 'Jouw fouten met de klok',
+  'set.klok-dig-fouten': 'Jouw fouten met de digitale klok',
   // De naam van een set: wat de startbalk en de kaarten tonen.
   'vlag.regio.wereld': 'de wereld',
   'vlag.set.bekend': 'Bekende vlaggen van {regio}',
@@ -1319,6 +1339,11 @@ export const nl = {
   'regio.werkwoorden': 'Werkwoorden',
   'regio.engels': 'Engels',
   'start.deel': 'deel',
+  // Klok (ADR-257): eerst welke klok, dan het onderwerp, dan hoe.
+  'klokdeel.title': 'Welke klok?',
+  'regio.analoog': 'Analoge klok',
+  'regio.digitaal': 'Digitale klok',
+  'start.klok': 'klok',
   // Spelling: zes tegels. De vier soorten onthoudwoorden en de drie
   // woordeinden zijn elk één tegel, met knopjes eronder.
   'onderwerp.taal.onthoud': 'Onthoudwoorden',
@@ -2282,6 +2307,12 @@ export const nl = {
   'diploma.zin.klok-half': 'Je leest elke halve klok. En je weet: half acht is half vóór acht.',
   'diploma.zin.klok-kwart': 'Je leest kwart over en kwart voor, op elke klok.',
   'diploma.zin.klok-vijf': 'Je leest de klok op vijf minuten, zoals vijf voor half drie.',
+  // De digitale klok (ADR-257): je schrijft de tijd in cijfers.
+  'diploma.zin.klok-dig-heel': 'Je schrijft elk heel uur in cijfers, zoals 7:00.',
+  'diploma.zin.klok-dig-half': 'Je schrijft elk half uur in cijfers. Half acht is 7:30.',
+  'diploma.zin.klok-dig-kwart': 'Je schrijft kwart over en kwart voor in cijfers, zoals 6:45.',
+  'diploma.zin.klok-dig-vijf':
+    'Je schrijft elke tijd in cijfers, zoals 2:25 voor vijf voor half drie.',
   'diploma.zin.vlag-nederland-provincies': 'Je herkent de vlaggen van alle twaalf provincies.',
   'diploma.zin.vlag-afrika-alle': 'Je herkent alle vlaggen van Afrika, ook de lastige.',
   'diploma.zin.vlag-azie-alle': 'Je herkent alle vlaggen van Azië, ook de lastige.',

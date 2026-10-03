@@ -50,7 +50,10 @@ export interface Regio {
     | 'nederland'
     | TaalDeel
     /** Het derde deel van Taal: de lijsten die een ouder zelf intypte (ADR-135). */
-    | typeof EIGEN_DEEL;
+    | typeof EIGEN_DEEL
+    /** De twee klokken (ADR-257). */
+    | 'analoog'
+    | 'digitaal';
   readonly naam: TranslationKey;
   /** Whether there are sets behind it today. */
   readonly built: boolean;
@@ -84,6 +87,7 @@ export const TOPO_REGIOS: readonly Regio[] = [
  */
 export function regiosVan(moduleId: Module['id']): readonly Regio[] {
   if (moduleId === 'woorden') return taalDelen();
+  if (moduleId === 'klok') return KLOK_DELEN;
   return moduleId === 'topo' || moduleId === 'vlaggen' ? TOPO_REGIOS : [];
 }
 
@@ -96,6 +100,19 @@ export const TAAL_DELEN: readonly Regio[] = [
   { id: 'spelling', naam: 'regio.spelling', built: true },
   { id: 'werkwoorden', naam: 'regio.werkwoorden', built: true },
   { id: 'engels', naam: 'regio.engels', built: true },
+];
+
+/**
+ * De twee klokken (ADR-257). De wijzerklok eerst, want die leert een kind
+ * eerst, en daarna de digitale: dezelfde tijden in cijfers, ook na twaalf uur.
+ *
+ * Tot ADR-257 was de digitale klok een spelvorm (ADR-247). Maar welke klok je
+ * leest, is een keuze over wát je oefent en niet over hoe. Dezelfde rij als
+ * Taal's delen, om dezelfde reden: de grofste keuze eerst, en één mechanisme.
+ */
+export const KLOK_DELEN: readonly Regio[] = [
+  { id: 'analoog', naam: 'regio.analoog', built: true },
+  { id: 'digitaal', naam: 'regio.digitaal', built: true },
 ];
 
 /**
@@ -115,13 +132,15 @@ function taalDelen(): readonly Regio[] {
   return heeft ? [...TAAL_DELEN, { id: EIGEN_DEEL, naam: 'regio.eigen', built: true }] : TAAL_DELEN;
 }
 
-/** What the row asks: where on the map, or which part of Taal. */
+/** What the row asks: where on the map, which part of Taal, or which clock. */
 export function regioVraag(moduleId: Module['id']): TranslationKey {
+  if (moduleId === 'klok') return 'klokdeel.title';
   return moduleId === 'woorden' ? 'deel.title' : 'regio.title';
 }
 
-/** The word before the row's answer in the start bar: "kaart", or "deel". */
+/** The word before the row's answer in the start bar: "kaart", "deel" or "klok". */
 export function regioLabel(moduleId: Module['id']): TranslationKey {
+  if (moduleId === 'klok') return 'start.klok';
   return moduleId === 'woorden' ? 'start.deel' : 'start.kaart';
 }
 
@@ -136,11 +155,18 @@ export function regioLabel(moduleId: Module['id']): TranslationKey {
  * provincievlaggen, and a child who comes for flags comes for the countries'.
  *
  * Taal opens on Spelling, which is this row's default in the same sense: the
- * only thing on the page chosen before the child chooses (ADR-118).
+ * only thing on the page chosen before the child chooses (ADR-118). Klok
+ * opent op de wijzerklok (ADR-257).
  */
 export function eersteRegio(moduleId: Module['id'], regios: readonly Regio[]): Regio['id'] | null {
   const standaard: Regio['id'] =
-    moduleId === 'vlaggen' ? 'wereld' : moduleId === 'woorden' ? 'spelling' : 'nederland';
+    moduleId === 'vlaggen'
+      ? 'wereld'
+      : moduleId === 'woorden'
+        ? 'spelling'
+        : moduleId === 'klok'
+          ? 'analoog'
+          : 'nederland';
   const eerst = regios.find((regio) => regio.id === standaard && regio.built);
   return (eerst ?? regios.find((regio) => regio.built))?.id ?? null;
 }

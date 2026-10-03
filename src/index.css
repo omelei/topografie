@@ -1849,6 +1849,13 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.04em;
   }
+  /* Als een van vier antwoorden bij Klok zoeken (ADR-257): een klein
+   * schermpje, zodat de vier naast elkaar passen. */
+  .tk-klok-optie .tk-digitaal {
+    width: 100%;
+    padding: 16px 8px;
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+  }
 
   /* ---- Flags (ADR-102) -------------------------------------------------
    * Every flag stands in a frame of 4 by 3, and keeps its own shape inside

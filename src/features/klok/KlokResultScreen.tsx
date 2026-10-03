@@ -1,5 +1,6 @@
 import { diplomaDrempel } from '@/game-core';
 import { t, type TranslationKey } from '@/i18n';
+import { isDigitaleKlokSet } from '@/content/loadKlok';
 import { RondeKlaar } from '@/features/round/RondeKlaar';
 import { KlokFace } from './KlokFace';
 import { klokVoluit } from './klokTaal';
@@ -83,9 +84,13 @@ export function KlokResultScreen({
               {/* The face is decorative here and deliberately so: the words
                   beside it say the same thing, and a screen reader that read
                   both would hear half past seven twice. */}
-              <span className="tk-lijstrij-beeld">
-                <KlokFace item={tijd} cijfers={false} />
-              </span>
+              {/* Op de digitale klok geen wijzerplaat (ADR-257): de cijfers
+                  staan al in de regel ernaast. */}
+              {isDigitaleKlokSet(setId) ? null : (
+                <span className="tk-lijstrij-beeld">
+                  <KlokFace item={tijd} cijfers={false} />
+                </span>
+              )}
               <span className="tk-lijstrij-tekst">
                 <span className="tk-lijstrij-titel">{klokVoluit(tijd)}</span>
               </span>

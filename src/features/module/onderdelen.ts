@@ -21,7 +21,15 @@ import { KIES_VORM, type TaalMode } from '@/features/taal/taalRegels';
 import { itemId, leesLijsten, setIdVan } from '@/store/woordlijsten';
 import { EIGEN_DEEL } from './regios';
 import { isMix, loadSumSet, loadSumSets, MIX_IDS } from '@/content/loadSums';
-import { KLOK_FOUTEN_ID, KLOK_MIX_ID, loadKlokSet, loadKlokSets } from '@/content/loadKlok';
+import {
+  KLOK_DIG_FOUTEN_ID,
+  KLOK_DIG_MIX_ID,
+  KLOK_FOUTEN_ID,
+  KLOK_MIX_ID,
+  loadDigitaleKlokSets,
+  loadKlokSet,
+  loadKlokSets,
+} from '@/content/loadKlok';
 import { loadVlagSet, loadVlagSets, type VlagOnderwerp, type VlagSet } from '@/content/loadVlaggen';
 import { t, type TranslationKey } from '@/i18n';
 import type { Module } from '@/features/shell/modules';
@@ -378,7 +386,8 @@ function rekenMixen(): Onderdeel[] {
  *
  * Named by key rather than composed the way rekenen's are: "Hele uren" is a
  * word, not a number with a word in front of it, so there is nothing here for a
- * `klokNaam` to work out.
+ * `klokNaam` to work out. De digitale klok draagt dezelfde namen: de rij
+ * erboven zegt al welke klok het is (ADR-257).
  */
 const KLOK_NAAM: Record<string, TranslationKey> = {
   'klok-heel': 'set.klok-heel',
@@ -387,6 +396,12 @@ const KLOK_NAAM: Record<string, TranslationKey> = {
   'klok-vijf': 'set.klok-vijf',
   [KLOK_MIX_ID]: 'set.klok-mix',
   [KLOK_FOUTEN_ID]: 'set.klok-fouten',
+  'klok-dig-heel': 'set.klok-dig-heel',
+  'klok-dig-half': 'set.klok-dig-half',
+  'klok-dig-kwart': 'set.klok-dig-kwart',
+  'klok-dig-vijf': 'set.klok-dig-vijf',
+  [KLOK_DIG_MIX_ID]: 'set.klok-dig-mix',
+  [KLOK_DIG_FOUTEN_ID]: 'set.klok-dig-fouten',
 };
 
 function klokOnderdeel(set: { readonly id: string; readonly items: readonly Schedulable[] }) {
@@ -396,14 +411,15 @@ function klokOnderdeel(set: { readonly id: string; readonly items: readonly Sche
     naam: KLOK_NAAM[set.id] ?? null,
     literalNaam: null,
     kortNaam: null,
-    mix: set.id === KLOK_MIX_ID,
+    mix: set.id === KLOK_MIX_ID || set.id === KLOK_DIG_MIX_ID,
     items: set.items,
     roundSize: ROUND_SIZE.klok,
   };
 }
 
+/** De stappen van beide klokken: eerst de wijzerklok, dan de digitale (ADR-257). */
 function klokOnderdelen(): Onderdeel[] {
-  return loadKlokSets().map((set) => klokOnderdeel(set));
+  return [...loadKlokSets(), ...loadDigitaleKlokSets()].map((set) => klokOnderdeel(set));
 }
 
 /**
@@ -414,74 +430,87 @@ function klokOnderdelen(): Onderdeel[] {
  * counted as part of the module's total anywhere, because that total would then
  * count every face twice (`onderdelen` leaves the mixes out).
  */
-function klokMix(): Onderdeel | null {
-  const mix = loadKlokSet(KLOK_MIX_ID);
+function klokMix(id: string): Onderdeel | null {
+  const mix = loadKlokSet(id);
   return mix ? klokOnderdeel(mix) : null;
 }
 
 /**
- * Klokkijken's subjects: four steps and a mix of them, one set each.
+ * Klokkijken's subjects: four steps and a mix of them, one set each — en dat
+ * twee keer, onder de vraag welke klok (ADR-257).
  *
  * The shape topografie's Nederland row has rather than rekenen's: no subject
  * here holds thirteen sets, so there is no second question to ask and no row of
  * chips under the tiles. "Hele uren" is one thing to practise and it is twelve
  * faces, the way "Provincies" is one thing and twelve provinces.
  *
- * No regions, so the page draws no region row and numbers its steps from one —
- * which is what `ModuleScreen` works out for itself rather than being told.
+ * Tot ADR-257 had Klok geen rij erboven en was de digitale klok een spelvorm
+ * (ADR-247). Maar analoog of digitaal gaat over de klok, niet over hoe je
+ * oefent: nu kiest een kind eerst de klok, dan het onderwerp, dan de spelvorm.
  */
 function klokOnderwerpen(): Onderwerp[] {
   const sets = klokOnderdelen();
   const van = (id: string) => sets.filter((deel) => deel.setId === id);
-  const mix = klokMix();
+  const vakken: Onderwerp[] = [];
 
-  const vakken: Onderwerp[] = [
-    {
-      moduleId: 'klok',
-      id: 'hele-uren',
-      naam: 'onderwerp.heleUren',
-      uitleg: 'onderwerp.heleUren.uitleg',
-      keuze: null,
-      regio: null,
-      sets: van('klok-heel'),
-    },
-    {
-      moduleId: 'klok',
-      id: 'halve-uren',
-      naam: 'onderwerp.halveUren',
-      uitleg: 'onderwerp.halveUren.uitleg',
-      keuze: null,
-      regio: null,
-      sets: van('klok-half'),
-    },
-    {
-      moduleId: 'klok',
-      id: 'kwartieren',
-      naam: 'onderwerp.kwartieren',
-      uitleg: 'onderwerp.kwartieren.uitleg',
-      keuze: null,
-      regio: null,
-      sets: van('klok-kwart'),
-    },
-    {
-      moduleId: 'klok',
-      id: 'vijf-minuten',
-      naam: 'onderwerp.vijfMinuten',
-      uitleg: 'onderwerp.vijfMinuten.uitleg',
-      keuze: null,
-      regio: null,
-      sets: van('klok-vijf'),
-    },
-    {
-      moduleId: 'klok',
-      id: KLOK_MIX_ID,
-      naam: 'onderwerp.klokmix',
-      uitleg: 'set.klok-mix.uitleg',
-      keuze: null,
-      regio: null,
-      sets: mix === null ? [] : [mix],
-    },
-  ];
+  for (const [regio, voor, mixId] of [
+    ['analoog', 'klok-', KLOK_MIX_ID],
+    ['digitaal', 'klok-dig-', KLOK_DIG_MIX_ID],
+  ] as const) {
+    const mix = klokMix(mixId);
+    // De ids van de wijzerklok blijven wat ze waren; die van de digitale klok
+    // krijgen het deel ervoor, want een onderwerp-id is uniek op de pagina.
+    const id = (kaal: string) => (regio === 'analoog' ? kaal : `digitaal-${kaal}`);
+    vakken.push(
+      {
+        moduleId: 'klok',
+        id: id('hele-uren'),
+        naam: 'onderwerp.heleUren',
+        uitleg: regio === 'analoog' ? 'onderwerp.heleUren.uitleg' : 'onderwerp.heleUren.digitaal',
+        keuze: null,
+        regio,
+        sets: van(`${voor}heel`),
+      },
+      {
+        moduleId: 'klok',
+        id: id('halve-uren'),
+        naam: 'onderwerp.halveUren',
+        uitleg: regio === 'analoog' ? 'onderwerp.halveUren.uitleg' : 'onderwerp.halveUren.digitaal',
+        keuze: null,
+        regio,
+        sets: van(`${voor}half`),
+      },
+      {
+        moduleId: 'klok',
+        id: id('kwartieren'),
+        naam: 'onderwerp.kwartieren',
+        uitleg:
+          regio === 'analoog' ? 'onderwerp.kwartieren.uitleg' : 'onderwerp.kwartieren.digitaal',
+        keuze: null,
+        regio,
+        sets: van(`${voor}kwart`),
+      },
+      {
+        moduleId: 'klok',
+        id: id('vijf-minuten'),
+        naam: 'onderwerp.vijfMinuten',
+        uitleg:
+          regio === 'analoog' ? 'onderwerp.vijfMinuten.uitleg' : 'onderwerp.vijfMinuten.digitaal',
+        keuze: null,
+        regio,
+        sets: van(`${voor}vijf`),
+      },
+      {
+        moduleId: 'klok',
+        id: mixId,
+        naam: 'onderwerp.klokmix',
+        uitleg: regio === 'analoog' ? 'set.klok-mix.uitleg' : 'set.klok-dig-mix.uitleg',
+        keuze: null,
+        regio,
+        sets: mix === null ? [] : [mix],
+      },
+    );
+  }
 
   // A subject with nothing in it is a card that opens onto nothing.
   return vakken.filter((vak) => vak.sets.length > 0);
@@ -894,17 +923,21 @@ export function onderdelen(): Onderdeel[] {
 
 /** Every set a round can be started on, mixes included. Used to name a round. */
 export function startbareOnderdelen(): Onderdeel[] {
-  const klok = klokMix();
-  const klokFout = loadKlokSet(KLOK_FOUTEN_ID);
+  const klokMixen = [klokMix(KLOK_MIX_ID), klokMix(KLOK_DIG_MIX_ID)].filter(
+    (mix): mix is Onderdeel => mix !== null,
+  );
+  const klokFouten = [loadKlokSet(KLOK_FOUTEN_ID), loadKlokSet(KLOK_DIG_FOUTEN_ID)].flatMap(
+    (set) => (set ? [klokOnderdeel(set)] : []),
+  );
   return [
     ...topoOnderdelen(),
     topoMix(),
     ...FOUTEN_SET_IDS.map(topoFoutenOnderdeel),
-    ...(klokFout ? [klokOnderdeel(klokFout)] : []),
+    ...klokFouten,
     ...rekenOnderdelen(),
     ...rekenMixen(),
     ...klokOnderdelen(),
-    ...(klok === null ? [] : [klok]),
+    ...klokMixen,
     ...loadVlagSets().map(vlagOnderdeel),
     ...taalOnderdelen(),
     ...eigenOnderdelen(),
@@ -1441,7 +1474,6 @@ const SUM_MODES: readonly ModeId[] = [
 const KLOK_MODES: readonly ModeId[] = [
   'klok-meerkeuze',
   'klok-welke-klok',
-  'klok-digitaal',
   'klok-typen',
   'bliksemronde',
   'overleven',

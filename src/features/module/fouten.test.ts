@@ -58,11 +58,17 @@ describe('de fouten staan niet meer bij de onderwerpen', () => {
       .map((vak) => vak.id);
     expect(nederland.at(-1)).toBe('nl-mix');
 
-    expect(
-      onderwerpenVan('klok')
-        .map((vak) => vak.id)
-        .at(-1),
-    ).toBe('klok-mix');
+    for (const [regio, mix] of [
+      ['analoog', 'klok-mix'],
+      ['digitaal', 'klok-dig-mix'],
+    ]) {
+      expect(
+        onderwerpenVan('klok')
+          .filter((vak) => vak.regio === regio)
+          .map((vak) => vak.id)
+          .at(-1),
+      ).toBe(mix);
+    }
     expect(
       onderwerpenVan('tafels')
         .map((vak) => vak.id)

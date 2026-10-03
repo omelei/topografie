@@ -78,6 +78,13 @@ const SET_SLUG: Record<string, string> = {
   'klok-kwart': 'kwartieren',
   'klok-vijf': 'vijf-minuten',
   'klok-mix': 'mix',
+  // De digitale klok (ADR-257), met het deel ervoor: /klokkijken/digitaal-halve-uren.
+  'klok-dig-heel': 'digitaal-hele-uren',
+  'klok-dig-half': 'digitaal-halve-uren',
+  'klok-dig-kwart': 'digitaal-kwartieren',
+  'klok-dig-vijf': 'digitaal-vijf-minuten',
+  'klok-dig-mix': 'digitaal-mix',
+  'klok-dig-fouten': 'digitaal-fouten',
   // "Oefen je fouten" (ADR-103): for Nederland and the clock the one word,
   // further out the werelddeel in front of it, because each map has its own.
   'nl-fouten': 'fouten',
@@ -213,6 +220,9 @@ const TAAL_SET = new Map(Object.entries(TAAL_SLUG).map(([id, slug]) => [slug, id
 /** Taal's parts, which answer to their own name after /taal. */
 const TAAL_DELEN: readonly string[] = ['spelling', 'werkwoorden', 'engels'];
 
+/** De twee klokken (ADR-257), als deel in het adres: /klokkijken/digitaal. */
+const KLOK_DELEN: readonly string[] = ['analoog', 'digitaal'];
+
 export function setSlug(setId: string): string {
   if (setId === VLAG_PROVINCIES) return 'provincies';
   if (setId.startsWith('vlag-')) return setId.slice('vlag-'.length);
@@ -239,6 +249,12 @@ const KLOK_SLUG: Record<string, string> = {
   'vijf-minuten': 'klok-vijf',
   mix: 'klok-mix',
   fouten: 'klok-fouten',
+  'digitaal-hele-uren': 'klok-dig-heel',
+  'digitaal-halve-uren': 'klok-dig-half',
+  'digitaal-kwartieren': 'klok-dig-kwart',
+  'digitaal-vijf-minuten': 'klok-dig-vijf',
+  'digitaal-mix': 'klok-dig-mix',
+  'digitaal-fouten': 'klok-dig-fouten',
 };
 
 function setIdFor(module: Module, slug: string): string | null {
@@ -357,9 +373,10 @@ function soleCategoryOf(module: Module): Category | null {
 function moduleRoute(module: Module, tail: string | undefined, regio: string | null = null): Route {
   if (!module.built) return { name: 'soon', module };
   // Taal's part by name after the module — /taal/werkwoorden — or by the alias
-  // it was reached at — /werkwoorden.
-  const deel =
-    module.id === 'woorden' && tail !== undefined && TAAL_DELEN.includes(tail) ? tail : regio;
+  // it was reached at — /werkwoorden. En de klok op de digitale of de analoge
+  // klok: /klokkijken/digitaal (ADR-257).
+  const delen = module.id === 'woorden' ? TAAL_DELEN : module.id === 'klok' ? KLOK_DELEN : [];
+  const deel = tail !== undefined && delen.includes(tail) ? tail : regio;
   // A set nobody has heard of opens the module rather than an error page: the
   // child asked for topography and topography is what they get.
   const setId = tail === undefined || tail === '' || tail === deel ? null : setIdFor(module, tail);

@@ -20,13 +20,22 @@ describe('worksheets', () => {
       'nl-hoofdsteden',
       'tafel-7',
       'klok-half',
+      'klok-dig-half',
       'vlag-europa-bekend',
       'taal-sp-eiij',
       'taal-ww-vt',
     ]) {
       expect(heeftWerkblad(deel(setId)), setId).toBe(true);
     }
-    for (const setId of ['nl-mix', 'rekenmix', 'klok-mix', 'fouten', 'taal-sp-mix']) {
+    for (const setId of [
+      'nl-mix',
+      'rekenmix',
+      'klok-mix',
+      'klok-dig-mix',
+      'klok-dig-fouten',
+      'fouten',
+      'taal-sp-mix',
+    ]) {
       expect(heeftWerkblad(deel(setId)), setId).toBe(false);
     }
   });
@@ -38,6 +47,15 @@ describe('worksheets', () => {
       for (const vraag of blad?.vragen ?? []) {
         expect(vraag.antwoord.length, onderdeel.setId).toBeGreaterThan(0);
       }
+    }
+  });
+
+  it('asks the digital clock in words, to be written in figures (ADR-257)', () => {
+    const blad = werkbladVoor(deel('klok-dig-half'), 1);
+    expect(blad?.opdracht).toBe('werkblad.opdracht.klokDigitaal');
+    for (const vraag of blad?.vragen ?? []) {
+      expect(vraag.soort).toBe('klok-woorden');
+      expect(vraag.antwoord).toMatch(/^\d{1,2}:30$/);
     }
   });
 

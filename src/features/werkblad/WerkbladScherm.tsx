@@ -175,6 +175,9 @@ function Vraag({ vraag }: { readonly vraag: WerkbladVraag }) {
       </span>
     );
   }
+  if (vraag.soort === 'klok-woorden') {
+    return <span className="tk-werkblad-som">{vraag.woorden} = ______ : ______</span>;
+  }
   if (vraag.soort === 'vlag') {
     return (
       <span className="tk-werkblad-figuur">

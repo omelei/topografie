@@ -147,6 +147,19 @@ describe('the addresses', () => {
     // A set under the short word too, because that is what somebody writes on
     // a note. What `pathFor` writes back is still the module's own slug.
     expect(routeFor('/klok/halve-uren')).toMatchObject({ name: 'module', setId: 'klok-half' });
+    // De digitale klok (ADR-257): een onderwerp met het deel ervoor, en het
+    // deel zelf als adres.
+    expect(routeFor('/klokkijken/digitaal-halve-uren')).toMatchObject({
+      name: 'module',
+      setId: 'klok-dig-half',
+    });
+    expect(routeFor('/klok/digitaal')).toMatchObject({
+      name: 'module',
+      setId: null,
+      regio: 'digitaal',
+    });
+    const digitaal = routeFor('/klokkijken/digitaal-mix');
+    expect(digitaal.name === 'module' ? pathFor(digitaal) : null).toBe('/klokkijken/digitaal-mix');
     expect(pathFor(routeFor('/klok/halve-uren'))).toMatch(/\/klokkijken\/halve-uren$/);
   });
 
