@@ -10,6 +10,7 @@ import { Gallery } from '@/design/Gallery';
 import { DiagnoseScherm } from '@/features/diagnose/DiagnoseScherm';
 import { Shell } from '@/features/shell/Shell';
 import { TopBar } from '@/features/shell/TopBar';
+import { ReeksKnop } from '@/features/shell/ReeksKnop';
 import { MODULES, type Destination, type Module } from '@/features/shell/modules';
 import { useRoute } from '@/features/shell/useRoute';
 import { titelVoor } from '@/seo/paginas';
@@ -220,6 +221,7 @@ export default function App() {
     boot.status === 'ready' ? (
       <TopBar profile={boot.profile} onProfile={() => openWisselaar()} />
     ) : null;
+  const reeks = boot.status === 'ready' ? <ReeksKnop kindId={boot.profile.id} /> : null;
 
   const goTo = (id: Destination['id']) => {
     const next: Route =
@@ -692,6 +694,7 @@ export default function App() {
     return (
       <Shell
         bar={bar}
+        reeks={reeks}
         onNavigate={goTo}
         onModule={goModule}
         currentModule={route.module.id}
@@ -730,7 +733,7 @@ export default function App() {
   // (ADR-214): een ouder die via "Voor ouders" komt, wil eerst lezen.
   if (route.name === 'premium') {
     return (
-      <Shell bar={bar} current="premium" onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} current="premium" onNavigate={goTo} onModule={goModule}>
         {/* Zonder kolom (ADR-145). ADR-143 liet hier het toetsblok staan,
             maar niemand komt hier om een toets te plannen, en de vergelijking
             tussen basis en premium heeft de breedte nodig. */}
@@ -747,7 +750,7 @@ export default function App() {
   // naam, want wie dit leest, is meestal geen kind.
   if (route.name === 'voorOuders') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} onNavigate={goTo} onModule={goModule}>
         <VoorOuders
           onProberen={() => {
             const eerste = starters()[0];
@@ -765,7 +768,7 @@ export default function App() {
   // Voor de klas (ADR-216): een klassencode aanvragen, zonder naam.
   if (route.name === 'scholen') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} onNavigate={goTo} onModule={goModule}>
         <Scholen />
       </Shell>
     );
@@ -774,7 +777,7 @@ export default function App() {
   // De privacyverklaring (ADR-249), zonder naam: wie dit leest, is een ouder.
   if (route.name === 'privacy') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} onNavigate={goTo} onModule={goModule}>
         <Privacy />
       </Shell>
     );
@@ -795,7 +798,7 @@ export default function App() {
   // pagina die blijft staan.
   if (route.name === 'ouder') {
     return (
-      <Shell bar={bar} current="ouders" onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} current="ouders" onNavigate={goTo} onModule={goModule}>
         {/* De ouderpagina gaat over een kind met een naam: wie hem opent
             terwijl dit kind er nog geen heeft, typt hem eerst (ADR-229). */}
         {ouder && !heeftNaam(boot.profile) ? (
@@ -822,7 +825,13 @@ export default function App() {
   // address opens the tables themselves (see routes.ts).
   if (route.name === 'category') {
     return (
-      <Shell bar={bar} onNavigate={goTo} onModule={goModule} grond={route.category.modules[0]}>
+      <Shell
+        bar={bar}
+        reeks={reeks}
+        onNavigate={goTo}
+        onModule={goModule}
+        grond={route.category.modules[0]}
+      >
         <CategoryScreen
           category={route.category}
           onOpen={(module) => go({ name: 'module', module, setId: null })}
@@ -838,6 +847,7 @@ export default function App() {
     return (
       <Shell
         bar={bar}
+        reeks={reeks}
         onNavigate={goTo}
         onModule={goModule}
         currentModule={route.module.id}
@@ -852,7 +862,7 @@ export default function App() {
   // dat vak opent.
   if (route.name === 'oefenen') {
     return (
-      <Shell bar={bar} current="oefenen" onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} current="oefenen" onNavigate={goTo} onModule={goModule}>
         <OefenenScherm onOpen={goModule} />
       </Shell>
     );
@@ -860,7 +870,7 @@ export default function App() {
 
   if (route.name === 'you') {
     return (
-      <Shell bar={bar} current="jij" onNavigate={goTo} onModule={goModule}>
+      <Shell bar={bar} reeks={reeks} current="jij" onNavigate={goTo} onModule={goModule}>
         {/* Zonder `aside`: de eigen kolom is weg (ADR-168). Met al je cijfers:
             Onthouden is een deel van deze pagina (ADR-171). */}
         <ProfileScreen
@@ -877,14 +887,20 @@ export default function App() {
   }
 
   return (
-    <Shell bar={bar} current="vandaag" onNavigate={goTo} onModule={goModule} grond="vandaag">
+    <Shell
+      bar={bar}
+      reeks={reeks}
+      current="vandaag"
+      onNavigate={goTo}
+      onModule={goModule}
+      grond="vandaag"
+    >
       <HomeScreen
         naam={boot.profile.naam}
         onBegin={beginRonde}
         onVerder={maakAf}
         onPlan={uitHetPlan}
         onGeheugencheck={startGeheugencheck}
-        onVak={goModule}
         onVoorOuders={() => go({ name: 'voorOuders' })}
       />
     </Shell>

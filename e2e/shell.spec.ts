@@ -6,7 +6,7 @@ import { stap } from './stap';
  * Naar de onderkant van de pagina, en hoe ver dat was.
  *
  * Op een telefoon scrolt `.tk-schil-rol` en niet het document: dan staat het
- * menu onderaan er altijd (zie `.tk-schil` in index.css). Vanaf 1200 scrolt het
+ * menu onderaan er altijd (zie `.tk-schil` in index.css). Vanaf 1024 scrolt het
  * document zoals altijd. Dit zet allebei, en geeft terug wat er bewoog.
  */
 async function naarOnder(page: Page): Promise<number> {
@@ -208,11 +208,11 @@ test('keeps the wordmark and the question legible at 200% text', async ({ page }
   ).toBeLessThanOrEqual(0);
 });
 
-test('below 1200 a vak is reached through Oefenen', async ({ page }, testInfo) => {
+test('below 1024 a vak is reached through Oefenen', async ({ page }, testInfo) => {
   // ADR-241: the vak menu under the bar is gone. Oefenen is the middle tab, it
   // opens the vakken as cards, and it stays marked inside every vak.
   test.skip(
-    ['chromebook', 'desktop-1440'].includes(testInfo.project.name),
+    ['chromebook', 'desktop-1440', 'ipad-landscape'].includes(testInfo.project.name),
     'the side bar, at a desk',
   );
 
@@ -247,8 +247,8 @@ test('at a desk the vakken fold away under Oefenen, and stay folded', async ({
   page,
 }, testInfo) => {
   test.skip(
-    !['chromebook', 'desktop-1440'].includes(testInfo.project.name),
-    'no side bar below 1200',
+    !['chromebook', 'desktop-1440', 'ipad-landscape'].includes(testInfo.project.name),
+    'no side bar below 1024',
   );
 
   await signIn(page, 'Ilse');
@@ -379,7 +379,7 @@ test('on a phone the tab bar stays in view, below the page rather than over it',
 });
 
 /**
- * Onder 1200 scrolt alleen de inhoud, nooit het document (ADR-203). Een label
+ * Onder 1024 scrolt alleen de inhoud, nooit het document (ADR-203). Een label
  * dat absoluut aan de body hing, maakte het document op Premium bijna vijfduizend
  * pixels hoog; op een telefoon schoof dan de hele app weg boven een lege vlakte.
  */
@@ -387,10 +387,10 @@ test.describe('zonder code', () => {
   // Zonder code staat op Premium de vergelijkingstabel met de verborgen labels.
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('onder 1200 is het document nooit hoger dan het scherm', async ({ page }) => {
+  test('onder 1024 is het document nooit hoger dan het scherm', async ({ page }) => {
     await signIn(page, 'Noor');
     const breedte = page.viewportSize()?.width ?? 0;
-    test.skip(breedte >= 1200, 'vanaf 1200 scrolt het document zelf');
+    test.skip(breedte >= 1024, 'vanaf 1024 scrolt het document zelf');
 
     for (const pad of ['/', '/jij', '/topografie', '/premium']) {
       await page.goto(pad);

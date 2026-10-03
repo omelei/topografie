@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { aanEenBureau } from './maat';
 import { weetGroepNiet } from './naam';
 import { stap } from './stap';
 
@@ -54,10 +53,9 @@ test('the front door opens without a name, and asks for the group first', async 
   const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
   await expect(vraag).toBeVisible();
   await expect(page.getByRole('form', { name: 'Hoe heet je?' })).toHaveCount(0);
-  // De vakken staan er alleen aan een bureau (ADR-251).
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(
-    aanEenBureau(page) ? 1 : 0,
-  );
+  // De vakken staan niet op Vandaag: aan een bureau in de zijbalk, anders
+  // onder de tab Oefenen (ADR-251, ADR-259).
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(0);
 
   // Groep 3 begint niet met de provincies, maar met plussommen tot 20.
   await vraag.getByRole('button', { name: 'Groep 3', exact: true }).click();
@@ -102,10 +100,9 @@ test('groep 1 and 2 hear honestly that their rounds are coming', async ({ page }
     page.getByRole('region', { name: 'Voor groep 1 en 2 komt er iets aan' }),
   ).toBeVisible();
   await expect(page.getByRole('group', { name: /Hier begin je mee/ })).toHaveCount(0);
-  // De vakken staan er alleen aan een bureau (ADR-251).
-  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(
-    aanEenBureau(page) ? 1 : 0,
-  );
+  // De vakken staan niet op Vandaag: aan een bureau in de zijbalk, anders
+  // onder de tab Oefenen (ADR-251, ADR-259).
+  await expect(page.getByRole('region', { name: 'Kies een vak' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Andere groep' })).toBeVisible();
 });
 

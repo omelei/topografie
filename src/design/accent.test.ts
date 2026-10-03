@@ -84,6 +84,17 @@ const DEFINITION_SELECTORS = /^(:root|\[data-accent='module'\])$/;
  * double rule and the tick; the light tone never carries a state alone.
  */
 const SUBJECT_SELECTORS: ReadonlyMap<string, string> = new Map([
+  // ADR-259: de vakken op Oefenen en de vakpagina dragen weer de kleur van
+  // het vak, ook wat nog niet gekozen is.
+  ['.tk-vakvlak-tegel', 'a subject on Oefenen, in its own tint and edge'],
+  ['.tk-stapopen', 'the open step on a subject’s page, in its edge'],
+  ['.tk-kiespagina .tk-keuze', 'a chip on a subject’s page, in its edge'],
+  ['.tk-kiespagina .tk-tegel', 'a tile on a subject’s page, in its edge'],
+  ['.tk-kiespagina .tk-kies', 'a step on a subject’s page, in its edge'],
+  [
+    ".tk-zijbalk-rij[data-module][aria-current='page']",
+    'the subject you are in, in the side bar: its edge under the white row',
+  ],
   ['.tk-kaart', 'a card on Vandaag is a door into one subject'],
   ['.tk-kaart:hover', 'the same card under the pointer'],
   ['.tk-kaart-voet', 'the line the card is about, in its subject'],

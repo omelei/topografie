@@ -22,18 +22,17 @@ async function startRound(page: Page) {
   await expect(page.getByRole('heading', { name: /Waar ligt / })).toBeVisible();
 }
 
-/** Room, of melk vanaf 1200 breed (ADR-247). */
+/** Room, op elke maat (ADR-259; ADR-247 maakte het melk aan een bureau). */
 async function grondVoor(page: Page): Promise<string> {
-  const breed = await page.evaluate(() => window.innerWidth >= 1200);
-  return breed ? 'rgb(250, 247, 243)' : 'rgb(255, 243, 230)';
+  return Promise.resolve('rgb(255, 243, 230)');
 }
 
 test('stands on room and sets its headings in Baloo 2', async ({ page }) => {
   await signIn(page, 'Noor');
 
   const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  // Room, the logo's own, the ground since Kleur erin (ADR-239); aan een
-  // bureau melk, want daar is veel meer grond te zien (ADR-247).
+  // Room, the logo's own, the ground since Kleur erin (ADR-239), op elke maat
+  // (ADR-259).
   expect(ground).toBe(await grondVoor(page));
 
   const heading = page.getByRole('heading', { name: /^Hoi / });
@@ -66,8 +65,9 @@ test('keeps a round on the app’s paper, with its controls at 56 whatever the s
 });
 
 /**
- * Op een groot scherm groeit de pagina mee (ADR-199): driekwart van het
- * scherm, tussen 1080 en 1600. Alleen op de desktop, want daar zit de maat.
+ * Op een groot scherm groeit de pagina mee (ADR-199): sinds ADR-259 alles
+ * naast de zijbalk (256 en 24 lucht), tot 1600. Alleen op de desktop, want
+ * daar zit de maat.
  */
 test('de pagina groeit mee met een groot scherm', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-1440', 'de maat van een desktop');
@@ -75,9 +75,9 @@ test('de pagina groeit mee met een groot scherm', async ({ page }, testInfo) => 
   const breedte = () =>
     page.locator('.tk-home').evaluate((el) => Math.round(el.getBoundingClientRect().width));
 
-  expect(await breedte()).toBe(1080);
+  expect(await breedte()).toBe(1440 - 280);
   await page.setViewportSize({ width: 1920, height: 1080 });
-  expect(await breedte()).toBe(1440);
+  expect(await breedte()).toBe(1600);
   await page.setViewportSize({ width: 2560, height: 1440 });
   expect(await breedte()).toBe(1600);
 });

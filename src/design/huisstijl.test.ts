@@ -173,15 +173,16 @@ describe('the tokens are the styleguide’s', () => {
     expect(rootValue('module-meng')).toBe('var(--nacht)');
   });
 
-  it('puts the bar on the ground, the side bar on white and every tile on a bright edge (ADR-240, ADR-241)', () => {
+  it('puts the bar on the ground, the side bar on peach and every tile on a bright edge (ADR-240, ADR-241)', () => {
     const rule = (selector: string) => {
       const start = cssCode.indexOf(`${selector} {`);
       return cssCode.slice(start, cssCode.indexOf('}', start));
     };
-    // Onder 1200 staat de balk op de grond; aan een bureau is hij wit.
+    // De balk staat op elke maat op de grond, de zijbalk is een perzik vlak
+    // (ADR-259).
     expect(rule('  .tk-appbar')).toContain('background: transparent');
-    expect(rule('    .tk-appbar')).toContain('background: var(--kaart)');
-    expect(rule('  .tk-zijbalk')).toContain('background: var(--kaart)');
+    expect(rule('    .tk-appbar')).not.toContain('background');
+    expect(rule('  .tk-zijbalk')).toContain('background: var(--perzik)');
     // No subject tints the bar any more.
     expect(cssCode).not.toMatch(/\.tk-appbar\[data-module\]/);
     for (const tegel of ['.tk-kaart', '.tk-tegel', '.tk-tafel', '.tk-vaktegel']) {

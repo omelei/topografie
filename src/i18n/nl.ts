@@ -454,6 +454,26 @@ export const nl = {
   'nav.vakkenInklappen': 'Vakken inklappen',
   'nav.vakkenUitklappen': 'Vakken uitklappen',
   'oefenen.titel': 'Oefenen',
+  // Denker in de kop van Oefenen (ADR-259): eerst een vraag, en dan wat hij
+  // vindt van het vak waar je op staat.
+  'oefenen.vraag': 'Waar heb je vandaag zin in?',
+  'oefenen.vakZin': '{vak}! {regel}.',
+  // Wie op Denker tikt, kietelt hem (ADR-259).
+  'denker.kietel': 'Hihi, dat kietelt!',
+  'denker.kietelKnop': 'Kietel Denker',
+  // Denker bij de startknop (ADR-259): de vraag die nog open staat, en als
+  // alles gekozen is iets over de spelvorm.
+  'denker.stapEerst': '{vraag}',
+  'denker.stapOoh': 'Ooh. {vraag}',
+  'denker.stapTop': 'Top! {vraag}',
+  'denker.vorm.aanwijzen': 'Tik de plek aan. Ik kijk mee!',
+  'denker.vorm.meerkeuze': 'Vier antwoorden, één is goed.',
+  'denker.vorm.typen': 'Typ het antwoord zelf, net als op de toets.',
+  'denker.vorm.ontdekken': 'Kijk maar rond. Ik stel geen vragen.',
+  'denker.vorm.bliksem': 'Eén minuut, zo veel als je kunt!',
+  'denker.vorm.overleven': 'Ga door tot je levens op zijn. Jij kunt dat.',
+  'denker.vorm.diploma': 'Pas aan het eind zie je hoe het ging. Zet hem op!',
+  'denker.vorm.anders': 'Alles gekozen. Druk op Start!',
   // De terugknop boven een vakpagina op een telefoon. Zichtbaar staat er
   // "Oefenen" met een pijl; de naam zegt waar hij heen gaat.
   'module.terugOefenen': 'Terug naar Oefenen',
@@ -461,6 +481,18 @@ export const nl = {
   'nav.jij': 'Jij',
   'nav.premium': 'Premium',
   'nav.ouders': 'Ouders',
+  // De dagen achter elkaar, bovenin op elke maat (ADR-259). Een lege dag
+  // breekt hem pas vannacht, dus vandaag zegt wat er nog kan.
+  'reeks.knop': 'Dagen achter elkaar: {aantal}',
+  'reeks.titel': 'dagen achter elkaar',
+  'reeks.titelEen': 'dag achter elkaar',
+  'reeks.sinds': 'Elke dag geoefend sinds {dag}.',
+  'reeks.alleenVandaag': 'Vandaag geoefend. Morgen weer?',
+  'reeks.vandaagNog': 'Oefen vandaag ook, dan worden het er {aantal}.',
+  'reeks.geen': 'Oefen vandaag een ronde, dan begin je.',
+  'reeks.week': 'Deze week',
+  'reeks.dagGeoefend': '{dag}: geoefend',
+  'reeks.dagNiet': '{dag}: niet geoefend',
   // De rail draagt korte woorden, zoals K1 ze tekent: "topo", niet
   // "Topografie". Een rail van 88 breed leest als een lijst en niet als proza.
   'module.topo': 'Topo',
@@ -799,7 +831,6 @@ export const nl = {
   'start.welke': 'welke',
   'start.manier': 'spelvorm',
   'start.ronde': 'ronde',
-  'start.stand': 'stand',
   'start.vragen': '{aantal} vragen',
   'start.vragenTijd': '{aantal} vragen · ±{minuten} min',
   'start.seconden': '{aantal} seconden',
@@ -821,6 +852,10 @@ export const nl = {
   // leeg, en zegt hij welke stappen nog wachten. De stappen zijn genummerd op
   // de pagina, dus het nummer is de kortste weg terug.
   'start.nogKiezen': 'Nog even kiezen',
+  // De startkaart (ADR-259): een stap zonder antwoord, en de regel onder de
+  // stappen zolang er nog iets te kiezen is.
+  'start.nogKiezenRij': 'Nog kiezen',
+  'start.kiesElkeStap': 'Kies bij elke stap iets, dan kun je starten.',
   'start.kiesNogStap': 'Kies nog bij stap {stap}',
   'start.kiesNogStappen': 'Kies nog bij stap {stappen} en {laatste}',
   // Een stap die nog wacht, als knop in de startbalk (ADR-247).

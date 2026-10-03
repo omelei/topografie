@@ -1,17 +1,8 @@
 import { ChevronRightIcon } from '@/components/Icon';
-import { t, type TranslationKey } from '@/i18n';
+import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import { BUILT_MODULES, type Module } from './modules';
-
-/** Wat er in elk vak zit, in één regel. Tijdvakken is er nog niet en staat er niet. */
-const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
-  topo: 'home.vak.topo',
-  tafels: 'home.vak.tafels',
-  klok: 'home.vak.klok',
-  woorden: 'home.vak.woorden',
-  vlaggen: 'home.vak.vlaggen',
-  tijdvakken: 'home.vak.topo',
-};
+import { VAK_UITLEG } from './vakUitleg';
 
 /**
  * De vakken als lijst: de plaat, de naam, een regel over wat erin zit en een
