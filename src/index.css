@@ -5512,13 +5512,14 @@
   .tk-startkaart-denker {
     display: contents;
   }
+  /* Binnen het blad en niet erboven uit: een Denker die over de rand steekt,
+   * ligt als knop over de chips erboven (axe target-size). */
   .tk-startkaart-denker > :first-child {
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     grid-column: 1;
-    align-self: start;
-    width: 92px;
-    height: 92px;
-    margin: -52px -4px -4px -6px;
+    align-self: center;
+    width: 72px;
+    height: 72px;
   }
   .tk-startkaart-denker .tk-levend {
     width: 100% !important;
@@ -5540,12 +5541,15 @@
     color: var(--tekst-secundair);
   }
   .tk-kiespagina .tk-startbalk > .tk-button-go {
-    grid-row: 1 / span 2;
+    grid-row: 1 / span 3;
     grid-column: 3;
   }
-  .tk-startkaart-stappen,
-  .tk-startkaart-duur,
   .tk-kiespagina .tk-startbalk > .tk-hulp {
+    grid-row: 3;
+    grid-column: 2;
+  }
+  .tk-startkaart-stappen,
+  .tk-startkaart-duur {
     display: none;
   }
   .tk-startkaart-stappen {
@@ -5656,6 +5660,7 @@
       margin-top: -44px;
     }
     .tk-startkaart-denker > :first-child {
+      align-self: flex-end;
       width: 108px;
       height: 108px;
       margin: 0 0 0 -8px;
@@ -5683,12 +5688,11 @@
     .tk-startkaart-stappen {
       display: block;
     }
-    .tk-startkaart-duur,
-    .tk-kiespagina .tk-startbalk > .tk-hulp {
-      display: block;
-    }
     .tk-kiespagina .tk-startbalk > .tk-button-go {
       min-height: 60px;
+    }
+    .tk-startkaart-duur {
+      display: block;
     }
   }
 
