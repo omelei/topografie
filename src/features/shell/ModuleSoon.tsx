@@ -2,6 +2,7 @@ import { NextIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import { BUILT_MODULES, type Module } from './modules';
+import { Paginakop } from './Paginakop';
 
 /**
  * A module the plan has and the product does not, reached from the rail or by
@@ -39,9 +40,8 @@ export function ModuleSoon({
             <ModuleIcon size={20} />
             {t('soon.subtitle')}
           </span>
-          <h1 className="tk-titel">{t(module.name)}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('soon.body')}</p>
         </div>
+        <Paginakop kop={t(module.name)} regel={t('soon.body')} />
 
         {/* The ones that do exist, as the list every page uses (ADR-112). */}
         <section className="flex flex-col gap-3" aria-label={t('soon.instead')}>

@@ -1,4 +1,4 @@
-import { NextIcon } from '@/components/Icon';
+import { ChevronRightIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import { BUILT_MODULES, type Module } from './modules';
@@ -14,9 +14,12 @@ const VAK_UITLEG: Record<Module['id'], TranslationKey> = {
 };
 
 /**
- * De vakken als tegels in hun eigen kleur: de plaat, de naam, een regel over
- * wat erin zit en een pijl. Op Vandaag onder "Kies een vak" en op /oefenen
- * dezelfde (ADR-242), zodat een kind één vorm leert voor "naar een vak".
+ * De vakken als lijst: de plaat, de naam, een regel over wat erin zit en een
+ * pijl in de tint van het vak. Op Vandaag onder "Kies een vak", op /oefenen en
+ * op Voor ouders dezelfde (ADR-242), zodat een kind één vorm leert voor "naar
+ * een vak". Sinds ADR-255 de lijst van Vandaag op een telefoon (ADR-252): één
+ * witte kaart, de rijen met een haarlijn ertussen. Het waren tegels in de kleur
+ * van het vak, met een rand en een onderkant.
  */
 export function VakTegels({
   onVak,
@@ -26,7 +29,7 @@ export function VakTegels({
   readonly modules?: readonly Module[];
 }) {
   return (
-    <ul className="tk-vakraster">
+    <ul className="tk-oefenlijst-rijen">
       {modules.map((module) => {
         const ModuleIcon = MODULE_ICON[module.id];
         return (
@@ -34,18 +37,18 @@ export function VakTegels({
             <button
               type="button"
               data-module={module.id}
-              className="tk-vaktegel"
+              className="tk-oefenrij"
               onClick={() => onVak(module.id)}
             >
-              <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
-                <ModuleIcon size={24} />
+              <span className="tk-plaat tk-oefenrij-plaat" aria-hidden="true">
+                <ModuleIcon size={22} />
               </span>
-              <span className="tk-vaktegel-tekst">
-                <span className="tk-kaart-titel">{t(module.name)}</span>
-                <span className="tk-kaart-regel">{t(VAK_UITLEG[module.id])}</span>
+              <span className="tk-oefenrij-tekst">
+                <span className="tk-oefenrij-titel">{t(module.name)}</span>
+                <span className="tk-oefenrij-regel">{t(VAK_UITLEG[module.id])}</span>
               </span>
-              <span className="tk-lijstrij-pijl" aria-hidden="true">
-                <NextIcon size={20} />
+              <span className="tk-oefenrij-pijl" aria-hidden="true">
+                <ChevronRightIcon size={20} />
               </span>
             </button>
           </li>

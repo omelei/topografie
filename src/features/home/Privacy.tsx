@@ -1,6 +1,7 @@
 import { brand } from '@/config/brand';
 import { t, type TranslationKey } from '@/i18n';
 import { isIngesteld } from '@/store/account/omgeving';
+import { Paginakop } from '@/features/shell/Paginakop';
 
 /** Een blok met een kop en alinea's, of een lijst als er een `lijst` is. */
 function Blok({
@@ -54,8 +55,7 @@ export function Privacy() {
     <div className="tk-page">
       <div className="tk-page-main">
         <header className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t('privacy.titel')}</h1>
-          <p className="text-lopend">{t('privacy.intro')}</p>
+          <Paginakop kop={t('privacy.titel')} regel={t('privacy.intro')} />
           <p className="tk-hulp">{t('privacy.bijgewerkt')}</p>
         </header>
 

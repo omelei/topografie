@@ -325,11 +325,8 @@ export const nl = {
   'vandaag.titel': 'Vandaag herhalen',
   'vandaag.ronde': '{aantal} vragen',
   'vandaag.rondeEen': '1 vraag',
-  // Naast de kop, als de rondes als tegels klaarstaan (ADR-238).
-  'vandaag.bijschrift': 'wat je bijna vergeten bent',
   // Het slinken en de bodem (ADR-139). "Klaar voor vandaag" en niet "je bent
   // bij": het plan is hoogstens vier rondes, dus verderop kan nog werk liggen.
-  'vandaag.gedaan': '{gedaan} van de {totaal} rondes gedaan.',
   'vandaag.klaarVoorVandaag': 'Klaar voor vandaag. Lekker bezig!',
   'vandaag.klaarUitleg': 'Je hebt alles herhaald wat vandaag aan de beurt was.',
   'vandaag.over': 'Nog {aantal} rondes voor vandaag.',
@@ -379,10 +376,6 @@ export const nl = {
   // De uitslag van de laatste ronde op een kaart in Verder oefenen, met premium.
   'home.recentOutOf': '{goed} van de {totaal} goed',
   'home.recentLine': 'Cijfer {cijfer} · {goed} van de {totaal} goed',
-  // De twee knoppen boven een rij, die hem een kaart opschuiven. Ze noemen de
-  // rij, want er staan er drie onder elkaar en "verder" alleen zegt niet welke.
-  'home.rowBack': 'Terug in {rij}',
-  'home.rowOn': 'Verder in {rij}',
 
   // Terugkomen na weken (ADR-149): geen gemiste dagen, wel wat er nog staat.
   // Het aantal is wat er vandaag aan de beurt is, dus het klopt letterlijk.

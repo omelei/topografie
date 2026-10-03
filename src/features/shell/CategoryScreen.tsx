@@ -1,6 +1,7 @@
 import { t } from '@/i18n';
 import { MODULE_ICON } from './moduleIcons';
 import { MODULES, type Category, type Module } from './modules';
+import { Paginakop } from './Paginakop';
 
 /**
  * The word a parent types, when it holds more than one thing.
@@ -32,10 +33,7 @@ export function CategoryScreen({
   return (
     <div className="tk-page">
       <div className="tk-page-main">
-        <div className="flex flex-col gap-2">
-          <h1 className="tk-titel">{t(category.name)}</h1>
-          <p className="text-lopend text-tekst-secundair">{t('category.holds')}</p>
-        </div>
+        <Paginakop kop={t(category.name)} regel={t('category.holds')} />
 
         {/* The list every page uses (ADR-112). */}
         <ul className="tk-lijst">

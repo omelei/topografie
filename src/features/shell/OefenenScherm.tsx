@@ -1,6 +1,7 @@
 import { t } from '@/i18n';
 import { BUILT_MODULES, type Module } from './modules';
 import { VakTegels } from './VakTegels';
+import { Paginakop } from './Paginakop';
 
 /**
  * Oefenen, op /oefenen (ADR-241): de vakken bij elkaar.
@@ -8,7 +9,8 @@ import { VakTegels } from './VakTegels';
  * Aan een bureau staan dezelfde vakken ook in de zijbalk, onder Oefenen; op een
  * telefoon is dit de weg naar een vak. Sinds ADR-242 dezelfde tegels als onder
  * "Kies een vak" op Vandaag: een lijst met een regel over wat er in elk vak
- * zit. Een tegel opent de startpagina van het vak.
+ * zit. Een tegel opent de startpagina van het vak. Sinds ADR-255 met de kop en
+ * de lijst van Vandaag.
  */
 export function OefenenScherm({
   modules = BUILT_MODULES,
@@ -20,7 +22,7 @@ export function OefenenScherm({
   return (
     <div className="tk-page">
       <div className="tk-page-main tk-oefenen">
-        <h1 className="tk-oefenen-titel">{t('oefenen.titel')}</h1>
+        <Paginakop kop={t('oefenen.titel')} />
         <VakTegels onVak={onOpen} modules={modules} />
       </div>
     </div>

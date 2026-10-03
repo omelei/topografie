@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { signIn, weetGroepNiet } from './naam';
-import { opEenTelefoon, stap } from './stap';
+import { stap } from './stap';
 
 /**
  * The flows that exist today. Two of them are the point of the local-first
@@ -127,33 +127,22 @@ test('greets the child by name on the front door', async ({ page }) => {
 });
 
 /**
- * The rows on the front door hide their scrollbar (ADR-094), and hiding it must
- * not take scrolling away from anyone who does not swipe. The row is a stop in
- * the tab order and the arrow keys move it — checked at every size, because a
- * row that fits its screen would pass this by not moving at all, and five
- * cards fit none of them.
+ * A list on the front door shows three rows, and the rest is one press further
+ * (ADR-252; on every size since ADR-255). The focus goes to the first row that
+ * came in, so a keyboard does not start at the top again.
  */
-test('a row on the front door scrolls from the keyboard', async ({ page }) => {
+test('a list on the front door shows three rows, and the rest on request', async ({ page }) => {
   await signIn(page, 'Rik');
 
-  // Voor een kind dat nog niets deed heet deze rij "Hier begin je mee vandaag"
-  // en niet "Meest geoefend" (ADR-131): dezelfde rij, een kop die waar is. Hij
-  // staat er na de vraag naar de groep (ADR-243).
+  // Voor een kind dat nog niets deed heet deze lijst "Hier begin je mee
+  // vandaag" en niet "Meest geoefend" (ADR-131). Hij staat er na de vraag naar
+  // de groep (ADR-243).
   await weetGroepNiet(page);
   const rij = page.getByRole('group', { name: 'Hier begin je mee vandaag' });
-  // Op een telefoon is de rij een lijst (ADR-252): drie rijen, en de rest
-  // achter "Nog 2 tonen", met de focus op de eerste die erbij kwam.
-  if (opEenTelefoon(page)) {
-    await expect(rij.locator('.tk-oefenrij')).toHaveCount(3);
-    await rij.getByRole('button', { name: 'Nog 2 tonen' }).click();
-    await expect(rij.locator('.tk-oefenrij')).toHaveCount(5);
-    await expect(rij.locator('.tk-oefenrij').nth(3)).toBeFocused();
-    return;
-  }
-  await rij.focus();
-  await page.keyboard.press('ArrowRight');
-
-  await expect.poll(() => rij.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await expect(rij.locator('.tk-oefenrij')).toHaveCount(3);
+  await rij.getByRole('button', { name: 'Nog 2 tonen' }).click();
+  await expect(rij.locator('.tk-oefenrij')).toHaveCount(5);
+  await expect(rij.locator('.tk-oefenrij').nth(3)).toBeFocused();
 });
 
 test('Vandaag offers the round that was stopped, and lists each topic once', async ({ page }) => {

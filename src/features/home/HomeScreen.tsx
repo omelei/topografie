@@ -9,8 +9,6 @@ import {
   type ItemState,
   type ModeId,
 } from '@/game-core';
-import { ProgressBar } from '@/components/ProgressBar';
-import { MODULE_ICON } from '@/features/shell/moduleIcons';
 import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates, loadOpenRounds, loadPlayedRounds } from '@/store/progress';
@@ -32,7 +30,6 @@ import {
   type Onderdeel,
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
-import { useSmallScreen } from '@/features/shell/useSmallScreen';
 import { Geheugencheck, zoekGeheugencheck, type CheckKlaar } from './Geheugencheck';
 import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
 import { NuDoenBinnen, NuDoenKaart } from './NuDoen';
@@ -40,8 +37,7 @@ import { OefenLijst, type OefenRijData } from './OefenLijst';
 import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
 import { terugkomst, TerugKaart } from './TerugBlok';
 import { useVandaag, vormVoor, vrijeVorm, type Vandaag } from './useVandaag';
-import { KlaarVoorVandaag, VandaagHerhalen } from './VandaagBlok';
-import { ScrollRij } from './ScrollRij';
+import { KlaarVoorVandaag } from './VandaagBlok';
 import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
 
 /**
@@ -71,11 +67,11 @@ import { NaamUitnodiging, VoorWieNieuwIs } from './NogZonderNaam';
  * slot en geen knop. En zonder code ook geen getal van wat er terugkomt
  * (ADR-253): een getal zonder plek om het te oefenen roept alleen vragen op.
  *
- * **Op een telefoon één blok bovenaan, en lijsten in plaats van rijen**
- * (ADR-252). De begroeting en Nu doen zijn één koraal vlak met een witte kaart
- * erin, en Verder oefenen, Past bij groep en Vandaag herhalen zijn lijsten van
- * drie rijen in een witte kaart, met de rest één druk verder. Vanaf 768 blijft
- * alles zoals het was.
+ * **Eén blok bovenaan, en lijsten in plaats van rijen** (ADR-252). De
+ * begroeting en Nu doen zijn één koraal vlak met een witte kaart erin, en
+ * Verder oefenen, Past bij groep en Vandaag herhalen zijn lijsten van drie
+ * rijen in een witte kaart, met de rest één druk verder. Dat was het ontwerp
+ * voor een telefoon; sinds ADR-255 is het Vandaag op elke maat.
  *
  * Eén kolom, op elke maat (ADR-168). One thing it deliberately does not do:
  * **it does not forecast** — "wat onthoud je" is K9's.
@@ -166,7 +162,6 @@ export function HomeScreen({
 
   const { actief } = usePremium();
   const vandaag = useVandaag();
-  const kleinScherm = useSmallScreen();
 
   // Over every set a round can be started on, mixes included: a round of the
   // Rekenmix that could not be placed would drop out of the history entirely.
@@ -226,11 +221,11 @@ export function HomeScreen({
       />
     );
   } else if (soort === 'herhalen' && vandaag !== null) {
-    // Op een telefoon is de eerste ronde van het plan Nu doen, als kaart met
-    // één knop; de rest staat eronder als lijst (ADR-252).
+    // De eerste ronde van het plan is Nu doen, als kaart met één knop; de
+    // rest staat eronder als lijst (ADR-252, op elke maat sinds ADR-255).
     const eerste = vandaag.plan.rondes[0];
     nuDoen =
-      kleinScherm && eerste !== undefined ? (
+      eerste === undefined ? null : (
         <NuDoenKaart
           moduleId={eerste.set.moduleId}
           kop={t('vandaag.titel')}
@@ -245,8 +240,6 @@ export function HomeScreen({
           knop={t('home.nu.verder.knop')}
           onStart={() => onPlan(eerste.set, vormVoor(eerste.set, gespeeld), eerste.ids)}
         />
-      ) : (
-        <VandaagHerhalen vandaag={vandaag} gespeeld={gespeeld} onPlan={onPlan} />
       );
   } else if (soort === 'maakAf' && half !== null) {
     const { deel, ronde } = half;
@@ -302,31 +295,10 @@ export function HomeScreen({
           : t('home.status.begin')
       : statusVoor(soort, vandaag?.plan.vragen ?? 0, klaarVandaag);
 
-  // Het welkomstvlak (Kleurblokken, ADR-238): het merkvlak van de pagina, met
-  // Denker die zwaait over de rand. De vormen zijn versiering, staan stil en
-  // dragen geen tekst.
-  const kop = (
-    <div className="tk-etalage tk-welkom">
-      <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
-      <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
-      <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
-      <span className="tk-welkom-vorm tk-welkom-room-twee" aria-hidden="true" />
-      <div className="tk-welkom-tekst">
-        <h1 className="tk-welkom-kop">
-          {naamloos ? t('home.welcomeZonderNaam') : t('home.welcome', { naam })}
-        </h1>
-        <p className="tk-welkom-tekstregel">{status}</p>
-      </div>
-      <span className="tk-welkom-denker">
-        <Brandmark size={136} uitdrukking="zwaaien" />
-      </span>
-    </div>
-  );
-
-  // Op een telefoon is het welkomstvlak ook Nu doen (ADR-252): de begroeting,
-  // Denker kleiner ernaast, en de kaart met de ene knop als witte kaart in het
-  // koraal. Zo staat de knop boven de vouw op elke telefoon, en is er bovenaan
-  // één blok in plaats van twee.
+  // Het welkomstvlak is ook Nu doen (ADR-252, op elke maat sinds ADR-255): de
+  // begroeting, Denker ernaast, en de kaart met de ene knop als witte kaart in
+  // het koraal. Zo staat de knop boven de vouw op elke telefoon, en is er
+  // bovenaan één blok in plaats van twee.
   const welkom = (binnen: ReactNode) => (
     <div className="tk-etalage tk-welkom tk-welkom-nu">
       <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
@@ -352,8 +324,7 @@ export function HomeScreen({
   // te bouwen, zodat een rij zijn focus en zijn scrollstand houdt.
   const blok = (sleutel: string, inhoud: ReactNode) => <Fragment key={sleutel}>{inhoud}</Fragment>;
 
-  if (!gelezenAlles)
-    return <div className="tk-home">{[blok('kop', kleinScherm ? welkom(null) : kop)]}</div>;
+  if (!gelezenAlles) return <div className="tk-home">{[blok('kop', welkom(null))]}</div>;
 
   if (nieuw) {
     // Waar dit kind mee begint: de vijf onderwerpen van zijn groep, één per
@@ -364,7 +335,7 @@ export function HomeScreen({
     ) : kleuter ? (
       <VoorKleuters />
     ) : (
-      <Starters groep={groep} premium={actief} lijst={kleinScherm} onBegin={onBegin} />
+      <Starters groep={groep} premium={actief} onBegin={onBegin} />
     );
     // Onder de kaarten en niet erboven, want eerst kiest het waarmee het begint.
     const andere = vraagGroep ? null : (
@@ -382,7 +353,7 @@ export function HomeScreen({
     return (
       <div className="tk-home">
         {[
-          blok('kop', kleinScherm ? welkom(null) : kop),
+          blok('kop', welkom(null)),
           blok('beginnen', beginnen),
           blok('andere', andere),
           // Aan een bureau de vakken en hoe het werkt; op een telefoon en een
@@ -408,17 +379,16 @@ export function HomeScreen({
   return (
     <div className="tk-home">
       {[
-        blok('kop', kleinScherm ? welkom(nuDoen) : kop),
-        blok('nu', kleinScherm ? null : nuDoen),
+        blok('kop', welkom(nuDoen)),
         // Na de eerste ronde, één keer: hoe heet je? Onder Nu doen en niet
         // erboven, en weg te klikken (ADR-229, ADR-250).
         blok('naam', naamloos ? <NaamUitnodiging /> : null),
         blok('klaar', klaarVandaag && soort !== 'herhalen' ? <KlaarVoorVandaag /> : null),
-        // Op een telefoon staat wat vandaag terugkomt als lijst, met premium
-        // (ADR-252); de eerste ronde is Nu doen als die aan de beurt is.
+        // Wat vandaag terugkomt staat als lijst, met premium (ADR-252); de
+        // eerste ronde is Nu doen als die aan de beurt is.
         blok(
           'herhalen',
-          kleinScherm && herhalen && vandaag !== null ? (
+          herhalen && vandaag !== null ? (
             <HerhaalLijst
               vandaag={vandaag}
               zonderEerste={soort === 'herhalen'}
@@ -433,7 +403,6 @@ export function HomeScreen({
             <VerderOefenen
               kaarten={verder}
               premium={actief}
-              lijst={kleinScherm}
               onBegin={onBegin}
               onVerder={onVerder}
             />
@@ -441,13 +410,7 @@ export function HomeScreen({
         ),
         blok(
           'passend',
-          <PastBijGroep
-            gespeeld={gespeeld}
-            groep={groep}
-            premium={actief}
-            lijst={kleinScherm}
-            onBegin={onBegin}
-          />,
+          <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />,
         ),
         blok(
           'vakken',
@@ -497,57 +460,7 @@ function restVan(ronde: OpenRound): string {
 }
 
 /**
- * Eén kaart in een rij op Vandaag (ADR-250): de plaat links, het onderwerp, de
- * spelvorm, en waar dat zo is de stand eronder. Dezelfde kaart in Verder
- * oefenen, Hier begin je mee en Past bij groep.
- */
-function OefenKaart({
-  deel,
-  vorm,
-  half,
-  uitslag,
-  onClick,
-}: {
-  readonly deel: Onderdeel;
-  readonly vorm: string;
-  /** Een ronde die half af is: een balk en hoeveel er nog over is. */
-  readonly half?: OpenRound | undefined;
-  /** De uitslag van de laatste ronde, met premium (ADR-192). */
-  readonly uitslag?: string | null | undefined;
-  readonly onClick: () => void;
-}) {
-  const ModuleIcon = MODULE_ICON[deel.moduleId];
-  const rest = half === undefined ? null : restVan(half);
-
-  return (
-    <button
-      type="button"
-      data-module={deel.moduleId}
-      className="tk-kaart tk-maakaf"
-      onClick={onClick}
-    >
-      <span className="tk-plaat tk-plaat-groot">
-        <ModuleIcon size={24} />
-      </span>
-      <span className="tk-kaart-titel">{naamVan(deel)}</span>
-      <span className="tk-kaart-regel">{vorm}</span>
-      {half === undefined || rest === null ? null : (
-        // The bar is decorative: the words under it say the same, and the
-        // whole card is one button whose name is read once.
-        <span aria-hidden="true">
-          <ProgressBar value={half.beantwoord / half.totaal} showDot={false} label={rest} />
-        </span>
-      )}
-      {rest !== null ? <span className="tk-kaart-voet">{rest}</span> : null}
-      {uitslag ? <span className="tk-kaart-voet">{uitslag}</span> : null}
-    </button>
-  );
-}
-
-/**
- * Eén onderwerp in een rij van Vandaag, wat ervoor staat en wat een druk doet.
- * Vanaf 768 een kaart in een rij die opzij doorloopt, op een telefoon een rij
- * in een lijst (ADR-252): dezelfde gegevens, twee vormen.
+ * Eén onderwerp in een lijst van Vandaag, wat ervoor staat en wat een druk doet.
  */
 interface Oefening {
   readonly sleutel: string;
@@ -559,50 +472,34 @@ interface Oefening {
   readonly onClick: () => void;
 }
 
-/** Een rij kaarten, of op een telefoon een lijst (ADR-252). */
+/**
+ * Een lijst op Vandaag (ADR-252). De rijen die opzij doorliepen stonden hier
+ * vanaf 768 tot ADR-255; nu is het op elke maat dezelfde lijst.
+ */
 function Rij({
   titel,
-  lijst,
   oefeningen,
 }: {
   readonly titel: string;
-  readonly lijst: boolean;
   readonly oefeningen: readonly Oefening[];
 }) {
-  if (lijst) {
-    return (
-      <OefenLijst
-        titel={titel}
-        rijen={oefeningen.map(({ sleutel, deel, vorm, half, uitslag, onClick }): OefenRijData => ({
-          sleutel,
-          moduleId: deel.moduleId,
-          titel: naamVan(deel),
-          regel: [vorm, half === undefined ? null : restVan(half), uitslag ?? null]
-            .filter((stuk) => stuk !== null)
-            .join(' · '),
-          balk:
-            half === undefined
-              ? undefined
-              : { waarde: half.beantwoord / half.totaal, label: restVan(half) },
-          onClick,
-        }))}
-      />
-    );
-  }
-
   return (
-    <ScrollRij titel={titel}>
-      {oefeningen.map(({ sleutel, deel, vorm, half, uitslag, onClick }) => (
-        <OefenKaart
-          key={sleutel}
-          deel={deel}
-          vorm={vorm}
-          half={half}
-          uitslag={uitslag}
-          onClick={onClick}
-        />
-      ))}
-    </ScrollRij>
+    <OefenLijst
+      titel={titel}
+      rijen={oefeningen.map(({ sleutel, deel, vorm, half, uitslag, onClick }): OefenRijData => ({
+        sleutel,
+        moduleId: deel.moduleId,
+        titel: naamVan(deel),
+        regel: [vorm, half === undefined ? null : restVan(half), uitslag ?? null]
+          .filter((stuk) => stuk !== null)
+          .join(' · '),
+        balk:
+          half === undefined
+            ? undefined
+            : { waarde: half.beantwoord / half.totaal, label: restVan(half) },
+        onClick,
+      }))}
+    />
   );
 }
 
@@ -618,14 +515,12 @@ function Rij({
 function VerderOefenen({
   kaarten,
   premium,
-  lijst,
   onBegin,
   onVerder,
 }: {
   readonly kaarten: readonly VerderKaart[];
   /** Zonder premium geen uitslag, en een premiummanier wordt een gratis manier (ADR-192). */
   readonly premium: boolean;
-  readonly lijst: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
   readonly onVerder: (deel: Onderdeel, mode: ModeId, rest: readonly string[]) => void;
 }) {
@@ -651,11 +546,11 @@ function VerderOefenen({
     };
   });
 
-  return <Rij titel={t('home.verderTitel')} lijst={lijst} oefeningen={oefeningen} />;
+  return <Rij titel={t('home.verderTitel')} oefeningen={oefeningen} />;
 }
 
 /**
- * Vandaag herhalen als lijst, op een telefoon en met premium (ADR-252). Het
+ * Vandaag herhalen als lijst, met premium (ADR-252). Het
  * aantal vragen staat rechts in de kop. Is de eerste ronde al Nu doen, dan
  * staat hij hier niet nog eens, en heet de lijst "Daarna herhalen".
  */
@@ -715,13 +610,11 @@ function uitslagVan({ ronde }: Gespeeld): string {
 function Starters({
   groep,
   premium,
-  lijst,
   onBegin,
 }: {
   /** Waarmee een nieuw kind begint, hangt af van zijn groep (ADR-151). */
   readonly groep: Groep | undefined;
   readonly premium: boolean;
-  readonly lijst: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   const begin = starters(groep);
@@ -730,7 +623,6 @@ function Starters({
   return (
     <Rij
       titel={groep === undefined ? t('home.popularStart') : t('home.popularStartGroep', { groep })}
-      lijst={lijst}
       oefeningen={begin.map(({ deel, mode }) => {
         const vorm = vrijeVorm(deel, mode, premium);
         return {
@@ -752,13 +644,11 @@ function PastBijGroep({
   gespeeld,
   groep,
   premium,
-  lijst,
   onBegin,
 }: {
   readonly gespeeld: readonly Gespeeld[];
   readonly groep: Groep | undefined;
   readonly premium: boolean;
-  readonly lijst: boolean;
   readonly onBegin: (deel: Onderdeel, mode: ModeId) => void;
 }) {
   if (groep === undefined || gespeeld.length === 0) return null;
@@ -768,7 +658,6 @@ function PastBijGroep({
   return (
     <Rij
       titel={t('home.pastBijGroep', { groep })}
-      lijst={lijst}
       oefeningen={passend.map(({ deel, mode }) => {
         const vorm = vrijeVorm(deel, mode, premium);
         return {

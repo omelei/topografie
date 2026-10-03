@@ -3,6 +3,7 @@ import { t, type TranslationKey } from '@/i18n';
 import { isIngesteld } from '@/store/account/omgeving';
 import type { Module } from '@/features/shell/modules';
 import { VakkenRaster } from './Kennismaken';
+import { Paginakop } from '@/features/shell/Paginakop';
 
 /**
  * Voor ouders (ADR-214): wat leer.nu is, hoe het werkt, wat het kost en wat er
@@ -34,8 +35,7 @@ export function VoorOuders({
   return (
     <div className="tk-home">
       <header className="flex flex-col gap-3">
-        <h1 className="tk-titel">{t('ouders.titel')}</h1>
-        <p className="text-lopend">{t('ouders.intro')}</p>
+        <Paginakop kop={t('ouders.titel')} regel={t('ouders.intro')} />
         <div className="flex flex-wrap gap-3">
           <button type="button" className="tk-button" onClick={onProberen}>
             {t('ouders.proberen')}

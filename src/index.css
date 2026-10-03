@@ -3214,10 +3214,11 @@
     grid-column: 1 / -1;
   }
 
-  /* ---- Vandaag op een telefoon (ADR-252) ----------------------------------
-   * Alleen op een telefoon getekend (`useSmallScreen`), dus zonder breekpunt.
-   * Het welkomstvlak en Nu doen zijn één koraal vlak: de begroeting met Denker
-   * ernaast, en daaronder Nu doen als witte binnenkaart. Cacao op koraal 5,72. */
+  /* ---- Vandaag (ADR-252) ---------------------------------------------------
+   * Het ontwerp voor een telefoon, sinds ADR-255 op elke maat en ook de kop van
+   * de andere pagina's (`Paginakop`), dus zonder breekpunt. Het welkomstvlak en
+   * Nu doen zijn één koraal vlak: de begroeting met Denker ernaast, en daaronder
+   * Nu doen als witte binnenkaart. Cacao op koraal 5,72. */
   .tk-welkom-nu {
     flex-direction: column;
     align-items: stretch;
@@ -3239,6 +3240,18 @@
     width: 68px;
     height: 68px;
     margin: 0 -4px 0 0;
+  }
+  /* Vanaf 768 maakt het welkomstvlak zijn regel en zijn cirkel groter; dit
+   * vlak houdt de maat van een telefoon. */
+  .tk-welkom-nu .tk-welkom-tekstregel {
+    font-size: var(--type-lopend);
+    line-height: 1.625rem; /* 26px */
+  }
+  .tk-welkom-nu .tk-welkom-cirkel {
+    top: -44px;
+    right: -36px;
+    width: 150px;
+    height: 150px;
   }
   /* De binnenkaart: plaat, kop en regel naast elkaar, de balk en de knop over
    * de hele breedte. Wit op koraal, dus geen rand en geen onderkant van het
@@ -3270,9 +3283,10 @@
     margin: -4px 0 -6px;
   }
 
-  /* De lijsten van Vandaag op een telefoon (ADR-252): één witte kaart per
-   * lijst, de rijen met een haarlijn ertussen, elke rij even hoog. De pijl in
-   * een cirkel in de tint van het vak, de woorden erop in de diepe toon. */
+  /* De lijsten van Vandaag (ADR-252, op elke maat sinds ADR-255): één witte
+   * kaart per lijst, de rijen met een haarlijn ertussen, elke rij even hoog.
+   * De pijl in een cirkel in de tint van het vak, de woorden erop in de diepe
+   * toon. Ook de vakken op Oefenen en onder "Kies een vak" (`VakTegels`). */
   .tk-oefenlijst {
     display: flex;
     flex-direction: column;
@@ -4579,45 +4593,101 @@
     line-height: 1.25rem;
   }
 
-  /* Wat een chip en een tegel op een telefoon anders zijn (ADR-252). Twee
-   * vormen om te kiezen: een pil van 48 die niet afbreekt, en een tegel in
-   * twee kolommen. Ongekozen wit met een warme rand, gekozen de tint van het
-   * vak met zijn rand en zijn woorden. */
+  /* Wat een chip en een tegel op de vakpagina anders zijn (ADR-252, op elke
+   * maat sinds ADR-255). Twee vormen om te kiezen: een pil van 48 die niet
+   * afbreekt, en een tegel met de plaat boven de naam. Ongekozen wit met een
+   * warme rand, gekozen de tint van het vak met zijn rand en zijn woorden. */
+  .tk-kiespagina .tk-keuze {
+    min-height: 48px;
+    max-width: 100%;
+    padding: 0 18px;
+    border-color: var(--rand-sterk);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--rand-sterk);
+    white-space: nowrap;
+  }
+  .tk-kiespagina .tk-keuze[aria-pressed='true'] {
+    border-color: var(--accent);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--accent);
+    background: var(--accent-tint);
+    color: var(--accent-text);
+  }
+  .tk-kiespagina .tk-tegels {
+    grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr));
+    gap: 10px;
+  }
+  .tk-kiespagina .tk-tegel {
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 96px;
+    padding: 12px;
+    border-width: var(--stroke-active);
+    border-color: var(--rand-sterk);
+    border-radius: 18px;
+    box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
+    overflow-wrap: anywhere;
+    font-family: var(--font-kop);
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.375rem; /* 22px */
+    font-weight: 700;
+  }
+  .tk-kiespagina .tk-tegel .tk-plaat {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-chip);
+    background: var(--perzik);
+    box-shadow: none;
+    color: var(--inkt);
+  }
+  .tk-kiespagina .tk-tegel[aria-pressed='true'] {
+    border-color: var(--accent);
+    box-shadow: 0 var(--onderkant) 0 var(--accent);
+    background: var(--accent-tint);
+    color: var(--inkt);
+  }
+  .tk-kiespagina .tk-tegel[aria-pressed='true'] .tk-plaat {
+    background: var(--accent);
+    color: var(--kaart);
+  }
+  .tk-kiespagina .tk-tegel-vink {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    border-radius: var(--radius-pil);
+    background: var(--accent);
+  }
+  .tk-kiespagina .tk-tegel-vink > svg {
+    width: 16px;
+    height: 16px;
+  }
+  /* Het diploma: een tegel over de volle breedte, in zon (ADR-168). */
+  .tk-kiespagina .tk-tegel-diploma {
+    grid-column: 1 / -1;
+    margin-block-start: 0;
+  }
+  .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) {
+    padding: 12px;
+    border-color: var(--zon-rand);
+    box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
+    background: var(--zon-tint);
+  }
+  .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) .tk-plaat {
+    background: var(--zon);
+    box-shadow: none;
+  }
+  .tk-kiespagina .tk-tegel-diploma[aria-pressed='true'] {
+    background: var(--zon-tint);
+  }
+
   @media (max-width: 767px) {
-    .tk-kiespagina .tk-keuze {
-      min-height: 48px;
-      max-width: 100%;
-      padding: 0 18px;
-      border-color: var(--rand-sterk);
-      box-shadow: 0 var(--onderkant-klein) 0 var(--rand-sterk);
-      white-space: nowrap;
-    }
-    .tk-kiespagina .tk-keuze[aria-pressed='true'] {
-      border-color: var(--accent);
-      box-shadow: 0 var(--onderkant-klein) 0 var(--accent);
-      background: var(--accent-tint);
-      color: var(--accent-text);
-    }
     .tk-kiespagina .tk-tegels {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .tk-kiespagina .tk-tegel {
-      position: relative;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      min-height: 96px;
-      padding: 12px;
-      border-width: var(--stroke-active);
-      border-color: var(--rand-sterk);
-      border-radius: 18px;
-      box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
-      overflow-wrap: anywhere;
-      font-family: var(--font-kop);
-      font-size: 1.125rem; /* 18px */
-      line-height: 1.375rem; /* 22px */
-      font-weight: 700;
     }
     /* Op een vinger blijft de muis staan waar je tikte: geen gekleurde rand
      * op een tegel of chip die niet gekozen is. */
@@ -4625,58 +4695,39 @@
     .tk-kiespagina .tk-keuze:not(:disabled):not([aria-pressed='true']):hover {
       border-color: var(--rand-sterk);
     }
-    .tk-kiespagina .tk-tegel .tk-plaat {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--radius-chip);
-      background: var(--perzik);
-      box-shadow: none;
-      color: var(--inkt);
-    }
-    .tk-kiespagina .tk-tegel[aria-pressed='true'] {
-      border-color: var(--accent);
-      box-shadow: 0 var(--onderkant) 0 var(--accent);
-      background: var(--accent-tint);
-      color: var(--inkt);
-    }
-    .tk-kiespagina .tk-tegel[aria-pressed='true'] .tk-plaat {
-      background: var(--accent);
-      color: var(--kaart);
-    }
-    .tk-kiespagina .tk-tegel-vink {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      align-items: center;
-      justify-content: center;
-      width: 26px;
-      height: 26px;
-      margin: 0;
-      border-radius: var(--radius-pil);
-      background: var(--accent);
-    }
-    .tk-kiespagina .tk-tegel-vink > svg {
-      width: 16px;
-      height: 16px;
-    }
-    /* Het diploma: een tegel over de volle breedte, in zon (ADR-168). */
-    .tk-kiespagina .tk-tegel-diploma {
-      grid-column: 1 / -1;
-      margin-block-start: 0;
-    }
-    .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) {
-      padding: 12px;
-      border-color: var(--zon-rand);
-      box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
-      background: var(--zon-tint);
-    }
-    .tk-kiespagina .tk-tegel-diploma:not([aria-pressed='true']) .tk-plaat {
-      background: var(--zon);
-      box-shadow: none;
-    }
-    .tk-kiespagina .tk-tegel-diploma[aria-pressed='true'] {
-      background: var(--zon-tint);
-    }
+  }
+
+  /* Vanaf 768 staan de stappen onder elkaar, niet als accordeon (ADR-255). Elke
+   * stap is wat op een telefoon de open stap is: een witte kaart met een warme
+   * rand en onderkant, het nummer in inkt. De startbalk is een wit blad met
+   * dezelfde rand, en de stappen die nog wachten zijn neutraal: de kleur van
+   * het vak is op deze pagina voor wat gekozen is. */
+  .tk-kiespagina .tk-kies {
+    padding: 16px 20px 20px;
+    border: var(--stroke-active) solid var(--rand-sterk);
+    border-radius: 20px;
+    box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
+    background: var(--kaart);
+  }
+  .tk-kiespagina .tk-stap-nummer {
+    background: var(--inkt);
+    color: var(--kaart);
+  }
+  .tk-kiespagina .tk-startbalk {
+    border: var(--stroke-active) solid var(--rand-sterk);
+    border-radius: 24px;
+    box-shadow: 0 var(--onderkant) 0 var(--rand-sterk);
+    background: var(--kaart);
+  }
+  .tk-kiespagina .tk-startbalk-label {
+    color: var(--tekst-secundair);
+  }
+  .tk-kiespagina .tk-nogstap {
+    border-color: var(--rand-sterk);
+    box-shadow: 0 var(--onderkant-klein) 0 var(--rand-sterk);
+  }
+  .tk-kiespagina .tk-nogstap:hover {
+    border-color: var(--rand-bediening);
   }
 
   /* ---- Squares: which table, which division ------------------------------

@@ -40,7 +40,7 @@ test('Jij draagt je instellingen, je diploma’s en al je cijfers, in die volgor
 
   await expect(page.getByRole('heading', { level: 1, name: 'Jij' })).toBeVisible();
   // De zin onder de titel zegt wie er oefent en wat er op de pagina staat.
-  await expect(page.locator('.tk-etalage-tekst').first()).toHaveText(
+  await expect(page.locator('.tk-welkom-tekstregel').first()).toHaveText(
     'Je oefent als Noor. Hier staan je instellingen, je diploma’s en wat je beheerst.',
   );
 
@@ -119,7 +119,7 @@ test('je naam wijzig je bij de instellingen', async ({ page }) => {
 
   // Opnieuw geladen, en nergens staat de oude naam nog.
   await expect(page.getByRole('banner').getByRole('button', { name: 'Floor' })).toBeVisible();
-  await expect(page.locator('.tk-etalage-tekst').first()).toContainText('Je oefent als Floor.');
+  await expect(page.locator('.tk-welkom-tekstregel').first()).toContainText('Je oefent als Floor.');
 });
 
 test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
