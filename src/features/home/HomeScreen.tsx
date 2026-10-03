@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState, type ReactNode } from 'react';
-import { Brandmark } from '@/components/Brandmark';
+import { LevendeDenker } from '@/components/LevendeDenker';
 import {
   formatGrade,
   grade,
@@ -9,7 +9,6 @@ import {
   type ItemState,
   type ModeId,
 } from '@/game-core';
-import type { Module } from '@/features/shell/modules';
 import { t, type TranslationKey } from '@/i18n';
 import { loadItemStates, loadOpenRounds, loadPlayedRounds } from '@/store/progress';
 import {
@@ -31,7 +30,7 @@ import {
 } from '@/features/module/onderdelen';
 import { usePremium } from '@/features/premium/usePremium';
 import { Geheugencheck, zoekGeheugencheck, type CheckKlaar } from './Geheugencheck';
-import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
+import { GroepVraag, VoorKleuters, ZoWerktHet } from './Kennismaken';
 import { NuDoenBinnen, NuDoenKaart } from './NuDoen';
 import { OefenLijst, type OefenRijData } from './OefenLijst';
 import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
@@ -93,8 +92,6 @@ export interface HomeScreenProps {
    * een andere reden — daar is de rest van een ronde, hier wat je bijna vergeet.
    */
   readonly onPlan: (deel: Onderdeel, mode: ModeId, ids: readonly string[]) => void;
-  /** Naar de pagina van een vak, vanuit "Kies een vak" (ADR-204). */
-  readonly onVak: (id: Module['id']) => void;
   /** De geheugencheck, één keer per kind (ADR-228). */
   readonly onGeheugencheck: (check: CheckKlaar) => void;
   /** Naar de pagina voor ouders, voor wie nog geen naam heeft (ADR-229). */
@@ -106,7 +103,6 @@ export function HomeScreen({
   onBegin,
   onVerder,
   onPlan,
-  onVak,
   onGeheugencheck,
   onVoorOuders,
 }: HomeScreenProps) {
@@ -302,6 +298,8 @@ export function HomeScreen({
   const welkom = (binnen: ReactNode) => (
     <div className="tk-etalage tk-welkom tk-welkom-nu">
       <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+      <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+      <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
       <div className="tk-welkom-boven">
         <div className="tk-welkom-tekst">
           <h1 className="tk-welkom-kop">
@@ -309,9 +307,7 @@ export function HomeScreen({
           </h1>
           <p className="tk-welkom-tekstregel">{status}</p>
         </div>
-        <span className="tk-welkom-denker">
-          <Brandmark size={136} uitdrukking="zwaaien" />
-        </span>
+        <LevendeDenker className="tk-welkom-denker" size={136} uitdrukking="zwaaien" />
       </div>
       {binnen === null ? null : (
         <NuDoenBinnen.Provider value={true}>{binnen}</NuDoenBinnen.Provider>
@@ -356,12 +352,12 @@ export function HomeScreen({
           blok('kop', welkom(null)),
           blok('beginnen', beginnen),
           blok('andere', andere),
-          // Aan een bureau de vakken en hoe het werkt; op een telefoon en een
-          // tablet niet: daar staat de tab Oefenen voor de vakken (ADR-251).
+          // Aan een bureau hoe het werkt; op een telefoon en een tablet niet
+          // (ADR-251). De vakken staan er niet meer: aan een bureau staan ze in
+          // de zijbalk, en niet nog eens op de pagina (ADR-259).
           blok(
             'vakken',
             <AlleenAanEenBureau>
-              <VakkenRaster onVak={onVak} />
               <ZoWerktHet />
             </AlleenAanEenBureau>,
           ),
@@ -412,12 +408,6 @@ export function HomeScreen({
           'passend',
           <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />,
         ),
-        blok(
-          'vakken',
-          <AlleenAanEenBureau>
-            <VakkenRaster onVak={onVak} />
-          </AlleenAanEenBureau>,
-        ),
         blok('gast', naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null),
       ]}
     </div>
@@ -425,13 +415,13 @@ export function HomeScreen({
 }
 
 /**
- * Wat alleen aan een bureau staat, vanaf 1200 (ADR-251). Op een telefoon en een
+ * Wat alleen aan een bureau staat, vanaf 1024 (ADR-251, ADR-259). Op een telefoon en een
  * tablet duwden de vakken en "Zo werkt leer.nu" alles een scherm omlaag; daar
  * zijn de vakken één tik weg onder Oefenen. `contents`, zodat de blokken in de
  * kolom van Vandaag hun gewone afstand houden.
  */
 function AlleenAanEenBureau({ children }: { readonly children: ReactNode }) {
-  return <div className="hidden desk:contents">{children}</div>;
+  return <div className="tk-home-bureau hidden desk:contents">{children}</div>;
 }
 
 /** De zin onder de begroeting voor wie al geoefend heeft, bij zijn Nu doen. */

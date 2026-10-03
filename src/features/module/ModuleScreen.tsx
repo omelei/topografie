@@ -64,6 +64,8 @@ import {
 } from './forms';
 import { isPremiumOnderwerp, isPremiumVorm, metPremium } from './premium';
 import { useSmallScreen } from '@/features/shell/useSmallScreen';
+import { VAK_UITLEG } from '@/features/shell/vakUitleg';
+import { LevendeDenker } from '@/components/LevendeDenker';
 import {
   Blad,
   LaterStappen,
@@ -183,6 +185,13 @@ export function ModuleScreen({
   const [foutenstand, setFoutenstand] = useState(false);
   const kleinScherm = useSmallScreen();
   const nogId = useId();
+  // Wie Denker bij de startknop kietelt, laat hem even juichen (ADR-259).
+  const [gekieteld, zetGekieteld] = useState(0);
+  useEffect(() => {
+    if (gekieteld === 0) return;
+    const klaar = window.setTimeout(() => zetGekieteld(0), KIETEL_MS);
+    return () => window.clearTimeout(klaar);
+  }, [gekieteld]);
   // Op een telefoon (ADR-252): welke stap het kind zelf opende, of 'auto' voor
   // de eerste zonder antwoord; welk blad openstaat; en hoeveel diploma's de
   // wand in dat blad heeft, voor de rij die ernaar wijst.
@@ -499,25 +508,6 @@ export function ModuleScreen({
       ? t('start.eerderGehad', { eerder: vooraf.seen, totaal: vooraf.total })
       : null;
 
-  const gekozenLijst: readonly { readonly label: string; readonly waarde: string }[] = [
-    ...(regioNaam ? [{ label: t(regioLabel(module.id)), waarde: t(regioNaam.naam) }] : []),
-    ...(onderwerp
-      ? [
-          {
-            label: t(module.id === 'tafels' ? 'start.som' : 'start.onderwerp'),
-            waarde: t(onderwerp.naam),
-          },
-        ]
-      : []),
-    ...(heeftKeuze && chosen
-      ? [{ label: t('start.welke'), waarde: chosen.kortNaam ?? naamVan(chosen) }]
-      : []),
-    ...(form ? [{ label: t('start.manier'), waarde: t(form.name) }] : []),
-    ...(ronde ? [{ label: t('start.ronde'), waarde: ronde }] : []),
-    ...(alsToets ? [{ label: t('start.stand'), waarde: t('choose.testMode') }] : []),
-    ...(alsFouten ? [{ label: t('start.stand'), waarde: t('choose.fouten') }] : []),
-  ];
-
   /** A set chosen from outside its own subject's row: the map follows the set. */
   const kiesElders = (id: string) => {
     setRegio(null);
@@ -590,6 +580,74 @@ export function ModuleScreen({
   const openId = openStap(standen, openWens);
   const balk = balkStand(standen, openId);
 
+  // Wat de startkaart noemt (ADR-259): elke genummerde stap met zijn antwoord,
+  // of null zolang hij leeg is. Vanaf 768 heeft de kaart een standaard
+  // (ADR-111), dus die staat altijd gekozen.
+  const kaartRijen: readonly {
+    readonly nummer: number;
+    readonly label: string;
+    readonly vraag: string;
+    readonly waarde: string | null;
+    readonly sectie: { readonly current: HTMLElement | null };
+  }[] = [
+    ...(regioNaam
+      ? [
+          {
+            nummer: stap.regio,
+            label: t(regioLabel(module.id)),
+            vraag: t(regioVraag(module.id)),
+            waarde: t(regioNaam.naam),
+            sectie: watSectie,
+          },
+        ]
+      : []),
+    {
+      nummer: stap.wat,
+      label: t(module.id === 'tafels' ? 'start.som' : 'start.onderwerp'),
+      vraag: t('choose.stepWhat'),
+      waarde: onderwerp ? t(onderwerp.naam) : null,
+      sectie: watSectie,
+    },
+    ...(heeftKeuze && onderwerp.keuze !== null
+      ? [
+          {
+            nummer: stap.keuze,
+            label: t('start.welke'),
+            vraag: t(onderwerp.keuze),
+            waarde: chosen ? (chosen.kortNaam ?? naamVan(chosen)) : null,
+            sectie: keuzeSectie,
+          },
+        ]
+      : []),
+    {
+      nummer: stap.hoe,
+      label: t('start.manier'),
+      vraag: t('choose.stepHow'),
+      waarde: vormWaarde,
+      sectie: hoeSectie,
+    },
+  ];
+  // Denker bij de startknop wordt enthousiaster naarmate er meer gekozen is:
+  // nieuwsgierig, blij, en als alles gekozen is juichend (ADR-259).
+  const aantalGekozen = kaartRijen.filter((rij) => rij.waarde !== null).length;
+  const denkerNiveau: 0 | 1 | 2 | 3 =
+    gekieteld !== 0 || klaar ? 3 : aantalGekozen === 0 ? 0 : aantalGekozen === 1 ? 1 : 2;
+  const denkerUitdrukking = (['denken', 'verbaasd', 'blij', 'juichen'] as const)[denkerNiveau];
+  const eersteVraag = kaartRijen.find((rij) => rij.waarde === null)?.vraag ?? '';
+  const denkerZin =
+    gekieteld !== 0
+      ? t('denker.kietel')
+      : klaar && form !== null
+        ? t(denkerOverVorm(form.id))
+        : t(
+            denkerNiveau === 0
+              ? 'denker.stapEerst'
+              : denkerNiveau === 1
+                ? 'denker.stapOoh'
+                : 'denker.stapTop',
+            { vraag: eersteVraag },
+          );
+
   // De open stap in beeld, na een keuze of een druk op een stap: alleen als hij
   // niet al bovenin staat. Na de laatste keuze is alles dicht, en dan de
   // stappen zelf.
@@ -600,10 +658,28 @@ export function ModuleScreen({
   }, [scrollVraag]);
 
   const vakKop = vakPagina?.kop ?? t('choose.titleZonderNaam');
+  // De kop is het vlak in de diepe kleur van het vak (ADR-259): de plaat wit,
+  // de kop en de regel wit, en de tekening van het vak groot en schuin in de
+  // hoek. Het was een witte kaart (ADR-252, ADR-255).
+  const vakVlak = (
+    <div className="tk-vakkaart">
+      <span className="tk-vakkaart-vorm" aria-hidden="true" />
+      <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
+        <ModuleIcon size={28} />
+      </span>
+      <div className="tk-vakkaart-tekst">
+        <h1 className="tk-vakkaart-kop">{vakKop}</h1>
+        <p className="tk-vakkaart-regel">{t(VAK_UITLEG[module.id])}</p>
+      </div>
+      <span className="tk-vakkaart-teken" aria-hidden="true">
+        <ModuleIcon size={96} />
+      </span>
+    </div>
+  );
   const setdiplomaTitel = t(
     module.id === 'woorden' ? 'taal.diplomasTitle' : 'rekenen.somdiplomasTitle',
   );
-  // Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat boven de
+  // Onder 1024 is er geen zijbalk: de weg terug naar de vakken staat boven de
   // kop (ADR-241).
   const terugKnop = onOefenen ? (
     <button
@@ -1109,58 +1185,54 @@ export function ModuleScreen({
           own column beside it does not: it is about the child, not the module. */}
       <div className="tk-page-main" data-accent="module">
         <div className="tk-vakkop">
-          {/* Onder 1200 is er geen zijbalk: de weg terug naar de vakken staat
+          {/* Onder 1024 is er geen zijbalk: de weg terug naar de vakken staat
             boven de kop (ADR-241). */}
           {terugKnop}
-          {/* De kop als witte kaart, met de plaat van het vak, zoals op een
-              telefoon (ADR-252, op elke maat sinds ADR-255). Het was een vlak
-              in de diepe kleur van het vak (ADR-238). Het vak en wat je hier
-              doet: "Topografie oefenen", ook als er een onderwerp gekozen is
-              (ADR-247). */}
-          <div className="tk-vakkaart">
-            <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
-              <ModuleIcon size={24} />
-            </span>
-            <h1 className="tk-vakkaart-kop">{vakKop}</h1>
-          </div>
+          {/* Het vak en wat je hier doet: "Topografie oefenen", ook als er een
+              onderwerp gekozen is (ADR-247). */}
+          {vakVlak}
         </div>
 
-        {/* Where on the map, or which part of Taal, and only where there is
+        {/* Vanaf 1200 de stappen links en de startkaart rechts, die meeleest
+            (ADR-259); daaronder de startkaart onderaan, als blad. */}
+        <div className="tk-kiesraster">
+          <div className="tk-kieskolom">
+            {/* Where on the map, or which part of Taal, and only where there is
             more than one answer. */}
-        {heeftRegio ? (
-          <section className="tk-kies" aria-label={t(regioVraag(module.id))}>
-            <Stap nummer={stap.regio} label={t(regioVraag(module.id))} />
-            {regioKnoppen}
-          </section>
-        ) : null}
+            {heeftRegio ? (
+              <section className="tk-kies" aria-label={t(regioVraag(module.id))}>
+                <Stap nummer={stap.regio} label={t(regioVraag(module.id))} />
+                {regioKnoppen}
+              </section>
+            ) : null}
 
-        <section ref={watSectie} className="tk-kies" aria-label={t('choose.stepWhat')}>
-          <Stap nummer={stap.wat} label={t('choose.stepWhat')} />
+            <section ref={watSectie} className="tk-kies" aria-label={t('choose.stepWhat')}>
+              <Stap nummer={stap.wat} label={t('choose.stepWhat')} />
 
-          {/* Tegels, op elk vak (ADR-168). Rekenen tekende zijn onderwerpen als
+              {/* Tegels, op elk vak (ADR-168). Rekenen tekende zijn onderwerpen als
               chips en de andere vier als tegels, en dat maakte dezelfde vraag —
               "wat wil je oefenen?" — op twee pagina's twee verschillende
               dingen: een rij woorden om te lezen, of een raster om aan te
               wijzen. Een kind dat op /topografie geleerd heeft waar het antwoord
               op stap 2 staat, vindt het op /rekenen op dezelfde plek terug. */}
-          {onderwerpTegels}
-          {legendaWat}
-        </section>
+              {onderwerpTegels}
+              {legendaWat}
+            </section>
 
-        {/* The second, smaller decision, where there is one — numbered like the
+            {/* The second, smaller decision, where there is one — numbered like the
             others, because on rekenen it is the press that decides what the
             round contains. The tables and the divisions are a keypad of twelve;
             a range, a level or which cities are chips. The keypad has no mix
             square: the Rekenmix is one step up already (ADR-100). */}
-        {onderwerp && heeftKeuze && onderwerp.keuze ? (
-          <section ref={keuzeSectie} className="tk-kies" aria-label={t(onderwerp.keuze)}>
-            <Stap nummer={stap.keuze} label={t(onderwerp.keuze)} />
-            {keuzeKnoppen}
-          </section>
-        ) : null}
+            {onderwerp && heeftKeuze && onderwerp.keuze ? (
+              <section ref={keuzeSectie} className="tk-kies" aria-label={t(onderwerp.keuze)}>
+                <Stap nummer={stap.keuze} label={t(onderwerp.keuze)} />
+                {keuzeKnoppen}
+              </section>
+            ) : null}
 
-        <section ref={hoeSectie} className="tk-kies" aria-label={t('choose.stepHow')}>
-          {/* The order of the ways is the argument, and the tile is the name.
+            <section ref={hoeSectie} className="tk-kies" aria-label={t('choose.stepHow')}>
+              {/* The order of the ways is the argument, and the tile is the name.
               What each is for is in its label, so tabbing through them never
               costs a child the thing that tells them apart (ADR-061).
 
@@ -1171,48 +1243,87 @@ export function ModuleScreen({
               volgorde van `forms.ts` maar die van deze sectie: het diploma
               stond daar al achteraan en werd hier alsnog door de oefentoets
               ingehaald. */}
-          <Stap nummer={stap.hoe} label={t('choose.stepHow')} />
+              <Stap nummer={stap.hoe} label={t('choose.stepHow')} />
 
-          {vormTegels}
-          {legendaHoe}
-        </section>
+              {vormTegels}
+              {legendaHoe}
+            </section>
 
-        {/* How long, as a step of its own — and only after a way that has a
+            {/* How long, as a step of its own — and only after a way that has a
             length: pointing, choosing, typing. A minute, three lives and
             exploring have none, and a diploma is the whole table, so for those
             the step is not there rather than empty (ADR-100, amending ADR-074). */}
-        {chosen && form && lengtes.length > 0 ? (
-          <section ref={aantalSectie} className="tk-kies" aria-label={t('choose.howMany')}>
-            <Stap nummer={stap.hoe + 1} label={t('choose.howMany')} />
-            {aantalKnoppen}
-          </section>
-        ) : null}
-
-        {/* From a tablet up, the answers together and the way on, closing the
-            chooser. Always drawn; filled once every step has an answer. */}
-        <div ref={startSectie} className="tk-startbalk tk-choose-start">
-          <div className="min-w-0">
-            <p className="tk-startbalk-label">{t(klaar ? 'start.klaar' : 'start.nogKiezen')}</p>
-            {klaar ? (
-              <ul className="tk-startbalk-keuzes">
-                {gekozenLijst.map(({ label, waarde }) => (
-                  <li key={label} className="tk-startchip">
-                    <span className="tk-startchip-label">{label}</span>
-                    {waarde}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <>
-                <p id={nogId} className="tk-sr-only">
-                  {nogZin}
-                </p>
-                <NogKiezen wachtend={wachtend} kort={false} onNaar={springNaar} />
-              </>
-            )}
-            {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
+            {chosen && form && lengtes.length > 0 ? (
+              <section ref={aantalSectie} className="tk-kies" aria-label={t('choose.howMany')}>
+                <Stap nummer={stap.hoe + 1} label={t('choose.howMany')} />
+                {aantalKnoppen}
+              </section>
+            ) : null}
           </div>
-          {startKnop}
+
+          {/* From a tablet up, the answers together and the way on, closing the
+            chooser. Always drawn; filled once every step has an answer. Sinds
+            ADR-259 een kaart met Denker erop, die meeleest met wat je kiest:
+            elke stap met zijn munt en zijn antwoord, of een knop naar die stap
+            zolang hij leeg is. */}
+          <div
+            ref={startSectie}
+            className="tk-startbalk tk-choose-start"
+            data-klaar={klaar ? '' : undefined}
+          >
+            <div className="tk-startkaart-denker">
+              <LevendeDenker
+                size={108}
+                uitdrukking={denkerUitdrukking}
+                niveau={denkerNiveau}
+                onKietel={() => zetGekieteld(Date.now())}
+                kietelLabel={t('denker.kietelKnop')}
+              />
+              <p className="tk-startkaart-ballon" aria-live="polite">
+                {denkerZin}
+              </p>
+            </div>
+            <p className="tk-startbalk-label">{t(klaar ? 'start.klaar' : 'start.nogKiezen')}</p>
+            <ol className="tk-startkaart-stappen">
+              {kaartRijen.map((rij) => (
+                <li key={rij.nummer}>
+                  {rij.waarde === null ? (
+                    <button
+                      type="button"
+                      className="tk-startkaart-rij"
+                      aria-label={t('start.naarStap', { stap: rij.nummer, vraag: rij.vraag })}
+                      onClick={() => springNaar(rij.sectie)}
+                    >
+                      <span className="tk-startkaart-munt" aria-hidden="true">
+                        {rij.nummer}
+                      </span>
+                      <span className="tk-startkaart-tekst" aria-hidden="true">
+                        <span className="tk-startkaart-label">{rij.label}</span>
+                        <span className="tk-startkaart-waarde">{t('start.nogKiezenRij')}</span>
+                      </span>
+                    </button>
+                  ) : (
+                    <span className="tk-startkaart-rij" data-gekozen="">
+                      <span className="tk-startkaart-munt" aria-hidden="true">
+                        {rij.nummer}
+                      </span>
+                      <span className="tk-startkaart-tekst">
+                        <span className="tk-startkaart-label">{rij.label}</span>
+                        <span className="tk-sr-only">: </span>
+                        <span className="tk-startkaart-waarde">{rij.waarde}</span>
+                      </span>
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ol>
+            <p id={nogId} className="tk-sr-only">
+              {klaar ? '' : nogZin}
+            </p>
+            <p className="tk-startkaart-duur">{klaar ? (ronde ?? zin) : t('start.kiesElkeStap')}</p>
+            {eerderZin ? <p className="tk-hulp">{eerderZin}</p> : null}
+            {startKnop}
+          </div>
         </div>
 
         {/* Eén zin: wat hier vandaag terugkomt. Dat is de voorwaarde voor het
@@ -1343,15 +1454,7 @@ export function ModuleScreen({
         <div className="tk-page-main" data-accent="module">
           <div className="tk-vakkop">
             {terugKnop}
-            {/* De kop als witte kaart, met de plaat van het vak: geen vlak in
-                de kleur van het vak, want die is op deze pagina voor wat je
-                koos (ADR-252). */}
-            <div className="tk-vakkaart">
-              <span className="tk-plaat tk-plaat-groot" aria-hidden="true">
-                <ModuleIcon size={24} />
-              </span>
-              <h1 className="tk-vakkaart-kop">{vakKop}</h1>
-            </div>
+            {vakVlak}
           </div>
 
           <div ref={stappenRef} className="tk-stappen">
@@ -1459,49 +1562,27 @@ export function ModuleScreen({
   }
 }
 
+/** Hoe lang Denker juicht nadat je hem kietelde. */
+const KIETEL_MS = 1300;
+
+/** Wat Denker zegt als alles gekozen is: iets over de spelvorm (ADR-259). */
+function denkerOverVorm(id: string): TranslationKey {
+  if (id === 'wijs-aan' || id === 'vlag-zoeken') return 'denker.vorm.aanwijzen';
+  if (id === 'ontdekken') return 'denker.vorm.ontdekken';
+  if (id === 'bliksemronde') return 'denker.vorm.bliksem';
+  if (id === 'overleven') return 'denker.vorm.overleven';
+  if (id.includes('diploma')) return 'denker.vorm.diploma';
+  if (id.includes('typen') || id === 'hoe-heet-dit' || id.includes('dictee'))
+    return 'denker.vorm.typen';
+  if (id.includes('meerkeuze') || id.includes('kiezen')) return 'denker.vorm.meerkeuze';
+  return 'denker.vorm.anders';
+}
+
 /** Een stap die nog wacht: zijn nummer, zijn vraag en waar hij staat. */
 interface Wachtend {
   readonly nummer: number;
   readonly vraag: string;
   readonly sectie: { readonly current: HTMLElement | null };
-}
-
-/**
- * De stappen die nog wachten, in de startbalk (ADR-247).
- *
- * Er stond "Kies nog bij stap 2 en 3", in grijze letters: een zin die je moest
- * lezen, en dan zelf de stap zoeken. Nu is elke stap die wacht een knop met
- * zijn munt en zijn vraag, en een druk brengt je erheen. Op een telefoon is
- * er geen plek voor de vraag: dan alleen de munt, met de vraag als naam.
- */
-function NogKiezen({
-  wachtend,
-  kort,
-  onNaar,
-}: {
-  readonly wachtend: readonly Wachtend[];
-  readonly kort: boolean;
-  readonly onNaar: (sectie: Wachtend['sectie']) => void;
-}) {
-  return (
-    <ul className="tk-nogkiezen">
-      {wachtend.map(({ nummer, vraag, sectie }) => (
-        <li key={nummer}>
-          <button
-            type="button"
-            className="tk-nogstap"
-            aria-label={t('start.naarStap', { stap: nummer, vraag })}
-            onClick={() => onNaar(sectie)}
-          >
-            <span className="tk-stap-nummer" aria-hidden="true">
-              {nummer}
-            </span>
-            {kort ? null : <span aria-hidden="true">{vraag}</span>}
-          </button>
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 /**

@@ -26,12 +26,12 @@ import {
  * The frame around everything that is not a round, in two postures (ADR-093,
  * ADR-241).
  *
- * **From 1200 up** there is a mouse at eye level. The bar at the top carries
+ * **From 1024 up** (ADR-259) there is room beside the page. The bar carries
  * the wordmark, premium and the child; the destinations and the modules stand
  * in a side bar on the left: Vandaag, Oefenen with the five modules under it
  * (it folds away), a rule, Jij and Ouders.
  *
- * **Below 1200** — a tablet either way up, and a phone — the bar stands on
+ * **Below 1024** — a tablet upright, and a phone — the bar stands on
  * the ground: the mark, and two round buttons for premium and the child.
  * Vandaag, Oefenen, Jij and Ouders lie along the bottom where a thumb is
  * (ADR-242), and a vak is reached through Oefenen (`/oefenen`), which stays
@@ -116,8 +116,10 @@ export interface ShellProps {
   /** Which module is open, so the rail and the menu can say so truthfully. */
   readonly currentModule?: Module['id'];
   readonly onModule?: (id: Module['id']) => void;
-  /** The streak, the profile switch — whatever the app bar is carrying today. */
+  /** The profile switch — whatever the app bar is carrying after premium. */
   readonly bar?: ReactNode;
+  /** De dagen achter elkaar, vóór premium in de kop (ADR-259). */
+  readonly reeks?: ReactNode;
   /**
    * What the page stands on (ADR-120): the front door's ground, a module's —
    * on its page and on a category of it — or, left out, the plain paper.
@@ -144,6 +146,7 @@ export function Shell({
   currentModule,
   onModule,
   bar,
+  reeks,
   grond,
   modules = RAIL_MODULES,
   destinations = BUILT_DESTINATIONS,
@@ -227,7 +230,7 @@ export function Shell({
   return (
     <div className="tk-schil bg-grond">
       {/* Op een telefoon scrolt dit deel, en staat het menu eronder in plaats
-          van eroverheen (zie `.tk-schil` in index.css). Vanaf 1200 is het
+          van eroverheen (zie `.tk-schil` in index.css). Vanaf 1024 is het
           gewoon de pagina. */}
       <div className="tk-schil-rol">
         {/* Het eerste wat de tab-toets raakt, op elke pagina (ADR-166).
@@ -262,6 +265,7 @@ export function Shell({
           </button>
 
           <div className="tk-appbar-acties">
+            {reeks}
             {/* Premium, de ene knop die opvalt (ADR-241): zon, en nacht als je
                 er bent. Een pil met het woord aan een bureau, een ronde knop
                 op een telefoon; het woord blijft dan de naam. */}

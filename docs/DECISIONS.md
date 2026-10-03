@@ -14777,3 +14777,74 @@ volgorde waarin een school ze aanbiedt:
   uit het onderwerp.
 - De rekenmix blijft een deel met één onderwerp. Hij vraagt alle soorten door
   elkaar en hoort dus bij geen van de andere twee.
+
+## ADR-259 — Tablet en desktop zoals de telefoon: kop op de grond, een perzik zijbalk, vlakken die meegroeien en Denker die meeleeft
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar, naar het
+ontwerp "leer.nu Tablet en Desktop" (1440, 1024, 820 en 390): "voer bijgevoegd
+design door op de gehele app". Wijzigt ADR-241 (de schil), ADR-247 (melk aan
+een bureau), ADR-251 (de vakken op Vandaag), ADR-252 en ADR-255 (de kop en de
+kleuren van de vakpagina), en zet de reeks van ADR-158 terug bij het kind,
+tegen ADR-149 in.
+
+**Besluit, de schil.**
+
+- **De zijbalk staat vanaf 1024**, niet vanaf 1200: een liggende tablet heeft
+  er plek voor. Het breekpunt `desk` is 1024; de tabbalk staat eronder.
+- **De kop staat op de grond, op elke maat**: geen witte balk met een lijn
+  meer, en de grond is room op elke maat (melk aan een bureau, ADR-247, is
+  weg). Aan een bureau 84 hoog, met het logo op 34.
+- **De zijbalk is een zwevend perzik vlak** van 256 met ronde hoeken, dat
+  blijft staan als de pagina scrolt. Waar je bent is een witte rij met een
+  harde onderkant, zoals een tegel: bij een bestemming de plaat in nacht met
+  het teken in wit, bij een vak de onderkant in de rand van het vak en het
+  woord in zijn diepe kleur. De pagina ernaast vult de breedte, tot 1600.
+- **De dagen achter elkaar** staan in de kop op elke maat, als ronde knop vóór
+  premium. Een druk opent een kaartje met het aantal, een zin ("Elke dag
+  geoefend sinds dinsdag.", of wat er vandaag nog kan) en de week van maandag
+  tot en met zondag. De rekensom is die van `reeksVan` (ADR-158): alle dagen
+  tellen, en een lege dag breekt hem pas vannacht. Een keuze van de eigenaar,
+  gevraagd en bevestigd: ADR-149 hield de reeks juist weg bij het kind.
+
+**Besluit, de pagina's.**
+
+- **Vandaag**: het koraal vlak groeit mee met het scherm, met Denker groot
+  erin (150 op een tablet, 236 aan een bureau). Nu doen ligt erin als witte
+  kaart met de knop ernaast. Vanaf 1024 staan de lijsten in twee kolommen.
+  **"Kies een vak" staat niet meer op Vandaag**: aan een bureau staan de
+  vakken in de zijbalk, op een telefoon onder Oefenen. "Zo werkt leer.nu"
+  blijft aan een bureau staan (de eigenaar koos dat).
+- **De kop van een pagina** (`Paginakop`) groeit op dezelfde manier mee, en
+  Denker kan iets zeggen in een witte ballon.
+- **Oefenen**: de vakken zijn weer tegels in hun eigen kleur (tint, rand van
+  het vak, onderkant in de heldere kleur, de naam in de diepe kleur): aan een
+  bureau drie en twee, op een tablet twee naast elkaar, op een telefoon onder
+  elkaar. Denker zegt wat hij vindt van het vak waar je op staat.
+- **De vakpagina**: de kop is het vlak in de diepe kleur van het vak, met de
+  plaat wit en het teken groot en schuin in de hoek. Stappen, chips en tegels
+  dragen de kleur van het vak: de rand, de plaat in de heldere kleur, en wat
+  gekozen is in de diepe kleur met witte woorden. **Vanaf 1200 staat rechts
+  een startkaart** die blijft staan en meeleest: Denker met een ballon, elke
+  stap met zijn munt en zijn antwoord (een lege stap is een knop erheen), hoe
+  lang de ronde duurt, en Start. Van 768 tot 1200 is dat een wit blad onderaan
+  met Denker, zijn zin en Start.
+
+**Denker leeft (`LevendeDenker`).** Hij ademt op elke pagina, volgt de muis met
+zijn ogen, en is bij de startknop en op Oefenen een knop: kietelen laat hem
+juichen ("Hihi, dat kietelt!"). Bij de startknop wordt hij enthousiaster
+naarmate er meer gekozen is: nieuwsgierig, blij met wat confetti, en als alles
+gekozen is juichend. Wat hij zegt, is de vraag die nog open staat, en als
+alles gekozen is iets over de spelvorm. Niets daarvan beweegt voor wie minder
+beweging vroeg.
+
+**Niet gedaan, en waarom.** Het gedrag van de vakpagina verandert niet, op
+verzoek van de eigenaar: op een telefoon blijft de accordeon (ADR-252), en
+vanaf 768 blijft Nederland voorgekozen (ADR-111) en maakt een tweede tik geen
+keuze ongedaan. Het ontwerp liet beide anders zien. De rondes zelf houden hun
+vorm. Waar het ontwerp tekeningen gebruikte die de app niet heeft (de
+uitsneden van de vakken), staan de tekens van de app zelf.
+
+**Gevolgen.** `e2e/maat.ts` is weg: de vakken staan op geen enkele maat meer op
+Vandaag. De e2e-tests die een zijbalk verwachten, lopen nu ook op de liggende
+iPad. De oude tegels van de vakken (`VakTegels`) staan alleen nog op Voor
+ouders via `VakkenRaster`.

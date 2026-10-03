@@ -202,10 +202,10 @@ test('typing a time takes every way a child writes one', async ({ page }) => {
 });
 
 test('the clock is a door in the side bar like the others', async ({ page }, testInfo) => {
-  // Below 1200 the way in is Oefenen (ADR-241); shell.spec.ts walks it.
+  // Below 1024 the way in is Oefenen (ADR-241); shell.spec.ts walks it.
   test.skip(
-    !['chromebook', 'desktop-1440'].includes(testInfo.project.name),
-    'no side bar below 1200',
+    !['chromebook', 'desktop-1440', 'ipad-landscape'].includes(testInfo.project.name),
+    'no side bar below 1024',
   );
 
   await signIn(page, 'Timo');

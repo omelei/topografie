@@ -164,7 +164,7 @@ export default {
       // left, a column on the right and the destinations in the app bar; below
       // it, the modules are a menu and the destinations a tab bar (ADR-093).
       screens: {
-        desk: '1200px',
+        desk: '1024px',
       },
       // A bare `border` draws the light rule, not currentColor.
       borderColor: {
