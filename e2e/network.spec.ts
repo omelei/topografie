@@ -142,10 +142,37 @@ test('the kassa asks one address and nobody else', async ({ page, baseURL }) => 
 
   const naarDeKassa = page.waitForRequest((request) => request.url().startsWith(kassa));
   await page.getByLabel('Waar sturen we de code heen?').fill('ouder@example.nl');
+  await page.getByRole('checkbox', { name: 'Ik wil de code meteen krijgen' }).check();
   await page.getByRole('button', { name: 'Betalen met iDEAL' }).click();
   await naarDeKassa;
 
   expect(vreemd, 'de kassapagina vroeg iets aan een derde').toEqual([]);
+});
+
+/**
+ * Zonder het vinkje gaat er niets naar de kassa (ADR-254). Afstand van
+ * herroeping moet vooraf gegeven zijn, dus een ouder die het niet aanvinkt,
+ * krijgt een melding en geen betaalpagina.
+ */
+test('the kassa sends nothing without the consent box', async ({ page }) => {
+  const kassa = 'https://kassa.leer.test';
+  const verzoeken: string[] = [];
+  page.on('request', (request) => {
+    if (request.url().startsWith(kassa)) verzoeken.push(request.url());
+  });
+
+  await page.goto('/kopen/');
+  const vinkje = page.getByRole('checkbox', { name: 'Ik wil de code meteen krijgen' });
+  await expect(vinkje).not.toBeChecked();
+
+  await page.getByLabel('Waar sturen we de code heen?').fill('ouder@example.nl');
+  await page.getByRole('button', { name: 'Betalen met iDEAL' }).click();
+
+  await expect(page.getByRole('alert')).toHaveText(
+    'Vink eerst aan dat je de code meteen wilt krijgen.',
+  );
+  await expect(vinkje).toBeFocused();
+  expect(verzoeken).toEqual([]);
 });
 
 test('the kassa carries no link or import pointing off-origin', async ({ page, baseURL }) => {

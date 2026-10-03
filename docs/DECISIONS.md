@@ -14554,6 +14554,49 @@ vandaag".
 wat aan de beurt is eerst (`composeRound`). Alleen het getal is weg.
 `HerhaalRegel`, zijn stijl en de twee teksten zijn verwijderd.
 
+## ADR-254 — Afstand van herroeping in de kassa, en de bevestiging in de mail
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar, na het
+besluit om geen geld-terug-garantie en geen proefperiode te geven (B8 en B9 in
+de besloten roadmap).
+
+**Aanleiding.** Een online aankoop geeft een consument 14 dagen bedenktijd. De
+kassa levert de code meteen, en bij digitale inhoud vervalt het
+herroepingsrecht alleen als de koper vooraf uitdrukkelijk instemt met directe
+levering, verklaart te weten dat hij daarmee zijn recht verliest, en de
+verkoper dat bevestigt op een duurzame drager (art. 6:230p onder g en 6:230t
+BW). De kassa vroeg dat niet. Zonder die stap houdt een koper zijn bedenktijd,
+hoe de pagina het ook noemt.
+
+**Besluit.**
+
+- `/kopen` heeft onder het e-mailadres een vinkje: "Ik wil de code meteen
+  krijgen. Ik weet dat ik de koop daarna niet meer kan herroepen." Met een regel
+  eronder die zegt wat er vervalt. Het staat niet vooraf aan, want een vinkje
+  dat al aanstaat, is geen toestemming.
+- Zonder vinkje gaat er niets naar de kassa: de pagina zegt "Vink eerst aan dat
+  je de code meteen wilt krijgen." en zet de focus op het vakje.
+- De kassa controleert het opnieuw (`startBestelling` weigert met
+  `geen-afstand-herroeping`), want een verzoek kan ook buiten de pagina om
+  komen.
+- Het moment van de afstand gaat als `afstandHerroeping` mee in de metadata van
+  de betaling bij Mollie, naast het e-mailadres. Er komt geen tabel bij: Mollie
+  bewaart de transactie toch, en zo staat het bewijs bij de betaling.
+- De mail met de code bevestigt de koop (wat, voor welk bedrag) en de afstand,
+  met de datum. Een betaling van vóór deze wijziging krijgt de bevestiging van
+  de koop zonder de zin over de afstand.
+
+**Gevolgen.**
+
+- De kassa-functie rolt uit bij de merge (workflow **Kassa functie**, ADR-230).
+  Doe daarna een testaankoop: weigert de pagina zonder vinkje, en staat de
+  bevestiging in de mail?
+- De naam, het adres en het KvK-nummer van de verkoper horen ook bij de
+  informatie vóór de koop en in de bevestiging (art. 6:230m BW). Die komen erbij
+  zodra de KvK-inschrijving rond is, op dezelfde manier als op `/privacy`.
+- Of de herroepingsfunctie uit Richtlijn 2023/2673 hier ook nodig is, gaat als
+  vraag naar de FG.
+
 ## ADR-255 — Het ontwerp van Vandaag op een telefoon op elke pagina en elke maat
 
 **Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar: "het

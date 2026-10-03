@@ -78,6 +78,23 @@
             required
           />
         </div>
+        <!--
+          Afstand van herroeping (ADR-254). De code komt meteen, dus vervalt de
+          bedenktijd van 14 dagen alleen als de ouder vooraf instemt met directe
+          levering en verklaart dat te weten (art. 6:230p onder g BW). Niet vooraf
+          aangevinkt: een vinkje dat al aanstaat, is geen toestemming. De kassa
+          controleert het nog eens, en de mail met de code bevestigt het.
+        -->
+        <div class="vink">
+          <input id="afstand" name="afstand" type="checkbox" required />
+          <label for="afstand">
+            Ik wil de code meteen krijgen. Ik weet dat ik de koop daarna niet meer kan herroepen.
+          </label>
+        </div>
+        <p class="hulp">
+          Bij een online aankoop heb je meestal 14 dagen bedenktijd. Omdat je de code direct krijgt
+          en meteen kunt gebruiken, vervalt die bedenktijd als je dit aanvinkt.
+        </p>
         <p class="fout" id="fout" role="alert" hidden></p>
         <button type="submit" id="knop">Betalen met iDEAL</button>
         <p class="hulp">
@@ -104,6 +121,7 @@
         }
         var form = document.getElementById('bestelling');
         var veld = document.getElementById('email');
+        var afstand = document.getElementById('afstand');
         var knop = document.getElementById('knop');
         var fout = document.getElementById('fout');
 
@@ -131,6 +149,11 @@
             veld.focus();
             return;
           }
+          if (!afstand.checked) {
+            zegFout('Vink eerst aan dat je de code meteen wilt krijgen.');
+            afstand.focus();
+            return;
+          }
 
           knop.disabled = true;
           knop.textContent = 'Een moment…';
@@ -138,7 +161,7 @@
           fetch(kassa + '?actie=start', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({ email: adres }),
+            body: JSON.stringify({ email: adres, afstandHerroeping: true }),
           })
             .then(function (antwoord) {
               return antwoord.json().then(function (inhoud) {

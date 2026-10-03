@@ -123,9 +123,21 @@ export function mailVoorCode(input: {
   readonly code: string;
   readonly geldigTot: string;
   readonly premiumUrl: string;
+  /** Wanneer de ouder afzag van herroeping, als ISO-tijd; null bij een betaling van daarvoor. */
+  readonly afstandHerroeping?: string | null;
 }): { readonly onderwerp: string; readonly tekst: string; readonly html: string } {
   const code = codeVoorMens(input.code);
   const tot = leesbareDatum(input.geldigTot);
+  const afstand = input.afstandHerroeping ?? null;
+  // De bevestiging van de koop, op een duurzame drager (art. 6:230t BW). Met de
+  // toestemming en de afstand erin: zonder die bevestiging vervalt het
+  // herroepingsrecht niet (art. 6:230p onder g BW, ADR-254).
+  const koop = `Je kocht leer.nu premium voor een jaar, voor ${bedragVoorMens()}.`;
+  const herroeping =
+    afstand === null
+      ? null
+      : `Op ${leesbareDatum(afstand.slice(0, 10))} vroeg je de code meteen te krijgen,` +
+        ' en verklaarde je dat je daarmee afziet van je recht om de koop binnen 14 dagen te herroepen.';
   // De code vult een ouder in op de ouderpagina (ADR-173), niet op de
   // premiumpagina. Het adres van de premiumpagina staat in de configuratie;
   // de ouderpagina ligt ernaast.
@@ -142,6 +154,9 @@ export function mailVoorCode(input: {
     'Bewaar deze mail: de code staat nergens anders. Wij bewaren hem niet in',
     'leesbare vorm, dus kwijt is kwijt — dan maken we een nieuwe.',
     '',
+    koop,
+    ...(herroeping === null ? [] : [herroeping]),
+    '',
     'leer.nu',
   ].join('\n');
 
@@ -153,6 +168,7 @@ export function mailVoorCode(input: {
     ` op maximaal ${MAX_APPARATEN} apparaten.</p>`,
     '<p>Bewaar deze mail: de code staat nergens anders. Wij bewaren hem niet in',
     ' leesbare vorm, dus kwijt is kwijt — dan maken we een nieuwe.</p>',
+    `<p>${koop}${herroeping === null ? '' : ` ${herroeping}`}</p>`,
     '<p>leer.nu</p>',
   ].join('');
 
@@ -167,6 +183,8 @@ export interface Betaling {
   /** Mollie's eigen woord: open, pending, paid, canceled, expired, failed. */
   readonly status: string;
   readonly email: string | null;
+  /** Wanneer de ouder afzag van herroeping, uit de metadata; null bij een betaling van daarvoor. */
+  readonly afstandHerroeping: string | null;
 }
 
 export interface Bestelling {
@@ -185,6 +203,7 @@ export interface Diensten {
       readonly valuta: string;
       readonly omschrijving: string;
       readonly email: string;
+      readonly afstandHerroeping: string;
       readonly terugUrl: string;
       readonly webhookUrl: string;
     }): Promise<{ readonly id: string; readonly checkoutUrl: string }>;
@@ -241,16 +260,28 @@ export class KassaFout extends Error {
  * Het adres gaat mee als metadata naar Mollie en verder nergens heen. De
  * terug-url krijgt het betaal-id mee, zodat de pagina na afloop kan vragen hoe
  * het afliep zonder dat wij iets hoeven te onthouden.
+ *
+ * **Zonder afstand van herroeping geen betaling** (ADR-254). De code komt
+ * meteen, dus de ouder moet vooraf instemmen met directe levering en verklaren
+ * dat het herroepingsrecht daarmee vervalt (art. 6:230p onder g BW). De kassa
+ * vraagt het met een vinkje; hier wordt het nog eens gecontroleerd, want een
+ * verzoek kan ook buiten de pagina om komen. Het moment gaat als metadata mee
+ * naar Mollie, naast het adres, en komt terug in de mail met de code.
  */
-export async function startBestelling(email: string, diensten: Diensten) {
-  const adres = normaliseerEmail(email);
+export async function startBestelling(
+  input: { readonly email: string; readonly afstandHerroeping: boolean },
+  diensten: Diensten,
+) {
+  const adres = normaliseerEmail(input.email);
   if (!isEmail(adres)) throw new KassaFout(400, 'geen-geldig-adres');
+  if (input.afstandHerroeping !== true) throw new KassaFout(400, 'geen-afstand-herroeping');
 
   const betaling = await diensten.mollie.maakBetaling({
     bedrag: bedragVoorMollie(),
     valuta: VALUTA,
     omschrijving: OMSCHRIJVING,
     email: adres,
+    afstandHerroeping: diensten.nu().toISOString(),
     terugUrl: diensten.terugUrl,
     webhookUrl: diensten.webhookUrl,
   });
@@ -302,6 +333,7 @@ export async function verwerkWebhook(betalingId: string, diensten: Diensten): Pr
     code: teMailen,
     geldigTot: bestelling.geldigTot,
     premiumUrl: diensten.premiumUrl,
+    afstandHerroeping: betaling.afstandHerroeping,
   });
   await diensten.mail.stuur({ aan: betaling.email, ...mail });
   await diensten.db.noteerGemaild(betaling.id);
