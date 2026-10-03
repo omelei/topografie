@@ -1,6 +1,6 @@
 # Roadmap leer.nu
 
-_Bijgewerkt: 2 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
+_Bijgewerkt: 3 oktober 2026._ Elke PR die iets van deze lijst oppakt, afmaakt
 of verschuift, werkt deze pagina in dezelfde PR bij (zie `CLAUDE.md`). De
 beslissingen zelf staan in [DECISIONS.md](DECISIONS.md); hier staat alleen wat
 er gebeurt, in welke volgorde, en wie aan zet is.
@@ -32,13 +32,15 @@ er gebeurt, in welke volgorde, en wie aan zet is.
    Resend noemt naast die van Google (niets wijzigen of weghalen), en zet in
    Supabase de geheimen `RESEND_SLEUTEL` en `KASSA_AFZENDER`. Doe daarna een
    testaankoop: vraagt Mollie het nieuwe jaarbedrag (ADR-230), en komt de mail
-   met de code aan?
+   met de code aan? Kijk daarbij of de kassa zonder vinkje weigert en of de
+   mail de afstand van herroeping bevestigt (ADR-254).
 6. **Uiterlijk 9 oktober de open besluiten nemen** die in de besloten roadmap
    staan (§8: B4, B5 en B7). B0, B1, B2 en B6 zijn op 30 september genomen.
 7. **Na de inschrijving bij de KvK** (1 oktober): zet in GitHub bij **Settings →
    Secrets and variables → Actions → Variables** `KVK_NUMMER` en
    `VESTIGINGSPLAATS`, en draai **Actions → CI → Run workflow** op `main`. Dan
-   staan ze op `/privacy`; tot die tijd laat de pagina ze weg.
+   staan ze op `/privacy`; tot die tijd laat de pagina ze weg. Daarna horen ze
+   ook op `/kopen` en in de mail met de code (ADR-254); dat bouwt Claude.
 8. **Op 8 oktober de teller uitlezen** (de vragen staan in
    `tools/premium/README.md`) en samen het volgende kiezen. Kijk daarbij ook
    hoe vaak groep 1 en 2 gekozen worden (`/1` en `/2`): dat beslist of fase 1

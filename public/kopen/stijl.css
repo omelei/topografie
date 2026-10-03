@@ -127,7 +127,32 @@ input[type='email'] {
   font: inherit;
 }
 
+/* Het vinkje voor de afstand van herroeping (ADR-254). Het label hoort bij het
+ * vakje, dus de hele regel is het trefvlak, minstens 44 hoog. */
+.vink {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.vink input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 10px 0 0;
+  accent-color: var(--inkt);
+}
+
+.vink label {
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
 input[type='email']:focus-visible,
+input[type='checkbox']:focus-visible,
 button:focus-visible {
   outline: 3px solid var(--inkt);
   outline-offset: 2px;
