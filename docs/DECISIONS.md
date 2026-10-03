@@ -14660,3 +14660,43 @@ none of them is built in this phase.
 | ADR-008 | No free consumer tier, because a self-service account for a minor makes us the controller under a different legal regime       | Reversed by ADR-155: a child signs in, and the parent consents           |
 | ADR-012 | Retention hangs on class archival, and deletion is announced before it runs                                                    | No stored pupil data                                                     |
 | ADR-013 | Payments behind a `PaymentProvider` interface; schools pay on invoice with SEPA                                                | No commercial model                                                      |
+
+## ADR-256 — De premiumpagina: tabel, keuze en knop boven de vouw
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar, naar het
+ontwerp "Premium v3": "voer bijgevoegd design en inhoud door voor de premium
+pagina." Wijzigt ADR-124, ADR-145 en ADR-164 voor de vorm van de pagina, en de
+premiumpagina-uitzondering in ADR-255 (de koraal etalage is weg).
+
+**Besluit.** Bovenaan staan Basis en Premium in één tabel, en daarnaast (vanaf 768) of eronder (telefoon) de keuze Maandelijks of Jaarlijks, de prijs, de knop
+"Premium activeren" en de voorwaarden met een link naar de privacyverklaring.
+Op een telefoon staat de kop er alleen voor een schermlezer, zodat de knop boven
+de vouw past. Daaronder vier kaarten "Waarom leer.nu", en onderaan de weg naar
+de ouder voor wie al een code heeft (ADR-173). De koraal etalage, de vier
+kaarten "Wat premium voor je doet" en de twee plankaarten zijn weg; de tabel
+zegt hetzelfde, korter.
+
+- **De tabel** heeft tien regels zonder groepen: de acht van het ontwerp en
+  twee die premium wel opent en het ontwerp niet noemde ("Eigen oefenlijsten",
+  "Eén code voor 3 apparaten"). Twee regels van het ontwerp zijn op verzoek van
+  de eigenaar feitelijk gemaakt: "Alle spelvormen" werd "Bliksemronde, overleven
+  en de oefentoets", want elke spelvorm die leert is gratis (ADR-224); "Meer
+  dan 80 diploma's" werd "Alle 80 diploma's", want het zijn er precies 80.
+- **De keuze** is twee echte keuzerondjes in een `fieldset`, opgemaakt als één
+  schakelaar, standaard Jaarlijks. Maandelijks toont € 9,95 per maand en
+  "Maandelijks opzegbaar.", en de knop gaat dan naar `/kopen/?plan=maand`.
+- **Waarom leer.nu**: je kind blijft anoniem, slim herhalen, een paar minuten
+  per dag, geen reclame. In de jij-vorm van de schrijfwijzer, niet in de
+  u-vorm van het ontwerp. Met een gezinsaccount zegt de uitleg bij "anoniem"
+  dat de voornaam met toestemming naar de server gaat (ADR-249).
+- Met een code blijft de pagina zoals hij was: tot wanneer het aanstaat, en
+  verder niets.
+
+**Bewust anders dan het advies.** Per maand betalen bestaat nog niet (ADR-164,
+ADR-196): de kassa verkoopt alleen het jaar en zegt bij `?plan=maand` dat de
+maand "binnenkort" komt. De eigenaar koos er toch voor de keuze precies zoals
+ontworpen te tonen, met "−50%" en "Maandelijks opzegbaar.". Het risico is
+genoteerd: de pagina belooft een maandabonnement dat de kassa nog niet levert,
+en "−50%" is een korting op een prijs die nog niet te betalen is (en 49,8%
+precies). Zodra betalen per maand er is, vervalt dit; tot die tijd is het een
+punt op de roadmap.

@@ -2597,129 +2597,330 @@
     border: var(--stroke-tegel) solid var(--zon);
     background: linear-gradient(160deg, var(--zon-tint), var(--kaart) 70%);
   }
-  .tk-premium-waarom-rij {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
+  /* De premiumpagina sinds ADR-256: tabel en knop samen boven de vouw. Op een
+   * telefoon onder elkaar en zonder zichtbare kop, op een tablet en aan een
+   * bureau naast elkaar. */
+  .tk-premium-pagina {
+    gap: 12px;
   }
-
-  .tk-premium-plannen {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
+  @media (max-width: 767px) {
+    .tk-premium-kop {
+      display: contents;
+    }
+    .tk-premium-titel {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
   }
   @media (min-width: 768px) {
-    .tk-premium-plannen {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .tk-premium-pagina {
+      gap: 24px;
     }
   }
-  .tk-premium-plan {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: var(--kaart-padding);
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
+  .tk-premium-boven {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
-  /* Premium met een gouden rand: het plan dat de pagina aanraadt. */
-  .tk-premium-plan[data-premium] {
-    border: var(--stroke-tegel) solid var(--zon);
-    box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
-    background: linear-gradient(160deg, var(--zon-tint), var(--kaart) 70%);
-  }
-  .tk-premium-plan-naam {
-    font-family: var(--font-kop);
-    font-size: var(--type-kaartkop);
-    line-height: var(--type-kaartkop-lh);
-    font-weight: var(--type-kaartkop-weight);
-  }
-  .tk-premium-plan-prijs .tk-display {
-    font-size: var(--type-getal);
-    line-height: var(--type-getal-lh);
-    font-weight: var(--type-getal-weight);
-  }
-  /* De twee prijzen naast elkaar (ADR-164), en onder elkaar zodra ze niet
-   * passen: "€ 59,95 per jaar" en "€ 9,95 per maand" zijn samen breder dan
-   * een kolom op een telefoon. De tweede krijgt een streep ervoor waar ze naast
-   * elkaar staan, zodat het één regel blijft lezen en geen twee aanbiedingen. */
-  .tk-premium-prijzen {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 8px 20px;
-  }
-  @media (min-width: 480px) {
-    .tk-premium-prijzen > * + * {
-      padding-left: 20px;
-      border-left: var(--stroke-hair) solid var(--rand-licht);
+  @media (min-width: 768px) {
+    .tk-premium-boven {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 20px;
     }
   }
-  /* De knoppen. Het jaar is de primaire; de maand staat er tot hij te koop is
-   * als "binnenkort" (ADR-196), en daarna als secundaire knop: de pagina raadt
-   * er één aan, en twee even zware knoppen raden niets aan. */
-  .tk-premium-plan-knoppen {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+  @media (min-width: 1200px) {
+    .tk-premium-boven {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 24px;
+    }
+  }
+  /* Een tabel zonder koopblok ernaast (geen kassa) krijgt de hele breedte. */
+  .tk-premium-boven > :only-child {
+    grid-column: 1 / -1;
   }
 
-  /* De tabel scrolt in zijn eigen doos als hij niet past, nooit de pagina. */
-  .tk-premium-tabel-rol {
-    overflow-x: auto;
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-  }
+  /* De tabel: een witte kaart, de kolom van premium op zon met een gouden
+   * rand eromheen, van de kop tot de laatste regel. */
   .tk-premium-tabel {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: var(--stroke-hair) solid var(--rand-licht);
+    border-radius: var(--kaart-radius);
+    overflow: hidden;
+    background: var(--kaart);
   }
   .tk-premium-tabel :is(th, td) {
-    padding: 12px 16px;
-    border-bottom: var(--stroke-hair) solid var(--rand-licht);
-    text-align: left;
+    padding: 4px;
+    text-align: center;
     vertical-align: middle;
+  }
+  .tk-premium-tabel tbody :is(th, td) {
+    border-top: var(--stroke-hair) solid var(--rand-licht);
   }
   .tk-premium-tabel th[scope='row'] {
+    padding: 4px 8px 4px 14px;
+    font-size: 0.9375rem;
+    line-height: 1.25rem;
     font-weight: 400;
-  }
-  .tk-premium-tabel :is(thead th, td) {
-    width: 96px;
-    text-align: center;
-  }
-  .tk-premium-tabel thead th:first-child {
-    width: auto;
+    text-align: left;
+    text-wrap: pretty;
   }
   .tk-premium-tabel thead th {
-    font-family: var(--font-kop);
-    font-weight: var(--type-kaartkop-weight);
+    padding: 8px 4px 6px;
+    vertical-align: bottom;
   }
-  .tk-premium-tabel td {
-    color: var(--tekst-secundair);
-  }
-  .tk-premium-tabel td svg {
-    display: inline-block;
-    vertical-align: middle;
-    color: var(--inkt);
-  }
-  /* De kolom van premium op een zachte groene grond, met het vinkje in groen. */
-  .tk-premium-tabel [data-premium] {
-    background: var(--nadruk-vlak);
-    color: var(--nadruk-tekst);
-  }
-  .tk-premium-tabel td[data-premium] svg {
-    color: var(--nadruk-tekst);
-  }
-  .tk-premium-tabel .tk-premium-tabel-groep {
-    padding-top: 20px;
-    background: var(--papier);
+  .tk-premium-tabel thead th:first-child {
+    padding-left: 14px;
     font-size: var(--type-vlaklabel);
     line-height: var(--type-vlaklabel-lh);
     letter-spacing: var(--type-vlaklabel-ls);
     font-weight: var(--type-vlaklabel-weight);
+    text-align: left;
     text-transform: uppercase;
     color: var(--tekst-secundair);
+  }
+  .tk-premium-tabel thead th:nth-child(2) {
+    width: 64px;
+  }
+  .tk-premium-tabel thead th:nth-child(3) {
+    width: 76px;
+  }
+  .tk-premium-tabel-plan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-family: var(--font-kop);
+    font-size: 1.0625rem;
+    line-height: 1.375rem;
+    font-weight: var(--type-kaartkop-weight);
+  }
+  .tk-premium-tabel-plan svg {
+    color: var(--zon);
+  }
+  .tk-premium-actief {
+    display: inline-flex;
+    padding: 1px 7px;
+    border-radius: var(--radius-pil);
+    background: var(--nacht-tint);
+    color: var(--nacht);
+    font-family: var(--font-tekst);
+    font-size: 0.6875rem;
+    line-height: 0.875rem;
+    letter-spacing: var(--type-vlaklabel-ls);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  /* Op de regelhoogte van de regel ernaast, niet op die van lopende tekst. */
+  .tk-premium-tabel td {
+    line-height: 1.25rem;
+  }
+  .tk-premium-tabel td svg {
+    display: inline-block;
+    vertical-align: middle;
+    color: var(--nadruk);
+  }
+  .tk-premium-tabel td > span[aria-hidden] {
+    color: var(--tekst-tertiair);
+  }
+  .tk-premium-tabel [data-premium] {
+    border-right: var(--stroke-tegel) solid var(--zon);
+    border-left: var(--stroke-tegel) solid var(--zon);
+    background: var(--zon-tint);
+  }
+  .tk-premium-tabel thead [data-premium] {
+    border-top: var(--stroke-tegel) solid var(--zon);
+    border-radius: var(--radius-tegel) var(--radius-tegel) 0 0;
+  }
+  .tk-premium-tabel tbody tr:last-child [data-premium] {
+    border-bottom: var(--stroke-tegel) solid var(--zon);
+    border-radius: 0 0 var(--radius-tegel) var(--radius-tegel);
+  }
+  @media (min-width: 768px) {
+    .tk-premium-tabel th[scope='row'] {
+      padding: 8px 8px 8px 16px;
+    }
+    .tk-premium-tabel td {
+      padding: 8px 4px;
+    }
+    .tk-premium-tabel thead th {
+      padding: 10px 4px 8px;
+    }
+    .tk-premium-tabel thead th:first-child {
+      padding-left: 16px;
+    }
+    .tk-premium-tabel thead th:nth-child(2) {
+      width: 68px;
+    }
+    .tk-premium-tabel thead th:nth-child(3) {
+      width: 80px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .tk-premium-tabel th[scope='row'] {
+      padding: 9px 8px 9px 20px;
+    }
+    .tk-premium-tabel td {
+      padding: 9px 4px;
+    }
+    .tk-premium-tabel thead th:first-child {
+      padding-left: 20px;
+    }
+    .tk-premium-tabel thead th:nth-child(2) {
+      width: 96px;
+    }
+    .tk-premium-tabel thead th:nth-child(3) {
+      width: 108px;
+    }
+  }
+
+  /* Kopen: de keuze, de prijs, de knop en de voorwaarden. Op een telefoon
+   * zonder kaart eromheen, zodat alles boven de vouw past. */
+  .tk-premium-kopen {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  @media (min-width: 768px) {
+    .tk-premium-kopen {
+      justify-content: center;
+      gap: 14px;
+      padding: 20px;
+      border: var(--stroke-hair) solid var(--rand-licht);
+      border-radius: var(--radius-kaart);
+      background: var(--kaart);
+    }
+  }
+  @media (min-width: 1200px) {
+    .tk-premium-kopen {
+      gap: 16px;
+      padding: 24px 28px;
+    }
+  }
+  /* Maandelijks of jaarlijks: twee keuzerondjes als één schakelaar. */
+  .tk-premium-plankeuze {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin: 0;
+    padding: 4px;
+    border: 0;
+    border-radius: var(--radius-pil);
+    background: var(--perzik);
+  }
+  .tk-premium-plankeuze-optie {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: var(--touch-wijzer);
+    padding: 0 12px;
+    border-radius: var(--radius-pil);
+    font-family: var(--font-kop);
+    font-size: var(--type-lopend);
+    line-height: 1.375rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .tk-premium-plankeuze-optie:has(:checked) {
+    box-shadow: 0 var(--onderkant-klein) 0 var(--rand-licht);
+    background: var(--kaart);
+  }
+  .tk-premium-plankeuze-optie:has(:focus-visible) {
+    outline: var(--stroke-active) solid var(--inkt);
+    outline-offset: 2px;
+  }
+  @media (min-width: 768px) {
+    .tk-premium-plankeuze-optie {
+      min-height: 48px;
+    }
+  }
+  .tk-premium-korting {
+    display: inline-flex;
+    padding: 1px 7px;
+    border-radius: var(--radius-pil);
+    background: var(--zon);
+    font-family: var(--font-tekst);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 700;
+  }
+  .tk-premium-prijs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    text-align: center;
+  }
+  .tk-premium-prijs .tk-display {
+    font-size: 2.125rem;
+    line-height: 2.375rem;
+    font-weight: 800;
+  }
+  @media (min-width: 768px) {
+    .tk-premium-prijs .tk-display {
+      font-size: 2.5rem;
+      line-height: 2.75rem;
+    }
+  }
+  @media (min-width: 1200px) {
+    .tk-premium-prijs .tk-display {
+      font-size: var(--type-getal);
+      line-height: var(--type-getal-lh);
+    }
+  }
+  /* Het teken staat in de regel en niet ernaast, zodat het bij de eerste
+   * woorden blijft als de zin over twee regels loopt. */
+  .tk-premium-gezin {
+    text-wrap: balance;
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    color: var(--tekst-secundair);
+  }
+  .tk-premium-gezin svg {
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: -4px;
+  }
+  .tk-premium-kopen > .tk-button {
+    width: 100%;
+  }
+  .tk-premium-voorwaarden {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0 4px;
+    font-size: var(--type-bijschrift);
+    line-height: var(--type-bijschrift-lh);
+    text-align: center;
+    color: var(--tekst-secundair);
+  }
+  .tk-premium-voorwaarden a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-wijzer);
+    padding: 0 6px;
+    border-radius: var(--radius-chip);
+    color: var(--inkt);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tk-premium-voorwaarden a:hover {
+    background: var(--perzik);
+  }
+
+  /* Waarom leer.nu: twee kaarten naast elkaar op een tablet, vier aan een
+   * bureau. */
+  @media (min-width: 1200px) {
+    .tk-premium-waarom {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   /* Het bestandsveld bij de eigen oefenstof (ADR-145): de knop van de browser,

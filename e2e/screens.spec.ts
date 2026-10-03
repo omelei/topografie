@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { antwoord, GEZIN, herstelLink, langsDePoort, stubGezin } from './gezin';
-import { signIn } from './naam';
+import { doorDePremiumdeur, signIn } from './naam';
 import { openOver, stap } from './stap';
 
 /**
@@ -182,6 +182,17 @@ test.describe('zonder code', () => {
     await venster.getByRole('button', { name: 'Vraag mijn ouders om een code' }).click();
     await expect(venster.getByRole('button', { name: 'Versturen' })).toBeVisible(READY);
     await shoot(page, size, '25-doorsturen');
+  });
+
+  // De premiumpagina zoals een ouder zonder code hem ziet (ADR-256): de tabel
+  // en de knop boven de vouw, in elke maat.
+  test('the premium page, still selling', async ({ page }, testInfo) => {
+    const size = testInfo.project.name;
+    await signIn(page, 'Sanne');
+    await page.goto('/premium');
+    await doorDePremiumdeur(page);
+    await expect(page.getByRole('link', { name: 'Premium activeren' })).toBeVisible(READY);
+    await shoot(page, size, '26-premium');
   });
 });
 

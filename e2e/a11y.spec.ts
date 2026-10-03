@@ -476,7 +476,7 @@ test.describe('zonder code', () => {
     await signIn(page, 'Wout');
     await page.goto('/premium');
     await doorDePremiumdeur(page);
-    await expect(page.getByRole('heading', { name: 'Wat premium voor je doet' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Premium activeren' })).toBeVisible();
     expect((await scan(page)).violations).toEqual([]);
   });
 
