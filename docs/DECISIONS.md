@@ -14744,3 +14744,36 @@ dan de spelvorm. De pagina opent op de analoge klok.
 **Gevolg.** Op een telefoon staat eerst "Welke klok?" open: één keuze meer
 voordat een kind een onderwerp ziet. Dat is de prijs van de juiste volgorde,
 en dezelfde die Topografie en Taal al betalen.
+
+## ADR-258 — Rekenen vraagt eerst welke sommen
+
+**Status:** accepted. **Date:** 2026-10-03. Op verzoek van de eigenaar, na
+ADR-257: "nu rekenen ook zo structureren." Wijzigt ADR-120 en ADR-168 voor de
+vorm van de pagina: negen onderwerpen naast elkaar.
+
+**Aanleiding.** Rekenen had negen onderwerpen in één stap, drie meer dan de zes
+tegels die een stap mag dragen (ADR-061). Topografie, Taal en sinds ADR-257 ook
+Klok vragen eerst de grofste keuze.
+
+**Besluit.** Een rij "Welke sommen?" boven de onderwerpen, met drie delen in de
+volgorde waarin een school ze aanbiedt:
+
+| Deel          | Onderwerpen                                            |
+| ------------- | ------------------------------------------------------ |
+| Plus en min   | Plussommen, Minsommen, Splitsen, Halveren, Verdubbelen |
+| Keer en delen | Tafels, Keersommen, Deelsommen                         |
+| Rekenmix      | Rekenmix, met de vraag hoe moeilijk                    |
+
+- Splitsen, halveren en verdubbelen staan bij plus en min, omdat ze daarop
+  leunen en in groep 3 en 4 bij optellen en aftrekken horen.
+- **Het standaarddeel is keer en delen**, want daar staan de tafels en daarvoor
+  komen de meeste kinderen; tot en met groep 3 is het plus en min, want de
+  tafels komen pas in groep 4. De rij staat eerst open, zoals bij elk vak met
+  een rij (ADR-252, ADR-255); het standaarddeel is wat de onderwerpen tonen
+  als een kind de rij overslaat en meteen op het onderwerp drukt.
+- **Adressen:** `/rekenen/plus-en-min`, `/rekenen/keer-en-delen` en
+  `/rekenen/rekenmix` openen op het deel. Elk onderwerp houdt zijn adres
+  (`/rekenen/tafel-7`, `/rekenen/plus-20`, `/rekenen/mix`), en het deel volgt
+  uit het onderwerp.
+- De rekenmix blijft een deel met één onderwerp. Hij vraagt alle soorten door
+  elkaar en hoort dus bij geen van de andere twee.

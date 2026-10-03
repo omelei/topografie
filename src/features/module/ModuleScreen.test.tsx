@@ -128,14 +128,15 @@ describe('de vakpagina op een telefoon (ADR-252)', () => {
   it('wist met een ander onderwerp ook welke je koos', () => {
     render(<Pagina id="tafels" />);
 
-    // Rekenen heeft geen kaart: stap 1 is het onderwerp.
+    // Rekenen vraagt eerst welke sommen (ADR-258), dan het onderwerp.
+    kies('Welke sommen?', /^Keer en delen/);
     kies('Kies een onderwerp', /^Tafels/);
     kies('Welke tafel?', 'Tafel van 7');
     expect(
-      screen.getByRole('button', { name: /^Wijzig stap 2, Welke tafel\?: 7/ }),
+      screen.getByRole('button', { name: /^Wijzig stap 3, Welke tafel\?: 7/ }),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /^Wijzig stap 1/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Wijzig stap 2/ }));
     kies('Kies een onderwerp', /^Keersommen/);
     // De tafel is weg, en de vraag die erbij hoort staat open.
     expect(stap('Tot welk getal?')).toBeInTheDocument();

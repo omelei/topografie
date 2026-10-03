@@ -1,5 +1,5 @@
 import { leesLijsten } from '@/store/woordlijsten';
-import type { TaalDeel } from '@/game-core';
+import type { Groep, TaalDeel } from '@/game-core';
 import type { TranslationKey } from '@/i18n';
 import type { Module } from '@/features/shell/modules';
 
@@ -53,7 +53,11 @@ export interface Regio {
     | typeof EIGEN_DEEL
     /** De twee klokken (ADR-257). */
     | 'analoog'
-    | 'digitaal';
+    | 'digitaal'
+    /** De delen van Rekenen (ADR-258). */
+    | 'plus-en-min'
+    | 'keer-en-delen'
+    | 'rekenmix';
   readonly naam: TranslationKey;
   /** Whether there are sets behind it today. */
   readonly built: boolean;
@@ -88,6 +92,7 @@ export const TOPO_REGIOS: readonly Regio[] = [
 export function regiosVan(moduleId: Module['id']): readonly Regio[] {
   if (moduleId === 'woorden') return taalDelen();
   if (moduleId === 'klok') return KLOK_DELEN;
+  if (moduleId === 'tafels') return REKEN_DELEN;
   return moduleId === 'topo' || moduleId === 'vlaggen' ? TOPO_REGIOS : [];
 }
 
@@ -116,6 +121,22 @@ export const KLOK_DELEN: readonly Regio[] = [
 ];
 
 /**
+ * De delen van Rekenen (ADR-258): welke sommen, voordat je kiest welk
+ * onderwerp. In de volgorde waarin een school ze aanbiedt: plus en min in
+ * groep 3 en 4, met splitsen, verdubbelen en halveren erbij omdat die erop
+ * leunen; keer en delen vanaf groep 4 met de tafels; en de rekenmix, die alle
+ * soorten door elkaar vraagt, als laatste.
+ *
+ * Tot ADR-258 stonden negen onderwerpen naast elkaar. Dezelfde rij als bij
+ * Topografie, Taal en Klok: de grofste keuze eerst.
+ */
+export const REKEN_DELEN: readonly Regio[] = [
+  { id: 'plus-en-min', naam: 'regio.plusEnMin', built: true },
+  { id: 'keer-en-delen', naam: 'regio.keerEnDelen', built: true },
+  { id: 'rekenmix', naam: 'regio.rekenmix', built: true },
+];
+
+/**
  * De delen van Taal, met het eigen deel erbij zodra er een lijst is.
  *
  * Een deel en geen `geldtVoor` op de spellingvormen, want op deze module staan
@@ -135,12 +156,14 @@ function taalDelen(): readonly Regio[] {
 /** What the row asks: where on the map, which part of Taal, or which clock. */
 export function regioVraag(moduleId: Module['id']): TranslationKey {
   if (moduleId === 'klok') return 'klokdeel.title';
+  if (moduleId === 'tafels') return 'rekendeel.title';
   return moduleId === 'woorden' ? 'deel.title' : 'regio.title';
 }
 
 /** The word before the row's answer in the start bar: "kaart", "deel" or "klok". */
 export function regioLabel(moduleId: Module['id']): TranslationKey {
   if (moduleId === 'klok') return 'start.klok';
+  if (moduleId === 'tafels') return 'start.sommen';
   return moduleId === 'woorden' ? 'start.deel' : 'start.kaart';
 }
 
@@ -157,16 +180,31 @@ export function regioLabel(moduleId: Module['id']): TranslationKey {
  * Taal opens on Spelling, which is this row's default in the same sense: the
  * only thing on the page chosen before the child chooses (ADR-118). Klok
  * opent op de wijzerklok (ADR-257).
+ *
+ * Rekenen opent op keer en delen, want daar staan de tafels en daarvoor komen
+ * de meeste kinderen; een kind tot en met groep 3 opent op plus en min, want
+ * de tafels komen pas in groep 4 (ADR-258).
  */
-export function eersteRegio(moduleId: Module['id'], regios: readonly Regio[]): Regio['id'] | null {
+export function eersteRegio(
+  moduleId: Module['id'],
+  regios: readonly Regio[],
+  groep?: Groep,
+): Regio['id'] | null {
   const standaard: Regio['id'] =
-    moduleId === 'vlaggen'
-      ? 'wereld'
-      : moduleId === 'woorden'
-        ? 'spelling'
-        : moduleId === 'klok'
-          ? 'analoog'
-          : 'nederland';
+    moduleId === 'tafels'
+      ? rekenDeelVoor(groep)
+      : moduleId === 'vlaggen'
+        ? 'wereld'
+        : moduleId === 'woorden'
+          ? 'spelling'
+          : moduleId === 'klok'
+            ? 'analoog'
+            : 'nederland';
   const eerst = regios.find((regio) => regio.id === standaard && regio.built);
   return (eerst ?? regios.find((regio) => regio.built))?.id ?? null;
+}
+
+/** Het deel van Rekenen waarop de pagina opent, voor deze groep (ADR-258). */
+function rekenDeelVoor(groep: Groep | undefined): Regio['id'] {
+  return groep !== undefined && groep <= 3 ? 'plus-en-min' : 'keer-en-delen';
 }

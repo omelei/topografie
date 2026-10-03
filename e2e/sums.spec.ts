@@ -115,7 +115,8 @@ test('rekenen is the word a parent looks for, and it is the page itself', async 
   await expect(tafels).toHaveAttribute('aria-pressed', 'false');
   // Op een telefoon zegt de balk dan de stap, en staat er nog geen Start (ADR-252).
   if (opEenTelefoon(page)) {
-    await expect(page.locator('.tk-choose-start')).toContainText('Stap 1 van');
+    // Stap 2: de rij van het onderwerp is net opengedrukt (ADR-258).
+    await expect(page.locator('.tk-choose-start')).toContainText('Stap 2 van');
   } else {
     await expect(page.locator('.tk-choose-start .tk-button-go')).toBeDisabled();
   }
@@ -270,38 +271,36 @@ test('the lightning round is offered without a setting, and marked premium', asy
  * kind, that the page keeps its shape while they do, and that no section ever
  * grows past six cards.
  */
-test('rekenen offers nine subjects, as the tiles every module uses', async ({ page }) => {
+test('rekenen asks which sums first, then offers the subjects of that part', async ({ page }) => {
   await signIn(page, 'Bram');
   await page.goto('/rekenen');
 
-  for (const naam of [
-    'Tafels',
-    'Keersommen',
-    'Deelsommen',
+  // Eerst welke sommen (ADR-258): drie delen, zoals Topografie zijn kaarten
+  // heeft en Taal zijn delen. De pagina opent op keer en delen, waar de tafels
+  // staan.
+  const delen = await stap(page, /Welke sommen/);
+  await expect(delen.getByRole('button')).toHaveText([/Plus en min/, /Keer en delen/, /Rekenmix/]);
+
+  const onderwerpen = async (deel: RegExp, namen: readonly string[]) => {
+    await (await stap(page, /Welke sommen/)).getByRole('button', { name: deel }).click();
+    const stap2 = await stap(page, /Kies een onderwerp/);
+    await expect(stap2.locator('.tk-tegel')).toHaveCount(namen.length);
+    for (const naam of namen) {
+      await expect(stap2.getByRole('button', { name: new RegExp(`^${naam}`) })).toBeVisible();
+    }
+  };
+
+  // Nooit meer dan zes tegels in een stap (ADR-061): negen naast elkaar was
+  // de reden voor de delen.
+  await onderwerpen(/^Plus en min/, [
     'Plussommen',
     'Minsommen',
     'Splitsen',
     'Halveren',
     'Verdubbelen',
-    'Rekenmix',
-  ]) {
-    await expect(
-      (await stap(page, /Kies een onderwerp/)).getByRole('button', {
-        name: new RegExp(`^${naam}`),
-      }),
-    ).toBeVisible();
-  }
-
-  // Six was the ceiling a section of tiles may hold (ADR-061, ADR-062). ADR-120
-  // gave rekenen three more kinds of sum, and ADR-168 made them tiles like every
-  // other module's subjects — "Oefen je fouten" is er geen meer, dus het zijn er
-  // negen en de rij eindigt op de Rekenmix. The step holds nothing else, so the
-  // region's buttons are the subjects.
-  await expect((await stap(page, /Kies een onderwerp/)).getByRole('button')).toHaveCount(9);
-  await expect((await stap(page, /Kies een onderwerp/)).locator('.tk-tegel')).toHaveCount(9);
-  await expect((await stap(page, /Kies een onderwerp/)).getByRole('button').last()).toContainText(
-    'Rekenmix',
-  );
+  ]);
+  await onderwerpen(/^Keer en delen/, ['Tafels', 'Keersommen', 'Deelsommen']);
+  await onderwerpen(/^Rekenmix/, ['Rekenmix']);
 });
 
 test('a subject with many sets asks which, instead of showing all of them', async ({ page }) => {
@@ -334,7 +333,9 @@ test('a subject with many sets asks which, instead of showing all of them', asyn
     .click();
   await expect(welke(/^Tot welk getal/)).toHaveText(['tot 10', 'tot 100', 'tot 1000']);
 
-  // Splitsen stops at a hundred: past that it is plus and minus.
+  // Splitsen stops at a hundred: past that it is plus and minus. Het staat
+  // bij plus en min (ADR-258).
+  await (await stap(page, /Welke sommen/)).getByRole('button', { name: /^Plus en min/ }).click();
   await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Splitsen/ }).click();
   await expect(welke(/^Tot welk getal/)).toHaveText(['tot 10', 'tot 20', 'tot 100']);
 
@@ -349,7 +350,8 @@ test('a subject with many sets asks which, instead of showing all of them', asyn
   await expect(welke(/^Tot welk getal/)).toHaveText(['tot 20', 'tot 100', 'tot 1000']);
 
   // The Rekenmix has three difficulties and an everything, out of the level
-  // every set already carried (ADR-073).
+  // every set already carried (ADR-073). Een deel op zich (ADR-258).
+  await (await stap(page, /Welke sommen/)).getByRole('button', { name: /^Rekenmix/ }).click();
   await (await stap(page, /Kies een onderwerp/)).getByRole('button', { name: /^Rekenmix/ }).click();
   await expect(welke(/^Hoe moeilijk/)).toHaveCount(4);
   await expect(welke(/^Hoe moeilijk/)).toHaveText([

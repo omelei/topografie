@@ -228,7 +228,7 @@ export function ModuleScreen({
   // having to carry the word. With neither, the module's own (`eersteRegio`).
   const regios = regiosVan(module.id);
   const uitAdres = regios.find((kandidaat) => kandidaat.id === adresRegio)?.id ?? null;
-  const hier = regio ?? adresVak?.regio ?? uitAdres ?? eersteRegio(module.id, regios);
+  const hier = regio ?? adresVak?.regio ?? uitAdres ?? eersteRegio(module.id, regios, groep);
   // Welke klok, voor de diploma's van die klok (ADR-257).
   const klokDeel = hier === 'digitaal' ? 'digitaal' : 'analoog';
   const opKaart =

@@ -223,6 +223,9 @@ const TAAL_DELEN: readonly string[] = ['spelling', 'werkwoorden', 'engels'];
 /** De twee klokken (ADR-257), als deel in het adres: /klokkijken/digitaal. */
 const KLOK_DELEN: readonly string[] = ['analoog', 'digitaal'];
 
+/** De delen van Rekenen (ADR-258): /rekenen/plus-en-min. */
+const REKEN_DELEN: readonly string[] = ['plus-en-min', 'keer-en-delen', 'rekenmix'];
+
 export function setSlug(setId: string): string {
   if (setId === VLAG_PROVINCIES) return 'provincies';
   if (setId.startsWith('vlag-')) return setId.slice('vlag-'.length);
@@ -374,8 +377,16 @@ function moduleRoute(module: Module, tail: string | undefined, regio: string | n
   if (!module.built) return { name: 'soon', module };
   // Taal's part by name after the module — /taal/werkwoorden — or by the alias
   // it was reached at — /werkwoorden. En de klok op de digitale of de analoge
-  // klok: /klokkijken/digitaal (ADR-257).
-  const delen = module.id === 'woorden' ? TAAL_DELEN : module.id === 'klok' ? KLOK_DELEN : [];
+  // klok: /klokkijken/digitaal (ADR-257), en Rekenen op een deel:
+  // /rekenen/plus-en-min (ADR-258).
+  const delen =
+    module.id === 'woorden'
+      ? TAAL_DELEN
+      : module.id === 'klok'
+        ? KLOK_DELEN
+        : module.id === 'tafels'
+          ? REKEN_DELEN
+          : [];
   const deel = tail !== undefined && delen.includes(tail) ? tail : regio;
   // A set nobody has heard of opens the module rather than an error page: the
   // child asked for topography and topography is what they get.
