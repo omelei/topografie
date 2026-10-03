@@ -7,7 +7,7 @@
  *
  * Drie ingangen, op één adres:
  *
- *   POST ?actie=start     { email }        → { checkoutUrl }
+ *   POST ?actie=start     { email, afstandHerroeping } → { checkoutUrl }
  *   POST ?actie=webhook   id=tr_…          → 204, en Mollie is tevreden
  *   GET  ?actie=status&betaling=tr_…       → { status, code, geldigTot }
  *
@@ -92,6 +92,7 @@ function alsBetaling(ruw: unknown): Betaling {
     id: tekst(ruw, 'id') ?? '',
     status: tekst(ruw, 'status') ?? '',
     email: tekst(metadata, 'email'),
+    afstandHerroeping: tekst(metadata, 'afstandHerroeping'),
   };
 }
 
@@ -175,7 +176,7 @@ function diensten(): Diensten {
             redirectUrl: input.terugUrl,
             webhookUrl: input.webhookUrl,
             locale: 'nl_NL',
-            metadata: { email: input.email },
+            metadata: { email: input.email, afstandHerroeping: input.afstandHerroeping },
           }),
         });
         const links = (ruw as { _links?: { checkout?: unknown } })._links;
@@ -224,8 +225,11 @@ Deno.serve(async (verzoek) => {
 
   try {
     if (actie === 'start' && verzoek.method === 'POST') {
-      const inhoud = (await verzoek.json()) as { email?: unknown };
-      const uitkomst = await startBestelling(String(inhoud.email ?? ''), diensten());
+      const inhoud = (await verzoek.json()) as { email?: unknown; afstandHerroeping?: unknown };
+      const uitkomst = await startBestelling(
+        { email: String(inhoud.email ?? ''), afstandHerroeping: inhoud.afstandHerroeping === true },
+        diensten(),
+      );
       return antwoord(uitkomst);
     }
 

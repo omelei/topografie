@@ -48,7 +48,12 @@ function nepDiensten(overschrijf: Partial<Diensten> = {}) {
       maakBetaling: vi.fn(async () => {
         gemaakt += 1;
         const id = `tr_test${gemaakt}`;
-        betalingen.set(id, { id, status: 'open', email: 'ouder@example.nl' });
+        betalingen.set(id, {
+          id,
+          status: 'open',
+          email: 'ouder@example.nl',
+          afstandHerroeping: '2026-09-14T10:00:00.000Z',
+        });
         return { id, checkoutUrl: `https://mollie.test/checkout/${id}` };
       }),
       leesBetaling: vi.fn(async (id: string) => {
@@ -103,6 +108,9 @@ function nepDiensten(overschrijf: Partial<Diensten> = {}) {
 
   return { diensten, gemaild, betaal, zetStatus, bestellingen };
 }
+
+/** Een bestelling zoals de kassapagina hem stuurt: met een adres en het vinkje. */
+const bestelling = { email: 'ouder@example.nl', afstandHerroeping: true } as const;
 
 describe('de code', () => {
   it('gebruikt hetzelfde alfabet en dezelfde lengte als het script dat ze met de hand maakt', () => {
@@ -206,12 +214,40 @@ describe('de mail', () => {
     expect(mail.html).toContain('href="https://www.leer.nu/ouder"');
     expect(mail.html).toContain('LEER-7K3M-Q9TX');
   });
+
+  it('bevestigt de koop en de afstand van herroeping (ADR-254)', () => {
+    const mail = mailVoorCode({
+      code: '7K3MQ9TX',
+      geldigTot: '2027-09-14',
+      premiumUrl: 'https://www.leer.nu/premium',
+      afstandHerroeping: '2026-09-14T10:00:00.000Z',
+    });
+    for (const deel of [mail.tekst, mail.html]) {
+      expect(deel).toContain('Je kocht leer.nu premium voor een jaar, voor € 59,95.');
+      expect(deel).toContain('Op 14 september 2026 vroeg je de code meteen te krijgen');
+      expect(deel).toContain('binnen 14 dagen te herroepen');
+    }
+  });
+
+  it('zegt niets over afstand bij een betaling van vóór het vinkje', () => {
+    const mail = mailVoorCode({
+      code: '7K3MQ9TX',
+      geldigTot: '2027-09-14',
+      premiumUrl: 'https://www.leer.nu/premium',
+      afstandHerroeping: null,
+    });
+    expect(mail.tekst).toContain('Je kocht leer.nu premium');
+    expect(mail.tekst).not.toContain('herroepen');
+  });
 });
 
 describe('een bestelling starten', () => {
   it('maakt een betaling van het juiste bedrag en geeft de checkout terug', async () => {
     const { diensten } = nepDiensten();
-    const uitkomst = await startBestelling(' Ouder@Example.NL ', diensten);
+    const uitkomst = await startBestelling(
+      { email: ' Ouder@Example.NL ', afstandHerroeping: true },
+      diensten,
+    );
 
     expect(uitkomst.checkoutUrl).toBe('https://mollie.test/checkout/tr_test1');
     expect(diensten.mollie.maakBetaling).toHaveBeenCalledWith(
@@ -221,15 +257,33 @@ describe('een bestelling starten', () => {
 
   it('weigert een adres dat geen adres is, voordat er iets bij Mollie gebeurt', async () => {
     const { diensten } = nepDiensten();
-    await expect(startBestelling('ouder@', diensten)).rejects.toThrow(KassaFout);
+    await expect(
+      startBestelling({ email: 'ouder@', afstandHerroeping: true }, diensten),
+    ).rejects.toThrow(KassaFout);
     expect(diensten.mollie.maakBetaling).not.toHaveBeenCalled();
+  });
+
+  it('weigert een bestelling zonder afstand van herroeping, ook buiten de pagina om', async () => {
+    const { diensten } = nepDiensten();
+    await expect(
+      startBestelling({ email: 'ouder@example.nl', afstandHerroeping: false }, diensten),
+    ).rejects.toThrow('geen-afstand-herroeping');
+    expect(diensten.mollie.maakBetaling).not.toHaveBeenCalled();
+  });
+
+  it('geeft het moment van de afstand mee aan Mollie', async () => {
+    const { diensten } = nepDiensten();
+    await startBestelling(bestelling, diensten);
+    expect(diensten.mollie.maakBetaling).toHaveBeenCalledWith(
+      expect.objectContaining({ afstandHerroeping: '2026-09-14T10:00:00.000Z' }),
+    );
   });
 });
 
 describe('de webhook', () => {
   it('maakt een code en mailt hem zodra er betaald is', async () => {
     const { diensten, gemaild, betaal } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     betaal('tr_test1');
 
     await verwerkWebhook('tr_test1', diensten);
@@ -237,11 +291,12 @@ describe('de webhook', () => {
     expect(gemaild).toHaveLength(1);
     expect(gemaild[0]?.aan).toBe('ouder@example.nl');
     expect(gemaild[0]?.tekst).toMatch(/LEER-[A-Z2-9]{4}-[A-Z2-9]{4}/);
+    expect(gemaild[0]?.tekst).toContain('binnen 14 dagen te herroepen');
   });
 
   it('doet niets bij een betaling die niet betaald is', async () => {
     const { diensten, gemaild, zetStatus } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
 
     for (const status of ['open', 'pending', 'canceled', 'expired', 'failed']) {
       zetStatus('tr_test1', status);
@@ -256,7 +311,7 @@ describe('de webhook', () => {
     // Mollie stuurt met opzet vaker. Twee codes voor één betaling zou zowel
     // verwarrend als duur zijn, en twee mails zijn er één te veel.
     const { diensten, gemaild, betaal } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     betaal('tr_test1');
 
     await verwerkWebhook('tr_test1', diensten);
@@ -272,7 +327,7 @@ describe('de webhook', () => {
     // alsnog gebeuren — vandaar dat het mailen aan `gemaild` hangt en niet aan
     // `nieuw`.
     const { diensten, gemaild, betaal } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     betaal('tr_test1');
 
     vi.mocked(diensten.mail.stuur).mockRejectedValueOnce(new Error('mailer plat'));
@@ -292,20 +347,20 @@ describe('de webhook', () => {
 describe('de pagina na het betalen', () => {
   it('zegt "bezig" zolang de betaling loopt', async () => {
     const { diensten } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     await expect(leesStatus('tr_test1', diensten)).resolves.toMatchObject({ status: 'bezig' });
   });
 
   it('zegt "bezig" wanneer er betaald is maar de webhook er nog niet langs was', async () => {
     const { diensten, betaal } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     betaal('tr_test1');
     await expect(leesStatus('tr_test1', diensten)).resolves.toMatchObject({ status: 'bezig' });
   });
 
   it('geeft de code zodra hij er is, zodat een ouder niet op de mail hoeft te wachten', async () => {
     const { diensten, betaal } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     betaal('tr_test1');
     await verwerkWebhook('tr_test1', diensten);
 
@@ -317,7 +372,7 @@ describe('de pagina na het betalen', () => {
 
   it('zegt "mislukt" bij een afgebroken betaling', async () => {
     const { diensten, zetStatus } = nepDiensten();
-    await startBestelling('ouder@example.nl', diensten);
+    await startBestelling(bestelling, diensten);
     zetStatus('tr_test1', 'canceled');
     await expect(leesStatus('tr_test1', diensten)).resolves.toMatchObject({ status: 'mislukt' });
   });
