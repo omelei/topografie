@@ -962,231 +962,6 @@
    * foot of the screen — see .tk-startbalk-mobiel — which ADR-052 put off after
    * three attempts produced three bugs.
    */
-  /* "Vandaag herhalen" op de voordeur (ADR-126): het enige blok in de app dat
-   * zegt wat er nú te doen is, en daarom het enige op die pagina dat een vlak
-   * van zichzelf heeft. Dezelfde vorm als de startbalk van een modulepagina —
-   * zachte grond, kleur langs de aanlopende rand — want het is dezelfde
-   * belofte: hier begint een ronde. Buiten een module is de accentkleur de
-   * groene nadruk, en dat is precies de bedoeling: op de voordeur is dit de
-   * enige plek waar die kleur staat. */
-
-  /* Sinds Kleurblokken (ADR-238) geen kaart met een koraalrand meer: een
-   * sectie op de grond, met de rondes als vaktegels. De kleur zit in de tegels,
-   * die elk de diepe kleur van hun vak dragen. */
-  .tk-vandaag {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  /* ---- Herhaaltegels (Kleurblokken, ADR-238) ----------------------------------
-   * Een ronde van vandaag als tegel in de diepe kleur van zijn vak, met witte
-   * woorden (5,66 tot 7,89) op een harde onderkant een stap donkerder. Hooguit
-   * drie; de rest is de lijst van altijd. De vormen zijn in de heldere
-   * vlakkleur, staan stil, dragen geen tekst en liggen onder de woorden. Op de
-   * tweede en derde tegel staan ze rechtsboven en niet onderaan: daar staat de
-   * titel, en wit op een vlakkleur haalt geen 4,5. */
-  .tk-herhaaltegels {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-herhaaltegels > li {
-    display: flex;
-  }
-  .tk-herhaaltegels > li:first-child {
-    grid-column: 1 / -1;
-  }
-  .tk-herhaaltegel {
-    position: relative;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    min-width: 0;
-    min-height: 128px;
-    padding: 14px 16px;
-    overflow: hidden;
-    border: 0;
-    border-radius: var(--radius-tegel);
-    box-shadow: 0 var(--onderkant) 0 var(--module-schaduw);
-    background: var(--module);
-    color: var(--kaart);
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-herhaaltegels > li:first-child .tk-herhaaltegel {
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    min-height: 96px;
-    padding: 16px 18px;
-  }
-  .tk-herhaaltegel > :not(.tk-herhaaltegel-vorm, .tk-herhaaltegel-stip) {
-    position: relative;
-  }
-  .tk-herhaaltegel-tekst {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    min-width: 0;
-  }
-  /* De tekst van de eerste tegel blijft links van de cirkel: wit op de
-   * vlakkleur haalt geen 4,5. */
-  .tk-herhaaltegels > li:first-child .tk-herhaaltegel-tekst {
-    margin-right: 34px;
-  }
-  .tk-herhaaltegel-titel {
-    font-family: var(--font-kop);
-    font-size: var(--type-knop); /* 20px */
-    line-height: var(--type-knop-lh); /* 24px */
-    font-weight: 800;
-  }
-  .tk-herhaaltegels > li:first-child .tk-herhaaltegel-titel {
-    font-size: 1.5rem; /* 24px */
-    line-height: 1.75rem; /* 28px */
-  }
-  .tk-herhaaltegel-regel {
-    font-size: var(--type-bijschrift); /* 15px */
-    line-height: var(--type-bijschrift-lh);
-  }
-  .tk-herhaaltegels > li:first-child .tk-herhaaltegel-regel {
-    font-size: 1rem; /* 16px */
-    line-height: 1.375rem;
-  }
-  .tk-herhaaltegel-pijl {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-pil);
-    background: var(--kaart);
-    color: var(--module);
-  }
-  /* The subject's tile on its own deep tile: the bright fill with the glyph
-   * in white, as everywhere, at the tile's size. */
-  .tk-plaat-tegel {
-    width: 40px;
-    height: 40px;
-    box-shadow: none;
-  }
-  .tk-herhaaltegels > li:first-child .tk-plaat-tegel {
-    width: 48px;
-    height: 48px;
-  }
-  .tk-herhaaltegel-vorm,
-  .tk-herhaaltegel-stip {
-    position: absolute;
-    pointer-events: none;
-  }
-  .tk-herhaaltegel-stip {
-    top: 12px;
-    right: 70px;
-    width: 14px;
-    height: 14px;
-    border-radius: var(--radius-pil);
-    background: var(--module-vlak);
-  }
-  /* Eerste tegel: een cirkel rechtsonder, achter de pijl. */
-  .tk-herhaaltegels > li:nth-child(1) .tk-herhaaltegel-vorm {
-    right: -24px;
-    bottom: -40px;
-    width: 120px;
-    height: 120px;
-    border-radius: var(--radius-pil);
-    background: var(--module-vlak);
-  }
-  /* Tweede tegel: een gedraaide tegel. */
-  .tk-herhaaltegels > li:nth-child(2) .tk-herhaaltegel-vorm {
-    top: -30px;
-    right: -20px;
-    width: 90px;
-    height: 90px;
-    border-radius: var(--radius-tegel);
-    background: var(--module-vlak);
-    transform: rotate(18deg);
-  }
-  /* Derde tegel: een ring. */
-  .tk-herhaaltegels > li:nth-child(3) .tk-herhaaltegel-vorm {
-    top: -30px;
-    right: -30px;
-    width: 100px;
-    height: 100px;
-    border: 14px solid var(--module-vlak);
-    border-radius: var(--radius-pil);
-  }
-  @media (min-width: 768px) {
-    .tk-herhaaltegels {
-      grid-template-columns: 1.3fr 1fr 1fr;
-      gap: 16px;
-    }
-    .tk-herhaaltegels > li:first-child {
-      grid-column: auto;
-    }
-    .tk-herhaaltegel,
-    .tk-herhaaltegels > li:first-child .tk-herhaaltegel {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      grid-template-rows: auto 1fr;
-      align-items: end;
-      gap: 12px;
-      min-height: 180px;
-      padding: 20px;
-      border-radius: var(--radius-kaart);
-    }
-    .tk-herhaaltegels > li:first-child .tk-herhaaltegel-tekst {
-      margin-right: 54px;
-    }
-    .tk-herhaaltegel .tk-plaat-tegel {
-      grid-column: 1 / -1;
-      align-self: start;
-      width: 44px;
-      height: 44px;
-    }
-    .tk-herhaaltegels > li:first-child .tk-plaat-tegel {
-      width: 52px;
-      height: 52px;
-    }
-    .tk-herhaaltegel-titel {
-      font-size: 1.375rem; /* 22px */
-      line-height: 1.625rem; /* 26px */
-    }
-    .tk-herhaaltegels > li:first-child .tk-herhaaltegel-titel {
-      font-size: 1.625rem; /* 26px */
-      line-height: 1.875rem; /* 30px */
-    }
-    .tk-herhaaltegel-regel {
-      font-size: 1rem; /* 16px */
-      line-height: 1.375rem;
-    }
-    .tk-herhaaltegel-stip {
-      width: 16px;
-      height: 16px;
-    }
-    .tk-herhaaltegels > li:nth-child(1) .tk-herhaaltegel-vorm {
-      right: -40px;
-      bottom: -60px;
-      width: 170px;
-      height: 170px;
-    }
-    .tk-herhaaltegels > li:nth-child(2) .tk-herhaaltegel-vorm {
-      width: 120px;
-      height: 120px;
-      border-radius: 26px;
-    }
-    .tk-herhaaltegels > li:nth-child(3) .tk-herhaaltegel-vorm {
-      width: 130px;
-      height: 130px;
-      border-width: 18px;
-    }
-  }
 
   .tk-startbalk {
     display: grid;
@@ -1319,12 +1094,6 @@
   }
   .tk-startbalk-mobiel .tk-hulp {
     color: var(--module-tekst);
-  }
-  .tk-startbalk-zin {
-    flex: 1;
-    min-width: 0;
-    font-size: var(--type-knop);
-    line-height: var(--type-knop-lh);
   }
   .tk-startbalk-mobiel .tk-button-go {
     flex: none;
@@ -2231,20 +2000,6 @@
     font-weight: var(--type-paginakop-weight);
   }
 
-  .tk-home-kop {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 16px 20px;
-  }
-  .tk-home-welkom {
-    display: flex;
-    min-width: 0;
-    flex: 1 1 240px;
-    flex-direction: column;
-    gap: 8px;
-  }
-
   /* ---- De etalage: de kop van een pagina (ADR-145, ADR-150) ---------------
    * Begonnen als de premiumpagina: een kop in de actiekleur, kaarten met een
    * teken, twee plannen naast elkaar en een vergelijkingstabel. Sinds ADR-150
@@ -2286,10 +2041,11 @@
   }
 
   /* ---- Het welkomstvlak op Vandaag (Kleurblokken, ADR-238) -----------------
-   * Het merkvlak van de voordeur: de etalage, met Denker die zwaait over de
-   * rand en drie of vier vormen erachter. De vormen staan stil, zijn
-   * versiering en dragen nooit tekst: de rustige stand verandert er dus niets
-   * aan. Cacao op koraal 5,72. */
+   * Het merkvlak van de voordeur en sinds ADR-255 de kop van elke pagina: de
+   * etalage, met Denker ernaast en een cirkel in de hoek. De cirkel staat
+   * stil, is versiering en draagt nooit tekst: de rustige stand verandert er
+   * dus niets aan. Hoe het vlak met Nu doen erin staat, is `.tk-welkom-nu`
+   * hieronder (ADR-252). Cacao op koraal 5,72. */
   .tk-welkom {
     position: relative;
     flex-direction: row;
@@ -2343,125 +2099,6 @@
     width: 150px;
     height: 150px;
     background: var(--koraal-vorm);
-  }
-  .tk-welkom-zon {
-    top: 18px;
-    right: 92px;
-    width: 18px;
-    height: 18px;
-    background: var(--zon);
-  }
-  .tk-welkom-room {
-    top: 44px;
-    right: 70px;
-    width: 10px;
-    height: 10px;
-    background: var(--papier);
-  }
-  .tk-welkom-room-twee {
-    display: none;
-  }
-  /* Het vakvlak: dezelfde vorm op de pagina van een vak, in de diepe kleur
-   * met witte woorden (5,66 tot 7,89). De grote cirkel is de toon van de
-   * vraagcirkel in een ronde, want de titel mag erover lopen (4,53 of meer);
-   * de grote stip is de heldere vlakkleur en de kleine zon (ADR-239), en ze
-   * staan alleen op een telefoon, waar ze boven de titel op de cirkel liggen. */
-  .tk-vakvlak {
-    background: var(--module);
-    color: var(--kaart);
-  }
-  .tk-vakvlak .tk-welkom-kop {
-    color: var(--kaart);
-  }
-  .tk-vakvlak .tk-welkom-tekst {
-    gap: 12px;
-  }
-  .tk-vakvlak .tk-welkom-cirkel {
-    background: var(--module-vraag);
-  }
-  .tk-vakvlak .tk-welkom-room {
-    background: var(--module-vlak);
-  }
-  .tk-vakvlak .tk-welkom-zon {
-    background: var(--zon);
-  }
-  /* The badge on the panel: white, with the subject's words, so it reads on
-   * the deep tone as it did on the ground. */
-  .tk-vakvlak .tk-modulebadge {
-    border-color: var(--kaart);
-    background: var(--kaart);
-  }
-  @media (min-width: 768px) {
-    .tk-welkom {
-      align-items: center;
-      gap: 16px;
-      padding: 32px 36px;
-      border-radius: 32px;
-    }
-    .tk-welkom-kop {
-      font-size: 3rem; /* 48px */
-      line-height: 3.25rem; /* 52px */
-    }
-    .tk-welkom-tekstregel {
-      font-size: var(--type-knop); /* 20px */
-      line-height: 1.875rem; /* 30px */
-    }
-    .tk-welkom-denker {
-      width: 136px;
-      height: 136px;
-      margin: -16px 0;
-    }
-    .tk-welkom-cirkel {
-      top: -80px;
-      right: -60px;
-      width: 280px;
-      height: 280px;
-    }
-    .tk-welkom-zon {
-      top: 28px;
-      right: 250px;
-      width: 26px;
-      height: 26px;
-    }
-    .tk-welkom-room {
-      top: 70px;
-      right: 220px;
-      width: 14px;
-      height: 14px;
-    }
-    .tk-welkom-room-twee {
-      display: block;
-      right: 280px;
-      bottom: 26px;
-      width: 12px;
-      height: 12px;
-      background: var(--papier);
-    }
-    /* Op het vakvlak loopt de titel hier langs: wit op de vlakkleur haalt geen
-     * 4,5, dus de stippen blijven weg en de cirkel draagt het vlak. */
-    .tk-vakvlak :is(.tk-welkom-zon, .tk-welkom-room, .tk-welkom-room-twee) {
-      display: none;
-    }
-  }
-  /* De etalage van Jij met de vormen van het welkomstvlak (ADR-239): de
-   * cirkel, de zon en de room, stil en achter de tekst. */
-  .tk-etalage-vormen {
-    position: relative;
-    overflow: hidden;
-  }
-  .tk-etalage-vormen :is(.tk-etalage-kop, .tk-etalage-tekst) {
-    position: relative;
-  }
-  @media (max-width: 767px) {
-    /* Hier staat geen Denker, dus de stippen schuiven naar rechts op. */
-    .tk-etalage-vormen .tk-welkom-zon {
-      top: 22px;
-      right: 112px;
-    }
-    .tk-etalage-vormen .tk-welkom-room {
-      top: 50px;
-      right: 90px;
-    }
   }
   .tk-etalage-knoppen {
     display: flex;
@@ -2884,154 +2521,6 @@
     overflow: hidden;
   }
 
-  /* ---- A row on the front door (ADR-094) ---------------------------------
-   * A heading on a hairline, two round buttons from a tablet up, and cards
-   * that run on past the edge. The scrollbar is hidden and scrolling is not:
-   * see `ScrollRij` for the three ways it still moves.
-   */
-  .tk-rij {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 0;
-  }
-  /* A section heading (.tk-sectie) with the two buttons at its end. */
-  .tk-rij-kop {
-    align-items: center;
-    justify-content: space-between;
-    min-height: var(--raak);
-  }
-  .tk-rij-knoppen {
-    display: none;
-    gap: 8px;
-  }
-  @media (min-width: 768px) {
-    .tk-rij-knoppen {
-      display: flex;
-    }
-  }
-  /* 44 where the handoff draws 40: 44 is the floor every control in this
-   * product clears (ADR-032), and a round button is no exception to a
-   * fingertip. */
-  .tk-rij-knop {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--raak);
-    height: var(--raak);
-    border-radius: var(--radius-pil);
-    border: var(--stroke-hair) solid var(--rand-bediening);
-    background: var(--kaart);
-    color: var(--inkt);
-    cursor: pointer;
-  }
-  .tk-rij-knop:hover:not(:disabled) {
-    background: var(--vlak-hover);
-  }
-  /* Off at the end of the row: it recedes rather than disappearing, so the
-   * pair stays a pair and the heading does not change width. */
-  .tk-rij-knop:disabled {
-    color: var(--tekst-tertiair);
-    cursor: default;
-  }
-  /* Positioned, so it is the containing block of everything absolute inside
-   * it. A card carries a line for screen readers in .tk-sr-only, which is
-   * absolute; with nothing positioned above it, that line hung off the page
-   * rather than off the row, sat wherever its card sat — 540 across, for the
-   * third card on a phone — and pushed the page 129 wider than the glass. The
-   * row scrolls; the page must not. */
-  .tk-rij-baan {
-    position: relative;
-    display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    /* Room inside the scroll box for a card's focus ring, which an overflow
-     * box would otherwise clip at every edge. The margin gives it back. */
-    margin: -4px;
-    padding: 4px;
-    scroll-padding-inline: 4px;
-  }
-  .tk-rij-baan::-webkit-scrollbar {
-    display: none;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .tk-rij-baan {
-      scroll-behavior: smooth;
-    }
-  }
-
-  /* ---- A card in a row ---------------------------------------------------
-   * The same card in "meest geoefend" and "recent geoefend": a plate, the
-   * exercise, the way it was done, and under a rule the one line the row is
-   * about. 264 wide below 1200 and 300 from it, so the edge of the next card
-   * always shows — which is what tells a child there is more.
-   */
-  .tk-kaart {
-    display: flex;
-    flex: none;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    width: 264px;
-    padding: var(--kaart-padding);
-    /* Kleur erin (ADR-239): the rule in the subject's light tone, the lower
-     * edge in its bright fill. The plate still names the subject. */
-    border: var(--stroke-tegel) solid var(--module-rand);
-    border-radius: var(--kaart-radius);
-    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
-    background: var(--kaart);
-    color: var(--inkt);
-    text-align: left;
-    scroll-snap-align: start;
-    cursor: pointer;
-  }
-  @media (min-width: 1200px) {
-    .tk-kaart {
-      width: 300px;
-    }
-  }
-  /* "Maak af" (Kleurblokken, ADR-238): het vakicoon links, en rechts de
-   * titel, de spelvorm, een balk in de kleur van het vak op zijn eigen tint
-   * en hoeveel er nog over is. */
-  .tk-maakaf {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-content: start;
-    column-gap: 14px;
-    row-gap: 4px;
-    padding: 16px;
-    border-radius: var(--radius-kaart);
-  }
-  .tk-maakaf > .tk-plaat {
-    grid-row: 1 / span 4;
-  }
-  .tk-maakaf .tk-kaart-titel {
-    font-weight: 700;
-    line-height: var(--type-knop-lh); /* 24px */
-  }
-  .tk-maakaf .tk-kaart-regel {
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-  }
-  .tk-maakaf .tk-progress {
-    margin: 6px 0 2px;
-  }
-  .tk-maakaf .tk-progress-rail {
-    height: 10px;
-    background: var(--module-tint);
-  }
-  .tk-maakaf .tk-progress-fill {
-    background: var(--module-vlak);
-  }
-  .tk-maakaf .tk-kaart-voet {
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
-  }
-
   /* ---- Een melding na een knop (ADR-205) ----------------------------------
    * Wat er gebeurde nadat je op een knop drukte: een mail is verstuurd, een
    * pincode klopt niet. Het stond als losse regel tekst onder de knop en viel
@@ -3195,24 +2684,6 @@
     align-self: center;
     margin: -8px 0 -6px;
   }
-  .tk-nudoen-smal {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    align-items: center;
-    gap: 14px;
-    padding: 16px;
-  }
-  .tk-nudoen-smal .tk-nudoen-tekst {
-    gap: 0;
-  }
-  .tk-nudoen-smal .tk-nudoen-titel {
-    font-size: var(--type-knop); /* 20px */
-    line-height: var(--type-knop-lh); /* 24px */
-    font-weight: 700;
-  }
-  .tk-nudoen-smal > .tk-nudoen-knop {
-    grid-column: 1 / -1;
-  }
 
   /* ---- Vandaag (ADR-252) ---------------------------------------------------
    * Het ontwerp voor een telefoon, sinds ADR-255 op elke maat en ook de kop van
@@ -3240,18 +2711,6 @@
     width: 68px;
     height: 68px;
     margin: 0 -4px 0 0;
-  }
-  /* Vanaf 768 maakt het welkomstvlak zijn regel en zijn cirkel groter; dit
-   * vlak houdt de maat van een telefoon. */
-  .tk-welkom-nu .tk-welkom-tekstregel {
-    font-size: var(--type-lopend);
-    line-height: 1.625rem; /* 26px */
-  }
-  .tk-welkom-nu .tk-welkom-cirkel {
-    top: -44px;
-    right: -36px;
-    width: 150px;
-    height: 150px;
   }
   /* De binnenkaart: plaat, kop en regel naast elkaar, de balk en de knop over
    * de hele breedte. Wit op koraal, dus geen rand en geen onderkant van het
@@ -3442,40 +2901,6 @@
 
   /* Elke rij even hoog (ADR-242): een toelichting over twee regels maakte de
    * tweede rij hoger dan de eerste. */
-  .tk-vakraster {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
-    grid-auto-rows: 1fr;
-    gap: 12px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .tk-vaktegel {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    height: 100%;
-    padding: 16px;
-    border: var(--stroke-tegel) solid var(--module-rand);
-    border-radius: var(--kaart-radius);
-    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
-    background: var(--kaart);
-    color: var(--inkt);
-    text-align: left;
-    cursor: pointer;
-  }
-  .tk-vaktegel:hover {
-    border-color: var(--module);
-  }
-  .tk-vaktegel-tekst {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
   .tk-uitlegstappen {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(17rem, 100%), 1fr));
@@ -3493,64 +2918,12 @@
     border-radius: var(--kaart-radius);
     background: var(--kaart);
   }
-  .tk-uitlegstap-nummer {
-    display: inline-flex;
-    flex: none;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-pil);
-    background: var(--inkt);
-    color: var(--kaart);
-    font-family: var(--font-kop);
-    font-size: var(--type-kaartkop);
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-  }
 
-  /* Hover in the module's colour since Kleur erin (ADR-239): the card
-   * already wears it, and the rule darkens to its deep tone. */
-  .tk-kaart:hover {
-    border-color: var(--module);
-  }
   .tk-kaart-titel {
     font-family: var(--font-kop);
     font-size: var(--type-kaartkop);
     line-height: var(--type-kaartkop-lh);
     font-weight: 600;
-  }
-  /* Room for two lines whether or not the name needs them, so a row of
-   * cards has its rules at one height. */
-  .tk-kaart-titel-twee {
-    min-height: calc(2 * var(--type-kaartkop-lh));
-  }
-  .tk-kaart-regel {
-    font-size: var(--type-lopend);
-    line-height: var(--type-lopend-lh);
-    color: var(--tekst-secundair);
-  }
-  .tk-kaart-voet {
-    align-self: stretch;
-    margin-top: auto;
-    padding-top: 10px;
-    border-top: var(--stroke-hair) solid var(--module-rand);
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--module-tekst);
-  }
-  /* A module the plan has and the product does not: a dashed rule and a
-   * plate with no module in it. A shape rather than a colour, so "not yet" is
-   * legible to a child who cannot tell two greys apart. */
-  .tk-kaart[data-soon] {
-    border-style: dashed;
-    border-color: var(--rand-sterk);
-  }
-  .tk-kaart[data-soon] .tk-plaat {
-    background: var(--papier);
-    color: var(--tekst-secundair);
   }
 
   /* ---- Je geheugen, over alles (ADR-148, ADR-171) -----------------------
@@ -3563,50 +2936,6 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-  .tk-geheugen-kop {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 16px 24px;
-  }
-  .tk-ring {
-    position: relative;
-    display: inline-grid;
-    flex: none;
-    place-content: center;
-    justify-items: center;
-    width: 132px;
-    height: 132px;
-    border-radius: var(--radius-pil);
-    background: conic-gradient(
-      var(--module) 0 var(--vul, 0%),
-      color-mix(in srgb, var(--module-meng) 16%, var(--kaart)) var(--vul, 0%)
-    );
-  }
-  .tk-ring::before {
-    content: '';
-    position: absolute;
-    inset: 14px;
-    border-radius: var(--radius-pil);
-    background: var(--kaart);
-  }
-  .tk-ring-getal,
-  .tk-ring-label {
-    position: relative;
-  }
-  .tk-ring-getal {
-    font-family: var(--font-kop);
-    font-size: var(--type-sectiekop);
-    line-height: var(--type-sectiekop-lh);
-    letter-spacing: var(--type-sectiekop-ls);
-    font-weight: var(--type-sectiekop-weight);
-    font-variant-numeric: tabular-nums;
-  }
-  .tk-ring-label {
-    font-size: var(--type-bijschrift);
-    line-height: var(--type-bijschrift-lh);
-    color: var(--tekst-secundair);
   }
   /* ---- Per vak ----------------------------------------------------------
    * A row per subject with a bar under its words: remembered in the subject's
@@ -4730,62 +4059,12 @@
     border-color: var(--rand-bediening);
   }
 
-  /* ---- Squares: which table, which division ------------------------------
-   * The numbers as a keypad: four across on a phone, six from a tablet up,
-   * each one square, one to twelve in the display face. Twelve is three rows of
-   * four and two of six, with no gap in either. The mix square that came first
-   * is gone: the Rekenmix is one step up (ADR-100). All twelve on every size:
-   * the handoff shows seven on a phone, and a table a child cannot reach there
-   * is a table taken away (ADR-095).
-   */
-  .tk-tafels {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-  }
-  @media (min-width: 768px) {
-    .tk-tafels {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 12px;
-    }
-  }
-  .tk-tafel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    aspect-ratio: 1;
-    min-height: var(--raak);
-    border: var(--stroke-tegel) solid var(--module-rand);
-    border-radius: var(--radius-tegel);
-    box-shadow: 0 var(--onderkant) 0 var(--module-vlak);
-    background: var(--kaart);
-    color: var(--inkt);
-    font-family: var(--font-kop);
-    font-size: var(--type-sectiekop);
-    line-height: var(--type-sectiekop-lh);
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    cursor: pointer;
-  }
-  .tk-tafel:not([aria-pressed='true']):hover {
-    border-color: var(--module);
-  }
-  .tk-tafel[aria-pressed='true'] {
-    border-color: var(--accent-text);
-    box-shadow: 0 var(--onderkant) 0 var(--accent-text);
-    background: var(--accent-text);
-    color: var(--kaart);
-  }
-
   /* ---- Badges ----------------------------------------------------------
    * The small hard-edged label K1 puts before a heading: "toets", and the
    * subject that test is for. Square, because §A gives the badge no radius —
    * it is a stamp on the page. Deliberately not a `.tk-chip`, which is a
    * filter you can switch on: this is a fact, and nothing here is pressable.
    */
-  .tk-badge,
   .tk-badge-outline {
     display: inline-flex;
     align-items: center;
@@ -4795,10 +4074,6 @@
     font-size: var(--type-knop);
     line-height: var(--type-knop-lh);
     font-weight: 600;
-  }
-  .tk-badge {
-    background: var(--inkt);
-    color: var(--kaart);
   }
   /* The quiet one: which subject the test is for. Ink on paper with a rule
    * round it, and not the module's accent — §B allows an accent on the
@@ -5300,18 +4575,9 @@
   .tk-oefenen {
     gap: 16px;
   }
-  .tk-oefenen-titel {
-    font-size: 1.875rem; /* 30px */
-    line-height: 2.25rem;
-    font-weight: 800;
-  }
   @media (min-width: 1200px) {
     .tk-oefenen {
       gap: 24px;
-    }
-    .tk-oefenen-titel {
-      font-size: 2.25rem; /* 36px */
-      line-height: 2.75rem;
     }
   }
 
@@ -6395,13 +5661,6 @@
     gap: 8px;
   }
 
-  /* ---- Wie terugkomt na weken (ADR-158) ---------------------------------- */
-  .tk-terug {
-    border: var(--stroke-hair) solid var(--rand-licht);
-    border-radius: var(--kaart-radius);
-    background: var(--kaart);
-  }
-
   /* ---- Diploma's: rijp, bijhouden en afzwemmen (ADR-149) -----------------
    * Rijp staat in inkt, zoals gehaald: het is iets om te doen. De seizoenen
    * zijn vier vakjes, gestippeld tot er een stempel in staat. */
@@ -7150,19 +6409,16 @@
     :root:not([data-beweging='rustig'])
       :is(
         .tk-button,
-        .tk-kaart,
         button.tk-kaartje,
         .tk-lijstrij,
         .tk-tegel,
         .tk-keuze,
-        .tk-tafel,
         .tk-module-card,
         .tk-profiel,
         .tk-zijbalk-rij,
         .tk-tabbar-item,
         .tk-doel-ander,
-        .tk-weekdoel-weg,
-        .tk-herhaaltegel
+        .tk-weekdoel-weg
       ) {
       transition:
         transform var(--beweeg-vlot) var(--beweeg-uit),
@@ -7176,10 +6432,8 @@
      * nog op zijn onderkant, dus het leest als optillen en niet als zweven. */
     :root:not([data-beweging='rustig'])
       :is(
-        .tk-kaart:hover,
         button.tk-kaartje:hover,
         .tk-lijstrij:hover,
-        .tk-herhaaltegel:hover,
         .tk-tegel:hover:not(:disabled),
         .tk-module-card:hover:not(:disabled)
       ) {
@@ -7205,23 +6459,17 @@
     :root:not([data-beweging='rustig']) .tk-button-secondary:active:not(:disabled) {
       box-shadow: 0 0 0 var(--rand-licht);
     }
-    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tafel, .tk-tegel):active:not(:disabled) {
+    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tegel):active:not(:disabled) {
       transform: scale(0.96);
     }
     :root:not([data-beweging='rustig'])
-      :is(
-        .tk-kaart:active,
-        button.tk-kaartje:active,
-        .tk-lijstrij:active,
-        .tk-herhaaltegel:active,
-        .tk-module-card:active:not(:disabled)
-      ) {
+      :is(button.tk-kaartje:active, .tk-lijstrij:active, .tk-module-card:active:not(:disabled)) {
       transform: translateY(0) scale(0.98);
     }
 
     /* Een keuze klikt (§05): .96, 1.03, 1. Hij speelt zodra de keuze gekozen
      * wordt, want dan gaat de regel pas gelden. */
-    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tegel, .tk-tafel)[aria-pressed='true'] {
+    :root:not([data-beweging='rustig']) :is(.tk-keuze, .tk-tegel)[aria-pressed='true'] {
       animation: tk-keuze-klikt var(--beweeg-keuze) var(--beweeg-veer);
     }
 

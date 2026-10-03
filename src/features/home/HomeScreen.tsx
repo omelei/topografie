@@ -32,7 +32,7 @@ import {
 import { usePremium } from '@/features/premium/usePremium';
 import { Geheugencheck, zoekGeheugencheck, type CheckKlaar } from './Geheugencheck';
 import { GroepVraag, VakkenRaster, VoorKleuters, ZoWerktHet } from './Kennismaken';
-import { NuDoenBinnen, NuDoenKaart } from './NuDoen';
+import { NuDoenKaart } from './NuDoen';
 import { OefenLijst, type OefenRijData } from './OefenLijst';
 import { halfAf, kiesNuDoen, verderOefenen, type NuDoenSoort, type VerderKaart } from './nuDoen';
 import { terugkomst, TerugKaart } from './TerugBlok';
@@ -268,7 +268,6 @@ export function HomeScreen({
     const vorm = vrijeVorm(laatste.deel, laatste.ronde.mode, actief);
     nuDoen = (
       <NuDoenKaart
-        vorm="smal"
         moduleId={laatste.deel.moduleId}
         kop={t('home.nu.verder.kop', { onderwerp: naamVan(laatste.deel) })}
         regel={t(`mode.${vorm}` as TranslationKey)}
@@ -313,9 +312,7 @@ export function HomeScreen({
           <Brandmark size={136} uitdrukking="zwaaien" />
         </span>
       </div>
-      {binnen === null ? null : (
-        <NuDoenBinnen.Provider value={true}>{binnen}</NuDoenBinnen.Provider>
-      )}
+      {binnen}
     </div>
   );
 
