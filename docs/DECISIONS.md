@@ -14848,3 +14848,45 @@ uitsneden van de vakken), staan de tekens van de app zelf.
 Vandaag. De e2e-tests die een zijbalk verwachten, lopen nu ook op de liggende
 iPad. De oude tegels van de vakken (`VakTegels`) staan alleen nog op Voor
 ouders via `VakkenRaster`.
+
+## ADR-260 — Ronde klaar in de vorm van de andere pagina's, met een trotse Denker
+
+**Status:** accepted. **Date:** 2026-10-04. Op verzoek van de eigenaar: "maak
+de 'ronde klaar' pagina op in lijn met de overige pagina's, en zorg voor een
+trotse Denker-animatie". Wijzigt de kop van ADR-112; de inhoud blijft.
+
+**Besluit.**
+
+- **De kop is het koraal vlak van elke pagina** (ADR-255, ADR-259): het vak
+  als witte pil, "Ronde klaar", het onderwerp met de spelvorm, Denker ernaast,
+  en wat er gebeurde als witte kaart erin, zoals Nu doen op Vandaag. Het was
+  een losse kop op de grond met een Denker van 64 en een kaart eronder.
+- **Het aantal goed staat groot** in de diepe kleur van het vak, met een balk
+  in zijn heldere kleur ernaast. De zin "12 vragen, 3 goed" blijft eronder en
+  draagt wat een schermlezer hoort; het grote getal is voor het oog.
+- **Denker is trots** (`TrotseDenker`): hij komt binnen met een plop, zet zijn
+  borst op (omhoog, breder, kin omhoog), houdt dat even vast en zakt terug.
+  Drie sterren in zon fonkelen om zijn hoofd, en bij binnenkomst springt er één
+  keer confetti af. Trots op het oefenen, niet op de score: ook bij drie goed,
+  want de pagina zegt nooit "goed gedaan" en Denker zegt niets. Zonder beweging
+  staan hij en de sterren stil.
+- Gestopt voor de eerste vraag (ADR-236) krijgt hetzelfde vlak zonder Denker.
+  Tijdens de uitreiking van een diploma blijft Denker uit de kop: één Denker
+  op een scherm.
+
+## ADR-261 — De vraag naar de groep blijft op Vandaag zolang er geen groep is
+
+**Status:** accepted. **Date:** 2026-10-04. Een fout die de eigenaar vond:
+"als ik een nieuw kind toevoeg, geen groep instel en gelijk ga oefenen, is de
+Vandaag-pagina leeg. Er wordt dan geen groep meer uitgevraagd." Wijzigt
+ADR-243.
+
+**Oorzaak.** De vraag naar de groep stond alleen op Vandaag voor een kind dat
+nog niets deed (ADR-243). Een kind dat via Oefenen meteen een ronde speelde,
+was daarna niet meer nieuw: de vraag kwam niet meer, "Past bij groep" bleef
+weg omdat er geen groep was, en Vandaag had alleen Nu doen.
+
+**Besluit.** Zolang een kind geen groep heeft en niet "Weet ik niet" zei, staat
+de vraag op Vandaag op de plek van "Past bij groep", ook als het al oefende. Na
+een keuze staat daar wat bij die groep past. "Weet ik niet" blijft een
+antwoord: de vraag komt dan niet terug, en de groep is te kiezen op Jij.
