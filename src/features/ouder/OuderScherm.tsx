@@ -1,5 +1,5 @@
-import { useEffect, useId, useState, type FormEvent } from 'react';
-import { CorrectIcon, SlotIcon, StarIcon, TodayIcon } from '@/components/Icon';
+import { useId, useState, type FormEvent } from 'react';
+import { CorrectIcon, SlotIcon, StarIcon } from '@/components/Icon';
 import { t, type TranslationKey } from '@/i18n';
 import { AccountBlok } from '@/features/account/AccountBlok';
 import { CodeVeld } from '@/features/premium/CodeVeld';
@@ -15,18 +15,10 @@ import {
   zetSessieMinuten,
   type OuderFout,
 } from '@/store/ouder';
-import {
-  GEEN_DOELEN,
-  leesWeekdoelen,
-  schrijfWeekdoelen,
-  type Weekdoelen,
-} from '@/store/weekdoelStore';
+import { useAccount } from '@/features/account/useAccount';
 import { Apparaten } from './Apparaten';
 import { Bewaren } from './Bewaren';
-import { DezeWeek } from './DezeWeek';
-import { GeheugencheckUitslag } from './GeheugencheckUitslag';
-import { HoeGaatHet } from './HoeGaatHet';
-import { Kinderen } from './Kinderen';
+import { JouwKinderen } from './JouwKinderen';
 import { Overname } from './Overname';
 import { Paginakop } from '@/features/shell/Paginakop';
 
@@ -63,70 +55,74 @@ import { Paginakop } from '@/features/shell/Paginakop';
  * zolang hij openstaat, is een pagina zonder slot.
  */
 export function OuderScherm({ naam }: { readonly naam: string }) {
-  // Wat `Kinderen` verandert, moet `HoeGaatHet` opnieuw laten lezen: allebei
-  // lezen ze dezelfde kinderen, en allebei houden ze hun eigen kopie. Een
-  // teller als sleutel is hier goedkoper dan een winkel met abonnees, want er
-  // zijn precies twee lezers en ze staan naast elkaar op één pagina.
-  const [versie, zetVersie] = useState(0);
-  // Een kind dat `Overname` op dit apparaat zet, hoort ook in `Kinderen` te
-  // staan (ADR-189). Een eigen teller, zodat `Kinderen` alleen opnieuw begint
-  // als er van buitenaf iets veranderde, en niet bij zijn eigen wijzigingen.
+  // Een kind dat `Overname` op dit apparaat zet, hoort ook in Jouw kinderen te
+  // staan (ADR-189): dan begint dat blok opnieuw.
   const [vanBuiten, zetVanBuiten] = useState(0);
+  // Zonder gezinsproject in de bouw is er geen account, en dan staat er ook
+  // geen blok en geen anker (ADR-172, ADR-262).
+  const { ingesteld: metAccount } = useAccount();
+
+  const ankers: readonly (readonly [string, TranslationKey])[] = [
+    ['kinderen', 'ouder.kinderen'],
+    ['premiumcode', 'ouder.premium'],
+    ...(metAccount ? [['account', 'account.titel'] as const] : []),
+    ['pincode', 'ouder.instellingen'],
+    ['wissen', 'wissen.titel'],
+  ];
 
   return (
     <div className="tk-page" onClickCapture={() => verleng()} onKeyDownCapture={() => verleng()}>
-      <div className="tk-page-main">
+      <div className="tk-page-main tk-ouder">
         <Paginakop kop={t('ouder.titel')} regel={t('ouder.intro')} />
 
-        <Kinderen
-          key={`kinderen-${vanBuiten}`}
-          onVeranderd={() => zetVersie((vorige) => vorige + 1)}
-        />
+        {/* Waar alles staat, en de weg terug naar het kind (ADR-262). */}
+        <nav className="tk-ouder-ankers" aria-label={t('ouder.opDezePagina')}>
+          <ul>
+            {ankers.map(([id, kop]) => (
+              <li key={id}>
+                <a className="tk-chip" href={`#${id}`}>
+                  {t(kop)}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <Terug naam={naam} />
+        </nav>
 
-        {/* Waar de poort, de volwassenencheck en de wisselaar het allemaal over
-            hadden (ADR-177). Boven premium, want dit is waar een ouder voor
-            komt; wat het kost is de vraag daarna. */}
-        <HoeGaatHet key={`hoe-${versie}`} />
+        {/* Links waar een ouder voor komt, rechts wat hij regelt (ADR-262).
+            Op een tablet en een telefoon onder elkaar, in dezelfde volgorde. */}
+        <div className="tk-ouder-raster">
+          <div className="tk-ouder-kolom">
+            <JouwKinderen key={`kinderen-${vanBuiten}`} />
+          </div>
 
-        {/* Wat het dagplan deze week deed (ADR-227). Ook zonder code: het plan
-            rekent stil mee, en dit is waar een ouder ziet wat het zou doen. */}
-        <DezeWeek key={`week-${versie}`} />
+          <div className="tk-ouder-kolom">
+            <Premium />
 
-        {/* Wat de geheugencheck liet zien, één keer per kind (ADR-228). */}
-        <GeheugencheckUitslag key={`check-${versie}`} />
+            {metAccount ? (
+              <div id="account" className="tk-ouderblok">
+                {/* Het account van het gezin, en direct eronder het meenemen
+                    van de kinderen erin (ADR-187). */}
+                <AccountBlok />
+                <Overname onKinderenVeranderd={() => zetVanBuiten((vorige) => vorige + 1)} />
+              </div>
+            ) : null}
 
-        {/* Direct onder hoe het gaat: of wat de kinderen oefenen over een week
-            nog staat, is de voorwaarde voor al het andere op deze pagina
-            (ADR-186). Het blok tekent niets als de browser er niets over zegt. */}
-        <Bewaren />
+            {/* Of de browser de voortgang vasthoudt (ADR-186). Tekent niets als
+                de browser er niets over zegt. */}
+            <Bewaren />
 
-        <Premium />
-        {/* Welke apparaten de code gebruiken (ADR-226). Alleen met een code op
-            dit apparaat; de lijst komt pas na een druk op de knop. */}
-        <Apparaten />
-        <Gezinsinstellingen />
+            <Gezinsinstellingen />
+          </div>
+        </div>
 
-        {/* Het account van het gezin. Zonder gezinsproject in de bouw tekent het
-            niets (ADR-172), en dat blijft zo: dit is de plek waar het komt te
-            staan zodra er een account ís, en niet een kop met een belofte. */}
-        <AccountBlok />
-
-        {/* Direct onder het account: wie ingelogd is, kan hier zijn kinderen
-            meenemen (ADR-187). Zonder sessie tekent het niets. */}
-        <Overname
-          onKinderenVeranderd={() => {
-            zetVanBuiten((vorige) => vorige + 1);
-            zetVersie((vorige) => vorige + 1);
-          }}
-        />
-
-        {/* Als laatste, en achter de pincode: het enige op dit apparaat dat niet
-            terug te draaien is (ADR-166). Het stond op Jij, waar een kind erbij
-            kon. Het is ook de enige uitweg voor wie zijn pincode kwijt is, en
-            het geeft dus niets: wie hem neemt, houdt een leeg apparaat over. */}
-        <Wissen />
-
-        <Terug naam={naam} />
+        {/* Als laatste, over de hele breedte en met een rode rand: het enige op
+            dit apparaat dat niet terug te draaien is (ADR-166, ADR-262). Ook de
+            enige uitweg voor wie zijn pincode kwijt is, en het geeft dus niets:
+            wie hem neemt, houdt een leeg apparaat over. */}
+        <div id="wissen">
+          <Wissen />
+        </div>
       </div>
     </div>
   );
@@ -143,7 +139,7 @@ function Terug({ naam }: { readonly naam: string }) {
   return (
     <button
       type="button"
-      className="tk-button tk-button-secondary self-start"
+      className="tk-button tk-button-secondary tk-ouder-terug"
       onClick={() => {
         sluit();
         window.location.href = '/';
@@ -174,7 +170,7 @@ function Premium() {
   });
 
   return (
-    <section className="flex flex-col gap-3" aria-label={t('ouder.premium')}>
+    <section id="premiumcode" className="tk-ouderblok" aria-label={t('ouder.premium')}>
       <h2 className="tk-sectie">{t('ouder.premium')}</h2>
 
       {actief && stand ? (
@@ -229,65 +225,30 @@ function Premium() {
           </div>
         </div>
       )}
+      {/* Welke apparaten de code gebruiken (ADR-226): plekken op de code, dus
+          hier. Alleen met een code op dit apparaat. */}
+      <Apparaten />
     </section>
   );
 }
 
 /**
- * Wat de app wel of niet doet, voor het hele gezin.
- *
- * Eén schakelaar vandaag: of de app doelen voor de week voorstelt. Die stond
- * tussen de instellingen op Jij (ADR-171), en hij hoort hier: het is de
- * schakelaar die bepaalt of de app het kind ergens toe aanzet, en dat is een
- * besluit van de ouder en niet van wie aangezet wordt.
+ * Pincode en instellingen (ADR-232, ADR-262): wat de deur van deze pagina
+ * regelt. Een nieuwe pincode, en hoe lang de pagina openblijft. De schakelaar
+ * voor de weekdoelen stond hier en staat nu bij Jouw kinderen, want hij gaat
+ * over wat de app de kinderen vraagt.
  *
  * Geluid, voorlezen en minder beweging blijven met opzet op Jij. Die gaan over
  * de kamer en over het kind dat de iPad vasthoudt; ze achter een pincode zetten
  * zou een kind dat het geluid uit wil doen naar zijn ouder sturen.
  */
 function Gezinsinstellingen() {
-  const [doelen, setDoelen] = useState<Weekdoelen | null>(null);
-
-  useEffect(() => {
-    void leesWeekdoelen().then(setDoelen);
-  }, []);
-
-  const uit = doelen?.uit ?? false;
-
   return (
-    <section
-      className="flex flex-col gap-3"
-      aria-label={t('ouder.instellingen')}
-      aria-busy={doelen === null}
-    >
+    <section id="pincode" className="tk-ouderblok" aria-label={t('ouder.instellingen')}>
       <h2 className="tk-sectie">{t('ouder.instellingen')}</h2>
       <ul className="tk-lijst">
-        <li>
-          <button
-            type="button"
-            className="tk-lijstrij"
-            aria-pressed={!uit}
-            onClick={() => {
-              const huidig = doelen ?? GEEN_DOELEN;
-              const volgende = { ...huidig, uit: !huidig.uit };
-              void schrijfWeekdoelen(volgende).then(() => setDoelen(volgende));
-            }}
-          >
-            <span className="tk-plaat tk-plaat-neutraal">
-              <TodayIcon size={24} />
-            </span>
-            <span className="tk-lijstrij-tekst">
-              <span className="tk-lijstrij-titel">{t('you.doelen')}</span>
-              <span className="tk-lijstrij-regel">{t('you.doelenWhy')}</span>
-            </span>
-            <span className="tk-lijstrij-pijl">
-              <span className="tk-schakelaar" aria-hidden="true" />
-              <span className="tk-label">{uit ? t('you.off') : t('you.on')}</span>
-            </span>
-          </button>
-        </li>
-        <SessieDuur />
         <PinWijzigen />
+        <SessieDuur />
       </ul>
       <p className="tk-hulp">{t('ouder.instellingenUitleg')}</p>
     </section>

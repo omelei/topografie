@@ -140,7 +140,7 @@ test('the memory check comes once, changes no box, and the parent reads the resu
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
 
-  const check = page.getByRole('region', { name: 'Geheugencheck' });
+  const check = page.getByRole('region', { name: 'Jouw kinderen' });
   await expect(check).toContainText('7');
   await expect(check).toContainText('goed, van de 10 vragen');
   await expect(check).toContainText('vragen uit Tafel van 1 die Lotte 3 tot 8 weken geleden');
@@ -148,7 +148,7 @@ test('the memory check comes once, changes no box, and the parent reads the resu
   // De knop staat één keer op de pagina, in het blok Premium (ADR-236).
   await expect(check.getByRole('button', { name: 'Wat zit er in premium?' })).toHaveCount(0);
   await expect(
-    page.getByRole('region', { name: 'Premium', exact: true }).getByRole('button', {
+    page.getByRole('region', { name: 'Premiumcode', exact: true }).getByRole('button', {
       name: 'Wat zit er in premium?',
     }),
   ).toBeVisible();

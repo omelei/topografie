@@ -59,10 +59,10 @@ export function ReeksKnop({ kindId }: { readonly kindId: string }) {
   const aantal = stand?.reeks.dagen ?? 0;
 
   return (
-    <div ref={doos} className="tk-reeks">
+    <div ref={doos} className="tk-dagteller">
       <button
         type="button"
-        className="tk-reeks-knop"
+        className="tk-dagteller-knop"
         aria-label={t('reeks.knop', { aantal })}
         aria-expanded={open}
         aria-controls={kaartId}
@@ -70,24 +70,24 @@ export function ReeksKnop({ kindId }: { readonly kindId: string }) {
       >
         <StreakIcon size={24} />
       </button>
-      <div id={kaartId} className="tk-reeks-kaart" hidden={!open}>
-        <div className="tk-reeks-kop">
-          <span className="tk-reeks-getal" aria-hidden="true">
+      <div id={kaartId} className="tk-dagteller-kaart" hidden={!open}>
+        <div className="tk-dagteller-kop">
+          <span className="tk-dagteller-getal" aria-hidden="true">
             {aantal}
           </span>
-          <div className="tk-reeks-tekst">
-            <p className="tk-reeks-titel">
+          <div className="tk-dagteller-tekst">
+            <p className="tk-dagteller-titel">
               {aantal === 1 ? t('reeks.titelEen') : t('reeks.titel', { aantal })}
             </p>
-            <p className="tk-reeks-zin">{stand === null ? null : zinVoor(stand.reeks)}</p>
+            <p className="tk-dagteller-zin">{stand === null ? null : zinVoor(stand.reeks)}</p>
           </div>
         </div>
         {stand === null ? null : (
-          <ol className="tk-reeks-week" aria-label={t('reeks.week')}>
+          <ol className="tk-dagteller-week" aria-label={t('reeks.week')}>
             {stand.week.map((dag) => (
               <li
                 key={dag.dag}
-                className="tk-reeks-dag"
+                className="tk-dagteller-dag"
                 data-geoefend={dag.geoefend ? '' : undefined}
                 data-vandaag={dag.vandaag ? '' : undefined}
                 aria-label={t(dag.geoefend ? 'reeks.dagGeoefend' : 'reeks.dagNiet', {

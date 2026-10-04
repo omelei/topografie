@@ -14890,3 +14890,51 @@ weg omdat er geen groep was, en Vandaag had alleen Nu doen.
 de vraag op Vandaag op de plek van "Past bij groep", ook als het al oefende. Na
 een keuze staat daar wat bij die groep past. "Weet ik niet" blijft een
 antwoord: de vraag komt dan niet terug, en de groep is te kiezen op Jij.
+
+## ADR-262 — De ouderpagina in vijf blokken: Jouw kinderen, Premiumcode, Account, Pincode en instellingen, Alles wissen
+
+**Status:** accepted. **Date:** 2026-10-04. Op verzoek van de eigenaar: "alles
+staat door elkaar en niet overzichtelijk; in ieder geval Jouw kinderen,
+Premium code, Account, pincode en alles wissen". De indeling, de kaart per kind
+en de strengheid van het wissen zijn met de eigenaar gekozen; wat onder welk
+blok valt en het Account-blok liet hij aan Claude. Wijzigt de volgorde van
+ADR-173 en ADR-177, en het wissen van ADR-166.
+
+**Aanleiding.** Dertien blokken onder elkaar, waarvan vier elk alle kinderen
+langsgingen (de namen, hoe het gaat, deze week, de geheugencheck), en inzicht
+en beheer door elkaar.
+
+**Besluit.**
+
+- **Kop, ankers en de weg terug.** Onder de paginakop een rij ankers naar de
+  blokken, en "Terug naar {kind}" ernaast in plaats van onderaan.
+- **Twee kolommen vanaf 1200**: links Jouw kinderen (waar een ouder voor
+  komt), rechts Premiumcode, Account en Pincode en instellingen (wat hij
+  regelt). Alles wissen staat daaronder over de hele breedte. Op een tablet en
+  een telefoon alles onder elkaar, in dezelfde volgorde.
+- **Jouw kinderen: één kaart per kind, onder elkaar** (keuze van de eigenaar).
+  Avatar, naam en groep, met "Wijzig" voor naam, groep en weghalen. Daaronder
+  wat het kind wil (in zon, met een link naar de premiumcode), hoe het gaat
+  (met premium), deze week en de geheugencheck. Kind toevoegen is een
+  gestippelde kaart. Zonder code het voorbeeld en het slot eronder, één keer.
+  De schakelaar voor de weekdoelen staat hier: hij gaat over wat de app de
+  kinderen vraagt.
+- **Premiumcode**: de stand, de code, afmelden of het codeveld, en de
+  apparaten. De apparaten zijn plekken op de code.
+- **Account**: inloggen en het meenemen van de kinderen. **Zonder
+  gezinsproject in de bouw staat het blok er niet, en zijn anker ook niet.**
+  Afgewogen: een regel "met een account bewaar je de voortgang ook buiten dit
+  apparaat" vertelt een ouder wat er komt, maar is een kop zonder iets om te
+  doen. Dat is een belofte zonder knop, en ADR-172 koos daarom al voor niets.
+  Zodra het account aan staat, staat het blok er vanzelf.
+- **Pincode en instellingen**: de pincode wijzigen en hoe lang de pagina
+  openblijft. "Bewaren op dit apparaat" (ADR-186) staat er direct boven, als
+  het iets te zeggen heeft.
+- **Alles wissen**: een rode rand op een lichtrode grond, meteen wat er
+  weggaat, en de knop werkt pas als er WISSEN getypt is. De twee stappen met
+  "Laat maar staan" zijn weg: niets doen is de uitweg.
+
+**Ook.** De knop met de dagen achter elkaar (ADR-259) gebruikte de klassen
+`tk-reeks-getal` en `tk-reeks-zin`, die al bestonden voor de grote getallen
+hier en in het overzicht van Jij; die tekenden sindsdien als een zonnetje.
+De knop heet nu `tk-dagteller`.

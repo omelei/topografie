@@ -1884,10 +1884,17 @@ export const nl = {
   // account dat in F3 komt, en twee woorden voor twee verschillende sloten is
   // precies wat er nodig is zodra ze allebei bestaan.
   'ouder.titel': 'Ouderpagina',
-  'ouder.intro': 'Hier vind je je ouderinstellingen.',
+  'ouder.intro': 'Hoe het met je kinderen gaat, en wat je regelt.',
+  // De ankers bovenaan (ADR-262).
+  'ouder.opDezePagina': 'Op deze pagina',
   'ouder.terugNaarKind': 'Terug naar {naam}',
 
-  'ouder.kinderen': 'Je kinderen',
+  'ouder.kinderen': 'Jouw kinderen',
+  // Per kind achter een knop: naam, groep en weghalen (ADR-262).
+  'ouder.wijzig': 'Wijzig',
+  'ouder.wijzigKlaar': 'Klaar',
+  'ouder.kindWijzig': '{naam} wijzigen',
+  'ouder.naarPremiumcode': 'Naar de premiumcode',
   'ouder.kindNaam': 'Naam',
   'ouder.kindToevoegen': 'Toevoegen',
   'ouder.nogEenKind': 'Nog een kind erbij',
@@ -1933,7 +1940,7 @@ export const nl = {
   'ouder.kindSchatting':
     'Zonder oefenen is daar over drie weken naar schatting nog {procent}% van over.',
 
-  'ouder.premium': 'Premium',
+  'ouder.premium': 'Premiumcode',
   'ouder.premiumUit': 'Premium staat uit. Heb je een code gekocht? Vul hem dan hier in.',
   // Instellingen van de ouder (ADR-232).
   'ouder.sessie': 'De ouderpagina sluit na',
@@ -2010,7 +2017,7 @@ export const nl = {
   'apparaat.linux': 'Linux-computer',
   'apparaat.onbekend': 'Apparaat',
 
-  'ouder.instellingen': 'Instellingen',
+  'ouder.instellingen': 'Pincode en instellingen',
   'ouder.instellingenUitleg':
     'Geluid, voorlezen en minder beweging staan bij het kind zelf, op Jij.',
 
@@ -2485,7 +2492,7 @@ export const nl = {
   // stappen, en de tweede stap vertelt wat er weggaat in plaats van "weet je
   // het zeker?" te vragen — die vraag leert iemand alleen om twee keer te
   // drukken.
-  'wissen.titel': 'Alles van dit apparaat halen',
+  'wissen.titel': 'Alles wissen',
   'wissen.uitleg':
     'Wat je kinderen hier oefenen, staat op dit apparaat en nergens anders. Hier haal je het er weer af.',
   'wissen.knop': 'Alles wissen',
@@ -2495,7 +2502,8 @@ export const nl = {
   'wissen.watCode':
     'De premiumcode. Die kun je daarna opnieuw invullen. Dit apparaat telt dan niet meer mee bij de drie apparaten van de code.',
   'wissen.onomkeerbaar': 'Je kunt dit niet terugdraaien.',
-  'wissen.doe': 'Ja, haal alles weg',
+  'wissen.typLabel': 'Typ {woord} om te bevestigen',
+  'wissen.typWoord': 'WISSEN',
   'wissen.laatMaar': 'Laat maar staan',
   'wissen.bezig': 'Bezig met wissen…',
 

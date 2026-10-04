@@ -57,7 +57,7 @@ export function Apparaten() {
 
   return (
     <section className="flex flex-col gap-3" aria-label={t('ouder.apparaten')}>
-      <h2 className="tk-sectie">{t('ouder.apparaten')}</h2>
+      <h3 className="tk-sectie">{t('ouder.apparaten')}</h3>
       <div className="tk-card flex flex-col gap-3" aria-busy={bezig}>
         <p className="text-lopend">
           {t(stand.plek === true ? 'ouder.apparatenDitMet' : 'ouder.apparatenDitZonder')}

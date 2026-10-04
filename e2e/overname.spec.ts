@@ -290,7 +290,7 @@ test('een kind uit het account halen laat het op dit apparaat staan', async ({ p
   await expect(blok).toContainText('Noor oefent op dit apparaat');
   expect(gezin.beheer).toContainEqual({ actie: 'verwijderen', kindId: 'server-noor' });
   // En het kind zelf is er nog.
-  await expect(page.getByRole('region', { name: 'Je kinderen', exact: true })).toContainText(
+  await expect(page.getByRole('region', { name: 'Jouw kinderen', exact: true })).toContainText(
     'Noor',
   );
 });
@@ -418,7 +418,7 @@ test('een kind uit het account komt op een tweede apparaat, met wat het daar dee
 
   await expect(blok).toContainText('Noor');
   await expect(noor).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Je kinderen', exact: true })).toContainText(
+  await expect(page.getByRole('region', { name: 'Jouw kinderen', exact: true })).toContainText(
     'Noor',
   );
 

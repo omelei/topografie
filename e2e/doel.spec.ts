@@ -124,10 +124,11 @@ test('doelen zijn uit te zetten, en komen dan niet terug op Jij', async ({ page 
   await page.reload();
   await expect(blokVan(page)).toHaveCount(0);
 
-  // Bij de ouder staat de weg terug, als schakelaar bij de instellingen.
+  // Bij de ouder staat de weg terug, als schakelaar bij Jouw kinderen
+  // (ADR-262).
   await naarOuder(page);
   const schakelaar = page
-    .getByRole('region', { name: 'Instellingen' })
+    .getByRole('region', { name: 'Jouw kinderen' })
     .getByRole('button', { name: /Doelen voor deze week/ });
   await expect(schakelaar).toHaveAttribute('aria-pressed', 'false');
   await schakelaar.click();
