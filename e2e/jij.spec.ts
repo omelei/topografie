@@ -154,9 +154,7 @@ test('de navigatie gaat naar Vandaag, Oefenen, Jij, Premium en Ouders', async ({
   }
 
   // Premium staat in de kop, op elke maat, als de ene knop die opvalt.
-  const premium = page
-    .getByRole('banner')
-    .getByRole('button', { name: 'Premium', exact: true });
+  const premium = page.getByRole('banner').getByRole('button', { name: 'Premium', exact: true });
   await premium.click();
   await expect(page).toHaveURL(/\/premium$/);
   await expect(premium).toHaveAttribute('aria-current', 'page');
