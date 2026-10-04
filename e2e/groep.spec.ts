@@ -204,6 +204,38 @@ test('de groep staat in de kop, en na een ronde komt "Past bij groep"', async ({
 });
 
 /**
+ * Een kind dat meteen via Oefenen begint, zonder groep (ADR-261). Na die ronde
+ * is het niet meer nieuw; de vraag naar de groep stond alleen voor een nieuw
+ * kind, en dan was Vandaag leeg op Nu doen na. Nu staat de vraag er zolang er
+ * geen groep is, en daarna wat bij de groep past.
+ */
+test('wie zonder groep meteen oefent, krijgt de vraag op Vandaag alsnog', async ({ page }) => {
+  await signIn(page, 'Isa');
+
+  await page.goto('/topografie');
+  await (
+    await stap(page, /Kies een onderwerp/)
+  )
+    .getByRole('button', { name: /^Provincies/ })
+    .click();
+  await (await stap(page, /Hoe wil je/)).getByRole('button', { name: /Aanwijzen/ }).click();
+  await page.locator('.tk-choose-start .tk-button-go').click();
+  await page.getByRole('button', { name: 'Limburg' }).click();
+  await expect(page.getByRole('button', { name: 'Volgende vraag' })).toBeVisible();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('heading', { name: 'Ronde klaar' })).toBeVisible();
+
+  await page.goto('/');
+  const vraag = page.getByRole('region', { name: 'In welke groep zit je?' });
+  await expect(vraag).toBeVisible();
+  await vraag.getByRole('button', { name: 'Groep 6', exact: true }).click();
+
+  await expect(vraag).toHaveCount(0);
+  const passend = page.getByRole('group', { name: 'Past bij groep 6' });
+  await expect(passend.getByRole('button', { name: /Keersommen tot 100/ })).toBeVisible();
+});
+
+/**
  * "Ik ben een ouder" (ADR-161, ADR-198, ADR-229). Het stond op het naamscherm
  * en liet de ouder de naam en de groep van het kind typen. Dat scherm is weg:
  * nu staat de knop op Vandaag, zolang er geen naam is, en opent hij de pagina

@@ -404,9 +404,17 @@ export function HomeScreen({
             />
           ),
         ),
+        // Zonder groep de vraag naar de groep, ook voor wie al oefende
+        // (ADR-261): een kind dat meteen via Oefenen begon, was na die ronde
+        // niet meer nieuw, kreeg de vraag nooit meer, en had dan geen lijst
+        // die bij zijn groep past. Wie "Weet ik niet" zei, krijgt hem niet terug.
         blok(
           'passend',
-          <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />,
+          groep === undefined && !weetNiet ? (
+            <GroepVraag gekozen={null} onKies={kiesGroep} />
+          ) : (
+            <PastBijGroep gespeeld={gespeeld} groep={groep} premium={actief} onBegin={onBegin} />
+          ),
         ),
         blok('gast', naamloos ? <VoorWieNieuwIs onVoorOuders={onVoorOuders} /> : null),
       ]}

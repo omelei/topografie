@@ -1586,6 +1586,109 @@
     flex-wrap: wrap;
     gap: 12px;
   }
+  /* De kop van Ronde klaar (ADR-260): het koraal vlak van elke pagina, met
+   * het vak, de kop, het onderwerp en de spelvorm, Denker trots ernaast, en wat
+   * er gebeurde als witte kaart erin. Het getal groot in de diepe kleur van het
+   * vak, met een balk erachter in zijn heldere kleur. */
+  .tk-uitslag-kop .tk-modulebadge {
+    margin-bottom: 6px;
+    border-color: var(--kaart);
+    background: var(--kaart);
+  }
+  .tk-uitslag-kop[data-zonder-denker] .tk-welkom-tekst {
+    padding-right: 0;
+  }
+  .tk-uitslag-kaart {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    background: var(--kaart);
+    color: var(--inkt);
+  }
+  .tk-uitslag-score {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 4px;
+  }
+  .tk-uitslag-getal {
+    color: var(--module-tekst);
+    font-family: var(--font-kop);
+    font-size: 3.5rem; /* 56px */
+    line-height: 1;
+    font-weight: 800;
+  }
+  .tk-uitslag-van {
+    color: var(--tekst-secundair);
+    font-family: var(--font-kop);
+    font-size: 1.5rem; /* 24px */
+    font-weight: 700;
+  }
+  .tk-uitslag-balk {
+    align-self: center;
+    margin-left: 16px;
+  }
+  .tk-uitslag-balk .tk-progress-rail {
+    height: 12px;
+    background: var(--module-tint);
+  }
+  .tk-uitslag-balk .tk-progress-fill {
+    background: var(--module-vlak);
+  }
+  .tk-uitslag-kaart .tk-uitslag-regels {
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .tk-uitslag-kaart {
+      gap: 14px;
+      padding: 20px 22px;
+      border-radius: 24px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .tk-uitslag-kop .tk-uitslag-kaart {
+      max-width: 540px;
+    }
+    .tk-uitslag-getal {
+      font-size: 4rem; /* 64px */
+    }
+  }
+
+  /* Denker trots (ADR-260): sterren in zon om zijn hoofd, en confetti die er
+   * bij binnenkomst één keer afspringt. Zonder beweging staan de sterren stil
+   * en is er geen confetti. */
+  .tk-trots {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    line-height: 0;
+  }
+  .tk-trots > .tk-levend {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .tk-trots-ster {
+    position: absolute;
+    z-index: 1;
+    fill: var(--zon);
+    stroke: var(--zon-rand);
+    stroke-width: 1;
+    pointer-events: none;
+  }
+  .tk-trots-confetti {
+    display: none;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 2px;
+    pointer-events: none;
+  }
   /* What is still to practise, and the map beside it where there is one. */
   .tk-uitslag-duo {
     display: grid;
@@ -8511,6 +8614,20 @@
       animation: tk-denker-plop 0.3s var(--beweeg-veer) both;
     }
 
+    /* Trots (ADR-260): borst vooruit en kin omhoog, even vasthouden, en terug.
+     * Na de adem hierboven, zodat dit voor trots de beweging is. */
+    :root:not([data-beweging='rustig']) .tk-denker[data-uitdrukking='trots'] .lijf {
+      transform-origin: 50px 94px;
+      animation: tk-denker-trots 2.8s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+    }
+    :root:not([data-beweging='rustig']) .tk-trots-ster {
+      animation: tk-trots-fonkel 2.4s ease-in-out infinite both;
+    }
+    :root:not([data-beweging='rustig']) .tk-trots-confetti {
+      display: block;
+      animation: tk-trots-confetti 1.1s ease-out 1 both;
+    }
+
     /* Denker komt na het antwoord binnen met een plop (§05: pop, 200 ms). */
     :root:not([data-beweging='rustig']) .tk-ronde-denker {
       animation: tk-denker-plop 0.5s var(--beweeg-veer) both;
@@ -8697,6 +8814,62 @@
 @keyframes tk-denker-plop {
   from {
     transform: scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Denker trots (ADR-260): omhoog en breder met de kin omhoog, vasthouden,
+ * en met een kleine veer terug. */
+@keyframes tk-denker-trots {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(0);
+  }
+  18% {
+    transform: translateY(-6px) scale(1.07, 1.05) rotate(-4deg);
+  }
+  48% {
+    transform: translateY(-6px) scale(1.07, 1.05) rotate(-4deg);
+  }
+  62% {
+    transform: translateY(1px) scale(1.03, 0.97) rotate(0);
+  }
+  74% {
+    transform: translateY(0) scale(1, 1) rotate(0);
+  }
+}
+/* Een ster die fonkelt: aan, draaien, uit. */
+@keyframes tk-trots-fonkel {
+  0%,
+  100% {
+    transform: scale(0.2) rotate(0);
+    opacity: 0;
+  }
+  30%,
+  55% {
+    transform: scale(1) rotate(45deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(0.6) rotate(90deg);
+    opacity: 0;
+  }
+}
+/* Confetti die één keer van Denker afspringt, naar --tx en --ty. */
+@keyframes tk-trots-confetti {
+  0% {
+    top: 45%;
+    left: 50%;
+    transform: scale(0.3) rotate(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    top: var(--ty);
+    left: var(--tx);
+    transform: scale(1) rotate(200deg);
     opacity: 0;
   }
 }
