@@ -57,7 +57,7 @@ test('Jij draagt je instellingen, je diploma’s en al je cijfers, in die volgor
 
   // En wat naar de ouder is verhuisd, staat hier niet meer (ADR-173): wisselen
   // is de knop in de balk geworden, en het wissen zit achter de pincode.
-  for (const weg of ['Wie oefent er?', 'Alles van dit apparaat halen']) {
+  for (const weg of ['Wie oefent er?', 'Alles wissen']) {
     await expect(page.getByRole('region', { name: weg, exact: true })).toHaveCount(0);
   }
 
@@ -139,7 +139,7 @@ test('de oude adressen komen uit waar het nu staat', async ({ page }) => {
   await expect(
     page.getByRole('heading', { level: 1, name: 'Dit is de ouderpagina' }),
   ).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Je kinderen' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Jouw kinderen' })).toHaveCount(0);
 });
 
 test('de navigatie gaat naar Vandaag, Oefenen, Jij, Premium en Ouders', async ({ page }) => {
@@ -210,7 +210,7 @@ test('de doelen gaan uit op Jij en weer aan bij de ouder', async ({ page }) => {
 
   await naarOuder(page);
   const schakelaar = page
-    .getByRole('region', { name: 'Instellingen' })
+    .getByRole('region', { name: 'Jouw kinderen' })
     .getByRole('button', { name: /Doelen voor deze week/ });
   await expect(schakelaar).toHaveAttribute('aria-pressed', 'false');
   await schakelaar.click();
@@ -221,27 +221,23 @@ test('de doelen gaan uit op Jij en weer aan bij de ouder', async ({ page }) => {
 });
 
 /**
- * Alles van dit apparaat halen (ADR-166).
+ * Alles wissen (ADR-166, ADR-262).
  *
  * De belofte van dit product is dat de voortgang op het apparaat blijft. Deze
- * test legt vast wat die belofte waard maakt: dat je er ook bij kunt. In twee
- * stappen, met een uitweg, en daarna is het kind er echt niet meer — de app
- * opent weer op de vraag naar een naam.
+ * test legt vast wat die belofte waard maakt: dat je er ook bij kunt. Wat er
+ * weggaat staat er meteen, de knop werkt pas na het woord WISSEN, en daarna is
+ * het kind er echt niet meer — de app opent weer op de vraag naar een naam.
  */
-test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
+test('alles gaat van dit apparaat af, pas na het woord WISSEN', async ({ page }) => {
   await signIn(page, 'Loes');
   await naarOuder(page);
 
-  const blok = page.getByRole('region', { name: 'Alles van dit apparaat halen' });
-  await expect(blok).toBeVisible();
-
-  // Eén druk wist nog niets: er komt eerst te staan wat er weggaat.
-  await blok.getByRole('button', { name: 'Alles wissen' }).click();
+  const blok = page.getByRole('region', { name: 'Alles wissen' });
   await expect(blok).toContainText('Je kunt dit niet terugdraaien.');
-
-  // En de uitweg brengt je terug zonder dat er iets gebeurd is.
-  await blok.getByRole('button', { name: 'Laat maar staan' }).click();
-  await expect(blok.getByRole('button', { name: 'Alles wissen' })).toBeVisible();
+  const knop = blok.getByRole('button', { name: 'Alles wissen' });
+  await expect(knop).toBeDisabled();
+  await blok.getByLabel('Typ WISSEN om te bevestigen').fill('wis');
+  await expect(knop).toBeDisabled();
 
   await page.goto('/');
   await expect(page.getByRole('banner').getByRole('button', { name: 'Loes' })).toBeVisible();
@@ -250,8 +246,8 @@ test('alles gaat van dit apparaat af, in twee stappen', async ({ page }) => {
   // dus een adreswissel in hetzelfde tabblad (ADR-173): de deur hoeft niet nog
   // een keer open.
   await page.goto('/ouder');
-  await blok.getByRole('button', { name: 'Alles wissen' }).click();
-  await blok.getByRole('button', { name: 'Ja, haal alles weg' }).click();
+  await blok.getByLabel('Typ WISSEN om te bevestigen').fill('wissen');
+  await knop.click();
 
   // Terug bij het begin: geen kind meer, dus een nieuw kind zonder naam, zoals
   // bij het eerste bezoek (ADR-229).

@@ -416,9 +416,9 @@ test('the switcher and the parent page have no violations', async ({ page }) => 
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
-  await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw kinderen' })).toBeVisible();
   await page
-    .getByRole('region', { name: 'Je kinderen' })
+    .getByRole('region', { name: 'Jouw kinderen' })
     .getByRole('button', { name: /^Fenna/ })
     .click();
   await expect(page.getByRole('region', { name: 'Voortgang bewaren in je account' })).toContainText(

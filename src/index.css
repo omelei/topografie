@@ -6164,12 +6164,12 @@
    * de reeks, en een kaartje dat eronder openklapt. Open zon-tint met de
    * zonrand. Het getal in cacao op zon (10.55); de dagen van deze week in zon
    * als er geoefend is, anders leeg. */
-  .tk-reeks {
+  .tk-dagteller {
     position: relative;
     display: inline-flex;
     flex: none;
   }
-  .tk-reeks-knop {
+  .tk-dagteller-knop {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -6183,25 +6183,25 @@
     color: var(--inkt);
     cursor: pointer;
   }
-  .tk-reeks-knop:hover {
+  .tk-dagteller-knop:hover {
     background: var(--perzik);
   }
-  .tk-reeks-knop[aria-expanded='true'] {
+  .tk-dagteller-knop[aria-expanded='true'] {
     border-color: var(--zon-rand);
     box-shadow: 0 var(--onderkant-klein) 0 var(--zon-rand);
     background: var(--zon-tint);
   }
   @media (min-width: 1024px) {
-    .tk-reeks-knop {
+    .tk-dagteller-knop {
       width: 48px;
       height: 48px;
       box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
     }
-    .tk-reeks-knop[aria-expanded='true'] {
+    .tk-dagteller-knop[aria-expanded='true'] {
       box-shadow: 0 var(--onderkant) 0 var(--zon-rand);
     }
   }
-  .tk-reeks-kaart {
+  .tk-dagteller-kaart {
     position: absolute;
     top: calc(100% + 12px);
     right: -52px;
@@ -6218,15 +6218,15 @@
     background: var(--kaart);
     transform-origin: top right;
   }
-  .tk-reeks-kaart[hidden] {
+  .tk-dagteller-kaart[hidden] {
     display: none;
   }
-  .tk-reeks-kop {
+  .tk-dagteller-kop {
     display: flex;
     align-items: center;
     gap: 12px;
   }
-  .tk-reeks-getal {
+  .tk-dagteller-getal {
     display: inline-flex;
     flex: none;
     align-items: center;
@@ -6241,24 +6241,24 @@
     font-size: 1.625rem; /* 26px */
     font-weight: 800;
   }
-  .tk-reeks-tekst {
+  .tk-dagteller-tekst {
     display: flex;
     flex-direction: column;
     min-width: 0;
   }
-  .tk-reeks-titel {
+  .tk-dagteller-titel {
     color: var(--inkt);
     font-family: var(--font-kop);
     font-size: 1.3125rem; /* 21px */
     line-height: 1.5625rem; /* 25px */
     font-weight: 800;
   }
-  .tk-reeks-zin {
+  .tk-dagteller-zin {
     color: var(--tekst-secundair);
     font-size: var(--type-bijschrift);
     line-height: 1.25rem;
   }
-  .tk-reeks-week {
+  .tk-dagteller-week {
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 4px;
@@ -6266,7 +6266,7 @@
     padding: 0;
     list-style: none;
   }
-  .tk-reeks-dag {
+  .tk-dagteller-dag {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -6278,12 +6278,12 @@
     font-size: 0.8125rem; /* 13px */
     font-weight: 700;
   }
-  .tk-reeks-dag[data-geoefend] {
+  .tk-dagteller-dag[data-geoefend] {
     background: var(--zon);
     color: var(--inkt);
     font-weight: 800;
   }
-  .tk-reeks-dag[data-vandaag] {
+  .tk-dagteller-dag[data-vandaag] {
     outline: var(--stroke-active) solid var(--zon-rand);
     outline-offset: -2px;
   }
@@ -6526,6 +6526,178 @@
     margin: 10px 8px;
     border: 0;
     border-top: var(--stroke-active) solid var(--papier);
+  }
+
+  /* ---- De ouderpagina (ADR-262) ---------------------------------------------
+   * De kop, een rij ankers met de weg terug naar het kind, en dan twee kolommen
+   * vanaf 1200: links Jouw kinderen, rechts de premiumcode, het account en de
+   * pincode. Daaronder over de hele breedte het wissen, met een rode rand. Op
+   * een tablet en een telefoon alles onder elkaar, in dezelfde volgorde. */
+  .tk-ouder {
+    gap: 24px;
+  }
+  .tk-ouder-ankers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .tk-ouder-ankers ul {
+    display: flex;
+    flex: 1 1 100%;
+    gap: 8px;
+    min-width: 0;
+    margin: 0;
+    padding: 0 0 4px;
+    overflow-x: auto;
+    list-style: none;
+    scrollbar-width: none;
+  }
+  .tk-ouder-ankers a {
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .tk-ouder-terug {
+    flex: none;
+  }
+  @media (min-width: 768px) {
+    .tk-ouder-ankers ul {
+      flex: 1 1 0;
+    }
+  }
+  .tk-ouder-raster {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 32px;
+  }
+  .tk-ouder-kolom {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-width: 0;
+  }
+  @media (min-width: 1200px) {
+    .tk-ouder-raster {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 28px;
+    }
+  }
+  .tk-ouderblok {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-margin-top: 16px;
+  }
+  #wissen,
+  #account {
+    scroll-margin-top: 16px;
+  }
+
+  /* Een kaart per kind: avatar, naam en groep met Wijzig, en daaronder wat er
+   * over dit kind te zeggen valt, elk deel met een kleine kop en een lijn
+   * erboven. Wat het kind wil, staat in zon. Kind toevoegen is een gestippelde
+   * kaart. */
+  .tk-kindkaarten {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tk-kindkaart {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px 20px 20px;
+    border: var(--stroke-active) solid var(--rand-licht);
+    border-radius: 24px;
+    box-shadow: 0 var(--onderkant) 0 var(--rand-licht);
+    background: var(--kaart);
+  }
+  .tk-kindkaart-erbij {
+    align-items: flex-start;
+    border-style: dashed;
+    box-shadow: none;
+    background: transparent;
+  }
+  .tk-kindkaart-kop {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tk-kindkaart-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-pil);
+  }
+  .tk-kindkaart-wie {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .tk-kindkaart-naam {
+    color: var(--inkt);
+    font-family: var(--font-kop);
+    font-size: 1.5rem; /* 24px */
+    line-height: 1.75rem;
+    font-weight: 800;
+  }
+  .tk-kindkaart-wijzig {
+    flex: none;
+  }
+  .tk-kindkaart-bewerken {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    background: var(--papier);
+  }
+  .tk-kindkaart-wens {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 16px;
+    border: var(--stroke-hair) solid var(--zon-rand);
+    border-radius: 18px;
+    background: var(--zon-tint);
+  }
+  .tk-kindkaart-deel {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 14px;
+    border-top: var(--stroke-hair) solid var(--rand-licht);
+  }
+  .tk-kindkaart-deelkop {
+    color: var(--tekst-secundair);
+    font-size: var(--type-vlaklabel);
+    line-height: var(--type-vlaklabel-lh);
+    letter-spacing: var(--type-vlaklabel-ls);
+    font-weight: var(--type-vlaklabel-weight);
+    text-transform: uppercase;
+  }
+
+  /* Alles wissen (ADR-262): een rode rand en een lichtrode grond, zodat het
+   * er anders uitziet dan alles erboven. De knop blijft een gewone knop, en
+   * doet niets tot er WISSEN staat. */
+  .tk-wissen {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tk-wissen-kaart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    border: var(--stroke-active) solid var(--fout);
+    border-radius: 24px;
+    background: var(--fout-vlak);
+    color: var(--fout-tekst);
   }
 
   /* ---- Oefenen, op /oefenen (ADR-241) -----------------------------------
@@ -8610,7 +8782,7 @@
     :root:not([data-beweging='rustig']) .tk-levend[data-niveau='3'] .tk-levend-confetti {
       animation-duration: 0.9s;
     }
-    :root:not([data-beweging='rustig']) .tk-reeks-kaart {
+    :root:not([data-beweging='rustig']) .tk-dagteller-kaart {
       animation: tk-denker-plop 0.3s var(--beweeg-veer) both;
     }
 

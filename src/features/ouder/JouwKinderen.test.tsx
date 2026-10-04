@@ -3,10 +3,21 @@ import { emptyState, type ItemState, type Schedulable } from '@/game-core';
 import { listChildren } from '@/store/children';
 import { loadItemStates } from '@/store/progress';
 import { PREMIUM_SLEUTEL } from '@/store/premium';
-import { DezeWeek } from './DezeWeek';
+import { JouwKinderen } from './JouwKinderen';
 
-vi.mock('@/store/children', () => ({ listChildren: vi.fn() }));
-vi.mock('@/store/progress', () => ({ loadItemStates: vi.fn() }));
+vi.mock('@/store/children', async (origineel) => ({
+  ...(await origineel<typeof import('@/store/children')>()),
+  listChildren: vi.fn(),
+}));
+vi.mock('@/store/progress', () => ({
+  loadItemStates: vi.fn(),
+  loadPlayedRounds: vi.fn(async () => []),
+}));
+vi.mock('@/store/weekdoelStore', async (origineel) => ({
+  ...(await origineel<typeof import('@/store/weekdoelStore')>()),
+  leesWeekdoelen: vi.fn(async () => ({ doelen: [], uit: false })),
+}));
+vi.mock('@/store/geheugencheck', () => ({ leesGeheugencheck: vi.fn(async () => null) }));
 vi.mock('@/features/module/onderdelen', () => ({ startbareOnderdelen: () => [] }));
 vi.mock('@/features/home/useVandaag', () => ({
   planSets: () => [
@@ -39,10 +50,10 @@ function geoefend(aantal: number): Map<string, ItemState> {
   );
 }
 
-/** Deze week op de ouderpagina (ADR-227). */
+/** Deze week, in de kaart van het kind op de ouderpagina (ADR-227, ADR-262). */
 describe('deze week', () => {
   beforeEach(() => {
-    kinderen.mockResolvedValue([{ id: 'fem', naam: 'Fem' }] as never);
+    kinderen.mockResolvedValue([{ id: 'fem', naam: 'Fem', avatarConfig: {} }] as never);
   });
   afterEach(() => {
     window.localStorage.clear();
@@ -51,7 +62,7 @@ describe('deze week', () => {
 
   it('zegt zonder code wat het plan zou doen, zonder eigen koopknop (ADR-236)', async () => {
     standen.mockResolvedValue(geoefend(6));
-    render(<DezeWeek />);
+    render(<JouwKinderen />);
     expect(
       await screen.findByText('Fem oefende deze week 6 verschillende vragen.'),
     ).toBeInTheDocument();
@@ -65,12 +76,12 @@ describe('deze week', () => {
 
   it('staat er niet onder 5 onderdelen', async () => {
     standen.mockResolvedValue(geoefend(4));
-    let container: HTMLElement | null = null;
     await act(async () => {
-      container = render(<DezeWeek />).container;
+      render(<JouwKinderen />);
     });
     expect(standen).toHaveBeenCalled();
-    expect(container).toBeEmptyDOMElement();
+    expect(await screen.findByRole('heading', { name: 'Fem' })).toBeInTheDocument();
+    expect(screen.queryByText(/verschillende vragen/)).toBeNull();
   });
 
   it('is met een code een feit, zonder aanbod', async () => {
@@ -83,9 +94,9 @@ describe('deze week', () => {
       }),
     );
     standen.mockResolvedValue(geoefend(5));
-    render(<DezeWeek />);
+    render(<JouwKinderen />);
     expect(await screen.findByText(/Het plan zet ze .+ weer klaar/)).toBeInTheDocument();
-    expect(screen.queryByText(/Met premium/)).toBeNull();
+    expect(screen.queryByText(/Met premium zet het plan/)).toBeNull();
     expect(screen.queryByRole('button', { name: 'Wat zit er in premium?' })).toBeNull();
   });
 });

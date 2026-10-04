@@ -267,7 +267,7 @@ test('een vergeten pincode is te vervangen, zonder iets te wissen', async ({ pag
   await expect(page).toHaveURL(/\/ouder$/);
 
   // Het kind staat er nog: er is niets gewist om erbij te komen.
-  await expect(page.getByRole('region', { name: 'Je kinderen' })).toContainText('Roos');
+  await expect(page.getByRole('region', { name: 'Jouw kinderen' })).toContainText('Roos');
 
   // En de oude code werkt niet meer.
   await page.getByRole('button', { name: /Terug naar Roos/ }).click();
@@ -292,7 +292,7 @@ test('wie zonder pincode op /ouder komt, krijgt de deur en niet de pagina', asyn
 
   // Niets van wat erachter zit is te zien: geen codeveld, geen wissen.
   await expect(page.getByLabel('Typ de code')).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Alles van dit apparaat halen' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Alles wissen' })).toHaveCount(0);
 
   // En het adres blijft staan: het wordt niet weggeschreven naar een andere
   // pagina, want dan zou de terugknop een stap overslaan.
@@ -305,22 +305,17 @@ test('de ouderpagina draagt de kinderen, premium, de instellingen en het wissen'
   await signIn(page, 'Iris');
   await maakOuder(page);
 
-  for (const blok of [
-    'Je kinderen',
-    'Hoe gaat het?',
-    'Premium',
-    'Instellingen',
-    'Alles van dit apparaat halen',
-  ]) {
+  for (const blok of ['Jouw kinderen', 'Premiumcode', 'Pincode en instellingen', 'Alles wissen']) {
     await expect(page.getByRole('region', { name: blok, exact: true })).toBeVisible();
   }
 
   // Het kind staat erin, met zijn groep, en de naam is hier te veranderen —
   // ook die van een kind dat nu niet aan de beurt is.
-  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
-  const rij = kinderen.getByRole('button', { name: /^Iris/ });
-  await expect(rij).toContainText('geen groep gekozen');
-  await rij.click();
+  // Eén kaart per kind (ADR-262); naam en groep staan achter Wijzig.
+  const kinderen = page.getByRole('region', { name: 'Jouw kinderen' });
+  await expect(kinderen.getByRole('heading', { name: 'Iris' })).toBeVisible();
+  await expect(kinderen).toContainText('geen groep gekozen');
+  await kinderen.getByRole('button', { name: 'Iris wijzigen' }).click();
   await expect(kinderen.getByRole('button', { name: 'Groep 5' })).toBeVisible();
 });
 
@@ -352,9 +347,9 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
   // zit in de balk.
   await page.goto('/');
   await maakOuder(page);
-  const blok = page.getByRole('region', { name: 'Hoe gaat het?' });
+  const blok = page.getByRole('region', { name: 'Jouw kinderen' });
 
-  // Per kind een eigen kaart met zijn naam erboven: twee kinderen optellen
+  // Per kind een eigen kaart met zijn naam erboven (ADR-262): twee kinderen optellen
   // geeft een getal dat over niemand gaat.
   await expect(blok.getByRole('heading', { name: 'Fenna' })).toBeVisible();
   // Over het kind in de derde persoon: de ouder leest dit.
@@ -367,7 +362,7 @@ test('hoe het met je kinderen gaat, staat er per kind en niet opgeteld', async (
   await expect(blok).toContainText(/naar schatting nog \d+% van over\./);
 
   // Een tweede kind komt er los bij te staan, en niet erbij opgeteld.
-  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  const kinderen = page.getByRole('region', { name: 'Jouw kinderen' });
   await kinderen.getByRole('button', { name: 'Nog een kind erbij' }).click();
   await kinderen.getByLabel('Naam').fill('Joep');
   await kinderen.getByRole('button', { name: 'Toevoegen' }).click();
@@ -382,7 +377,7 @@ test('de sessie van de ouder overleeft een adreswissel in hetzelfde tabblad', as
 
   await page.goto('/jij');
   await page.goto('/ouder');
-  await expect(page.getByRole('region', { name: 'Je kinderen' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Jouw kinderen' })).toBeVisible();
 });
 
 /**
@@ -449,7 +444,7 @@ test('een kind gaat van het apparaat, en dan kan er weer een bij', async ({ page
   }
   await maakOuder(page);
 
-  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  const kinderen = page.getByRole('region', { name: 'Jouw kinderen' });
   await expect(kinderen).toContainText('Op dit apparaat staan al 3 kinderen.');
   await kinderen.getByRole('button', { name: /^Mama/ }).click();
   await kinderen.getByRole('button', { name: 'Haal Mama van dit apparaat' }).click();
@@ -464,7 +459,7 @@ test('het laatste kind kan niet weg', async ({ page }) => {
   await signIn(page, 'Noor');
   await maakOuder(page);
 
-  const kinderen = page.getByRole('region', { name: 'Je kinderen' });
+  const kinderen = page.getByRole('region', { name: 'Jouw kinderen' });
   await kinderen.getByRole('button', { name: /^Noor/ }).click();
   await expect(kinderen.getByLabel('Naam')).toBeVisible();
   await expect(kinderen.getByRole('button', { name: /van dit apparaat/ })).toHaveCount(0);
@@ -477,7 +472,7 @@ test('het laatste kind kan niet weg', async ({ page }) => {
 test('de ouder kiest hoe lang de pagina openblijft en wijzigt de pincode', async ({ page }) => {
   await signIn(page, 'Lot');
   await maakOuder(page, '4821');
-  await expect(page.getByText('Hier vind je je ouderinstellingen.')).toBeVisible();
+  await expect(page.getByText('Hoe het met je kinderen gaat, en wat je regelt.')).toBeVisible();
 
   const duur = page.getByRole('group', { name: 'De ouderpagina sluit na' });
   await expect(duur.getByRole('button', { name: '5 minuten', exact: true })).toHaveAttribute(

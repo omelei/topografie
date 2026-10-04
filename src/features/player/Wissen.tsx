@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { ShieldIcon } from '@/components/Icon';
 import { t } from '@/i18n';
 import { wisAlles } from '@/store/wissen';
@@ -15,18 +15,18 @@ import { wisAlles } from '@/store/wissen';
  * **Onderaan de pagina.** Dit is het laatste wat iemand hier komt doen, en het
  * is het enige op deze pagina dat niet terug te draaien is.
  *
- * **In twee stappen, en de tweede is geen "weet je het zeker?".** Die vraag
- * leert iemand alleen om twee keer te drukken. De tweede stap vertelt wat er
- * weggaat en wat dat betekent — de voortgang van elk kind, en de code moet
- * opnieuw ingevuld — en de knop erop zegt wat hij doet in plaats van "ja".
- *
- * **En de uitweg is de zwaarste knop.** Wie hier per ongeluk belandt, hoort met
- * één druk terug te kunnen, en de knop die je zoekt hoort de opvallendste te
- * zijn.
+ * **Wat weggaat staat er meteen, en de knop werkt pas na een woord**
+ * (ADR-262). Het waren twee stappen met "Laat maar staan" als uitweg. Nu staat
+ * in een blok met een rode rand wat er weggaat — de voortgang van elk kind, en
+ * de code moet opnieuw ingevuld — en doet de knop niets tot de ouder WISSEN
+ * typt. Een vraag die je wegklikt, leert je klikken; een woord typ je niet per
+ * ongeluk. Er hoeft dus ook geen uitweg te zijn: niets doen is de uitweg.
  */
 export function Wissen() {
-  const [vraagt, setVraagt] = useState(false);
+  const [getypt, setGetypt] = useState('');
   const [bezig, setBezig] = useState(false);
+  const veld = useId();
+  const klopt = getypt.trim().toUpperCase() === t('wissen.typWoord');
 
   async function wis() {
     setBezig(true);
@@ -39,59 +39,56 @@ export function Wissen() {
   }
 
   return (
-    <section className="flex flex-col gap-3" aria-labelledby="wissen-kop">
+    <section className="tk-wissen" aria-labelledby="wissen-kop">
       <h2 id="wissen-kop" className="tk-sectie">
         {t('wissen.titel')}
       </h2>
-
-      {vraagt ? (
-        <div className="tk-card flex flex-col gap-3">
-          <p className="text-lopend">{t('wissen.zeker')}</p>
-          <ul className="tk-regelkaart-lijst">
-            <li className="text-lopend">{t('wissen.watVoortgang')}</li>
-            <li className="text-lopend">{t('wissen.watCode')}</li>
-          </ul>
-          <p className="text-lopend text-tekst-secundair">{t('wissen.onomkeerbaar')}</p>
-          {/* Het zwaarst is de knop die níéts doet (Button.tsx: drie gewichten
-              en geen vierde). De primaire knop is de weg vooruit, en vooruit is
-              hier "laat staan" — de andere is een echt alternatief dat je
-              bewust kiest, en dat is precies wat secundair betekent. Een
-              vierde, rode knopsoort zou een kleur aan de huisstijl toevoegen
-              voor één scherm. */}
-          <div className="flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="tk-button"
-              disabled={bezig}
-              onClick={() => setVraagt(false)}
-            >
-              {t('wissen.laatMaar')}
-            </button>
-            <button
-              type="button"
-              className="tk-button tk-button-secondary"
-              disabled={bezig}
-              onClick={() => void wis()}
-            >
-              {bezig ? t('wissen.bezig') : t('wissen.doe')}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="tk-card tk-kaartrij">
+      {/* Eerst wat er weggaat, dan het woord, dan de knop (ADR-262). De knop
+          doet niets tot het woord er staat: wie hier per ongeluk drukt, typt
+          niet per ongeluk WISSEN. */}
+      <div className="tk-wissen-kaart">
+        <p className="flex items-start gap-3 text-lopend">
           <span className="tk-kaartteken">
             <ShieldIcon size={24} />
           </span>
-          <p className="tk-kaartrij-tekst text-lopend">{t('wissen.uitleg')}</p>
+          <span>{t('wissen.uitleg')}</span>
+        </p>
+        <p className="text-lopend">{t('wissen.zeker')}</p>
+        <ul className="tk-regelkaart-lijst">
+          <li className="text-lopend">{t('wissen.watVoortgang')}</li>
+          <li className="text-lopend">{t('wissen.watCode')}</li>
+        </ul>
+        <p className="text-lopend font-bold">{t('wissen.onomkeerbaar')}</p>
+        <form
+          className="flex flex-wrap items-end gap-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (klopt && !bezig) void wis();
+          }}
+        >
+          <div className="flex flex-col gap-2">
+            <label htmlFor={veld} className="tk-label">
+              {t('wissen.typLabel', { woord: t('wissen.typWoord') })}
+            </label>
+            <input
+              id={veld}
+              className="tk-input max-w-[14rem]"
+              value={getypt}
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              onChange={(event) => setGetypt(event.target.value)}
+            />
+          </div>
           <button
-            type="button"
-            className="tk-button tk-button-secondary"
-            onClick={() => setVraagt(true)}
+            type="submit"
+            className="tk-button tk-button-secondary tk-wissen-knop"
+            disabled={!klopt || bezig}
           >
-            {t('wissen.knop')}
+            {bezig ? t('wissen.bezig') : t('wissen.knop')}
           </button>
-        </div>
-      )}
+        </form>
+      </div>
     </section>
   );
 }

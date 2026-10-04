@@ -718,7 +718,7 @@ test('without a code the parents read what the child wanted, and what it is read
   await page.getByLabel('Nieuwe pincode').fill('1234');
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
-  const hoe = page.getByRole('region', { name: 'Hoe gaat het?' });
+  const hoe = page.getByRole('region', { name: 'Jouw kinderen' });
   await expect(hoe).toContainText('Fem is klaar voor de toets van Tafel van 1.');
   await expect(hoe).toContainText('Fem wilde dit graag doen');
   await expect(hoe).toContainText('Bliksemronde bij Provincies van Nederland');
@@ -750,7 +750,7 @@ test('without a code the parent sees what the day plan did this week, and the ch
   await page.getByLabel('Nog een keer').fill('1234');
   await page.getByRole('button', { name: 'Bewaren', exact: true }).click();
 
-  const week = page.getByRole('region', { name: 'Deze week' });
+  const week = page.getByRole('region', { name: 'Jouw kinderen' });
   await expect(week).toContainText('Sem oefende deze week 10 verschillende vragen.');
   await expect(week).toContainText(
     'Met premium zet het plan ze voor Sem morgen klaar om te herhalen',
