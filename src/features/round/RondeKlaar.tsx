@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Brandmark } from '@/components/Brandmark';
+import { ProgressBar } from '@/components/ProgressBar';
 import { DiplomaIcon, NextIcon, TodayIcon } from '@/components/Icon';
 import { RoundMark } from '@/components/RoundMark';
 import { setRetention, vooruitblik, type ItemState, type ModeId } from '@/game-core';
@@ -23,6 +23,7 @@ import { getActiveChild } from '@/store/children';
 import { leesWeekdoelen } from '@/store/weekdoelStore';
 import { HerhaalFouten } from './HerhaalFouten';
 import { DeelUitslag } from './DeelUitslag';
+import { TrotseDenker } from './TrotseDenker';
 import { VandaagVerder } from '@/features/home/VandaagVerder';
 import { useVandaag } from '@/features/home/useVandaag';
 
@@ -146,9 +147,17 @@ export function RondeKlaar({
     return (
       <main className="tk-uitslag" data-module={moduleId} data-accent="module">
         <div className="tk-uitslag-kolom">
-          <header className="flex flex-col gap-3">
-            <h1 className="tk-titel">{t('result.gestoptTitel')}</h1>
-            <p className="text-lopend text-tekst-secundair">{t('result.gestoptLeeg')}</p>
+          <header
+            className="tk-etalage tk-welkom tk-welkom-nu tk-uitslag-kop"
+            data-zonder-denker=""
+          >
+            <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+            <div className="tk-welkom-boven">
+              <div className="tk-welkom-tekst">
+                <h1 className="tk-welkom-kop">{t('result.gestoptTitel')}</h1>
+                <p className="tk-welkom-tekstregel">{t('result.gestoptLeeg')}</p>
+              </div>
+            </div>
           </header>
           <div className="flex flex-wrap gap-3">
             <button type="button" className="tk-button" onClick={onAgain}>
@@ -166,60 +175,82 @@ export function RondeKlaar({
   return (
     <main className="tk-uitslag" data-module={moduleId} data-accent="module">
       <div className="tk-uitslag-kolom">
-        <header className="flex flex-col gap-3">
-          {module ? (
-            <p className="tk-modulebadge">
-              <ModuleIcon size={16} />
-              {t(module.name)}
-            </p>
-          ) : null}
-          <div className="tk-kop-denker">
-            <h1 className="tk-titel">{t('result.title')}</h1>
+        {/* De kop van elke pagina (ADR-255, ADR-259): het koraal vlak met de
+            kop en Denker, en wat er gebeurde als witte kaart erin, zoals Nu
+            doen op Vandaag (ADR-260). Het was een losse kop op de grond met
+            een kleine Denker en een kaart eronder. */}
+        <header className="tk-etalage tk-welkom tk-welkom-nu tk-uitslag-kop">
+          <span className="tk-welkom-vorm tk-welkom-cirkel" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-zon" aria-hidden="true" />
+          <span className="tk-welkom-vorm tk-welkom-room" aria-hidden="true" />
+          <div className="tk-welkom-boven">
+            <div className="tk-welkom-tekst">
+              {module ? (
+                <p className="tk-modulebadge">
+                  <ModuleIcon size={16} />
+                  {t(module.name)}
+                </p>
+              ) : null}
+              <h1 className="tk-welkom-kop">{t('result.title')}</h1>
+              <p className="tk-welkom-tekstregel">{deel ? `${naamVan(deel)} · ${vorm}` : vorm}</p>
+            </div>
             {/* One Denker on a screen: while the diploma is being handed over,
-                that one is his. */}
-            {diploma !== null && uitreiking ? null : <Brandmark size={64} uitdrukking="blij" />}
+                that one is his. Otherwise he is proud (ADR-260). */}
+            {diploma !== null && uitreiking ? null : (
+              <TrotseDenker className="tk-welkom-denker" size={136} />
+            )}
           </div>
-          <p className="text-lopend text-tekst-secundair">
-            {deel ? `${naamVan(deel)} · ${vorm}` : vorm}
-          </p>
-        </header>
 
-        <section className="tk-card flex flex-col gap-4" aria-label={t('result.samenvatting')}>
-          {toetsstand ? (
-            <dl className="tk-cijfers">
-              <RoundMark goed={goed} totaal={beantwoord} />
-            </dl>
-          ) : null}
+          <section className="tk-uitslag-kaart" aria-label={t('result.samenvatting')}>
+            {toetsstand ? (
+              <dl className="tk-cijfers">
+                <RoundMark goed={goed} totaal={beantwoord} />
+              </dl>
+            ) : (
+              <div className="tk-uitslag-score" aria-hidden="true">
+                <span className="tk-uitslag-getal">{goed}</span>
+                <span className="tk-uitslag-van">/{beantwoord}</span>
+                <ProgressBar
+                  className="tk-uitslag-balk"
+                  value={beantwoord === 0 ? 0 : goed / beantwoord}
+                  showDot={false}
+                  label={gedaan}
+                />
+              </div>
+            )}
 
-          <ul className="tk-uitslag-regels">
-            <li>
-              <span className="tk-uitslag-regelicoon" aria-hidden="true">
-                <NextIcon size={20} />
-              </span>
-              {gedaan}
-            </li>
-            {/* Wat morgen terugkomt en wat er over drie weken over is, zijn
-                voortgang, en die is alleen met premium te zien (ADR-192). Wat
-                er in deze ronde gebeurde, staat er altijd. */}
-            {eigenDeel && premium ? (
+            <ul className="tk-uitslag-regels">
               <li>
                 <span className="tk-uitslag-regelicoon" aria-hidden="true">
-                  <TodayIcon size={20} />
+                  <NextIcon size={20} />
                 </span>
-                {morgenZin(blik)}
+                {gedaan}
               </li>
-            ) : null}
-          </ul>
+              {/* Wat morgen terugkomt en wat er over drie weken over is, zijn
+                  voortgang, en die is alleen met premium te zien (ADR-192). Wat
+                  er in deze ronde gebeurde, staat er altijd. */}
+              {eigenDeel && premium ? (
+                <li>
+                  <span className="tk-uitslag-regelicoon" aria-hidden="true">
+                    <TodayIcon size={20} />
+                  </span>
+                  {morgenZin(blik)}
+                </li>
+              ) : null}
+            </ul>
 
-          <div className="flex flex-col gap-1">
-            {premium ? <OnthoudRegel ids={ids} states={na} /> : null}
-            {gestopt ? (
-              <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
+            {premium || gestopt || toetsstand || melding ? (
+              <div className="flex flex-col gap-1">
+                {premium ? <OnthoudRegel ids={ids} states={na} /> : null}
+                {gestopt ? (
+                  <p className="text-tekst-secundair">{t('result.stoppedEarly', gestopt)}</p>
+                ) : null}
+                {toetsstand ? <p className="text-tekst-secundair">{t('result.markWhy')}</p> : null}
+                {melding ? <p className="text-tekst-secundair">{melding}</p> : null}
+              </div>
             ) : null}
-            {toetsstand ? <p className="text-tekst-secundair">{t('result.markWhy')}</p> : null}
-            {melding ? <p className="text-tekst-secundair">{melding}</p> : null}
-          </div>
-        </section>
+          </section>
+        </header>
 
         {/* Klaar voor de toets, zonder code (ADR-193): het moment waarop een
             kind het zijn ouders vraagt. */}
